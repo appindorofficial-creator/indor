@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Subscriptions";
+    ViewData["Subtitulo"] = "Plans available for your home";
+    var planes = (IEnumerable<IndorMvcApp.Models.PlanMembresia>?)ViewBag.Planes ?? Enumerable.Empty<IndorMvcApp.Models.PlanMembresia>();
+    var membresia = (IndorMvcApp.Models.MembresiaUsuario?)ViewBag.MembresiaActual;
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+}
+
+<style>
+    .plan-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .plan-card {
+        background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px;
+        padding: 16px; position: relative;
+    }
+    .plan-card.active { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.15); }
+    .plan-card.recommended { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.15); }
+    .pc-flag {
+        position: absolute; top: -10px; right: 12px;
+        background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+        font-size: .68rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;
+    }
+    .plan-card h4 { margin: 0 0 4px; font-size: 1rem; }
+    .pc-sub { font-size: .78rem; color: #6B7280; margin-bottom: 8px; }
+    .pc-price { font-size: 1.4rem; font-weight: 800; color: #0066CC; margin-bottom: 10px; }
+    .pc-price small { font-size: .7rem; color: #6B7280; font-weight: 500; }
+    .plan-card ul { list-style: none; padding: 0; margin: 0 0 12px; display: flex; flex-direction: column; gap: 4px; }
+    .plan-card li { font-size: .8rem; color: #0A2540; display: flex; gap: 6px; align-items: flex-start; }
+    .plan-card li i { color: #0066CC; font-size: .7rem; margin-top: 5px; }
+    .pc-action {
+        width: 100%; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+        border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;
+    }
+    .pc-action[disabled] { background: #E5E7EB; color: #6B7280; cursor: default; }
+</style>
+
+<div class="pf-card">
+    <h3><i class="fas fa-crown"></i> Available plans</h3>
+    @if (!planes.Any())
+    {
+        <div class="empty">No plans available.</div>
+    }
+    else
+    {
+        <div class="plan-grid">
+            @foreach (var pl in planes)
+            {
+                var feats = string.IsNullOrWhiteSpace(pl.Caracteristicas)
+                    ? Array.Empty<string>()
+                    : pl.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                var esActual = membresia?.PlanMembresiaId == pl.Id;
+                <div class="plan-card @(esActual ? "active" : (pl.Recomendado ? "recommended" : ""))">
+                    @if (esActual) { <span class="pc-flag">Current plan</span> }
+                    else if (pl.Recomendado) { <span class="pc-flag">Recommended</span> }
+                    <h4>@pl.Nombre</h4>
+                    <div class="pc-sub">@pl.Subtitulo</div>
+                    <div class="pc-price">@pl.PrecioMensual.ToString("C0", culture) <small>/ month</small></div>
+                    <ul>
+                        @foreach (var f in feats) { <li><i class="fas fa-check"></i><span>@f</span></li> }
+                    </ul>
+                    <form method="post" asp-controller="Perfil" asp-action="ActivarPlan">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="planId" value="@pl.Id" />
+                        <button type="submit" class="pc-action" @(esActual ? "disabled" : "")>
+                            @(esActual ? "Current plan" : "Activate plan")
+                        </button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>

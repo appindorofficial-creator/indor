@@ -1,0 +1,2477 @@
+﻿@model IEnumerable<IndorMvcApp.Models.Propiedad>
+@using System.Text.Json
+@using IndorMvcApp.ViewModels
+@{
+    ViewData["Title"] = "Home - InDor";
+    Layout = null;
+
+    string Money(decimal? v) => v.HasValue ? string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C0}", v.Value) : "—";
+    string Num(decimal? v) => v.HasValue ? v.Value.ToString("0.##") : "—";
+    string Date(DateTime? d) => d.HasValue ? d.Value.ToString("dd/MM/yyyy") : "—";
+    string PricePerSqft(decimal? value, int? sqft)
+    {
+        if (!value.HasValue || !sqft.HasValue || sqft.Value <= 0) return "—";
+        return string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "${0:N0}/sqft", value.Value / sqft.Value);
+    }
+    string[] SplitIncludes(string? incluye) => string.IsNullOrWhiteSpace(incluye)
+        ? Array.Empty<string>()
+        : incluye.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+    string BedsLabel(int? beds) => beds.HasValue ? $"{beds} bed{(beds.Value == 1 ? "" : "s")}" : "";
+    string BathsLabel(decimal? baths) => baths.HasValue ? $"{Num(baths)} bath{(baths.Value == 1 ? "" : "s")}" : "";
+
+    OfferingCarouselViewModel BuildMicroCarousel(IEnumerable<IndorMvcApp.Models.Microservicio> items, string subtitle)
+    {
+        return new OfferingCarouselViewModel
+        {
+            Title = "Microservices",
+            Subtitle = subtitle,
+            Icon = "fa-layer-group",
+            Items = items.Select(s => new OfferingCardViewModel
+            {
+                Name = s.Nombre,
+                Subtitle = s.Subtitulo,
+                Description = s.Descripcion,
+                Includes = SplitIncludes(s.Incluye),
+                Frequency = s.Frecuencia,
+                Price = s.Valor,
+                PricePrefix = s.PrecioPrefijo,
+                Currency = s.Moneda,
+                Cta = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Schedule service" : s.CtaTexto,
+                ImageUrl = s.ImagenUrl,
+                ImageBase64 = s.ImagenBase64,
+                SourceId = s.Id,
+                EnableSchedule = true
+            }).ToList()
+        };
+    }
+
+    OfferingCarouselViewModel BuildServicioCarousel(IEnumerable<IndorMvcApp.Models.Servicio> items, string subtitle)
+    {
+        return new OfferingCarouselViewModel
+        {
+            Title = "Services",
+            Subtitle = subtitle,
+            Icon = "fa-screwdriver-wrench",
+            BlockClass = "category-block-services",
+            IconClass = "category-icon-alt",
+            BadgeClass = "category-badge-alt",
+            Items = items.Select(sv => new OfferingCardViewModel
+            {
+                Name = sv.Nombre,
+                Subtitle = sv.Subtitulo,
+                Description = sv.Descripcion,
+                Includes = SplitIncludes(sv.Incluye),
+                Frequency = sv.Frecuencia,
+                Price = sv.Valor,
+                PricePrefix = sv.PrecioPrefijo,
+                PriceText = sv.PrecioTexto,
+                Currency = sv.Moneda,
+                Cta = string.IsNullOrWhiteSpace(sv.CtaTexto) ? "Request quote" : sv.CtaTexto,
+                ImageUrl = sv.ImagenUrl,
+                FreqIcon = "fa-clock",
+                CtaIcon = "fa-paper-plane"
+            }).ToList()
+        };
+    }
+
+    OfferingCarouselViewModel BuildInspeccionCarousel(IEnumerable<IndorMvcApp.Models.Inspeccion> items, string subtitle)
+    {
+        return new OfferingCarouselViewModel
+        {
+            Title = "Inspections",
+            Subtitle = subtitle,
+            Icon = "fa-magnifying-glass-chart",
+            BlockClass = "category-block-inspections",
+            IconClass = "category-icon-insp",
+            BadgeClass = "category-badge-insp",
+            Items = items.Select(ins => new OfferingCardViewModel
+            {
+                Name = ins.Nombre,
+                Subtitle = ins.Subtitulo,
+                Description = ins.Descripcion,
+                Includes = SplitIncludes(ins.Incluye),
+                Frequency = ins.Frecuencia,
+                Price = ins.Valor,
+                PricePrefix = ins.PrecioPrefijo,
+                PriceText = ins.PrecioTexto,
+                Currency = ins.Moneda,
+                Cta = string.IsNullOrWhiteSpace(ins.CtaTexto) ? "Schedule inspection" : ins.CtaTexto,
+                ImageUrl = ins.ImagenUrl,
+                FreqIcon = "fa-clipboard-check",
+                CtaIcon = "fa-calendar-check"
+            }).ToList()
+        };
+    }
+
+    // === Construir slides agrupados desde PropertyInfoViewModel ===
+    List<(string Title, string Icon, List<(string Label, string Value)> Items)> BuildGroupsFor(PropertyInfoViewModel info)
+    {
+        var groups = new List<(string Title, string Icon, List<(string Label, string Value)> Items)>();
+
+        // 1. Dirección
+        var dir = new List<(string, string)>();
+        if (!string.IsNullOrWhiteSpace(info.FormattedAddress)) dir.Add(("Full address", info.FormattedAddress));
+        if (!string.IsNullOrWhiteSpace(info.HouseNumber)) dir.Add(("House number", info.HouseNumber!));
+        if (!string.IsNullOrWhiteSpace(info.Street)) dir.Add(("Street", info.Street!));
+        if (!string.IsNullOrWhiteSpace(info.City)) dir.Add(("City", info.City!));
+        if (!string.IsNullOrWhiteSpace(info.County)) dir.Add(("County", info.County!));
+        if (!string.IsNullOrWhiteSpace(info.State)) dir.Add(("State", info.State!));
+        if (!string.IsNullOrWhiteSpace(info.PostalCode)) dir.Add(("Postal code", info.PostalCode!));
+        if (!string.IsNullOrWhiteSpace(info.Country)) dir.Add(("Country", info.Country!));
+        if (dir.Count > 0) groups.Add(("Address", "fa-map-marker-alt", dir));
+
+        // 2. Coordenadas
+        var coords = new List<(string, string)>
+        {
+            ("Latitude", info.Latitude.ToString("0.######")),
+            ("Longitude", info.Longitude.ToString("0.######"))
+        };
+        if (info.BoundingBox != null)
+        {
+            coords.Add(("Area (lat min/max)", $"{info.BoundingBox.MinLat:0.####} / {info.BoundingBox.MaxLat:0.####}"));
+            coords.Add(("Area (lon min/max)", $"{info.BoundingBox.MinLon:0.####} / {info.BoundingBox.MaxLon:0.####}"));
+        }
+        groups.Add(("Coordinates", "fa-location-crosshairs", coords));
+
+        // 3. Detalles de la propiedad
+        if (info.PropertyDetails != null)
+        {
+            var d = info.PropertyDetails;
+            var det = new List<(string, string)>();
+            if (!string.IsNullOrWhiteSpace(d.PropertyType)) det.Add(("Property type", d.PropertyType));
+            if (d.YearBuilt.HasValue) det.Add(("Year built", d.YearBuilt.Value.ToString()));
+            if (d.YearRenovated.HasValue) det.Add(("Year renovated", d.YearRenovated.Value.ToString()));
+            if (d.LivingArea.HasValue) det.Add(("Living area", $"{d.LivingArea} sq ft"));
+            if (d.LotSize.HasValue) det.Add(("Lot size", $"{d.LotSize} acres"));
+            if (d.Bedrooms.HasValue) det.Add(("Bedrooms", d.Bedrooms.Value.ToString()));
+            if (d.Bathrooms.HasValue) det.Add(("Bathrooms", Num(d.Bathrooms)));
+            if (d.Floors.HasValue) det.Add(("Floors", d.Floors.Value.ToString()));
+            if (!string.IsNullOrWhiteSpace(d.ArchitecturalStyle)) det.Add(("Style", d.ArchitecturalStyle));
+            if (d.Features != null && d.Features.Count > 0) det.Add(("Features", string.Join(", ", d.Features)));
+            if (det.Count > 0) groups.Add(("Property details", "fa-house", det));
+
+            // 4. Valor e impuestos
+            var val = new List<(string, string)>();
+            if (d.EstimatedValue.HasValue) val.Add(($"Valor estimado ({d.EstimatedValueYear})", Money(d.EstimatedValue)));
+            if (d.LastSalePrice.HasValue) val.Add(("Last sale price", Money(d.LastSalePrice)));
+            if (d.LastSaleDate.HasValue) val.Add(("Last sale date", Date(d.LastSaleDate)));
+            if (d.AnnualTaxAmount.HasValue) val.Add(($"Impuestos anuales ({d.TaxYear})", Money(d.AnnualTaxAmount)));
+            if (!string.IsNullOrWhiteSpace(d.ParcelNumber)) val.Add(("Parcel number", d.ParcelNumber!));
+            if (!string.IsNullOrWhiteSpace(d.Zoning)) val.Add(("Zoning", d.Zoning!));
+            if (val.Count > 0) groups.Add(("Value and taxes", "fa-dollar-sign", val));
+        }
+
+        return groups;
+    }
+
+    // === Servicios públicos como tarjetas ricas ===
+    List<UtilityCard> BuildUtilities(UtilityProvidersInfo? u)
+    {
+        var list = new List<UtilityCard>();
+        if (u == null) return list;
+        void Add(UtilityProvider? p, string icon)
+        {
+            if (p == null || string.IsNullOrWhiteSpace(p.Name)) return;
+            list.Add(new UtilityCard { Icon = icon, Provider = p });
+        }
+        Add(u.Electric, "fa-bolt");
+        Add(u.Water, "fa-droplet");
+        Add(u.Sewer, "fa-water");
+        Add(u.Gas, "fa-fire-flame-curved");
+        if (u.Internet != null) foreach (var p in u.Internet) Add(p, "fa-wifi");
+        if (u.CableTV != null) foreach (var p in u.CableTV) Add(p, "fa-tv");
+        return list;
+    }
+
+    // === Garantías / seguros como tarjetas ricas ===
+    List<WarrantyCard> BuildWarranties(HomeWarrantiesInfo? w)
+    {
+        var list = new List<WarrantyCard>();
+        if (w == null) return list;
+        void Add(HomeWarranty? hw, string icon)
+        {
+            if (hw == null || string.IsNullOrWhiteSpace(hw.SystemName)) return;
+            list.Add(new WarrantyCard { Icon = icon, Warranty = hw });
+        }
+        Add(w.HomeWarrantyPolicy, "fa-shield-halved");
+        Add(w.HVACSystem, "fa-temperature-half");
+        Add(w.WaterHeater, "fa-fire");
+        Add(w.Roof, "fa-house-chimney");
+        Add(w.Appliances, "fa-blender");
+        Add(w.Plumbing, "fa-faucet");
+        Add(w.Electrical, "fa-plug");
+        return list;
+    }
+
+    var jsonOpts = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+
+    // Cada slide tiene un Kind: "group" | "utilities" | "warranties"
+    var propertiesGrouped = new List<(
+        IndorMvcApp.Models.Propiedad Prop,
+        List<SlideEntry> Slides)>();
+
+    foreach (var p in Model)
+    {
+        PropertyInfoViewModel? info = null;
+        if (!string.IsNullOrWhiteSpace(p.DatosJson))
+        {
+            try { info = JsonSerializer.Deserialize<PropertyInfoViewModel>(p.DatosJson, jsonOpts); }
+            catch { info = null; }
+        }
+
+        var slides = new List<SlideEntry>();
+
+        if (info != null)
+        {
+            // Slides agrupados de información básica
+            foreach (var g in BuildGroupsFor(info))
+            {
+                slides.Add(new SlideEntry
+                {
+                    Kind = "group",
+                    Title = g.Title,
+                    Icon = g.Icon,
+                    Items = g.Items
+                });
+            }
+
+            // Slide de servicios públicos (asociados a esta dirección)
+            var utils = BuildUtilities(info.UtilityProviders);
+            if (utils.Count > 0)
+            {
+                slides.Add(new SlideEntry
+                {
+                    Kind = "utilities",
+                    Title = "Utilities",
+                    Icon = "fa-plug-circle-bolt",
+                    Utilities = utils
+                });
+            }
+
+            // Slide de seguros / garantías (asociados a esta dirección)
+            var warrs = BuildWarranties(info.HomeWarranties);
+            if (warrs.Count > 0)
+            {
+                slides.Add(new SlideEntry
+                {
+                    Kind = "warranties",
+                    Title = "Insurance and warranties",
+                    Icon = "fa-shield-halved",
+                    Warranties = warrs
+                });
+            }
+        }
+        else
+        {
+            // Compatibilidad con propiedades viejas
+            slides.Add(new SlideEntry
+            {
+                Kind = "group",
+                Title = "Address",
+                Icon = "fa-map-marker-alt",
+                Items = new List<(string, string)> { ("Address", p.Direccion ?? "—") }
+            });
+        }
+
+        propertiesGrouped.Add((p, slides));
+    }
+    var hasProperties = propertiesGrouped.Count > 0;
+
+    // === Información básica de la propiedad principal (la más reciente) ===
+    PropertyInfoViewModel? primaryInfo = null;
+    IndorMvcApp.Models.Propiedad? primaryProp = null;
+    if (hasProperties)
+    {
+        primaryProp = propertiesGrouped[0].Prop;
+        if (!string.IsNullOrWhiteSpace(primaryProp.DatosJson))
+        {
+            try { primaryInfo = JsonSerializer.Deserialize<PropertyInfoViewModel>(primaryProp.DatosJson, jsonOpts); }
+            catch { primaryInfo = null; }
+        }
+    }
+
+    // === Notificaciones derivadas de las garantías guardadas ===
+    var notificaciones = new List<NotificationItem>();
+    foreach (var entry in propertiesGrouped)
+    {
+        var p = entry.Prop;
+        PropertyInfoViewModel? infoP = null;
+        if (!string.IsNullOrWhiteSpace(p.DatosJson))
+        {
+            try { infoP = JsonSerializer.Deserialize<PropertyInfoViewModel>(p.DatosJson, jsonOpts); }
+            catch { infoP = null; }
+        }
+        if (infoP?.HomeWarranties == null) continue;
+
+        void EvalWarranty(HomeWarranty? w, string defaultIcon)
+        {
+            if (w == null || string.IsNullOrWhiteSpace(w.SystemName)) return;
+            if (!w.CoverageEndDate.HasValue) return;
+            var end = w.CoverageEndDate.Value.Date;
+            var today = DateTime.Today;
+            var days = (end - today).Days;
+            string severity;
+            string icon = defaultIcon;
+            string title;
+            if (days < 0)
+            {
+                severity = "expired";
+                title = $"{w.SystemName} expired";
+            }
+            else if (days <= 30)
+            {
+                severity = "soon";
+                title = $"{w.SystemName} expires in {days} day{(days == 1 ? "" : "s")}";
+            }
+            else if (days <= 90)
+            {
+                severity = "upcoming";
+                title = $"{w.SystemName} expires in {days} days";
+            }
+            else
+            {
+                return;
+            }
+            notificaciones.Add(new NotificationItem
+            {
+                Icon = icon,
+                Severity = severity,
+                Title = title,
+                Subtitle = $"{(string.IsNullOrWhiteSpace(w.WarrantyProvider) ? "Warranty" : w.WarrantyProvider)} · {p.Direccion}",
+                Date = end,
+                DaysRemaining = days
+            });
+        }
+
+        var hw = infoP.HomeWarranties;
+        EvalWarranty(hw.HomeWarrantyPolicy, "fa-shield-halved");
+        EvalWarranty(hw.HVACSystem, "fa-temperature-half");
+        EvalWarranty(hw.WaterHeater, "fa-fire");
+        EvalWarranty(hw.Roof, "fa-house-chimney");
+        EvalWarranty(hw.Appliances, "fa-blender");
+        EvalWarranty(hw.Plumbing, "fa-faucet");
+        EvalWarranty(hw.Electrical, "fa-plug");
+    }
+
+    var programacionesMs = ViewBag.ProgramacionesMicroservicio as List<IndorMvcApp.Models.ProgramacionMicroservicio>
+                             ?? new List<IndorMvcApp.Models.ProgramacionMicroservicio>();
+    foreach (var prog in programacionesMs)
+    {
+        var scheduled = prog.FechaProgramada.Date;
+        var days = (scheduled - DateTime.Today).Days;
+        var serviceName = prog.Microservicio?.Nombre ?? "Microservice";
+        string severity;
+        string title;
+        if (days < 0)
+        {
+            severity = "expired";
+            title = $"{serviceName} overdue by {Math.Abs(days)} day{(Math.Abs(days) == 1 ? "" : "s")}";
+        }
+        else if (days == 0)
+        {
+            severity = "soon";
+            title = $"{serviceName} due today";
+        }
+        else if (days <= 30)
+        {
+            severity = "soon";
+            title = $"{serviceName} due in {days} day{(days == 1 ? "" : "s")}";
+        }
+        else if (days <= 90)
+        {
+            severity = "upcoming";
+            title = $"{serviceName} scheduled in {days} days";
+        }
+        else
+        {
+            continue;
+        }
+
+        notificaciones.Add(new NotificationItem
+        {
+            Icon = "fa-calendar-check",
+            Severity = severity,
+            Title = title,
+            Subtitle = string.IsNullOrWhiteSpace(prog.Propiedad?.Direccion)
+                ? "Home maintenance reminder"
+                : prog.Propiedad!.Direccion!,
+            Date = scheduled,
+            DaysRemaining = days
+        });
+    }
+
+    notificaciones = notificaciones.OrderBy(n => n.DaysRemaining).ToList();
+}
+
+@functions {
+    public class UtilityCard
+    {
+        public string Icon { get; set; } = "";
+        public UtilityProvider Provider { get; set; } = new();
+    }
+    public class WarrantyCard
+    {
+        public string Icon { get; set; } = "";
+        public HomeWarranty Warranty { get; set; } = new();
+    }
+    public class SlideEntry
+    {
+        public string Kind { get; set; } = "group";
+        public string Title { get; set; } = "";
+        public string Icon { get; set; } = "fa-circle-info";
+        public List<(string Label, string Value)> Items { get; set; } = new();
+        public List<UtilityCard> Utilities { get; set; } = new();
+        public List<WarrantyCard> Warranties { get; set; } = new();
+    }
+    public class NotificationItem
+    {
+        public string Icon { get; set; } = "fa-bell";
+        public string Severity { get; set; } = "upcoming"; // expired | soon | upcoming
+        public string Title { get; set; } = "";
+        public string Subtitle { get; set; } = "";
+        public DateTime Date { get; set; }
+        public int DaysRemaining { get; set; }
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #FFFFFF;
+            color: #0A2540;
+            min-height: 100vh;
+            padding-bottom: 90px; /* espacio para el bottom nav */
+        }
+
+        /* === Top bar === */
+        .top-bar {
+            background: #FFFFFF;
+            padding: 14px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, 0.05);
+        }
+
+        .avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFF;
+            font-weight: 700;
+            font-size: 0.95rem;
+            flex-shrink: 0;
+        }
+
+        .search-bar {
+            flex: 1;
+            background: #F3F4F6;
+            border-radius: 999px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            font-size: 0.9rem;
+        }
+
+        .bell {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #F3F4F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0A2540;
+            flex-shrink: 0;
+        }
+
+        /* === Sections === */
+        .section { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
+        .section.active { display: block; }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .section-title a { font-size: 0.8rem; color: #0066CC; text-decoration: none; font-weight: 600; }
+
+        /* Cards de la pantalla Home */
+        .info-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+
+        .info-card {
+            background: #FFF;
+            border-radius: 14px;
+            padding: 14px;
+            box-shadow: 0 4px 12px rgba(10, 37, 64, 0.05);
+        }
+        .info-card .label { font-size: 0.72rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .info-card .value { font-size: 1rem; font-weight: 700; color: #0A2540; line-height: 1.2; margin-bottom: 6px; }
+        .info-card .sub { font-size: 0.72rem; color: #6B7280; margin-bottom: 10px; }
+        .info-card .pill { display: inline-block; font-size: 0.72rem; font-weight: 600; padding: 4px 10px; border-radius: 999px; }
+        .pill-green { background: #DCFCE7; color: #15803D; }
+        .pill-blue { background: #DBEAFE; color: #004FA3; }
+        .pill-yellow { background: #FEF3C7; color: #B45309; }
+
+        .service-card {
+            background: #FFF;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(10, 37, 64, 0.05);
+        }
+        .service-card .img { height: 110px; background: linear-gradient(135deg, #0066CC, #004FA3); display: flex; align-items: center; justify-content: center; color: #FFF; font-size: 2.4rem; }
+        .service-card .body { padding: 12px; }
+        .service-card .title { font-weight: 700; font-size: 0.95rem; margin-bottom: 4px; }
+        .service-card .desc { font-size: 0.75rem; color: #6B7280; margin-bottom: 10px; }
+        .btn-book { width: 100%; background: #0066CC; color: #FFF; border: none; padding: 8px; border-radius: 10px; font-weight: 600; font-size: 0.85rem; cursor: pointer; }
+
+        .verified {
+            background: #FFF;
+            border-radius: 14px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(10, 37, 64, 0.05);
+            margin-top: 16px;
+        }
+        .verified .icon { width: 40px; height: 40px; border-radius: 12px; background: #DBEAFE; color: #0066CC; display: flex; align-items: center; justify-content: center; }
+        .verified .text strong { display: block; font-size: 0.9rem; }
+        .verified .text small { color: #6B7280; font-size: 0.75rem; }
+
+        /* === MyHome (slider con datos del JSON) === */
+        .property-selector {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .property-tab {
+            flex: 0 0 auto;
+            background: #FFF;
+            border: 1.5px solid #E5E7EB;
+            color: #0A2540;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .property-tab.active { background: #0A2540; color: #FFF; border-color: #0A2540; }
+
+        .results-card {
+            background: #FFFFFF;
+            border-radius: 18px;
+            padding: 18px 14px;
+            box-shadow: 0 8px 24px rgba(10, 37, 64, 0.08);
+        }
+        .results-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .results-title { font-size: 0.95rem; font-weight: 700; color: #0A2540; }
+        .slide-counter { font-size: 0.75rem; font-weight: 600; color: #0066CC; background: rgba(0,102,204,0.1); padding: 4px 10px; border-radius: 999px; }
+
+        .slider-viewport { overflow: hidden; border-radius: 14px; background: #F9FAFB; }
+        .slider-track { display: flex; transition: transform .45s cubic-bezier(.4,0,.2,1); will-change: transform; }
+        .result-card { flex: 0 0 100%; min-width: 100%; padding: 22px 18px; display: flex; flex-direction: column; min-height: 240px; max-height: 60vh; overflow-y: auto; }
+        .group-header { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+        .field-icon { width: 48px; height: 48px; border-radius: 12px; background: linear-gradient(135deg, rgba(0,102,204,.12), rgba(0,79,163,.12)); color: #0066CC; display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0; }
+        .group-title { font-size: 1.05rem; font-weight: 700; color: #0A2540; }
+        .group-list { display: flex; flex-direction: column; gap: 10px; }
+        .group-item { display: flex; flex-direction: column; padding: 10px 12px; background: #FFFFFF; border-radius: 10px; border: 1px solid #EEF2F7; }
+        .group-item .k { font-size: 0.72rem; color: #6B7280; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 2px; font-weight: 600; }
+        .group-item .v { font-size: 0.95rem; color: #0A2540; font-weight: 600; word-break: break-word; }
+
+        .slider-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-top: 14px; }
+        .nav-button { width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #E5E7EB; background: #FFF; color: #0A2540; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: .25s; }
+        .nav-button:hover:not(:disabled) { border-color: #0066CC; color: #0066CC; }
+        .nav-button:disabled { opacity: .4; cursor: not-allowed; }
+        .dots-container { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; max-width: 220px; }
+        .dot { width: 7px; height: 7px; border-radius: 50%; background: #E5E7EB; cursor: pointer; transition: .3s; }
+        .dot.active { background: #0066CC; width: 20px; border-radius: 4px; }
+
+        .empty-state { background: #FFF; border-radius: 14px; padding: 40px 20px; text-align: center; box-shadow: 0 4px 12px rgba(10, 37, 64, 0.05); }
+        .empty-state i { font-size: 2.5rem; color: #9CA3AF; margin-bottom: 12px; }
+        .empty-state p { color: #6B7280; margin-bottom: 14px; }
+        .btn-primary-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF; text-decoration: none;
+            padding: 10px 18px; border-radius: 12px; font-weight: 600; font-size: 0.9rem;
+        }
+
+        /* === Bottom navigation === */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: #FFFFFF;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 6px calc(env(safe-area-inset-bottom, 0) + 10px);
+            box-shadow: 0 -4px 16px rgba(10, 37, 64, 0.08);
+            z-index: 100;
+        }
+        .nav-item {
+            flex: 1;
+            border: none;
+            background: transparent;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 2px;
+            color: #9CA3AF;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 500;
+            transition: color .2s;
+        }
+        .nav-item i { font-size: 1.2rem; }
+        .nav-item.active { color: #0066CC; }
+        .nav-item.active i { transform: translateY(-2px); }
+
+        @@media (max-width: 480px) {
+            .field-value { font-size: 1.2rem; }
+        }
+
+        /* === Servicios públicos === */
+        .extra-title { font-size: 1rem; font-weight: 700; color: #0A2540; margin: 18px 0 10px; display: flex; align-items: center; gap: 8px; }
+        .extra-title i { color: #0066CC; }
+
+        .utility-grid { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .utility-card { background: #FFF; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(10,37,64,.05); border: 1px solid #EEF2F7; }
+        .utility-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .util-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, rgba(0,102,204,.15), rgba(0,79,163,.15)); color: #0066CC; display: flex; align-items: center; justify-content: center; font-size: 1.05rem; flex-shrink: 0; }
+        .utility-name { font-weight: 700; font-size: 0.95rem; color: #0A2540; }
+        .utility-type { font-size: 0.75rem; color: #6B7280; }
+        .utility-cov { font-size: 0.8rem; color: #6B7280; margin-bottom: 8px; }
+        .utility-actions { display: flex; flex-wrap: wrap; gap: 6px; }
+        .util-btn { display: inline-flex; align-items: center; gap: 6px; background: #F3F4F6; color: #0A2540; padding: 6px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 600; text-decoration: none; }
+        .util-btn:hover { background: #E5E7EB; }
+
+        /* === Garantías === */
+        .warranty-list { display: flex; flex-direction: column; gap: 12px; }
+        .warranty-card { background: #FFF; border-radius: 14px; padding: 14px; box-shadow: 0 4px 12px rgba(10,37,64,.05); border: 1px solid #EEF2F7; }
+        .warranty-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+        .warranty-titles { flex: 1; min-width: 0; }
+        .warranty-name { font-weight: 700; font-size: 0.95rem; color: #0A2540; }
+        .warranty-prov { font-size: 0.75rem; color: #6B7280; }
+        .pill-red { background: #FEE2E2; color: #B91C1C; }
+        .warranty-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
+        .wg-item { background: #F9FAFB; border-radius: 8px; padding: 8px 10px; display: flex; flex-direction: column; }
+        .wg-item .k { font-size: 0.65rem; color: #6B7280; text-transform: uppercase; letter-spacing: .4px; font-weight: 600; }
+        .wg-item .v { font-size: 0.82rem; color: #0A2540; font-weight: 600; word-break: break-word; }
+        .warranty-extra { font-size: 0.78rem; color: #4B5563; margin-bottom: 8px; line-height: 1.4; }
+        .warranty-extra strong { color: #0A2540; }
+
+        /* === Servicios (Microservicios desde DB) === */
+        .services-count {
+            background: #0066CC; color: #FFF; font-size: 0.72rem; font-weight: 700;
+            padding: 3px 10px; border-radius: 999px;
+        }
+
+        .services-hero {
+            background: linear-gradient(135deg, #EFF6FF 0%, #FFFFFF 100%);
+            color: #0A2540;
+            border: 1px solid #DBEAFE;
+            border-radius: 18px;
+            padding: 16px 18px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.08);
+        }
+        .services-hero-text { flex: 1; display: flex; flex-direction: column; gap: 2px; }
+        .services-hero-text strong { font-size: 1rem; font-weight: 700; color: #0A2540; }
+        .services-hero-text small { font-size: 0.78rem; color: #64748B; }
+        .services-hero-icon {
+            width: 46px; height: 46px; border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; flex-shrink: 0;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, 0.25);
+        }
+
+        /* === Carrusel tipo slide para Microservicios / Servicios / Inspecciones === */
+        .services-grid {
+            position: relative;
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 0;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            padding: 4px 0 8px;
+            margin: 0;
+            scrollbar-width: none;
+        }
+        .services-grid::-webkit-scrollbar { display: none; height: 0; }
+        .services-grid > .ms-card {
+            flex: 0 0 92%;
+            width: 92%;
+            max-width: 92%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            margin-right: 10px;
+        }
+        .carousel-wrap { position: relative; }
+        .carousel-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            width: 36px; height: 36px; border-radius: 50%;
+            border: none; background: rgba(255,255,255,.95);
+            color: #0A2540; font-size: 0.95rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(10, 37, 64, .18);
+            cursor: pointer; z-index: 3;
+            transition: transform .15s ease, opacity .15s ease;
+        }
+        .carousel-nav:hover { transform: translateY(-50%) scale(1.06); }
+        .carousel-nav:disabled { opacity: 0.35; cursor: default; }
+        .carousel-nav.prev { left: 6px; }
+        .carousel-nav.next { right: 6px; }
+        .carousel-dots {
+            display: flex; justify-content: center; align-items: center;
+            gap: 6px; margin-top: 10px; flex-wrap: wrap;
+        }
+        .carousel-dot {
+            width: 7px; height: 7px; border-radius: 999px;
+            background: #CBD5E1; border: none; padding: 0; cursor: pointer;
+            transition: width .2s ease, background .2s ease;
+        }
+        .carousel-dot.active { width: 22px; background: #0066CC; }
+        .carousel-counter {
+            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+            background: rgba(10, 37, 64, .8); color: #FFF;
+            font-size: 0.68rem; font-weight: 700;
+            padding: 4px 10px; border-radius: 999px;
+            z-index: 3; backdrop-filter: blur(4px);
+            pointer-events: none;
+        }
+
+        /* === Contenedor de categoría (Microservicios) === */
+        .category-block {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 16px 14px 18px;
+            box-shadow: 0 6px 20px rgba(10, 37, 64, .06);
+            position: relative;
+        }
+        .category-header {
+            display: flex; align-items: center; gap: 12px;
+            padding-bottom: 14px; margin-bottom: 14px;
+            border-bottom: 1px dashed #E5E7EB;
+        }
+        .category-icon {
+            width: 42px; height: 42px; border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF; display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; flex-shrink: 0;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, .25);
+        }
+        .category-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+        .category-title {
+            font-size: 1rem; font-weight: 800; color: #0A2540;
+            letter-spacing: .2px; margin: 0;
+        }
+        .category-sub { font-size: 0.72rem; color: #6B7280; }
+        .category-badge {
+            background: #ECFDF5; color: #15803D;
+            font-size: 0.72rem; font-weight: 700;
+            padding: 4px 10px; border-radius: 999px;
+            border: 1px solid #A7F3D0;
+        }
+
+        /* Variante para la categoría "Servicios" */
+        .category-block-services { margin-top: 18px; }
+        .category-icon-alt {
+            background: linear-gradient(135deg, #0066CC, #004FA3) !important;
+            box-shadow: 0 6px 14px rgba(219, 39, 119, .25) !important;
+        }
+        .category-badge-alt {
+            background: #FFF7ED; color: #C2410C; border-color: #FED7AA;
+        }
+        /* Variante para la categoría "Inspecciones" */
+        .category-block-inspections { margin-top: 18px; }
+        .category-icon-insp {
+            background: linear-gradient(135deg, #0066CC, #004FA3) !important;
+            box-shadow: 0 6px 14px rgba(29, 78, 216, .25) !important;
+        }
+        .category-badge-insp {
+            background: #EFF6FF; color: #004FA3; border-color: #BFDBFE;
+        }
+        .ms-amount-text {
+            font-size: 1.05rem; font-weight: 800; color: #0066CC;
+            text-transform: uppercase; letter-spacing: .5px;
+        }
+
+        .ms-card {
+            background: #FFF; border-radius: 18px; overflow: hidden;
+            box-shadow: 0 6px 18px rgba(10, 37, 64, .08);
+            display: flex; flex-direction: column;
+            transition: transform .2s ease, box-shadow .2s ease;
+            border: 1px solid #EEF2F7;
+        }
+        .ms-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(10, 37, 64, .12); }
+
+        .ms-media {
+            position: relative; height: 170px;
+            background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
+            display: flex; align-items: center; justify-content: center;
+            overflow: hidden;
+        }
+        .ms-media img { width: 100%; height: 100%; object-fit: cover; }
+        .ms-freq {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(10, 37, 64, .85); color: #FFF;
+            font-size: 0.68rem; font-weight: 600;
+            padding: 5px 10px; border-radius: 999px;
+            display: inline-flex; align-items: center; gap: 5px;
+            backdrop-filter: blur(4px);
+        }
+        .ms-freq i { font-size: 0.62rem; }
+
+        .ms-body { padding: 14px 14px 16px; display: flex; flex-direction: column; flex: 1; }
+        .ms-title { font-size: 1.05rem; font-weight: 800; color: #0A2540; margin-bottom: 2px; line-height: 1.25; }
+        .ms-subtitle { font-size: 0.78rem; color: #0066CC; font-weight: 600; margin-bottom: 8px; font-style: italic; }
+        .ms-desc {
+            font-size: 0.8rem; color: #4B5563; line-height: 1.45;
+            margin-bottom: 12px;
+        }
+
+        .ms-includes {
+            background: #F9FAFB; border: 1px solid #EEF2F7; border-radius: 12px;
+            padding: 10px 12px; margin-bottom: 14px;
+        }
+        .ms-includes-label {
+            display: block; font-size: 0.65rem; font-weight: 700; letter-spacing: .8px;
+            text-transform: uppercase; color: #6B7280; margin-bottom: 6px;
+        }
+        .ms-includes ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
+        .ms-includes li {
+            display: flex; align-items: flex-start; gap: 8px;
+            font-size: 0.78rem; color: #0A2540; line-height: 1.35;
+        }
+        .ms-includes li i {
+            color: #0066CC; font-size: 0.7rem; margin-top: 4px; flex-shrink: 0;
+        }
+
+        .ms-footer {
+            margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            padding-top: 10px; border-top: 1px dashed #E5E7EB;
+        }
+        .ms-price { display: flex; flex-direction: column; gap: 1px; }
+        .ms-price-prefix { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .8px; color: #6B7280; font-weight: 700; }
+        .ms-price-amount { display: flex; align-items: baseline; gap: 3px; color: #0A2540; }
+        .ms-currency { font-size: 0.85rem; font-weight: 700; color: #0066CC; }
+        .ms-amount { font-size: 1.5rem; font-weight: 800; color: #0066CC; line-height: 1; }
+        .ms-currency-code { font-size: 0.68rem; font-weight: 600; color: #6B7280; margin-left: 2px; }
+
+        .ms-book {
+            background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; border: none;
+            padding: 10px 14px; border-radius: 12px;
+            font-size: 0.78rem; font-weight: 700; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 6px;
+            transition: transform .2s ease, box-shadow .2s ease;
+            white-space: nowrap;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, .3);
+        }
+        .ms-book:hover { transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0, 102, 204, .4); }
+        .ms-book i { font-size: 0.72rem; }
+        a.ms-book { text-decoration: none; color: #FFF; }
+
+        @@media (max-width: 380px) {
+            .ms-media { height: 150px; }
+            .ms-amount { font-size: 1.3rem; }
+        }
+
+        /* === Banner Home === */
+        .home-banner {
+            padding: 16px 16px 0;
+            margin-bottom: 0;
+            background: #FFF;
+        }
+        .home-banner img { width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto; }
+
+        /* === Home & Services — modern light layout === */
+        #section-home { padding: 16px; }
+        .home-content { display: flex; flex-direction: column; gap: 14px; }
+
+        .prop-hero {
+            background: linear-gradient(145deg, #FFFFFF 0%, #F0F7FF 55%, #E8F2FC 100%);
+            border: 1px solid #DBEAFE;
+            border-radius: 20px;
+            padding: 20px 18px;
+            box-shadow: 0 10px 32px rgba(0, 102, 204, 0.1);
+        }
+        .prop-price {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: #0A2540;
+        }
+        .prop-stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0 10px;
+        }
+        .prop-stats span {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #FFFFFF;
+            border: 1px solid #E2E8F0;
+            color: #334155;
+            font-size: 0.82rem;
+            font-weight: 600;
+            padding: 6px 12px;
+            border-radius: 999px;
+            box-shadow: 0 2px 6px rgba(10, 37, 64, 0.04);
+        }
+        .prop-stats i { color: #0066CC; font-size: 0.78rem; }
+        .prop-address {
+            color: #64748B;
+            font-size: 0.88rem;
+            line-height: 1.5;
+            margin-bottom: 14px;
+        }
+        .prop-est-bar {
+            background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+            border-radius: 12px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.84rem;
+            color: #FFF;
+            box-shadow: 0 6px 16px rgba(0, 102, 204, 0.25);
+        }
+        .prop-est-bar span { font-weight: 600; }
+        .prop-est-link {
+            background: rgba(255, 255, 255, 0.15);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 8px;
+            color: #FFF;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            white-space: nowrap;
+            padding: 6px 10px;
+            transition: background 0.2s ease;
+        }
+        .prop-est-link:hover { background: rgba(255, 255, 255, 0.25); }
+
+        .prop-card {
+            background: #FFFFFF;
+            border-radius: 18px;
+            padding: 18px 16px;
+            box-shadow: 0 8px 24px rgba(10, 37, 64, 0.07);
+            border: 1px solid #EEF2F7;
+            color: #0A2540;
+        }
+        .prop-card-title {
+            font-size: 1.02rem;
+            font-weight: 700;
+            margin: 0 0 14px;
+            color: #0A2540;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .prop-card-title i { color: #0066CC; font-size: 0.95rem; }
+
+        .facts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .fact-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            min-width: 0;
+            background: #F8FAFC;
+            border: 1px solid #EEF2F7;
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .fact-item > i {
+            width: 32px;
+            height: 32px;
+            border-radius: 9px;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.14), rgba(0, 79, 163, 0.08));
+            color: #0066CC;
+            font-size: 0.82rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .fact-item .fact-label {
+            font-size: 0.68rem;
+            color: #64748B;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            display: block;
+        }
+        .fact-item .fact-value {
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: #0A2540;
+            display: block;
+            line-height: 1.3;
+        }
+
+        .show-more-link {
+            color: #0066CC;
+            font-size: 0.88rem;
+            font-weight: 600;
+            margin-top: 14px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .prop-details-expand {
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid #EEF2F7;
+        }
+        .prop-details-expand[hidden] { display: none !important; }
+        .detail-group { margin-bottom: 16px; }
+        .detail-group:last-child { margin-bottom: 0; }
+        .detail-group h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin: 0 0 8px;
+            color: #0A2540;
+        }
+        .detail-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .detail-bullets li {
+            font-size: 0.84rem;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            padding-left: 14px;
+            position: relative;
+        }
+        .detail-bullets li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.55em;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: #0066CC;
+        }
+        .detail-bullets li strong { color: #0A2540; font-weight: 600; }
+
+        .whats-special-text {
+            color: #475569;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .catalog-list-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 6px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #EEF2F7;
+        }
+        .catalog-list-header h3 {
+            font-size: 1.02rem;
+            font-weight: 700;
+            margin: 0;
+            color: #0A2540;
+        }
+        .catalog-count {
+            background: #EFF6FF;
+            color: #004FA3;
+            border: 1px solid #BFDBFE;
+            border-radius: 999px;
+            padding: 2px 10px;
+            font-size: 0.72rem;
+            font-weight: 700;
+        }
+        .catalog-section {
+            padding: 16px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .catalog-section:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+        .catalog-section h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin: 0 0 4px;
+            color: #0A2540;
+        }
+        .catalog-sub {
+            font-size: 0.82rem;
+            color: #0066CC;
+            font-weight: 500;
+            margin: 0 0 8px;
+        }
+        .catalog-bullets {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 14px;
+        }
+        .catalog-bullets li {
+            font-size: 0.84rem;
+            color: #475569;
+            line-height: 1.5;
+            margin-bottom: 6px;
+            padding-left: 22px;
+            position: relative;
+        }
+        .catalog-bullets li::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.5em;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #0066CC;
+        }
+        .catalog-bullets li strong { color: #0A2540; font-weight: 600; }
+        .catalog-desc {
+            font-size: 0.84rem;
+            color: #64748B;
+            line-height: 1.45;
+            margin: 0 0 10px;
+        }
+        .catalog-actions { display: flex; gap: 10px; }
+        .btn-catalog-outline {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 11px;
+            border: 1.5px solid #0066CC;
+            background: #FFFFFF;
+            color: #0066CC;
+            font-weight: 600;
+            font-size: 0.84rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-catalog-outline:hover { background: #EFF6FF; }
+        .btn-catalog-primary {
+            flex: 2;
+            padding: 10px 12px;
+            border-radius: 11px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFFFFF;
+            font-weight: 700;
+            border: none;
+            font-size: 0.84rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, 0.28);
+            transition: transform 0.2s ease;
+        }
+        .btn-catalog-primary:hover { transform: translateY(-1px); }
+
+        .home-content .empty-state {
+            background: #FFFFFF;
+            border-radius: 18px;
+            color: #64748B;
+            padding: 28px 16px;
+            text-align: center;
+            border: 1px solid #EEF2F7;
+            box-shadow: 0 8px 24px rgba(10, 37, 64, 0.06);
+        }
+        .home-content .empty-state i { color: #0066CC; font-size: 2rem; margin-bottom: 10px; display: block; }
+        .home-content .empty-state p { margin: 0 0 14px; }
+        .home-content .btn-primary-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            padding: 10px 16px;
+            border-radius: 11px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.88rem;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, 0.25);
+        }
+
+        #section-services .services-catalog { display: flex; flex-direction: column; gap: 14px; }
+        .home-content .category-block { margin-bottom: 0; }
+
+        /* Force light theme on Home & Services */
+        #section-home,
+        #section-home .home-content,
+        #section-services,
+        #section-services .services-catalog {
+            background: transparent !important;
+            color: #0A2540 !important;
+        }
+        #section-home .prop-card,
+        #section-home .prop-hero,
+        #section-services .prop-card {
+            background: #FFFFFF !important;
+            color: #0A2540 !important;
+        }
+        #section-home .prop-hero {
+            background: linear-gradient(145deg, #FFFFFF 0%, #F0F7FF 55%, #E8F2FC 100%) !important;
+        }
+        #section-home .prop-price,
+        #section-home .prop-card-title,
+        #section-home .catalog-section h4,
+        #section-services .catalog-section h4,
+        #section-services .catalog-list-header h3 {
+            color: #0A2540 !important;
+        }
+        #section-home .prop-address,
+        #section-home .whats-special-text,
+        #section-home .catalog-desc,
+        #section-home .catalog-bullets li,
+        #section-home .detail-bullets li,
+        #section-services .catalog-desc,
+        #section-services .catalog-bullets li {
+            color: #475569 !important;
+        }
+        #section-home .fact-item .fact-value,
+        #section-home .catalog-bullets li strong,
+        #section-home .detail-bullets li strong,
+        #section-services .catalog-bullets li strong {
+            color: #0A2540 !important;
+        }
+        #section-home .fact-item .fact-label {
+            color: #64748B !important;
+        }
+
+        /* === Atajo a Microservicios desde Home === */
+        .home-shortcut {
+            display: flex; align-items: center; justify-content: space-between;
+            background: #FFF; border-radius: 18px; padding: 14px 16px;
+            box-shadow: 0 6px 18px rgba(10, 37, 64, .08);
+            border: 1px solid #EEF2F7; margin-bottom: 16px; cursor: pointer;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .home-shortcut:hover { transform: translateY(-1px); box-shadow: 0 10px 22px rgba(10, 37, 64, .12); }
+        .home-shortcut .hs-left { display: flex; align-items: center; gap: 12px; }
+        .home-shortcut .hs-icon {
+            width: 40px; height: 40px; border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .home-shortcut .hs-text strong { display: block; font-size: 0.95rem; color: #0A2540; }
+        .home-shortcut .hs-text small { color: #6B7280; font-size: 0.75rem; }
+        .home-shortcut .hs-arrow { color: #94A3B8; }
+
+        /* === Notificaciones === */
+        .bell { position: relative; cursor: pointer; }
+        .bell-count {
+            position: absolute; top: -2px; right: -2px;
+            background: #EF4444; color: #FFF; font-size: 0.62rem; font-weight: 700;
+            min-width: 16px; height: 16px; border-radius: 999px; padding: 0 4px;
+            display: flex; align-items: center; justify-content: center;
+            border: 2px solid #FFF;
+        }
+        .notif-panel {
+            position: fixed; top: 64px; right: 12px; z-index: 200;
+            width: 320px; max-width: calc(100vw - 24px);
+            background: #FFF; border-radius: 16px;
+            box-shadow: 0 18px 36px rgba(10, 37, 64, .18);
+            border: 1px solid #EEF2F7; overflow: hidden; display: none;
+        }
+        .notif-panel.open { display: block; }
+        .notif-header {
+            padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .notif-header strong { font-size: 0.95rem; color: #0A2540; }
+        .notif-header .notif-clear { font-size: 0.75rem; color: #6B7280; background: transparent; border: 0; cursor: pointer; }
+        .notif-list { max-height: 360px; overflow-y: auto; }
+        .notif-empty { padding: 18px; text-align: center; color: #6B7280; font-size: 0.85rem; }
+        .notif-item { display: flex; gap: 10px; padding: 12px 14px; border-bottom: 1px solid #F1F5F9; }
+        .notif-item:last-child { border-bottom: 0; }
+        .notif-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .notif-icon.expired { background: #FEE2E2; color: #B91C1C; }
+        .notif-icon.soon { background: #FEF3C7; color: #B45309; }
+        .notif-icon.upcoming { background: #DBEAFE; color: #004FA3; }
+        .notif-text { flex: 1; min-width: 0; }
+        .notif-text .nt-title { font-size: 0.88rem; font-weight: 700; color: #0A2540; }
+        .notif-text .nt-sub { font-size: 0.72rem; color: #6B7280; margin-top: 2px; }
+        .notif-text .nt-date { font-size: 0.7rem; color: #94A3B8; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+
+        /* === Sección de notificaciones embebida en Home === */
+        .notif-section {
+            background: #FFF; border-radius: 18px; padding: 14px 16px;
+            box-shadow: 0 6px 18px rgba(10, 37, 64, .08);
+            border: 1px solid #EEF2F7; margin-top: 4px;
+        }
+        .notif-section .ns-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+        .notif-section .ns-header h3 { font-size: 0.95rem; color: #0A2540; margin: 0; display: flex; align-items: center; gap: 8px; }
+        .notif-section .ns-header h3 i { color: #0066CC; }
+        .notif-section .ns-badge {
+            background: #EFF6FF; color: #004FA3; border: 1px solid #BFDBFE;
+            border-radius: 999px; padding: 2px 10px; font-size: 0.72rem; font-weight: 700;
+        }
+        .notif-section .notif-list { max-height: none; }
+        .notif-section .notif-item { padding: 10px 0; }
+
+        /* === Schedule tab === */
+        .schedule-list { display: flex; flex-direction: column; gap: 12px; }
+        .schedule-card {
+            background: #FFF; border-radius: 16px; padding: 14px 16px;
+            border: 1px solid #EEF2F7;
+            box-shadow: 0 6px 18px rgba(10, 37, 64, 0.06);
+        }
+        .schedule-card-head {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; margin-bottom: 8px;
+        }
+        .schedule-card-head strong { font-size: 0.95rem; color: #0A2540; }
+        .schedule-card-date {
+            font-size: 0.84rem; color: #475569;
+            display: flex; align-items: center; gap: 8px; margin-bottom: 6px;
+        }
+        .schedule-card-notes {
+            font-size: 0.82rem; color: #64748B; margin-bottom: 10px; line-height: 1.4;
+        }
+        .schedule-edit-link {
+            font-size: 0.82rem; font-weight: 600; color: #0066CC;
+            text-decoration: none; display: inline-flex; align-items: center; gap: 6px;
+        }
+        .alert-schedule-ok {
+            background: #DCFCE7; color: #15803D; border-radius: 12px;
+            padding: 12px 14px; font-size: 0.85rem; margin-bottom: 14px;
+            border: 1px solid #BBF7D0;
+        }
+
+        /* === Sección More (Perfil) === */
+        .more-card {
+            background: #FFF; border-radius: 18px; padding: 16px;
+            box-shadow: 0 6px 18px rgba(10, 37, 64, .08);
+            border: 1px solid #EEF2F7; margin-bottom: 14px;
+        }
+        .more-card h3 { font-size: 0.95rem; color: #0A2540; margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
+        .more-card h3 i { color: #0066CC; }
+        .user-card { display: flex; gap: 18px; align-items: center; padding: 6px 4px; }
+        .user-avatar-lg {
+            width: 128px; height: 128px; border-radius: 50%; overflow: hidden; flex-shrink: 0;
+            background: #E8EEF9; color: #6C8BD6;
+            display: flex; align-items: flex-end; justify-content: center;
+            font-size: 4.2rem; font-weight: 700; line-height: 1;
+            box-shadow: inset 0 0 0 1px #DCE5F5;
+        }
+        .user-avatar-lg img { width: 100%; height: 100%; object-fit: cover; }
+        .user-avatar-lg .avatar-placeholder {
+            width: 100%; height: 100%;
+            display: flex; align-items: flex-end; justify-content: center;
+            color: #6C8BD6;
+        }
+        .user-avatar-lg .avatar-placeholder i { font-size: 5.4rem; transform: translateY(6px); }
+        .user-info { flex: 1; min-width: 0; }
+        .user-info .uline {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px; padding: 10px 2px;
+            border-bottom: 1px solid #E5E9F0;
+            font-size: 1rem; color: #0A2540; min-height: 38px;
+        }
+        .user-info .uline:last-child { border-bottom: none; }
+        .user-info .uline .ulabel {
+            display: flex; align-items: center; gap: 8px;
+            min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            font-weight: 500;
+        }
+        .user-info .uline .ulabel .lead-icon { color: #6C8BD6; font-size: 1rem; }
+        .user-info .uline .uicon { color: #6C8BD6; font-size: 1.05rem; flex-shrink: 0; }
+        .user-info .uline.muted .ulabel { color: #9AA4B2; }
+        .membership-pill {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+            font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px;
+        }
+        .membership-pill.none { background: #F1F5F9; color: #6B7280; }
+        @@media (max-width: 480px) {
+            .user-avatar-lg { width: 96px; height: 96px; }
+            .user-avatar-lg .avatar-placeholder i { font-size: 4rem; }
+            .user-info .uline { font-size: 0.92rem; }
+        }
+
+        .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .opt-btn {
+            background: #F8FAFC; border: 1px solid #EEF2F7; border-radius: 12px;
+            padding: 12px; display: flex; flex-direction: column; align-items: center; gap: 6px;
+            color: #0A2540; cursor: pointer; font-size: 0.78rem; font-weight: 600;
+            transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .opt-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 14px rgba(10, 37, 64, .08); }
+        .opt-btn i { font-size: 1.1rem; color: #0066CC; }
+        .opt-btn.danger { color: #B91C1C; }
+        .opt-btn.danger i { color: #B91C1C; }
+
+        /* === Menú de links del More === */
+        .more-menu { display: flex; flex-direction: column; gap: 8px; }
+        .more-link {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px 12px; border-radius: 14px;
+            background: #F8FAFC; border: 1px solid #EEF2F7;
+            color: #0A2540; text-decoration: none;
+            transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+        }
+        .more-link:hover {
+            background: #FFF; transform: translateY(-1px);
+            box-shadow: 0 6px 14px rgba(10, 37, 64, .08);
+            text-decoration: none; color: #0A2540;
+        }
+        .more-link .ml-icon {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem; flex-shrink: 0;
+            box-shadow: 0 4px 10px rgba(0, 102, 204, .25);
+        }
+        .more-link .ml-text {
+            flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;
+        }
+        .more-link .ml-text strong { font-size: .92rem; font-weight: 700; }
+        .more-link .ml-text small { font-size: .72rem; color: #6B7280; line-height: 1.3; }
+        .more-link .ml-arrow { color: #9CA3AF; font-size: .85rem; flex-shrink: 0; }
+
+        .perfil-form { display: none; flex-direction: column; gap: 8px; margin-top: 12px; }
+        .perfil-form.open { display: flex; }
+        .perfil-form input, .perfil-form select {
+            border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px;
+            font-size: 0.85rem; font-family: inherit;
+        }
+        .perfil-form button {
+            background: #0066CC; color: #FFF; border: 0; border-radius: 10px; padding: 10px;
+            font-weight: 600; cursor: pointer; font-size: 0.85rem;
+        }
+        .perfil-form .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .alert-ok { background: #DCFCE7; color: #15803D; padding: 10px 12px; border-radius: 10px; font-size: 0.82rem; margin-bottom: 12px; }
+        .alert-err { background: #FEE2E2; color: #B91C1C; padding: 10px 12px; border-radius: 10px; font-size: 0.82rem; margin-bottom: 12px; }
+
+        .pay-list, .hist-list, .pm-list { display: flex; flex-direction: column; gap: 8px; }
+        .pay-item, .hist-item, .pm-item {
+            background: #F8FAFC; border: 1px solid #EEF2F7; border-radius: 12px;
+            padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; gap: 10px;
+        }
+        .pay-item .pi-left, .hist-item .hi-left, .pm-item .pmi-left { flex: 1; min-width: 0; }
+        .pay-item .pi-title, .hist-item .hi-title, .pm-item .pmi-title { font-size: 0.88rem; font-weight: 700; color: #0A2540; }
+        .pay-item .pi-sub, .hist-item .hi-sub, .pm-item .pmi-sub { font-size: 0.72rem; color: #6B7280; margin-top: 2px; }
+        .pay-amount { font-weight: 800; color: #0A2540; }
+        .badge {
+            font-size: 0.68rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+        }
+        .badge-pendiente { background: #FEF3C7; color: #B45309; }
+        .badge-completado { background: #DCFCE7; color: #15803D; }
+        .badge-financiado { background: #DBEAFE; color: #004FA3; }
+        .badge-vencido { background: #FEE2E2; color: #B91C1C; }
+        .badge-default { background: #F1F5F9; color: #475569; }
+
+        .plan-grid { display: flex; flex-direction: column; gap: 10px; }
+        .plan-card {
+            background: #FFF; border: 1px solid #EEF2F7; border-radius: 14px; padding: 14px;
+            position: relative;
+        }
+        .plan-card.recommended { border-color: #0066CC; box-shadow: 0 8px 18px rgba(0, 102, 204, .15); }
+        .plan-card.active { border-color: #0066CC; }
+        .plan-card .pc-flag {
+            position: absolute; top: -10px; right: 12px;
+            background: #0066CC; color: #FFF; font-size: 0.65rem; font-weight: 700;
+            padding: 3px 8px; border-radius: 999px;
+        }
+        .plan-card.active .pc-flag { background: #0066CC; }
+        .plan-card h4 { font-size: 0.95rem; color: #0A2540; margin: 0; }
+        .plan-card .pc-sub { font-size: 0.75rem; color: #6B7280; margin-top: 2px; }
+        .plan-card .pc-price { margin: 8px 0; font-size: 1.2rem; font-weight: 800; color: #0A2540; }
+        .plan-card .pc-price small { font-size: 0.72rem; color: #6B7280; font-weight: 500; }
+        .plan-card ul { list-style: none; padding: 0; margin: 8px 0 12px; }
+        .plan-card li { font-size: 0.78rem; color: #475569; padding: 3px 0; display: flex; gap: 6px; align-items: flex-start; }
+        .plan-card li i { color: #0066CC; font-size: 0.7rem; margin-top: 4px; }
+        .plan-card .pc-action {
+            width: 100%; background: #0066CC; color: #FFF; border: 0; border-radius: 10px;
+            padding: 10px; font-weight: 600; cursor: pointer; font-size: 0.85rem;
+        }
+        .plan-card.active .pc-action { background: #0066CC; }
+
+        .hist-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+        .hist-tab {
+            flex: 1; background: #F8FAFC; border: 1px solid #EEF2F7; color: #475569;
+            border-radius: 10px; padding: 8px; font-size: 0.75rem; font-weight: 600; cursor: pointer;
+        }
+        .hist-tab.active { background: #0066CC; color: #FFF; border-color: #0066CC; }
+
+        .internet-row { display: grid; grid-template-columns: 1fr; gap: 10px; }
+        .internet-card {
+            background: #F8FAFC; border: 1px solid #EEF2F7; border-radius: 12px; padding: 12px;
+        }
+        .internet-card.current { background: linear-gradient(135deg, #E8F1FB, #D6E8F9); border-color: #0066CC; }
+        .internet-card .ic-head { display: flex; justify-content: space-between; align-items: center; }
+        .internet-card .ic-prov { font-size: 0.75rem; color: #6B7280; text-transform: uppercase; letter-spacing: .5px; }
+        .internet-card .ic-name { font-size: 0.95rem; font-weight: 700; color: #0A2540; }
+        .internet-card .ic-speed { font-size: 0.85rem; color: #0066CC; font-weight: 700; margin-top: 4px; }
+        .internet-card .ic-price { font-size: 1.05rem; font-weight: 800; color: #0A2540; }
+        .internet-card .ic-feats { font-size: 0.75rem; color: #475569; margin-top: 6px; }
+        .internet-card .ic-tag { font-size: 0.65rem; font-weight: 700; padding: 3px 8px; border-radius: 999px; background: #0066CC; color: #FFF; }
+
+        .chat-box {
+            background: #F8FAFC; border: 1px solid #EEF2F7; border-radius: 12px;
+            padding: 10px; max-height: 280px; overflow-y: auto; margin-bottom: 10px;
+            display: flex; flex-direction: column; gap: 8px;
+        }
+        .chat-msg { display: flex; flex-direction: column; max-width: 85%; }
+        .chat-msg.usuario { align-self: flex-end; align-items: flex-end; }
+        .chat-msg.soporte { align-self: flex-start; align-items: flex-start; }
+        .chat-bubble {
+            padding: 8px 12px; border-radius: 12px; font-size: 0.82rem; line-height: 1.35;
+        }
+        .chat-msg.usuario .chat-bubble { background: #0066CC; color: #FFF; border-bottom-right-radius: 4px; }
+        .chat-msg.soporte .chat-bubble { background: #FFF; color: #0A2540; border: 1px solid #EEF2F7; border-bottom-left-radius: 4px; }
+        .chat-time { font-size: 0.65rem; color: #94A3B8; margin-top: 2px; }
+        .chat-empty { text-align: center; color: #6B7280; font-size: 0.82rem; padding: 16px; }
+        .chat-form { display: flex; gap: 6px; }
+        .chat-form input { flex: 1; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; font-family: inherit; }
+        .chat-form button { background: #0066CC; color: #FFF; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="top-bar">
+        <div class="avatar">
+            @{
+                var topUser = (IndorMvcApp.Models.ApplicationUser?)ViewBag.UsuarioActual;
+            }
+            @if (!string.IsNullOrWhiteSpace(topUser?.FotoUrl))
+            {
+                <img src="@Url.Content("~" + topUser!.FotoUrl)" alt="Foto" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
+            }
+            else
+            {
+                @(topUser?.Nombre?.Substring(0, 1).ToUpper() ?? User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
+            }
+        </div>
+        <div class="search-bar"><i class="fas fa-search"></i><span>Search services...</span></div>
+        <div class="bell" id="bellToggle" role="button" aria-label="Notifications">
+            <i class="far fa-bell"></i>
+            @if (notificaciones.Count > 0)
+            {
+                <span class="bell-count">@(notificaciones.Count > 9 ? "9+" : notificaciones.Count.ToString())</span>
+            }
+        </div>
+    </header>
+
+    <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications">
+        <div class="notif-header">
+            <strong><i class="far fa-bell"></i> Notifications</strong>
+            <button type="button" class="notif-clear" id="notifClose">Close</button>
+        </div>
+        <div class="notif-list">
+            @if (notificaciones.Count == 0)
+            {
+                <div class="notif-empty">You have no notifications right now.</div>
+            }
+            else
+            {
+                @foreach (var n in notificaciones)
+                {
+                    <div class="notif-item">
+                        <div class="notif-icon @n.Severity"><i class="fas @n.Icon"></i></div>
+                        <div class="notif-text">
+                            <div class="nt-title">@n.Title</div>
+                            <div class="nt-sub">@n.Subtitle</div>
+                            <div class="nt-date"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
+
+    <!-- ====== HOME ====== -->
+    <section class="section active" id="section-home">
+        <!-- 1. Banner -->
+        <div class="home-banner">
+            <img src="@Url.Content("~/logoindor.png")" alt="Indor - The Home Operating System" />
+        </div>
+
+        <!-- 2. Property summary + services -->
+        @{
+            var microserviciosHome = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
+                                     ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
+            var serviciosHome = (IEnumerable<IndorMvcApp.Models.Servicio>?)ViewBag.Servicios
+                                ?? Enumerable.Empty<IndorMvcApp.Models.Servicio>();
+        }
+        <div class="home-content">
+            @if (TempData["ScheduleSaved"] is string scheduleMsg)
+            {
+                <div class="alert-schedule-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
+            }
+            @if (primaryProp != null)
+            {
+                var d = primaryInfo?.PropertyDetails;
+                var direccion = !string.IsNullOrWhiteSpace(primaryInfo?.FormattedAddress)
+                                ? primaryInfo!.FormattedAddress
+                                : (primaryProp.Direccion ?? "—");
+                var valorEstimado = d?.EstimatedValue.HasValue == true ? Money(d.EstimatedValue) : "—";
+                var beds = BedsLabel(d?.Bedrooms);
+                var baths = BathsLabel(d?.Bathrooms);
+                var sqft = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : "";
+                var priceSqft = PricePerSqft(d?.EstimatedValue, d?.LivingArea);
+                var whatsSpecial = d?.Features?.Count > 0
+                    ? string.Join(". ", d!.Features) + "."
+                    : (!string.IsNullOrWhiteSpace(d?.LegalDescription)
+                        ? d!.LegalDescription!
+                        : (!string.IsNullOrWhiteSpace(d?.ArchitecturalStyle)
+                            ? $"This {d!.PropertyType.ToLower()} features {d.ArchitecturalStyle} architecture."
+                            : "Your home profile is managed through Indor — track warranties, services, and property details in one place."));
+                var factItems = new List<(string Icon, string Label, string Value)>();
+                if (priceSqft != "—") factItems.Add(("fa-ruler-combined", "Price per sqft", priceSqft));
+                if (!string.IsNullOrWhiteSpace(d?.PropertyType)) factItems.Add(("fa-house", "Property type", d!.PropertyType));
+                if (d?.YearBuilt.HasValue == true) factItems.Add(("fa-calendar", "Built in", d.YearBuilt!.Value.ToString()));
+                if (d?.LotSize.HasValue == true) factItems.Add(("fa-tree", "Lot size", $"{d.LotSize} acres"));
+                else if (d?.LotSizeSqFt.HasValue == true) factItems.Add(("fa-tree", "Lot size", $"{d.LotSizeSqFt:N0} sq ft"));
+                if (d?.Bedrooms.HasValue == true) factItems.Add(("fa-bed", "Bedrooms", d.Bedrooms!.Value.ToString()));
+                if (d?.Bathrooms.HasValue == true) factItems.Add(("fa-bath", "Bathrooms", Num(d.Bathrooms)));
+                if (!string.IsNullOrWhiteSpace(d?.ArchitecturalStyle)) factItems.Add(("fa-building", "Style", d!.ArchitecturalStyle!));
+                if (!string.IsNullOrWhiteSpace(d?.Zoning)) factItems.Add(("fa-map", "Zoning", d!.Zoning!));
+                if (d?.Floors.HasValue == true) factItems.Add(("fa-stairs", "Floors", d.Floors!.Value.ToString()));
+                var visibleFacts = factItems.Take(4).ToList();
+                var monthlyTax = d?.AnnualTaxAmount.HasValue == true ? Money(d.AnnualTaxAmount / 12) : null;
+
+                <div class="prop-hero">
+                    <div class="prop-price">@valorEstimado</div>
+                    @if (!string.IsNullOrEmpty(beds) || !string.IsNullOrEmpty(baths) || !string.IsNullOrEmpty(sqft))
+                    {
+                        <div class="prop-stats">
+                            @if (!string.IsNullOrEmpty(beds))
+                            {
+                                <span><i class="fas fa-bed"></i> @beds</span>
+                            }
+                            @if (!string.IsNullOrEmpty(baths))
+                            {
+                                <span><i class="fas fa-bath"></i> @baths</span>
+                            }
+                            @if (!string.IsNullOrEmpty(sqft))
+                            {
+                                <span><i class="fas fa-ruler-combined"></i> @sqft</span>
+                            }
+                        </div>
+                    }
+                    <div class="prop-address">@direccion</div>
+                    <div class="prop-est-bar">
+                        @if (monthlyTax != null)
+                        {
+                            <span>Est. @monthlyTax/mo property tax</span>
+                        }
+                        else
+                        {
+                            <span>Home value tracked in Indor</span>
+                        }
+                        <button type="button" class="prop-est-link nav-jump" data-target="section-myhome">View full details</button>
+                    </div>
+                </div>
+
+                @if (visibleFacts.Count > 0)
+                {
+                    <div class="prop-card">
+                        <h3 class="prop-card-title"><i class="fas fa-list-check"></i> Facts &amp; features</h3>
+                        <div class="facts-grid">
+                            @foreach (var fact in visibleFacts)
+                            {
+                                <div class="fact-item">
+                                    <i class="fas @fact.Icon"></i>
+                                    <div>
+                                        <span class="fact-label">@fact.Label</span>
+                                        <span class="fact-value">@fact.Value</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                        @if (primaryInfo != null)
+                        {
+                            <div class="prop-details-expand" id="propDetailsExpand" hidden>
+                                @foreach (var g in BuildGroupsFor(primaryInfo))
+                                {
+                                    <div class="detail-group">
+                                        <h4>@g.Title</h4>
+                                        <ul class="detail-bullets">
+                                            @foreach (var item in g.Items)
+                                            {
+                                                <li><strong>@item.Label:</strong> @item.Value</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                            </div>
+                            <button type="button" class="show-more-link" id="btnShowFacts" aria-expanded="false">
+                                Show more <i class="fas fa-chevron-right"></i>
+                            </button>
+                        }
+                    </div>
+                }
+
+                <div class="prop-card">
+                    <h3 class="prop-card-title"><i class="fas fa-star"></i> What's special</h3>
+                    <p class="whats-special-text">@whatsSpecial</p>
+                </div>
+            }
+            else
+            {
+                <div class="empty-state">
+                    <i class="fas fa-house-circle-exclamation"></i>
+                    <p>You have no registered properties yet.</p>
+                    <a asp-controller="Propietario" asp-action="AddProperty" class="btn-primary-link">
+                        <i class="fas fa-plus"></i> Add property
+                    </a>
+                </div>
+            }
+
+            @if (microserviciosHome.Any())
+            {
+                @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microserviciosHome, $"{microserviciosHome.Count()} services available for your home"))
+            }
+
+            @if (serviciosHome.Any())
+            {
+                @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(serviciosHome, $"{serviciosHome.Count()} remodeling and installation projects"))
+            }
+        </div>
+
+        <!-- 4. Sección de Notificaciones -->
+        <div class="notif-section">
+            <div class="ns-header">
+                <h3><i class="far fa-bell"></i> Notifications</h3>
+                <span class="ns-badge">@notificaciones.Count</span>
+            </div>
+            <div class="notif-list">
+                @if (notificaciones.Count == 0)
+                {
+                    <div class="notif-empty">You have no notifications right now.</div>
+                }
+                else
+                {
+                    @foreach (var n in notificaciones)
+                    {
+                        <div class="notif-item">
+                            <div class="notif-icon @n.Severity"><i class="fas @n.Icon"></i></div>
+                            <div class="notif-text">
+                                <div class="nt-title">@n.Title</div>
+                                <div class="nt-sub">@n.Subtitle</div>
+                                <div class="nt-date"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </section>
+
+    <!-- ====== SERVICES ====== -->
+    <section class="section" id="section-services">
+        <div class="section-title">
+            Available services
+            <span class="services-count">@((((IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios)?.Count() ?? 0) + (((IEnumerable<IndorMvcApp.Models.Servicio>?)ViewBag.Servicios)?.Count() ?? 0) + (((IEnumerable<IndorMvcApp.Models.Inspeccion>?)ViewBag.Inspecciones)?.Count() ?? 0))</span>
+        </div>
+
+        @{
+            var microservicios = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
+                                 ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
+            var servicios = (IEnumerable<IndorMvcApp.Models.Servicio>?)ViewBag.Servicios
+                             ?? Enumerable.Empty<IndorMvcApp.Models.Servicio>();
+            var inspecciones = (IEnumerable<IndorMvcApp.Models.Inspeccion>?)ViewBag.Inspecciones
+                                ?? Enumerable.Empty<IndorMvcApp.Models.Inspeccion>();
+            var totalOfferings = microservicios.Count() + servicios.Count() + inspecciones.Count();
+        }
+
+        @if (totalOfferings == 0)
+        {
+            <div class="empty-state">
+                <i class="fas fa-tools"></i>
+                <p>Coming soon.</p>
+            </div>
+        }
+        else
+        {
+            <div class="services-catalog">
+                <div class="services-hero">
+                    <div class="services-hero-text">
+                        <strong>Take care of your home effortlessly</strong>
+                        <small>Verified professionals with transparent pricing.</small>
+                    </div>
+                    <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
+                </div>
+
+                @if (microservicios.Any())
+                {
+                    @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, $"{microservicios.Count()} services available for your home"))
+                }
+
+                @if (servicios.Any())
+                {
+                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, $"{servicios.Count()} remodeling and installation projects"))
+                }
+
+                @if (inspecciones.Any())
+                {
+                    @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count()} professional inspections for your home"))
+                }
+            </div>
+        }
+    </section>
+    <section class="section" id="section-myhome">
+        <div class="section-title">
+            My Home
+            <a asp-controller="Propietario" asp-action="AddProperty">+ Add</a>
+        </div>
+
+        @if (!hasProperties)
+        {
+            <div class="empty-state">
+                <i class="fas fa-house-circle-exclamation"></i>
+                <p>You have no registered properties yet.</p>
+                <a asp-controller="Propietario" asp-action="AddProperty" class="btn-primary-link">
+                    <i class="fas fa-plus"></i> Add property
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="property-selector" id="propertySelector">
+                @for (int idx = 0; idx < propertiesGrouped.Count; idx++)
+                {
+                    var p = propertiesGrouped[idx].Prop;
+                    <button type="button" class="property-tab @(idx == 0 ? "active" : "")" data-prop-index="@idx">
+                        <i class="fas fa-map-marker-alt"></i>
+                        @(string.IsNullOrWhiteSpace(p.Direccion) ? $"Property #{p.Id}" : (p.Direccion!.Length > 30 ? p.Direccion.Substring(0, 30) + "…" : p.Direccion))
+                    </button>
+                }
+            </div>
+
+            @for (int idx = 0; idx < propertiesGrouped.Count; idx++)
+            {
+                var entry = propertiesGrouped[idx];
+                var slides = entry.Slides;
+                var totalSlides = slides.Count;
+                <div class="results-card property-panel" data-prop-panel="@idx" style="@(idx == 0 ? "" : "display:none;")">
+                    <div class="results-header">
+                        <div class="results-title">@entry.Prop.Direccion</div>
+                        <span class="slide-counter" data-counter="@idx">1 / @totalSlides</span>
+                    </div>
+
+                    <div class="slider-viewport">
+                        <div class="slider-track" data-track="@idx">
+                            @foreach (var slide in slides)
+                            {
+                                <div class="result-card">
+                                    <div class="group-header">
+                                        <div class="field-icon"><i class="fas @slide.Icon"></i></div>
+                                        <div class="group-title">@slide.Title</div>
+                                    </div>
+
+                                    @if (slide.Kind == "group")
+                                    {
+                                        <div class="group-list">
+                                            @foreach (var it in slide.Items)
+                                            {
+                                                <div class="group-item">
+                                                    <span class="k">@it.Label</span>
+                                                    <span class="v">@it.Value</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else if (slide.Kind == "utilities")
+                                    {
+                                        <div class="utility-grid">
+                                            @foreach (var up in slide.Utilities)
+                                            {
+                                                <div class="utility-card">
+                                                    <div class="utility-head">
+                                                        <div class="util-icon"><i class="fas @up.Icon"></i></div>
+                                                        <div>
+                                                            <div class="utility-name">@up.Provider.Name</div>
+                                                            <div class="utility-type">@up.Provider.ServiceType</div>
+                                                        </div>
+                                                    </div>
+                                                    @if (!string.IsNullOrWhiteSpace(up.Provider.Coverage))
+                                                    {
+                                                        <div class="utility-cov">@up.Provider.Coverage</div>
+                                                    }
+                                                    <div class="utility-actions">
+                                                        @if (!string.IsNullOrWhiteSpace(up.Provider.Phone))
+                                                        {
+                                                            <a class="util-btn" href="tel:@up.Provider.Phone"><i class="fas fa-phone"></i> @up.Provider.Phone</a>
+                                                        }
+                                                        @if (!string.IsNullOrWhiteSpace(up.Provider.Website))
+                                                        {
+                                                            <a class="util-btn" href="@up.Provider.Website" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Web</a>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else if (slide.Kind == "warranties")
+                                    {
+                                        <div class="warranty-list">
+                                            @foreach (var w in slide.Warranties)
+                                            {
+                                                var status = w.Warranty.Status ?? "—";
+                                                var statusClass = status.Equals("Active", StringComparison.OrdinalIgnoreCase) || status.Equals("Activa", StringComparison.OrdinalIgnoreCase) ? "pill-green"
+                                                    : status.Equals("Expired", StringComparison.OrdinalIgnoreCase) || status.Equals("Expirada", StringComparison.OrdinalIgnoreCase) ? "pill-red" : "pill-yellow";
+                                                <div class="warranty-card">
+                                                    <div class="warranty-head">
+                                                        <div class="util-icon"><i class="fas @w.Icon"></i></div>
+                                                        <div class="warranty-titles">
+                                                            <div class="warranty-name">@w.Warranty.SystemName</div>
+                                                            @if (!string.IsNullOrWhiteSpace(w.Warranty.WarrantyProvider))
+                                                            {
+                                                                <div class="warranty-prov">@w.Warranty.WarrantyProvider</div>
+                                                            }
+                                                        </div>
+                                                        <span class="pill @statusClass">@status</span>
+                                                    </div>
+
+                                                    <div class="warranty-grid">
+                                                        @if (!string.IsNullOrWhiteSpace(w.Warranty.PolicyNumber))
+                                                        {
+                                                            <div class="wg-item"><span class="k">Policy</span><span class="v">@w.Warranty.PolicyNumber</span></div>
+                                                        }
+                                                        @if (w.Warranty.WarrantyYears.HasValue)
+                                                        {
+                                                            <div class="wg-item"><span class="k">Term</span><span class="v">@w.Warranty.WarrantyYears years</span></div>
+                                                        }
+                                                        @if (w.Warranty.InstallationDate.HasValue)
+                                                        {
+                                                            <div class="wg-item"><span class="k">Installed</span><span class="v">@Date(w.Warranty.InstallationDate)</span></div>
+                                                        }
+                                                        @if (w.Warranty.CoverageStartDate.HasValue)
+                                                        {
+                                                            <div class="wg-item"><span class="k">Coverage start</span><span class="v">@Date(w.Warranty.CoverageStartDate)</span></div>
+                                                        }
+                                                        @if (w.Warranty.CoverageEndDate.HasValue)
+                                                        {
+                                                            <div class="wg-item"><span class="k">Coverage end</span><span class="v">@Date(w.Warranty.CoverageEndDate)</span></div>
+                                                        }
+                                                    </div>
+
+                                                    @if (!string.IsNullOrWhiteSpace(w.Warranty.ManufacturerWarranty))
+                                                    {
+                                                        <div class="warranty-extra"><strong>Manufacturer warranty:</strong> @w.Warranty.ManufacturerWarranty</div>
+                                                    }
+                                                    @if (!string.IsNullOrWhiteSpace(w.Warranty.CoverageDetails))
+                                                    {
+                                                        <div class="warranty-extra">@w.Warranty.CoverageDetails</div>
+                                                    }
+
+                                                    <div class="utility-actions">
+                                                        @if (!string.IsNullOrWhiteSpace(w.Warranty.ContactPhone))
+                                                        {
+                                                            <a class="util-btn" href="tel:@w.Warranty.ContactPhone"><i class="fas fa-phone"></i> @w.Warranty.ContactPhone</a>
+                                                        }
+                                                        @if (!string.IsNullOrWhiteSpace(w.Warranty.ContactWebsite))
+                                                        {
+                                                            <a class="util-btn" href="@w.Warranty.ContactWebsite" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Web</a>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="slider-controls">
+                        <button type="button" class="nav-button" data-prev="@idx" aria-label="Previous">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <div class="dots-container" data-dots="@idx">
+                            @for (int i = 0; i < totalSlides; i++)
+                            {
+                                <div class="dot @(i == 0 ? "active" : "")" data-slide="@i"></div>
+                            }
+                        </div>
+                        <button type="button" class="nav-button" data-next="@idx" aria-label="Next">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+
+    <!-- ====== SCHEDULE ====== -->
+    <section class="section" id="section-schedule">
+        <div class="section-title">Schedule</div>
+        @{
+            var agendaItems = ViewBag.ProgramacionesMicroservicio as List<IndorMvcApp.Models.ProgramacionMicroservicio>
+                              ?? new List<IndorMvcApp.Models.ProgramacionMicroservicio>();
+        }
+        @if (agendaItems.Count == 0)
+        {
+            <div class="empty-state">
+                <i class="fas fa-calendar-days"></i>
+                <p>No maintenance scheduled yet.</p>
+                <small style="color:#64748B;display:block;margin-top:8px;">Tap a microservice on Home to pick a date.</small>
+            </div>
+        }
+        else
+        {
+            <div class="schedule-list">
+                @foreach (var item in agendaItems)
+                {
+                    var daysLeft = (item.FechaProgramada.Date - DateTime.Today).Days;
+                    var badgeClass = daysLeft < 0 ? "badge-vencido" : daysLeft <= 7 ? "badge-pendiente" : "badge-completado";
+                    var badgeText = daysLeft < 0 ? "Overdue" : daysLeft == 0 ? "Today" : daysLeft == 1 ? "Tomorrow" : $"{daysLeft} days";
+                    <div class="schedule-card">
+                        <div class="schedule-card-head">
+                            <strong>@(item.Microservicio?.Nombre ?? "Microservice")</strong>
+                            <span class="badge @badgeClass">@badgeText</span>
+                        </div>
+                        <div class="schedule-card-date">
+                            <i class="far fa-calendar"></i> @item.FechaProgramada.ToString("dddd, MMM dd, yyyy")
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(item.Notas))
+                        {
+                            <div class="schedule-card-notes">@item.Notas</div>
+                        }
+                        <a asp-controller="Microservicios" asp-action="Schedule" asp-route-id="@item.MicroservicioId" class="schedule-edit-link">
+                            <i class="fas fa-pen"></i> Edit date
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </section>
+
+    <!-- ====== MORE ====== -->
+    <section class="section" id="section-more">
+        @{
+            var usr = (IndorMvcApp.Models.ApplicationUser?)ViewBag.UsuarioActual;
+            var membresia = (IndorMvcApp.Models.MembresiaUsuario?)ViewBag.MembresiaActual;
+            var planes = (IEnumerable<IndorMvcApp.Models.PlanMembresia>?)ViewBag.Planes ?? Enumerable.Empty<IndorMvcApp.Models.PlanMembresia>();
+            var metodosPago = (IEnumerable<IndorMvcApp.Models.MetodoPago>?)ViewBag.MetodosPago ?? Enumerable.Empty<IndorMvcApp.Models.MetodoPago>();
+            var pagos = (IEnumerable<IndorMvcApp.Models.Pago>?)ViewBag.Pagos ?? Enumerable.Empty<IndorMvcApp.Models.Pago>();
+            var planesInternet = (IEnumerable<IndorMvcApp.Models.PlanInternet>?)ViewBag.PlanesInternet ?? Enumerable.Empty<IndorMvcApp.Models.PlanInternet>();
+            var historial = (IEnumerable<IndorMvcApp.Models.HistorialServicio>?)ViewBag.Historial ?? Enumerable.Empty<IndorMvcApp.Models.HistorialServicio>();
+            var mensajes = (IEnumerable<IndorMvcApp.Models.MensajeSoporte>?)ViewBag.MensajesSoporte ?? Enumerable.Empty<IndorMvcApp.Models.MensajeSoporte>();
+
+            string PrimerNombre(string? n) => string.IsNullOrWhiteSpace(n) ? "" : n.Split(' ')[0];
+            string Inicial(string? s) => string.IsNullOrWhiteSpace(s) ? "U" : s.Substring(0, 1).ToUpper();
+            string EstadoBadgeClass(string? estado) => (estado ?? "").ToLower() switch
+            {
+                "completado" => "badge badge-completado",
+                "pendiente" => "badge badge-pendiente",
+                "financiado" => "badge badge-financiado",
+                "vencido" => "badge badge-vencido",
+                _ => "badge badge-default"
+            };
+
+            var pagosPendientes = pagos.Where(p => p.Estado == "Pendiente" || p.Estado == "Vencido").ToList();
+            var pagosFinanciados = pagos.Where(p => p.Estado == "Financiado").ToList();
+            var pagosHistorial = pagos.Where(p => p.Estado == "Completado").ToList();
+        }
+
+        @if (TempData["PerfilOk"] != null)
+        {
+            <div class="alert-ok"><i class="fas fa-check-circle"></i> @TempData["PerfilOk"]</div>
+        }
+        @if (TempData["PerfilError"] != null)
+        {
+            <div class="alert-err"><i class="fas fa-exclamation-triangle"></i> @TempData["PerfilError"]</div>
+        }
+
+        <!-- 1. Tarjeta del usuario -->
+        <div class="more-card">
+            <div class="user-card">
+                <div class="user-avatar-lg">
+                    @if (!string.IsNullOrWhiteSpace(usr?.FotoUrl))
+                    {
+                        <img src="@Url.Content("~" + usr!.FotoUrl)" alt="Foto de perfil" />
+                    }
+                    else
+                    {
+                        <span class="avatar-placeholder"><i class="fas fa-user"></i></span>
+                    }
+                </div>
+                <div class="user-info">
+                    @{
+                        var fullName = $"{PrimerNombre(usr?.Nombre)} {PrimerNombre(usr?.Apellidos)}".Trim();
+                        var hasName = !string.IsNullOrWhiteSpace(fullName);
+                        var hasEmail = !string.IsNullOrWhiteSpace(usr?.Email);
+                        var hasPhone = !string.IsNullOrWhiteSpace(usr?.Telefono);
+                    }
+                    <div class="uline @(hasName ? "" : "muted")">
+                        <span class="ulabel">@(hasName ? fullName : "Name")</span>
+                        <i class="far fa-user uicon"></i>
+                    </div>
+                    <div class="uline @(hasEmail ? "" : "muted")">
+                        <span class="ulabel">@(hasEmail ? usr!.Email : "Email")</span>
+                        <i class="far fa-envelope uicon"></i>
+                    </div>
+                    <div class="uline @(hasPhone ? "" : "muted")">
+                        <span class="ulabel">
+                            <i class="fas fa-phone-alt lead-icon"></i>
+                            @(hasPhone ? usr!.Telefono : "Phone")
+                        </span>
+                        <i class="fas fa-phone-alt uicon"></i>
+                    </div>
+                    <div class="uline">
+                        <span class="ulabel">
+                            @if (membresia?.Plan != null)
+                            {
+                                <span class="membership-pill"><i class="fas fa-crown"></i> @membresia.Plan.Nombre</span>
+                            }
+                            else
+                            {
+                                <span class="membership-pill none">No active membership</span>
+                            }
+                        </span>
+                        <i class="fas fa-shield-alt uicon"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+		<!-- 2. MenÃº del perfil (links a vistas separadas) -->
+		<div class="more-card">
+			<h3><i class="fas fa-bars"></i> My account</h3>
+			<nav class="more-menu">
+				<a class="more-link" asp-controller="Perfil" asp-action="Opciones">
+					<span class="ml-icon"><i class="fas fa-user-gear"></i></span>
+					<span class="ml-text">
+						<strong>Profile options</strong>
+						<small>Edit details, photo, password, and payment methods</small>
+					</span>
+					<i class="fas fa-chevron-right ml-arrow"></i>
+				</a>
+				<a class="more-link" asp-controller="Perfil" asp-action="Pagos">
+					<span class="ml-icon"><i class="fas fa-money-bill-wave"></i></span>
+					<span class="ml-text">
+						<strong>Payments</strong>
+						<small>Pending, financing, and history</small>
+					</span>
+					<i class="fas fa-chevron-right ml-arrow"></i>
+				</a>
+				<a class="more-link" asp-controller="Perfil" asp-action="Suscripciones">
+					<span class="ml-icon"><i class="fas fa-crown"></i></span>
+					<span class="ml-text">
+						<strong>Subscriptions</strong>
+						<small>Plans and descriptions</small>
+					</span>
+					<i class="fas fa-chevron-right ml-arrow"></i>
+				</a>
+				<a class="more-link" asp-controller="Perfil" asp-action="Historial">
+					<span class="ml-icon"><i class="fas fa-clock-rotate-left"></i></span>
+					<span class="ml-text">
+						<strong>History</strong>
+						<small>Microservices, inspections, and services</small>
+					</span>
+					<i class="fas fa-chevron-right ml-arrow"></i>
+				</a>
+				<a class="more-link" asp-controller="Perfil" asp-action="Internet">
+					<span class="ml-icon"><i class="fas fa-wifi"></i></span>
+					<span class="ml-text">
+						<strong>Internet comparison</strong>
+						<small>Current plan vs market plans</small>
+					</span>
+					<i class="fas fa-chevron-right ml-arrow"></i>
+				</a>
+				<a class="more-link" asp-controller="Perfil" asp-action="Soporte">
+					<span class="ml-icon"><i class="fas fa-headset"></i></span>
+					<span class="ml-text">
+						<strong>Support</strong>
+						<small>Chat with our team</small>
+					</span>
+					<i class="fas fa-chevron-right ml-arrow"></i>
+				</a>
+			</nav>
+
+			<form method="post" asp-controller="Account" asp-action="Logout" style="margin-top:12px;">
+				@Html.AntiForgeryToken()
+				<button type="submit" class="opt-btn danger" style="width:100%;flex-direction:row;justify-content:center;">
+					<i class="fas fa-right-from-bracket"></i> Sign out
+				</button>
+			</form>
+		</div>
+	</section>
+
+	<!-- ====== BOTTOM NAV ====== -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-target="section-home"><i class="fas fa-house"></i><span>Home</span></button>
+        <button class="nav-item" data-target="section-services"><i class="fas fa-compass"></i><span>Services</span></button>
+        <button class="nav-item" data-target="section-myhome"><i class="fas fa-wand-magic-sparkles"></i><span>My Home</span></button>
+        <button class="nav-item" data-target="section-schedule"><i class="fas fa-calendar"></i><span>Schedule</span></button>
+        <button class="nav-item" data-target="section-more"><i class="fas fa-ellipsis"></i><span>More</span></button>
+    </nav>
+
+    <script>
+        // === Bottom nav ===
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+                document.getElementById(btn.dataset.target).classList.add('active');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // === Slider por propiedad ===
+        function initSlider(idx) {
+            const track = document.querySelector(`[data-track="${idx}"]`);
+            if (!track) return;
+            const total = track.children.length;
+            const counter = document.querySelector(`[data-counter="${idx}"]`);
+            const dots = document.querySelectorAll(`[data-dots="${idx}"] .dot`);
+            const btnPrev = document.querySelector(`[data-prev="${idx}"]`);
+            const btnNext = document.querySelector(`[data-next="${idx}"]`);
+            let cur = 0;
+
+            function update() {
+                track.style.transform = `translateX(-${cur * 100}%)`;
+                if (counter) counter.textContent = `${cur + 1} / ${total}`;
+                if (btnPrev) btnPrev.disabled = cur === 0;
+                if (btnNext) btnNext.disabled = cur === total - 1;
+                dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+            }
+            btnNext && btnNext.addEventListener('click', () => { if (cur < total - 1) { cur++; update(); } });
+            btnPrev && btnPrev.addEventListener('click', () => { if (cur > 0) { cur--; update(); } });
+            dots.forEach((d, i) => d.addEventListener('click', () => { cur = i; update(); }));
+
+            // swipe
+            const vp = track.parentElement;
+            let startX = 0;
+            vp.addEventListener('touchstart', e => { startX = e.touches[0].clientX; }, { passive: true });
+            vp.addEventListener('touchend', e => {
+                const dx = e.changedTouches[0].clientX - startX;
+                if (dx < -40 && cur < total - 1) { cur++; update(); }
+                else if (dx > 40 && cur > 0) { cur--; update(); }
+            });
+            update();
+        }
+
+        document.querySelectorAll('[data-track]').forEach(t => initSlider(t.dataset.track));
+
+        // === Atajos desde Home a otras secciones ===
+        document.querySelectorAll('.home-shortcut[data-target], .nav-jump[data-target]').forEach(el => {
+            el.addEventListener('click', () => {
+                const target = el.dataset.target;
+                const navBtn = document.querySelector(`.bottom-nav .nav-item[data-target="${target}"]`);
+                if (navBtn) navBtn.click();
+            });
+        });
+
+        // === Facts & features expand ===
+        (function () {
+            const btn = document.getElementById('btnShowFacts');
+            const panel = document.getElementById('propDetailsExpand');
+            if (!btn || !panel) return;
+            btn.addEventListener('click', () => {
+                const open = panel.hasAttribute('hidden');
+                if (open) {
+                    panel.removeAttribute('hidden');
+                    btn.setAttribute('aria-expanded', 'true');
+                    btn.innerHTML = 'Show less <i class="fas fa-chevron-up"></i>';
+                } else {
+                    panel.setAttribute('hidden', '');
+                    btn.setAttribute('aria-expanded', 'false');
+                    btn.innerHTML = 'Show more <i class="fas fa-chevron-right"></i>';
+                }
+            });
+        })();
+
+        // === Notificaciones (campanita) ===
+        (function () {
+            const bell = document.getElementById('bellToggle');
+            const panel = document.getElementById('notifPanel');
+            const closeBtn = document.getElementById('notifClose');
+            if (!bell || !panel) return;
+            bell.addEventListener('click', (e) => {
+                e.stopPropagation();
+                panel.classList.toggle('open');
+            });
+            closeBtn && closeBtn.addEventListener('click', () => panel.classList.remove('open'));
+            document.addEventListener('click', (e) => {
+                if (!panel.contains(e.target) && e.target !== bell) {
+                    panel.classList.remove('open');
+                }
+            });
+        })();
+
+        // === More: toggle de formularios del perfil ===
+        document.querySelectorAll('.opt-btn[data-form]').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const id = btn.dataset.form;
+                document.querySelectorAll('.perfil-form').forEach(f => {
+                    if (f.id === id) f.classList.toggle('open');
+                    else f.classList.remove('open');
+                });
+            });
+        });
+
+        // === More: tabs de historial ===
+        document.querySelectorAll('.hist-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.hist-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                const target = tab.dataset.hist;
+                document.querySelectorAll('[data-hist-list]').forEach(l => {
+                    l.style.display = l.dataset.histList === target ? '' : 'none';
+                });
+            });
+        });
+
+        // === Si llegamos con ?section=more, abrir directamente esa sección ===
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const sec = params.get('section');
+            if (sec) {
+                const btn = document.querySelector(`.bottom-nav .nav-item[data-target="section-${sec}"]`);
+                if (btn) btn.click();
+            }
+            // Auto-scroll del chat al final
+            const chat = document.getElementById('chatBox');
+            if (chat) chat.scrollTop = chat.scrollHeight;
+        })();
+
+        // === Selector de propiedad (tabs) ===
+        document.querySelectorAll('#propertySelector .property-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const idx = tab.dataset.propIndex;
+                document.querySelectorAll('#propertySelector .property-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                // Ocultar todos los paneles principales y extras
+                document.querySelectorAll('[data-prop-panel]').forEach(p => p.style.display = 'none');
+                document.querySelectorAll(`[data-prop-panel="${idx}"]`).forEach(p => p.style.display = 'block');
+            });
+        });
+
+        // ===== Slide carousel para Microservicios / Servicios / Inspecciones =====
+        (function () {
+            function initCarousel(wrap) {
+                const grid = wrap.querySelector('.services-grid');
+                if (!grid) return;
+                const cards = Array.from(grid.querySelectorAll('.ms-card'));
+                if (cards.length === 0) return;
+
+                // Counter
+                const counter = document.createElement('div');
+                counter.className = 'carousel-counter';
+                counter.textContent = `1 / ${cards.length}`;
+                wrap.appendChild(counter);
+
+                // Prev / Next buttons (solo si hay más de 1)
+                let btnPrev, btnNext, dotsWrap, dots = [];
+                if (cards.length > 1) {
+                    btnPrev = document.createElement('button');
+                    btnPrev.type = 'button';
+                    btnPrev.className = 'carousel-nav prev';
+                    btnPrev.setAttribute('aria-label', 'Previous');
+                    btnPrev.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                    wrap.appendChild(btnPrev);
+
+                    btnNext = document.createElement('button');
+                    btnNext.type = 'button';
+                    btnNext.className = 'carousel-nav next';
+                    btnNext.setAttribute('aria-label', 'Next');
+                    btnNext.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                    wrap.appendChild(btnNext);
+
+                    dotsWrap = document.createElement('div');
+                    dotsWrap.className = 'carousel-dots';
+                    cards.forEach((_, i) => {
+                        const d = document.createElement('button');
+                        d.type = 'button';
+                        d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
+                        d.setAttribute('aria-label', `Ir al slide ${i + 1}`);
+                        d.addEventListener('click', () => goTo(i));
+                        dotsWrap.appendChild(d);
+                        dots.push(d);
+                    });
+                    wrap.appendChild(dotsWrap);
+                }
+
+                let current = 0;
+                function goTo(i) {
+                    current = Math.max(0, Math.min(cards.length - 1, i));
+                    cards[current].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
+                }
+                function update() {
+                    const cardStep = (cards[0]?.offsetWidth || grid.clientWidth) + 10;
+                    const idx = Math.round(grid.scrollLeft / cardStep);
+                    current = Math.max(0, Math.min(cards.length - 1, idx));
+                    counter.textContent = `${current + 1} / ${cards.length}`;
+                    if (dots.length) {
+                        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+                    }
+                    if (btnPrev) btnPrev.disabled = current === 0;
+                    if (btnNext) btnNext.disabled = current === cards.length - 1;
+                }
+
+                if (btnPrev) btnPrev.addEventListener('click', () => goTo(current - 1));
+                if (btnNext) btnNext.addEventListener('click', () => goTo(current + 1));
+
+                let scrollTimer = null;
+                grid.addEventListener('scroll', () => {
+                    if (scrollTimer) clearTimeout(scrollTimer);
+                    scrollTimer = setTimeout(update, 60);
+                });
+                window.addEventListener('resize', update);
+                update();
+            }
+
+            document.querySelectorAll('.carousel-wrap').forEach(initCarousel);
+        })();
+    </script>
+</body>
+</html>

@@ -1,0 +1,664 @@
+@model IndorMvcApp.ViewModels.AddPropertyViewModel
+@using System.Text.Json
+@using System.Globalization
+@{
+    ViewData["Title"] = "Add Property - INDOR";
+    Layout = null;
+
+    // ===== Parseo del JSON de la API en pares clave/valor para mostrarlos
+    //       como slides individuales (uno por campo). =====
+    var apiFields = new List<(string Key, string Value)>();
+    var rawJson = ViewBag.RawJson as string;
+
+    string Humanize(string key)
+    {
+        if (string.IsNullOrWhiteSpace(key)) return key ?? string.Empty;
+        var withSpaces = System.Text.RegularExpressions.Regex
+            .Replace(key.Replace('_', ' ').Replace('-', ' '), "([a-z])([A-Z])", "$1 $2");
+        return CultureInfo.GetCultureInfo("en-US").TextInfo.ToTitleCase(withSpaces.ToLowerInvariant());
+    }
+
+    string IconFor(string key)
+    {
+        var k = (key ?? string.Empty).ToLowerInvariant();
+        if (k.Contains("address") || k.Contains("direcc")) return "fa-map-marker-alt";
+        if (k.Contains("city") || k.Contains("ciudad")) return "fa-city";
+        if (k.Contains("state") || k.Contains("estado")) return "fa-flag";
+        if (k.Contains("zip") || k.Contains("postal")) return "fa-mail-bulk";
+        if (k.Contains("country") || k.Contains("pais")) return "fa-globe";
+        if (k.Contains("year") || k.Contains("anio") || k.Contains("ano")) return "fa-calendar-alt";
+        if (k.Contains("bed") || k.Contains("habitac") || k.Contains("dorm")) return "fa-bed";
+        if (k.Contains("bath") || k.Contains("ban")) return "fa-bath";
+        if (k.Contains("area") || k.Contains("sqft") || k.Contains("size")) return "fa-ruler-combined";
+        if (k.Contains("lot")) return "fa-draw-polygon";
+        if (k.Contains("price") || k.Contains("value") || k.Contains("valor") || k.Contains("estimate")) return "fa-dollar-sign";
+        if (k.Contains("tax") || k.Contains("impuesto")) return "fa-receipt";
+        if (k.Contains("type") || k.Contains("tipo")) return "fa-home";
+        if (k.Contains("lat") || k.Contains("lng") || k.Contains("lon") || k.Contains("coord")) return "fa-location-crosshairs";
+        if (k.Contains("phone") || k.Contains("tel")) return "fa-phone";
+        if (k.Contains("email") || k.Contains("mail")) return "fa-envelope";
+        if (k.Contains("url") || k.Contains("link")) return "fa-link";
+        if (k.Contains("id")) return "fa-fingerprint";
+        return "fa-circle-info";
+    }
+
+    void Flatten(JsonElement element, string prefix, List<(string, string)> bag)
+    {
+        switch (element.ValueKind)
+        {
+            case JsonValueKind.Object:
+                foreach (var prop in element.EnumerateObject())
+                {
+                    var newKey = string.IsNullOrEmpty(prefix) ? prop.Name : $"{prefix}.{prop.Name}";
+                    Flatten(prop.Value, newKey, bag);
+                }
+                break;
+            case JsonValueKind.Array:
+                int i = 0;
+                foreach (var item in element.EnumerateArray())
+                {
+                    Flatten(item, $"{prefix}[{i}]", bag);
+                    i++;
+                }
+                break;
+            case JsonValueKind.String:
+                bag.Add((prefix, element.GetString() ?? string.Empty));
+                break;
+            case JsonValueKind.Number:
+                bag.Add((prefix, element.GetRawText()));
+                break;
+            case JsonValueKind.True:
+            case JsonValueKind.False:
+                bag.Add((prefix, element.GetBoolean() ? "Yes" : "No"));
+                break;
+            case JsonValueKind.Null:
+                bag.Add((prefix, "—"));
+                break;
+        }
+    }
+
+    if (!string.IsNullOrWhiteSpace(rawJson))
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(rawJson);
+            Flatten(doc.RootElement, string.Empty, apiFields);
+        }
+        catch
+        {
+            apiFields.Add(("Response", rawJson));
+        }
+    }
+
+    var totalSlides = apiFields.Count;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            color: #0A2540;
+            position: relative;
+        }
+
+        .page-container {
+            width: 100%;
+            max-width: 460px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header */
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1.5px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0A2540;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.25s ease;
+        }
+
+        .back-btn:hover {
+            border-color: #0066CC;
+            color: #0066CC;
+            transform: translateX(-2px);
+        }
+
+        .smart-home-logo {
+            max-height: 42px;
+            width: auto;
+            display: block;
+        }
+
+        /* Brand */
+        .brand-section {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .brand-name {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #0A2540;
+            letter-spacing: -0.5px;
+        }
+
+        .brand-tagline {
+            font-size: 0.9rem;
+            color: #6B7280;
+            margin-top: 4px;
+        }
+
+        .brand-tagline .highlight {
+            color: #0066CC;
+            font-weight: 600;
+        }
+
+        /* Card del formulario */
+        .form-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 24px 20px;
+            box-shadow: 0 12px 40px rgba(10, 37, 64, 0.08);
+            border: 1px solid rgba(229, 231, 235, 0.7);
+            margin-bottom: 24px;
+            animation: slideUp 0.7s ease-out 0.15s backwards;
+        }
+
+        @@keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #0A2540;
+            margin-bottom: 6px;
+        }
+
+        .page-subtitle {
+            font-size: 0.88rem;
+            color: #6B7280;
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #0A2540;
+            margin-bottom: 8px;
+        }
+
+        .input-wrapper {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: #0A2540;
+            background: #F9FAFB;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder { color: #9CA3AF; }
+
+        .form-input:focus {
+            border-color: #0066CC;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .validation-error {
+            display: block;
+            font-size: 0.78rem;
+            color: #EF4444;
+            margin-top: 6px;
+            margin-left: 4px;
+        }
+
+        .validation-summary {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #B91C1C;
+            border-radius: 12px;
+            padding: 12px 14px;
+            font-size: 0.85rem;
+            margin-bottom: 16px;
+        }
+
+        .validation-summary ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        /* Botón principal estilo home */
+        .btn {
+            width: 100%;
+            padding: 16px 22px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            text-decoration: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+            color: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 102, 204, 0.35);
+        }
+
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* Resultados */
+        .results-card {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 22px 18px;
+            box-shadow: 0 12px 40px rgba(10, 37, 64, 0.08);
+            border: 1px solid rgba(229, 231, 235, 0.7);
+            animation: slideUp 0.7s ease-out 0.25s backwards;
+        }
+
+        .results-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .results-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #0A2540;
+        }
+
+        .slide-counter {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #0066CC;
+            background: rgba(0, 102, 204, 0.1);
+            padding: 4px 10px;
+            border-radius: 999px;
+        }
+
+        .api-url {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.72rem;
+            color: #6B7280;
+            background: #F9FAFB;
+            border: 1px dashed #E5E7EB;
+            border-radius: 10px;
+            padding: 8px 10px;
+            margin-bottom: 14px;
+            overflow: hidden;
+        }
+
+        .api-url i { color: #0066CC; flex-shrink: 0; }
+
+        .api-url span {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .slider-viewport {
+            overflow: hidden;
+            border-radius: 16px;
+            background: #F9FAFB;
+        }
+
+        .slider-track {
+            display: flex;
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform;
+        }
+
+        .result-card {
+            flex: 0 0 100%;
+            min-width: 100%;
+            padding: 30px 22px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            min-height: 260px;
+        }
+
+        .field-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 79, 163, 0.12) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0066CC;
+            font-size: 1.7rem;
+            margin-bottom: 18px;
+        }
+
+        .field-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 10px;
+        }
+
+        .field-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #0A2540;
+            line-height: 1.15;
+            margin-bottom: 10px;
+            word-break: break-word;
+        }
+
+        .field-description {
+            font-size: 0.85rem;
+            color: #6B7280;
+            max-width: 280px;
+        }
+
+        /* JSON viewer (último slide) */
+        .json-viewer {
+            width: 100%;
+            text-align: left;
+            background: #0A2540;
+            border-radius: 12px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .json-header {
+            background: rgba(255, 255, 255, 0.05);
+            color: #0066CC;
+            padding: 10px 12px;
+            font-size: 0.75rem;
+            font-family: 'Courier New', monospace;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            word-break: break-all;
+        }
+
+        .json-content {
+            color: #E5E7EB;
+            padding: 12px;
+            font-size: 0.72rem;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 220px;
+            overflow: auto;
+        }
+
+        /* Controles del slider */
+        .slider-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 18px;
+            gap: 10px;
+        }
+
+        .nav-button {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            border: 1.5px solid #E5E7EB;
+            background: #FFFFFF;
+            color: #0A2540;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            flex-shrink: 0;
+        }
+
+        .nav-button:hover:not(:disabled) {
+            border-color: #0066CC;
+            color: #0066CC;
+            transform: scale(1.05);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .dots-container {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: #0066CC;
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        @@media (max-width: 480px) {
+            .field-value { font-size: 1.5rem; }
+            .form-card, .results-card { padding: 20px 16px; }
+        }
+    </style>
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-bar">
+            <a asp-controller="Account" asp-action="Login" class="back-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
+            <div style="width:44px;"></div>
+        </div>
+
+        <div class="brand-section">
+            <p class="brand-tagline">
+                Add your <span class="highlight">property</span> in seconds
+            </p>
+        </div>
+
+        <div class="form-card">
+            <h2 class="page-title">Find property</h2>
+            <p class="page-subtitle">Enter the full address to look up information.</p>
+
+            <div asp-validation-summary="All" class="validation-summary"></div>
+
+            <form asp-controller="Propietario" asp-action="AddProperty" method="post">
+                <label asp-for="Address" class="input-label">Address</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-map-marker-alt input-icon"></i>
+                    <input asp-for="Address"
+                           type="text"
+                           class="form-input"
+                           placeholder="123 Main Street, Miami, FL 33101"
+                           required />
+                </div>
+                <span asp-validation-for="Address" class="validation-error"></span>
+
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                    <span>Search</span>
+                </button>
+            </form>
+        </div>
+
+        @if (apiFields.Count > 0)
+        {
+            <div class="results-card">
+                <div class="results-header">
+                    <h3 class="results-title">Property information</h3>
+                    <span class="slide-counter" id="slideCounter">1 / @totalSlides</span>
+                </div>
+
+                @if (!string.IsNullOrEmpty(ViewBag.ApiUrl as string))
+                {
+                    <div class="api-url" title="@ViewBag.ApiUrl">
+                        <i class="fas fa-link"></i>
+                        <span>@ViewBag.ApiUrl</span>
+                    </div>
+                }
+
+                <div class="slider-viewport">
+                    <div class="slider-track" id="sliderTrack">
+                        @foreach (var field in apiFields)
+                        {
+                            <div class="result-card">
+                                <div class="field-icon"><i class="fas @IconFor(field.Key)"></i></div>
+                                <div class="field-label">@Humanize(field.Key)</div>
+                                <div class="field-value">@field.Value</div>
+                                <p class="field-description">@field.Key</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+                <div class="slider-controls">
+                    <button type="button" class="nav-button" id="btnPrev" aria-label="Previous">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+
+                    <div class="dots-container" id="dotsContainer">
+                        @for (int i = 0; i < totalSlides; i++)
+                        {
+                            <div class="dot @(i == 0 ? "active" : "")" data-slide="@i"></div>
+                        }
+                    </div>
+
+                    <button type="button" class="nav-button" id="btnNext" aria-label="Next">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+
+            <script>
+                (function () {
+                    let currentSlide = 0;
+                    const totalSlides = @totalSlides;
+                    const track = document.getElementById('sliderTrack');
+                    const btnPrev = document.getElementById('btnPrev');
+                    const btnNext = document.getElementById('btnNext');
+                    const counter = document.getElementById('slideCounter');
+                    const dots = document.querySelectorAll('#dotsContainer .dot');
+
+                    function updateSlider() {
+                        track.style.transform = `translateX(-${currentSlide * 100}%)`;
+                        counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
+                        btnPrev.disabled = currentSlide === 0;
+                        btnNext.disabled = currentSlide === totalSlides - 1;
+                        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentSlide));
+                    }
+
+                    btnNext.addEventListener('click', () => {
+                        if (currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); }
+                    });
+                    btnPrev.addEventListener('click', () => {
+                        if (currentSlide > 0) { currentSlide--; updateSlider(); }
+                    });
+                    dots.forEach((dot, idx) => {
+                        dot.addEventListener('click', () => { currentSlide = idx; updateSlider(); });
+                    });
+                    document.addEventListener('keydown', (e) => {
+                        if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); }
+                        else if (e.key === 'ArrowLeft' && currentSlide > 0) { currentSlide--; updateSlider(); }
+                    });
+
+                    // Swipe touch para mobile
+                    let startX = 0;
+                    const viewport = document.querySelector('.slider-viewport');
+                    viewport.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
+                    viewport.addEventListener('touchend', (e) => {
+                        const dx = e.changedTouches[0].clientX - startX;
+                        if (dx < -40 && currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); }
+                        else if (dx > 40 && currentSlide > 0) { currentSlide--; updateSlider(); }
+                    });
+
+                    updateSlider();
+                })();
+            </script>
+        }
+    </div>
+</body>
+</html>

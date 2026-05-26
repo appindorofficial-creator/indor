@@ -1,0 +1,39 @@
+@page
+@model IndorMvcApp.Pages.EditAddressModel
+@{
+    ViewData["Title"] = "Edit Address";
+}
+
+<h2>Edit Address</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label asp-for="PropertyInfo.FormattedAddress"></label>
+        <input asp-for="PropertyInfo.FormattedAddress" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PropertyInfo.Street"></label>
+        <input asp-for="PropertyInfo.Street" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PropertyInfo.HouseNumber"></label>
+        <input asp-for="PropertyInfo.HouseNumber" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PropertyInfo.City"></label>
+        <input asp-for="PropertyInfo.City" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PropertyInfo.State"></label>
+        <input asp-for="PropertyInfo.State" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PropertyInfo.PostalCode"></label>
+        <input asp-for="PropertyInfo.PostalCode" class="form-control" />
+    </div>
+    <div class="form-group">
+        <label asp-for="PropertyInfo.Country"></label>
+        <input asp-for="PropertyInfo.Country" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Save changes</button>
+</form>

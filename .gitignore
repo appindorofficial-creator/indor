@@ -1,0 +1,23 @@
+# Build outputs
+**/bin/
+**/obj/
+**/.vs/
+
+# User-specific / secrets
+**/appsettings.json
+**/appsettings.*.json
+!**/appsettings.Example.json
+
+# Publish profiles with credentials
+**/*.pubxml.user
+
+# OS / IDE
+.DS_Store
+Thumbs.db
+*.user
+*.suo
+.idea/
+.vscode/
+
+# Logs
+*.log

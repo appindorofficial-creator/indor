@@ -1,0 +1,75 @@
+@{
+    ViewData["Title"] = "Profile options";
+    ViewData["Subtitulo"] = "Edit your details, photo, and password";
+    var usr = (IndorMvcApp.Models.ApplicationUser?)ViewBag.UsuarioActual;
+}
+
+<div class="pf-card">
+    <h3><i class="fas fa-id-card"></i> Personal details</h3>
+    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="ActualizarDatos">
+        @Html.AntiForgeryToken()
+        <div class="pf-row">
+            <input type="text" name="nombre" placeholder="First name" value="@usr?.Nombre" />
+            <input type="text" name="apellidos" placeholder="Last name" value="@usr?.Apellidos" />
+        </div>
+        <input type="text" name="telefono" placeholder="Mobile phone" value="@usr?.Telefono" />
+        <button type="submit" class="pf-btn"><i class="fas fa-save"></i> Save changes</button>
+    </form>
+</div>
+
+<div class="pf-card">
+    <h3><i class="fas fa-camera"></i> Profile photo</h3>
+    @if (!string.IsNullOrWhiteSpace(usr?.FotoUrl))
+    {
+        <div style="text-align:center;margin-bottom:10px;">
+            <img src="@Url.Content("~" + usr!.FotoUrl)" alt="Photo" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:1px solid #E5E7EB;" />
+        </div>
+    }
+    <form class="pf-form" method="post" enctype="multipart/form-data" asp-controller="Perfil" asp-action="SubirFoto">
+        @Html.AntiForgeryToken()
+        <input type="file" name="foto" accept="image/*" required />
+        <button type="submit" class="pf-btn"><i class="fas fa-upload"></i> Upload photo</button>
+    </form>
+</div>
+
+<div class="pf-card">
+    <h3><i class="fas fa-lock"></i> Change password</h3>
+    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="CambiarPassword">
+        @Html.AntiForgeryToken()
+        <input type="password" name="actual" placeholder="Current password" required />
+        <input type="password" name="nueva" placeholder="New password" required />
+        <input type="password" name="confirmar" placeholder="Confirm new password" required />
+        <button type="submit" class="pf-btn"><i class="fas fa-key"></i> Change password</button>
+    </form>
+</div>
+
+<div class="pf-card">
+    <h3><i class="fas fa-credit-card"></i> Add payment method</h3>
+    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="AgregarMetodoPago">
+        @Html.AntiForgeryToken()
+        <div class="pf-row">
+            <select name="tipo">
+                <option value="Card">Card</option>
+                <option value="Bank">Bank</option>
+                <option value="PayPal">PayPal</option>
+            </select>
+            <input type="text" name="marca" placeholder="Brand (Visa, etc.)" />
+        </div>
+        <div class="pf-row">
+            <input type="text" name="ultimos4" placeholder="Last 4 digits" maxlength="4" />
+            <input type="text" name="expiracion" placeholder="MM/YY" maxlength="7" />
+        </div>
+        <input type="text" name="titular" placeholder="Cardholder name" />
+        <label style="font-size:.78rem;color:#475569;">
+            <input type="checkbox" name="predeterminado" value="true" /> Set as default
+        </label>
+        <button type="submit" class="pf-btn"><i class="fas fa-plus"></i> Add method</button>
+    </form>
+</div>
+
+<form method="post" asp-controller="Account" asp-action="Logout">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="pf-btn danger" style="width:100%;">
+        <i class="fas fa-right-from-bracket"></i> Sign out
+    </button>
+</form>

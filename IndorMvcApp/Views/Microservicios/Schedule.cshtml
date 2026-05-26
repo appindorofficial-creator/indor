@@ -1,0 +1,161 @@
+@model IndorMvcApp.ViewModels.ScheduleMicroservicioViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Schedule service - INDOR";
+    Layout = null;
+    var scheduledDateValue = Model.FechaProgramada.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            padding: 20px 16px 32px;
+            color: #0A2540;
+        }
+        .page-container { max-width: 480px; margin: 0 auto; }
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 18px;
+        }
+        .back-btn {
+            width: 44px; height: 44px; border-radius: 50%;
+            background: #FFF; border: 1.5px solid #E5E7EB;
+            display: flex; align-items: center; justify-content: center;
+            color: #0A2540; text-decoration: none;
+        }
+        .smart-home-logo { max-height: 42px; }
+        .form-card {
+            background: #FFF; border-radius: 20px; padding: 22px 18px;
+            box-shadow: 0 12px 40px rgba(10, 37, 64, 0.08);
+            border: 1px solid rgba(229, 231, 235, 0.7);
+        }
+        .service-head {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 18px;
+        }
+        .service-icon {
+            width: 48px; height: 48px; border-radius: 14px;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.14), rgba(0, 79, 163, 0.08));
+            color: #0066CC; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem;
+        }
+        .page-title { font-size: 1.15rem; font-weight: 700; margin: 0; }
+        .page-subtitle { font-size: 0.84rem; color: #64748B; margin-top: 2px; }
+        .input-label {
+            display: block; font-size: 0.82rem; font-weight: 600;
+            margin-bottom: 8px;
+        }
+        .input-wrapper { position: relative; margin-bottom: 16px; }
+        .input-icon {
+            position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+            color: #9CA3AF; pointer-events: none;
+        }
+        .form-input, .form-textarea {
+            width: 100%; padding: 13px 14px 13px 42px;
+            border: 1.5px solid #E5E7EB; border-radius: 12px;
+            font-family: 'Inter', sans-serif; font-size: 0.92rem;
+            background: #F9FAFB; color: #0A2540;
+        }
+        .form-textarea { padding-left: 14px; min-height: 90px; resize: vertical; }
+        .form-input:focus, .form-textarea:focus {
+            outline: none; border-color: #0066CC; background: #FFF;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+        .validation-error { color: #DC2626; font-size: 0.78rem; margin-top: 6px; display: block; }
+        .hint {
+            font-size: 0.8rem; color: #64748B; margin: -8px 0 16px;
+            line-height: 1.45;
+        }
+        .btn-primary {
+            width: 100%; padding: 15px 22px; border: none; border-radius: 14px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF; font-weight: 700; font-size: 1rem; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-bar">
+            <a asp-controller="Home" asp-action="Index" class="back-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
+            <div style="width:44px;"></div>
+        </div>
+
+        <div class="form-card">
+            <div class="service-head">
+                <div class="service-icon"><i class="fas fa-calendar-check"></i></div>
+                <div>
+                    <h1 class="page-title">@Model.NombreMicroservicio</h1>
+                    @if (!string.IsNullOrWhiteSpace(Model.SubtituloMicroservicio))
+                    {
+                        <p class="page-subtitle">@Model.SubtituloMicroservicio</p>
+                    }
+                </div>
+            </div>
+
+            <p class="hint">
+                @if (Model.HasExistingSchedule)
+                {
+                    <text>You already have this service scheduled. Update the date below if needed.</text>
+                }
+                else
+                {
+                    <text>Pick the date when this maintenance should happen (for example, when to change your air filter).
+                    You will get a reminder in Notifications as the date gets closer.</text>
+                }
+            </p>
+
+            <form asp-action="Schedule" method="post">
+                <input type="hidden" asp-for="MicroservicioId" />
+                <input type="hidden" asp-for="HasExistingSchedule" />
+
+                <label asp-for="FechaProgramada" class="input-label"></label>
+                <div class="input-wrapper">
+                    <i class="fas fa-calendar-day input-icon"></i>
+                    @if (Model.HasExistingSchedule)
+                    {
+                        <input type="date"
+                               class="form-input"
+                               id="@Html.IdFor(m => m.FechaProgramada)"
+                               name="@Html.NameFor(m => m.FechaProgramada)"
+                               value="@scheduledDateValue"
+                               required />
+                    }
+                    else
+                    {
+                        <input type="date"
+                               class="form-input"
+                               id="@Html.IdFor(m => m.FechaProgramada)"
+                               name="@Html.NameFor(m => m.FechaProgramada)"
+                               value="@scheduledDateValue"
+                               min="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               required />
+                    }
+                </div>
+                <span asp-validation-for="FechaProgramada" class="validation-error"></span>
+
+                <label asp-for="Notas" class="input-label"></label>
+                <textarea asp-for="Notas" class="form-textarea"
+                          placeholder="Optional notes (e.g. replace HVAC filter, 16x25x1)"></textarea>
+
+                <button type="submit" class="btn-primary">
+                    <i class="fas fa-check"></i>
+                    @(Model.HasExistingSchedule ? "Update schedule" : "Save schedule")
+                </button>
+            </form>        </div>
+    </div>
+</body>
+</html>

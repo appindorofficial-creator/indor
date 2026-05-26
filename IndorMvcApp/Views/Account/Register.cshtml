@@ -1,0 +1,395 @@
+@model IndorMvcApp.ViewModels.RegisterViewModel
+@{
+    ViewData["Title"] = "Create Account - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+            color: #0A2540;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .top-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .back-btn {
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 1.5px solid #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0A2540;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: all 0.25s ease;
+        }
+
+        .back-btn:hover {
+            border-color: #0066CC;
+            color: #0066CC;
+            transform: translateX(-2px);
+        }
+
+        .logo-container {
+            margin-bottom: 14px;
+            animation: logoAnimation 0.8s ease-out;
+        }
+
+        @@keyframes logoAnimation {
+            0%   { opacity: 0; transform: scale(0.85); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .smart-home-logo {
+            width: min(100%, 240px);
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .brand-section {
+            text-align: center;
+            margin-bottom: 22px;
+        }
+
+        .brand-tagline {
+            font-size: 0.95rem;
+            color: #6B7280;
+            font-weight: 400;
+        }
+
+        .brand-tagline .highlight {
+            color: #0066CC;
+            font-weight: 600;
+        }
+
+        .form-card {
+            width: 100%;
+            max-width: 380px;
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 26px 22px 22px;
+            box-shadow: 0 12px 40px rgba(10, 37, 64, 0.08);
+            border: 1px solid rgba(229, 231, 235, 0.7);
+            animation: slideUp 0.7s ease-out 0.15s backwards;
+        }
+
+        @@keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #0A2540;
+            margin-bottom: 8px;
+            letter-spacing: 0.2px;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #9CA3AF;
+            font-size: 0.95rem;
+            pointer-events: none;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 14px 16px 14px 44px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: 'Inter', sans-serif;
+            color: #0A2540;
+            background: #F9FAFB;
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder { color: #9CA3AF; }
+
+        .form-input:focus {
+            border-color: #0066CC;
+            background: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: transparent;
+            border: none;
+            color: #9CA3AF;
+            cursor: pointer;
+            font-size: 0.95rem;
+            padding: 4px;
+        }
+
+        .password-toggle:hover { color: #0066CC; }
+
+        .field-error {
+            display: block;
+            font-size: 0.78rem;
+            color: #EF4444;
+            margin-top: 6px;
+            margin-left: 4px;
+        }
+
+        .validation-error {
+            font-size: 0.85rem;
+            color: #EF4444;
+            margin-bottom: 14px;
+            background: rgba(239, 68, 68, 0.08);
+            padding: 10px 12px;
+            border-radius: 10px;
+        }
+
+        .validation-error:empty { display: none; }
+
+        .btn {
+            width: 100%;
+            padding: 16px 22px;
+            border-radius: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            border: none;
+            margin-top: 6px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+            color: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 102, 204, 0.35);
+        }
+
+        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-icon { font-size: 1.1rem; }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 18px;
+            font-size: 0.9rem;
+            color: #6B7280;
+        }
+
+        .signup-link a {
+            color: #0066CC;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .signup-link a:hover { color: #0066CC; }
+
+        @@media (max-width: 380px) {
+            .row-2 { grid-template-columns: 1fr; gap: 0; }
+            .smart-home-logo { width: 95px; }
+            .form-card { padding: 22px 16px 20px; }
+        }
+    </style>
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-container">
+        <div class="top-bar">
+            <a asp-controller="Account" asp-action="Login" class="back-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div style="width:44px;"></div>
+        </div>
+
+        <div class="logo-container">
+            <img src="~/logoindor.png" alt="Indor - The Home Operating System" class="smart-home-logo" />
+        </div>
+
+        <div class="brand-section">
+            <p class="brand-tagline">
+                Create your account and start with your <span class="highlight">smart home</span>
+            </p>
+        </div>
+
+        <div class="form-card">
+            <form asp-controller="Account" asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+
+                <div class="row-2">
+                    <div class="input-group">
+                        <label asp-for="Nombre" class="input-label">First name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-user input-icon"></i>
+                            <input asp-for="Nombre" type="text" class="form-input" placeholder="Your first name" autocomplete="given-name" />
+                        </div>
+                        <span asp-validation-for="Nombre" class="field-error"></span>
+                    </div>
+
+                    <div class="input-group">
+                        <label asp-for="Apellidos" class="input-label">Last name</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-id-card input-icon"></i>
+                            <input asp-for="Apellidos" type="text" class="form-input" placeholder="Last name" autocomplete="family-name" />
+                        </div>
+                        <span asp-validation-for="Apellidos" class="field-error"></span>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="Telefono" class="input-label">Phone</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-phone input-icon"></i>
+                        <input asp-for="Telefono" type="tel" class="form-input" placeholder="Your phone number" autocomplete="tel" />
+                    </div>
+                    <span asp-validation-for="Telefono" class="field-error"></span>
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="Email" class="input-label">Email</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-envelope input-icon"></i>
+                        <input asp-for="Email" type="email" class="form-input" placeholder="you@email.com" autocomplete="email" />
+                    </div>
+                    <span asp-validation-for="Email" class="field-error"></span>
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="Password" class="input-label">Password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input asp-for="Password" type="password" id="regPassword" class="form-input" placeholder="••••••••" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" onclick="togglePassword('regPassword', this)" aria-label="Show password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="field-error"></span>
+                </div>
+
+                <div class="input-group">
+                    <label asp-for="ConfirmPassword" class="input-label">Confirm password</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-shield-halved input-icon"></i>
+                        <input asp-for="ConfirmPassword" type="password" id="regConfirmPassword" class="form-input" placeholder="••••••••" autocomplete="new-password" />
+                        <button type="button" class="password-toggle" onclick="togglePassword('regConfirmPassword', this)" aria-label="Show password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="field-error"></span>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    <div class="btn-content">
+                        <i class="fas fa-user-plus btn-icon"></i>
+                        <span>Create account</span>
+                    </div>
+                    <i class="fas fa-chevron-right btn-icon"></i>
+                </button>
+
+                <div class="signup-link">
+                    Already have an account? <a asp-controller="Account" asp-action="LoginForm">Sign in</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jquery-validation/dist/jquery.validate.min.js"></script>
+    <script src="~/lib/jquery-validation-unobtrusive/jquery.validate.unobtrusive.min.js"></script>
+    <script>
+        function togglePassword(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
+</body>
+</html>

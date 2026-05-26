@@ -1,0 +1,385 @@
+@{
+    ViewData["Title"] = "Welcome - InDor";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+            margin: 0;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Solid white background on Welcome */
+        body {
+            background-image: none !important;
+        }
+
+        .welcome-container {
+            width: 100%;
+            max-width: 430px;
+            background: transparent;
+            padding: 60px 32px 30px 32px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Logo Safe Project Solution - MÁS GRANDE */
+        .safe-project-logo {
+            text-align: center;
+            margin-bottom: 35px;
+            animation: logoFadeIn 500ms ease-out forwards;
+        }
+
+        @@keyframes logoFadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .safe-project-logo img {
+            width: min(100%, 300px);
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Bienvenido a InDor */
+        .welcome-section {
+            text-align: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        /* Casa Moderna Animada de EE.UU. */
+        .modern-house-animation {
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 25px;
+            animation: floatHouse 3.5s ease-in-out infinite;
+        }
+
+        @@keyframes floatHouse {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-12px);
+            }
+        }
+
+        .modern-house-animation svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 6px 16px rgba(13, 27, 61, 0.15));
+        }
+
+        /* Animación de ventanas parpadeantes */
+        @@keyframes windowGlow {
+            0%, 100% {
+                opacity: 0.3;
+            }
+            50% {
+                opacity: 1;
+            }
+        }
+
+        .window-glow {
+            animation: windowGlow 2s ease-in-out infinite;
+        }
+
+        .welcome-text {
+            font-size: 1.05rem;
+            color: #374151;
+            font-weight: 400;
+            margin-bottom: 10px;
+            letter-spacing: 0.2px;
+        }
+
+        .brand-name {
+            font-size: 3.2rem;
+            font-weight: 700;
+            margin-bottom: 18px;
+            line-height: 1;
+            letter-spacing: -1.5px;
+        }
+
+        .brand-name .in {
+            color: #0D1B3D;
+        }
+
+        .brand-name .dor {
+            color: #0066CC;
+        }
+
+        /* Decorative divider */
+        .brand-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .brand-divider-line {
+            width: 70px;
+            height: 2px;
+            background: #0066CC;
+        }
+
+        .brand-divider-dot {
+            width: 8px;
+            height: 8px;
+            background: #0066CC;
+            border-radius: 50%;
+        }
+
+        .tagline {
+            font-size: 0.95rem;
+            color: #6B7280;
+            line-height: 1.6;
+            font-weight: 400;
+            letter-spacing: 0.2px;
+        }
+
+        /* Buttons Container */
+        .buttons-container {
+            width: 100%;
+            max-width: 370px;
+            margin-bottom: 30px;
+            animation: buttonsSlideUp 600ms ease-out 200ms forwards;
+            opacity: 0;
+        }
+
+        @@keyframes buttonsSlideUp {
+            0% {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Primary Button */
+        .button-primary {
+            width: 100%;
+            padding: 18px 24px;
+            background: #0D1B3D;
+            border: none;
+            border-radius: 16px;
+            color: #FFFFFF;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 200ms ease-in-out;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(13, 27, 61, 0.15);
+        }
+
+        .button-primary:hover,
+        .button-primary:active {
+            transform: scale(1.02) translateY(-2px);
+            box-shadow: 0 8px 24px rgba(13, 27, 61, 0.25);
+            background: #162544;
+        }
+
+        .button-primary:active {
+            transform: scale(0.98);
+        }
+
+        .button-primary .button-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .button-primary i.fa-home {
+            font-size: 1.35rem;
+        }
+
+        .button-primary i.fa-chevron-right {
+            font-size: 0.95rem;
+        }
+
+        /* Secondary Button */
+        .button-secondary {
+            width: 100%;
+            padding: 18px 24px;
+            background: #FFFFFF;
+            border: 2.5px solid #0066CC;
+            border-radius: 16px;
+            color: #0066CC;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: 'Poppins', sans-serif;
+            cursor: pointer;
+            transition: all 200ms ease-in-out;
+            margin-bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(242, 183, 5, 0.08);
+        }
+
+        .button-secondary:hover,
+        .button-secondary:active {
+            transform: scale(1.02) translateY(-2px);
+            background: rgba(242, 183, 5, 0.05);
+            box-shadow: 0 6px 20px rgba(242, 183, 5, 0.2);
+        }
+
+        .button-secondary:active {
+            transform: scale(0.98);
+        }
+
+        .button-secondary .button-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .button-secondary i.fa-user-plus {
+            font-size: 1.25rem;
+        }
+
+        .button-secondary i.fa-chevron-right {
+            font-size: 0.95rem;
+        }
+
+        /* Footer text */
+        .footer-text {
+            text-align: center;
+            font-size: 0.9rem;
+            color: #374151;
+            line-height: 1.6;
+            font-weight: 400;
+            position: relative;
+            z-index: 10;
+            letter-spacing: 0.2px;
+        }
+
+        .footer-text strong {
+            color: #0D1B3D;
+            font-weight: 600;
+        }
+
+        .highlight-yellow {
+            color: #0066CC;
+            font-weight: 700;
+        }
+
+        /* Responsive */
+        @@media (max-width: 480px) {
+            .welcome-container {
+                padding: 50px 28px 30px 28px;
+            }
+
+            .brand-name {
+                font-size: 2.8rem;
+            }
+
+            .safe-project-logo svg {
+                width: 260px;
+            }
+
+            .buttons-container {
+                max-width: 100%;
+            }
+
+            .modern-house-animation {
+                width: 140px;
+                height: 140px;
+            }
+        }
+
+        @@media (min-width: 481px) and (max-width: 768px) {
+            .welcome-container {
+                max-width: 500px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="welcome-container">
+        <!-- Indor Logo -->
+        <div class="safe-project-logo">
+            <img src="~/logoindor.png" alt="Indor - The Home Operating System" />
+        </div>
+
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <p class="welcome-text">Welcome</p>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons-container">
+            <a asp-controller="Account" asp-action="Login" class="button-primary">
+                <div class="button-content">
+                    <i class="fas fa-home"></i>
+                    <span>Sign in</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+
+            <a asp-controller="Account" asp-action="Register" class="button-secondary">
+                <div class="button-content">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Create account</span>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+
+        <!-- Footer text -->
+        <p class="footer-text">
+            Solutions for your home,<br>
+            <strong>financing up to <span class="highlight-yellow">100%</span>.</strong>
+        </p>
+    </div>
+</body>
+</html>

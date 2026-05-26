@@ -1,0 +1,93 @@
+@model IndorMvcApp.ViewModels.OfferingCarouselViewModel
+@if (Model.Items.Count > 0)
+{
+<div class="category-block @(Model.BlockClass)">
+    <div class="category-header">
+        <div class="category-icon @(Model.IconClass)"><i class="fas @Model.Icon"></i></div>
+        <div class="category-info">
+            <h3 class="category-title">@Model.Title</h3>
+            @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+            {
+                <span class="category-sub">@Model.Subtitle</span>
+            }
+        </div>
+        <span class="category-badge @(Model.BadgeClass)">@Model.Items.Count</span>
+    </div>
+
+    <div class="carousel-wrap">
+        <div class="services-grid">
+            @foreach (var item in Model.Items)
+            {
+                var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                    ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
+                    : item.ImageBase64;
+                var precioPrefijo = string.IsNullOrWhiteSpace(item.PricePrefix) ? "From" : item.PricePrefix;
+
+                <article class="ms-card">
+                    <div class="ms-media">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="@item.Name" loading="lazy" />
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.Frequency))
+                        {
+                            <span class="ms-freq"><i class="fas @item.FreqIcon"></i> @item.Frequency</span>
+                        }
+                    </div>
+                    <div class="ms-body">
+                        <h4 class="ms-title">@item.Name</h4>
+                        @if (!string.IsNullOrWhiteSpace(item.Subtitle))
+                        {
+                            <p class="ms-subtitle">@item.Subtitle</p>
+                        }
+                        <p class="ms-desc">@item.Description</p>
+
+                        @if (item.Includes.Length > 0)
+                        {
+                            <div class="ms-includes">
+                                <span class="ms-includes-label">Includes</span>
+                                <ul>
+                                    @foreach (var inc in item.Includes)
+                                    {
+                                        <li><i class="fas fa-check"></i><span>@inc</span></li>
+                                    }
+                                </ul>
+                            </div>
+                        }
+
+                        <div class="ms-footer">
+                            <div class="ms-price">
+                                <span class="ms-price-prefix">@precioPrefijo</span>
+                                <div class="ms-price-amount">
+                                    @if (item.Price.HasValue)
+                                    {
+                                        <span class="ms-currency">$</span>
+                                        <span class="ms-amount">@item.Price.Value.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("en-US"))</span>
+                                        <span class="ms-currency-code">@item.Currency</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="ms-amount ms-amount-text">@(string.IsNullOrWhiteSpace(item.PriceText) ? "Custom" : item.PriceText)</span>
+                                    }
+                                </div>
+                            </div>
+                            @if (item.EnableSchedule && item.SourceId.HasValue)
+                            {
+                                <a asp-controller="Microservicios" asp-action="Schedule" asp-route-id="@item.SourceId" class="ms-book">
+                                    <i class="fas @item.CtaIcon"></i> @item.Cta
+                                </a>
+                            }
+                            else
+                            {
+                                <button type="button" class="ms-book">
+                                    <i class="fas @item.CtaIcon"></i> @item.Cta
+                                </button>
+                            }
+                        </div>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</div>
+}

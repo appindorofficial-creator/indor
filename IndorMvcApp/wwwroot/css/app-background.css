@@ -1,0 +1,45 @@
+/* ===== INDOR APP BACKGROUND =====
+   Solid white background across the app. */
+
+html {
+    background: #FFFFFF !important;
+    min-height: 100%;
+}
+
+body {
+    background-color: #FFFFFF !important;
+    background-image: none !important;
+    position: relative !important;
+    min-height: 100vh !important;
+}
+
+body::before,
+body::after {
+    content: none !important;
+    display: none !important;
+    background: none !important;
+}
+
+body > * {
+    position: relative;
+    z-index: 1;
+}
+
+.auth-futuristic-container,
+.tech-background,
+.grid-overlay,
+.welcome-container,
+.page-container,
+.login-container {
+    background: transparent !important;
+    background-color: transparent !important;
+}
+
+.tech-background,
+.grid-overlay {
+    display: none !important;
+}
+
+.auth-futuristic-container {
+    background: #FFFFFF !important;
+}

@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "History";
+    ViewData["Subtitulo"] = "Microservices, inspections, and services";
+    var historial = (IEnumerable<IndorMvcApp.Models.HistorialServicio>?)ViewBag.Historial ?? Enumerable.Empty<IndorMvcApp.Models.HistorialServicio>();
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+}
+
+<style>
+    .hist-tabs { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+    .hist-tab {
+        flex: 1; min-width: 90px; background: #F1F5F9; border: none;
+        padding: 8px 10px; border-radius: 10px; font-size: .8rem; font-weight: 600;
+        color: #475569; cursor: pointer;
+    }
+    .hist-tab.active { background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; }
+    .hist-item {
+        display: flex; justify-content: space-between; align-items: flex-start;
+        padding: 10px 0; border-bottom: 1px dashed #EEF2F7;
+    }
+    .hist-item:last-child { border-bottom: none; }
+    .hi-title { font-weight: 700; font-size: .9rem; }
+    .hi-sub { font-size: .72rem; color: #6B7280; }
+    .badge-x { font-size: .68rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    .b-com { background: #DCFCE7; color: #166534; }
+    .b-pen { background: #FEF3C7; color: #92400E; }
+    .b-ven { background: #FEE2E2; color: #991B1B; }
+</style>
+
+@functions{
+    string Cls(string? s) => (s ?? "").ToLower() switch {
+        "completado" or "completed" => "badge-x b-com",
+        "pendiente" or "pending" => "badge-x b-pen",
+        "vencido" or "overdue" => "badge-x b-ven",
+        _ => "badge-x b-pen"
+    };
+    string Label(string? s) => (s ?? "").ToLower() switch {
+        "completado" or "completed" => "Completed",
+        "pendiente" or "pending" => "Pending",
+        "vencido" or "overdue" => "Overdue",
+        _ => s ?? "—"
+    };
+}
+
+<div class="pf-card">
+    <div class="hist-tabs">
+        <button type="button" class="hist-tab active" data-hist="Microservicio">Microservices</button>
+        <button type="button" class="hist-tab" data-hist="Inspeccion">Inspections</button>
+        <button type="button" class="hist-tab" data-hist="Servicio">Services</button>
+    </div>
+
+    @foreach (var grupo in new[] { "Microservicio", "Inspeccion", "Servicio" })
+    {
+        var items = historial.Where(h => h.Tipo == grupo).ToList();
+        <div data-hist-list="@grupo" style="@(grupo == "Microservicio" ? "" : "display:none;")">
+            @if (!items.Any())
+            {
+                <div class="empty">No records.</div>
+            }
+            else
+            {
+                @foreach (var h in items)
+                {
+                    <div class="hist-item">
+                        <div>
+                            <div class="hi-title">@h.NombreItem</div>
+                            <div class="hi-sub">@h.Fecha.ToString("MM/dd/yyyy") @(string.IsNullOrWhiteSpace(h.Notas) ? "" : "· " + h.Notas)</div>
+                        </div>
+                        <div style="text-align:right;">
+                            @if (h.Monto.HasValue)
+                            {
+                                <div style="font-weight:800;">@h.Monto.Value.ToString("C0", culture)</div>
+                            }
+                            <span class="@Cls(h.Estado)">@Label(h.Estado)</span>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    }
+</div>
+
+<script>
+    document.querySelectorAll('.hist-tab').forEach(t => {
+        t.addEventListener('click', () => {
+            document.querySelectorAll('.hist-tab').forEach(x => x.classList.remove('active'));
+            t.classList.add('active');
+            const k = t.dataset.hist;
+            document.querySelectorAll('[data-hist-list]').forEach(l => {
+                l.style.display = (l.dataset.histList === k) ? '' : 'none';
+            });
+        });
+    });
+</script>

@@ -1,0 +1,130 @@
+@{
+    ViewData["Title"] = "Payments";
+    ViewData["Subtitulo"] = "Pending, financing, and history";
+    var pagos = (IEnumerable<IndorMvcApp.Models.Pago>?)ViewBag.Pagos ?? Enumerable.Empty<IndorMvcApp.Models.Pago>();
+    var metodos = (IEnumerable<IndorMvcApp.Models.MetodoPago>?)ViewBag.MetodosPago ?? Enumerable.Empty<IndorMvcApp.Models.MetodoPago>();
+    var pendientes = pagos.Where(p => p.Estado == "Pendiente" || p.Estado == "Vencido" || p.Estado == "Pending" || p.Estado == "Overdue").ToList();
+    var financiados = pagos.Where(p => p.Estado == "Financiado" || p.Estado == "Financed").ToList();
+    var historial = pagos.Where(p => p.Estado == "Completado" || p.Estado == "Completed").ToList();
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+}
+
+<style>
+    .pay-item {
+        display: flex; justify-content: space-between; align-items: center;
+        padding: 10px 0; border-bottom: 1px dashed #EEF2F7;
+    }
+    .pay-item:last-child { border-bottom: none; }
+    .pi-title { font-weight: 700; font-size: .9rem; }
+    .pi-sub { font-size: .72rem; color: #6B7280; }
+    .pay-amount { font-weight: 800; color: #0A2540; }
+    .badge-x { font-size: .68rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    .b-pen { background: #FEF3C7; color: #92400E; }
+    .b-ven { background: #FEE2E2; color: #991B1B; }
+    .b-fin { background: #DBEAFE; color: #1E40AF; }
+    .b-com { background: #DCFCE7; color: #166534; }
+</style>
+
+@functions{
+    string Cls(string? s) => (s ?? "").ToLower() switch {
+        "pendiente" or "pending" => "badge-x b-pen",
+        "vencido" or "overdue" => "badge-x b-ven",
+        "financiado" or "financed" => "badge-x b-fin",
+        "completado" or "completed" => "badge-x b-com",
+        _ => "badge-x b-pen"
+    };
+    string Label(string? s) => (s ?? "").ToLower() switch {
+        "pendiente" or "pending" => "Pending",
+        "vencido" or "overdue" => "Overdue",
+        "financiado" or "financed" => "Financed",
+        "completado" or "completed" => "Completed",
+        _ => s ?? "—"
+    };
+}
+
+<div class="pf-card">
+    <h3><i class="fas fa-hourglass-half"></i> Pending payments</h3>
+    @if (!pendientes.Any()) { <div class="empty">You have no pending payments.</div> }
+    else
+    {
+        @foreach (var p in pendientes)
+        {
+            <div class="pay-item">
+                <div>
+                    <div class="pi-title">@p.Concepto</div>
+                    <div class="pi-sub">Due: @(p.FechaVencimiento?.ToString("MM/dd/yyyy") ?? "—")</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="pay-amount">@p.Monto.ToString("C0", culture)</div>
+                    <span class="@Cls(p.Estado)">@Label(p.Estado)</span>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div class="pf-card">
+    <h3><i class="fas fa-coins"></i> Financing</h3>
+    @if (!financiados.Any()) { <div class="empty">You have no financed payments.</div> }
+    else
+    {
+        @foreach (var p in financiados)
+        {
+            <div class="pay-item">
+                <div>
+                    <div class="pi-title">@p.Concepto</div>
+                    <div class="pi-sub">Installments: @(p.CuotasPagadas ?? 0)/@(p.Cuotas ?? 0)</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="pay-amount">@p.Monto.ToString("C0", culture)</div>
+                    <span class="@Cls(p.Estado)">@Label(p.Estado)</span>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div class="pf-card">
+    <h3><i class="fas fa-clock-rotate-left"></i> Payment history</h3>
+    @if (!historial.Any()) { <div class="empty">No payment history yet.</div> }
+    else
+    {
+        @foreach (var p in historial)
+        {
+            <div class="pay-item">
+                <div>
+                    <div class="pi-title">@p.Concepto</div>
+                    <div class="pi-sub">Paid: @(p.FechaPago?.ToString("MM/dd/yyyy") ?? "—")</div>
+                </div>
+                <div style="text-align:right;">
+                    <div class="pay-amount">@p.Monto.ToString("C0", culture)</div>
+                    <span class="@Cls(p.Estado)">@Label(p.Estado)</span>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div class="pf-card">
+    <h3><i class="fas fa-credit-card"></i> Saved methods</h3>
+    @if (!metodos.Any()) { <div class="empty">You have no saved payment methods.</div> }
+    else
+    {
+        @foreach (var m in metodos)
+        {
+            <div class="pay-item">
+                <div>
+                    <div class="pi-title"><i class="fas fa-credit-card"></i> @m.Marca @(string.IsNullOrWhiteSpace(m.Ultimos4) ? "" : "•••• " + m.Ultimos4)</div>
+                    <div class="pi-sub">@m.Titular @(string.IsNullOrWhiteSpace(m.Expiracion) ? "" : "· Exp " + m.Expiracion)</div>
+                </div>
+                @if (m.EsPredeterminado)
+                {
+                    <span class="badge-x b-com">Default</span>
+                }
+            </div>
+        }
+    }
+    <a class="pf-btn" asp-controller="Perfil" asp-action="Opciones" style="margin-top:12px;text-decoration:none;">
+        <i class="fas fa-plus"></i> Add payment method
+    </a>
+</div>

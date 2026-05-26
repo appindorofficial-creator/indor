@@ -1,0 +1,396 @@
+@model IndorMvcApp.ViewModels.LoginViewModel
+@{
+    ViewData["Title"] = "Sign In - INDOR";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #FFFFFF;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Fondo decorativo sutil */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -10%;
+            width: 40%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(0, 102, 204, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            right: -10%;
+            width: 50%;
+            height: 80%;
+            background: radial-gradient(circle, rgba(0, 102, 204, 0.03) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo Smart Home */
+        .logo-container {
+            margin-bottom: 35px;
+            animation: logoAnimation 0.8s ease-out;
+        }
+
+        @@keyframes logoAnimation {
+            0% {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .smart-home-logo {
+            width: min(100%, 260px);
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        /* Brand Section */
+        .brand-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .brand-name {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #0A2540;
+            letter-spacing: -2px;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .brand-tagline {
+            font-size: 1.05rem;
+            color: #6B7280;
+            font-weight: 400;
+            line-height: 1.5;
+        }
+
+        .brand-tagline .highlight {
+            color: #0066CC;
+            font-weight: 600;
+        }
+
+        /* Indicadores de página (dots) */
+        .page-indicators {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 35px;
+        }
+
+        .indicator-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #E5E7EB;
+            transition: all 0.3s ease;
+        }
+
+        .indicator-dot.active {
+            background: #0066CC;
+            width: 28px;
+            border-radius: 5px;
+        }
+
+        /* Botones */
+        .buttons-container {
+            width: 100%;
+            max-width: 380px;
+            margin-bottom: 40px;
+            animation: slideUp 0.8s ease-out 0.2s backwards;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px 24px;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            text-decoration: none;
+            border: none;
+            margin-bottom: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+            color: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 12px 32px rgba(0, 102, 204, 0.35);
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .btn-icon {
+            font-size: 1.3rem;
+        }
+
+        .btn-arrow {
+            font-size: 1rem;
+        }
+
+        .btn-secondary {
+            background: #FFFFFF;
+            color: #0066CC;
+            border: 2.5px solid #0066CC;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, 0.08);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(0, 102, 204, 0.03);
+            transform: scale(1.03) translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.15);
+        }
+
+        .btn-secondary:active {
+            transform: scale(0.98);
+        }
+
+        /* Iconos de características */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            width: 100%;
+            max-width: 380px;
+            margin-bottom: 25px;
+        }
+
+        .feature-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-icon {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            color: #0066CC;
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.08) 0%, rgba(0, 79, 163, 0.08) 100%);
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover .feature-icon {
+            transform: scale(1.1);
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.15) 0%, rgba(0, 79, 163, 0.15) 100%);
+        }
+
+        .feature-label {
+            font-size: 0.8rem;
+            color: #6B7280;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Versión */
+        .version-text {
+            font-size: 0.85rem;
+            color: #9CA3AF;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        /* Responsive */
+        @@media (max-width: 480px) {
+            .brand-name {
+                font-size: 3rem;
+            }
+
+            .smart-home-logo {
+                width: 150px;
+                height: 150px;
+            }
+
+            .buttons-container,
+            .features-grid {
+                max-width: 100%;
+            }
+
+            .features-grid {
+                gap: 15px;
+            }
+
+            .feature-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.4rem;
+            }
+
+            .feature-label {
+                font-size: 0.75rem;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="login-container">
+        <!-- Logo Smart Home -->
+        <div class="logo-container">
+            <img src="~/logoindor.png" alt="Indor - The Home Operating System" class="smart-home-logo" />
+        </div>
+
+        <!-- Brand -->
+        <div class="brand-section">
+            <p class="brand-tagline">
+                Your smart home,<br>
+                your life <span class="highlight">made simple</span>.
+            </p>
+        </div>
+
+        <!-- Page Indicators -->
+        <div class="page-indicators">
+            <div class="indicator-dot active"></div>
+            <div class="indicator-dot"></div>
+            <div class="indicator-dot"></div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="buttons-container">
+            <a asp-controller="Account" asp-action="LoginForm" class="btn btn-primary">
+                <div class="btn-content">
+                    <i class="fas fa-right-to-bracket btn-icon"></i>
+                    <span>Sign in</span>
+                </div>
+                <i class="fas fa-chevron-right btn-arrow"></i>
+            </a>
+
+            <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">
+                <div class="btn-content">
+                    <i class="fas fa-user-plus btn-icon"></i>
+                    <span>Create account</span>
+                </div>
+                <i class="fas fa-chevron-right btn-arrow"></i>
+            </a>
+        </div>
+
+        <!-- Features Grid -->
+        <div class="features-grid">
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-shield-halved"></i>
+                </div>
+                <span class="feature-label">Secure</span>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-house-signal"></i>
+                </div>
+                <span class="feature-label">Smart</span>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <span class="feature-label">Efficient</span>
+            </div>
+
+            <div class="feature-item">
+                <div class="feature-icon">
+                    <i class="fas fa-heart"></i>
+                </div>
+                <span class="feature-label">Connected</span>
+            </div>
+        </div>
+
+        <!-- Version -->
+        <p class="version-text">Version 1.0.0</p>
+    </div>
+</body>
+</html>

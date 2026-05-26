@@ -1,0 +1,59 @@
+@{
+    ViewData["Title"] = "Support";
+    ViewData["Subtitulo"] = "Chat with our team";
+    var mensajes = (IEnumerable<IndorMvcApp.Models.MensajeSoporte>?)ViewBag.MensajesSoporte ?? Enumerable.Empty<IndorMvcApp.Models.MensajeSoporte>();
+}
+
+<style>
+    .chat-box {
+        background: #F8FAFC; border: 1px solid #EEF2F7; border-radius: 14px;
+        padding: 12px; min-height: 260px; max-height: 60vh; overflow-y: auto;
+        display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;
+    }
+    .chat-msg { display: flex; flex-direction: column; max-width: 85%; }
+    .chat-msg.usuario { align-self: flex-end; align-items: flex-end; }
+    .chat-msg.soporte { align-self: flex-start; align-items: flex-start; }
+    .chat-bubble {
+        padding: 9px 12px; border-radius: 14px; font-size: .85rem; line-height: 1.35;
+    }
+    .chat-msg.usuario .chat-bubble { background: linear-gradient(135deg,#0066CC,#004FA3); color: #FFF; border-bottom-right-radius: 4px; }
+    .chat-msg.soporte .chat-bubble { background: #FFF; color: #0A2540; border: 1px solid #E5E7EB; border-bottom-left-radius: 4px; }
+    .chat-time { font-size: .65rem; color: #94A3B8; margin-top: 3px; }
+    .chat-form { display: flex; gap: 8px; }
+    .chat-form input { flex: 1; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; font-size: .9rem; }
+    .chat-form button { background: linear-gradient(135deg,#0066CC,#004FA3); color: #FFF; border: none; padding: 0 16px; border-radius: 10px; cursor: pointer; }
+</style>
+
+<div class="pf-card">
+    <h3><i class="fas fa-headset"></i> Conversation</h3>
+    <div class="chat-box" id="chatBox">
+        @if (!mensajes.Any())
+        {
+            <div class="empty">Start a conversation with our support team.</div>
+        }
+        else
+        {
+            @foreach (var m in mensajes)
+            {
+                var remitente = m.Remitente?.ToLower();
+                var clase = remitente is "usuario" or "user" ? "usuario" : "soporte";
+                <div class="chat-msg @clase">
+                    <div class="chat-bubble">@m.Contenido</div>
+                    <div class="chat-time">@m.Fecha.ToString("MM/dd HH:mm")</div>
+                </div>
+            }
+        }
+    </div>
+    <form class="chat-form" method="post" asp-controller="Perfil" asp-action="EnviarMensajeSoporte">
+        @Html.AntiForgeryToken()
+        <input type="text" name="contenido" placeholder="Type your message..." required autocomplete="off" />
+        <button type="submit"><i class="fas fa-paper-plane"></i></button>
+    </form>
+</div>
+
+<script>
+    (function () {
+        const box = document.getElementById('chatBox');
+        if (box) box.scrollTop = box.scrollHeight;
+    })();
+</script>

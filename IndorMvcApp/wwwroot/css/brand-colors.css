@@ -1,0 +1,16 @@
+/* Indor brand palette — matches logo colors */
+:root {
+    --indor-blue: #0066CC;
+    --indor-blue-dark: #004FA3;
+    --indor-blue-light: #E8F1FB;
+    --indor-navy: #0D1B3D;
+    --indor-text: #0A2540;
+    --indor-gray: #6B7280;
+    --indor-gray-light: #9CA3AF;
+
+    /* Legacy aliases used in site.css */
+    --primary-color: var(--indor-navy);
+    --secondary-color: var(--indor-blue);
+    --accent: var(--indor-blue);
+    --text-light: var(--indor-navy);
+}

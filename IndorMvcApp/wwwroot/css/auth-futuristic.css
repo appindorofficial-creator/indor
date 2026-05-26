@@ -1,0 +1,1484 @@
+/* ============================================
+   INDOR - FUTURISTIC AUTH DESIGN - EXACT MATCH
+   ============================================ */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    overflow: hidden;
+    width: 100vw;
+    height: 100vh;
+}
+
+/* ============================================
+   BACKGROUND & CONTAINER
+   ============================================ */
+
+.auth-futuristic-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Tech background with particles */
+.tech-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(0, 102, 204, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 79, 163, 0.08) 0%, transparent 50%),
+        radial-gradient(1px 1px at 30px 40px, rgba(255, 255, 255, 0.4), transparent),
+        radial-gradient(1px 1px at 80px 120px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(1px 1px at 150px 60px, rgba(255, 255, 255, 0.4), transparent),
+        radial-gradient(1px 1px at 200px 180px, rgba(255, 255, 255, 0.2), transparent);
+    background-size: 100% 100%, 100% 100%, 250px 250px, 250px 250px, 250px 250px, 250px 250px;
+    animation: floatParticles 30s linear infinite;
+}
+
+@keyframes floatParticles {
+    from { background-position: 0 0, 0 0, 0 0, 50px 70px, 100px 30px, 150px 100px; }
+    to { background-position: 0 0, 0 0, 250px 250px, 300px 320px, 350px 280px, 400px 350px; }
+}
+
+/* Grid overlay */
+.grid-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 79, 163, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 102, 204, 0.02) 1px, transparent 1px);
+    background-size: 40px 40px;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    from { transform: translate(0, 0); }
+    to { transform: translate(40px, 40px); }
+}
+
+/* ============================================
+   DEVICE FRAME (Mobile Phone) - EXACT STYLE
+   ============================================ */
+
+.device-frame {
+    position: relative;
+    width: 420px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #ffffff;
+    backdrop-filter: blur(25px);
+    border-radius: 45px;
+    padding: 50px 40px;
+    border: 2px solid #E5E7EB;
+    box-shadow: 
+        0 10px 40px rgba(0, 0, 0, 0.08),
+        0 4px 12px rgba(0, 0, 0, 0.05);
+    animation: deviceGlow 4s ease-in-out infinite;
+    z-index: 10;
+}
+
+/* Simular borde con pseudo-elemento para mejor efecto */
+.device-frame::before {
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    background: linear-gradient(135deg, 
+        rgba(40, 120, 170, 0.5), 
+        rgba(30, 100, 150, 0.4), 
+        rgba(40, 120, 170, 0.5));
+    border-radius: 45px;
+    z-index: -1;
+    opacity: 0.6;
+    filter: blur(1px);
+}
+
+@keyframes deviceGlow {
+    0%, 100% {
+        box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.08),
+            0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+    50% {
+        box-shadow: 
+            0 12px 45px rgba(0, 0, 0, 0.1),
+            0 6px 15px rgba(0, 0, 0, 0.06);
+    }
+}
+
+/* Register frame specific */
+.device-frame.register-frame {
+    padding: 40px 30px;
+}
+
+.device-frame.register-frame .auth-logo-section {
+    margin-bottom: 30px;
+}
+
+.device-frame.register-frame .auth-logo {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 10px;
+}
+
+.device-frame.register-frame .auth-brand {
+    font-size: 2rem;
+}
+
+.device-frame.register-frame .input-group {
+    margin-bottom: 25px;
+}
+
+/* ============================================
+   LOGO SECTION
+   ============================================ */
+
+.auth-logo-section {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-logo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    filter: drop-shadow(0 0 25px rgba(0, 102, 204, 0.6));
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.auth-brand {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0D1B3D 0%, #0066CC 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.05em;
+    margin-bottom: 8px;
+}
+
+/* Underline below brand name */
+.brand-underline {
+    width: 120px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #0066CC, transparent);
+    margin: 0 auto 30px;
+}
+
+/* ============================================
+   FORM STYLES - EXACT MATCH
+   ============================================ */
+
+.futuristic-form {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Input Groups - EXACT BORDER AND SHADOW */
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.tech-input {
+    width: 100%;
+    padding: 18px 18px;
+    background: #FFFFFF;
+    border: 2px solid #E5E7EB;
+    border-radius: 18px;
+    color: #0D1B3D;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+    box-shadow: none;
+}
+
+.tech-input.password-input {
+    padding-right: 55px;
+}
+
+.tech-input::placeholder {
+    color: #9CA3AF;
+}
+
+.tech-input:focus {
+    border-color: #0066CC;
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(242, 183, 5, 0.1);
+}
+
+/* Password toggle */
+.password-toggle {
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6B7280;
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.password-toggle:hover {
+    color: #0D1B3D;
+}
+
+/* Validation errors */
+.validation-error {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.2);
+}
+
+.field-error {
+    display: block;
+    color: #fca5a5;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+/* ============================================
+   FORM OPTIONS (Forgot Password)
+   ============================================ */
+
+.forgot-password-link {
+    text-align: right;
+    margin-bottom: 25px;
+}
+
+.forgot-password {
+    color: #0066CC;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #d9a404;
+}
+
+/* Keep for other pages that might use it */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.remember-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+.remember-check input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 79, 163, 0.5);
+    border-radius: 5px;
+    position: relative;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 79, 163, 0.2);
+}
+
+.remember-check input:checked ~ .checkmark {
+    background: linear-gradient(135deg, #0066CC, #004FA3);
+    border-color: #0066CC;
+    box-shadow: 0 0 20px rgba(0, 102, 204, 0.4);
+}
+
+.remember-check input:checked ~ .checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #0a1428;
+    font-size: 0.7rem;
+}
+
+.check-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   SUBMIT BUTTON - EXACT MATCH
+   ============================================ */
+
+.tech-button {
+    position: relative;
+    width: 100%;
+    padding: 18px;
+    background: #0D1B3D;
+    border: 2px solid #0D1B3D;
+    border-radius: 16px;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 12px rgba(13, 27, 61, 0.2);
+}
+
+.tech-button span {
+    position: relative;
+    z-index: 2;
+}
+
+.button-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(242, 183, 5, 0.2), transparent);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.tech-button:hover {
+    background: #1a2a50;
+    border-color: #1a2a50;
+    box-shadow: 0 6px 16px rgba(13, 27, 61, 0.3);
+    transform: translateY(-2px);
+}
+
+.tech-button:hover .button-glow {
+    width: 400px;
+    height: 400px;
+}
+
+.tech-button:active {
+    transform: translateY(0);
+}
+
+/* ============================================
+   SOCIAL DIVIDER
+   ============================================ */
+
+.social-divider {
+    text-align: center;
+    margin: 30px 0;
+    position: relative;
+}
+
+.social-divider::before,
+.social-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(40, 120, 170, 0.3), transparent);
+}
+
+.social-divider::before {
+    left: 0;
+}
+
+.social-divider::after {
+    right: 0;
+}
+
+.social-divider span {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+    padding: 0 15px;
+    background: rgba(5, 12, 30, 0.8);
+}
+
+/* ============================================
+   SIGNUP LINK
+   ============================================ */
+
+.signup-link {
+    text-align: center;
+    color: #6B7280;
+    font-size: 0.95rem;
+}
+
+.signup-link a {
+    color: #0066CC;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.signup-link a:hover {
+    color: #d9a404;
+}
+
+/* Back button */
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 18, 35, 0.6);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(40, 120, 170, 0.3);
+    border-radius: 50%;
+    color: #4da8da;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    z-index: 100;
+    box-shadow: 0 0 20px rgba(30, 100, 150, 0.2);
+}
+
+.back-button:hover {
+    background: rgba(40, 120, 170, 0.15);
+    border-color: rgba(50, 140, 190, 0.6);
+    transform: translateX(-5px);
+    box-shadow: 0 5px 30px rgba(40, 120, 170, 0.4);
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .device-frame {
+        width: 90vw;
+        padding: 40px 30px;
+        border-radius: 40px;
+        max-height: 85vh;
+    }
+
+    .device-frame::before {
+        border-radius: 40px;
+    }
+
+    .device-frame.register-frame {
+        padding: 35px 25px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.8rem;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 22px;
+    }
+
+    .auth-logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .auth-brand {
+        font-size: 2rem;
+    }
+
+    .tech-input {
+        padding: 16px 45px 16px 16px;
+        font-size: 0.95rem;
+    }
+
+    .tech-button {
+        padding: 16px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .device-frame {
+        width: 95vw;
+        padding: 35px 25px;
+        border-radius: 35px;
+        max-height: 90vh;
+    }
+
+    .device-frame::before {
+        border-radius: 35px;
+    }
+
+    .device-frame.register-frame {
+        padding: 30px 20px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.6rem;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 20px;
+    }
+
+    .auth-logo {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 12px;
+    }
+
+    .auth-brand {
+        font-size: 1.8rem;
+    }
+
+    .tech-input {
+        padding: 15px 40px 15px 15px;
+        font-size: 0.9rem;
+        border-radius: 14px;
+    }
+
+    .tech-label {
+        font-size: 0.9rem;
+    }
+
+    .tech-button {
+        padding: 15px;
+        font-size: 0.95rem;
+        border-radius: 14px;
+    }
+
+    .form-options {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .check-label,
+    .forgot-password {
+        font-size: 0.85rem;
+    }
+
+    .signup-link {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 375px) {
+    .device-frame {
+        padding: 30px 20px;
+        border-radius: 30px;
+    }
+
+    .device-frame::before {
+        border-radius: 30px;
+    }
+
+    .device-frame.register-frame {
+        padding: 25px 15px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.4rem;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 18px;
+    }
+
+    .auth-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .auth-brand {
+        font-size: 1.6rem;
+    }
+
+    .tech-input {
+        padding: 14px 35px 14px 14px;
+        font-size: 0.85rem;
+    }
+
+    .tech-button {
+        padding: 14px;
+        font-size: 0.9rem;
+    }
+
+    .signup-link {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape mode optimization */
+@media (max-height: 600px) and (orientation: landscape) {
+    .device-frame {
+        max-height: 95vh;
+        overflow-y: auto;
+        padding: 25px 30px;
+    }
+
+    .device-frame.register-frame {
+        padding: 20px 25px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 8px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.3rem;
+    }
+
+    .device-frame.register-frame .auth-logo-section {
+        margin-bottom: 20px;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 15px;
+    }
+
+    .auth-logo {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 10px;
+    }
+
+    .auth-brand {
+        font-size: 1.5rem;
+    }
+
+    .auth-logo-section {
+        margin-bottom: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .tech-button {
+        margin-bottom: 15px;
+        padding: 13px;
+    }
+
+    .social-divider {
+        margin: 15px 0;
+    }
+
+    .tech-input {
+        padding: 13px 35px 13px 13px;
+    }
+}
+
+/* ============================================
+   BACKGROUND & CONTAINER
+   ============================================ */
+
+.auth-futuristic-container {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    background: radial-gradient(ellipse at center, #001f54 0%, #0a1128 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Tech background with particles */
+.tech-background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 30%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 70%, rgba(0, 79, 163, 0.1) 0%, transparent 50%),
+        radial-gradient(2px 2px at 30px 40px, rgba(255, 255, 255, 0.3), transparent),
+        radial-gradient(1px 1px at 80px 120px, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(2px 2px at 150px 60px, rgba(255, 255, 255, 0.3), transparent);
+    background-size: 100% 100%, 100% 100%, 200px 200px, 200px 200px, 200px 200px;
+    animation: floatParticles 30s linear infinite;
+}
+
+@keyframes floatParticles {
+    from { background-position: 0 0, 0 0, 0 0, 50px 70px, 100px 30px; }
+    to { background-position: 0 0, 0 0, 200px 200px, 250px 270px, 300px 230px; }
+}
+
+/* Grid overlay */
+.grid-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        linear-gradient(rgba(0, 102, 204, 0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 79, 163, 0.03) 1px, transparent 1px);
+    background-size: 50px 50px;
+    animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+    from { transform: translate(0, 0); }
+    to { transform: translate(50px, 50px); }
+}
+
+/* Back button */
+.back-button {
+    position: absolute;
+    top: 30px;
+    left: 30px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(0, 102, 204, 0.2);
+    border-radius: 50%;
+    color: #0066CC;
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    z-index: 100;
+}
+
+.back-button:hover {
+    background: rgba(0, 102, 204, 0.1);
+    border-color: #0066CC;
+    transform: translateX(-5px);
+    box-shadow: 0 5px 20px rgba(0, 102, 204, 0.3);
+}
+
+/* ============================================
+   DEVICE FRAME (Mobile Phone)
+   ============================================ */
+
+.device-frame {
+    position: relative;
+    width: 420px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: rgba(10, 17, 40, 0.6);
+    backdrop-filter: blur(20px);
+    border-radius: 40px;
+    padding: 50px 35px;
+    border: 2px solid rgba(0, 102, 204, 0.2);
+    box-shadow: 
+        0 0 60px rgba(0, 102, 204, 0.2),
+        0 0 100px rgba(0, 79, 163, 0.1),
+        inset 0 0 60px rgba(0, 102, 204, 0.05);
+    animation: deviceGlow 4s ease-in-out infinite;
+    z-index: 10;
+}
+
+/* Register frame specific */
+.device-frame.register-frame {
+    padding: 40px 30px;
+}
+
+.device-frame.register-frame .auth-logo-section {
+    margin-bottom: 30px;
+}
+
+.device-frame.register-frame .auth-logo {
+    width: 90px;
+    height: 90px;
+    margin-bottom: 10px;
+}
+
+.device-frame.register-frame .auth-brand {
+    font-size: 2rem;
+}
+
+.device-frame.register-frame .input-group {
+    margin-bottom: 25px;
+}
+
+@keyframes deviceGlow {
+    0%, 100% {
+        box-shadow: 
+            0 0 60px rgba(0, 102, 204, 0.2),
+            0 0 100px rgba(0, 79, 163, 0.1),
+            inset 0 0 60px rgba(0, 102, 204, 0.05);
+    }
+    50% {
+        box-shadow: 
+            0 0 80px rgba(0, 102, 204, 0.3),
+            0 0 120px rgba(0, 79, 163, 0.2),
+            inset 0 0 80px rgba(0, 102, 204, 0.08);
+    }
+}
+
+/* ============================================
+   LOGO SECTION
+   ============================================ */
+
+.auth-logo-section {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 0.8s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.auth-logo {
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 15px;
+    filter: drop-shadow(0 0 20px rgba(0, 102, 204, 0.5));
+    animation: logoFloat 3s ease-in-out infinite;
+}
+
+@keyframes logoFloat {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.auth-brand {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.05em;
+}
+
+/* ============================================
+   FORM STYLES
+   ============================================ */
+
+.futuristic-form {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Input Groups */
+.input-group {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.tech-input {
+    width: 100%;
+    padding: 16px 50px 16px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 2px solid rgba(0, 102, 204, 0.2);
+    border-radius: 12px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.tech-input:focus {
+    border-color: #0066CC;
+    background: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 102, 204, 0.2);
+}
+
+.tech-input::placeholder {
+    color: transparent;
+}
+
+/* Floating labels */
+.tech-label {
+    position: absolute;
+    left: 16px;
+    top: 16px;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+
+.tech-input:focus ~ .tech-label,
+.tech-input:not(:placeholder-shown) ~ .tech-label {
+    top: -10px;
+    left: 12px;
+    font-size: 0.75rem;
+    color: #0066CC;
+    background: rgba(10, 17, 40, 0.9);
+    padding: 0 8px;
+    border-radius: 4px;
+}
+
+/* Underline effect */
+.input-underline {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #0066CC, #004FA3);
+    transition: width 0.3s ease;
+}
+
+.tech-input:focus ~ .input-underline {
+    width: 100%;
+}
+
+/* Password toggle */
+.password-toggle {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    cursor: pointer;
+    padding: 5px;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #0066CC;
+}
+
+/* Validation errors */
+.validation-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #fca5a5;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 0.9rem;
+}
+
+.field-error {
+    display: block;
+    color: #fca5a5;
+    font-size: 0.8rem;
+    margin-top: 5px;
+}
+
+/* ============================================
+   FORM OPTIONS (Remember & Forgot)
+   ============================================ */
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.remember-check {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    position: relative;
+}
+
+.remember-check input[type="checkbox"] {
+    display: none;
+}
+
+.checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 102, 204, 0.3);
+    border-radius: 4px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.remember-check input:checked ~ .checkmark {
+    background: linear-gradient(135deg, #0066CC, #004FA3);
+    border-color: #0066CC;
+}
+
+.remember-check input:checked ~ .checkmark::after {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #0a1128;
+    font-size: 0.7rem;
+}
+
+.check-label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+}
+
+.forgot-password {
+    color: #004FA3;
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+    color: #0066CC;
+}
+
+/* ============================================
+   SUBMIT BUTTON
+   ============================================ */
+
+.tech-button {
+    position: relative;
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+    border: none;
+    border-radius: 12px;
+    color: #0a1128;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    margin-bottom: 25px;
+}
+
+.tech-button span {
+    position: relative;
+    z-index: 2;
+}
+
+.button-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.tech-button:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 40px rgba(0, 102, 204, 0.4);
+}
+
+.tech-button:hover .button-glow {
+    width: 300px;
+    height: 300px;
+}
+
+.tech-button:active {
+    transform: translateY(-1px);
+}
+
+/* ============================================
+   SOCIAL BUTTONS
+   ============================================ */
+
+.social-divider {
+    text-align: center;
+    margin: 25px 0;
+    position: relative;
+}
+
+.social-divider::before,
+.social-divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.social-divider::before {
+    left: 0;
+}
+
+.social-divider::after {
+    right: 0;
+}
+
+.social-divider span {
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 0.9rem;
+    padding: 0 15px;
+    background: rgba(10, 17, 40, 0.6);
+}
+
+.social-buttons {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.social-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.03);
+    color: #ffffff;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.social-btn.facebook:hover {
+    border-color: #1877f2;
+    box-shadow: 0 5px 20px rgba(24, 119, 242, 0.3);
+}
+
+.social-btn.google:hover {
+    border-color: #ea4335;
+    box-shadow: 0 5px 20px rgba(234, 67, 53, 0.3);
+}
+
+/* ============================================
+   SIGNUP LINK
+   ============================================ */
+
+.signup-link {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.95rem;
+}
+
+.signup-link a {
+    color: #0066CC;
+    text-decoration: none;
+    font-weight: 600;
+    transition: color 0.3s ease;
+}
+
+.signup-link a:hover {
+    color: #004FA3;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+    .device-frame {
+        width: 380px;
+        padding: 40px 30px;
+        border-radius: 35px;
+        max-height: 85vh;
+    }
+
+    .device-frame.register-frame {
+        padding: 35px 25px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.8rem;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 22px;
+    }
+
+    .auth-logo {
+        width: 100px;
+        height: 100px;
+    }
+
+    .auth-brand {
+        font-size: 2rem;
+    }
+
+    .tech-input {
+        padding: 14px 45px 14px 14px;
+        font-size: 0.95rem;
+    }
+
+    .tech-button {
+        padding: 16px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .device-frame {
+        width: 95vw;
+        padding: 35px 25px;
+        border-radius: 30px;
+        max-height: 90vh;
+    }
+
+    .device-frame.register-frame {
+        padding: 30px 20px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 70px;
+        height: 70px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.6rem;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 20px;
+    }
+
+    .auth-logo {
+        width: 90px;
+        height: 90px;
+        margin-bottom: 12px;
+    }
+
+    .auth-brand {
+        font-size: 1.8rem;
+    }
+
+    .tech-input {
+        padding: 13px 40px 13px 13px;
+        font-size: 0.9rem;
+    }
+
+    .tech-label {
+        font-size: 0.9rem;
+    }
+
+    .tech-button {
+        padding: 15px;
+        font-size: 0.95rem;
+    }
+
+    .social-buttons {
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .form-options {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start;
+    }
+
+    .check-label,
+    .forgot-password {
+        font-size: 0.85rem;
+    }
+
+    .signup-link {
+        font-size: 0.85rem;
+    }
+}
+
+@media (max-width: 375px) {
+    .device-frame {
+        padding: 30px 20px;
+    }
+
+    .device-frame.register-frame {
+        padding: 25px 15px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 65px;
+        height: 65px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.4rem;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 18px;
+    }
+
+    .auth-logo {
+        width: 80px;
+        height: 80px;
+    }
+
+    .auth-brand {
+        font-size: 1.6rem;
+    }
+
+    .tech-input {
+        padding: 12px 35px 12px 12px;
+        font-size: 0.85rem;
+    }
+
+    .tech-button {
+        padding: 14px;
+        font-size: 0.9rem;
+    }
+
+    .social-btn {
+        padding: 12px 16px;
+        font-size: 0.85rem;
+    }
+
+    .signup-link {
+        font-size: 0.8rem;
+    }
+}
+
+/* Landscape mode optimization */
+@media (max-height: 600px) and (orientation: landscape) {
+    .device-frame {
+        max-height: 95vh;
+        overflow-y: auto;
+        padding: 25px 30px;
+    }
+
+    .device-frame.register-frame {
+        padding: 20px 25px;
+    }
+
+    .device-frame.register-frame .auth-logo {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 8px;
+    }
+
+    .device-frame.register-frame .auth-brand {
+        font-size: 1.3rem;
+    }
+
+    .device-frame.register-frame .auth-logo-section {
+        margin-bottom: 20px;
+    }
+
+    .device-frame.register-frame .input-group {
+        margin-bottom: 15px;
+    }
+
+    .auth-logo {
+        width: 70px;
+        height: 70px;
+        margin-bottom: 10px;
+    }
+
+    .auth-brand {
+        font-size: 1.5rem;
+    }
+
+    .auth-logo-section {
+        margin-bottom: 25px;
+    }
+
+    .input-group {
+        margin-bottom: 20px;
+    }
+
+    .tech-button {
+        margin-bottom: 15px;
+        padding: 13px;
+    }
+
+    .social-divider {
+        margin: 15px 0;
+    }
+
+    .tech-input {
+        padding: 11px 35px 11px 11px;
+    }
+}

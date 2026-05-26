@@ -1,0 +1,56 @@
+@{
+    ViewData["Title"] = "Internet comparison";
+    ViewData["Subtitulo"] = "Your current plan vs market plans";
+    var planesInternet = (IEnumerable<IndorMvcApp.Models.PlanInternet>?)ViewBag.PlanesInternet ?? Enumerable.Empty<IndorMvcApp.Models.PlanInternet>();
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+}
+
+<style>
+    .internet-row { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    .internet-card {
+        background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px;
+        padding: 14px;
+    }
+    .internet-card.current { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.15); }
+    .ic-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .ic-prov { font-size: .72rem; color: #6B7280; text-transform: uppercase; letter-spacing: .5px; }
+    .ic-name { font-size: 1rem; font-weight: 800; color: #0A2540; }
+    .ic-tag { background: linear-gradient(135deg,#0066CC,#004FA3); color: #FFF; font-size: .68rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+    .ic-speed { font-size: .85rem; color: #0066CC; font-weight: 600; margin-bottom: 4px; }
+    .ic-price { font-size: 1.2rem; font-weight: 800; color: #0A2540; }
+    .ic-feats { font-size: .75rem; color: #6B7280; margin-top: 6px; }
+</style>
+
+<div class="pf-card">
+    <h3><i class="fas fa-wifi"></i> Plans</h3>
+    @if (!planesInternet.Any())
+    {
+        <div class="empty">No internet plans available.</div>
+    }
+    else
+    {
+        <div class="internet-row">
+            @foreach (var pi in planesInternet)
+            {
+                var feats = string.IsNullOrWhiteSpace(pi.Caracteristicas)
+                    ? Array.Empty<string>()
+                    : pi.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                <div class="internet-card @(pi.EsPlanActual ? "current" : "")">
+                    <div class="ic-head">
+                        <div>
+                            <div class="ic-prov">@pi.Proveedor</div>
+                            <div class="ic-name">@pi.Nombre</div>
+                        </div>
+                        @if (pi.EsPlanActual) { <span class="ic-tag">Current plan</span> }
+                    </div>
+                    <div class="ic-speed"><i class="fas fa-gauge-high"></i> @pi.VelocidadDescargaMbps Mbps ↓ / @pi.VelocidadSubidaMbps Mbps ↑</div>
+                    <div class="ic-price">@pi.PrecioMensual.ToString("C0", culture) <small style="font-size:.7rem;color:#6B7280;font-weight:500;">/ month</small></div>
+                    @if (feats.Length > 0)
+                    {
+                        <div class="ic-feats">@string.Join(" · ", feats)</div>
+                    }
+                </div>
+            }
+        </div>
+    }
+</div>
