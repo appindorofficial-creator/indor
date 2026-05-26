@@ -5,6 +5,10 @@ public static class InspeccionFlowRules
     public const string PrePurchaseHomeInspectionName = "Pre-Purchase Home Inspection";
     public const string ElectricalInspectionName = "Electrical Inspection";
     public const string CompleteHomeInspectionName = "Complete Home Inspection";
+    public const string PlumbingInspectionName = "Plumbing Inspection";
+    public const string HvacInspectionName = "HVAC Inspection";
+    public const string StructuralInspectionName = "Structural Inspection";
+    public const string RoofInspectionName = "Roof Inspection";
 
     public static bool SupportsPurchaseFlow(string? nombreInspeccion)
     {
@@ -30,11 +34,47 @@ public static class InspeccionFlowRules
             StringComparison.OrdinalIgnoreCase);
     }
 
+    public static bool SupportsPlumbingFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            PlumbingInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool SupportsHvacFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            HvacInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool SupportsStructuralFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            StructuralInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool SupportsRoofFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            RoofInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
     public static bool SupportsCustomFlow(string? nombreInspeccion)
     {
         return SupportsPurchaseFlow(nombreInspeccion)
                || SupportsElectricalFlow(nombreInspeccion)
-               || SupportsCompleteHomeFlow(nombreInspeccion);
+               || SupportsCompleteHomeFlow(nombreInspeccion)
+               || SupportsPlumbingFlow(nombreInspeccion)
+               || SupportsHvacFlow(nombreInspeccion)
+               || SupportsStructuralFlow(nombreInspeccion)
+               || SupportsRoofFlow(nombreInspeccion);
     }
 
     public static string? GetFlowAction(string? nombreInspeccion)
@@ -52,6 +92,26 @@ public static class InspeccionFlowRules
         if (SupportsCompleteHomeFlow(nombreInspeccion))
         {
             return "HomeReviewDetails";
+        }
+
+        if (SupportsPlumbingFlow(nombreInspeccion))
+        {
+            return "PlumbingDetails";
+        }
+
+        if (SupportsHvacFlow(nombreInspeccion))
+        {
+            return "HvacDetails";
+        }
+
+        if (SupportsStructuralFlow(nombreInspeccion))
+        {
+            return "StructuralDetails";
+        }
+
+        if (SupportsRoofFlow(nombreInspeccion))
+        {
+            return "RoofDetails";
         }
 
         return null;

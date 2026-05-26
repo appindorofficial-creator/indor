@@ -10,7 +10,7 @@ using IndorMvcApp.ViewModels;
 namespace IndorMvcApp.Controllers;
 
 [Authorize]
-public class InspeccionesController : Controller
+public partial class InspeccionesController : Controller
 {
     private static readonly string[] AllowedExtensions = [".pdf", ".jpg", ".jpeg", ".png"];
     private const long MaxFileSize = 10_000_000;
@@ -370,6 +370,149 @@ public class InspeccionesController : Controller
                 ResumenEtiqueta = "Focus areas",
                 ResumenPreocupacion = InspeccionDisplayLabels.FormatAreasEnfoque(solicitud.AreasEnfoque),
                 InfoMensaje = "Your provider will review your selected focus areas before arriving at your property.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "plumbing", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionPlomeria
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsPlumbingFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsurePlumbingAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "plumbing",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatPlumbingConcern(
+                    solicitud.TipoProblema,
+                    solicitud.UbicacionProblema,
+                    solicitud.SituacionesActuales),
+                InfoMensaje = "Your provider will review your selected plumbing concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "hvac", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionHvac
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsHvacFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureHvacAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "hvac",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatHvacConcern(
+                    solicitud.TipoProblema, solicitud.ParteAtencion),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatHvacFocusAreas(solicitud.ComponentesRevision),
+                InfoMensaje = "Your provider will review your selected HVAC concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "structural", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionStructural
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsStructuralFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureStructuralAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "structural",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatStructuralConcern(
+                    solicitud.TipoPreocupacion,
+                    solicitud.AreaPreocupacion,
+                    solicitud.TiposPreocupacion),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatStructuralFocusAreas(solicitud.AreasEnfoque),
+                InfoMensaje = "Your provider will review your selected structural concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "roof", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionRoof
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsRoofFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureRoofAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "roof",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatRoofConcern(
+                    solicitud.TipoProblema,
+                    solicitud.UbicacionProblema,
+                    solicitud.TiposProblema),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatRoofFocusAreas(
+                    solicitud.AreasEnfoque,
+                    solicitud.UbicacionProblema,
+                    solicitud.TiposProblema),
+                InfoMensaje = "Your provider will review your selected roof concerns and any uploaded files before arriving.",
                 Estado = "Confirmed"
             };
 

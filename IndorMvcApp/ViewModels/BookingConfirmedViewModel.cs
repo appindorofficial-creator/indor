@@ -19,6 +19,10 @@ public class BookingConfirmedViewModel
 
     public string ResumenPreocupacion { get; set; } = string.Empty;
 
+    public string? ResumenSecundarioEtiqueta { get; set; }
+
+    public string? ResumenSecundario { get; set; }
+
     public string InfoMensaje { get; set; } =
         "You'll receive updates at every step. Your provider will review your photos and comments before arriving.";
 

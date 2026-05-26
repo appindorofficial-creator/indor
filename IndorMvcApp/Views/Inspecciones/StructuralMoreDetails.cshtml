@@ -1,0 +1,182 @@
+@model IndorMvcApp.ViewModels.StructuralMoreDetailsViewModel
+@{
+    ViewData["Title"] = "Structural Details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
+        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
+        .form-input { width: 100%; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.95rem; background: #F9FAFB; }
+        .chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .chip-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 10px; font-weight: 600; font-size: 0.82rem; color: #64748B; cursor: pointer; text-align: center; position: relative; line-height: 1.3; }
+        .chip-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .chip-btn .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+        .chip-btn.active .check { display: flex; }
+        .segmented-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.84rem; color: #64748B; cursor: pointer; text-align: center; }
+        .segment-btn.active { background: rgba(0,102,204,0.08); border-color: #0066CC; color: #0066CC; }
+        .btn-primary, .btn-outline, .btn-secondary { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+        .btn-secondary { margin-top: 10px; border: 1.5px solid #CBD5E1; background: #FFF; color: #64748B; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="StructuralSigns" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <strong>Structural Details</strong>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_StructuralStepper", 3)
+
+    <h1 class="page-heading">Provide more details</h1>
+    <p class="page-lead">A few more details help us assign the right inspector and timing.</p>
+
+    <form asp-controller="Inspecciones" asp-action="StructuralMoreDetails" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="InspeccionId" />
+        <input type="hidden" asp-for="NombreInspeccion" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="DuracionProblema" id="DuracionProblema" />
+        <input type="hidden" asp-for="Severidad" id="Severidad" />
+        <input type="hidden" asp-for="ReparacionesPrevias" id="ReparacionesPrevias" />
+        <input type="hidden" asp-for="CondicionesInseguras" id="CondicionesInseguras" />
+        <input type="hidden" asp-for="MejorHorarioVisita" id="MejorHorarioVisita" />
+
+        <div class="field-card">
+            <label asp-for="UbicacionEspecifica" class="field-label">Specific location</label>
+            <input asp-for="UbicacionEspecifica" class="form-input" placeholder="Example: garage corner near side wall" />
+        </div>
+
+        <div class="field-card">
+            <label asp-for="CuandoNotadoTexto" class="field-label">When did you notice it?</label>
+            <input asp-for="CuandoNotadoTexto" class="form-input" placeholder="Select date or timeframe" />
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">How long has this been happening?</span>
+            <div class="chip-grid" data-target="DuracionProblema" data-multi="false">
+                <button type="button" class="chip-btn" data-value="LessThanWeek"><span class="check"><i class="fas fa-check"></i></span>Less than a week</button>
+                <button type="button" class="chip-btn" data-value="OneToThreeMonths"><span class="check"><i class="fas fa-check"></i></span>1 to 3 months</button>
+                <button type="button" class="chip-btn" data-value="ThreeToTwelveMonths"><span class="check"><i class="fas fa-check"></i></span>3 to 12 months</button>
+                <button type="button" class="chip-btn" data-value="MoreThanYear"><span class="check"><i class="fas fa-check"></i></span>More than a year</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Severity</span>
+            <div class="segmented-3" data-target="Severidad">
+                <button type="button" class="segment-btn" data-value="Mild">Mild</button>
+                <button type="button" class="segment-btn" data-value="Moderate">Moderate</button>
+                <button type="button" class="segment-btn" data-value="Severe">Severe</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Any previous repairs?</span>
+            <div class="segmented-3" data-target="ReparacionesPrevias">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Unsafe conditions now</span>
+            <div class="chip-grid" data-target="CondicionesInseguras" data-multi="true">
+                <button type="button" class="chip-btn" data-value="CracksWidening"><span class="check"><i class="fas fa-check"></i></span>Cracks widening</button>
+                <button type="button" class="chip-btn" data-value="SoftFloor"><span class="check"><i class="fas fa-check"></i></span>Soft floor</button>
+                <button type="button" class="chip-btn" data-value="WaterNearFoundation"><span class="check"><i class="fas fa-check"></i></span>Water near foundation</button>
+                <button type="button" class="chip-btn" data-value="LooseSupport"><span class="check"><i class="fas fa-check"></i></span>Loose support</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Best visit time</span>
+            <div class="chip-grid" data-target="MejorHorarioVisita" data-multi="false">
+                <button type="button" class="chip-btn" data-value="Morning"><span class="check"><i class="fas fa-check"></i></span>Morning</button>
+                <button type="button" class="chip-btn" data-value="Afternoon"><span class="check"><i class="fas fa-check"></i></span>Afternoon</button>
+                <button type="button" class="chip-btn" data-value="FirstAvailable"><span class="check"><i class="fas fa-check"></i></span>First available</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="save"><i class="fas fa-bookmark"></i> Save &amp; continue later</button>
+        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> Back</button>
+    </form>
+</div>
+<script>
+    function parsePipe(v){ return (v || '').split('|').map(x => x.trim()).filter(Boolean); }
+    function joinPipe(v){ return v.join('|'); }
+
+    function bindChipGroup(group) {
+        const target = document.getElementById(group.dataset.target);
+        const isMulti = group.dataset.multi === 'true';
+        const buttons = group.querySelectorAll('.chip-btn');
+        let selected = isMulti ? parsePipe(target.value) : [target.value || buttons[0]?.dataset.value];
+        selected = selected.filter(Boolean);
+        if (!selected.length && buttons.length) selected = [buttons[0].dataset.value];
+
+        function render() {
+            buttons.forEach(btn => btn.classList.toggle('active', selected.includes(btn.dataset.value)));
+            target.value = isMulti ? joinPipe(selected) : (selected[0] || '');
+        }
+
+        buttons.forEach(btn => btn.addEventListener('click', () => {
+            const value = btn.dataset.value;
+            if (isMulti) {
+                selected = selected.includes(value) ? selected.filter(x => x !== value) : [...selected, value];
+                if (!selected.length) selected = [value];
+            } else {
+                selected = [value];
+            }
+            render();
+        }));
+
+        render();
+    }
+
+    function bindSegmentedGroup(group) {
+        const target = document.getElementById(group.dataset.target);
+        const buttons = group.querySelectorAll('.segment-btn');
+        let selected = target.value || buttons[0]?.dataset.value || '';
+
+        function render() {
+            target.value = selected;
+            buttons.forEach(btn => btn.classList.toggle('active', btn.dataset.value === selected));
+        }
+
+        buttons.forEach(btn => btn.addEventListener('click', () => {
+            selected = btn.dataset.value;
+            render();
+        }));
+
+        render();
+    }
+
+    document.querySelectorAll('.chip-grid[data-target]').forEach(bindChipGroup);
+    document.querySelectorAll('.segmented-3[data-target]').forEach(bindSegmentedGroup);
+</script>
+</body>
+</html>

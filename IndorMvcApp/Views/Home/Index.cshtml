@@ -14,13 +14,31 @@
     bool IsCompleteHomeInspection(string? name) =>
         string.Equals(name?.Trim(), "Complete Home Inspection", StringComparison.OrdinalIgnoreCase);
 
+    bool IsPlumbingInspection(string? name) =>
+        string.Equals(name?.Trim(), "Plumbing Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsHvacInspection(string? name) =>
+        string.Equals(name?.Trim(), "HVAC Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsStructuralInspection(string? name) =>
+        string.Equals(name?.Trim(), "Structural Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsRoofInspection(string? name) =>
+        string.Equals(name?.Trim(), "Roof Inspection", StringComparison.OrdinalIgnoreCase);
+
     bool HasInspectionFlow(string? name) =>
-        IsPrePurchaseInspection(name) || IsElectricalInspection(name) || IsCompleteHomeInspection(name);
+        IsPrePurchaseInspection(name) || IsElectricalInspection(name)
+        || IsCompleteHomeInspection(name) || IsPlumbingInspection(name)
+        || IsHvacInspection(name) || IsStructuralInspection(name) || IsRoofInspection(name);
 
     string GetInspectionFlowAction(string? name) =>
         IsPrePurchaseInspection(name) ? "PurchaseDetails"
         : IsElectricalInspection(name) ? "ElectricalDetails"
         : IsCompleteHomeInspection(name) ? "HomeReviewDetails"
+        : IsPlumbingInspection(name) ? "PlumbingDetails"
+        : IsHvacInspection(name) ? "HvacDetails"
+        : IsStructuralInspection(name) ? "StructuralDetails"
+        : IsRoofInspection(name) ? "RoofDetails"
         : "PurchaseDetails";
 
     string Money(decimal? v) => v.HasValue ? string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C0}", v.Value) : "—";
@@ -2094,10 +2112,18 @@
                                   ?? new List<IndorMvcApp.Models.SolicitudInspeccionElectrica>();
             var completeItems = ViewBag.SolicitudesInspeccionCompleta as List<IndorMvcApp.Models.SolicitudInspeccionCompleta>
                                   ?? new List<IndorMvcApp.Models.SolicitudInspeccionCompleta>();
+            var plumbingItems = ViewBag.SolicitudesInspeccionPlomeria as List<IndorMvcApp.Models.SolicitudInspeccionPlomeria>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccionPlomeria>();
+            var hvacItems = ViewBag.SolicitudesInspeccionHvac as List<IndorMvcApp.Models.SolicitudInspeccionHvac>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccionHvac>();
+            var structuralItems = ViewBag.SolicitudesInspeccionStructural as List<IndorMvcApp.Models.SolicitudInspeccionStructural>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccionStructural>();
+            var roofItems = ViewBag.SolicitudesInspeccionRoof as List<IndorMvcApp.Models.SolicitudInspeccionRoof>
+                            ?? new List<IndorMvcApp.Models.SolicitudInspeccionRoof>();
             var confirmedItems = ViewBag.InspeccionesConfirmadas as List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>
                                  ?? new List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>();
         }
-        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && confirmedItems.Count == 0)
+        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && plumbingItems.Count == 0 && hvacItems.Count == 0 && structuralItems.Count == 0 && roofItems.Count == 0 && confirmedItems.Count == 0)
         {
             <div class="empty-state">
                 <i class="fas fa-calendar-days"></i>
@@ -2236,6 +2262,173 @@
                             </div>
                             <a asp-controller="Inspecciones" asp-action="HomeReviewDetails" asp-route-id="@item.InspeccionId" class="schedule-edit-link">
                                 <i class="fas fa-pen"></i> Continue setup
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (plumbingItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in plumbingItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "FilesPending" => "Photos pending",
+                            "ProblemCompleted" => "Details saved",
+                            "DetailsCompleted" => "Step 1 saved",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "ProblemCompleted" or "DetailsCompleted" => "PlumbingUpload",
+                            "FilesPending" => "PlumbingUpload",
+                            _ => "PlumbingDetails"
+                        };
+                        var linkId = linkAction == "PlumbingDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction == "PlumbingUpload" ? "Upload photos" : "Continue setup";
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Plumbing inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (hvacItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in hvacItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "FilesPending" => "Photos pending",
+                            "SystemCompleted" => "Details saved",
+                            "DetailsCompleted" => "Step 1 saved",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "SystemCompleted" or "FilesPending" => "HvacUpload",
+                            "DetailsCompleted" => "HvacSystemDetails",
+                            _ => "HvacDetails"
+                        };
+                        var linkId = linkAction == "HvacDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction == "HvacUpload" ? "Upload photos" : "Continue setup";
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "HVAC inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (structuralItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in structuralItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "FilesPending" => "Photos pending",
+                            "PhotosCompleted" => "Review pending",
+                            "PropertyCompleted" => "Photos pending",
+                            "MoreDetailsCompleted" => "Property step",
+                            "SignsCompleted" => "Details step",
+                            "ConcernCompleted" or "DetailsCompleted" => "Signs step",
+                            "SystemCompleted" => "Details saved",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "StructuralReview",
+                            "FilesPending" or "PropertyCompleted" => "StructuralUpload",
+                            "MoreDetailsCompleted" => "StructuralPropertyContext",
+                            "SignsCompleted" => "StructuralMoreDetails",
+                            "ConcernCompleted" or "DetailsCompleted" => "StructuralSigns",
+                            "SystemCompleted" => "StructuralUpload",
+                            _ => "StructuralDetails"
+                        };
+                        var linkId = linkAction == "StructuralDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "StructuralUpload" => "Upload photos",
+                            "StructuralReview" => "Review & confirm",
+                            _ => "Continue setup"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Structural inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (roofItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in roofItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "PropertyCompleted" => "Photos pending",
+                            "DetailsCompleted" => "Property step",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "RoofReview",
+                            "PropertyCompleted" => "RoofUpload",
+                            "DetailsCompleted" => "RoofPropertyContext",
+                            _ => "RoofDetails"
+                        };
+                        var linkId = linkAction == "RoofDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "RoofUpload" => "Upload photos",
+                            "RoofReview" => "Review & confirm",
+                            _ => "Continue setup"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Roof inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
                             </a>
                         </div>
                     }

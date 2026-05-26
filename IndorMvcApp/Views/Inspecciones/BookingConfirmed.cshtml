@@ -3,7 +3,15 @@
     ViewData["Title"] = "Booking Confirmed - INDOR";
     Layout = null;
     var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-    var headline = Model.FlowType == "complete"
+    var headline = Model.FlowType == "roof"
+        ? "Your roof inspection has been scheduled"
+        : Model.FlowType == "structural"
+        ? "Your structural inspection has been scheduled"
+        : Model.FlowType == "hvac"
+        ? "Your HVAC inspection has been scheduled"
+        : Model.FlowType == "plumbing"
+        ? "Your plumbing inspection has been scheduled"
+        : Model.FlowType == "complete"
         ? "Your complete home inspection has been scheduled"
         : Model.NombreServicio.Contains("Electrical", StringComparison.OrdinalIgnoreCase)
             ? "Your electrical inspection has been scheduled"
@@ -96,7 +104,7 @@
             <div class="summary-title">Appointment summary</div>
 
             <div class="summary-row">
-                <i class="fas @(Model.FlowType == "complete" ? "fa-clipboard-check" : Model.FlowType == "electrical" ? "fa-bolt" : "fa-house-chimney")"></i>
+                <i class="fas @(Model.FlowType == "roof" ? "fa-house-chimney-window" : Model.FlowType == "structural" ? "fa-building-shield" : Model.FlowType == "hvac" ? "fa-fan" : Model.FlowType == "plumbing" ? "fa-faucet" : Model.FlowType == "complete" ? "fa-clipboard-check" : Model.FlowType == "electrical" ? "fa-bolt" : "fa-house-chimney")"></i>
                 <div>
                     <div class="summary-label">Service</div>
                     <div class="summary-value">@Model.NombreServicio</div>
@@ -126,12 +134,23 @@
             </div>
 
             <div class="summary-row">
-                <i class="fas @(Model.FlowType == "complete" ? "fa-bullseye" : "fa-comment-dots")"></i>
+                <i class="fas @(Model.FlowType == "complete" || !string.IsNullOrWhiteSpace(Model.ResumenSecundarioEtiqueta) ? "fa-bullseye" : "fa-comment-dots")"></i>
                 <div>
                     <div class="summary-label">@Model.ResumenEtiqueta</div>
                     <div class="summary-value">@Model.ResumenPreocupacion</div>
                 </div>
             </div>
+
+            @if (!string.IsNullOrWhiteSpace(Model.ResumenSecundario))
+            {
+                <div class="summary-row">
+                    <i class="fas fa-crosshairs"></i>
+                    <div>
+                        <div class="summary-label">@Model.ResumenSecundarioEtiqueta</div>
+                        <div class="summary-value">@Model.ResumenSecundario</div>
+                    </div>
+                </div>
+            }
 
             <div class="summary-row">
                 <i class="fas fa-shield-check"></i>
