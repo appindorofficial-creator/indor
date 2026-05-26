@@ -5,6 +5,24 @@
     ViewData["Title"] = "Home - InDor";
     Layout = null;
 
+    bool IsPrePurchaseInspection(string? name) =>
+        string.Equals(name?.Trim(), "Pre-Purchase Home Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsElectricalInspection(string? name) =>
+        string.Equals(name?.Trim(), "Electrical Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsCompleteHomeInspection(string? name) =>
+        string.Equals(name?.Trim(), "Complete Home Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool HasInspectionFlow(string? name) =>
+        IsPrePurchaseInspection(name) || IsElectricalInspection(name) || IsCompleteHomeInspection(name);
+
+    string GetInspectionFlowAction(string? name) =>
+        IsPrePurchaseInspection(name) ? "PurchaseDetails"
+        : IsElectricalInspection(name) ? "ElectricalDetails"
+        : IsCompleteHomeInspection(name) ? "HomeReviewDetails"
+        : "PurchaseDetails";
+
     string Money(decimal? v) => v.HasValue ? string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C0}", v.Value) : "—";
     string Num(decimal? v) => v.HasValue ? v.Value.ToString("0.##") : "—";
     string Date(DateTime? d) => d.HasValue ? d.Value.ToString("dd/MM/yyyy") : "—";
@@ -40,7 +58,10 @@
                 ImageUrl = s.ImagenUrl,
                 ImageBase64 = s.ImagenBase64,
                 SourceId = s.Id,
-                EnableSchedule = true
+                EnableSchedule = true,
+                EnableLink = true,
+                LinkController = "Microservicios",
+                LinkAction = "Schedule"
             }).ToList()
         };
     }
@@ -95,10 +116,18 @@
                 PricePrefix = ins.PrecioPrefijo,
                 PriceText = ins.PrecioTexto,
                 Currency = ins.Moneda,
-                Cta = string.IsNullOrWhiteSpace(ins.CtaTexto) ? "Schedule inspection" : ins.CtaTexto,
+                Cta = HasInspectionFlow(ins.Nombre)
+                    ? "Continue"
+                    : (string.IsNullOrWhiteSpace(ins.CtaTexto) ? "Schedule inspection" : ins.CtaTexto),
                 ImageUrl = ins.ImagenUrl,
                 FreqIcon = "fa-clipboard-check",
-                CtaIcon = "fa-calendar-check"
+                CtaIcon = HasInspectionFlow(ins.Nombre)
+                    ? "fa-arrow-right"
+                    : "fa-calendar-check",
+                SourceId = ins.Id,
+                EnableLink = HasInspectionFlow(ins.Nombre),
+                LinkController = "Inspecciones",
+                LinkAction = GetInspectionFlowAction(ins.Nombre)
             }).ToList()
         };
     }
@@ -1653,6 +1682,10 @@
             {
                 <div class="alert-schedule-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
             }
+            @if (TempData["InspectionSaved"] is string inspectionMsg)
+            {
+                <div class="alert-schedule-ok"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
+            }
             @if (primaryProp != null)
             {
                 var d = primaryInfo?.PropertyDetails;
@@ -2055,17 +2088,162 @@
         @{
             var agendaItems = ViewBag.ProgramacionesMicroservicio as List<IndorMvcApp.Models.ProgramacionMicroservicio>
                               ?? new List<IndorMvcApp.Models.ProgramacionMicroservicio>();
+            var inspectionItems = ViewBag.SolicitudesInspeccion as List<IndorMvcApp.Models.SolicitudInspeccion>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccion>();
+            var electricalItems = ViewBag.SolicitudesInspeccionElectrica as List<IndorMvcApp.Models.SolicitudInspeccionElectrica>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccionElectrica>();
+            var completeItems = ViewBag.SolicitudesInspeccionCompleta as List<IndorMvcApp.Models.SolicitudInspeccionCompleta>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccionCompleta>();
+            var confirmedItems = ViewBag.InspeccionesConfirmadas as List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>
+                                 ?? new List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>();
         }
-        @if (agendaItems.Count == 0)
+        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && confirmedItems.Count == 0)
         {
             <div class="empty-state">
                 <i class="fas fa-calendar-days"></i>
                 <p>No maintenance scheduled yet.</p>
-                <small style="color:#64748B;display:block;margin-top:8px;">Tap a microservice on Home to pick a date.</small>
+                <small style="color:#64748B;display:block;margin-top:8px;">Tap a microservice or inspection on Services to get started.</small>
             </div>
         }
         else
         {
+            @if (confirmedItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in confirmedItems)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@item.NombreServicio</strong>
+                                <span class="badge badge-completado">Confirmed</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="far fa-calendar"></i> @item.FechaCita.ToString("dddd, MMM dd, yyyy") at @item.HoraCita
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-comment-dots"></i> @item.ResumenPreocupacion
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="BookingConfirmed" asp-route-type="@item.FlowType" asp-route-id="@item.SolicitudId" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View appointment
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (inspectionItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in inspectionItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "ReportPending" => "Report pending",
+                            "ReportUploaded" => "Report uploaded",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Home inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            @if (item.FechaCierreEstimada.HasValue)
+                            {
+                                <div class="schedule-card-date">
+                                    <i class="far fa-calendar"></i> Closing @item.FechaCierreEstimada.Value.ToString("MMM dd, yyyy")
+                                </div>
+                            }
+                            @if (item.Estado is "ReportPending" or "DetailsCompleted" or "InProgress")
+                            {
+                                <a asp-controller="Inspecciones" asp-action="UploadReport" asp-route-id="@item.Id" class="schedule-edit-link">
+                                    <i class="fas fa-cloud-arrow-up"></i> Upload report
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Inspecciones" asp-action="PurchaseDetails" asp-route-id="@item.InspeccionId" class="schedule-edit-link">
+                                    <i class="fas fa-pen"></i> Edit details
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (electricalItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in electricalItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "FilesPending" => "Photos pending",
+                            "FilesUploaded" => "Photos uploaded",
+                            "DetailsCompleted" => "Details saved",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Electrical inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            @if (item.Estado is "FilesPending" or "DetailsCompleted" or "InProgress")
+                            {
+                                <a asp-controller="Inspecciones" asp-action="ElectricalUpload" asp-route-id="@item.Id" class="schedule-edit-link">
+                                    <i class="fas fa-cloud-arrow-up"></i> Upload photos
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Inspecciones" asp-action="ElectricalDetails" asp-route-id="@item.InspeccionId" class="schedule-edit-link">
+                                    <i class="fas fa-pen"></i> Edit details
+                                </a>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (completeItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in completeItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "DetailsCompleted" => "Details saved",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Complete home inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="HomeReviewDetails" asp-route-id="@item.InspeccionId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> Continue setup
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (agendaItems.Count > 0)
+            {
             <div class="schedule-list">
                 @foreach (var item in agendaItems)
                 {
@@ -2090,6 +2268,7 @@
                     </div>
                 }
             </div>
+            }
         }
     </section>
 

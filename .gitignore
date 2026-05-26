@@ -21,3 +21,6 @@ Thumbs.db
 
 # Logs
 *.log
+
+# User-uploaded inspection files
+**/wwwroot/uploads/

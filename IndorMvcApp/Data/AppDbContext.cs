@@ -23,6 +23,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<HistorialServicio> HistorialServicios { get; set; }
     public DbSet<MensajeSoporte> MensajesSoporte { get; set; }
     public DbSet<ProgramacionMicroservicio> ProgramacionesMicroservicio { get; set; }
+    public DbSet<SolicitudInspeccion> SolicitudesInspeccion { get; set; }
+    public DbSet<ArchivoReporteInspeccion> ArchivosReporteInspeccion { get; set; }
+    public DbSet<SolicitudInspeccionElectrica> SolicitudesInspeccionElectrica { get; set; }
+    public DbSet<ArchivoInspeccionElectrica> ArchivosInspeccionElectrica { get; set; }
+    public DbSet<SolicitudInspeccionCompleta> SolicitudesInspeccionCompleta { get; set; }
+    public DbSet<ArchivoInspeccionCompleta> ArchivosInspeccionCompleta { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -57,6 +63,80 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany()
                   .HasForeignKey(p => p.PropiedadId)
                   .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccion>(entity =>
+        {
+            entity.Property(s => s.FechaCierreEstimada).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoReporteInspeccion>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccionElectrica>(entity =>
+        {
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoInspeccionElectrica>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionElectricaId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccionCompleta>(entity =>
+        {
+            entity.Property(s => s.FechaCitaProgramada).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoInspeccionCompleta>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionCompletaId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

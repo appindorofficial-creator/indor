@@ -1,0 +1,163 @@
+@model IndorMvcApp.ViewModels.BookingConfirmedViewModel
+@{
+    ViewData["Title"] = "Booking Confirmed - INDOR";
+    Layout = null;
+    var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
+    var headline = Model.FlowType == "complete"
+        ? "Your complete home inspection has been scheduled"
+        : Model.NombreServicio.Contains("Electrical", StringComparison.OrdinalIgnoreCase)
+            ? "Your electrical inspection has been scheduled"
+            : $"Your {Model.NombreServicio.ToLowerInvariant()} has been scheduled";
+    var subtext = Model.FlowType == "complete"
+        ? "Everything is confirmed. We've reserved your appointment and sent your request."
+        : "Everything is confirmed. We've sent your request and reserved your appointment.";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .top-bar { display: flex; align-items: center; justify-content: center; margin-bottom: 18px; position: relative; }
+        .back-btn {
+            position: absolute; left: 0; width: 44px; height: 44px; border-radius: 50%; background: #FFF;
+            border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center;
+            color: #0A2540; text-decoration: none;
+        }
+        .success-wrap { text-align: center; margin: 8px 0 22px; }
+        .success-icon {
+            width: 88px; height: 88px; border-radius: 50%; margin: 0 auto 16px;
+            background: linear-gradient(135deg, #22C55E, #16A34A); color: #FFF; font-size: 2.2rem;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 12px 30px rgba(34, 197, 94, 0.28);
+        }
+        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 20px; }
+        .summary-card {
+            background: #FFF; border-radius: 18px; padding: 18px; margin-bottom: 16px;
+            border: 1px solid rgba(229, 231, 235, 0.9); box-shadow: 0 8px 24px rgba(10, 37, 64, 0.04);
+        }
+        .summary-title { font-size: 0.92rem; font-weight: 800; margin-bottom: 14px; }
+        .summary-row {
+            display: flex; align-items: flex-start; gap: 12px; padding: 12px 0;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .summary-row:last-child { border-bottom: none; padding-bottom: 0; }
+        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
+        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 2px; }
+        .summary-value { font-size: 0.92rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
+        .datetime-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 6px; background: rgba(34, 197, 94, 0.12);
+            color: #15803D; border-radius: 999px; padding: 6px 12px; font-size: 0.82rem; font-weight: 700;
+        }
+        .info-box {
+            background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px;
+            padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 18px; color: #0A2540; font-size: 0.86rem; line-height: 1.45;
+        }
+        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+        .btn-primary, .btn-secondary {
+            width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none;
+        }
+        .btn-primary {
+            border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25); margin-bottom: 10px;
+        }
+        .btn-secondary {
+            margin-top: 0; margin-bottom: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC;
+        }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-bar">
+            <a asp-controller="Home" asp-action="Index" class="back-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <strong>Booking Confirmed</strong>
+        </div>
+
+        <div class="success-wrap">
+            <div class="success-icon"><i class="fas fa-check"></i></div>
+            <h1 class="page-heading">@headline</h1>
+            <p class="page-lead">@subtext</p>
+        </div>
+
+        <div class="summary-card">
+            <div class="summary-title">Appointment summary</div>
+
+            <div class="summary-row">
+                <i class="fas @(Model.FlowType == "complete" ? "fa-clipboard-check" : Model.FlowType == "electrical" ? "fa-bolt" : "fa-house-chimney")"></i>
+                <div>
+                    <div class="summary-label">Service</div>
+                    <div class="summary-value">@Model.NombreServicio</div>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <i class="fas fa-location-dot"></i>
+                <div>
+                    <div class="summary-label">Property</div>
+                    <div class="summary-value">@Model.DireccionPropiedad</div>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <i class="fas fa-calendar-day"></i>
+                <div class="datetime-grid">
+                    <div>
+                        <div class="summary-label">Date</div>
+                        <div class="summary-value">@fechaTexto</div>
+                    </div>
+                    <div>
+                        <div class="summary-label">Time</div>
+                        <div class="summary-value">@Model.HoraCita</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <i class="fas @(Model.FlowType == "complete" ? "fa-bullseye" : "fa-comment-dots")"></i>
+                <div>
+                    <div class="summary-label">@Model.ResumenEtiqueta</div>
+                    <div class="summary-value">@Model.ResumenPreocupacion</div>
+                </div>
+            </div>
+
+            <div class="summary-row">
+                <i class="fas fa-shield-check"></i>
+                <div>
+                    <div class="summary-label">Status</div>
+                    <div class="summary-value">
+                        <span class="status-badge"><i class="fas fa-check"></i> @Model.Estado</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <i class="fas fa-circle-info"></i>
+            <div>@Model.InfoMensaje</div>
+        </div>
+
+        <a asp-action="BookingConfirmed" asp-route-type="@Model.FlowType" asp-route-id="@Model.SolicitudId" class="btn-primary">
+            View appointment <i class="fas fa-arrow-right"></i>
+        </a>
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-secondary">
+            <i class="far fa-calendar"></i> Go to Schedule
+        </a>
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-secondary">
+            <i class="fas fa-house"></i> Go to My Home
+        </a>
+    </div>
+</body>
+</html>

@@ -29,4 +29,7 @@ public class OfferingCardViewModel
     public string CtaIcon { get; set; } = "fa-calendar-plus";
     public int? SourceId { get; set; }
     public bool EnableSchedule { get; set; }
+    public string? LinkController { get; set; }
+    public string? LinkAction { get; set; }
+    public bool EnableLink { get; set; }
 }

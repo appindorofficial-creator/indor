@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Services;
+using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Controllers;
 
@@ -95,6 +97,102 @@ public class HomeController : Controller
             .Where(p => p.UserId == userId && p.Estado == "Scheduled")
             .OrderBy(p => p.FechaProgramada)
             .ToListAsync();
+
+        ViewBag.SolicitudesInspeccion = await _db.SolicitudesInspeccion
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.PrePurchaseHomeInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesInspeccionElectrica = await _db.SolicitudesInspeccionElectrica
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.ElectricalInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesInspeccionCompleta = await _db.SolicitudesInspeccionCompleta
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.CompleteHomeInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        var purchaseConfirmed = await _db.SolicitudesInspeccion
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        var electricalConfirmed = await _db.SolicitudesInspeccionElectrica
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        var completeConfirmed = await _db.SolicitudesInspeccionCompleta
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        ViewBag.InspeccionesConfirmadas = purchaseConfirmed
+            .Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "purchase",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Home inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatPurchaseConcern(
+                    s.ObjetivoPrincipal, s.NotasRevision, s.RolComprador)
+            })
+            .Concat(electricalConfirmed.Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "electrical",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Electrical inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatElectricalConcern(
+                    s.PreocupacionPrincipal, s.MotivoRevision)
+            }))
+            .Concat(completeConfirmed.Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "complete",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Complete home inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatAreasEnfoque(s.AreasEnfoque)
+            }))
+            .OrderBy(s => s.FechaCita)
+            .ToList();
 
         return View(propiedades);
     }

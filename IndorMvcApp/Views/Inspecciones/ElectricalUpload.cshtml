@@ -1,0 +1,255 @@
+@model IndorMvcApp.ViewModels.ElectricalUploadViewModel
+@{
+    ViewData["Title"] = "Electrical Details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .back-btn {
+            width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB;
+            display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none;
+        }
+        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .field-card {
+            background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 14px;
+            border: 1px solid rgba(229, 231, 235, 0.9);
+        }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 10px; display: block; }
+        .address-display {
+            display: flex; align-items: center; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB;
+            border-radius: 12px; background: #F9FAFB; font-size: 0.92rem; color: #0A2540;
+        }
+        .address-display i { color: #0066CC; }
+        .dropzone {
+            border: 2px dashed #CBD5E1; border-radius: 18px; background: #F8FAFC; padding: 28px 18px;
+            text-align: center; margin-bottom: 14px; cursor: pointer; transition: all 0.2s ease;
+        }
+        .dropzone.dragover { border-color: #0066CC; background: rgba(0,102,204,0.05); }
+        .dropzone i { font-size: 2rem; color: #0066CC; margin-bottom: 10px; }
+        .dropzone p { font-size: 0.92rem; color: #64748B; }
+        .dropzone strong { color: #0066CC; }
+        .action-list { display: grid; gap: 10px; margin-bottom: 16px; }
+        .action-item {
+            display: flex; align-items: center; gap: 12px; background: #FFF; border: 1px solid #E5E7EB;
+            border-radius: 14px; padding: 14px 16px; cursor: pointer;
+        }
+        .action-item i.icon { color: #0066CC; width: 20px; text-align: center; font-size: 1.1rem; }
+        .action-item .action-text { flex: 1; }
+        .action-item .action-text strong { display: block; font-size: 0.92rem; font-weight: 600; }
+        .action-item .action-text small { display: block; font-size: 0.78rem; color: #94A3B8; margin-top: 2px; }
+        .action-item .chevron { color: #CBD5E1; }
+        .form-textarea {
+            width: 100%; min-height: 120px; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px;
+            font-family: 'Inter', sans-serif; font-size: 0.92rem; resize: vertical; background: #F9FAFB;
+        }
+        .char-count { text-align: right; font-size: 0.78rem; color: #94A3B8; margin-top: 6px; }
+        .tip-box {
+            background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px;
+            padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; color: #0A2540; font-size: 0.86rem; line-height: 1.45;
+        }
+        .tip-box i { color: #0066CC; margin-top: 2px; }
+        .file-list { display: grid; gap: 8px; margin-bottom: 14px; }
+        .file-item {
+            display: flex; align-items: center; justify-content: space-between; gap: 10px;
+            background: #F8FAFC; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem;
+        }
+        .validation-summary {
+            background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; border-radius: 12px;
+            padding: 12px 14px; font-size: 0.85rem; margin-bottom: 14px;
+        }
+        .btn-primary, .btn-secondary {
+            width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-primary {
+            border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
+            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25);
+        }
+        .btn-secondary { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+        .hidden-input { display: none; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <div class="top-bar">
+            <a asp-action="ElectricalDetails" asp-route-id="@Model.InspeccionId" class="back-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <strong>Electrical Details</strong>
+            <div style="width:44px;"></div>
+        </div>
+
+        <h1 class="page-heading">Upload photos and add comments</h1>
+        <p class="page-lead">Help INDOR understand the issue before scheduling the right provider.</p>
+
+        @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
+        {
+            <div asp-validation-summary="All" class="validation-summary"></div>
+        }
+
+        <form asp-controller="Inspecciones" asp-action="ElectricalUpload" method="post" enctype="multipart/form-data" id="uploadForm">
+            <input type="hidden" asp-for="SolicitudId" />
+            <input type="hidden" asp-for="InspeccionId" />
+            <input type="hidden" asp-for="NombreInspeccion" />
+            <input type="hidden" asp-for="DireccionPropiedad" />
+
+            <div class="field-card">
+                <span class="field-label">Property address</span>
+                <div class="address-display">
+                    <i class="fas fa-location-dot"></i>
+                    <span>@Model.DireccionPropiedad</span>
+                </div>
+            </div>
+
+            <div class="dropzone" id="dropzone">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <p>Drag files here or <strong>browse</strong></p>
+                <p style="margin-top:6px;font-size:0.82rem;">JPG, PNG, PDF up to 25 MB each</p>
+            </div>
+            <input type="file" id="fileInput" name="files" class="hidden-input" multiple
+                   accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov,.webm,application/pdf,image/*,video/*" />
+
+            <div class="action-list">
+                <label class="action-item" for="fileInputCamera">
+                    <i class="fas fa-camera icon"></i>
+                    <div class="action-text">
+                        <strong>Take photo</strong>
+                        <small>Use your camera to capture images</small>
+                    </div>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </label>
+                <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
+
+                <label class="action-item" for="fileInput">
+                    <i class="fas fa-images icon"></i>
+                    <div class="action-text">
+                        <strong>Upload photos</strong>
+                        <small>Choose from your photo library</small>
+                    </div>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </label>
+
+                <label class="action-item" for="fileInputReport">
+                    <i class="fas fa-file-lines icon"></i>
+                    <div class="action-text">
+                        <strong>Upload inspection report</strong>
+                        <small>PDF or image files</small>
+                    </div>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </label>
+                <input type="file" id="fileInputReport" class="hidden-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" />
+
+                <label class="action-item" for="fileInputVideo">
+                    <i class="fas fa-video icon"></i>
+                    <div class="action-text">
+                        <strong>Add video</strong>
+                        <small>Record or upload a short video</small>
+                    </div>
+                    <i class="fas fa-chevron-right chevron"></i>
+                </label>
+                <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
+            </div>
+
+            @if (Model.ArchivosExistentes.Count > 0)
+            {
+                <div class="file-list">
+                    @foreach (var file in Model.ArchivosExistentes)
+                    {
+                        <div class="file-item">
+                            <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
+                            <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                        </div>
+                    }
+                </div>
+            }
+
+            <div id="selectedFiles" class="file-list"></div>
+
+            <div class="field-card">
+                <label asp-for="ComentariosProveedor" class="field-label">Comments for the provider</label>
+                <textarea asp-for="ComentariosProveedor" class="form-textarea" maxlength="1000"
+                          placeholder="Example: Breakers trip in the kitchen, panel looks old, two outlets are not working..."></textarea>
+                <div class="char-count"><span id="charCount">0</span>/1000</div>
+            </div>
+
+            <div class="tip-box">
+                <i class="fas fa-circle-info"></i>
+                <div>Tip: Photos of the electrical panel, affected outlets, wiring, or any visible issue help providers give a more accurate review.</div>
+            </div>
+
+            <button type="submit" class="btn-primary" name="action" value="continue">
+                Continue <i class="fas fa-arrow-right"></i>
+            </button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+        </form>
+    </div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileInputCamera = document.getElementById('fileInputCamera');
+        const fileInputReport = document.getElementById('fileInputReport');
+        const fileInputVideo = document.getElementById('fileInputVideo');
+        const dropzone = document.getElementById('dropzone');
+        const selectedFiles = document.getElementById('selectedFiles');
+        const notes = document.querySelector('textarea[name="ComentariosProveedor"]');
+        const charCount = document.getElementById('charCount');
+
+        let pendingFiles = [];
+
+        function mergeFiles(newFiles) {
+            Array.from(newFiles).forEach(f => pendingFiles.push(f));
+            const dt = new DataTransfer();
+            pendingFiles.forEach(f => dt.items.add(f));
+            fileInput.files = dt.files;
+            renderSelectedFiles();
+        }
+
+        function renderSelectedFiles() {
+            selectedFiles.innerHTML = '';
+            pendingFiles.forEach(file => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerHTML = `<span><i class="fas fa-file"></i> ${file.name}</span><span>${Math.round(file.size / 1024)} KB</span>`;
+                selectedFiles.appendChild(item);
+            });
+        }
+
+        dropzone.addEventListener('click', () => fileInput.click());
+        fileInput.addEventListener('change', () => mergeFiles(fileInput.files));
+        fileInputCamera.addEventListener('change', () => mergeFiles(fileInputCamera.files));
+        fileInputReport.addEventListener('change', () => mergeFiles(fileInputReport.files));
+        fileInputVideo.addEventListener('change', () => mergeFiles(fileInputVideo.files));
+
+        dropzone.addEventListener('dragover', e => {
+            e.preventDefault();
+            dropzone.classList.add('dragover');
+        });
+        dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
+        dropzone.addEventListener('drop', e => {
+            e.preventDefault();
+            dropzone.classList.remove('dragover');
+            mergeFiles(e.dataTransfer.files);
+        });
+
+        function updateCount() {
+            charCount.textContent = (notes.value || '').length;
+        }
+        notes.addEventListener('input', updateCount);
+        updateCount();
+    </script>
+</body>
+</html>

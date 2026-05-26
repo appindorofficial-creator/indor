@@ -71,7 +71,13 @@
                                     }
                                 </div>
                             </div>
-                            @if (item.EnableSchedule && item.SourceId.HasValue)
+                            @if (item.EnableLink && item.SourceId.HasValue && !string.IsNullOrWhiteSpace(item.LinkController) && !string.IsNullOrWhiteSpace(item.LinkAction))
+                            {
+                                <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" asp-route-id="@item.SourceId" class="ms-book">
+                                    <i class="fas @item.CtaIcon"></i> @item.Cta
+                                </a>
+                            }
+                            else if (item.EnableSchedule && item.SourceId.HasValue)
                             {
                                 <a asp-controller="Microservicios" asp-action="Schedule" asp-route-id="@item.SourceId" class="ms-book">
                                     <i class="fas @item.CtaIcon"></i> @item.Cta
