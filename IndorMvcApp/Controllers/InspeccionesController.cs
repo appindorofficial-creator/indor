@@ -519,6 +519,149 @@ public partial class InspeccionesController : Controller
             return View(model);
         }
 
+        if (string.Equals(type, "moldmoisture", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionMoldMoisture
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsMoldMoistureFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureMoldMoistureAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "moldmoisture",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatMoldMoistureConcern(
+                    solicitud.TipoProblema,
+                    solicitud.UbicacionProblema,
+                    solicitud.TiposProblema),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatMoldMoistureFocusAreas(
+                    solicitud.AreasEnfoque,
+                    solicitud.UbicacionPrincipal,
+                    solicitud.UbicacionProblema),
+                InfoMensaje = "The provider will review your selected moisture concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "windowsinsulation", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionWindowsInsulation
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsWindowsInsulationFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureWindowsInsulationAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "windowsinsulation",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatWindowsInsulationConcern(
+                    solicitud.TiposProblema, solicitud.TipoProblema),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatWindowsInsulationFocusAreas(
+                    solicitud.AreasEnfoque, solicitud.AreasAtencion),
+                InfoMensaje = "Your provider will review your selected efficiency concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "homesafety", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionHomeSafety
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsHomeSafetyFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureHomeSafetyAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "homesafety",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Concern",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatHomeSafetyConcern(
+                    solicitud.TiposProblema, solicitud.TipoProblema),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatHomeSafetyFocusAreas(
+                    solicitud.AreasEnfoque, solicitud.AreasAtencion),
+                InfoMensaje = "Your provider will review your selected safety concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
+        if (string.Equals(type, "investor", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = await _db.SolicitudesInspeccionInvestor
+                .Include(s => s.Inspeccion)
+                .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+
+            if (solicitud?.Inspeccion == null
+                || !InspeccionFlowRules.SupportsInvestorFlow(solicitud.Inspeccion.Nombre))
+            {
+                return NotFound();
+            }
+
+            await EnsureInvestorAppointmentSavedAsync(solicitud);
+
+            var model = new BookingConfirmedViewModel
+            {
+                SolicitudId = solicitud.Id,
+                FlowType = "investor",
+                NombreServicio = solicitud.Inspeccion.Nombre,
+                DireccionPropiedad = solicitud.DireccionPropiedad,
+                FechaCita = solicitud.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(solicitud.HoraCitaProgramada!.Value),
+                ResumenEtiqueta = "Goal",
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatInvestorGoal(
+                    solicitud.TipoInversion, solicitud.EnfoquesInversion),
+                ResumenSecundarioEtiqueta = "Focus areas",
+                ResumenSecundario = InspeccionDisplayLabels.FormatInvestorFocusAreas(solicitud.AreasRevision),
+                InfoMensaje = "Your provider will review your selected investment concerns and any uploaded files before arriving.",
+                Estado = "Confirmed"
+            };
+
+            return View(model);
+        }
+
         return NotFound();
     }
 

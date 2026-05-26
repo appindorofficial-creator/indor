@@ -1,0 +1,37 @@
+@model int
+@{
+    var steps = new[] { "Goal", "Property", "Photos", "Review" };
+}
+<style>
+    .inv-stepper { display: flex; gap: 6px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; }
+    .inv-step { flex: 1; min-width: 52px; text-align: center; }
+    .inv-step-dot {
+        width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 6px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.78rem; font-weight: 700; border: 2px solid #CBD5E1; color: #94A3B8; background: #FFF;
+    }
+    .inv-step.done .inv-step-dot { border-color: #0066CC; background: #0066CC; color: #FFF; }
+    .inv-step.active .inv-step-dot { border-color: #0066CC; color: #0066CC; background: #FFF; }
+    .inv-step-label { font-size: 0.68rem; font-weight: 600; color: #94A3B8; line-height: 1.2; }
+    .inv-step.active .inv-step-label, .inv-step.done .inv-step-label { color: #0066CC; }
+</style>
+<div class="inv-stepper">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var stepNum = i + 1;
+        var css = stepNum < Model ? "inv-step done" : stepNum == Model ? "inv-step active" : "inv-step";
+        <div class="@css">
+            <div class="inv-step-dot">
+                @if (stepNum < Model)
+                {
+                    <i class="fas fa-check" style="font-size:0.7rem;"></i>
+                }
+                else
+                {
+                    @stepNum
+                }
+            </div>
+            <div class="inv-step-label">@steps[i]</div>
+        </div>
+    }
+</div>

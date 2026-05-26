@@ -9,6 +9,10 @@ public static class InspeccionFlowRules
     public const string HvacInspectionName = "HVAC Inspection";
     public const string StructuralInspectionName = "Structural Inspection";
     public const string RoofInspectionName = "Roof Inspection";
+    public const string MoldMoistureInspectionName = "Mold and Moisture Inspection";
+    public const string WindowsInsulationInspectionName = "Windows and Insulation Inspection";
+    public const string HomeSafetyInspectionName = "Home Safety Inspection";
+    public const string InvestorInspectionName = "Investor Inspection";
 
     public static bool SupportsPurchaseFlow(string? nombreInspeccion)
     {
@@ -66,6 +70,38 @@ public static class InspeccionFlowRules
             StringComparison.OrdinalIgnoreCase);
     }
 
+    public static bool SupportsMoldMoistureFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            MoldMoistureInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool SupportsWindowsInsulationFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            WindowsInsulationInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool SupportsHomeSafetyFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            HomeSafetyInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool SupportsInvestorFlow(string? nombreInspeccion)
+    {
+        return string.Equals(
+            nombreInspeccion?.Trim(),
+            InvestorInspectionName,
+            StringComparison.OrdinalIgnoreCase);
+    }
+
     public static bool SupportsCustomFlow(string? nombreInspeccion)
     {
         return SupportsPurchaseFlow(nombreInspeccion)
@@ -74,7 +110,11 @@ public static class InspeccionFlowRules
                || SupportsPlumbingFlow(nombreInspeccion)
                || SupportsHvacFlow(nombreInspeccion)
                || SupportsStructuralFlow(nombreInspeccion)
-               || SupportsRoofFlow(nombreInspeccion);
+               || SupportsRoofFlow(nombreInspeccion)
+               || SupportsMoldMoistureFlow(nombreInspeccion)
+               || SupportsWindowsInsulationFlow(nombreInspeccion)
+               || SupportsHomeSafetyFlow(nombreInspeccion)
+               || SupportsInvestorFlow(nombreInspeccion);
     }
 
     public static string? GetFlowAction(string? nombreInspeccion)
@@ -112,6 +152,26 @@ public static class InspeccionFlowRules
         if (SupportsRoofFlow(nombreInspeccion))
         {
             return "RoofDetails";
+        }
+
+        if (SupportsMoldMoistureFlow(nombreInspeccion))
+        {
+            return "MoldMoistureDetails";
+        }
+
+        if (SupportsWindowsInsulationFlow(nombreInspeccion))
+        {
+            return "WindowsInsulationDetails";
+        }
+
+        if (SupportsHomeSafetyFlow(nombreInspeccion))
+        {
+            return "HomeSafetyDetails";
+        }
+
+        if (SupportsInvestorFlow(nombreInspeccion))
+        {
+            return "InvestorDetails";
         }
 
         return null;

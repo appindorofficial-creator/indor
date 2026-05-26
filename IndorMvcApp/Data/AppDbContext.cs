@@ -37,6 +37,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ArchivoInspeccionStructural> ArchivosInspeccionStructural { get; set; }
     public DbSet<SolicitudInspeccionRoof> SolicitudesInspeccionRoof { get; set; }
     public DbSet<ArchivoInspeccionRoof> ArchivosInspeccionRoof { get; set; }
+    public DbSet<SolicitudInspeccionMoldMoisture> SolicitudesInspeccionMoldMoisture { get; set; }
+    public DbSet<ArchivoInspeccionMoldMoisture> ArchivosInspeccionMoldMoisture { get; set; }
+    public DbSet<SolicitudInspeccionWindowsInsulation> SolicitudesInspeccionWindowsInsulation { get; set; }
+    public DbSet<ArchivoInspeccionWindowsInsulation> ArchivosInspeccionWindowsInsulation { get; set; }
+    public DbSet<SolicitudInspeccionHomeSafety> SolicitudesInspeccionHomeSafety { get; set; }
+    public DbSet<ArchivoInspeccionHomeSafety> ArchivosInspeccionHomeSafety { get; set; }
+    public DbSet<SolicitudInspeccionInvestor> SolicitudesInspeccionInvestor { get; set; }
+    public DbSet<ArchivoInspeccionInvestor> ArchivosInspeccionInvestor { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -244,6 +252,106 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(a => a.Solicitud)
                   .WithMany(s => s.Archivos)
                   .HasForeignKey(a => a.SolicitudInspeccionRoofId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccionMoldMoisture>(entity =>
+        {
+            entity.Property(s => s.FechaCitaProgramada).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoInspeccionMoldMoisture>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionMoldMoistureId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccionWindowsInsulation>(entity =>
+        {
+            entity.Property(s => s.FechaCitaProgramada).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoInspeccionWindowsInsulation>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionWindowsInsulationId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccionHomeSafety>(entity =>
+        {
+            entity.Property(s => s.FechaCitaProgramada).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoInspeccionHomeSafety>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionHomeSafetyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudInspeccionInvestor>(entity =>
+        {
+            entity.Property(s => s.FechaCitaProgramada).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Inspeccion)
+                  .WithMany()
+                  .HasForeignKey(s => s.InspeccionId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoInspeccionInvestor>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudInspeccionInvestorId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }

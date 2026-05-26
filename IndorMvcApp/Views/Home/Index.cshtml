@@ -26,10 +26,24 @@
     bool IsRoofInspection(string? name) =>
         string.Equals(name?.Trim(), "Roof Inspection", StringComparison.OrdinalIgnoreCase);
 
+    bool IsMoldMoistureInspection(string? name) =>
+        string.Equals(name?.Trim(), "Mold and Moisture Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsWindowsInsulationInspection(string? name) =>
+        string.Equals(name?.Trim(), "Windows and Insulation Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsHomeSafetyInspection(string? name) =>
+        string.Equals(name?.Trim(), "Home Safety Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool IsInvestorInspection(string? name) =>
+        string.Equals(name?.Trim(), "Investor Inspection", StringComparison.OrdinalIgnoreCase);
+
     bool HasInspectionFlow(string? name) =>
         IsPrePurchaseInspection(name) || IsElectricalInspection(name)
         || IsCompleteHomeInspection(name) || IsPlumbingInspection(name)
-        || IsHvacInspection(name) || IsStructuralInspection(name) || IsRoofInspection(name);
+        || IsHvacInspection(name) || IsStructuralInspection(name) || IsRoofInspection(name)
+        || IsMoldMoistureInspection(name) || IsWindowsInsulationInspection(name)
+        || IsHomeSafetyInspection(name) || IsInvestorInspection(name);
 
     string GetInspectionFlowAction(string? name) =>
         IsPrePurchaseInspection(name) ? "PurchaseDetails"
@@ -39,6 +53,10 @@
         : IsHvacInspection(name) ? "HvacDetails"
         : IsStructuralInspection(name) ? "StructuralDetails"
         : IsRoofInspection(name) ? "RoofDetails"
+        : IsMoldMoistureInspection(name) ? "MoldMoistureDetails"
+        : IsWindowsInsulationInspection(name) ? "WindowsInsulationDetails"
+        : IsHomeSafetyInspection(name) ? "HomeSafetyDetails"
+        : IsInvestorInspection(name) ? "InvestorDetails"
         : "PurchaseDetails";
 
     string Money(decimal? v) => v.HasValue ? string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C0}", v.Value) : "—";
@@ -2120,10 +2138,18 @@
                                   ?? new List<IndorMvcApp.Models.SolicitudInspeccionStructural>();
             var roofItems = ViewBag.SolicitudesInspeccionRoof as List<IndorMvcApp.Models.SolicitudInspeccionRoof>
                             ?? new List<IndorMvcApp.Models.SolicitudInspeccionRoof>();
+            var moldMoistureItems = ViewBag.SolicitudesInspeccionMoldMoisture as List<IndorMvcApp.Models.SolicitudInspeccionMoldMoisture>
+                                    ?? new List<IndorMvcApp.Models.SolicitudInspeccionMoldMoisture>();
+            var windowsInsulationItems = ViewBag.SolicitudesInspeccionWindowsInsulation as List<IndorMvcApp.Models.SolicitudInspeccionWindowsInsulation>
+                                         ?? new List<IndorMvcApp.Models.SolicitudInspeccionWindowsInsulation>();
+            var homeSafetyItems = ViewBag.SolicitudesInspeccionHomeSafety as List<IndorMvcApp.Models.SolicitudInspeccionHomeSafety>
+                                  ?? new List<IndorMvcApp.Models.SolicitudInspeccionHomeSafety>();
+            var investorItems = ViewBag.SolicitudesInspeccionInvestor as List<IndorMvcApp.Models.SolicitudInspeccionInvestor>
+                                ?? new List<IndorMvcApp.Models.SolicitudInspeccionInvestor>();
             var confirmedItems = ViewBag.InspeccionesConfirmadas as List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>
                                  ?? new List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>();
         }
-        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && plumbingItems.Count == 0 && hvacItems.Count == 0 && structuralItems.Count == 0 && roofItems.Count == 0 && confirmedItems.Count == 0)
+        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && plumbingItems.Count == 0 && hvacItems.Count == 0 && structuralItems.Count == 0 && roofItems.Count == 0 && moldMoistureItems.Count == 0 && windowsInsulationItems.Count == 0 && homeSafetyItems.Count == 0 && investorItems.Count == 0 && confirmedItems.Count == 0)
         {
             <div class="empty-state">
                 <i class="fas fa-calendar-days"></i>
@@ -2422,6 +2448,178 @@
                         <div class="schedule-card">
                             <div class="schedule-card-head">
                                 <strong>@(item.Inspeccion?.Nombre ?? "Roof inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (moldMoistureItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in moldMoistureItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "PropertyCompleted" => "Photos pending",
+                            "DetailsCompleted" => "Property step",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "MoldMoistureReview",
+                            "PropertyCompleted" => "MoldMoistureUpload",
+                            "DetailsCompleted" => "MoldMoisturePropertyContext",
+                            _ => "MoldMoistureDetails"
+                        };
+                        var linkId = linkAction == "MoldMoistureDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "MoldMoistureUpload" => "Upload photos",
+                            "MoldMoistureReview" => "Review & confirm",
+                            _ => "Continue setup"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Mold and moisture inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (windowsInsulationItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in windowsInsulationItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "PropertyCompleted" => "Photos pending",
+                            "DetailsCompleted" => "Property step",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "WindowsInsulationReview",
+                            "PropertyCompleted" => "WindowsInsulationUpload",
+                            "DetailsCompleted" => "WindowsInsulationPropertyContext",
+                            _ => "WindowsInsulationDetails"
+                        };
+                        var linkId = linkAction == "WindowsInsulationDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "WindowsInsulationUpload" => "Upload photos",
+                            "WindowsInsulationReview" => "Review & confirm",
+                            _ => "Continue setup"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Windows and insulation inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (homeSafetyItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in homeSafetyItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "PropertyCompleted" => "Photos pending",
+                            "DetailsCompleted" => "Property step",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "HomeSafetyReview",
+                            "PropertyCompleted" => "HomeSafetyUpload",
+                            "DetailsCompleted" => "HomeSafetyPropertyContext",
+                            _ => "HomeSafetyDetails"
+                        };
+                        var linkId = linkAction == "HomeSafetyDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "HomeSafetyUpload" => "Upload photos",
+                            "HomeSafetyReview" => "Review & confirm",
+                            _ => "Continue setup"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Home safety inspection")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (investorItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in investorItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "PropertyCompleted" => "Photos pending",
+                            "DetailsCompleted" => "Property step",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "InvestorReview",
+                            "PropertyCompleted" => "InvestorUpload",
+                            "DetailsCompleted" => "InvestorPropertyContext",
+                            _ => "InvestorDetails"
+                        };
+                        var linkId = linkAction == "InvestorDetails" ? item.InspeccionId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "InvestorUpload" => "Upload photos",
+                            "InvestorReview" => "Review & confirm",
+                            _ => "Continue setup"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.Inspeccion?.Nombre ?? "Investor inspection")</strong>
                                 <span class="badge badge-pendiente">@statusText</span>
                             </div>
                             <div class="schedule-card-date">

@@ -630,6 +630,659 @@ public static class InspeccionDisplayLabels
         return string.Join(", ", parts.Distinct(StringComparer.OrdinalIgnoreCase));
     }
 
+    public static string TipoProblemaMoldMoisture(string? value) => value switch
+    {
+        "MustySmell" => "Musty smell",
+        "VisibleMold" => "Visible mold",
+        "WaterStain" => "Water stain",
+        "ActiveLeak" => "Active leak",
+        "Condensation" => "Condensation",
+        "CrawlSpaceHumidity" => "Crawl space humidity",
+        "BathroomMoisture" => "Bathroom moisture",
+        "AtticMoisture" => "Attic moisture",
+        "HvacMoisture" => "HVAC moisture",
+        "GeneralReview" => "General review",
+        _ => value ?? "General review"
+    };
+
+    public static string UbicacionMoldMoisture(string? value) => value switch
+    {
+        "Bathroom" => "Bathroom",
+        "Kitchen" => "Kitchen",
+        "Ceiling" => "Ceiling",
+        "Wall" => "Wall",
+        "CrawlSpace" => "Crawl space",
+        "Attic" => "Attic",
+        "Basement" => "Basement",
+        "HvacCloset" => "HVAC closet",
+        "AroundWindow" => "Around window",
+        "NotSure" => "Not sure",
+        _ => value ?? "Bathroom"
+    };
+
+    public static string MotivoRevisionMoldMoisture(string? value) => value switch
+    {
+        "MustySmellConcern" => "Musty smell concern",
+        "AfterWaterLeak" => "After water leak",
+        "BeforePurchase" => "Before purchase",
+        "HealthConcern" => "Health concern",
+        "AnnualReview" => "Annual review",
+        "SecondOpinion" => "Second opinion",
+        _ => value ?? "Musty smell concern"
+    };
+
+    public static string TipoPropiedadMoldMoisture(string? value) => value switch
+    {
+        "SingleFamily" => "Single-family",
+        "Townhome" => "Townhome",
+        "Condo" => "Condo",
+        "Apartment" => "Apartment",
+        _ => value ?? "Single-family"
+    };
+
+    public static List<string> FormatMoldMoistureReviewItems(
+        string? tiposPipe,
+        string? fallbackTipo,
+        string? ubicacion,
+        string? urgencia)
+    {
+        var items = ParsePipeValues(tiposPipe)
+            .Select(TipoProblemaMoldMoisture)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        if (items.Count == 0 && !string.IsNullOrWhiteSpace(fallbackTipo))
+        {
+            items.Add(TipoProblemaMoldMoisture(fallbackTipo));
+        }
+
+        var locationLabel = UbicacionMoldMoisture(ubicacion);
+        if (!string.IsNullOrWhiteSpace(locationLabel)
+            && !string.Equals(ubicacion, "NotSure", StringComparison.OrdinalIgnoreCase)
+            && !items.Contains(locationLabel, StringComparer.OrdinalIgnoreCase))
+        {
+            items.Add(locationLabel);
+        }
+
+        var urgencyLabel = UrgenciaStructural(urgencia);
+        if (!string.IsNullOrWhiteSpace(urgencyLabel)
+            && !string.Equals(urgencia, "Normal", StringComparison.OrdinalIgnoreCase)
+            && !items.Contains(urgencyLabel, StringComparer.OrdinalIgnoreCase))
+        {
+            items.Add(urgencyLabel);
+        }
+
+        return items;
+    }
+
+    public static string FormatMoldMoistureConcern(string? tipo, string? ubicacion, string? tiposPipe = null)
+    {
+        var primary = TipoProblemaMoldMoisture(
+            GetFirstPipeValue(tiposPipe) ?? tipo);
+
+        var detail = ubicacion switch
+        {
+            "Ceiling" => "ceiling moisture",
+            "Bathroom" => "bathroom moisture",
+            "Attic" => "attic moisture",
+            "CrawlSpace" => "crawl space moisture",
+            "HvacCloset" => "HVAC moisture",
+            "Wall" => "wall moisture",
+            _ => "moisture concern"
+        };
+
+        return $"{primary.ToLowerInvariant()} / {detail}";
+    }
+
+    public static string FormatMoldMoisturePropertySummary(string? tipoPropiedad)
+    {
+        return TipoPropiedadMoldMoisture(tipoPropiedad);
+    }
+
+    public static string FormatMoldMoistureFocusAreas(
+        string? areasPipe,
+        string? ubicacionPrincipal,
+        string? ubicacionProblema)
+    {
+        if (!string.IsNullOrWhiteSpace(areasPipe))
+        {
+            return string.Join(", ",
+                ParsePipeValues(areasPipe)
+                    .Select(v => UbicacionMoldMoisture(v).ToLowerInvariant())
+                    .Where(v => !string.IsNullOrWhiteSpace(v) && v != "not sure"));
+        }
+
+        var location = UbicacionMoldMoisture(ubicacionPrincipal ?? ubicacionProblema);
+        if (string.IsNullOrWhiteSpace(location) || string.Equals(location, "Not sure", StringComparison.OrdinalIgnoreCase))
+        {
+            return "bathroom, ceiling, vent area";
+        }
+
+        var parts = new List<string> { location.ToLowerInvariant() };
+        if (string.Equals(ubicacionPrincipal ?? ubicacionProblema, "Bathroom", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(ubicacionPrincipal ?? ubicacionProblema, "Ceiling", StringComparison.OrdinalIgnoreCase))
+        {
+            parts.Add("ceiling");
+            parts.Add("vent area");
+        }
+
+        return string.Join(", ", parts.Distinct(StringComparer.OrdinalIgnoreCase));
+    }
+
+    public static string TipoProblemaWindowsInsulation(string? value) => value switch
+    {
+        "DraftAir" => "Draft / air coming in",
+        "HighEnergyBill" => "High energy bill",
+        "ColdRoom" => "Cold room",
+        "HotRoom" => "Hot room",
+        "WindowCondensation" => "Window condensation",
+        "WindowSealing" => "Window sealing issue",
+        "DamagedInsulation" => "Damaged insulation",
+        "AtticInsulation" => "Attic insulation",
+        "WallInsulation" => "Wall insulation",
+        "MoistureAroundWindow" => "Moisture around window",
+        "WholeHouseReview" => "Whole-house review",
+        "NotSure" => "Not sure",
+        _ => value ?? "Draft / air coming in"
+    };
+
+    public static string AreaAtencionWindowsInsulation(string? value) => value switch
+    {
+        "LivingRoom" => "Living room",
+        "Bedroom" => "Bedroom",
+        "Attic" => "Attic",
+        "CrawlSpace" => "Crawl space",
+        "AroundWindows" => "Around windows",
+        "ExteriorWall" => "Exterior wall",
+        "WholeHouse" => "Whole house",
+        "NotSure" => "Not sure",
+        _ => value ?? "Living room"
+    };
+
+    public static string MotivoRevisionWindowsInsulation(string? value) => value switch
+    {
+        "HighUtilityBill" => "High utility bill",
+        "ComfortIssue" => "Comfort issue",
+        "BeforePurchase" => "Before purchase",
+        "AfterRemodel" => "After remodel",
+        "AnnualReview" => "Annual review",
+        "MoistureConcern" => "Moisture concern",
+        "SecondOpinion" => "Second opinion",
+        _ => value ?? "High utility bill"
+    };
+
+    public static string NumeroPisosWindowsInsulation(string? value) => value switch
+    {
+        "OneStory" => "1 story",
+        "TwoStory" => "2 story",
+        "ThreePlus" => "3+ story",
+        _ => value ?? "2 story"
+    };
+
+    public static string AreaEnfoqueWindowsInsulation(string? value) => value switch
+    {
+        "Windows" => "Windows",
+        "AtticInsulation" => "Attic insulation",
+        "Doors" => "Doors",
+        "CrawlSpaceInsulation" => "Crawl space insulation",
+        "ExteriorWalls" => "Exterior walls",
+        "WholeHouse" => "Whole house",
+        _ => value ?? "Windows"
+    };
+
+    public static string TipoVentanaWindowsInsulation(string? value) => value switch
+    {
+        "DoublePane" => "Double-pane windows",
+        "SinglePane" => "Single-pane windows",
+        "NotSure" => "Window type not sure",
+        _ => value ?? "Double-pane windows"
+    };
+
+    public static string DanoHumedadVisibleWindowsInsulation(string? value) => value switch
+    {
+        "Yes" => "Yes",
+        "No" => "No",
+        "NotSure" => "Not sure",
+        _ => value ?? "No"
+    };
+
+    public static string UrgenciaWindowsInsulation(string? value) => value switch
+    {
+        "Normal" => "Normal",
+        "Priority" => "Priority",
+        "NotSure" => "Not sure",
+        _ => value ?? "Normal"
+    };
+
+    public static string FormatWindowsInsulationMainConcern(
+        string? tiposPipe,
+        string? fallbackTipo,
+        string? danoHumedadVisible)
+    {
+        var issues = ParsePipeValues(tiposPipe)
+            .Select(TipoProblemaWindowsInsulation)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        if (issues.Count == 0 && !string.IsNullOrWhiteSpace(fallbackTipo))
+        {
+            issues.Add(TipoProblemaWindowsInsulation(fallbackTipo));
+        }
+
+        var moisture = DanoHumedadVisibleWindowsInsulation(danoHumedadVisible);
+        var baseText = issues.Count == 0 ? "Efficiency concern" : string.Join(", ", issues);
+        return $"{baseText}, Visible moisture: {moisture}";
+    }
+
+    public static string FormatWindowsInsulationConcern(string? tiposPipe, string? fallbackTipo)
+    {
+        var first = TipoProblemaWindowsInsulation(GetFirstPipeValue(tiposPipe) ?? fallbackTipo);
+        var second = ParsePipeValues(tiposPipe)
+            .Skip(1)
+            .Select(TipoProblemaWindowsInsulation)
+            .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
+
+        if (string.IsNullOrWhiteSpace(second))
+        {
+            return first.ToLowerInvariant();
+        }
+
+        return $"{first.ToLowerInvariant()} / {second.ToLowerInvariant()}";
+    }
+
+    public static string FormatWindowsInsulationPropertySummary(
+        string? tipoPropiedad,
+        string? numeroPisos,
+        string? tipoVentana)
+    {
+        var parts = new List<string>();
+        var propertyType = TipoPropiedadMoldMoisture(tipoPropiedad);
+        if (!string.IsNullOrWhiteSpace(propertyType))
+        {
+            parts.Add(propertyType);
+        }
+
+        var stories = NumeroPisosWindowsInsulation(numeroPisos);
+        if (!string.IsNullOrWhiteSpace(stories))
+        {
+            parts.Add(stories);
+        }
+
+        var windowType = TipoVentanaWindowsInsulation(tipoVentana);
+        if (!string.IsNullOrWhiteSpace(windowType))
+        {
+            parts.Add(windowType);
+        }
+
+        return string.Join(", ", parts);
+    }
+
+    public static string FormatWindowsInsulationFocusAreas(string? areasEnfoque, string? areasAtencion)
+    {
+        var labels = ParsePipeValues(areasEnfoque)
+            .Select(AreaEnfoqueWindowsInsulation)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        if (labels.Count == 0)
+        {
+            labels = ParsePipeValues(areasAtencion)
+                .Select(AreaAtencionWindowsInsulation)
+                .Where(v => !string.IsNullOrWhiteSpace(v)
+                            && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        return labels.Count == 0 ? "Windows, attic insulation" : string.Join(", ", labels);
+    }
+
+    public static string FormatWindowsInsulationFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
+    {
+        var list = archivos.ToList();
+        if (list.Count == 0)
+        {
+            return "No files uploaded";
+        }
+
+        var photos = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "photo", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(a.CategoriaArchivo, "video", StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(a.CategoriaArchivo));
+        var utilityBills = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "utility", StringComparison.OrdinalIgnoreCase));
+        var reports = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "report", StringComparison.OrdinalIgnoreCase));
+
+        var parts = new List<string>();
+        if (photos > 0)
+        {
+            parts.Add($"{photos} photo{(photos == 1 ? "" : "s")}");
+        }
+
+        if (utilityBills > 0)
+        {
+            parts.Add($"{utilityBills} utility bill{(utilityBills == 1 ? "" : "s")}");
+        }
+
+        if (reports > 0)
+        {
+            parts.Add($"{reports} report{(reports == 1 ? "" : "s")}");
+        }
+
+        return parts.Count == 0 ? $"{list.Count} file{(list.Count == 1 ? "" : "s")} uploaded" : string.Join(" and ", parts);
+    }
+
+    public static string TipoProblemaHomeSafety(string? value) => value switch
+    {
+        "SmokeDetectorConcern" => "Smoke detector concern",
+        "CoDetectorConcern" => "CO detector concern",
+        "NoDetectors" => "No detectors",
+        "ChirpingAlarm" => "Chirping alarm",
+        "FireExtinguisherConcern" => "Fire extinguisher concern",
+        "TripFallHazard" => "Trip / fall hazard",
+        "StairRailingConcern" => "Stair / railing concern",
+        "DoorLockSafety" => "Door / lock safety",
+        "OutletBasicHazard" => "Outlet / basic hazard",
+        "ChildSafetyConcern" => "Child safety concern",
+        "GeneralSafetyReview" => "General safety review",
+        "NotSure" => "Not sure",
+        _ => value ?? "Smoke detector concern"
+    };
+
+    public static string AreaAtencionHomeSafety(string? value) => value switch
+    {
+        "Hallway" => "Hallway",
+        "Bedroom" => "Bedroom",
+        "Kitchen" => "Kitchen",
+        "Garage" => "Garage",
+        "Stairway" => "Stairway",
+        "Basement" => "Basement",
+        "Exterior" => "Exterior",
+        "WholeHouse" => "Whole house",
+        "Laundry" => "Laundry",
+        "NotSure" => "Not sure",
+        _ => value ?? "Hallway"
+    };
+
+    public static string MotivoRevisionHomeSafety(string? value) => value switch
+    {
+        "AnnualReview" => "Annual review",
+        "ChildrenAtHome" => "Children at home",
+        "BeforePurchase" => "Before purchase",
+        "ElderlySafety" => "Elderly safety",
+        "SecondOpinion" => "Second opinion",
+        _ => value ?? "Annual review"
+    };
+
+    public static string AreaEnfoqueHomeSafety(string? value) => value switch
+    {
+        "SmokeCoDetectors" => "Smoke / CO detectors",
+        "WholeHouse" => "Whole house",
+        "StairsRailings" => "Stairs & railings",
+        "DoorsExits" => "Doors & exits",
+        "GarageSafety" => "Garage safety",
+        "KitchenSafety" => "Kitchen safety",
+        _ => value ?? "Smoke / CO detectors"
+    };
+
+    public static string OcupanteHomeSafety(string? value) => value switch
+    {
+        "Children" => "Children",
+        "Adults" => "Adults",
+        "Seniors" => "Seniors",
+        "Pets" => "Pets",
+        _ => value ?? "Children"
+    };
+
+    public static string RiesgoActivoHomeSafety(string? value) => value switch
+    {
+        "Yes" => "Yes",
+        "No" => "No",
+        "NotSure" => "Not sure",
+        _ => value ?? "No"
+    };
+
+    public static string FormatHomeSafetyMainConcern(
+        string? tiposPipe,
+        string? fallbackTipo,
+        string? riesgoActivo)
+    {
+        var issues = ParsePipeValues(tiposPipe)
+            .Select(TipoProblemaHomeSafety)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        if (issues.Count == 0 && !string.IsNullOrWhiteSpace(fallbackTipo))
+        {
+            issues.Add(TipoProblemaHomeSafety(fallbackTipo));
+        }
+
+        var risk = RiesgoActivoHomeSafety(riesgoActivo);
+        var baseText = issues.Count == 0 ? "Safety concern" : string.Join(", ", issues);
+        return $"{baseText}, Active risk: {risk}";
+    }
+
+    public static string FormatHomeSafetyConcern(string? tiposPipe, string? fallbackTipo)
+    {
+        var first = TipoProblemaHomeSafety(GetFirstPipeValue(tiposPipe) ?? fallbackTipo);
+        var second = ParsePipeValues(tiposPipe)
+            .Skip(1)
+            .Select(TipoProblemaHomeSafety)
+            .FirstOrDefault(v => !string.IsNullOrWhiteSpace(v));
+
+        if (string.IsNullOrWhiteSpace(second))
+        {
+            return first.ToLowerInvariant();
+        }
+
+        return $"{first.ToLowerInvariant()} / {second.ToLowerInvariant()}";
+    }
+
+    public static string FormatHomeSafetyPropertySummary(string? tipoPropiedad, string? numeroPisos)
+    {
+        var parts = new List<string>();
+        var propertyType = TipoPropiedadMoldMoisture(tipoPropiedad);
+        if (!string.IsNullOrWhiteSpace(propertyType))
+        {
+            parts.Add(propertyType);
+        }
+
+        var stories = NumeroPisosWindowsInsulation(numeroPisos);
+        if (!string.IsNullOrWhiteSpace(stories))
+        {
+            parts.Add(stories);
+        }
+
+        return string.Join(", ", parts);
+    }
+
+    public static string FormatHomeSafetyFocusAreas(string? areasEnfoque, string? areasAtencion)
+    {
+        var labels = ParsePipeValues(areasEnfoque)
+            .Select(AreaEnfoqueHomeSafety)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        if (labels.Count == 0)
+        {
+            labels = ParsePipeValues(areasAtencion)
+                .Select(AreaAtencionHomeSafety)
+                .Where(v => !string.IsNullOrWhiteSpace(v)
+                            && !string.Equals(v, "Not sure", StringComparison.OrdinalIgnoreCase))
+                .ToList();
+        }
+
+        return labels.Count == 0 ? "Hallway, whole house" : string.Join(", ", labels);
+    }
+
+    public static string FormatHomeSafetyFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
+    {
+        var list = archivos.ToList();
+        if (list.Count == 0)
+        {
+            return "No files uploaded";
+        }
+
+        var photos = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "photo", StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(a.CategoriaArchivo));
+        var videos = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "video", StringComparison.OrdinalIgnoreCase));
+        var reports = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "report", StringComparison.OrdinalIgnoreCase));
+
+        var parts = new List<string>();
+        if (photos > 0)
+        {
+            parts.Add($"{photos} photo{(photos == 1 ? "" : "s")}");
+        }
+
+        if (videos > 0)
+        {
+            parts.Add($"{videos} short video{(videos == 1 ? "" : "s")}");
+        }
+
+        if (reports > 0)
+        {
+            parts.Add($"{reports} report{(reports == 1 ? "" : "s")}");
+        }
+
+        return parts.Count == 0 ? $"{list.Count} file{(list.Count == 1 ? "" : "s")} uploaded" : string.Join(" and ", parts);
+    }
+
+    public static string TipoInversionInvestor(string? value) => value switch
+    {
+        "Flip" => "Flip",
+        "RentalProperty" => "Rental property",
+        "BuyAndHold" => "Buy and hold",
+        "BRRRR" => "BRRRR",
+        "BeforeOffer" => "Before offer",
+        "BeforeClosing" => "Before closing",
+        _ => value ?? "Flip"
+    };
+
+    public static string EnfoqueInversionInvestor(string? value) => value switch
+    {
+        "GeneralAssessment" => "General assessment",
+        "RepairRisk" => "Repair risk",
+        "RehabBudget" => "Rehab evaluation",
+        "RentReadiness" => "Rent readiness",
+        "ResalePotential" => "Resale potential",
+        "NegotiationSupport" => "Negotiation support",
+        _ => value ?? "Rehab evaluation"
+    };
+
+    public static string TipoPropiedadInvestor(string? value) => value switch
+    {
+        "SingleFamily" => "Single-family",
+        "Duplex" => "Duplex",
+        "Triplex" => "Triplex",
+        "Condo" => "Condo",
+        "SmallMultifamily" => "Small multifamily",
+        _ => value ?? "Single-family"
+    };
+
+    public static string OcupacionInvestor(string? value) => value switch
+    {
+        "TenantOccupied" => "Tenant occupied",
+        "Vacant" => "Vacant",
+        "OwnerOccupied" => "Owner occupied",
+        "NotSure" => "Not sure",
+        _ => value ?? "Tenant occupied"
+    };
+
+    public static string NivelRehabInvestor(string? value) => value switch
+    {
+        "Light" => "Light",
+        "Medium" => "Medium",
+        "Heavy" => "Heavy",
+        "NotSure" => "Not sure",
+        _ => value ?? "Light"
+    };
+
+    public static string AreaRevisionInvestor(string? value) => value switch
+    {
+        "Roof" => "Roof",
+        "Hvac" => "HVAC",
+        "Plumbing" => "Plumbing",
+        "Electrical" => "Electrical",
+        "Foundation" => "Foundation",
+        "Moisture" => "Moisture",
+        "Safety" => "Safety",
+        "Cosmetic" => "Cosmetic",
+        _ => value ?? string.Empty
+    };
+
+    public static string FormatInvestorGoal(string? tipoInversion, string? enfoquesInversion)
+    {
+        var investment = TipoInversionInvestor(tipoInversion);
+        var firstEnfoque = GetFirstPipeValue(enfoquesInversion);
+        var focus = EnfoqueInversionInvestor(firstEnfoque);
+        return $"{investment} / {focus.ToLowerInvariant()}";
+    }
+
+    public static string FormatInvestorFocusAreas(string? areasRevision)
+    {
+        var labels = ParsePipeValues(areasRevision)
+            .Select(AreaRevisionInvestor)
+            .Where(v => !string.IsNullOrWhiteSpace(v))
+            .ToList();
+
+        return labels.Count == 0 ? "Roof, HVAC, Plumbing, Electrical" : string.Join(", ", labels);
+    }
+
+    public static string FormatInvestorPropertySummary(string? tipoPropiedad, string? ocupacion)
+    {
+        var property = TipoPropiedadInvestor(tipoPropiedad);
+        if (string.Equals(tipoPropiedad, "SingleFamily", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Single-family home";
+        }
+
+        var occupancy = OcupacionInvestor(ocupacion);
+        if (string.IsNullOrWhiteSpace(ocupacion) || string.Equals(ocupacion, "NotSure", StringComparison.OrdinalIgnoreCase))
+        {
+            return property;
+        }
+
+        return $"{property} · {occupancy.ToLowerInvariant()}";
+    }
+
+    public static string FormatInvestorFilesSummary(IEnumerable<(string? CategoriaArchivo, string? NombreArchivo)> archivos)
+    {
+        var list = archivos.ToList();
+        if (list.Count == 0)
+        {
+            return "No files uploaded";
+        }
+
+        var photos = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "photo", StringComparison.OrdinalIgnoreCase)
+            || string.IsNullOrWhiteSpace(a.CategoriaArchivo));
+        var videos = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "video", StringComparison.OrdinalIgnoreCase));
+        var reports = list.Count(a =>
+            string.Equals(a.CategoriaArchivo, "report", StringComparison.OrdinalIgnoreCase));
+
+        var parts = new List<string>();
+        if (photos > 0)
+        {
+            parts.Add($"{photos} photo{(photos == 1 ? "" : "s")}");
+        }
+
+        if (videos > 0)
+        {
+            parts.Add($"{videos} video{(videos == 1 ? "" : "s")}");
+        }
+
+        if (reports > 0)
+        {
+            parts.Add($"{reports} report{(reports == 1 ? "" : "s")}");
+        }
+
+        return parts.Count == 0 ? $"{list.Count} file{(list.Count == 1 ? "" : "s")} uploaded" : string.Join(", ", parts);
+    }
+
     public static string FormatPipeLabels(string? pipe, Func<string?, string> labelFn, string fallback = "")
     {
         var labels = ParsePipeValues(pipe).Select(labelFn).Where(v => !string.IsNullOrWhiteSpace(v)).ToList();

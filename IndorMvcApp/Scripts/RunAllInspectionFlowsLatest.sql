@@ -8,6 +8,10 @@
     3. Structural Inspection (6-step flow)
     4. Structural ALTER (if table existed from an older version)
     5. Roof Inspection
+    6. Mold and Moisture Inspection
+    7. Windows and Insulation Inspection
+    8. Home Safety Inspection
+    9. Investor Inspection
 
   Safe to run multiple times (idempotent).
   Prerequisites: AspNetUsers, Inspecciones, Propiedades tables must exist.
@@ -16,7 +20,7 @@
   =============================================================================
 */
 
-PRINT '=== 1/5 Plumbing Inspection ===';
+PRINT '=== 1/9 Plumbing Inspection ===';
 GO
 
 IF OBJECT_ID(N'dbo.SolicitudesInspeccionPlomeria', N'U') IS NULL
@@ -125,7 +129,7 @@ BEGIN
 END
 GO
 
-PRINT '=== 2/5 HVAC Inspection ===';
+PRINT '=== 2/9 HVAC Inspection ===';
 GO
 
 IF OBJECT_ID(N'dbo.SolicitudesInspeccionHvac', N'U') IS NULL
@@ -237,7 +241,7 @@ BEGIN
 END
 GO
 
-PRINT '=== 3/5 Structural Inspection ===';
+PRINT '=== 3/9 Structural Inspection ===';
 GO
 
 IF OBJECT_ID(N'dbo.SolicitudesInspeccionStructural', N'U') IS NULL
@@ -367,7 +371,7 @@ BEGIN
 END
 GO
 
-PRINT '=== 4/5 Structural Inspection — ALTER (legacy tables) ===';
+PRINT '=== 4/9 Structural Inspection — ALTER (legacy tables) ===';
 GO
 
 IF OBJECT_ID(N'dbo.SolicitudesInspeccionStructural', N'U') IS NOT NULL
@@ -411,7 +415,7 @@ BEGIN
 END
 GO
 
-PRINT '=== 5/5 Roof Inspection ===';
+PRINT '=== 5/9 Roof Inspection ===';
 GO
 
 IF OBJECT_ID(N'dbo.SolicitudesInspeccionRoof', N'U') IS NULL
@@ -514,6 +518,444 @@ END
 ELSE
 BEGIN
     PRINT 'Table ArchivosInspeccionRoof already exists.';
+END
+GO
+
+PRINT '=== 6/9 Mold and Moisture Inspection ===';
+GO
+
+IF OBJECT_ID(N'dbo.SolicitudesInspeccionMoldMoisture', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[SolicitudesInspeccionMoldMoisture](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [UserId] [nvarchar](450) NOT NULL,
+        [InspeccionId] [int] NOT NULL,
+        [PropiedadId] [int] NULL,
+        [DireccionPropiedad] [nvarchar](300) NOT NULL,
+        [TiposProblema] [nvarchar](300) NULL,
+        [TipoProblema] [nvarchar](40) NOT NULL,
+        [UbicacionProblema] [nvarchar](30) NOT NULL,
+        [Urgencia] [nvarchar](20) NOT NULL,
+        [HumedadActiva] [nvarchar](20) NOT NULL,
+        [MotivoRevision] [nvarchar](30) NULL,
+        [TipoPropiedad] [nvarchar](20) NULL,
+        [UbicacionPrincipal] [nvarchar](30) NULL,
+        [IntrusionAguaReciente] [nvarchar](20) NULL,
+        [AccesoPreferido] [nvarchar](20) NULL,
+        [AreasEnfoque] [nvarchar](200) NULL,
+        [ComentariosProveedor] [nvarchar](500) NULL,
+        [FechaCitaProgramada] [date] NULL,
+        [HoraCitaProgramada] [time](0) NULL,
+        [Estado] [nvarchar](30) NOT NULL,
+        [FechaCreacion] [datetime2](7) NOT NULL,
+        [FechaActualizacion] [datetime2](7) NULL,
+        CONSTRAINT [PK_SolicitudesInspeccionMoldMoisture] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionMoldMoisture_TipoProblema]
+        DEFAULT (N'VisibleMold') FOR [TipoProblema];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionMoldMoisture_UbicacionProblema]
+        DEFAULT (N'Bathroom') FOR [UbicacionProblema];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionMoldMoisture_Urgencia]
+        DEFAULT (N'Normal') FOR [Urgencia];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionMoldMoisture_HumedadActiva]
+        DEFAULT (N'Yes') FOR [HumedadActiva];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionMoldMoisture_Estado]
+        DEFAULT (N'InProgress') FOR [Estado];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionMoldMoisture_FechaCreacion]
+        DEFAULT (sysdatetime()) FOR [FechaCreacion];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionMoldMoisture_AspNetUsers]
+        FOREIGN KEY([UserId]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE;
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionMoldMoisture_Inspecciones]
+        FOREIGN KEY([InspeccionId]) REFERENCES [dbo].[Inspecciones] ([Id]);
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionMoldMoisture]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionMoldMoisture_Propiedades]
+        FOREIGN KEY([PropiedadId]) REFERENCES [dbo].[Propiedades] ([Id]);
+
+    CREATE NONCLUSTERED INDEX [IX_SolicitudesInspeccionMoldMoisture_UserId_InspeccionId]
+        ON [dbo].[SolicitudesInspeccionMoldMoisture] ([UserId], [InspeccionId], [Estado]);
+
+    PRINT 'Table SolicitudesInspeccionMoldMoisture created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table SolicitudesInspeccionMoldMoisture already exists.';
+END
+GO
+
+IF OBJECT_ID(N'dbo.ArchivosInspeccionMoldMoisture', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[ArchivosInspeccionMoldMoisture](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [SolicitudInspeccionMoldMoistureId] [int] NOT NULL,
+        [NombreArchivo] [nvarchar](260) NOT NULL,
+        [RutaArchivo] [nvarchar](500) NOT NULL,
+        [CategoriaArchivo] [nvarchar](20) NULL,
+        [TipoArchivo] [nvarchar](20) NULL,
+        [TamanioBytes] [bigint] NOT NULL,
+        [FechaSubida] [datetime2](7) NOT NULL,
+        CONSTRAINT [PK_ArchivosInspeccionMoldMoisture] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[ArchivosInspeccionMoldMoisture]
+        ADD CONSTRAINT [DF_ArchivosInspeccionMoldMoisture_FechaSubida]
+        DEFAULT (sysdatetime()) FOR [FechaSubida];
+
+    ALTER TABLE [dbo].[ArchivosInspeccionMoldMoisture]
+        WITH CHECK ADD CONSTRAINT [FK_ArchivosInspeccionMoldMoisture_Solicitudes]
+        FOREIGN KEY([SolicitudInspeccionMoldMoistureId]) REFERENCES [dbo].[SolicitudesInspeccionMoldMoisture] ([Id]) ON DELETE CASCADE;
+
+    CREATE NONCLUSTERED INDEX [IX_ArchivosInspeccionMoldMoisture_SolicitudId]
+        ON [dbo].[ArchivosInspeccionMoldMoisture] ([SolicitudInspeccionMoldMoistureId]);
+
+    PRINT 'Table ArchivosInspeccionMoldMoisture created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table ArchivosInspeccionMoldMoisture already exists.';
+END
+GO
+
+PRINT '=== 7/9 Windows and Insulation Inspection ===';
+GO
+
+IF OBJECT_ID(N'dbo.SolicitudesInspeccionWindowsInsulation', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[SolicitudesInspeccionWindowsInsulation](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [UserId] [nvarchar](450) NOT NULL,
+        [InspeccionId] [int] NOT NULL,
+        [PropiedadId] [int] NULL,
+        [DireccionPropiedad] [nvarchar](300) NOT NULL,
+        [TiposProblema] [nvarchar](300) NULL,
+        [TipoProblema] [nvarchar](40) NOT NULL,
+        [AreasAtencion] [nvarchar](300) NULL,
+        [UbicacionProblema] [nvarchar](30) NOT NULL,
+        [Urgencia] [nvarchar](20) NOT NULL,
+        [DanoHumedadVisible] [nvarchar](20) NOT NULL,
+        [MotivosRevision] [nvarchar](200) NULL,
+        [MotivoRevision] [nvarchar](30) NULL,
+        [TipoPropiedad] [nvarchar](20) NULL,
+        [NumeroPisos] [nvarchar](10) NULL,
+        [AreasEnfoque] [nvarchar](200) NULL,
+        [AccesoPreferido] [nvarchar](20) NULL,
+        [TipoVentana] [nvarchar](20) NULL,
+        [AccesoAtticCrawlSpace] [nvarchar](20) NULL,
+        [ComentariosProveedor] [nvarchar](1000) NULL,
+        [FechaCitaProgramada] [date] NULL,
+        [HoraCitaProgramada] [time](0) NULL,
+        [Estado] [nvarchar](30) NOT NULL,
+        [FechaCreacion] [datetime2](7) NOT NULL,
+        [FechaActualizacion] [datetime2](7) NULL,
+        CONSTRAINT [PK_SolicitudesInspeccionWindowsInsulation] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionWindowsInsulation_TipoProblema]
+        DEFAULT (N'DraftAir') FOR [TipoProblema];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionWindowsInsulation_UbicacionProblema]
+        DEFAULT (N'LivingRoom') FOR [UbicacionProblema];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionWindowsInsulation_Urgencia]
+        DEFAULT (N'Normal') FOR [Urgencia];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionWindowsInsulation_DanoHumedadVisible]
+        DEFAULT (N'No') FOR [DanoHumedadVisible];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionWindowsInsulation_Estado]
+        DEFAULT (N'InProgress') FOR [Estado];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionWindowsInsulation_FechaCreacion]
+        DEFAULT (sysdatetime()) FOR [FechaCreacion];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionWindowsInsulation_AspNetUsers]
+        FOREIGN KEY([UserId]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE;
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionWindowsInsulation_Inspecciones]
+        FOREIGN KEY([InspeccionId]) REFERENCES [dbo].[Inspecciones] ([Id]);
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionWindowsInsulation]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionWindowsInsulation_Propiedades]
+        FOREIGN KEY([PropiedadId]) REFERENCES [dbo].[Propiedades] ([Id]);
+
+    CREATE NONCLUSTERED INDEX [IX_SolicitudesInspeccionWindowsInsulation_UserId_InspeccionId]
+        ON [dbo].[SolicitudesInspeccionWindowsInsulation] ([UserId], [InspeccionId], [Estado]);
+
+    PRINT 'Table SolicitudesInspeccionWindowsInsulation created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table SolicitudesInspeccionWindowsInsulation already exists.';
+END
+GO
+
+IF OBJECT_ID(N'dbo.ArchivosInspeccionWindowsInsulation', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[ArchivosInspeccionWindowsInsulation](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [SolicitudInspeccionWindowsInsulationId] [int] NOT NULL,
+        [NombreArchivo] [nvarchar](260) NOT NULL,
+        [RutaArchivo] [nvarchar](500) NOT NULL,
+        [CategoriaArchivo] [nvarchar](20) NULL,
+        [TipoArchivo] [nvarchar](20) NULL,
+        [TamanioBytes] [bigint] NOT NULL,
+        [FechaSubida] [datetime2](7) NOT NULL,
+        CONSTRAINT [PK_ArchivosInspeccionWindowsInsulation] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[ArchivosInspeccionWindowsInsulation]
+        ADD CONSTRAINT [DF_ArchivosInspeccionWindowsInsulation_FechaSubida]
+        DEFAULT (sysdatetime()) FOR [FechaSubida];
+
+    ALTER TABLE [dbo].[ArchivosInspeccionWindowsInsulation]
+        WITH CHECK ADD CONSTRAINT [FK_ArchivosInspeccionWindowsInsulation_Solicitudes]
+        FOREIGN KEY([SolicitudInspeccionWindowsInsulationId]) REFERENCES [dbo].[SolicitudesInspeccionWindowsInsulation] ([Id]) ON DELETE CASCADE;
+
+    CREATE NONCLUSTERED INDEX [IX_ArchivosInspeccionWindowsInsulation_SolicitudId]
+        ON [dbo].[ArchivosInspeccionWindowsInsulation] ([SolicitudInspeccionWindowsInsulationId]);
+
+    PRINT 'Table ArchivosInspeccionWindowsInsulation created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table ArchivosInspeccionWindowsInsulation already exists.';
+END
+GO
+
+PRINT '=== 8/9 Home Safety Inspection ===';
+GO
+
+IF OBJECT_ID(N'dbo.SolicitudesInspeccionHomeSafety', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[SolicitudesInspeccionHomeSafety](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [UserId] [nvarchar](450) NOT NULL,
+        [InspeccionId] [int] NOT NULL,
+        [PropiedadId] [int] NULL,
+        [DireccionPropiedad] [nvarchar](300) NOT NULL,
+        [TiposProblema] [nvarchar](300) NULL,
+        [TipoProblema] [nvarchar](40) NOT NULL,
+        [AreasAtencion] [nvarchar](300) NULL,
+        [UbicacionProblema] [nvarchar](30) NOT NULL,
+        [Urgencia] [nvarchar](20) NOT NULL,
+        [RiesgoActivo] [nvarchar](20) NOT NULL,
+        [MotivosRevision] [nvarchar](200) NULL,
+        [MotivoRevision] [nvarchar](30) NULL,
+        [TipoPropiedad] [nvarchar](20) NULL,
+        [NumeroPisos] [nvarchar](10) NULL,
+        [AreasEnfoque] [nvarchar](200) NULL,
+        [AccesoPreferido] [nvarchar](20) NULL,
+        [OcupantesHogar] [nvarchar](100) NULL,
+        [ComentariosProveedor] [nvarchar](1000) NULL,
+        [FechaCitaProgramada] [date] NULL,
+        [HoraCitaProgramada] [time](0) NULL,
+        [Estado] [nvarchar](30) NOT NULL,
+        [FechaCreacion] [datetime2](7) NOT NULL,
+        [FechaActualizacion] [datetime2](7) NULL,
+        CONSTRAINT [PK_SolicitudesInspeccionHomeSafety] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionHomeSafety_TipoProblema]
+        DEFAULT (N'SmokeDetectorConcern') FOR [TipoProblema];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionHomeSafety_UbicacionProblema]
+        DEFAULT (N'Hallway') FOR [UbicacionProblema];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionHomeSafety_Urgencia]
+        DEFAULT (N'Normal') FOR [Urgencia];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionHomeSafety_RiesgoActivo]
+        DEFAULT (N'No') FOR [RiesgoActivo];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionHomeSafety_Estado]
+        DEFAULT (N'InProgress') FOR [Estado];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionHomeSafety_FechaCreacion]
+        DEFAULT (sysdatetime()) FOR [FechaCreacion];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionHomeSafety_AspNetUsers]
+        FOREIGN KEY([UserId]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE;
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionHomeSafety_Inspecciones]
+        FOREIGN KEY([InspeccionId]) REFERENCES [dbo].[Inspecciones] ([Id]);
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionHomeSafety]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionHomeSafety_Propiedades]
+        FOREIGN KEY([PropiedadId]) REFERENCES [dbo].[Propiedades] ([Id]);
+
+    CREATE NONCLUSTERED INDEX [IX_SolicitudesInspeccionHomeSafety_UserId_InspeccionId]
+        ON [dbo].[SolicitudesInspeccionHomeSafety] ([UserId], [InspeccionId], [Estado]);
+
+    PRINT 'Table SolicitudesInspeccionHomeSafety created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table SolicitudesInspeccionHomeSafety already exists.';
+END
+GO
+
+IF OBJECT_ID(N'dbo.ArchivosInspeccionHomeSafety', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[ArchivosInspeccionHomeSafety](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [SolicitudInspeccionHomeSafetyId] [int] NOT NULL,
+        [NombreArchivo] [nvarchar](260) NOT NULL,
+        [RutaArchivo] [nvarchar](500) NOT NULL,
+        [CategoriaArchivo] [nvarchar](20) NULL,
+        [TipoArchivo] [nvarchar](20) NULL,
+        [TamanioBytes] [bigint] NOT NULL,
+        [FechaSubida] [datetime2](7) NOT NULL,
+        CONSTRAINT [PK_ArchivosInspeccionHomeSafety] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[ArchivosInspeccionHomeSafety]
+        ADD CONSTRAINT [DF_ArchivosInspeccionHomeSafety_FechaSubida]
+        DEFAULT (sysdatetime()) FOR [FechaSubida];
+
+    ALTER TABLE [dbo].[ArchivosInspeccionHomeSafety]
+        WITH CHECK ADD CONSTRAINT [FK_ArchivosInspeccionHomeSafety_Solicitudes]
+        FOREIGN KEY([SolicitudInspeccionHomeSafetyId]) REFERENCES [dbo].[SolicitudesInspeccionHomeSafety] ([Id]) ON DELETE CASCADE;
+
+    CREATE NONCLUSTERED INDEX [IX_ArchivosInspeccionHomeSafety_SolicitudId]
+        ON [dbo].[ArchivosInspeccionHomeSafety] ([SolicitudInspeccionHomeSafetyId]);
+
+    PRINT 'Table ArchivosInspeccionHomeSafety created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table ArchivosInspeccionHomeSafety already exists.';
+END
+GO
+
+PRINT '=== 9/9 Investor Inspection ===';
+GO
+
+IF OBJECT_ID(N'dbo.SolicitudesInspeccionInvestor', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[SolicitudesInspeccionInvestor](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [UserId] [nvarchar](450) NOT NULL,
+        [InspeccionId] [int] NOT NULL,
+        [PropiedadId] [int] NULL,
+        [DireccionPropiedad] [nvarchar](300) NOT NULL,
+        [TipoInversion] [nvarchar](30) NOT NULL,
+        [EnfoquesInversion] [nvarchar](300) NULL,
+        [Urgencia] [nvarchar](20) NOT NULL,
+        [TipoPropiedad] [nvarchar](20) NULL,
+        [Ocupacion] [nvarchar](20) NULL,
+        [NivelRehab] [nvarchar](20) NULL,
+        [AreasRevision] [nvarchar](200) NULL,
+        [AccesoPreferido] [nvarchar](20) NULL,
+        [ComentariosProveedor] [nvarchar](1000) NULL,
+        [FechaCitaProgramada] [date] NULL,
+        [HoraCitaProgramada] [time](0) NULL,
+        [Estado] [nvarchar](30) NOT NULL,
+        [FechaCreacion] [datetime2](7) NOT NULL,
+        [FechaActualizacion] [datetime2](7) NULL,
+        CONSTRAINT [PK_SolicitudesInspeccionInvestor] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionInvestor_TipoInversion]
+        DEFAULT (N'Flip') FOR [TipoInversion];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionInvestor_Urgencia]
+        DEFAULT (N'Normal') FOR [Urgencia];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionInvestor_Estado]
+        DEFAULT (N'InProgress') FOR [Estado];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        ADD CONSTRAINT [DF_SolicitudesInspeccionInvestor_FechaCreacion]
+        DEFAULT (sysdatetime()) FOR [FechaCreacion];
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionInvestor_AspNetUsers]
+        FOREIGN KEY([UserId]) REFERENCES [dbo].[AspNetUsers] ([Id]) ON DELETE CASCADE;
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionInvestor_Inspecciones]
+        FOREIGN KEY([InspeccionId]) REFERENCES [dbo].[Inspecciones] ([Id]);
+
+    ALTER TABLE [dbo].[SolicitudesInspeccionInvestor]
+        WITH CHECK ADD CONSTRAINT [FK_SolicitudesInspeccionInvestor_Propiedades]
+        FOREIGN KEY([PropiedadId]) REFERENCES [dbo].[Propiedades] ([Id]);
+
+    CREATE NONCLUSTERED INDEX [IX_SolicitudesInspeccionInvestor_UserId_InspeccionId]
+        ON [dbo].[SolicitudesInspeccionInvestor] ([UserId], [InspeccionId], [Estado]);
+
+    PRINT 'Table SolicitudesInspeccionInvestor created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table SolicitudesInspeccionInvestor already exists.';
+END
+GO
+
+IF OBJECT_ID(N'dbo.ArchivosInspeccionInvestor', N'U') IS NULL
+BEGIN
+    CREATE TABLE [dbo].[ArchivosInspeccionInvestor](
+        [Id] [int] IDENTITY(1,1) NOT NULL,
+        [SolicitudInspeccionInvestorId] [int] NOT NULL,
+        [NombreArchivo] [nvarchar](260) NOT NULL,
+        [RutaArchivo] [nvarchar](500) NOT NULL,
+        [CategoriaArchivo] [nvarchar](20) NULL,
+        [TipoArchivo] [nvarchar](20) NULL,
+        [TamanioBytes] [bigint] NOT NULL,
+        [FechaSubida] [datetime2](7) NOT NULL,
+        CONSTRAINT [PK_ArchivosInspeccionInvestor] PRIMARY KEY CLUSTERED ([Id] ASC)
+    );
+
+    ALTER TABLE [dbo].[ArchivosInspeccionInvestor]
+        ADD CONSTRAINT [DF_ArchivosInspeccionInvestor_FechaSubida]
+        DEFAULT (sysdatetime()) FOR [FechaSubida];
+
+    ALTER TABLE [dbo].[ArchivosInspeccionInvestor]
+        WITH CHECK ADD CONSTRAINT [FK_ArchivosInspeccionInvestor_Solicitudes]
+        FOREIGN KEY([SolicitudInspeccionInvestorId]) REFERENCES [dbo].[SolicitudesInspeccionInvestor] ([Id]) ON DELETE CASCADE;
+
+    CREATE NONCLUSTERED INDEX [IX_ArchivosInspeccionInvestor_SolicitudId]
+        ON [dbo].[ArchivosInspeccionInvestor] ([SolicitudInspeccionInvestorId]);
+
+    PRINT 'Table ArchivosInspeccionInvestor created.';
+END
+ELSE
+BEGIN
+    PRINT 'Table ArchivosInspeccionInvestor already exists.';
 END
 GO
 

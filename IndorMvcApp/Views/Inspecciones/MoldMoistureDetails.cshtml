@@ -1,0 +1,168 @@
+@model IndorMvcApp.ViewModels.MoldMoistureDetailsViewModel
+@{
+    ViewData["Title"] = "Mold & Moisture Details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
+        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
+        .address-summary .left { display: flex; align-items: center; gap: 10px; }
+        .address-summary i { color: #0066CC; }
+        .chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .chip-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 10px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; position: relative; line-height: 1.3; }
+        .chip-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .chip-btn .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+        .chip-btn.active .check { display: flex; }
+        .segmented-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.84rem; color: #64748B; cursor: pointer; text-align: center; }
+        .segment-btn.active { background: rgba(0,102,204,0.08); border-color: #0066CC; color: #0066CC; }
+        .segment-btn.emergency.active { border-color: #DC2626; color: #DC2626; background: rgba(220,38,38,0.08); }
+        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
+        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <strong>Mold &amp; Moisture Details</strong>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_MoldMoistureStepper", 1)
+
+    <h1 class="page-heading">Tell us about your mold or moisture concern</h1>
+    <p class="page-lead">This helps us send the right provider and prepare the inspection faster.</p>
+
+    <form asp-controller="Inspecciones" asp-action="MoldMoistureDetails" method="post">
+        <input type="hidden" asp-for="InspeccionId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="NombreInspeccion" />
+        <input type="hidden" asp-for="TiposProblema" id="TiposProblema" />
+        <input type="hidden" asp-for="TipoProblema" id="TipoProblema" />
+        <input type="hidden" asp-for="UbicacionProblema" id="UbicacionProblema" />
+        <input type="hidden" asp-for="Urgencia" id="Urgencia" />
+        <input type="hidden" asp-for="HumedadActiva" id="HumedadActiva" />
+
+        <div class="field-card">
+            <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+            <div class="address-summary">
+                <div class="left" style="flex:1;">
+                    <i class="fas fa-house"></i>
+                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="123 Main St, Charlotte, NC 28202" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What's the main issue?</span>
+            <div class="chip-grid" id="tiposGroup">
+                <button type="button" class="chip-btn" data-value="MustySmell"><span class="check"><i class="fas fa-check"></i></span>Musty smell</button>
+                <button type="button" class="chip-btn" data-value="VisibleMold"><span class="check"><i class="fas fa-check"></i></span>Visible mold</button>
+                <button type="button" class="chip-btn" data-value="WaterStain"><span class="check"><i class="fas fa-check"></i></span>Water stain</button>
+                <button type="button" class="chip-btn" data-value="ActiveLeak"><span class="check"><i class="fas fa-check"></i></span>Active leak</button>
+                <button type="button" class="chip-btn" data-value="Condensation"><span class="check"><i class="fas fa-check"></i></span>Condensation</button>
+                <button type="button" class="chip-btn" data-value="CrawlSpaceHumidity"><span class="check"><i class="fas fa-check"></i></span>Crawl space humidity</button>
+                <button type="button" class="chip-btn" data-value="BathroomMoisture"><span class="check"><i class="fas fa-check"></i></span>Bathroom moisture</button>
+                <button type="button" class="chip-btn" data-value="AtticMoisture"><span class="check"><i class="fas fa-check"></i></span>Attic moisture</button>
+                <button type="button" class="chip-btn" data-value="HvacMoisture"><span class="check"><i class="fas fa-check"></i></span>HVAC moisture</button>
+                <button type="button" class="chip-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>General review</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Where is it happening?</span>
+            <div class="chip-grid" data-target="UbicacionProblema">
+                <button type="button" class="chip-btn" data-value="Bathroom"><span class="check"><i class="fas fa-check"></i></span>Bathroom</button>
+                <button type="button" class="chip-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>Kitchen</button>
+                <button type="button" class="chip-btn" data-value="Ceiling"><span class="check"><i class="fas fa-check"></i></span>Ceiling</button>
+                <button type="button" class="chip-btn" data-value="Wall"><span class="check"><i class="fas fa-check"></i></span>Wall</button>
+                <button type="button" class="chip-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>Crawl space</button>
+                <button type="button" class="chip-btn" data-value="Attic"><span class="check"><i class="fas fa-check"></i></span>Attic</button>
+                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>Basement</button>
+                <button type="button" class="chip-btn" data-value="HvacCloset"><span class="check"><i class="fas fa-check"></i></span>HVAC closet</button>
+                <button type="button" class="chip-btn" data-value="AroundWindow"><span class="check"><i class="fas fa-check"></i></span>Around window</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">How urgent is it?</span>
+            <div class="segmented-3" data-target="Urgencia">
+                <button type="button" class="segment-btn" data-value="Normal">Normal</button>
+                <button type="button" class="segment-btn" data-value="Priority">Priority</button>
+                <button type="button" class="segment-btn emergency" data-value="Emergency">Emergency</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Is moisture active right now?</span>
+            <div class="segmented-3" data-target="HumedadActiva">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="info-box"><i class="fas fa-circle-info"></i><div>If you see spreading stains, strong odor, active leak, or visible mold growth, choose <strong>Priority</strong> or contact support immediately.</div></div>
+
+        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> Upload photos or report</button>
+    </form>
+</div>
+<script>
+    function parsePipe(v){ return (v||'').split('|').map(x=>x.trim()).filter(Boolean); }
+    function joinPipe(v){ return v.join('|'); }
+    function setSingle(group, selector, value){
+        document.getElementById(group.dataset.target).value = value;
+        group.querySelectorAll(selector).forEach(btn => btn.classList.toggle('active', btn.dataset.value === value));
+    }
+    (function initMulti(){
+        const hidden = document.getElementById('TiposProblema');
+        const primary = document.getElementById('TipoProblema');
+        let selected = parsePipe(hidden.value);
+        if (!selected.length) selected = ['VisibleMold'];
+        function render(){
+            document.querySelectorAll('#tiposGroup .chip-btn').forEach(btn => btn.classList.toggle('active', selected.includes(btn.dataset.value)));
+            hidden.value = joinPipe(selected);
+            primary.value = selected[0] || 'VisibleMold';
+        }
+        document.querySelectorAll('#tiposGroup .chip-btn').forEach(btn => btn.addEventListener('click', () => {
+            const v = btn.dataset.value;
+            selected = selected.includes(v) ? selected.filter(x => x !== v) : [...selected, v];
+            if (!selected.length) selected = [v];
+            render();
+        }));
+        render();
+    })();
+    document.querySelectorAll('[data-target="UbicacionProblema"]').forEach(group => {
+        group.querySelectorAll('.chip-btn').forEach(btn => btn.addEventListener('click', () => setSingle(group, '.chip-btn', btn.dataset.value)));
+        setSingle(group, '.chip-btn', document.getElementById('UbicacionProblema').value);
+    });
+    document.querySelectorAll('.segmented-3').forEach(group => {
+        group.querySelectorAll('.segment-btn').forEach(btn => btn.addEventListener('click', () => setSingle(group, '.segment-btn', btn.dataset.value)));
+        setSingle(group, '.segment-btn', document.getElementById(group.dataset.target).value);
+    });
+</script>
+</body>
+</html>

@@ -182,6 +182,54 @@ public class HomeController : Controller
             .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
             .ToListAsync();
 
+        ViewBag.SolicitudesInspeccionMoldMoisture = await _db.SolicitudesInspeccionMoldMoisture
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.MoldMoistureInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesInspeccionWindowsInsulation = await _db.SolicitudesInspeccionWindowsInsulation
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.WindowsInsulationInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesInspeccionHomeSafety = await _db.SolicitudesInspeccionHomeSafety
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.HomeSafetyInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesInspeccionInvestor = await _db.SolicitudesInspeccionInvestor
+            .Include(s => s.Inspeccion)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.Inspeccion != null
+                        && s.Inspeccion.Nombre == InspeccionFlowRules.InvestorInspectionName
+                        && s.Estado != "Skipped"
+                        && s.Estado != "Completed"
+                        && s.Estado != "Confirmed")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
         var purchaseConfirmed = await _db.SolicitudesInspeccion
             .Include(s => s.Inspeccion)
             .Where(s => s.UserId == userId
@@ -231,6 +279,38 @@ public class HomeController : Controller
             .ToListAsync();
 
         var roofConfirmed = await _db.SolicitudesInspeccionRoof
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        var moldMoistureConfirmed = await _db.SolicitudesInspeccionMoldMoisture
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        var windowsInsulationConfirmed = await _db.SolicitudesInspeccionWindowsInsulation
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        var homeSafetyConfirmed = await _db.SolicitudesInspeccionHomeSafety
+            .Include(s => s.Inspeccion)
+            .Where(s => s.UserId == userId
+                        && s.Estado == "Confirmed"
+                        && s.FechaCitaProgramada != null
+                        && s.HoraCitaProgramada != null)
+            .ToListAsync();
+
+        var investorConfirmed = await _db.SolicitudesInspeccionInvestor
             .Include(s => s.Inspeccion)
             .Where(s => s.UserId == userId
                         && s.Estado == "Confirmed"
@@ -314,6 +394,50 @@ public class HomeController : Controller
                 HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
                 ResumenPreocupacion = InspeccionDisplayLabels.FormatRoofConcern(
                     s.TipoProblema, s.UbicacionProblema, s.TiposProblema)
+            }))
+            .Concat(moldMoistureConfirmed.Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "moldmoisture",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Mold and moisture inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatMoldMoistureConcern(
+                    s.TipoProblema, s.UbicacionProblema, s.TiposProblema)
+            }))
+            .Concat(windowsInsulationConfirmed.Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "windowsinsulation",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Windows and insulation inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatWindowsInsulationConcern(
+                    s.TiposProblema, s.TipoProblema)
+            }))
+            .Concat(homeSafetyConfirmed.Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "homesafety",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Home safety inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatHomeSafetyConcern(
+                    s.TiposProblema, s.TipoProblema)
+            }))
+            .Concat(investorConfirmed.Select(s => new ConfirmedInspectionViewModel
+            {
+                FlowType = "investor",
+                SolicitudId = s.Id,
+                NombreServicio = s.Inspeccion?.Nombre ?? "Investor inspection",
+                DireccionPropiedad = s.DireccionPropiedad,
+                FechaCita = s.FechaCitaProgramada!.Value,
+                HoraCita = InspeccionDisplayLabels.FormatTime(s.HoraCitaProgramada!.Value),
+                ResumenPreocupacion = InspeccionDisplayLabels.FormatInvestorGoal(
+                    s.TipoInversion, s.EnfoquesInversion)
             }))
             .OrderBy(s => s.FechaCita)
             .ToList();

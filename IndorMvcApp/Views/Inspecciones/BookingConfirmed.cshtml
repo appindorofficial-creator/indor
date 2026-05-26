@@ -3,7 +3,15 @@
     ViewData["Title"] = "Booking Confirmed - INDOR";
     Layout = null;
     var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
-    var headline = Model.FlowType == "roof"
+    var headline = Model.FlowType == "investor"
+        ? "Your investor inspection has been scheduled"
+        : Model.FlowType == "homesafety"
+        ? "Your home safety inspection has been scheduled"
+        : Model.FlowType == "windowsinsulation"
+        ? "Your windows and insulation inspection has been scheduled"
+        : Model.FlowType == "moldmoisture"
+        ? "Your mold and moisture inspection has been scheduled"
+        : Model.FlowType == "roof"
         ? "Your roof inspection has been scheduled"
         : Model.FlowType == "structural"
         ? "Your structural inspection has been scheduled"
@@ -104,7 +112,7 @@
             <div class="summary-title">Appointment summary</div>
 
             <div class="summary-row">
-                <i class="fas @(Model.FlowType == "roof" ? "fa-house-chimney-window" : Model.FlowType == "structural" ? "fa-building-shield" : Model.FlowType == "hvac" ? "fa-fan" : Model.FlowType == "plumbing" ? "fa-faucet" : Model.FlowType == "complete" ? "fa-clipboard-check" : Model.FlowType == "electrical" ? "fa-bolt" : "fa-house-chimney")"></i>
+                <i class="fas @(Model.FlowType == "investor" ? "fa-chart-line" : Model.FlowType == "homesafety" ? "fa-shield-halved" : Model.FlowType == "windowsinsulation" ? "fa-window-maximize" : Model.FlowType == "moldmoisture" ? "fa-droplet" : Model.FlowType == "roof" ? "fa-house-chimney-window" : Model.FlowType == "structural" ? "fa-building-shield" : Model.FlowType == "hvac" ? "fa-fan" : Model.FlowType == "plumbing" ? "fa-faucet" : Model.FlowType == "complete" ? "fa-clipboard-check" : Model.FlowType == "electrical" ? "fa-bolt" : "fa-house-chimney")"></i>
                 <div>
                     <div class="summary-label">Service</div>
                     <div class="summary-value">@Model.NombreServicio</div>
