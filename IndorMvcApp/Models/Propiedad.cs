@@ -20,7 +20,19 @@ public class Propiedad
 
     public bool Activo { get; set; } = true;
 
-    // Relación con el usuario propietario
+    public long? AttomPropertyId { get; set; }
+
+    public string? AttomRawJson { get; set; }
+
+    public DateTime? AttomLastSyncUtc { get; set; }
+
+    [MaxLength(30)]
+    public string? AttomSyncStatus { get; set; }
+
+    [MaxLength(500)]
+    public string? AttomSyncError { get; set; }
+
+    // Owner relationship
     [Required]
     public string UserId { get; set; } = string.Empty;
 

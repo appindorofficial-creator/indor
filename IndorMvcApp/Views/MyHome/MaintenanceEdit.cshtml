@@ -1,0 +1,27 @@
+@model IndorMvcApp.ViewModels.MyHomeMaintenanceFormViewModel
+@{
+    ViewData["Title"] = "Edit Maintenance";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "summary";
+}
+<div class="hf-title-row">
+    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Edit maintenance</h1>
+</div>
+<form asp-action="MaintenanceEdit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PropiedadId" />
+    <label asp-for="Title" class="hf-label">Task title</label>
+    <input asp-for="Title" class="hf-input" />
+    <label asp-for="DueDate" class="hf-label">Due date</label>
+    <input asp-for="DueDate" class="hf-input" type="date" />
+    <label asp-for="Status" class="hf-label">Status</label>
+    <select asp-for="Status" class="hf-select">
+        <option value="Upcoming">Upcoming</option>
+        <option value="Completed">Completed</option>
+    </select>
+    <label asp-for="Notes" class="hf-label">Notes</label>
+    <textarea asp-for="Notes" class="hf-textarea" rows="3"></textarea>
+    <button type="submit" class="hf-btn hf-btn-primary">Save task</button>
+</form>

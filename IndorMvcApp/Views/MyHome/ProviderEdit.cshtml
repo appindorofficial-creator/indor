@@ -1,0 +1,26 @@
+@model IndorMvcApp.ViewModels.MyHomeProviderFormViewModel
+@{
+    ViewData["Title"] = "Edit Provider";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "summary";
+}
+<div class="hf-title-row">
+    <a asp-action="Providers" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Edit provider</h1>
+</div>
+<form asp-action="ProviderEdit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PropiedadId" />
+    <label asp-for="Name" class="hf-label">Company name</label>
+    <input asp-for="Name" class="hf-input" />
+    <label asp-for="ServiceCategory" class="hf-label">Service category</label>
+    <input asp-for="ServiceCategory" class="hf-input" />
+    <label asp-for="Phone" class="hf-label">Phone</label>
+    <input asp-for="Phone" class="hf-input" />
+    <label asp-for="Website" class="hf-label">Website</label>
+    <input asp-for="Website" class="hf-input" />
+    <label asp-for="Notes" class="hf-label">Notes</label>
+    <textarea asp-for="Notes" class="hf-textarea" rows="3"></textarea>
+    <button type="submit" class="hf-btn hf-btn-primary">Save provider</button>
+</form>

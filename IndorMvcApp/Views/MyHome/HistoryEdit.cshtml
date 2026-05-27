@@ -1,0 +1,38 @@
+@model IndorMvcApp.ViewModels.MyHomeHistoryFormViewModel
+@{
+    ViewData["Title"] = "Edit Record";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "history";
+}
+<div class="hf-title-row">
+    <a asp-action="HistoryDetail" asp-route-id="@Model.Id" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Edit record</h1>
+</div>
+<form asp-action="HistoryEdit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="PropiedadId" />
+    <label asp-for="RecordType" class="hf-label">Record type</label>
+    <select asp-for="RecordType" class="hf-select">
+        <option value="Improvement">Improvement</option>
+        <option value="Repair">Repair</option>
+        <option value="Maintenance">Maintenance</option>
+    </select>
+    <label asp-for="Title" class="hf-label">Title</label>
+    <input asp-for="Title" class="hf-input" />
+    <label asp-for="ProviderName" class="hf-label">Provider</label>
+    <input asp-for="ProviderName" class="hf-input" />
+    <label asp-for="CompletionDate" class="hf-label">Completion date</label>
+    <input asp-for="CompletionDate" class="hf-input" type="date" />
+    <label asp-for="TotalCost" class="hf-label">Total cost</label>
+    <input asp-for="TotalCost" class="hf-input" type="number" step="0.01" />
+    <label asp-for="WarrantyStatus" class="hf-label">Warranty status</label>
+    <select asp-for="WarrantyStatus" class="hf-select">
+        <option value="">Not specified</option>
+        <option value="Active">Active</option>
+        <option value="Expired">Expired</option>
+    </select>
+    <label asp-for="Description" class="hf-label">Description</label>
+    <textarea asp-for="Description" class="hf-textarea" rows="4"></textarea>
+    <button type="submit" class="hf-btn hf-btn-primary">Save record</button>
+</form>

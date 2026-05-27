@@ -1,0 +1,26 @@
+@model IndorMvcApp.ViewModels.MyHomeDocumentFormViewModel
+@{
+    ViewData["Title"] = "Upload Document";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "documents";
+}
+<div class="hf-title-row">
+    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Upload document</h1>
+</div>
+<form asp-action="DocumentCreate" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="PropiedadId" />
+    <label asp-for="Category" class="hf-label">Category</label>
+    <select asp-for="Category" class="hf-select">
+        @foreach (var cat in IndorMvcApp.Services.MyHomeDisplayService.DocumentCategories)
+        {
+            <option value="@cat">@cat</option>
+        }
+    </select>
+    <label asp-for="Title" class="hf-label">Title</label>
+    <input asp-for="Title" class="hf-input" />
+    <label class="hf-label">File</label>
+    <input type="file" name="file" class="hf-input" />
+    <button type="submit" class="hf-btn hf-btn-primary">Save document</button>
+</form>

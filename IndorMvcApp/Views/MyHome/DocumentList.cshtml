@@ -1,0 +1,33 @@
+@model IndorMvcApp.ViewModels.MyHomeDocumentListViewModel
+@{
+    ViewData["Title"] = Model.Category;
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "documents";
+}
+<div class="hf-title-row">
+    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">@Model.Category</h1>
+    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-category="@Model.Category" class="hf-btn">+ Add</a>
+</div>
+@if (Model.Items.Count == 0)
+{
+    <div class="hf-card" style="text-align:center;color:#64748B;">No documents in this category yet.</div>
+}
+else
+{
+    @foreach (var doc in Model.Items)
+    {
+        <div class="hf-card hf-doc-row" style="margin-bottom:8px;">
+            <i class="fas fa-file-lines" style="color:#0066CC;width:20px;"></i>
+            <div style="flex:1;">
+                <div style="font-weight:700;">@doc.Title</div>
+                <div style="font-size:0.78rem;color:#64748B;">@(doc.FileName ?? "Document") · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(doc.StoragePath))
+            {
+                <a href="@doc.StoragePath" target="_blank" rel="noopener" style="color:#0066CC;"><i class="fas fa-download"></i></a>
+            }
+        </div>
+    }
+}

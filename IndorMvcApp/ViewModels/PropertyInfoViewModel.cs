@@ -37,8 +37,13 @@ public class PropertyInfoViewModel
     // Seguros y garantías de sistemas de la casa
     public HomeWarrantiesInfo? HomeWarranties { get; set; }
 
-    // Dispositivos agregados por el usuario
+    // Devices added by the user
     public List<DeviceInfoViewModel> Devices { get; set; } = new();
+
+    // ATTOM metadata (also persisted on Propiedad columns)
+    public long? AttomPropertyId { get; set; }
+    public string? AttomRawJson { get; set; }
+    public string? DataSource { get; set; }
 }
 
 public class DeviceInfoViewModel
@@ -93,10 +98,11 @@ public class PropertyDetailsInfo
     public decimal? AnnualTaxAmount { get; set; }
     public int? TaxYear { get; set; }
 
-    // Información adicional
+    // Additional information
     public string? ParcelNumber { get; set; }
     public string? LegalDescription { get; set; }
     public string? Zoning { get; set; }
+    public string? AssignedSchool { get; set; }
 }
 
 public class UtilityProvidersInfo

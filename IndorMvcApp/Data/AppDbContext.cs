@@ -61,6 +61,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SolicitudEmergenciaRoofLeak> SolicitudesEmergenciaRoofLeak { get; set; }
     public DbSet<ArchivoEmergenciaRoofLeak> ArchivosEmergenciaRoofLeak { get; set; }
     public DbSet<SolicitudEmergenciaSmokeDetector> SolicitudesEmergenciaSmokeDetector { get; set; }
+    public DbSet<PropiedadHistorial> PropiedadHistorial { get; set; }
+    public DbSet<PropiedadProveedor> PropiedadProveedores { get; set; }
+    public DbSet<PropiedadMantenimiento> PropiedadMantenimiento { get; set; }
+    public DbSet<PropiedadDocumento> PropiedadDocumentos { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }

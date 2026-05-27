@@ -1,0 +1,37 @@
+@model IndorMvcApp.ViewModels.MyHomeMaintenanceDetailViewModel
+@{
+    ViewData["Title"] = "Maintenance Details";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "summary";
+}
+<div class="hf-title-row">
+    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Maintenance details</h1>
+</div>
+<div class="hf-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="width:48px;height:48px;border-radius:50%;background:rgba(0,102,204,0.1);display:flex;align-items:center;justify-content:center;color:#0066CC;"><i class="fas fa-clipboard-check"></i></div>
+        <div style="flex:1;">
+            <div style="font-weight:800;font-size:1.1rem;">@Model.Title</div>
+            <span class="hf-badge">@IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(Model.Status)</span>
+        </div>
+    </div>
+    <div class="hf-list-item"><i class="fas fa-calendar icon"></i><div class="meta"><div class="label">Due date</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatDate(Model.DueDate)</div></div></div>
+    @if (Model.CompletedDate.HasValue)
+    {
+        <div class="hf-list-item"><i class="fas fa-circle-check icon"></i><div class="meta"><div class="label">Completed</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatDate(Model.CompletedDate)</div></div></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.ProviderName))
+    {
+        <div class="hf-list-item"><i class="fas fa-user icon"></i><div class="meta"><div class="label">Provider</div><div class="value" style="color:#0066CC;">@Model.ProviderName</div></div></div>
+    }
+</div>
+@if (!string.IsNullOrWhiteSpace(Model.Notes))
+{
+    <div class="hf-card">
+        <div class="hf-label">Notes</div>
+        <p style="line-height:1.5;color:#475569;">@Model.Notes</p>
+    </div>
+}
+<a asp-action="MaintenanceEdit" asp-route-id="@Model.Id" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> Edit task</a>

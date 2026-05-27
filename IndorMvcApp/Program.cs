@@ -46,8 +46,15 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.AccessDeniedPath = "/Account/AccessDenied";
 });
 
-// Registrar HttpClient y AddressLookupService
+// Register HttpClient and AddressLookupService
 builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
+builder.Services.Configure<AttomOptions>(builder.Configuration.GetSection(AttomOptions.SectionName));
+builder.Services.AddHttpClient<IAttomPropertyService, AttomPropertyService>((sp, client) =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AttomOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
 
 var app = builder.Build();
 

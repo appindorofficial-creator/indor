@@ -196,6 +196,8 @@ public class PropietarioController : Controller
                 WriteIndented = false,
                 DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
             };
+            var attomRawJson = fullModel.AttomRawJson;
+            fullModel.AttomRawJson = null;
             var jsonRaw = JsonSerializer.Serialize(fullModel, jsonOptions);
 
             var propiedad = new Propiedad
@@ -204,7 +206,11 @@ public class PropietarioController : Controller
                 DatosJson = jsonRaw,
                 UserId = userId,
                 FechaCreacion = DateTime.Now,
-                Activo = true
+                Activo = true,
+                AttomPropertyId = fullModel.AttomPropertyId,
+                AttomRawJson = attomRawJson,
+                AttomLastSyncUtc = fullModel.AttomPropertyId.HasValue ? DateTime.UtcNow : null,
+                AttomSyncStatus = fullModel.AttomPropertyId.HasValue ? "Success" : "Estimated"
             };
 
             _db.Propiedades.Add(propiedad);

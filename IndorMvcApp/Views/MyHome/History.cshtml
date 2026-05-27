@@ -1,0 +1,50 @@
+@model IndorMvcApp.ViewModels.MyHomeHistoryListViewModel
+@{
+    ViewData["Title"] = "House History";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "history";
+    var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
+}
+<div class="hf-title-row">
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">House History</h1>
+    <a asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">+ Add</a>
+</div>
+<div class="hf-chip-row">
+    @foreach (var f in new[] { "All", "Improvement", "Repair", "Maintenance" })
+    {
+        <a asp-action="History" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@f</a>
+    }
+</div>
+@if (groups.Count == 0)
+{
+    <div class="hf-card" style="text-align:center;color:#64748B;">No history records yet. Tap <strong>+ Add</strong> to log improvements, repairs, or maintenance.</div>
+}
+else
+{
+    <div class="hf-timeline">
+        @foreach (var group in groups)
+        {
+            <div class="hf-timeline-month">@group.Key</div>
+            @foreach (var item in group)
+            {
+                <a asp-action="HistoryDetail" asp-route-id="@item.Id" class="hf-timeline-item">
+                    <div class="hf-timeline-dot"><i class="fas @IndorMvcApp.Services.MyHomeDisplayService.RecordTypeIcon(item.RecordType)"></i></div>
+                    <div class="hf-timeline-card">
+                        <div class="body">
+                            <div class="title">@item.Title</div>
+                            <div class="sub">@(item.ProviderName ?? "No provider")</div>
+                        </div>
+                        <div class="cost">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(item.TotalCost)</div>
+                        <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:0.75rem;"></i>
+                    </div>
+                </a>
+            }
+        }
+    </div>
+}
+<div class="hf-banner">
+    <i class="fas fa-shield-check"></i>
+    <div><strong>Keep your information up to date.</strong> A complete history gives you peace of mind and can increase your property value. <span style="color:#0066CC;font-weight:700;">Learn more &gt;</span></div>
+</div>

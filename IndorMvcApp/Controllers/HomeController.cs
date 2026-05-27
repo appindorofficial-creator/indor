@@ -33,6 +33,8 @@ public class HomeController : Controller
             .OrderByDescending(p => p.FechaCreacion)
             .ToListAsync();
 
+        ViewBag.PrimaryPropiedadId = propiedades.FirstOrDefault()?.Id;
+
         var microservicios = await _db.Microservicios
             .Where(m => m.Activo)
             .OrderBy(m => m.Id)

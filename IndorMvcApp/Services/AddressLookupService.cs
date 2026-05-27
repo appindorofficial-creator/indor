@@ -9,6 +9,7 @@ namespace IndorMvcApp.Services;
 public partial class AddressLookupService : IAddressLookupService
 {
     private readonly HttpClient _httpClient;
+    private readonly IAttomPropertyService _attomPropertyService;
     private readonly ILogger<AddressLookupService> _logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -19,9 +20,13 @@ public partial class AddressLookupService : IAddressLookupService
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    public AddressLookupService(HttpClient httpClient, ILogger<AddressLookupService> logger)
+    public AddressLookupService(
+        HttpClient httpClient,
+        IAttomPropertyService attomPropertyService,
+        ILogger<AddressLookupService> logger)
     {
         _httpClient = httpClient;
+        _attomPropertyService = attomPropertyService;
         _logger = logger;
     }
 
@@ -49,8 +54,10 @@ public partial class AddressLookupService : IAddressLookupService
             if (propertyInfo == null)
             {
                 _logger.LogWarning("No geocoder results for address: {Address}", address);
+                return null;
             }
 
+            await TryEnrichWithAttomAsync(propertyInfo);
             return propertyInfo;
         }
         catch (JsonException jsonEx)
@@ -354,6 +361,36 @@ public partial class AddressLookupService : IAddressLookupService
         };
 
         return details;
+    }
+
+    private async Task TryEnrichWithAttomAsync(PropertyInfoViewModel propertyInfo)
+    {
+        try
+        {
+            var attomResult = await _attomPropertyService.EnrichPropertyAsync(propertyInfo);
+            if (attomResult.Success)
+            {
+                propertyInfo.DataSource = "ATTOM";
+                propertyInfo.AttomPropertyId = attomResult.AttomPropertyId;
+                propertyInfo.AttomRawJson = attomResult.RawJson;
+                _logger.LogInformation(
+                    "ATTOM enrichment succeeded for {Address} (AttomId={AttomId})",
+                    propertyInfo.FormattedAddress,
+                    attomResult.AttomPropertyId);
+                return;
+            }
+
+            propertyInfo.DataSource ??= "Estimated";
+            _logger.LogInformation(
+                "ATTOM enrichment skipped for {Address}: {Reason}",
+                propertyInfo.FormattedAddress,
+                attomResult.ErrorMessage ?? "Unknown");
+        }
+        catch (Exception ex)
+        {
+            propertyInfo.DataSource ??= "Estimated";
+            _logger.LogWarning(ex, "ATTOM enrichment failed for {Address}", propertyInfo.FormattedAddress);
+        }
     }
 
     private async Task<UtilityProvidersInfo> GetAssignedUtilityProvidersAsync(

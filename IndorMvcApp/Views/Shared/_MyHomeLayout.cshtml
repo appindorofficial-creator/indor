@@ -1,0 +1,94 @@
+@{
+    Layout = null;
+    var propiedadId = ViewBag.PropiedadId as int? ?? 0;
+    var activeNav = ViewBag.MyHomeNav as string ?? "summary";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - HOUSE FACTS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body { font-family:'Inter',sans-serif; background:#F4F7FB; color:#0A2540; min-height:100vh; padding-bottom:84px; }
+        .hf-top { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; background:#FFF; border-bottom:1px solid #E5E7EB; }
+        .hf-brand { display:flex; align-items:center; gap:8px; font-weight:800; color:#0066CC; font-size:0.95rem; }
+        .hf-content { max-width:520px; margin:0 auto; padding:16px; }
+        .hf-title-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
+        .hf-title { font-size:1.45rem; font-weight:800; }
+        .hf-back { width:40px; height:40px; border-radius:50%; border:1.5px solid #E5E7EB; background:#FFF; display:inline-flex; align-items:center; justify-content:center; color:#0A2540; text-decoration:none; }
+        .hf-btn { border:1.5px solid #0066CC; background:#FFF; color:#0066CC; border-radius:12px; padding:10px 14px; font-weight:700; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
+        .hf-btn-primary { background:linear-gradient(135deg,#0066CC,#004FA3); color:#FFF; border:none; width:100%; justify-content:center; padding:15px; border-radius:14px; font-size:1rem; }
+        .hf-card { background:#FFF; border-radius:16px; padding:16px; border:1px solid rgba(229,231,235,0.9); margin-bottom:12px; }
+        .hf-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .hf-stat { background:#FFF; border:1px solid #E5E7EB; border-radius:14px; padding:14px; }
+        .hf-stat i { color:#0066CC; margin-bottom:8px; }
+        .hf-stat .k { font-size:0.75rem; color:#94A3B8; font-weight:600; }
+        .hf-stat .v { font-size:0.95rem; font-weight:700; margin-top:4px; }
+        .hf-action-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .hf-action { background:#FFF; border:1px solid #E5E7EB; border-radius:14px; padding:16px 12px; text-decoration:none; color:#0A2540; display:flex; flex-direction:column; align-items:center; gap:8px; font-weight:700; font-size:0.82rem; }
+        .hf-action i { color:#0066CC; font-size:1.2rem; }
+        .hf-list-item { display:flex; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid #E5E7EB; text-decoration:none; color:inherit; }
+        .hf-list-item:last-child { border-bottom:none; }
+        .hf-list-item i.icon { color:#0066CC; width:20px; text-align:center; }
+        .hf-list-item .meta { flex:1; }
+        .hf-list-item .label { font-size:0.78rem; color:#94A3B8; font-weight:600; }
+        .hf-list-item .value { font-size:0.92rem; font-weight:700; }
+        .hf-chip-row { display:flex; gap:8px; overflow-x:auto; margin-bottom:14px; }
+        .hf-chip { border:1.5px solid #E5E7EB; background:#FFF; border-radius:999px; padding:8px 14px; font-weight:600; font-size:0.82rem; color:#64748B; text-decoration:none; white-space:nowrap; }
+        .hf-chip.active { border-color:#0066CC; color:#0066CC; background:rgba(0,102,204,0.08); }
+        .hf-input, .hf-textarea, .hf-select { width:100%; padding:14px; border:1.5px solid #E5E7EB; border-radius:12px; font-family:inherit; font-size:0.92rem; background:#F9FAFB; margin-bottom:12px; }
+        .hf-label { display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px; }
+        .hf-banner { background:rgba(0,102,204,0.08); border:1px solid rgba(0,102,204,0.15); border-radius:14px; padding:14px 16px; display:flex; gap:10px; font-size:0.86rem; line-height:1.45; margin-bottom:14px; }
+        .hf-banner i { color:#0066CC; margin-top:2px; }
+        .hf-bottom-nav { position:fixed; left:0; right:0; bottom:0; background:#FFF; border-top:1px solid #E5E7EB; display:grid; grid-template-columns:repeat(4,1fr); padding:8px 0 10px; z-index:20; }
+        .hf-bottom-nav a { text-decoration:none; color:#94A3B8; text-align:center; font-size:0.68rem; font-weight:600; }
+        .hf-bottom-nav a i { display:block; font-size:1.1rem; margin-bottom:4px; }
+        .hf-bottom-nav a.active { color:#0066CC; }
+        .hf-hero { width:100%; height:180px; object-fit:cover; border-radius:16px; margin-bottom:12px; }
+        .hf-address-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; font-weight:600; }
+        .hf-timeline { position:relative; margin-left:8px; }
+        .hf-timeline::before { content:''; position:absolute; left:15px; top:8px; bottom:8px; width:2px; background:#E5E7EB; }
+        .hf-timeline-month { font-weight:800; margin:16px 0 8px 4px; font-size:0.95rem; }
+        .hf-timeline-item { position:relative; display:flex; align-items:stretch; gap:12px; margin-bottom:10px; text-decoration:none; color:inherit; }
+        .hf-timeline-dot { width:32px; height:32px; border-radius:50%; background:rgba(0,102,204,0.12); display:flex; align-items:center; justify-content:center; color:#0066CC; flex-shrink:0; z-index:1; margin-top:14px; }
+        .hf-timeline-card { flex:1; background:#FFF; border:1px solid #E5E7EB; border-radius:14px; padding:14px 16px; display:flex; align-items:center; gap:10px; }
+        .hf-timeline-card .body { flex:1; min-width:0; }
+        .hf-timeline-card .title { font-weight:800; font-size:0.95rem; margin-bottom:2px; }
+        .hf-timeline-card .sub { font-size:0.82rem; color:#64748B; }
+        .hf-timeline-card .cost { font-weight:800; font-size:0.95rem; white-space:nowrap; }
+        .hf-badge { display:inline-flex; align-items:center; border:1.5px solid #0066CC; color:#0066CC; background:rgba(0,102,204,0.08); border-radius:999px; padding:4px 10px; font-size:0.75rem; font-weight:700; }
+        .hf-photo-row { display:flex; gap:8px; overflow-x:auto; margin-top:10px; }
+        .hf-photo { width:72px; height:72px; border-radius:10px; object-fit:cover; flex-shrink:0; background:#E5E7EB; }
+        .hf-photo-more { width:72px; height:72px; border-radius:10px; background:rgba(0,102,204,0.15); color:#0066CC; display:flex; align-items:center; justify-content:center; font-weight:800; flex-shrink:0; }
+        .hf-doc-row { display:flex; align-items:center; gap:12px; padding:12px 0; border-bottom:1px solid #E5E7EB; }
+        .hf-doc-row:last-child { border-bottom:none; }
+        .hf-quick-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px; }
+        .hf-quick-link { background:#FFF; border:1px solid #E5E7EB; border-radius:12px; padding:12px; text-decoration:none; color:#0A2540; font-weight:700; font-size:0.82rem; display:flex; align-items:center; gap:8px; }
+        .hf-quick-link i { color:#0066CC; }
+    </style>
+    @RenderSection("Head", required: false)
+</head>
+<body>
+    <div class="hf-top">
+        <div class="hf-brand"><i class="fas fa-house"></i> HOUSE FACTS</div>
+        <a asp-controller="Home" asp-action="Index" style="color:#0066CC;"><i class="fas fa-bell"></i></a>
+    </div>
+    <div class="hf-content">
+        @RenderBody()
+    </div>
+    @if (propiedadId > 0)
+    {
+        <nav class="hf-bottom-nav">
+            <a asp-controller="MyHome" asp-action="Index" asp-route-id="@propiedadId" class="@(activeNav == "summary" ? "active" : "")"><i class="fas fa-house"></i>Summary</a>
+            <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId" class="@(activeNav == "history" ? "active" : "")"><i class="fas fa-clock-rotate-left"></i>History</a>
+            <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId" class="@(activeNav == "documents" ? "active" : "")"><i class="fas fa-file-lines"></i>Documents</a>
+            <a asp-controller="Home" asp-action="Index" data-target="section-more" class="@(activeNav == "more" ? "active" : "")"><i class="fas fa-ellipsis"></i>More</a>
+        </nav>
+    }
+</body>
+</html>

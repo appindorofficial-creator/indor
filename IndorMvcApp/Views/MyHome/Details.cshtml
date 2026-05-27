@@ -1,0 +1,36 @@
+@model IndorMvcApp.ViewModels.MyHomePropertyDetailsViewModel
+@{
+    ViewData["Title"] = "Property Details";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "summary";
+    var isPublic = Model.ActiveTab == "public";
+}
+<div class="hf-title-row">
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Property Details</h1>
+    <a asp-action="Edit" asp-route-id="@Model.PropiedadId" class="hf-btn">Edit</a>
+</div>
+<div class="hf-chip-row">
+    <a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="information" class="hf-chip @(!isPublic ? "active" : "")">Information</a>
+    <a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="public" class="hf-chip @(isPublic ? "active" : "")">Public data</a>
+</div>
+<div class="hf-card">
+    @if (!isPublic)
+    {
+        <a class="hf-list-item" href="#"><i class="fas fa-id-card icon"></i><div class="meta"><div class="label">Parcel ID</div><div class="value">@(Model.ParcelId ?? "—")</div></div></a>
+        <a class="hf-list-item" href="#"><i class="fas fa-map icon"></i><div class="meta"><div class="label">Zoning</div><div class="value">@(Model.Zoning ?? "—")</div></div></a>
+        <a class="hf-list-item" href="#"><i class="fas fa-graduation-cap icon"></i><div class="meta"><div class="label">Assigned school</div><div class="value">@(Model.AssignedSchool ?? "—")</div></div></a>
+        <a class="hf-list-item" href="#"><i class="fas fa-tag icon"></i><div class="meta"><div class="label">Last sale</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatDate(Model.LastSaleDate)</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></a>
+        <a class="hf-list-item" href="#"><i class="fas fa-circle-dollar-to-slot icon"></i><div class="meta"><div class="label">Annual tax</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.AnnualTaxAmount)</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></a>
+    }
+    <a class="hf-list-item" href="#"><i class="fas fa-calendar icon"></i><div class="meta"><div class="label">Year built</div><div class="value">@(Model.YearBuilt?.ToString() ?? "—")</div></div></a>
+    <a class="hf-list-item" href="#"><i class="fas fa-ruler-combined icon"></i><div class="meta"><div class="label">Living area</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatArea(Model.LivingArea)</div></div></a>
+    <a class="hf-list-item" href="#"><i class="fas fa-vector-square icon"></i><div class="meta"><div class="label">Lot size</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatLot(Model.LotSizeAcres)</div></div></a>
+    <a class="hf-list-item" href="#"><i class="fas fa-house icon"></i><div class="meta"><div class="label">Property type</div><div class="value">@(Model.PropertyType ?? "—")</div></div></a>
+    <a class="hf-list-item" href="#"><i class="fas fa-chart-line icon"></i><div class="meta"><div class="label">Estimated value</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.EstimatedValue)</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></a>
+</div>
+<div class="hf-banner">
+    <i class="fas fa-shield-check"></i>
+    <div><strong>Verified public source.</strong> This data comes from official public records (@Model.DataSource) and is updated periodically. <a asp-action="Edit" asp-route-id="@Model.PropiedadId" style="color:#0066CC;font-weight:700;">Learn more ></a></div>
+</div>

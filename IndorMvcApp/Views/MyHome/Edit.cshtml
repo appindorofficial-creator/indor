@@ -1,0 +1,35 @@
+@model IndorMvcApp.ViewModels.MyHomeEditViewModel
+@{
+    ViewData["Title"] = "Edit Property";
+    Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
+    ViewBag.PropiedadId = Model.PropiedadId;
+    ViewBag.MyHomeNav = "summary";
+}
+<div class="hf-title-row">
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">Edit property</h1>
+</div>
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="PropiedadId" />
+    <label asp-for="Address" class="hf-label">Address</label>
+    <input asp-for="Address" class="hf-input" />
+    <label asp-for="PropertyType" class="hf-label">Property type</label>
+    <input asp-for="PropertyType" class="hf-input" />
+    <div class="hf-grid-2">
+        <div><label asp-for="YearBuilt" class="hf-label">Year built</label><input asp-for="YearBuilt" class="hf-input" type="number" /></div>
+        <div><label asp-for="LivingArea" class="hf-label">Living area (sq ft)</label><input asp-for="LivingArea" class="hf-input" type="number" /></div>
+        <div><label asp-for="Bedrooms" class="hf-label">Bedrooms</label><input asp-for="Bedrooms" class="hf-input" type="number" /></div>
+        <div><label asp-for="Bathrooms" class="hf-label">Bathrooms</label><input asp-for="Bathrooms" class="hf-input" type="number" step="0.5" /></div>
+        <div><label asp-for="LotSizeAcres" class="hf-label">Lot size (acres)</label><input asp-for="LotSizeAcres" class="hf-input" type="number" step="0.01" /></div>
+        <div><label asp-for="EstimatedValue" class="hf-label">Estimated value</label><input asp-for="EstimatedValue" class="hf-input" type="number" step="1000" /></div>
+    </div>
+    <label asp-for="AnnualTaxAmount" class="hf-label">Annual tax</label>
+    <input asp-for="AnnualTaxAmount" class="hf-input" type="number" step="1" />
+    <label asp-for="ParcelId" class="hf-label">Parcel ID</label>
+    <input asp-for="ParcelId" class="hf-input" />
+    <label asp-for="Zoning" class="hf-label">Zoning</label>
+    <input asp-for="Zoning" class="hf-input" />
+    <label asp-for="AssignedSchool" class="hf-label">Assigned school</label>
+    <input asp-for="AssignedSchool" class="hf-input" />
+    <button type="submit" class="hf-btn hf-btn-primary">Save changes</button>
+</form>
