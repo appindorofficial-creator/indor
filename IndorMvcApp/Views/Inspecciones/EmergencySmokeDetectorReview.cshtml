@@ -1,0 +1,95 @@
+@model IndorMvcApp.ViewModels.EmergencySmokeDetectorReviewViewModel
+@{
+    ViewData["Title"] = "Smoke & CO Details - INDOR";
+    Layout = null;
+    var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.OrdinalIgnoreCase)
+        || Model.SeguridadResumen.Contains("not safe", StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 8px; }
+        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 6px; }
+        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+        .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5E7EB; }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
+        .summary-row i.warn { color: #DC2626; }
+        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600; }
+        .summary-value { font-size: 0.9rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
+        .summary-value.warn { color: #DC2626; }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; display: block; }
+        .form-textarea { width: 100%; min-height: 100px; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; background: #F9FAFB; resize: vertical; }
+        .char-count { text-align: right; font-size: 0.75rem; color: #94A3B8; margin-top: 4px; margin-bottom: 16px; }
+        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
+        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <a asp-action="EmergencySmokeDetectorYourInfo" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+    <strong style="display:block;margin-bottom:4px;">Smoke &amp; CO Details</strong>
+
+    @await Html.PartialAsync("_EmergencySmokeDetectorStepper", 3)
+
+    <h2 class="page-heading">Review your emergency request</h2>
+    <p class="page-lead">Make sure everything looks right before we dispatch help.</p>
+
+    <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorReview" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="ServicioEmergenciaId" />
+        <input type="hidden" asp-for="TituloServicio" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="ProblemaResumen" />
+        <input type="hidden" asp-for="UbicacionesResumen" />
+        <input type="hidden" asp-for="SeguridadResumen" />
+        <input type="hidden" asp-for="OlorGasResumen" />
+        <input type="hidden" asp-for="AccesoResumen" />
+
+        <div class="summary-card">
+            <div class="summary-row"><i class="fas fa-fire-flame-curved"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+            <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+            <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">Issue</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">Locations</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-triangle-exclamation warn"></i><div style="flex:1;"><div class="summary-label">Safety status</div><div class="summary-value @(unsafeInside ? "warn" : "")">@Model.SeguridadResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-wind"></i><div style="flex:1;"><div class="summary-label">Gas smell</div><div class="summary-value">@Model.OlorGasResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-user"></i><div style="flex:1;"><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoResumen</div></div></div>
+        </div>
+
+        <label asp-for="NotaCorta" class="field-label">Optional notes</label>
+        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="500" placeholder="Hallway detector started sounding and bedroom detector is chirping too."></textarea>
+        <div class="char-count"><span id="charCount">0</span>/500</div>
+
+        <div class="info-box">
+            <i class="fas fa-circle-info"></i>
+            <div>Providers will review your answers first. If danger increases, leave the home and call emergency services.</div>
+        </div>
+
+        <button type="submit" class="btn-primary" name="action" value="submit">Submit request <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">Edit details</button>
+    </form>
+</div>
+<script>
+    const note = document.getElementById('NotaCorta');
+    const charCount = document.getElementById('charCount');
+    function updateCount() { charCount.textContent = (note.value || '').length; }
+    note.addEventListener('input', updateCount);
+    updateCount();
+</script>
+</body>
+</html>

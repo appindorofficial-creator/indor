@@ -1,0 +1,150 @@
+@model IndorMvcApp.ViewModels.EmergencyWaterHeaterDetailsViewModel
+@{
+    ViewData["Title"] = "Emergency Water Heater - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 12px; }
+        .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .title-row h1 { font-size: 1.2rem; font-weight: 800; }
+        .badge-247 { background: rgba(220,38,38,0.1); color: #DC2626; font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; }
+        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; }
+        .address-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: #FFF; border-radius: 14px; border: 1px solid #E5E7EB; margin-bottom: 16px; font-size: 0.92rem; }
+        .address-row i { color: #0066CC; margin-right: 8px; }
+        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
+        .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
+        .chip-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 999px; padding: 10px 14px; font-weight: 600; font-size: 0.82rem; color: #64748B; cursor: pointer; }
+        .chip-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .form-textarea { width: 100%; min-height: 100px; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; resize: vertical; background: #F9FAFB; }
+        .char-count { text-align: right; font-size: 0.78rem; color: #94A3B8; margin-top: 6px; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <a asp-action="EmergencyWaterHeaterIssue" asp-route-id="@Model.ServicioEmergenciaId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+
+    <div class="title-row">
+        <h1>Emergency Water Heater</h1>
+        <span class="badge-247">24/7</span>
+    </div>
+    <p class="page-lead">Fast help for leaks, no hot water, or unsafe units.</p>
+
+    @await Html.PartialAsync("_EmergencyWaterHeaterStepper", 2)
+
+    <h2 class="page-heading">Add a few details</h2>
+    <p class="page-lead" style="margin-top:-4px;">A quick summary helps the provider arrive prepared.</p>
+
+    <div class="address-row">
+        <span><i class="fas fa-location-dot"></i>@Model.DireccionPropiedad</span>
+        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+    </div>
+
+    <form asp-controller="Inspecciones" asp-action="EmergencyWaterHeaterDetails" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="ServicioEmergenciaId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TituloServicio" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="UbicacionProblema" id="UbicacionProblema" />
+        <input type="hidden" asp-for="TipoUnidad" id="TipoUnidad" />
+        <input type="hidden" asp-for="SintomasVisibles" id="SintomasVisibles" />
+
+        <div class="field-card">
+            <span class="field-label">Where is the problem?</span>
+            <div class="chip-grid" id="locationGroup">
+                <button type="button" class="chip-btn" data-value="Garage">Garage</button>
+                <button type="button" class="chip-btn" data-value="Closet">Closet</button>
+                <button type="button" class="chip-btn" data-value="Attic">Attic</button>
+                <button type="button" class="chip-btn" data-value="Basement">Basement</button>
+                <button type="button" class="chip-btn" data-value="Outside">Outside</button>
+                <button type="button" class="chip-btn" data-value="UtilityRoom">Utility room</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What type of unit?</span>
+            <div class="chip-grid" id="unitGroup">
+                <button type="button" class="chip-btn" data-value="Gas">Gas</button>
+                <button type="button" class="chip-btn" data-value="Electric">Electric</button>
+                <button type="button" class="chip-btn" data-value="Tankless">Tankless</button>
+                <button type="button" class="chip-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Visible symptoms</span>
+            <div class="chip-grid" id="symptomsGroup">
+                <button type="button" class="chip-btn" data-value="WaterLeaking">Water leaking</button>
+                <button type="button" class="chip-btn" data-value="RustyWater">Rusty water</button>
+                <button type="button" class="chip-btn" data-value="NoHotWater">No hot water</button>
+                <button type="button" class="chip-btn" data-value="WarmOnly">Warm only</button>
+                <button type="button" class="chip-btn" data-value="LowPressureNearby">Low pressure nearby</button>
+                <button type="button" class="chip-btn" data-value="ErrorCode">Error code</button>
+                <button type="button" class="chip-btn" data-value="BurnerWontStayOn">Burner won't stay on</button>
+                <button type="button" class="chip-btn" data-value="PoppingNoise">Popping noise</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <label asp-for="NotaCorta" class="field-label">Short note</label>
+            <textarea asp-for="NotaCorta" class="form-textarea" maxlength="250" id="NotaCorta" placeholder="Add any details that might help (e.g., when it started, any error codes)."></textarea>
+            <div class="char-count"><span id="charCount">0</span>/250</div>
+        </div>
+
+        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">Back</button>
+    </form>
+</div>
+<script>
+    function setSingle(groupId, hiddenId, value) {
+        document.getElementById(hiddenId).value = value;
+        document.querySelectorAll(`#${groupId} .chip-btn`).forEach(btn => btn.classList.toggle('active', btn.dataset.value === value));
+    }
+    function initSingle(groupId, hiddenId, defaultValue) {
+        document.querySelectorAll(`#${groupId} .chip-btn`).forEach(btn => btn.addEventListener('click', () => setSingle(groupId, hiddenId, btn.dataset.value)));
+        setSingle(groupId, hiddenId, document.getElementById(hiddenId).value || defaultValue);
+    }
+    function initMulti(groupId, hiddenId, defaultValues) {
+        const hidden = document.getElementById(hiddenId);
+        let selected = (hidden.value || '').split('|').map(x => x.trim()).filter(Boolean);
+        if (!selected.length) selected = defaultValues.slice();
+        function render() {
+            document.querySelectorAll(`#${groupId} .chip-btn`).forEach(btn => btn.classList.toggle('active', selected.includes(btn.dataset.value)));
+            hidden.value = selected.join('|');
+        }
+        document.querySelectorAll(`#${groupId} .chip-btn`).forEach(btn => btn.addEventListener('click', () => {
+            const v = btn.dataset.value;
+            selected = selected.includes(v) ? selected.filter(x => x !== v) : [...selected, v];
+            render();
+        }));
+        render();
+    }
+    initSingle('locationGroup', 'UbicacionProblema', 'Garage');
+    initSingle('unitGroup', 'TipoUnidad', 'Gas');
+    initMulti('symptomsGroup', 'SintomasVisibles', []);
+    const notes = document.getElementById('NotaCorta');
+    const charCount = document.getElementById('charCount');
+    function updateCount() { charCount.textContent = (notes.value || '').length; }
+    notes.addEventListener('input', updateCount);
+    updateCount();
+</script>
+</body>
+</html>

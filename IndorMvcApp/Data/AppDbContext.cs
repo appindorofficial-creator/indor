@@ -46,6 +46,21 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ArchivoInspeccionHomeSafety> ArchivosInspeccionHomeSafety { get; set; }
     public DbSet<SolicitudInspeccionInvestor> SolicitudesInspeccionInvestor { get; set; }
     public DbSet<ArchivoInspeccionInvestor> ArchivosInspeccionInvestor { get; set; }
+    public DbSet<SolicitudEmergenciaPlomeria> SolicitudesEmergenciaPlomeria { get; set; }
+    public DbSet<ArchivoEmergenciaPlomeria> ArchivosEmergenciaPlomeria { get; set; }
+    public DbSet<SolicitudEmergenciaHvac> SolicitudesEmergenciaHvac { get; set; }
+    public DbSet<ArchivoEmergenciaHvac> ArchivosEmergenciaHvac { get; set; }
+    public DbSet<SolicitudEmergenciaWaterHeater> SolicitudesEmergenciaWaterHeater { get; set; }
+    public DbSet<ArchivoEmergenciaWaterHeater> ArchivosEmergenciaWaterHeater { get; set; }
+    public DbSet<SolicitudEmergenciaFlood> SolicitudesEmergenciaFlood { get; set; }
+    public DbSet<ArchivoEmergenciaFlood> ArchivosEmergenciaFlood { get; set; }
+    public DbSet<SolicitudEmergenciaElectrical> SolicitudesEmergenciaElectrical { get; set; }
+    public DbSet<ArchivoEmergenciaElectrical> ArchivosEmergenciaElectrical { get; set; }
+    public DbSet<SolicitudEmergenciaTreeDamage> SolicitudesEmergenciaTreeDamage { get; set; }
+    public DbSet<ArchivoEmergenciaTreeDamage> ArchivosEmergenciaTreeDamage { get; set; }
+    public DbSet<SolicitudEmergenciaRoofLeak> SolicitudesEmergenciaRoofLeak { get; set; }
+    public DbSet<ArchivoEmergenciaRoofLeak> ArchivosEmergenciaRoofLeak { get; set; }
+    public DbSet<SolicitudEmergenciaSmokeDetector> SolicitudesEmergenciaSmokeDetector { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }

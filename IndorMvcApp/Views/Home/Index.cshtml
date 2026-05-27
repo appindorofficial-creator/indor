@@ -2451,10 +2451,42 @@
                                   ?? new List<IndorMvcApp.Models.SolicitudInspeccionHomeSafety>();
             var investorItems = ViewBag.SolicitudesInspeccionInvestor as List<IndorMvcApp.Models.SolicitudInspeccionInvestor>
                                 ?? new List<IndorMvcApp.Models.SolicitudInspeccionInvestor>();
+            var emergencyPlumbingItems = ViewBag.SolicitudesEmergenciaPlomeria as List<IndorMvcApp.Models.SolicitudEmergenciaPlomeria>
+                                         ?? new List<IndorMvcApp.Models.SolicitudEmergenciaPlomeria>();
+            var emergencyPlumbingSubmitted = ViewBag.SolicitudesEmergenciaPlomeriaEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaPlomeria>
+                                             ?? new List<IndorMvcApp.Models.SolicitudEmergenciaPlomeria>();
+            var emergencyHvacItems = ViewBag.SolicitudesEmergenciaHvac as List<IndorMvcApp.Models.SolicitudEmergenciaHvac>
+                                     ?? new List<IndorMvcApp.Models.SolicitudEmergenciaHvac>();
+            var emergencyHvacSubmitted = ViewBag.SolicitudesEmergenciaHvacEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaHvac>
+                                         ?? new List<IndorMvcApp.Models.SolicitudEmergenciaHvac>();
+            var emergencyWaterHeaterItems = ViewBag.SolicitudesEmergenciaWaterHeater as List<IndorMvcApp.Models.SolicitudEmergenciaWaterHeater>
+                                            ?? new List<IndorMvcApp.Models.SolicitudEmergenciaWaterHeater>();
+            var emergencyWaterHeaterSubmitted = ViewBag.SolicitudesEmergenciaWaterHeaterEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaWaterHeater>
+                                                ?? new List<IndorMvcApp.Models.SolicitudEmergenciaWaterHeater>();
+            var emergencyFloodItems = ViewBag.SolicitudesEmergenciaFlood as List<IndorMvcApp.Models.SolicitudEmergenciaFlood>
+                                      ?? new List<IndorMvcApp.Models.SolicitudEmergenciaFlood>();
+            var emergencyFloodSubmitted = ViewBag.SolicitudesEmergenciaFloodEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaFlood>
+                                          ?? new List<IndorMvcApp.Models.SolicitudEmergenciaFlood>();
+            var emergencyElectricalItems = ViewBag.SolicitudesEmergenciaElectrical as List<IndorMvcApp.Models.SolicitudEmergenciaElectrical>
+                                             ?? new List<IndorMvcApp.Models.SolicitudEmergenciaElectrical>();
+            var emergencyElectricalSubmitted = ViewBag.SolicitudesEmergenciaElectricalEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaElectrical>
+                                               ?? new List<IndorMvcApp.Models.SolicitudEmergenciaElectrical>();
+            var emergencyTreeDamageItems = ViewBag.SolicitudesEmergenciaTreeDamage as List<IndorMvcApp.Models.SolicitudEmergenciaTreeDamage>
+                                           ?? new List<IndorMvcApp.Models.SolicitudEmergenciaTreeDamage>();
+            var emergencyTreeDamageSubmitted = ViewBag.SolicitudesEmergenciaTreeDamageEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaTreeDamage>
+                                               ?? new List<IndorMvcApp.Models.SolicitudEmergenciaTreeDamage>();
+            var emergencyRoofLeakItems = ViewBag.SolicitudesEmergenciaRoofLeak as List<IndorMvcApp.Models.SolicitudEmergenciaRoofLeak>
+                                         ?? new List<IndorMvcApp.Models.SolicitudEmergenciaRoofLeak>();
+            var emergencyRoofLeakSubmitted = ViewBag.SolicitudesEmergenciaRoofLeakEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaRoofLeak>
+                                             ?? new List<IndorMvcApp.Models.SolicitudEmergenciaRoofLeak>();
+            var emergencySmokeDetectorItems = ViewBag.SolicitudesEmergenciaSmokeDetector as List<IndorMvcApp.Models.SolicitudEmergenciaSmokeDetector>
+                                              ?? new List<IndorMvcApp.Models.SolicitudEmergenciaSmokeDetector>();
+            var emergencySmokeDetectorSubmitted = ViewBag.SolicitudesEmergenciaSmokeDetectorEnviadas as List<IndorMvcApp.Models.SolicitudEmergenciaSmokeDetector>
+                                                  ?? new List<IndorMvcApp.Models.SolicitudEmergenciaSmokeDetector>();
             var confirmedItems = ViewBag.InspeccionesConfirmadas as List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>
                                  ?? new List<IndorMvcApp.ViewModels.ConfirmedInspectionViewModel>();
         }
-        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && plumbingItems.Count == 0 && hvacItems.Count == 0 && structuralItems.Count == 0 && roofItems.Count == 0 && moldMoistureItems.Count == 0 && windowsInsulationItems.Count == 0 && homeSafetyItems.Count == 0 && investorItems.Count == 0 && confirmedItems.Count == 0)
+        @if (agendaItems.Count == 0 && inspectionItems.Count == 0 && electricalItems.Count == 0 && completeItems.Count == 0 && plumbingItems.Count == 0 && hvacItems.Count == 0 && structuralItems.Count == 0 && roofItems.Count == 0 && moldMoistureItems.Count == 0 && windowsInsulationItems.Count == 0 && homeSafetyItems.Count == 0 && investorItems.Count == 0 && emergencyPlumbingItems.Count == 0 && emergencyPlumbingSubmitted.Count == 0 && emergencyHvacItems.Count == 0 && emergencyHvacSubmitted.Count == 0 && emergencyWaterHeaterItems.Count == 0 && emergencyWaterHeaterSubmitted.Count == 0 && emergencyFloodItems.Count == 0 && emergencyFloodSubmitted.Count == 0 && emergencyElectricalItems.Count == 0 && emergencyElectricalSubmitted.Count == 0 && emergencyTreeDamageItems.Count == 0 && emergencyTreeDamageSubmitted.Count == 0 && emergencyRoofLeakItems.Count == 0 && emergencyRoofLeakSubmitted.Count == 0 && emergencySmokeDetectorItems.Count == 0 && emergencySmokeDetectorSubmitted.Count == 0 && confirmedItems.Count == 0)
         {
             <div class="empty-state">
                 <i class="fas fa-calendar-days"></i>
@@ -2938,6 +2970,526 @@
                 </div>
             }
 
+            @if (emergencyWaterHeaterSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyWaterHeaterSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Water heater emergency")</strong>
+                                <span class="badge badge-completado">Confirmed</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyWaterHeaterSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyWaterHeaterItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyWaterHeaterItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "DetailsCompleted" => "Photos pending",
+                            "IssueCompleted" => "Details pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "EmergencyWaterHeaterReview",
+                            "DetailsCompleted" => "EmergencyWaterHeaterUpload",
+                            "IssueCompleted" => "EmergencyWaterHeaterDetails",
+                            _ => "EmergencyWaterHeaterIssue"
+                        };
+                        var linkId = linkAction == "EmergencyWaterHeaterIssue" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyWaterHeaterUpload" => "Add photos",
+                            "EmergencyWaterHeaterReview" => "Review & confirm",
+                            "EmergencyWaterHeaterDetails" => "Add details",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Water heater emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyTreeDamageSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyTreeDamageSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Tree damage emergency")</strong>
+                                <span class="badge badge-completado">Dispatching</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-stopwatch"></i> Avg. arrival @(item.ServicioEmergencia?.TiempoLlegadaMinutos ?? 45) min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyTreeDamageSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyTreeDamageItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyTreeDamageItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "DescribeCompleted" => "Photos pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "EmergencyTreeDamageReview",
+                            "DescribeCompleted" => "EmergencyTreeDamagePhotos",
+                            _ => "EmergencyTreeDamageDescribe"
+                        };
+                        var linkId = linkAction == "EmergencyTreeDamageDescribe" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyTreeDamagePhotos" => "Add photos",
+                            "EmergencyTreeDamageReview" => "Review & dispatch",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Tree damage emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyRoofLeakSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyRoofLeakSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Roof leak emergency")</strong>
+                                <span class="badge badge-completado">Dispatching</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-stopwatch"></i> Avg. arrival @(item.ServicioEmergencia?.TiempoLlegadaMinutos ?? 45) min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyRoofLeakSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyRoofLeakItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyRoofLeakItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "DescribeCompleted" => "Details pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "DescribeCompleted" => "EmergencyRoofLeakDetails",
+                            _ => "EmergencyRoofLeakDescribe"
+                        };
+                        var linkId = linkAction == "EmergencyRoofLeakDescribe" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyRoofLeakDetails" => "Add details & submit",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Roof leak emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencySmokeDetectorSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencySmokeDetectorSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Smoke detector emergency")</strong>
+                                <span class="badge badge-completado">Provider search</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-phone"></i> Callback in 10–15 min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencySmokeDetectorItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencySmokeDetectorItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "YourInfoCompleted" => "Review pending",
+                            "DetailsCompleted" => "Your info pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "YourInfoCompleted" => "EmergencySmokeDetectorReview",
+                            "DetailsCompleted" => "EmergencySmokeDetectorYourInfo",
+                            _ => "EmergencySmokeDetectorDetails"
+                        };
+                        var linkId = linkAction == "EmergencySmokeDetectorDetails" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencySmokeDetectorReview" => "Review & submit",
+                            "EmergencySmokeDetectorYourInfo" => "Add your info",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Smoke detector emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyElectricalSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyElectricalSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Electrical emergency")</strong>
+                                <span class="badge badge-completado">Dispatching</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-stopwatch"></i> Avg. arrival @(item.ServicioEmergencia?.TiempoLlegadaMinutos ?? 45) min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyElectricalSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyElectricalItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyElectricalItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "LocationCompleted" => "Callback pending",
+                            "ProblemCompleted" => "Location pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "LocationCompleted" => "EmergencyElectricalContact",
+                            "ProblemCompleted" => "EmergencyElectricalLocation",
+                            _ => "EmergencyElectricalProblem"
+                        };
+                        var linkId = linkAction == "EmergencyElectricalProblem" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyElectricalContact" => "Photos & callback",
+                            "EmergencyElectricalLocation" => "Location & safety",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Electrical emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyFloodSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyFloodSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Flood emergency")</strong>
+                                <span class="badge badge-completado">Searching for provider</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-stopwatch"></i> Avg. arrival @(item.ServicioEmergencia?.TiempoLlegadaMinutos ?? 45) min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyFloodSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> View request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyFloodItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyFloodItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "PhotosCompleted" => "Review pending",
+                            "SafetyCompleted" => "Photos pending",
+                            "DetailsCompleted" => "Safety pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "PhotosCompleted" => "EmergencyFloodReview",
+                            "SafetyCompleted" => "EmergencyFloodUpload",
+                            "DetailsCompleted" => "EmergencyFloodSafety",
+                            _ => "EmergencyFloodDetails"
+                        };
+                        var linkId = linkAction == "EmergencyFloodDetails" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyFloodUpload" => "Add photos",
+                            "EmergencyFloodReview" => "Review & confirm",
+                            "EmergencyFloodSafety" => "Safety questions",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Flood emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyHvacSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyHvacSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "HVAC emergency")</strong>
+                                <span class="badge badge-completado">Searching for provider</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-stopwatch"></i> Avg. arrival @(item.ServicioEmergencia?.TiempoLlegadaMinutos ?? 45) min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyHvacSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> Track request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyHvacItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyHvacItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "ContactCompleted" => "Review pending",
+                            "DetailsCompleted" => "Contact info pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "ContactCompleted" => "EmergencyHvacReview",
+                            "DetailsCompleted" => "EmergencyHvacContact",
+                            _ => "EmergencyHvacDetails"
+                        };
+                        var linkId = linkAction == "EmergencyHvacDetails" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyHvacContact" => "Add contact info",
+                            "EmergencyHvacReview" => "Review & confirm",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "HVAC emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyPlumbingSubmitted.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyPlumbingSubmitted)
+                    {
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Plumbing emergency")</strong>
+                                <span class="badge badge-completado">Searching for provider</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-stopwatch"></i> Avg. arrival @(item.ServicioEmergencia?.TiempoLlegadaMinutos ?? 45) min
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="EmergencyPlumbingSubmitted" asp-route-id="@item.Id" class="schedule-edit-link">
+                                <i class="fas fa-eye"></i> Track request
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (emergencyPlumbingItems.Count > 0)
+            {
+                <div class="schedule-list" style="margin-bottom:16px;">
+                    @foreach (var item in emergencyPlumbingItems)
+                    {
+                        var statusText = item.Estado switch
+                        {
+                            "ContactCompleted" => "Review pending",
+                            "DetailsCompleted" => "Contact info pending",
+                            "InProgress" => "In progress",
+                            _ => item.Estado
+                        };
+                        var linkAction = item.Estado switch
+                        {
+                            "ContactCompleted" => "EmergencyPlumbingReview",
+                            "DetailsCompleted" => "EmergencyPlumbingContact",
+                            _ => "EmergencyPlumbingDetails"
+                        };
+                        var linkId = linkAction == "EmergencyPlumbingDetails" ? item.ServicioEmergenciaId : item.Id;
+                        var linkText = linkAction switch
+                        {
+                            "EmergencyPlumbingContact" => "Add contact info",
+                            "EmergencyPlumbingReview" => "Review & confirm",
+                            _ => "Continue request"
+                        };
+                        <div class="schedule-card">
+                            <div class="schedule-card-head">
+                                <strong>@(item.ServicioEmergencia?.TituloEmergencia ?? "Plumbing emergency")</strong>
+                                <span class="badge badge-pendiente">@statusText</span>
+                            </div>
+                            <div class="schedule-card-date">
+                                <i class="fas fa-location-dot"></i> @item.DireccionPropiedad
+                            </div>
+                            <a asp-controller="Inspecciones" asp-action="@linkAction" asp-route-id="@linkId" class="schedule-edit-link">
+                                <i class="fas fa-pen"></i> @linkText
+                            </a>
+                        </div>
+                    }
+                </div>
+            }
+
             @if (agendaItems.Count > 0)
             {
             <div class="schedule-list">
@@ -3230,9 +3782,28 @@
                     renderFeatures(card.dataset.features);
                     if (ctaEl) {
                         ctaEl.innerHTML = `<i class="fas fa-paper-plane"></i> ${card.dataset.cta || 'Request help'}`;
+                        const startUrl = card.dataset.startUrl || '';
+                        ctaEl.dataset.startUrl = startUrl;
+                        if (startUrl) {
+                            ctaEl.classList.remove('nav-jump');
+                        } else {
+                            ctaEl.classList.add('nav-jump');
+                            ctaEl.dataset.target = 'section-more';
+                        }
                     }
                 });
             });
+
+            if (ctaEl) {
+                ctaEl.addEventListener('click', (e) => {
+                    const startUrl = ctaEl.dataset.startUrl || '';
+                    if (startUrl) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        window.location.href = startUrl;
+                    }
+                });
+            }
         });
 
         // === Atajos desde Home a otras secciones ===

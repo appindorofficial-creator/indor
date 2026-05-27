@@ -1,0 +1,108 @@
+@model IndorMvcApp.ViewModels.EmergencyFloodSubmittedViewModel
+@{
+    ViewData["Title"] = "Request Confirmed - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; text-align: center; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
+        .success-icon {
+            width: 88px; height: 88px; border-radius: 50%; margin: 0 auto 12px;
+            background: linear-gradient(135deg, #22C55E, #16A34A); color: #FFF;
+            display: flex; align-items: center; justify-content: center; font-size: 2.4rem;
+        }
+        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 22px; }
+        .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(229,231,235,0.9); text-align: left; position: relative; }
+        .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #E5E7EB; }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
+        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600; }
+        .summary-value { font-size: 0.9rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
+        .arrival-badge {
+            position: absolute; top: 16px; right: 16px;
+            background: rgba(34,197,94,0.12); border-radius: 12px; padding: 10px 12px; text-align: center; min-width: 90px;
+        }
+        .arrival-badge i { color: #16A34A; font-size: 0.9rem; }
+        .arrival-badge .label { font-size: 0.68rem; color: #64748B; margin-top: 4px; }
+        .arrival-badge .value { font-size: 0.95rem; font-weight: 800; color: #16A34A; }
+        .status-pill {
+            display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
+            background: rgba(34,197,94,0.12); color: #15803D; font-size: 0.82rem; font-weight: 700;
+        }
+        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 18px; font-size: 0.86rem; line-height: 1.45; text-align: left; }
+        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-bottom: 10px; }
+        .btn-outline { margin-bottom: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <strong>Request Confirmed</strong>
+        <div style="width:44px;"></div>
+    </div>
+
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h1 class="page-heading">Your flood emergency request has been sent</h1>
+    <p class="page-lead">We've received your details and are finding the right provider now.</p>
+
+    <div class="summary-card">
+        <div class="arrival-badge">
+            <i class="fas fa-clock"></i>
+            <div class="label">Estimated arrival</div>
+            <div class="value">@Model.TiempoLlegadaRango</div>
+        </div>
+
+        <div class="summary-row">
+            <i class="fas fa-water"></i>
+            <div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div>
+        </div>
+        <div class="summary-row">
+            <i class="fas fa-house"></i>
+            <div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
+        </div>
+        <div class="summary-row">
+            <i class="fas fa-location-dot"></i>
+            <div style="flex:1;"><div class="summary-label">Area</div><div class="summary-value">@Model.AreaResumen</div></div>
+        </div>
+        <div class="summary-row">
+            <i class="fas fa-droplet"></i>
+            <div style="flex:1;"><div class="summary-label">Water source</div><div class="summary-value">@Model.CausaAguaResumen</div></div>
+        </div>
+        <div class="summary-row">
+            <i class="fas fa-faucet-drip"></i>
+            <div style="flex:1;"><div class="summary-label">Shutoff status</div><div class="summary-value">@Model.PuedeCerrarAguaResumen</div></div>
+        </div>
+        <div class="summary-row">
+            <i class="fas fa-magnifying-glass"></i>
+            <div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
+        </div>
+    </div>
+
+    <div class="info-box">
+        <i class="fas fa-circle-info"></i>
+        <div>Keep children and pets away from standing water. If water reaches electrical outlets, avoid the area and wait for professional help.</div>
+    </div>
+
+    <a asp-action="EmergencyFloodSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">View request <i class="fas fa-chevron-right"></i></a>
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-outline"><i class="fas fa-calendar"></i> Go to Schedule</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to My Home</a>
+</div>
+</body>
+</html>

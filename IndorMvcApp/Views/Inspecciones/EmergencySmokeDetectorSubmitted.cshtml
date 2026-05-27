@@ -1,0 +1,76 @@
+@model IndorMvcApp.ViewModels.EmergencySmokeDetectorSubmittedViewModel
+@{
+    ViewData["Title"] = "Request received - INDOR";
+    Layout = null;
+    var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; text-align: center; }
+        .success-icon { width: 88px; height: 88px; border-radius: 50%; margin: 0 auto 18px; background: linear-gradient(135deg, #22C55E, #16A34A); color: #FFF; display: flex; align-items: center; justify-content: center; font-size: 2.4rem; }
+        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
+        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 22px; }
+        .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(229,231,235,0.9); text-align: left; }
+        .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #E5E7EB; }
+        .summary-row:last-child { border-bottom: none; }
+        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
+        .summary-row i.danger { color: #DC2626; }
+        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600; }
+        .summary-value { font-size: 0.9rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
+        .summary-value.emergency { color: #DC2626; }
+        .summary-value.status { color: #0066CC; }
+        .callback-box { background: #FFF; border: 1.5px solid rgba(0,102,204,0.2); border-radius: 14px; padding: 16px; margin-bottom: 16px; text-align: center; }
+        .callback-box .label { font-size: 0.82rem; color: #64748B; margin-bottom: 4px; }
+        .callback-box .value { font-size: 1.2rem; font-weight: 800; color: #0066CC; }
+        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 18px; font-size: 0.86rem; line-height: 1.45; text-align: left; }
+        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-bottom: 10px; }
+        .btn-outline { margin-bottom: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h1 class="page-heading">Your smoke detector emergency request has been received</h1>
+    <p class="page-lead">We're reviewing your request and coordinating the right provider now.</p>
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-wrench"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">Concern</div><div class="summary-value">@Model.PreocupacionResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">Locations</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-triangle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">Priority</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value status">@Model.EstadoResumen</div></div></div>
+    </div>
+
+    <div class="info-box">
+        <i class="fas fa-circle-info"></i>
+        <div>If you smell gas or the CO alarm becomes active, leave immediately and <strong style="color:#0066CC;">call 911</strong>.</div>
+    </div>
+
+    <div class="callback-box">
+        <div class="label"><i class="fas fa-clock"></i> Estimated callback</div>
+        <div class="value">@Model.TiempoCallbackRango</div>
+    </div>
+
+    <a asp-action="EmergencySmokeDetectorSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">View request <i class="fas fa-chevron-right"></i></a>
+    <div class="btn-row">
+        <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to Home</a>
+        <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> Call support</a>
+    </div>
+</div>
+</body>
+</html>

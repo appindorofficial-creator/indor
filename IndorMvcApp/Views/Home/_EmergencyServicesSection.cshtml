@@ -1,7 +1,12 @@
 @model IndorMvcApp.ViewModels.EmergencyServicesSectionViewModel
+@using IndorMvcApp.Services
 @if (Model.Items.Count > 0)
 {
     var selected = Model.Items.FirstOrDefault(i => i.Id == Model.SelectedId) ?? Model.Items[0];
+    var selectedAction = EmergencyFlowRules.GetDetailsActionName(selected.Nombre);
+    var selectedStartUrl = selectedAction != null
+        ? Url.Action(selectedAction, "Inspecciones", new { id = selected.Id })
+        : string.Empty;
     var sectionId = $"emergencySection_{Model.SelectedId}_{Guid.NewGuid():N}";
 
     <div class="emergency-section" data-emergency-section>
@@ -24,12 +29,18 @@
                     ? Url.Content("~" + (item.ImagenUrl.StartsWith("/") ? item.ImagenUrl : "/" + item.ImagenUrl))
                     : "";
                 var isActive = item.Id == selected.Id;
+                var itemAction = EmergencyFlowRules.GetDetailsActionName(item.Nombre);
+                var startUrl = itemAction != null
+                    ? Url.Action(itemAction, "Inspecciones", new { id = item.Id })
+                    : string.Empty;
 
                 <button type="button"
                         class="emergency-card @(isActive ? "active" : "")"
                         role="option"
                         aria-selected="@(isActive ? "true" : "false")"
                         data-id="@item.Id"
+                        data-nombre="@item.Nombre"
+                        data-start-url="@startUrl"
                         data-title="@item.TituloEmergencia"
                         data-desc="@item.Descripcion"
                         data-arrival="@item.TiempoLlegadaMinutos"
@@ -85,7 +96,11 @@
                 }
             </div>
 
-            <button type="button" class="emergency-cta nav-jump" data-emergency-detail-cta data-target="section-more">
+            <button type="button"
+                    class="emergency-cta @(string.IsNullOrWhiteSpace(selectedStartUrl) ? "nav-jump" : "")"
+                    data-emergency-detail-cta
+                    data-start-url="@selectedStartUrl"
+                    data-target="section-more">
                 <i class="fas fa-paper-plane"></i> @selected.CtaTexto
             </button>
         </div>

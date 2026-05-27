@@ -236,6 +236,165 @@ public class HomeController : Controller
             .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
             .ToListAsync();
 
+        ViewBag.SolicitudesEmergenciaPlomeria = await _db.SolicitudesEmergenciaPlomeria
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.PlumbingEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaPlomeriaEnviadas = await _db.SolicitudesEmergenciaPlomeria
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.PlumbingEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaHvac = await _db.SolicitudesEmergenciaHvac
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.HvacEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaHvacEnviadas = await _db.SolicitudesEmergenciaHvac
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.HvacEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaWaterHeater = await _db.SolicitudesEmergenciaWaterHeater
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.WaterHeaterEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaWaterHeaterEnviadas = await _db.SolicitudesEmergenciaWaterHeater
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.WaterHeaterEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaFlood = await _db.SolicitudesEmergenciaFlood
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.FloodEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaFloodEnviadas = await _db.SolicitudesEmergenciaFlood
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.FloodEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaElectrical = await _db.SolicitudesEmergenciaElectrical
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.ElectricalEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaElectricalEnviadas = await _db.SolicitudesEmergenciaElectrical
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.ElectricalEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaTreeDamage = await _db.SolicitudesEmergenciaTreeDamage
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.TreeDamageEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaTreeDamageEnviadas = await _db.SolicitudesEmergenciaTreeDamage
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.TreeDamageEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaRoofLeak = await _db.SolicitudesEmergenciaRoofLeak
+            .Include(s => s.ServicioEmergencia)
+            .Include(s => s.Archivos)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.RoofLeakEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaRoofLeakEnviadas = await _db.SolicitudesEmergenciaRoofLeak
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.RoofLeakEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaSmokeDetector = await _db.SolicitudesEmergenciaSmokeDetector
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.SmokeDetectorEmergencyName
+                        && s.Estado != "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        ViewBag.SolicitudesEmergenciaSmokeDetectorEnviadas = await _db.SolicitudesEmergenciaSmokeDetector
+            .Include(s => s.ServicioEmergencia)
+            .Where(s => s.UserId == userId
+                        && s.ServicioEmergencia != null
+                        && s.ServicioEmergencia.Nombre == EmergencyFlowRules.SmokeDetectorEmergencyName
+                        && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
+            .Take(5)
+            .ToListAsync();
+
         var purchaseConfirmed = await _db.SolicitudesInspeccion
             .Include(s => s.Inspeccion)
             .Where(s => s.UserId == userId

@@ -1,0 +1,131 @@
+@model IndorMvcApp.ViewModels.EmergencyFloodDetailsViewModel
+@{
+    ViewData["Title"] = "Flood Details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
+        .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+        .title-row h1 { font-size: 1.2rem; font-weight: 800; }
+        .badge-247 { background: rgba(220,38,38,0.1); color: #DC2626; font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; }
+        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; }
+        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
+        .address-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; background: rgba(0,102,204,0.06); font-size: 0.92rem; }
+        .address-display .left { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .address-display i { color: #0066CC; }
+        .address-display input { border: none; background: transparent; font-weight: 600; width: 100%; font-family: inherit; font-size: 0.92rem; }
+        .option-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .option-grid.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .option-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 10px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; line-height: 1.3; }
+        .option-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .segmented-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.84rem; color: #64748B; cursor: pointer; text-align: center; }
+        .segment-btn.active { background: rgba(0,102,204,0.08); border-color: #0066CC; color: #0066CC; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <div style="width:44px;"></div>
+    </div>
+
+    <div class="title-row">
+        <h1>Flood Details</h1>
+        <span class="badge-247">24/7</span>
+    </div>
+    <p class="page-lead">Fast help for standing water, basement flooding, and storm damage.</p>
+
+    @await Html.PartialAsync("_EmergencyFloodStepper", 1)
+
+    <h2 class="page-heading">Tell us about the flooding</h2>
+
+    <form asp-controller="Inspecciones" asp-action="EmergencyFloodDetails" method="post">
+        <input type="hidden" asp-for="ServicioEmergenciaId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TituloServicio" />
+        <input type="hidden" asp-for="CausaAgua" id="CausaAgua" />
+        <input type="hidden" asp-for="UbicacionAgua" id="UbicacionAgua" />
+        <input type="hidden" asp-for="AguaActiva" id="AguaActiva" />
+
+        <div class="field-card">
+            <div class="address-display">
+                <div class="left">
+                    <i class="fas fa-house"></i>
+                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What is causing the water?</span>
+            <div class="option-grid" data-target="CausaAgua">
+                <button type="button" class="option-btn" data-value="BurstPipe">Burst pipe</button>
+                <button type="button" class="option-btn" data-value="WaterHeater">Water heater</button>
+                <button type="button" class="option-btn" data-value="ApplianceLeak">Appliance leak</button>
+                <button type="button" class="option-btn" data-value="ToiletOverflow">Toilet overflow</button>
+                <button type="button" class="option-btn" data-value="RoofCeilingLeak">Roof / ceiling leak</button>
+                <button type="button" class="option-btn" data-value="UnknownSource">Unknown source</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Where is the water?</span>
+            <div class="option-grid" data-target="UbicacionAgua">
+                <button type="button" class="option-btn" data-value="Basement">Basement</button>
+                <button type="button" class="option-btn" data-value="FirstFloor">1st floor</button>
+                <button type="button" class="option-btn" data-value="SecondFloor">2nd floor</button>
+                <button type="button" class="option-btn" data-value="Bathroom">Bathroom</button>
+                <button type="button" class="option-btn" data-value="Kitchen">Kitchen</button>
+                <button type="button" class="option-btn" data-value="Laundry">Laundry</button>
+                <button type="button" class="option-btn" data-value="Garage">Garage</button>
+                <button type="button" class="option-btn" data-value="CrawlSpace">Crawl space</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Is water still active right now?</span>
+            <div class="segmented-3" data-target="AguaActiva">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> Upload photos first</button>
+    </form>
+</div>
+<script>
+    function setSingle(group, selector, value) {
+        document.getElementById(group.dataset.target).value = value;
+        group.querySelectorAll(selector).forEach(btn => btn.classList.toggle('active', btn.dataset.value === value));
+    }
+    document.querySelectorAll('[data-target]').forEach(group => {
+        const selector = group.classList.contains('segmented-3') ? '.segment-btn' : '.option-btn';
+        group.querySelectorAll(selector).forEach(btn => btn.addEventListener('click', () => setSingle(group, selector, btn.dataset.value)));
+        setSingle(group, selector, document.getElementById(group.dataset.target).value);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+@model int
+@{
+    var steps = new[] { "Issue", "Details", "Photos & access", "Review" };
+}
+<style>
+    .ewh-stepper { display: flex; gap: 4px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; }
+    .ewh-step { flex: 1; min-width: 48px; text-align: center; }
+    .ewh-step-dot {
+        width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 6px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.78rem; font-weight: 700; border: 2px solid #CBD5E1; color: #94A3B8; background: #FFF;
+    }
+    .ewh-step.done .ewh-step-dot { border-color: #0066CC; background: #0066CC; color: #FFF; }
+    .ewh-step.active .ewh-step-dot { border-color: #0066CC; color: #0066CC; background: #FFF; }
+    .ewh-step-label { font-size: 0.62rem; font-weight: 600; color: #94A3B8; line-height: 1.2; }
+    .ewh-step.active .ewh-step-label, .ewh-step.done .ewh-step-label { color: #0066CC; }
+</style>
+<div class="ewh-stepper">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var stepNum = i + 1;
+        var css = stepNum < Model ? "ewh-step done" : stepNum == Model ? "ewh-step active" : "ewh-step";
+        <div class="@css">
+            <div class="ewh-step-dot">
+                @if (stepNum < Model)
+                {
+                    <i class="fas fa-check" style="font-size:0.7rem;"></i>
+                }
+                else
+                {
+                    @stepNum
+                }
+            </div>
+            <div class="ewh-step-label">@steps[i]</div>
+        </div>
+    }
+</div>

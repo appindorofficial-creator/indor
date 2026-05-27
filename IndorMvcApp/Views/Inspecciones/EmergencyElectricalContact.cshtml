@@ -1,0 +1,185 @@
+@model IndorMvcApp.ViewModels.EmergencyElectricalContactViewModel
+@{
+    ViewData["Title"] = "Electrical emergency - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 12px; }
+        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; }
+        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .summary-row { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; margin-bottom: 8px; font-size: 0.88rem; font-weight: 600; }
+        .summary-row i { color: #0066CC; width: 18px; text-align: center; }
+        .summary-row.issue i { color: #DC2626; }
+        .dropzone { border: 2px dashed #0066CC; border-radius: 18px; background: rgba(0,102,204,0.04); padding: 24px 18px; text-align: center; margin: 14px 0; cursor: pointer; }
+        .dropzone i { font-size: 1.8rem; color: #0066CC; margin-bottom: 8px; }
+        .action-list { display: grid; gap: 8px; margin-bottom: 16px; }
+        .action-item { display: flex; align-items: center; gap: 12px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 16px; cursor: pointer; }
+        .action-item i.icon { color: #0066CC; width: 20px; text-align: center; }
+        .action-item .action-text { flex: 1; font-weight: 600; font-size: 0.9rem; }
+        .action-item .chevron { color: #CBD5E1; }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 8px; display: block; }
+        .form-textarea, .form-input { width: 100%; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; background: #F9FAFB; }
+        .form-textarea { min-height: 90px; resize: vertical; }
+        .input-wrap { position: relative; margin-bottom: 14px; }
+        .input-wrap i { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #0066CC; }
+        .input-wrap .form-input { padding-left: 42px; }
+        .char-count { text-align: right; font-size: 0.75rem; color: #94A3B8; margin-top: 4px; }
+        .toggle-row { display: flex; align-items: center; justify-content: space-between; background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 14px 16px; margin-bottom: 14px; font-weight: 600; font-size: 0.9rem; }
+        .toggle { width: 48px; height: 28px; border-radius: 999px; background: #CBD5E1; position: relative; cursor: pointer; border: none; }
+        .toggle.on { background: #0066CC; }
+        .toggle::after { content: ''; position: absolute; top: 3px; left: 3px; width: 22px; height: 22px; border-radius: 50%; background: #FFF; transition: transform 0.2s; }
+        .toggle.on::after { transform: translateX(20px); }
+        .tip-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
+        .tip-box i { color: #0066CC; margin-right: 8px; }
+        .file-list { display: grid; gap: 8px; margin-bottom: 14px; }
+        .file-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #F8FAFC; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; }
+        .validation-summary { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; border-radius: 12px; padding: 12px 14px; font-size: 0.85rem; margin-bottom: 14px; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+        .hidden-input { display: none; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <a asp-action="EmergencyElectricalLocation" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+
+    <strong style="display:block;margin-bottom:6px;">Electrical emergency</strong>
+    @await Html.PartialAsync("_EmergencyElectricalStepper", 3)
+
+    <h2 class="page-heading">Photos &amp; callback</h2>
+    <p class="page-lead">Add anything that helps us respond faster.</p>
+
+    @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
+    {
+        <div asp-validation-summary="All" class="validation-summary"></div>
+    }
+
+    <div class="summary-row"><i class="fas fa-house"></i> @Model.DireccionPropiedad</div>
+    <div class="summary-row issue"><i class="fas fa-bolt"></i> @Model.ProblemaResumen</div>
+
+    <form asp-controller="Inspecciones" asp-action="EmergencyElectricalContact" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="ServicioEmergenciaId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TituloServicio" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="ProblemaResumen" />
+        <input type="hidden" asp-for="AceptaTextos" id="AceptaTextos" />
+
+        <div class="dropzone" id="dropzone">
+            <i class="fas fa-camera"></i>
+            <p><strong style="color:#0066CC;">Add photo or short video</strong></p>
+            <p style="font-size:0.82rem;color:#64748B;margin-top:4px;">Optional</p>
+        </div>
+        <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".jpg,.jpeg,.png,.mp4,.mov,.webm,image/*,video/*" />
+
+        <div class="action-list">
+            <label class="action-item" for="fileInputCamera">
+                <i class="fas fa-camera icon"></i>
+                <span class="action-text">Take photo</span>
+                <i class="fas fa-chevron-right chevron"></i>
+            </label>
+            <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
+            <label class="action-item" for="fileInput">
+                <i class="fas fa-images icon"></i>
+                <span class="action-text">Upload photo</span>
+                <i class="fas fa-chevron-right chevron"></i>
+            </label>
+            <label class="action-item" for="fileInputVideo">
+                <i class="fas fa-video icon"></i>
+                <span class="action-text">Add short video</span>
+                <i class="fas fa-chevron-right chevron"></i>
+            </label>
+            <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
+        </div>
+
+        @if (Model.ArchivosExistentes.Count > 0)
+        {
+            <div class="file-list">
+                @foreach (var file in Model.ArchivosExistentes)
+                {
+                    <div class="file-item">
+                        <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
+                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                    </div>
+                }
+            </div>
+        }
+        <div id="selectedFiles" class="file-list"></div>
+
+        <label asp-for="NotaCorta" class="field-label">Short note for the electrician</label>
+        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="250" placeholder="Breaker trips when AC starts. Smell near panel."></textarea>
+        <div class="char-count"><span id="charCount">0</span>/250</div>
+
+        <label asp-for="TelefonoContacto" class="field-label">Best callback number</label>
+        <div class="input-wrap">
+            <i class="fas fa-phone"></i>
+            <input asp-for="TelefonoContacto" class="form-input" placeholder="(704) 555-0123" required />
+        </div>
+
+        <div class="toggle-row">
+            <span>Okay to text updates</span>
+            <button type="button" class="toggle @(Model.AceptaTextos == "Yes" ? "on" : "")" id="textToggle" aria-label="Toggle text updates"></button>
+        </div>
+
+        <div class="tip-box">
+            <i class="fas fa-circle-info"></i>
+            Photos of the panel, outlet, or affected area can help us prepare.
+        </div>
+
+        <button type="submit" class="btn-primary" name="action" value="send"><i class="fas fa-paper-plane"></i> Send emergency request</button>
+        <button type="submit" class="btn-outline" name="action" value="skip">Skip and send</button>
+    </form>
+</div>
+<script>
+    const fileInput = document.getElementById('fileInput');
+    const fileInputCamera = document.getElementById('fileInputCamera');
+    const fileInputVideo = document.getElementById('fileInputVideo');
+    const dropzone = document.getElementById('dropzone');
+    const selectedFiles = document.getElementById('selectedFiles');
+    let pendingFiles = [];
+    function mergeFiles(newFiles) {
+        Array.from(newFiles).forEach(f => pendingFiles.push(f));
+        const dt = new DataTransfer();
+        pendingFiles.forEach(f => dt.items.add(f));
+        fileInput.files = dt.files;
+        selectedFiles.innerHTML = '';
+        pendingFiles.forEach(file => {
+            const item = document.createElement('div');
+            item.className = 'file-item';
+            item.innerHTML = `<span><i class="fas fa-file"></i> ${file.name}</span>`;
+            selectedFiles.appendChild(item);
+        });
+    }
+    dropzone.addEventListener('click', () => fileInput.click());
+    fileInput.addEventListener('change', () => mergeFiles(fileInput.files));
+    fileInputCamera.addEventListener('change', () => mergeFiles(fileInputCamera.files));
+    fileInputVideo.addEventListener('change', () => mergeFiles(fileInputVideo.files));
+    const note = document.getElementById('NotaCorta');
+    const charCount = document.getElementById('charCount');
+    function updateCount() { charCount.textContent = (note.value || '').length; }
+    note.addEventListener('input', updateCount);
+    updateCount();
+    const toggle = document.getElementById('textToggle');
+    const hiddenText = document.getElementById('AceptaTextos');
+    toggle.addEventListener('click', () => {
+        toggle.classList.toggle('on');
+        hiddenText.value = toggle.classList.contains('on') ? 'Yes' : 'No';
+    });
+</script>
+</body>
+</html>

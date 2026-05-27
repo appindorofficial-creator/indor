@@ -1,0 +1,171 @@
+@model IndorMvcApp.ViewModels.EmergencySmokeDetectorDetailsViewModel
+@{
+    ViewData["Title"] = "Smoke & CO Details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
+        .page-container { max-width: 520px; margin: 0 auto; }
+        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 8px; }
+        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 6px; }
+        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
+        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
+        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
+        .address-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; background: rgba(0,102,204,0.06); font-size: 0.92rem; }
+        .address-display .left { display: flex; align-items: center; gap: 10px; flex: 1; }
+        .address-display i { color: #0066CC; }
+        .address-display input { border: none; background: transparent; font-weight: 600; width: 100%; font-family: inherit; font-size: 0.92rem; }
+        .issue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .issue-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.72rem; color: #64748B; cursor: pointer; text-align: center; line-height: 1.3; }
+        .issue-btn i { display: block; font-size: 1rem; margin-bottom: 6px; color: #0066CC; }
+        .issue-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .loc-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+        .loc-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 10px 6px; font-weight: 600; font-size: 0.68rem; color: #64748B; cursor: pointer; text-align: center; }
+        .loc-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .segmented-3, .segmented-5 { display: grid; gap: 8px; }
+        .segmented-3 { grid-template-columns: 1fr 1fr 1fr; }
+        .segmented-5 { grid-template-columns: 1fr 1fr 1fr 1fr 1fr; }
+        .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; }
+        .segment-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+        .warn-box { background: rgba(220,38,38,0.08); border: 1px solid rgba(220,38,38,0.18); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
+        .warn-box i { color: #DC2626; margin-top: 2px; flex-shrink: 0; }
+        .validation-summary { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; border-radius: 12px; padding: 12px 14px; font-size: 0.85rem; margin-bottom: 14px; }
+        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
+        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
+    </style>
+</head>
+<body>
+<div class="page-container">
+    <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+    <strong style="display:block;margin-bottom:4px;">Smoke &amp; CO Details</strong>
+
+    @await Html.PartialAsync("_EmergencySmokeDetectorStepper", 1)
+
+    <h2 class="page-heading">Tell us what's happening</h2>
+    <p class="page-lead">Quick answers help us send the right support faster.</p>
+
+    @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
+    {
+        <div asp-validation-summary="All" class="validation-summary"></div>
+    }
+
+    <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorDetails" method="post">
+        <input type="hidden" asp-for="ServicioEmergenciaId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TituloServicio" />
+        <input type="hidden" asp-for="TiposProblema" id="TiposProblema" />
+        <input type="hidden" asp-for="UbicacionesDetectores" id="UbicacionesDetectores" />
+        <input type="hidden" asp-for="SituacionActual" id="SituacionActual" />
+        <input type="hidden" asp-for="PuedePermanecerAdentro" id="PuedePermanecerAdentro" />
+        <input type="hidden" asp-for="Urgencia" id="Urgencia" />
+
+        <div class="field-card">
+            <div class="address-display">
+                <div class="left">
+                    <i class="fas fa-house"></i>
+                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                </div>
+                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What is the issue?</span>
+            <div class="issue-grid" id="issueGroup">
+                <button type="button" class="issue-btn" data-value="SmokeDetectorBeeping"><i class="fas fa-bell"></i>Smoke detector beeping</button>
+                <button type="button" class="issue-btn" data-value="SmokeDetectorNotWorking"><i class="fas fa-ban"></i>Smoke detector not working</button>
+                <button type="button" class="issue-btn" data-value="CoDetectorAlert"><i class="fas fa-circle-radiation"></i>CO detector alert</button>
+                <button type="button" class="issue-btn" data-value="LowBatteryChirp"><i class="fas fa-battery-quarter"></i>Low battery chirp</button>
+                <button type="button" class="issue-btn" data-value="SmellOfGas"><i class="fas fa-wind"></i>Smell of gas</button>
+                <button type="button" class="issue-btn" data-value="NeedDetectorCheck"><i class="fas fa-magnifying-glass"></i>Need detector check</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Where is the detector?</span>
+            <div class="loc-grid" id="locationGroup">
+                <button type="button" class="loc-btn" data-value="Bedroom">Bedroom</button>
+                <button type="button" class="loc-btn" data-value="LivingRoom">Living room</button>
+                <button type="button" class="loc-btn" data-value="Hallway">Hallway</button>
+                <button type="button" class="loc-btn" data-value="Kitchen">Kitchen</button>
+                <button type="button" class="loc-btn" data-value="CommonArea">Common area</button>
+                <button type="button" class="loc-btn" data-value="Basement">Basement</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What is happening right now?</span>
+            <div class="segmented-5" data-target="SituacionActual">
+                <button type="button" class="segment-btn" data-value="AlarmSounding">Alarm sounding</button>
+                <button type="button" class="segment-btn" data-value="NoSound">No sound</button>
+                <button type="button" class="segment-btn" data-value="IntermittentChirp">Intermittent chirp</button>
+                <button type="button" class="segment-btn" data-value="GasSmell">Gas smell</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Can you stay inside safely?</span>
+            <div class="segmented-3" data-target="PuedePermanecerAdentro">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="warn-box">
+            <i class="fas fa-triangle-exclamation"></i>
+            <div>If there is a strong gas smell or an active CO alarm, leave the home and <strong style="color:#DC2626;">call 911</strong>.</div>
+        </div>
+
+        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="immediate"><i class="fas fa-paper-plane"></i> Request immediate help</button>
+    </form>
+</div>
+<script>
+    function setSingle(group, selector, value) {
+        document.getElementById(group.dataset.target).value = value;
+        group.querySelectorAll(selector).forEach(btn => btn.classList.toggle('active', btn.dataset.value === value));
+    }
+    function initMulti(groupId, hiddenId) {
+        const group = document.getElementById(groupId);
+        const hidden = document.getElementById(hiddenId);
+        const selector = groupId === 'issueGroup' ? '.issue-btn' : '.loc-btn';
+        function sync() {
+            const values = Array.from(group.querySelectorAll(`${selector}.active`)).map(btn => btn.dataset.value);
+            hidden.value = values.join(',');
+        }
+        group.querySelectorAll(selector).forEach(btn => {
+            btn.addEventListener('click', () => {
+                btn.classList.toggle('active');
+                sync();
+            });
+        });
+        (hidden.value || '').split(',').filter(Boolean).forEach(v => {
+            const btn = group.querySelector(`${selector}[data-value="${v.trim()}"]`);
+            if (btn) btn.classList.add('active');
+        });
+        sync();
+    }
+    initMulti('issueGroup', 'TiposProblema');
+    initMulti('locationGroup', 'UbicacionesDetectores');
+    document.querySelectorAll('.segmented-3, .segmented-5').forEach(group => {
+        group.querySelectorAll('.segment-btn').forEach(btn => btn.addEventListener('click', () => setSingle(group, '.segment-btn', btn.dataset.value)));
+        setSingle(group, '.segment-btn', document.getElementById(group.dataset.target).value);
+    });
+</script>
+</body>
+</html>

@@ -78,7 +78,7 @@ BEGIN
     (N'Plumbing', N'Plumbing Emergency', N'Leaks, clogs, pipe bursts & more.', 45, N'fa-droplet', N'/inspeccion4.jpeg',
      N'Most requested', 1, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 3),
 
-    (N'Drain Cleaning', N'Drain Cleaning Emergency', N'Slow drains, backups, and main line clogs.', 45, N'fa-sink', N'/inspeccion4.jpeg',
+    (N'Flood', N'Flood Emergency', N'Standing water, basement flooding, and urgent water removal.', 45, N'fa-water', N'/inspeccion4.jpeg',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 4),
 
     (N'Electrical', N'Electrical Emergency', N'Power loss, sparks, tripped breakers & more.', 45, N'fa-bolt', N'/inspeccion3.jpeg',
@@ -87,10 +87,10 @@ BEGIN
     (N'Roof Leak', N'Roof Leak Emergency', N'Active leaks, storm damage, and urgent patches.', 45, N'fa-house-chimney-crack', N'/inspeccion7.jpeg',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 6),
 
-    (N'Mold Remediation', N'Mold Remediation Emergency', N'Visible mold, moisture, and air quality concerns.', 45, N'fa-biohazard', N'/inspeccion9.jpeg',
+    (N'Tree Damage', N'Tree Damage Emergency', N'Fallen trees, limbs on structures, and storm-related hazards.', 45, N'fa-tree', N'/inspeccion9.jpeg',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 7),
 
-    (N'Gas Line', N'Gas Line Emergency', N'Gas smell, leaks, or shutoff assistance.', 45, N'fa-fire-flame-curved', N'/inspeccion2.jpeg',
+    (N'Smoke Detector', N'Smoke Detector & CO Alert', N'Chirping alarms, dead batteries, missing detectors, and urgent smoke alarm help.', 45, N'fa-bell', N'/inspeccion2.jpeg',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 8);
 
     PRINT 'ServiciosEmergencia seed data inserted.';
