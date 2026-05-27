@@ -1,0 +1,77 @@
+@model IndorMvcApp.ViewModels.UtilitiesSetupCompletedViewModel
+@{
+    ViewData["Title"] = "Utilities Setup Completed - INDOR";
+    Layout = null;
+    string PhoneHref(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone)) return "#";
+        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        return string.IsNullOrEmpty(digits) ? "#" : $"tel:{digits}";
+    }
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_UtilitiesSetupStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h1 class="page-heading" style="text-align:center;font-size:1.2rem;">Utilities Setup Completed</h1>
+    <p class="page-lead" style="text-align:center;color:#0066CC;font-weight:600;">Congratulations! Your home setup is ready.</p>
+    <p class="page-lead" style="text-align:center;margin-top:-10px;">We organized your utility and internet information for this property.</p>
+
+    <div class="location-card">
+        <div class="thumb"><i class="fas fa-house" style="color:#0066CC;"></i></div>
+        <div class="meta">
+            <div class="addr">@Model.DireccionPropiedad</div>
+            <div class="sub"><i class="fas fa-calendar"></i> @Model.FechaServicioLabel</div>
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.InternetProviderName))
+    {
+        <div class="summary-card" style="margin-bottom:12px;">
+            <div class="summary-row"><i class="fas fa-wifi"></i><div><div class="summary-label">Internet</div><div class="summary-value">@Model.InternetProviderName</div><div class="summary-value" style="font-size:0.78rem;color:#64748B;font-weight:500;">Saved as preferred provider</div></div></div>
+        </div>
+    }
+
+    <div class="completed-grid">
+        @foreach (var card in Model.ServiceCards)
+        {
+            <div class="completed-card">
+                <i class="fas fa-check check-corner"></i>
+                <i class="fas @card.Icon main"></i>
+                <div class="label">@card.Label</div>
+                <div class="provider">@card.ProviderName</div>
+                @if (!string.IsNullOrWhiteSpace(card.Phone))
+                {
+                    <div><a href="@PhoneHref(card.Phone)" style="color:#64748B;text-decoration:none;">@card.Phone</a></div>
+                }
+                @if (!string.IsNullOrWhiteSpace(card.Website))
+                {
+                    <div class="link">@card.Website.Replace("https://", "").Replace("http://", "")</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(card.ExtraNote))
+                {
+                    <div style="color:#94A3B8;margin-top:4px;">@card.ExtraNote</div>
+                }
+            </div>
+        }
+    </div>
+
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>You can call providers directly or return later from My Home.</span></div>
+
+    <a asp-controller="MyHome" asp-action="Index" class="btn-primary">Go to My Home</a>
+    <a asp-action="UtilitiesSetupReview" asp-route-id="@Model.SolicitudId" class="btn-outline">View setup details</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline">Done</a>
+</div>
+</body>
+</html>

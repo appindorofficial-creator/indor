@@ -1,0 +1,18 @@
+@await Html.PartialAsync("../Cleaning/_CleaningStyles")
+<style>
+    .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .value-badge { background: rgba(0,102,204,0.08); border-radius: 999px; padding: 8px 12px; font-size: 0.78rem; font-weight: 600; color: #0066CC; display: inline-flex; align-items: center; gap: 6px; }
+    .included-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; }
+    .included-grid span { font-size: 0.82rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .time-slot { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; }
+    .time-slot.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+    .time-slot .sub { display: block; font-size: 0.68rem; font-weight: 500; color: #94A3B8; margin-top: 4px; }
+    .upload-box { border: 2px dashed #CBD5E1; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 12px; background: rgba(248,250,252,0.8); }
+    .fa-stepper { display: flex; gap: 4px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; }
+    .fa-step { flex: 1; min-width: 72px; text-align: center; }
+    .fa-step-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; border: 2px solid #CBD5E1; color: #94A3B8; background: #FFF; }
+    .fa-step.done .fa-step-dot { border-color: #0066CC; background: #0066CC; color: #FFF; }
+    .fa-step.active .fa-step-dot { border-color: #0066CC; color: #0066CC; background: #FFF; }
+    .fa-step-label { font-size: 0.58rem; font-weight: 600; color: #94A3B8; line-height: 1.2; }
+    .fa-step.active .fa-step-label, .fa-step.done .fa-step-label { color: #0066CC; }
+</style>

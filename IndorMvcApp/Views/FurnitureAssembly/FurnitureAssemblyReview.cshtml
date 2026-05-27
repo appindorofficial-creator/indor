@@ -1,0 +1,79 @@
+@model IndorMvcApp.ViewModels.FurnitureAssemblyReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_FurnitureAssemblyStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="FurnitureAssemblyPreferences" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_FurnitureAssemblyStepper", 3)
+
+    <h2 class="page-heading" style="font-size:1.05rem;">Upload photos and review your request</h2>
+    <p class="page-lead" style="margin-top:-8px;">This helps the provider arrive ready.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="summary-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <strong><i class="fas fa-couch" style="color:#0066CC;"></i> @Model.NombreServicio</strong>
+            <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> Edit</a>
+        </div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-box"></i><div><div class="summary-label">Items</div><div class="summary-value">@Model.ItemsResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Schedule</div><div class="summary-value">@Model.FechaHorarioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Room</div><div class="summary-value">@Model.HabitacionLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-stairs"></i><div><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
+    </div>
+
+    <form asp-action="FurnitureAssemblyReview" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="DisclaimerTexto" />
+
+        <div class="upload-box">
+            <i class="fas fa-cloud-arrow-up" style="color:#0066CC;font-size:1.6rem;"></i>
+            <p style="margin-top:8px;font-size:0.88rem;">Drag files here or <strong>browse</strong></p>
+            <p style="font-size:0.72rem;color:#94A3B8;">JPG, PNG, PDF up to 25 MB</p>
+            <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf" multiple style="margin-top:12px;width:100%;" />
+        </div>
+
+        @foreach (var file in Model.ArchivosExistentes)
+        {
+            <div class="included-row"><i class="fas fa-file"></i><span>@file.NombreArchivo</span></div>
+        }
+
+        <div class="field-card">
+            <span class="field-label">Comments (optional)</span>
+            <div class="input-wrap"><i class="fas fa-comment"></i><textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="Boxes are already inside. One item needs wall anchoring."></textarea></div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
+        {
+            <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+        }
+
+        <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Request service</button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+    </form>
+</div>
+</body>
+</html>

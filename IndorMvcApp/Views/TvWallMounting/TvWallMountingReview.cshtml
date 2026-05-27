@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.TvWallMountingReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_TvWallMountingStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="TvWallMountingPrepare" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_TvWallMountingStepper", 3)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Review your request</h2>
+    <p class="page-lead" style="margin-top:-8px;">Check the details before booking.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-tv"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">Request</div><div class="summary-value">@Model.TipoSolicitudLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-up-right-and-down-left-from-center"></i><div><div class="summary-label">TV size</div><div class="summary-value">@Model.TamanoTvLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-hashtag"></i><div><div class="summary-label">Quantity</div><div class="summary-value">@Model.CantidadTvsLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-couch"></i><div><div class="summary-label">Room</div><div class="summary-value">@Model.HabitacionLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-border-all"></i><div><div class="summary-label">Wall type</div><div class="summary-value">@Model.TipoParedLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-grip-lines-vertical"></i><div><div class="summary-label">Wall mount</div><div class="summary-value">@Model.TieneSoporteLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-plug"></i><div><div class="summary-label">Cable setup</div><div class="summary-value">@Model.ConfiguracionCablesLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-outlet"></i><div><div class="summary-label">Outlet nearby</div><div class="summary-value">@Model.TomaCercanaLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-tv"></i><div><div class="summary-label">Previous mount on wall</div><div class="summary-value">@Model.MontajePrevioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-building"></i><div><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Arrival</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">Estimated time</div><div class="summary-value">@Model.TiempoEstimadoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-dollar-sign"></i><div><div class="summary-label">Starting price</div><div class="summary-value price-highlight">$@Model.PrecioEstimado.ToString("0")</div></div></div>
+        @if (!string.IsNullOrWhiteSpace(Model.NotaCorta))
+        {
+            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">Notes</div><div class="summary-value">@Model.NotaCorta</div></div></div>
+        }
+    </div>
+
+    @if (Model.ArchivosExistentes.Count > 0)
+    {
+        <div class="field-card">
+            <span class="field-label">Uploaded photos</span>
+            @foreach (var file in Model.ArchivosExistentes)
+            {
+                <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            }
+        </div>
+    }
+
+    <form asp-action="TvWallMountingReview" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="DisclaimerTexto" />
+
+        <label class="checkbox-row">
+            <input asp-for="AceptaDisclaimer" type="checkbox" />
+            <span>I understand final pricing may adjust based on wall type, mount hardware, cable concealment, or on-site conditions.</span>
+        </label>
+        <span asp-validation-for="AceptaDisclaimer" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
+
+        @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
+        {
+            <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+        }
+
+        <button type="submit" class="btn-primary">Confirm booking <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+</body>
+</html>

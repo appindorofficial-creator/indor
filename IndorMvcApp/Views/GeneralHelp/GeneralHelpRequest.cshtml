@@ -1,0 +1,105 @@
+@model IndorMvcApp.ViewModels.GeneralHelpRequestViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_GeneralHelpStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_GeneralHelpStepper", 1)
+
+    <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
+    <p class="page-lead" style="margin-top:-8px;text-align:center;">Tell us what kind of moving help you need.</p>
+
+    <div class="location-card">
+        <i class="fas fa-house main"></i>
+        <div class="meta">
+            <input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
+            <a asp-controller="Home" asp-action="Index" class="change">Change address ></a>
+        </div>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="GeneralHelpRequest" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="TipoAyuda" id="TipoAyuda" />
+        <input type="hidden" asp-for="VentanaTiempo" id="VentanaTiempo" />
+        <input type="hidden" asp-for="Urgencia" id="Urgencia" />
+
+        <div class="field-card">
+            <span class="field-label">What do you need help with?</span>
+            <div class="help-grid" id="helpTypeGroup">
+                <button type="button" class="help-tile" data-value="MovingQuestion"><i class="fas fa-circle-question"></i>Moving question</button>
+                <button type="button" class="help-tile" data-value="ExtraHands"><i class="fas fa-people-carry-box"></i>Extra hands</button>
+                <button type="button" class="help-tile" data-value="SmallTask"><i class="fas fa-wrench"></i>Small task</button>
+                <button type="button" class="help-tile" data-value="SuppliesPickup"><i class="fas fa-box"></i>Supplies pickup</button>
+                <button type="button" class="help-tile" data-value="DonationDropOff"><i class="fas fa-hand-holding-heart"></i>Donation drop-off</button>
+                <button type="button" class="help-tile" data-value="Other"><i class="fas fa-ellipsis"></i>Other</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">When do you need help?</span>
+            <div class="chip-scroll" id="timingGroup">
+                <button type="button" class="chip-option" data-value="Today"><i class="fas fa-calendar-day"></i> Today</button>
+                <button type="button" class="chip-option" data-value="Tomorrow"><i class="fas fa-calendar"></i> Tomorrow</button>
+                <button type="button" class="chip-option" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> This week</button>
+                <button type="button" class="chip-option" data-value="Flexible"><i class="fas fa-clock"></i> Flexible</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">How urgent is it?</span>
+            <div class="chip-scroll" id="urgencyGroup">
+                <button type="button" class="chip-option" data-value="Normal"><i class="fas fa-flag"></i> Normal</button>
+                <button type="button" class="chip-option" data-value="Priority"><i class="fas fa-shield"></i> Priority</button>
+                <button type="button" class="chip-option" data-value="Urgent"><i class="fas fa-bolt"></i> Urgent</button>
+            </div>
+        </div>
+
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>Choose the option that best matches your situation. You can describe the details on the next step.</span></div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">Next</button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back to Moving Setup</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSingle(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' .help-tile, #' + groupId + ' .chip-option').forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' .help-tile, #' + groupId + ' .chip-option').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                });
+            });
+        }
+
+        initSingle('helpTypeGroup', 'TipoAyuda', '@Model.TipoAyuda');
+        initSingle('timingGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
+        initSingle('urgencyGroup', 'Urgencia', '@Model.Urgencia');
+    })();
+</script>
+</body>
+</html>

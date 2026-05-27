@@ -1,0 +1,166 @@
+@model IndorMvcApp.ViewModels.TvWallMountingPrepareViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_TvWallMountingStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="TvWallMountingProject" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_TvWallMountingStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Add photos, access, and timing</h2>
+    <p class="page-lead" style="margin-top:-8px;">This helps us prepare for a smooth installation.</p>
+
+    <div class="location-card">
+        <div class="thumb" style="display:flex;align-items:center;justify-content:center;"><i class="fas fa-couch" style="color:#94A3B8;"></i></div>
+        <div class="meta">
+            <div class="addr">@Model.DireccionPropiedad</div>
+            <div class="room">@Model.HabitacionLabel</div>
+        </div>
+        <a asp-action="TvWallMountingProject" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;white-space:nowrap;">Edit ></a>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="TvWallMountingPrepare" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="HabitacionLabel" />
+        <input type="hidden" asp-for="ConfiguracionCables" id="ConfiguracionCables" />
+        <input type="hidden" asp-for="TomaCercana" id="TomaCercana" />
+        <input type="hidden" asp-for="MontajePrevio" id="MontajePrevio" />
+        <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+        <div class="upload-zone">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p><strong>Upload wall or TV photos</strong></p>
+            <p style="font-size:0.78rem;margin-top:4px;">Clear photos help us prepare the right tools and materials.</p>
+            <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf" multiple style="margin-top:10px;width:100%;" />
+        </div>
+        @foreach (var file in Model.ArchivosExistentes)
+        {
+            <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+        }
+
+        <div class="field-card">
+            <div class="picker-inline">
+                <div class="left"><i class="fas fa-plug"></i> Cable setup</div>
+                <div class="option-row" data-target="ConfiguracionCables">
+                    <button type="button" class="option-btn" data-value="BasicVisible">Basic visible cables</button>
+                    <button type="button" class="option-btn" data-value="HideInCover">Hide cables in cover</button>
+                    <button type="button" class="option-btn" data-value="InWallConcealment">In-wall concealment</button>
+                    <button type="button" class="option-btn" data-value="NotSure">Not sure</button>
+                </div>
+            </div>
+
+            <div class="picker-inline">
+                <div class="left"><i class="fas fa-outlet"></i> Is there an outlet near the TV location?</div>
+                <div class="option-row" data-target="TomaCercana">
+                    <button type="button" class="option-btn" data-value="Yes">Yes</button>
+                    <button type="button" class="option-btn" data-value="No">No</button>
+                    <button type="button" class="option-btn" data-value="NotSure">Not sure</button>
+                </div>
+            </div>
+
+            <div class="picker-inline">
+                <div class="left"><i class="fas fa-tv"></i> Has a TV been mounted on this wall before?</div>
+                <div class="option-row" data-target="MontajePrevio">
+                    <button type="button" class="option-btn" data-value="Yes">Yes</button>
+                    <button type="button" class="option-btn" data-value="No">No</button>
+                    <button type="button" class="option-btn" data-value="NotSure">Not sure</button>
+                </div>
+            </div>
+
+            <div class="picker-inline">
+                <div class="left"><i class="fas fa-building"></i> Access details</div>
+                <div class="option-row" data-target="DetallesAcceso">
+                    <button type="button" class="option-btn" data-value="GroundFloor">Ground floor</button>
+                    <button type="button" class="option-btn" data-value="Stairs">Stairs</button>
+                    <button type="button" class="option-btn" data-value="Elevator">Elevator</button>
+                    <button type="button" class="option-btn" data-value="ParkingLimited">Parking limited</button>
+                </div>
+            </div>
+
+            <div class="picker-inline">
+                <div class="left"><i class="fas fa-clock"></i> Preferred arrival</div>
+                <div class="option-row" data-target="VentanaHorario">
+                    <button type="button" class="option-btn" data-value="Morning">Morning</button>
+                    <button type="button" class="option-btn" data-value="Afternoon">Afternoon</button>
+                    <button type="button" class="option-btn" data-value="Evening">Evening</button>
+                    <button type="button" class="option-btn" data-value="AsSoonAsPossible">As soon as possible</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Preferred service date</span>
+            <div class="input-wrap">
+                <i class="fas fa-calendar"></i>
+                <input asp-for="FechaServicio" type="date" />
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Notes for the installer</span>
+            <div class="input-wrap">
+                <i class="fas fa-note-sticky"></i>
+                <textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="Customer would like centered placement above media console."></textarea>
+            </div>
+        </div>
+
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>Photos and access details help your provider bring the right tools and ensure a smooth installation.</span></div>
+
+        <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        const initial = {
+            ConfiguracionCables: '@Model.ConfiguracionCables',
+            TomaCercana: '@Model.TomaCercana',
+            MontajePrevio: '@Model.MontajePrevio',
+            DetallesAcceso: '@Model.DetallesAcceso',
+            VentanaHorario: '@Model.VentanaHorario'
+        };
+
+        document.querySelectorAll('[data-target]').forEach(group => {
+            const targetId = group.dataset.target;
+            const hidden = document.getElementById(targetId);
+            const current = initial[targetId] || hidden.value;
+
+            group.querySelectorAll('.option-btn').forEach(btn => {
+                if (btn.dataset.value === current) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                });
+            });
+
+            if (current) hidden.value = current;
+        });
+    })();
+</script>
+</body>
+</html>

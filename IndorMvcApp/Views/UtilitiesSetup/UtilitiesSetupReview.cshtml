@@ -1,0 +1,95 @@
+@model IndorMvcApp.ViewModels.UtilitiesSetupReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_UtilitiesSetupStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="UtilitiesSetupUtilities" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_UtilitiesSetupStepper", 4)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Review & Save</h2>
+    <p class="page-lead" style="margin-top:-8px;">Check your setup before saving to My Home.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="summary-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px;">
+            <strong style="font-size:0.92rem;">Address</strong>
+            <a asp-action="UtilitiesSetupAddress" asp-route-id="@Model.MovingSetupServicioId" style="color:#0066CC;font-size:0.78rem;font-weight:600;text-decoration:none;"><i class="fas fa-pen"></i> Edit</a>
+        </div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Move-in date</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-plug"></i><div><div class="summary-label">Services</div><div class="summary-value">@Model.ServiciosConectarLabel</div></div></div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.InternetResumen))
+    {
+        <div class="summary-card">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+                <strong style="font-size:0.92rem;">Internet</strong>
+                @if (Model.InternetSelected)
+                {
+                    <span class="status-selected"><i class="fas fa-check"></i> Selected</span>
+                }
+            </div>
+            <div class="summary-row"><i class="fas fa-wifi"></i><div><div class="summary-value">@Model.InternetResumen</div></div></div>
+        </div>
+    }
+
+    @if (Model.Contactos.Count > 0)
+    {
+        <div class="summary-card">
+            <strong style="font-size:0.92rem;display:block;margin-bottom:10px;">Utilities</strong>
+            @foreach (var contact in Model.Contactos)
+            {
+                <div class="summary-row">
+                    <i class="fas @contact.Icon"></i>
+                    <div>
+                        <div class="summary-label">@contact.TipoLabel</div>
+                        <div class="summary-value">@contact.Nombre</div>
+                        @if (!string.IsNullOrWhiteSpace(contact.Telefono) || !string.IsNullOrWhiteSpace(contact.Website))
+                        {
+                            <div class="summary-value" style="font-size:0.78rem;color:#64748B;font-weight:500;margin-top:4px;">
+                                @contact.Telefono
+                                @if (!string.IsNullOrWhiteSpace(contact.Telefono) && !string.IsNullOrWhiteSpace(contact.Website)) { <span> · </span> }
+                                @(contact.Website?.Replace("https://", "").Replace("http://", ""))
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-user"></i><div><div class="summary-label">Contact preference</div><div class="summary-value">@Model.PreferenciaContactoLabel</div></div></div>
+    </div>
+
+    <div class="success-banner"><i class="fas fa-circle-check"></i><span>Your provider list will be saved in My Home so you can call or visit websites anytime.</span></div>
+
+    <form asp-action="UtilitiesSetupReview" method="post">
+        <input type="hidden" name="id" value="@Model.SolicitudId" />
+        <button type="submit" name="action" value="save" class="btn-primary">Save setup</button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+</body>
+</html>

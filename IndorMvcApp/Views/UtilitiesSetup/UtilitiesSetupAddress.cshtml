@@ -1,0 +1,115 @@
+@model IndorMvcApp.ViewModels.UtilitiesSetupAddressViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_UtilitiesSetupStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_UtilitiesSetupStepper", 1)
+
+    <h2 class="page-heading" style="font-size:1.15rem;">@Model.PageTitle</h2>
+    <p class="page-lead" style="margin-top:-8px;">@Model.Subtitulo</p>
+
+    <div class="location-card">
+        <div class="thumb"><i class="fas fa-house" style="color:#0066CC;"></i></div>
+        <div class="meta">
+            <div class="addr"><input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" /></div>
+            <div class="sub">Move-in setup</div>
+        </div>
+        <span style="color:#0066CC;font-weight:600;font-size:0.85rem;"><i class="fas fa-pen"></i> Edit</span>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="UtilitiesSetupAddress" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="ServiciosConectar" id="ServiciosConectar" />
+        <input type="hidden" asp-for="PreferenciaContacto" id="PreferenciaContacto" />
+
+        <div class="field-card">
+            <span class="field-label">What do you need to connect?</span>
+            <div class="service-grid" id="servicesGroup">
+                <button type="button" class="service-tile" data-value="Internet"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wifi"></i>Internet</button>
+                <button type="button" class="service-tile" data-value="Cable"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tv"></i>Cable</button>
+                <button type="button" class="service-tile" data-value="Electricity"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bolt"></i>Electricity</button>
+                <button type="button" class="service-tile" data-value="Water"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-droplet"></i>Water</button>
+                <button type="button" class="service-tile" data-value="Gas"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-fire-flame-simple"></i>Gas</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">When do you need service?</span>
+            <div class="input-wrap">
+                <i class="fas fa-calendar"></i>
+                <input asp-for="FechaServicio" type="date" required />
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Contact preference</span>
+            <div class="pref-row" id="prefGroup">
+                <button type="button" class="pref-btn" data-value="ContactMyself"><i class="fas fa-user"></i>I'll contact providers myself</button>
+                <button type="button" class="pref-btn" data-value="SaveForLater"><i class="fas fa-clock"></i>Save providers for later</button>
+            </div>
+        </div>
+
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>We'll show the providers that serve this address, plus phone numbers and websites so you can connect service faster.</span></div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
+        <button type="submit" name="action" value="skip" class="btn-outline">Skip for now</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initMulti(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const selected = new Set((initial || hidden.value || '').split('|').filter(Boolean));
+            document.querySelectorAll('#' + groupId + ' .service-tile').forEach(btn => {
+                if (selected.has(btn.dataset.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    const value = btn.dataset.value;
+                    if (selected.has(value)) { selected.delete(value); btn.classList.remove('active'); }
+                    else { selected.add(value); btn.classList.add('active'); }
+                    hidden.value = Array.from(selected).join('|');
+                });
+            });
+            hidden.value = Array.from(selected).join('|');
+        }
+
+        function initSingle(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' .pref-btn').forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' .pref-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                });
+            });
+        }
+
+        initMulti('servicesGroup', 'ServiciosConectar', '@Model.ServiciosConectar');
+        initSingle('prefGroup', 'PreferenciaContacto', '@Model.PreferenciaContacto');
+    })();
+</script>
+</body>
+</html>

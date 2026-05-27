@@ -1,0 +1,121 @@
+@model IndorMvcApp.ViewModels.UtilitiesSetupInternetViewModel
+@using IndorMvcApp.Services
+@{
+    ViewData["Title"] = "Internet & Cable Options - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_UtilitiesSetupStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="UtilitiesSetupAddress" asp-route-id="@Model.MovingSetupServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_UtilitiesSetupStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Internet & Cable Options</h2>
+    <p class="page-lead" style="margin-top:-8px;">Available at your address: @Model.DireccionPropiedad</p>
+
+    <div class="address-card">
+        <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><span style="font-weight:600;font-size:0.92rem;">@Model.DireccionPropiedad</span></div>
+        <a asp-action="UtilitiesSetupAddress" asp-route-id="@Model.MovingSetupServicioId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> Edit</a>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="UtilitiesSetupInternet" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="ProveedorInternetId" id="ProveedorInternetId" />
+        <input type="hidden" asp-for="OpcionCable" id="OpcionCable" />
+
+        @foreach (var provider in Model.Proveedores)
+        {
+            var badgeClass = UtilitiesSetupDisplayLabels.ProviderBadgeClass(provider.Etiqueta);
+            <div class="provider-card @(provider.Selected ? "selected" : "")" data-provider-id="@provider.Id">
+                <div class="provider-head">
+                    <strong>@provider.Nombre</strong>
+                    @if (!string.IsNullOrWhiteSpace(provider.Etiqueta))
+                    {
+                        <span class="provider-badge @badgeClass">@provider.Etiqueta</span>
+                    }
+                </div>
+                <div class="provider-meta">@provider.Velocidad · @provider.DetalleExtra</div>
+                <div class="provider-price">From $@provider.PrecioDesde.ToString("0.00") /mo</div>
+                <div class="provider-actions">
+                    <span class="mini">View plans</span>
+                    @if (provider.Selected)
+                    {
+                        <span class="selected-pill"><i class="fas fa-check"></i> Selected</span>
+                    }
+                    else
+                    {
+                        <span class="mini">Choose</span>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="field-card">
+            <span class="field-label">How would you like to get cable? (Optional)</span>
+            <div class="cable-grid" id="cableGroup">
+                <button type="button" class="cable-card" data-value="InternetOnly"><span class="radio"></span><i class="fas fa-desktop"></i>Internet only<span class="sub">No TV service</span></button>
+                <button type="button" class="cable-card" data-value="InternetTv"><span class="radio"></span><i class="fas fa-tv"></i>Internet + TV<span class="sub">Add TV service</span></button>
+                <button type="button" class="cable-card" data-value="BringMyOwn"><span class="radio"></span><i class="fas fa-router"></i>Bring my own<span class="sub">I'll use my provider</span></button>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
+        <button type="submit" name="action" value="skip" class="btn-outline">Skip internet for now</button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        const providerHidden = document.getElementById('ProveedorInternetId');
+        const cableHidden = document.getElementById('OpcionCable');
+
+        document.querySelectorAll('.provider-card').forEach(card => {
+            card.addEventListener('click', () => {
+                document.querySelectorAll('.provider-card').forEach(c => {
+                    c.classList.remove('selected');
+                    const actions = c.querySelector('.provider-actions');
+                    if (actions) {
+                        actions.innerHTML = '<span class="mini">View plans</span><span class="mini">Choose</span>';
+                    }
+                });
+                card.classList.add('selected');
+                providerHidden.value = card.dataset.providerId;
+                const actions = card.querySelector('.provider-actions');
+                if (actions) {
+                    actions.innerHTML = '<span class="mini">View plans</span><span class="selected-pill"><i class="fas fa-check"></i> Selected</span>';
+                }
+            });
+        });
+
+        document.querySelectorAll('#cableGroup .cable-card').forEach(btn => {
+            if (btn.dataset.value === cableHidden.value) btn.classList.add('active');
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#cableGroup .cable-card').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                cableHidden.value = btn.dataset.value;
+            });
+        });
+    })();
+</script>
+</body>
+</html>

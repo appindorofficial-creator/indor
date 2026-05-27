@@ -1,0 +1,147 @@
+@model IndorMvcApp.ViewModels.FurnitureAssemblyPreferencesViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_FurnitureAssemblyStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_FurnitureAssemblyStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Access, room and schedule</h2>
+    <p class="page-lead" style="margin-top:-8px;">Tell us where the items are and when you need help.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="FurnitureAssemblyPreferences" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="Habitacion" id="Habitacion" />
+        <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
+        <input type="hidden" asp-for="AyudaMover" id="AyudaMover" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+        <div class="address-card">
+            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><span style="font-weight:600;">@Model.DireccionPropiedad</span></div>
+            <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit ></a>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Where will the assembly happen?</span>
+            <div class="chip-row" id="roomGroup" style="flex-wrap:wrap;">
+                <button type="button" class="chip-btn" data-value="LivingRoom"><i class="fas fa-couch"></i> Living room</button>
+                <button type="button" class="chip-btn" data-value="Bedroom"><i class="fas fa-bed"></i> Bedroom</button>
+                <button type="button" class="chip-btn" data-value="Office"><i class="fas fa-desktop"></i> Office</button>
+                <button type="button" class="chip-btn" data-value="DiningRoom"><i class="fas fa-utensils"></i> Dining room</button>
+                <button type="button" class="chip-btn" data-value="Patio"><i class="fas fa-umbrella-beach"></i> Patio</button>
+                <button type="button" class="chip-btn" data-value="MultipleRooms"><i class="fas fa-house"></i> Multiple rooms</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Access details</span>
+            <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
+                <button type="button" class="chip-btn" data-value="FirstFloor"><i class="fas fa-stairs"></i> 1st floor</button>
+                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> Stairs</button>
+                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> Elevator</button>
+                <button type="button" class="chip-btn" data-value="ParkingNearby"><i class="fas fa-square-parking"></i> Parking nearby</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Do you need help moving the boxes or furniture?</span>
+            <div class="segment-row" data-target="AyudaMover">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Preferred date</span>
+            <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" required /></div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Preferred time</span>
+            <div class="tile-grid" style="grid-template-columns:1fr;" data-target="VentanaHorario">
+                <button type="button" class="time-slot" data-value="Morning">Morning<span class="sub">8AM - 12PM</span></button>
+                <button type="button" class="time-slot" data-value="Afternoon">Afternoon<span class="sub">12PM - 5PM</span></button>
+                <button type="button" class="time-slot" data-value="Evening">Evening<span class="sub">5PM - 8PM</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Anything else we should know?</span>
+            <div class="input-wrap"><i class="fas fa-note-sticky"></i><textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="Heavy dresser for upstairs bedroom, assembly manual available."></textarea></div>
+        </div>
+
+        <button type="submit" class="btn-primary">Continue</button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSingleChip(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' .chip-btn').forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' .chip-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                });
+            });
+        }
+
+        function initSegments(containerSelector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            const buttons = container.querySelectorAll('.segment-btn');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+        }
+
+        function initTimeSlots(containerSelector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            const buttons = container.querySelectorAll('.time-slot');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || 'Afternoon');
+        }
+
+        initSingleChip('roomGroup', 'Habitacion', '@Model.Habitacion');
+        initSingleChip('accessGroup', 'DetallesAcceso', '@Model.DetallesAcceso');
+        initSegments('[data-target="AyudaMover"]', 'AyudaMover', '@Model.AyudaMover');
+        initTimeSlots('[data-target="VentanaHorario"]', 'VentanaHorario', '@Model.VentanaHorario');
+    })();
+</script>
+</body>
+</html>

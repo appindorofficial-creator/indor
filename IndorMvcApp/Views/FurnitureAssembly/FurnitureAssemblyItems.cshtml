@@ -1,0 +1,145 @@
+@model IndorMvcApp.ViewModels.FurnitureAssemblyItemsViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_FurnitureAssemblyStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="FurnitureAssemblyService" asp-route-id="@Model.MovingSetupServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_FurnitureAssemblyStepper", 1)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Tell us what needs assembly</h2>
+    <p class="page-lead" style="margin-top:-8px;">Help us prepare the right team and tools.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="FurnitureAssemblyItems" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TiposMueble" id="TiposMueble" />
+        <input type="hidden" asp-for="CantidadItems" id="CantidadItems" />
+        <input type="hidden" asp-for="CondicionItems" id="CondicionItems" />
+        <input type="hidden" asp-for="AnclajePared" id="AnclajePared" />
+
+        <div class="address-card">
+            <div class="left"><i class="fas fa-location-dot" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required /></div>
+            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit ></span>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What are you assembling?</span>
+            <div class="tile-grid tile-grid-4" id="typesGroup">
+                <button type="button" class="tile-btn" data-value="BedFrame"><i class="fas fa-bed"></i>Bed frame</button>
+                <button type="button" class="tile-btn" data-value="Dresser"><i class="fas fa-box"></i>Dresser</button>
+                <button type="button" class="tile-btn" data-value="Desk"><i class="fas fa-desktop"></i>Desk</button>
+                <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>Dining table</button>
+                <button type="button" class="tile-btn" data-value="Bookshelf"><i class="fas fa-book"></i>Bookshelf</button>
+                <button type="button" class="tile-btn" data-value="TvStand"><i class="fas fa-tv"></i>TV stand</button>
+                <button type="button" class="tile-btn" data-value="OfficeChair"><i class="fas fa-chair"></i>Office chair</button>
+                <button type="button" class="tile-btn" data-value="Shelving"><i class="fas fa-layer-group"></i>Shelving</button>
+                <button type="button" class="tile-btn" data-value="MultipleItems"><i class="fas fa-ellipsis"></i>Multiple items</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">How many items?</span>
+            <div class="segment-row" data-target="CantidadItems">
+                <button type="button" class="segment-btn" data-value="One">1</button>
+                <button type="button" class="segment-btn" data-value="Two">2</button>
+                <button type="button" class="segment-btn" data-value="Three">3</button>
+                <button type="button" class="segment-btn" data-value="FourPlus">4+</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What condition are the items in?</span>
+            <div class="tile-grid" data-target="CondicionItems">
+                <button type="button" class="type-card" data-value="NewInBox"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>New in box</button>
+                <button type="button" class="type-card" data-value="PartiallyAssembled"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-screwdriver-wrench"></i>Partially assembled</button>
+                <button type="button" class="type-card" data-value="NeedsReassembly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-arrows-rotate"></i>Needs re-assembly</button>
+                <button type="button" class="type-card" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question"></i>Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Will any item need wall anchoring?</span>
+            <div class="segment-row" data-target="AnclajePared">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Next <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> Upload photos</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initMulti(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const selected = new Set((initial || hidden.value || '').split('|').filter(Boolean));
+            document.querySelectorAll('#' + groupId + ' .tile-btn').forEach(btn => {
+                if (selected.has(btn.dataset.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    const value = btn.dataset.value;
+                    if (selected.has(value)) { selected.delete(value); btn.classList.remove('active'); }
+                    else { selected.add(value); btn.classList.add('active'); }
+                    hidden.value = Array.from(selected).join('|');
+                });
+            });
+            hidden.value = Array.from(selected).join('|');
+        }
+
+        function initSegments(containerSelector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            if (!container || !hidden) return;
+            const buttons = container.querySelectorAll('.segment-btn');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+        }
+
+        function initCards(containerSelector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            if (!container || !hidden) return;
+            const buttons = container.querySelectorAll('.type-card');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+        }
+
+        initMulti('typesGroup', 'TiposMueble', '@Model.TiposMueble');
+        initSegments('[data-target="CantidadItems"]', 'CantidadItems', '@Model.CantidadItems');
+        initCards('[data-target="CondicionItems"]', 'CondicionItems', '@Model.CondicionItems');
+        initSegments('[data-target="AnclajePared"]', 'AnclajePared', '@Model.AnclajePared');
+    })();
+</script>
+</body>
+</html>

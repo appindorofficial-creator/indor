@@ -1,0 +1,24 @@
+@model int
+@{
+    var steps = new[] { "Project details", "Prepare", "Review & Confirm" };
+}
+<div class="tv-stepper">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var stepNum = i + 1;
+        var css = stepNum < Model ? "tv-step done" : stepNum == Model ? "tv-step active" : "tv-step";
+        <div class="@css">
+            <div class="tv-step-dot">
+                @if (stepNum < Model)
+                {
+                    <i class="fas fa-check" style="font-size:0.7rem;"></i>
+                }
+                else
+                {
+                    @stepNum
+                }
+            </div>
+            <div class="tv-step-label">@steps[i]</div>
+        </div>
+    }
+</div>
