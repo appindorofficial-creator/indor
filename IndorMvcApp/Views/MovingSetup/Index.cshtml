@@ -1,0 +1,33 @@
+@model IndorMvcApp.ViewModels.MovingSetupSectionViewModel
+@{
+    ViewData["Title"] = "Moving Setup";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="hf-title-row">
+    <a asp-controller="Home" asp-action="Index" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <h1 class="hf-title">@Model.Titulo</h1>
+</div>
+<p style="color:#64748B;margin-bottom:16px;">@Model.Subtitulo</p>
+<div class="hf-grid-2" style="margin-bottom:16px;">
+    @foreach (var item in Model.Servicios)
+    {
+        var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
+        <a href="@href" class="hf-action" style="min-height:96px;">
+            <i class="fas @item.IconoClase"></i>
+            @item.Nombre
+        </a>
+    }
+</div>
+@if (Model.EnlacesRapidos.Count > 0)
+{
+    <div class="hf-label">Quick links</div>
+    @foreach (var link in Model.EnlacesRapidos)
+    {
+        var href = !string.IsNullOrWhiteSpace(link.Url) ? link.Url : "#";
+        <a href="@href" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
+            <i class="fas @link.IconoClase icon"></i>
+            <div class="meta"><div class="value">@link.Nombre</div></div>
+            <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+        </a>
+    }
+}

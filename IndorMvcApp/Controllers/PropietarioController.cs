@@ -199,6 +199,7 @@ public class PropietarioController : Controller
             var attomRawJson = fullModel.AttomRawJson;
             fullModel.AttomRawJson = null;
             var jsonRaw = JsonSerializer.Serialize(fullModel, jsonOptions);
+            var hasAttomPayload = !string.IsNullOrWhiteSpace(attomRawJson);
 
             var propiedad = new Propiedad
             {
@@ -209,8 +210,11 @@ public class PropietarioController : Controller
                 Activo = true,
                 AttomPropertyId = fullModel.AttomPropertyId,
                 AttomRawJson = attomRawJson,
-                AttomLastSyncUtc = fullModel.AttomPropertyId.HasValue ? DateTime.UtcNow : null,
-                AttomSyncStatus = fullModel.AttomPropertyId.HasValue ? "Success" : "Estimated"
+                AttomLastSyncUtc = hasAttomPayload ? DateTime.UtcNow : null,
+                AttomSyncStatus = fullModel.AttomPropertyId.HasValue ? "Success" : (hasAttomPayload ? "Partial" : "Estimated"),
+                AttomSyncError = fullModel.AttomPropertyId.HasValue || hasAttomPayload
+                    ? null
+                    : "ATTOM response not available"
             };
 
             _db.Propiedades.Add(propiedad);

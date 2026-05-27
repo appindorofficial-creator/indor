@@ -152,15 +152,25 @@ public class AttomPropertyService : IAttomPropertyService
                                                 ?? info.PropertyDetails.LegalDescription;
 
         var summary = propertyNode["summary"];
-        info.PropertyDetails.PropertyType = ReadString(summary?["propclass"])
+        info.PropertyDetails.PropertyType = ReadString(summary?["propertyType"])
+                                            ?? ReadString(summary?["propclass"])
                                             ?? ReadString(summary?["proptype"])
                                             ?? info.PropertyDetails.PropertyType;
         info.PropertyDetails.ArchitecturalStyle = ReadString(summary?["archStyle"])
                                                     ?? info.PropertyDetails.ArchitecturalStyle;
+        info.PropertyDetails.LegalDescription = ReadString(summary?["legal1"])
+                                                ?? info.PropertyDetails.LegalDescription;
+        info.PropertyDetails.Occupancy = ReadString(summary?["absenteeInd"])
+                                         ?? info.PropertyDetails.Occupancy;
+        info.PropertyDetails.Fips = ReadString(propertyNode["identifier"]?["fips"])
+                                    ?? info.PropertyDetails.Fips;
 
         var building = propertyNode["building"];
-        info.PropertyDetails.YearBuilt = ReadInt(building?["construction"]?["yearbuilt"])
+        info.PropertyDetails.YearBuilt = ReadInt(summary?["yearbuilt"])
+                                         ?? ReadInt(building?["construction"]?["yearbuilt"])
                                          ?? info.PropertyDetails.YearBuilt;
+        info.PropertyDetails.YearBuiltEffective = ReadInt(building?["summary"]?["yearbuilteffective"])
+                                                    ?? info.PropertyDetails.YearBuiltEffective;
         info.PropertyDetails.YearRenovated = ReadInt(building?["construction"]?["yearrenovated"])
                                              ?? info.PropertyDetails.YearRenovated;
         info.PropertyDetails.LivingArea = ReadInt(building?["size"]?["livingsize"])
@@ -170,8 +180,33 @@ public class AttomPropertyService : IAttomPropertyService
                                         ?? info.PropertyDetails.Bedrooms;
         info.PropertyDetails.Bathrooms = ReadDecimal(building?["rooms"]?["bathstotal"])
                                          ?? info.PropertyDetails.Bathrooms;
+        info.PropertyDetails.BathsFull = ReadInt(building?["rooms"]?["bathsfull"])
+                                         ?? info.PropertyDetails.BathsFull;
+        info.PropertyDetails.RoomsTotal = ReadInt(building?["rooms"]?["roomsTotal"])
+                                          ?? info.PropertyDetails.RoomsTotal;
         info.PropertyDetails.Floors = ReadInt(building?["summary"]?["levels"])
                                       ?? info.PropertyDetails.Floors;
+        info.PropertyDetails.BuildingCondition = ReadString(building?["construction"]?["condition"])
+                                                 ?? info.PropertyDetails.BuildingCondition;
+        info.PropertyDetails.WallType = ReadString(building?["construction"]?["wallType"])
+                                        ?? ReadString(building?["construction"]?["walltype"])
+                                        ?? info.PropertyDetails.WallType;
+        info.PropertyDetails.ParkingType = ReadString(building?["parking"]?["prkgType"])
+                                           ?? info.PropertyDetails.ParkingType;
+        info.PropertyDetails.GarageType = ReadString(building?["parking"]?["garagetype"])
+                                          ?? info.PropertyDetails.GarageType;
+        info.PropertyDetails.BasementSqFt = ReadInt(building?["interior"]?["bsmtsize"])
+                                            ?? info.PropertyDetails.BasementSqFt;
+        info.PropertyDetails.Fireplaces = ReadInt(building?["interior"]?["fplccount"])
+                                          ?? info.PropertyDetails.Fireplaces;
+
+        var utilities = propertyNode["utilities"];
+        info.PropertyDetails.HeatingType = ReadString(utilities?["heatingtype"])
+                                           ?? info.PropertyDetails.HeatingType;
+        info.PropertyDetails.HeatingFuel = ReadString(utilities?["heatingfuel"])
+                                           ?? info.PropertyDetails.HeatingFuel;
+        info.PropertyDetails.CoolingType = ReadString(utilities?["coolingtype"])
+                                           ?? info.PropertyDetails.CoolingType;
 
         var lot = propertyNode["lot"];
         info.PropertyDetails.LotSize = ReadDecimal(lot?["lotsize1"]) ?? info.PropertyDetails.LotSize;
@@ -181,8 +216,33 @@ public class AttomPropertyService : IAttomPropertyService
         info.PropertyDetails.Zoning = ReadString(area?["zonetype"])
                                       ?? ReadString(area?["countyuse1"])
                                       ?? info.PropertyDetails.Zoning;
+        info.PropertyDetails.Subdivision = ReadString(area?["subdname"])
+                                           ?? info.PropertyDetails.Subdivision;
+        info.PropertyDetails.Municipality = ReadString(area?["munname"])
+                                            ?? info.PropertyDetails.Municipality;
+        info.PropertyDetails.CountyName = ReadString(area?["countrysecsubd"])
+                                            ?? info.PropertyDetails.CountyName;
         info.PropertyDetails.AssignedSchool = ReadString(propertyNode["school"]?["schoolname"])
                                               ?? info.PropertyDetails.AssignedSchool;
+
+        var addressNode = propertyNode["address"];
+        if (!string.IsNullOrWhiteSpace(ReadString(addressNode?["oneLine"])))
+        {
+            info.FormattedAddress = ReadString(addressNode?["oneLine"])!;
+        }
+
+        var location = propertyNode["location"];
+        info.PropertyDetails.LocationAccuracy = ReadString(location?["accuracy"])
+                                                ?? info.PropertyDetails.LocationAccuracy;
+        if (decimal.TryParse(ReadString(location?["latitude"]), NumberStyles.Any, CultureInfo.InvariantCulture, out var lat))
+        {
+            info.Latitude = lat;
+        }
+
+        if (decimal.TryParse(ReadString(location?["longitude"]), NumberStyles.Any, CultureInfo.InvariantCulture, out var lon))
+        {
+            info.Longitude = lon;
+        }
 
         var assessment = propertyNode["assessment"];
         info.PropertyDetails.AnnualTaxAmount = ReadDecimal(assessment?["tax"]?["taxamt"])
@@ -203,8 +263,11 @@ public class AttomPropertyService : IAttomPropertyService
 
         var features = new List<string>();
         AddFeature(features, ReadString(building?["construction"]?["roofcover"]));
-        AddFeature(features, ReadString(building?["construction"]?["walltype"]));
-        AddFeature(features, ReadString(building?["parking"]?["prkgType"]));
+        AddFeature(features, info.PropertyDetails.WallType);
+        AddFeature(features, info.PropertyDetails.ParkingType);
+        AddFeature(features, info.PropertyDetails.GarageType);
+        AddFeature(features, info.PropertyDetails.HeatingType);
+        AddFeature(features, info.PropertyDetails.CoolingType);
         AddFeature(features, ReadString(building?["interior"]?["fplctype"]));
         if (features.Count > 0)
         {

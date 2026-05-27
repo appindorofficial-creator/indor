@@ -15,26 +15,71 @@ public class MyHomeSummaryViewModel
     public decimal? EstimatedValue { get; set; }
     public string DataSource { get; set; } = "Estimated";
     public DateTime? AttomLastSyncUtc { get; set; }
+    public long? AttomPropertyId { get; set; }
+    public bool HasAttomData { get; set; }
+    public int AttomFieldCount { get; set; }
 }
 
 public class MyHomePropertyDetailsViewModel
 {
     public int PropiedadId { get; set; }
     public string Address { get; set; } = string.Empty;
+    public long? AttomPropertyId { get; set; }
+    public DateTime? AttomLastSyncUtc { get; set; }
+    public bool HasAttomData { get; set; }
     public string? ParcelId { get; set; }
+    public string? Fips { get; set; }
+    public string? LegalDescription { get; set; }
     public string? Zoning { get; set; }
     public string? AssignedSchool { get; set; }
+    public string? Subdivision { get; set; }
+    public string? Municipality { get; set; }
+    public string? County { get; set; }
     public DateTime? LastSaleDate { get; set; }
     public decimal? LastSalePrice { get; set; }
     public decimal? AnnualTaxAmount { get; set; }
     public int? TaxYear { get; set; }
     public int? YearBuilt { get; set; }
+    public int? YearBuiltEffective { get; set; }
     public int? LivingArea { get; set; }
+    public int? LotSizeSqFt { get; set; }
     public decimal? LotSizeAcres { get; set; }
+    public int? Bedrooms { get; set; }
+    public decimal? Bathrooms { get; set; }
+    public int? RoomsTotal { get; set; }
+    public int? Floors { get; set; }
     public string? PropertyType { get; set; }
+    public string? Occupancy { get; set; }
     public decimal? EstimatedValue { get; set; }
+    public string? HeatingType { get; set; }
+    public string? HeatingFuel { get; set; }
+    public string? CoolingType { get; set; }
+    public string? BuildingCondition { get; set; }
+    public string? WallType { get; set; }
+    public string? ParkingType { get; set; }
+    public string? GarageType { get; set; }
+    public int? BasementSqFt { get; set; }
+    public int? Fireplaces { get; set; }
+    public string? LocationAccuracy { get; set; }
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
+    public List<string> Features { get; set; } = new();
     public string DataSource { get; set; } = "Estimated";
     public string ActiveTab { get; set; } = "information";
+    public List<AttomFieldGroupViewModel> AttomFieldGroups { get; set; } = new();
+    public string AttomRawJsonPretty { get; set; } = string.Empty;
+}
+
+public class AttomFieldGroupViewModel
+{
+    public string Title { get; set; } = string.Empty;
+    public List<AttomFieldItemViewModel> Fields { get; set; } = new();
+}
+
+public class AttomFieldItemViewModel
+{
+    public string Label { get; set; } = string.Empty;
+    public string Value { get; set; } = string.Empty;
 }
 
 public class MyHomeEditViewModel

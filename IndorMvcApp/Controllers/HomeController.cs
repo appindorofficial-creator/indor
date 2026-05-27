@@ -61,6 +61,21 @@ public class HomeController : Controller
             .ThenBy(s => s.Id)
             .ToListAsync();
 
+        var movingConfig = await _db.MovingSetupConfig.FirstOrDefaultAsync(c => c.Activo);
+        var movingServicios = await _db.MovingSetupServicios
+            .Where(s => s.Activo)
+            .OrderBy(s => s.Orden)
+            .ToListAsync();
+        var movingEnlaces = await _db.MovingSetupEnlacesRapidos
+            .Where(e => e.Activo)
+            .OrderBy(e => e.Orden)
+            .ToListAsync();
+        ViewBag.MovingSetupSection = MovingSetupDisplayService.Build(
+            movingConfig,
+            movingServicios,
+            movingEnlaces,
+            Url);
+
         // === Datos para sección "More" ===
         ViewBag.Planes = await _db.PlanesMembresia
             .Where(p => p.Activo)

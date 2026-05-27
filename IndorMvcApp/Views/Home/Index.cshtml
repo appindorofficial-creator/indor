@@ -1351,6 +1351,195 @@
             box-shadow: 0 6px 14px rgba(0, 102, 204, 0.25);
         }
 
+        .emergency-cta.hidden { display: none; }
+
+        /* === Moving Setup === */
+        .moving-setup-section {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 16px 14px 18px;
+            box-shadow: 0 6px 20px rgba(10, 37, 64, .06);
+            margin-bottom: 14px;
+        }
+        .moving-setup-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .moving-setup-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .moving-setup-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(0, 102, 204, 0.12);
+            color: #0066CC;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+        .moving-setup-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0A2540;
+        }
+        .moving-setup-subtitle {
+            margin: 6px 0 0;
+            font-size: 0.78rem;
+            color: #64748B;
+            line-height: 1.4;
+        }
+        .moving-setup-view-all {
+            color: #0066CC;
+            font-size: 0.82rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+        .moving-setup-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .moving-setup-grid-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: #0A2540;
+            padding: 10px 6px;
+            border-radius: 14px;
+            border: 1px solid #E5E7EB;
+            background: #FFF;
+            min-height: 88px;
+            justify-content: center;
+        }
+        .moving-setup-grid-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(0, 102, 204, 0.1);
+            color: #0066CC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+        }
+        .moving-setup-grid-label {
+            font-size: 0.68rem;
+            font-weight: 700;
+            text-align: center;
+            line-height: 1.2;
+        }
+        .moving-setup-featured {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            background: #F8FAFC;
+            margin-bottom: 12px;
+        }
+        .moving-setup-featured-media img,
+        .moving-setup-featured-fallback {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+        }
+        .moving-setup-featured-fallback {
+            background: #E5E7EB;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0066CC;
+            font-size: 1.4rem;
+        }
+        .moving-setup-featured-badge {
+            display: inline-block;
+            font-size: 0.62rem;
+            font-weight: 800;
+            color: #0066CC;
+            background: rgba(0, 102, 204, 0.1);
+            padding: 3px 8px;
+            border-radius: 999px;
+            margin-bottom: 6px;
+        }
+        .moving-setup-featured-title {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #0A2540;
+            margin-bottom: 4px;
+        }
+        .moving-setup-featured-desc {
+            font-size: 0.76rem;
+            color: #64748B;
+            line-height: 1.35;
+            margin-bottom: 8px;
+        }
+        .moving-setup-featured-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .moving-setup-tag {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: #475569;
+            background: #FFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 999px;
+            padding: 4px 8px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .moving-setup-tag i { color: #0066CC; font-size: 0.62rem; }
+        .moving-setup-cta {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            font-weight: 800;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+        .moving-setup-quick-links {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .moving-setup-quick-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            background: #FFF;
+            text-decoration: none;
+            color: #0A2540;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+        .moving-setup-quick-link i { color: #0066CC; }
+
         #section-services .services-catalog { display: flex; flex-direction: column; gap: 14px; }
         .home-content .category-block { margin-bottom: 0; }
 
@@ -2003,6 +2192,7 @@
                                    ?? Enumerable.Empty<IndorMvcApp.Models.Inspeccion>();
             var serviciosEmergenciaHome = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
                                           ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
+            var movingSetupSectionHome = ViewBag.MovingSetupSection as IndorMvcApp.ViewModels.MovingSetupSectionViewModel;
         }
         <div class="home-content">
             @if (TempData["ScheduleSaved"] is string scheduleMsg)
@@ -2138,6 +2328,11 @@
                 @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microserviciosHome, $"{microserviciosHome.Count()} services available for your home"))
             }
 
+            @if (movingSetupSectionHome != null)
+            {
+                @await Html.PartialAsync("_MovingSetupSection", movingSetupSectionHome)
+            }
+
             @if (serviciosHome.Any())
             {
                 @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(serviciosHome, $"{serviciosHome.Count()} remodeling and installation projects"))
@@ -2199,6 +2394,7 @@
                                 ?? Enumerable.Empty<IndorMvcApp.Models.Inspeccion>();
             var serviciosEmergencia = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
                                       ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
+            var movingSetupSection = ViewBag.MovingSetupSection as IndorMvcApp.ViewModels.MovingSetupSectionViewModel;
             var totalOfferings = microservicios.Count() + servicios.Count() + inspecciones.Count();
         }
 
@@ -2223,6 +2419,11 @@
                 @if (microservicios.Any())
                 {
                     @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, $"{microservicios.Count()} services available for your home"))
+                }
+
+                @if (movingSetupSection != null)
+                {
+                    @await Html.PartialAsync("_MovingSetupSection", movingSetupSection)
                 }
 
                 @if (servicios.Any())

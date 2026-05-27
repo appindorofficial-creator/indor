@@ -103,6 +103,26 @@ public class PropertyDetailsInfo
     public string? LegalDescription { get; set; }
     public string? Zoning { get; set; }
     public string? AssignedSchool { get; set; }
+
+    // ATTOM extended fields (also available in AttomRawJson on Propiedad)
+    public string? Fips { get; set; }
+    public string? Subdivision { get; set; }
+    public string? Municipality { get; set; }
+    public string? CountyName { get; set; }
+    public string? Occupancy { get; set; }
+    public int? YearBuiltEffective { get; set; }
+    public int? RoomsTotal { get; set; }
+    public int? BathsFull { get; set; }
+    public string? HeatingType { get; set; }
+    public string? HeatingFuel { get; set; }
+    public string? CoolingType { get; set; }
+    public string? BuildingCondition { get; set; }
+    public string? WallType { get; set; }
+    public string? ParkingType { get; set; }
+    public string? GarageType { get; set; }
+    public int? BasementSqFt { get; set; }
+    public int? Fireplaces { get; set; }
+    public string? LocationAccuracy { get; set; }
 }
 
 public class UtilityProvidersInfo

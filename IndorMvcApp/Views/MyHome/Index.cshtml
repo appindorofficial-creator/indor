@@ -29,6 +29,12 @@
 </div>
 <div class="hf-banner" style="margin-top:16px;">
     <i class="fas fa-shield-check"></i>
-    <div>Data source: <strong>@Model.DataSource</strong>@if (Model.AttomLastSyncUtc.HasValue) { <span> · Last synced @Model.AttomLastSyncUtc.Value.ToLocalTime().ToString("MMM dd, yyyy")</span> }</div>
+    <div>
+        Data source: <strong>@Model.DataSource</strong>
+        @if (Model.AttomPropertyId.HasValue) { <span> · ATTOM ID @Model.AttomPropertyId</span> }
+        @if (Model.AttomLastSyncUtc.HasValue) { <span> · Last synced @Model.AttomLastSyncUtc.Value.ToLocalTime().ToString("MMM dd, yyyy")</span> }
+        @if (Model.HasAttomData) { <span> · @Model.AttomFieldCount ATTOM fields saved</span> }
+    </div>
 </div>
+<a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hf-btn" style="margin-top:8px;width:100%;justify-content:center;">View all ATTOM data <i class="fas fa-chevron-right"></i></a>
 <a asp-action="Details" asp-route-id="@Model.PropiedadId" class="hf-btn hf-btn-primary" style="margin-top:8px;">View property details <i class="fas fa-chevron-right"></i></a>

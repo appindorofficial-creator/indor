@@ -1,0 +1,118 @@
+@model IndorMvcApp.ViewModels.MovingServiceViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_MovingStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    {
+        <img src="@Model.ImagenUrl" alt="@Model.LandingTitulo" class="hero-img" />
+    }
+
+    <h1 class="page-heading">@Model.LandingTitulo</h1>
+    <p class="page-lead">@Model.LandingSubtitulo</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="MovingService" method="post">
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="PageTitle" />
+        <input type="hidden" asp-for="LandingTitulo" />
+        <input type="hidden" asp-for="LandingSubtitulo" />
+        <input type="hidden" asp-for="ImagenUrl" />
+        <input type="hidden" asp-for="EstimatedTimeLabel" />
+        <input type="hidden" asp-for="EstimatedTimeValue" />
+        <input type="hidden" asp-for="EstimatedTimeNote" />
+        <input type="hidden" asp-for="BestForLabel" />
+        <input type="hidden" asp-for="BestForValue" />
+        <input type="hidden" asp-for="BestForNote" />
+        <input type="hidden" asp-for="CtaContinueTexto" />
+        <input type="hidden" asp-for="CtaEstimateTexto" />
+        <input type="hidden" asp-for="TipoMovimiento" id="TipoMovimiento" />
+
+        <div class="chip-row" id="moveTypeGroup">
+            @foreach (var moveType in Model.MoveTypes)
+            {
+                <button type="button" class="chip-btn @(moveType.Value == Model.TipoMovimiento ? "active" : "")" data-value="@moveType.Value">
+                    <i class="fas @moveType.Icon"></i> @moveType.Label
+                </button>
+            }
+        </div>
+
+        @if (Model.IncludedItems.Count > 0)
+        {
+            <div class="field-card">
+                <span class="field-label">What's included</span>
+                @foreach (var item in Model.IncludedItems)
+                {
+                    <div class="included-row">
+                        <i class="fas @item.Icon"></i>
+                        <span>@item.Text</span>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="info-cards">
+            <div class="info-card">
+                <i class="fas fa-clock"></i>
+                <div class="label">@Model.EstimatedTimeLabel</div>
+                <div class="value">@Model.EstimatedTimeValue</div>
+                @if (!string.IsNullOrWhiteSpace(Model.EstimatedTimeNote))
+                {
+                    <div class="note">@Model.EstimatedTimeNote</div>
+                }
+            </div>
+            <div class="info-card">
+                <i class="fas fa-house"></i>
+                <div class="label">@Model.BestForLabel</div>
+                <div class="value">@Model.BestForValue</div>
+                @if (!string.IsNullOrWhiteSpace(Model.BestForNote))
+                {
+                    <div class="note">@Model.BestForNote</div>
+                }
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @Model.CtaContinueTexto <i class="fas fa-chevron-right"></i>
+        </button>
+        <button type="submit" name="action" value="estimate" class="btn-outline">@Model.CtaEstimateTexto</button>
+    </form>
+</div>
+<script>
+    (function () {
+        const hidden = document.getElementById('TipoMovimiento');
+        const buttons = document.querySelectorAll('#moveTypeGroup .chip-btn');
+        buttons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                hidden.value = btn.dataset.value;
+            });
+        });
+    })();
+</script>
+</body>
+</html>

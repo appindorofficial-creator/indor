@@ -39,30 +39,67 @@ public static class MyHomeDisplayService
             LotSizeAcres = details?.LotSize,
             EstimatedValue = details?.EstimatedValue,
             DataSource = info?.DataSource ?? propiedad.AttomSyncStatus ?? "Estimated",
-            AttomLastSyncUtc = propiedad.AttomLastSyncUtc
+            AttomLastSyncUtc = propiedad.AttomLastSyncUtc,
+            AttomPropertyId = propiedad.AttomPropertyId ?? info?.AttomPropertyId,
+            HasAttomData = !string.IsNullOrWhiteSpace(propiedad.AttomRawJson),
+            AttomFieldCount = AttomFieldExtractor.ExtractGroups(propiedad.AttomRawJson)
+                .Sum(g => g.Fields.Count)
         };
     }
 
     public static MyHomePropertyDetailsViewModel BuildDetails(Propiedad propiedad, PropertyInfoViewModel? info)
     {
         var details = info?.PropertyDetails ?? new PropertyDetailsInfo();
+        var rawJson = propiedad.AttomRawJson;
+        var attomGroups = AttomFieldExtractor.ExtractGroups(rawJson);
+
         return new MyHomePropertyDetailsViewModel
         {
             PropiedadId = propiedad.Id,
             Address = propiedad.Direccion ?? info?.FormattedAddress ?? string.Empty,
+            AttomPropertyId = propiedad.AttomPropertyId ?? info?.AttomPropertyId,
+            AttomLastSyncUtc = propiedad.AttomLastSyncUtc,
+            HasAttomData = !string.IsNullOrWhiteSpace(rawJson),
             ParcelId = details.ParcelNumber,
+            Fips = details.Fips,
+            LegalDescription = details.LegalDescription,
             Zoning = details.Zoning,
             AssignedSchool = details.AssignedSchool,
+            Subdivision = details.Subdivision,
+            Municipality = details.Municipality,
+            County = details.CountyName,
             LastSaleDate = details.LastSaleDate,
             LastSalePrice = details.LastSalePrice,
             AnnualTaxAmount = details.AnnualTaxAmount,
             TaxYear = details.TaxYear,
             YearBuilt = details.YearBuilt,
+            YearBuiltEffective = details.YearBuiltEffective,
             LivingArea = details.LivingArea,
+            LotSizeSqFt = details.LotSizeSqFt,
             LotSizeAcres = details.LotSize,
+            Bedrooms = details.Bedrooms,
+            Bathrooms = details.Bathrooms,
+            RoomsTotal = details.RoomsTotal,
+            Floors = details.Floors,
             PropertyType = details.PropertyType,
+            Occupancy = details.Occupancy,
             EstimatedValue = details.EstimatedValue,
-            DataSource = info?.DataSource ?? propiedad.AttomSyncStatus ?? "Estimated"
+            HeatingType = details.HeatingType,
+            HeatingFuel = details.HeatingFuel,
+            CoolingType = details.CoolingType,
+            BuildingCondition = details.BuildingCondition,
+            WallType = details.WallType,
+            ParkingType = details.ParkingType,
+            GarageType = details.GarageType,
+            BasementSqFt = details.BasementSqFt,
+            Fireplaces = details.Fireplaces,
+            LocationAccuracy = details.LocationAccuracy,
+            Latitude = info?.Latitude,
+            Longitude = info?.Longitude,
+            Features = details.Features,
+            DataSource = info?.DataSource ?? propiedad.AttomSyncStatus ?? "Estimated",
+            AttomFieldGroups = attomGroups,
+            AttomRawJsonPretty = AttomFieldExtractor.FormatPrettyJson(rawJson)
         };
     }
 

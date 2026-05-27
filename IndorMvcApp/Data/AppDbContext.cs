@@ -65,6 +65,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PropiedadProveedor> PropiedadProveedores { get; set; }
     public DbSet<PropiedadMantenimiento> PropiedadMantenimiento { get; set; }
     public DbSet<PropiedadDocumento> PropiedadDocumentos { get; set; }
+    public DbSet<MovingSetupConfig> MovingSetupConfig { get; set; }
+    public DbSet<MovingSetupServicio> MovingSetupServicios { get; set; }
+    public DbSet<MovingSetupEnlaceRapido> MovingSetupEnlacesRapidos { get; set; }
+    public DbSet<MovingServicioLanding> MovingServicioLanding { get; set; }
+    public DbSet<SolicitudMoving> SolicitudesMoving { get; set; }
+    public DbSet<ArchivoMoving> ArchivosMoving { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -372,6 +378,31 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(a => a.Solicitud)
                   .WithMany(s => s.Archivos)
                   .HasForeignKey(a => a.SolicitudInspeccionInvestorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudMoving>(entity =>
+        {
+            entity.Property(s => s.FechaMovimiento).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.MovingSetupServicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MovingSetupServicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoMoving>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudMovingId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }

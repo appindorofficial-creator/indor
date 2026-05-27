@@ -1,0 +1,161 @@
+@model IndorMvcApp.ViewModels.MovingDetailsViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_MovingStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="MovingService" asp-route-id="@Model.MovingSetupServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_MovingStepper", 1)
+
+    <h2 class="page-heading" style="font-size:1.2rem;">Tell us about your move</h2>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="MovingDetails" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TipoMovimiento" id="TipoMovimiento" />
+        <input type="hidden" asp-for="TipoPropiedad" id="TipoPropiedad" />
+        <input type="hidden" asp-for="TamanoHogar" id="TamanoHogar" />
+        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+        <div class="field-card">
+            <span class="field-label">Move type</span>
+            <div class="tile-grid" data-target="TipoMovimiento">
+                <button type="button" class="tile-btn" data-value="MoveIn"><i class="fas fa-house-circle-check"></i>Move-In</button>
+                <button type="button" class="tile-btn" data-value="MoveOut"><i class="fas fa-house-circle-xmark"></i>Move-Out</button>
+                <button type="button" class="tile-btn" data-value="FullMove"><i class="fas fa-truck-moving"></i>Full Move</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Property type</span>
+            <div class="tile-grid tile-grid-4" data-target="TipoPropiedad">
+                <button type="button" class="tile-btn" data-value="Apartment"><i class="fas fa-building"></i>Apartment</button>
+                <button type="button" class="tile-btn" data-value="House"><i class="fas fa-house"></i>House</button>
+                <button type="button" class="tile-btn" data-value="Condo"><i class="fas fa-city"></i>Condo</button>
+                <button type="button" class="tile-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i>Townhome</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Home size</span>
+            <div class="tile-grid" data-target="TamanoHogar">
+                <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>Studio</button>
+                <button type="button" class="tile-btn" data-value="OneTwoBedrooms"><i class="fas fa-door-open"></i>1-2 Bedrooms</button>
+                <button type="button" class="tile-btn" data-value="ThreePlusBedrooms"><i class="fas fa-house-user"></i>3+ Bedrooms</button>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-field">
+                <label>From</label>
+                <div class="input-wrap">
+                    <i class="fas fa-location-dot"></i>
+                    <input asp-for="DireccionOrigen" placeholder="Pick up address" required />
+                </div>
+            </div>
+            <div class="input-field">
+                <label>To</label>
+                <div class="input-wrap">
+                    <i class="fas fa-location-dot"></i>
+                    <input asp-for="DireccionDestino" placeholder="Drop off address" required />
+                </div>
+            </div>
+        </div>
+
+        <div class="input-row">
+            <div class="input-field">
+                <label>Move date</label>
+                <div class="input-wrap">
+                    <i class="fas fa-calendar"></i>
+                    <input asp-for="FechaMovimiento" type="date" required />
+                </div>
+            </div>
+            <div class="input-field">
+                <label>Preferred arrival time</label>
+                <div class="input-wrap">
+                    <i class="fas fa-clock"></i>
+                    <select id="VentanaHorarioSelect">
+                        <option value="Morning">9:00 AM – 11:00 AM</option>
+                        <option value="MidMorning">11:00 AM – 1:00 PM</option>
+                        <option value="Afternoon">2:00 PM – 4:00 PM</option>
+                        <option value="Evening">4:00 PM – 6:00 PM</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Service type</span>
+            <div class="service-block" data-target="TipoServicio" data-value="MoversOnly">
+                <strong>Movers only</strong>
+                <span>You provide the truck.</span>
+            </div>
+            <div class="service-block" data-target="TipoServicio" data-value="TruckAndMovers">
+                <strong>Truck + Movers</strong>
+                <span>We bring the truck.</span>
+            </div>
+        </div>
+
+        <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initTiles(containerSelector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            if (!container || !hidden) return;
+            const buttons = container.querySelectorAll('.tile-btn');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+        }
+
+        initTiles('[data-target="TipoMovimiento"]', 'TipoMovimiento', '@Model.TipoMovimiento');
+        initTiles('[data-target="TipoPropiedad"]', 'TipoPropiedad', '@Model.TipoPropiedad');
+        initTiles('[data-target="TamanoHogar"]', 'TamanoHogar', '@Model.TamanoHogar');
+
+        const serviceHidden = document.getElementById('TipoServicio');
+        document.querySelectorAll('.service-block').forEach(block => {
+            block.addEventListener('click', () => {
+                document.querySelectorAll('.service-block').forEach(b => b.classList.remove('active'));
+                block.classList.add('active');
+                serviceHidden.value = block.dataset.value;
+            });
+            if (block.dataset.value === serviceHidden.value) block.classList.add('active');
+        });
+
+        const timeHidden = document.getElementById('VentanaHorario');
+        const timeSelect = document.getElementById('VentanaHorarioSelect');
+        timeSelect.value = timeHidden.value || 'Morning';
+        timeSelect.addEventListener('change', () => timeHidden.value = timeSelect.value);
+    })();
+</script>
+</body>
+</html>

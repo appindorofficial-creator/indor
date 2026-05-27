@@ -368,11 +368,15 @@ public partial class AddressLookupService : IAddressLookupService
         try
         {
             var attomResult = await _attomPropertyService.EnrichPropertyAsync(propertyInfo);
+            if (!string.IsNullOrWhiteSpace(attomResult.RawJson))
+            {
+                propertyInfo.AttomRawJson = attomResult.RawJson;
+            }
+
             if (attomResult.Success)
             {
                 propertyInfo.DataSource = "ATTOM";
                 propertyInfo.AttomPropertyId = attomResult.AttomPropertyId;
-                propertyInfo.AttomRawJson = attomResult.RawJson;
                 _logger.LogInformation(
                     "ATTOM enrichment succeeded for {Address} (AttomId={AttomId})",
                     propertyInfo.FormattedAddress,

@@ -17,15 +17,18 @@ public class MyHomeController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IAttomPropertyService _attomPropertyService;
 
     public MyHomeController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IAttomPropertyService attomPropertyService)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _attomPropertyService = attomPropertyService;
     }
 
     [HttpGet]
@@ -45,8 +48,62 @@ public class MyHomeController : Controller
         if (propiedad == null) return NotFound();
 
         var model = MyHomeDisplayService.BuildDetails(propiedad, MyHomeDisplayService.DeserializeProperty(propiedad));
-        model.ActiveTab = string.Equals(tab, "public", StringComparison.OrdinalIgnoreCase) ? "public" : "information";
+        model.ActiveTab = tab?.ToLowerInvariant() switch
+        {
+            "public" => "public",
+            "attom" => "attom",
+            _ => "information"
+        };
         return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SyncAttom(int id)
+    {
+        var propiedad = await LoadPropertyAsync(id);
+        if (propiedad == null) return NotFound();
+
+        var info = MyHomeDisplayService.DeserializeProperty(propiedad) ?? new PropertyInfoViewModel
+        {
+            FormattedAddress = propiedad.Direccion ?? string.Empty
+        };
+
+        if (string.IsNullOrWhiteSpace(info.FormattedAddress))
+        {
+            info.FormattedAddress = propiedad.Direccion ?? string.Empty;
+        }
+
+        var result = await _attomPropertyService.EnrichPropertyAsync(info);
+        if (!string.IsNullOrWhiteSpace(result.RawJson))
+        {
+            propiedad.AttomRawJson = result.RawJson;
+            propiedad.AttomLastSyncUtc = DateTime.UtcNow;
+        }
+
+        if (result.Success)
+        {
+            propiedad.AttomPropertyId = result.AttomPropertyId ?? info.AttomPropertyId;
+            propiedad.AttomSyncStatus = "Success";
+            propiedad.AttomSyncError = null;
+            info.DataSource = "ATTOM";
+            info.AttomPropertyId = propiedad.AttomPropertyId;
+        }
+        else
+        {
+            propiedad.AttomSyncStatus = string.IsNullOrWhiteSpace(result.RawJson) ? "Failed" : "Partial";
+            propiedad.AttomSyncError = result.ErrorMessage;
+        }
+
+        propiedad.Direccion = info.FormattedAddress;
+        propiedad.DatosJson = SerializePropertyInfo(info);
+        await _db.SaveChangesAsync();
+
+        TempData["AttomSyncMessage"] = result.Success
+            ? "Property data refreshed from ATTOM."
+            : (result.ErrorMessage ?? "ATTOM sync did not return property data.");
+
+        return RedirectToAction(nameof(Details), new { id = propiedad.Id, tab = result.Success ? "attom" : "information" });
     }
 
     [HttpGet]
