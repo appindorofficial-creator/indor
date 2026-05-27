@@ -1,0 +1,108 @@
+@model IndorMvcApp.ViewModels.CleaningServiceViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_CleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    {
+        <img src="@Model.ImagenUrl" alt="@Model.LandingTitulo" class="hero-img" />
+    }
+
+    <div class="title-row">
+        <div class="left">
+            <h1 class="page-heading" style="margin-bottom:4px;"><i class="fas fa-sparkles" style="color:#0066CC;font-size:1rem;margin-right:6px;"></i>@Model.LandingTitulo</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
+            {
+                <div class="tagline">@Model.LandingTagline</div>
+            }
+        </div>
+        <div class="price-from">Starting at $@Model.PrecioDesde.ToString("0")</div>
+    </div>
+    <p class="page-lead">@Model.LandingSubtitulo</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="CleaningService" method="post">
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="BestForSelection" id="BestForSelection" />
+
+        @if (Model.IncludedItems.Count > 0)
+        {
+            <div class="field-card">
+                <span class="field-label">What's included</span>
+                <div class="included-inline">
+                    @foreach (var item in Model.IncludedItems)
+                    {
+                        <span><i class="fas @item.Icon"></i> @item.Text</span>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="field-card">
+            <span class="field-label">@Model.BestForLabel</span>
+            <div class="chip-row" id="bestForGroup" style="flex-wrap:wrap;">
+                @foreach (var opt in Model.BestForOptions)
+                {
+                    <button type="button" class="chip-btn @(opt.Value == Model.BestForSelection ? "active" : "")" data-value="@opt.Value">
+                        <i class="fas @opt.Icon"></i> @opt.Label
+                    </button>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTitulo))
+        {
+            <div class="info-box-blue">
+                <i class="fas fa-circle-info"></i>
+                <div>
+                    <strong>@Model.InfoBoxTitulo</strong><br />
+                    @Model.InfoBoxTexto
+                </div>
+            </div>
+        }
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @Model.CtaContinueTexto <i class="fas fa-chevron-right"></i>
+        </button>
+        <button type="submit" name="action" value="upload" class="btn-outline">
+            <i class="fas fa-cloud-arrow-up"></i> @Model.CtaUploadTexto
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        const hidden = document.getElementById('BestForSelection');
+        document.querySelectorAll('#bestForGroup .chip-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#bestForGroup .chip-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                hidden.value = btn.dataset.value;
+            });
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+@model IndorMvcApp.ViewModels.CleaningReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+    var areas = Model.AreasResumen == "—" ? Array.Empty<string>() : Model.AreasResumen.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+    var extras = Model.TareasResumen == "—" ? Array.Empty<string>() : Model.TareasResumen.Split(", ", StringSplitOptions.RemoveEmptyEntries);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_CleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="CleaningTasks" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <span class="step-count">3 of 3</span>
+    </div>
+
+    @await Html.PartialAsync("_CleaningStepper", 3)
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-sparkles"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.TipoLimpiezaLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-bed"></i><div><div class="summary-label">Home size</div><div class="summary-value">@Model.TamanoHogarLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Condition</div><div class="summary-value">@Model.CondicionLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Time</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
+    </div>
+
+    <div class="review-grid">
+        <div class="review-mini">
+            <h4>Selected tasks</h4>
+            <ul>
+                @foreach (var area in areas)
+                {
+                    <li><i class="fas fa-check"></i> @area</li>
+                }
+                @foreach (var extra in extras)
+                {
+                    <li><i class="fas fa-check"></i> @extra</li>
+                }
+            </ul>
+        </div>
+        <div class="review-mini">
+            <h4>Access</h4>
+            <p style="margin-bottom:8px;"><strong>@Model.MetodoAccesoLabel</strong> <span class="status-badge">Selected</span></p>
+            <p><strong>Crew supplies:</strong> @Model.SuministrosLabel</p>
+            @if (!string.IsNullOrWhiteSpace(Model.NotaCorta))
+            {
+                <h4 style="margin-top:12px;">Notes</h4>
+                <p>@Model.NotaCorta</p>
+            }
+        </div>
+    </div>
+
+    <div class="total-card">
+        <div>
+            <div class="summary-label">Estimated total</div>
+            <div class="summary-value" style="font-size:0.78rem;color:#64748B;">Includes labor, supplies, and equipment.</div>
+        </div>
+        <div class="amount">$@Model.PrecioEstimado.ToString("0")</div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
+    {
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
+    }
+
+    <form asp-action="CleaningReview" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="DisclaimerTexto" />
+        <button type="submit" class="btn-primary">Request cleaning <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+    </form>
+</div>
+</body>
+</html>

@@ -1,0 +1,144 @@
+@model IndorMvcApp.ViewModels.CleaningTasksViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_CleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="CleaningDetails" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <span class="step-count">2 of 3</span>
+    </div>
+
+    @await Html.PartialAsync("_CleaningStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">What needs extra attention?</h2>
+    <p class="page-lead" style="margin-top:-8px;">Select the rooms and extras you want included.</p>
+
+    <div class="address-card">
+        <div class="left">
+            <i class="fas fa-house" style="color:#0066CC;"></i>
+            <span style="font-weight:600;font-size:0.92rem;">@Model.DireccionPropiedad</span>
+        </div>
+        <a asp-action="CleaningDetails" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit ></a>
+    </div>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="CleaningTasks" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="DireccionPropiedad" />
+        <input type="hidden" asp-for="AreasPrioridad" id="AreasPrioridad" />
+        <input type="hidden" asp-for="TareasExtra" id="TareasExtra" />
+        <input type="hidden" asp-for="SuministrosNecesarios" id="SuministrosNecesarios" />
+
+        <div class="field-card">
+            <span class="field-label">Priority areas</span>
+            <div class="tile-grid" id="areasGroup">
+                <button type="button" class="tile-btn" data-value="Kitchen"><i class="fas fa-kitchen-set"></i>Kitchen</button>
+                <button type="button" class="tile-btn" data-value="Bathrooms"><i class="fas fa-bath"></i>Bathrooms</button>
+                <button type="button" class="tile-btn" data-value="Floors"><i class="fas fa-border-all"></i>Floors</button>
+                <button type="button" class="tile-btn" data-value="Bedrooms"><i class="fas fa-bed"></i>Bedrooms</button>
+                <button type="button" class="tile-btn" data-value="LivingRoom"><i class="fas fa-couch"></i>Living room</button>
+                <button type="button" class="tile-btn" data-value="Closets"><i class="fas fa-door-closed"></i>Closets</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Extra tasks</span>
+            <div class="tile-grid" id="extrasGroup" style="grid-template-columns:repeat(4,1fr);">
+                <button type="button" class="tile-btn" data-value="InsideFridge"><i class="fas fa-snowflake"></i>Inside fridge</button>
+                <button type="button" class="tile-btn" data-value="InsideOven"><i class="fas fa-fire-burner"></i>Inside oven</button>
+                <button type="button" class="tile-btn" data-value="InsideCabinets"><i class="fas fa-box-archive"></i>Inside cabinets</button>
+                <button type="button" class="tile-btn" data-value="InteriorWindows"><i class="fas fa-window-maximize"></i>Interior windows</button>
+                <button type="button" class="tile-btn" data-value="Baseboards"><i class="fas fa-grip-lines"></i>Baseboards</button>
+                <button type="button" class="tile-btn" data-value="LaundryRoom"><i class="fas fa-shirt"></i>Laundry room</button>
+                <button type="button" class="tile-btn" data-value="Garage"><i class="fas fa-warehouse"></i>Garage</button>
+                <button type="button" class="tile-btn" data-value="BalconyPatio"><i class="fas fa-umbrella-beach"></i>Balcony / patio</button>
+                <button type="button" class="tile-btn" data-value="TrashLeftBehind"><i class="fas fa-trash"></i>Trash left behind</button>
+                <button type="button" class="tile-btn" data-value="PetHair"><i class="fas fa-paw"></i>Pet hair</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Supplies needed?</span>
+            <div class="segment-row" data-target="SuministrosNecesarios">
+                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
+                <button type="button" class="segment-btn" data-value="No">No</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Special notes</span>
+            <div class="input-wrap">
+                <i class="fas fa-note-sticky"></i>
+                <textarea asp-for="NotaCorta" rows="3" placeholder="Please focus on the kitchen, primary bathroom, and inside the refrigerator."></textarea>
+            </div>
+        </div>
+
+        <div class="upload-zone">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <p><strong>Upload photos (optional)</strong></p>
+            <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:10px;width:100%;" />
+        </div>
+        @if (Model.ArchivosExistentes.Count > 0)
+        {
+            @foreach (var file in Model.ArchivosExistentes)
+            {
+                <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            }
+        }
+
+        <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initMultiSelect(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const selected = new Set((initial || hidden.value || '').split('|').filter(Boolean));
+            document.querySelectorAll('#' + groupId + ' .tile-btn').forEach(btn => {
+                if (selected.has(btn.dataset.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    const value = btn.dataset.value;
+                    if (selected.has(value)) { selected.delete(value); btn.classList.remove('active'); }
+                    else { selected.add(value); btn.classList.add('active'); }
+                    hidden.value = Array.from(selected).join('|');
+                });
+            });
+            hidden.value = Array.from(selected).join('|');
+        }
+
+        initMultiSelect('areasGroup', 'AreasPrioridad', '@Model.AreasPrioridad');
+        initMultiSelect('extrasGroup', 'TareasExtra', '@Model.TareasExtra');
+
+        const suppliesHidden = document.getElementById('SuministrosNecesarios');
+        document.querySelectorAll('[data-target="SuministrosNecesarios"] .segment-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('[data-target="SuministrosNecesarios"] .segment-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                suppliesHidden.value = btn.dataset.value;
+            });
+            if (btn.dataset.value === suppliesHidden.value) btn.classList.add('active');
+        });
+    })();
+</script>
+</body>
+</html>

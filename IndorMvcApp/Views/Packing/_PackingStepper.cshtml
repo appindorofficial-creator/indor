@@ -1,0 +1,37 @@
+@model int
+@{
+    var steps = new[] { "About your job", "Your details", "Review & confirm" };
+}
+<style>
+    .pk-stepper { display: flex; gap: 4px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; }
+    .pk-step { flex: 1; min-width: 72px; text-align: center; }
+    .pk-step-dot {
+        width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 6px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 0.78rem; font-weight: 700; border: 2px solid #CBD5E1; color: #94A3B8; background: #FFF;
+    }
+    .pk-step.done .pk-step-dot { border-color: #0066CC; background: #0066CC; color: #FFF; }
+    .pk-step.active .pk-step-dot { border-color: #0066CC; color: #0066CC; background: #FFF; }
+    .pk-step-label { font-size: 0.62rem; font-weight: 600; color: #94A3B8; line-height: 1.2; }
+    .pk-step.active .pk-step-label, .pk-step.done .pk-step-label { color: #0066CC; }
+</style>
+<div class="pk-stepper">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var stepNum = i + 1;
+        var css = stepNum < Model ? "pk-step done" : stepNum == Model ? "pk-step active" : "pk-step";
+        <div class="@css">
+            <div class="pk-step-dot">
+                @if (stepNum < Model)
+                {
+                    <i class="fas fa-check" style="font-size:0.7rem;"></i>
+                }
+                else
+                {
+                    @stepNum
+                }
+            </div>
+            <div class="pk-step-label">@steps[i]</div>
+        </div>
+    }
+</div>

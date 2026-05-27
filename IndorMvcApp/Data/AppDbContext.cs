@@ -71,6 +71,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<MovingServicioLanding> MovingServicioLanding { get; set; }
     public DbSet<SolicitudMoving> SolicitudesMoving { get; set; }
     public DbSet<ArchivoMoving> ArchivosMoving { get; set; }
+    public DbSet<CleaningServicioLanding> CleaningServicioLanding { get; set; }
+    public DbSet<SolicitudCleaning> SolicitudesCleaning { get; set; }
+    public DbSet<ArchivoCleaning> ArchivosCleaning { get; set; }
+    public DbSet<PackingServicioLanding> PackingServicioLanding { get; set; }
+    public DbSet<SolicitudPacking> SolicitudesPacking { get; set; }
+    public DbSet<ArchivoPacking> ArchivosPacking { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -403,6 +409,56 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(a => a.Solicitud)
                   .WithMany(s => s.Archivos)
                   .HasForeignKey(a => a.SolicitudMovingId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudCleaning>(entity =>
+        {
+            entity.Property(s => s.FechaServicio).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.MovingSetupServicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MovingSetupServicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoCleaning>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudCleaningId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudPacking>(entity =>
+        {
+            entity.Property(s => s.FechaServicio).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.MovingSetupServicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MovingSetupServicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoPacking>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudPackingId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
     }

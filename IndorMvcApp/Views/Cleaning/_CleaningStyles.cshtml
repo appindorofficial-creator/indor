@@ -1,0 +1,35 @@
+@await Html.PartialAsync("../Moving/_MovingStyles")
+<style>
+    .title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 8px; }
+    .title-row .left { flex: 1; }
+    .tagline { color: #0066CC; font-size: 0.88rem; font-weight: 600; margin-bottom: 6px; }
+    .price-from { font-size: 1rem; font-weight: 800; color: #0066CC; white-space: nowrap; }
+    .included-inline { display: flex; flex-wrap: wrap; gap: 10px 16px; }
+    .included-inline span { font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+    .included-inline i { color: #0066CC; }
+    .info-box-blue { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 18px; font-size: 0.86rem; line-height: 1.45; }
+    .info-box-blue i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+    .address-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; background: rgba(0,102,204,0.06); margin-bottom: 16px; }
+    .address-card .left { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .address-card input { border: none; background: transparent; font-weight: 600; width: 100%; font-family: inherit; font-size: 0.92rem; }
+    .type-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 10px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; position: relative; }
+    .type-card i { display: block; font-size: 1.1rem; margin-bottom: 8px; color: #94A3B8; }
+    .type-card.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+    .type-card.active i { color: #0066CC; }
+    .type-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+    .type-card.active .check { display: flex; }
+    .segment-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 999px; padding: 10px 14px; font-weight: 600; font-size: 0.82rem; color: #64748B; cursor: pointer; }
+    .segment-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+    .picker-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; background: #FFF; }
+    .picker-row .left { display: flex; align-items: center; gap: 10px; flex: 1; }
+    .picker-row input, .picker-row select { border: none; background: transparent; width: 100%; font-family: inherit; font-size: 0.9rem; font-weight: 500; }
+    .review-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .review-mini { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px; font-size: 0.78rem; }
+    .review-mini h4 { font-size: 0.82rem; font-weight: 700; margin-bottom: 8px; }
+    .review-mini li { list-style: none; padding: 4px 0; display: flex; align-items: center; gap: 6px; }
+    .review-mini li i { color: #0066CC; font-size: 0.7rem; }
+    .total-card { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 16px; padding: 16px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+    .total-card .amount { font-size: 1.6rem; font-weight: 800; color: #0066CC; }
+    .step-count { font-size: 0.78rem; color: #94A3B8; font-weight: 600; }
+</style>

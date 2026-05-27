@@ -1,0 +1,44 @@
+@model IndorMvcApp.ViewModels.PackingConfirmedViewModel
+@{
+    ViewData["Title"] = "Booking Confirmed - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PackingStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="success-icon"><i class="fas fa-check"></i></div>
+    <h1 class="page-heading" style="text-align:center;">Booking Confirmed</h1>
+    <p class="page-lead" style="text-align:center;">Your packing help has been scheduled. Your request was submitted successfully.</p>
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Time</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clipboard-list"></i><div><div class="summary-label">Scope</div><div class="summary-value">@Model.AlcanceLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-tape"></i><div><div class="summary-label">Supplies</div><div class="summary-value">@Model.SuministrosLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">Status</div><div class="summary-value" style="color:#16A34A;">@Model.EstadoLabel</div></div></div>
+    </div>
+
+    <div class="info-banner">
+        <i class="fas fa-circle-info"></i>
+        <span>Your provider will review your packing details and any uploaded photos before arrival.</span>
+    </div>
+
+    <a asp-action="PackingReview" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-calendar"></i> View appointment <i class="fas fa-chevron-right"></i></a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-calendar"></i> Go to Schedule <i class="fas fa-chevron-right"></i></a>
+    <a asp-controller="MyHome" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to My Home <i class="fas fa-chevron-right"></i></a>
+</div>
+</body>
+</html>

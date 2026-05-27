@@ -1,0 +1,134 @@
+@model IndorMvcApp.ViewModels.PackingAboutViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PackingStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="PackingService" asp-route-id="@Model.MovingSetupServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_PackingStepper", 1)
+
+    <h2 class="page-heading" style="font-size:1.15rem;">Tell us about your packing job</h2>
+    <p class="page-lead" style="margin-top:-8px;">Help us match the right crew and packing materials.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="PackingAbout" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MovingSetupServicioId" />
+        <input type="hidden" asp-for="NombreServicio" />
+        <input type="hidden" asp-for="TipoEmpaque" id="TipoEmpaque" />
+        <input type="hidden" asp-for="CuandoMudanza" id="CuandoMudanza" />
+        <input type="hidden" asp-for="TipoPropiedad" id="TipoPropiedad" />
+        <input type="hidden" asp-for="TamanoHogar" id="TamanoHogar" />
+
+        <div class="address-card">
+            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="123 Main St, Charlotte, NC 28202" required /></div>
+            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">What kind of packing help do you need?</span>
+            <div class="tile-grid tile-grid-4" data-target="TipoEmpaque">
+                <button type="button" class="type-card" data-value="FullPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>Full packing</button>
+                <button type="button" class="type-card" data-value="PartialPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>Partial packing</button>
+                <button type="button" class="type-card" data-value="FragileOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wine-glass"></i>Fragile items only</button>
+                <button type="button" class="type-card" data-value="LastMinute"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-clock"></i>Last-minute help</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">When are you moving?</span>
+            <div class="segment-row" data-target="CuandoMudanza">
+                <button type="button" class="segment-btn" data-value="Today"><i class="fas fa-calendar-day"></i> Today</button>
+                <button type="button" class="segment-btn" data-value="Tomorrow"><i class="fas fa-calendar-plus"></i> Tomorrow</button>
+                <button type="button" class="segment-btn" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> This week</button>
+                <button type="button" class="segment-btn" data-value="LaterDate"><i class="fas fa-calendar"></i> Later date</button>
+            </div>
+            <div id="laterDateWrap" style="margin-top:12px;display:none;">
+                <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" /></div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Property type</span>
+            <div class="segment-row" data-target="TipoPropiedad">
+                <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> Apartment</button>
+                <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> House</button>
+                <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> Townhome</button>
+                <button type="button" class="segment-btn" data-value="Office"><i class="fas fa-briefcase"></i> Office</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Home size</span>
+            <div class="segment-row" data-target="TamanoHogar">
+                <button type="button" class="segment-btn" data-value="OneTwoRooms">1-2 rooms</button>
+                <button type="button" class="segment-btn" data-value="ThreeFourRooms">3-4 rooms</button>
+                <button type="button" class="segment-btn" data-value="FivePlusRooms">5+ rooms</button>
+                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>The more details you provide, the better we can prepare the right crew and materials for your move.</span></div>
+
+        <button type="submit" class="btn-primary">Next</button>
+        <button type="submit" name="action" value="skip" class="btn-outline">Skip for now</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initCards(containerSelector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            if (!container || !hidden) return;
+            const buttons = container.querySelectorAll('.type-card');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+        }
+
+        function initSegments(containerSelector, hiddenId, initial, onChange) {
+            const hidden = document.getElementById(hiddenId);
+            const container = document.querySelector(containerSelector);
+            if (!container || !hidden) return;
+            const buttons = container.querySelectorAll('.segment-btn');
+            function setActive(value) {
+                hidden.value = value;
+                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+                if (onChange) onChange(value);
+            }
+            buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
+            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+        }
+
+        initCards('[data-target="TipoEmpaque"]', 'TipoEmpaque', '@Model.TipoEmpaque');
+        initSegments('[data-target="TipoPropiedad"]', 'TipoPropiedad', '@Model.TipoPropiedad');
+        initSegments('[data-target="TamanoHogar"]', 'TamanoHogar', '@Model.TamanoHogar');
+        initSegments('[data-target="CuandoMudanza"]', 'CuandoMudanza', '@Model.CuandoMudanza', value => {
+            document.getElementById('laterDateWrap').style.display = value === 'LaterDate' ? 'block' : 'none';
+        });
+    })();
+</script>
+</body>
+</html>
