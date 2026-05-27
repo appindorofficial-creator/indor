@@ -53,6 +53,12 @@ public class HomeController : Controller
             .ToListAsync();
         ViewBag.Inspecciones = inspecciones;
 
+        ViewBag.ServiciosEmergencia = await _db.ServiciosEmergencia
+            .Where(s => s.Activo)
+            .OrderBy(s => s.Orden)
+            .ThenBy(s => s.Id)
+            .ToListAsync();
+
         // === Datos para sección "More" ===
         ViewBag.Planes = await _db.PlanesMembresia
             .Where(p => p.Activo)

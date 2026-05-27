@@ -168,6 +168,45 @@
         };
     }
 
+    EmergencyServicesSectionViewModel BuildEmergencySection(IEnumerable<IndorMvcApp.Models.ServicioEmergencia> items)
+    {
+        var cards = items.Select(s =>
+        {
+            var texts = SplitIncludes(s.Caracteristicas);
+            var icons = SplitIncludes(s.IconosCaracteristicas);
+            var features = new List<EmergencyServiceFeatureViewModel>();
+            for (var i = 0; i < texts.Length; i++)
+            {
+                features.Add(new EmergencyServiceFeatureViewModel
+                {
+                    Icon = i < icons.Length && !string.IsNullOrWhiteSpace(icons[i]) ? icons[i] : "fa-clock",
+                    Text = texts[i]
+                });
+            }
+
+            return new EmergencyServiceCardViewModel
+            {
+                Id = s.Id,
+                Nombre = s.Nombre,
+                TituloEmergencia = s.TituloEmergencia,
+                Descripcion = s.Descripcion,
+                TiempoLlegadaMinutos = s.TiempoLlegadaMinutos,
+                IconoClase = s.IconoClase,
+                ImagenUrl = s.ImagenUrl,
+                BadgeTexto = s.BadgeTexto,
+                CtaTexto = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Request help" : s.CtaTexto,
+                Caracteristicas = features
+            };
+        }).ToList();
+
+        var defaultItem = items.FirstOrDefault(s => s.EsPredeterminado) ?? items.FirstOrDefault();
+        return new EmergencyServicesSectionViewModel
+        {
+            Items = cards,
+            SelectedId = defaultItem?.Id ?? cards.FirstOrDefault()?.Id ?? 0
+        };
+    }
+
     // === Construir slides agrupados desde PropertyInfoViewModel ===
     List<(string Title, string Icon, List<(string Label, string Value)> Items)> BuildGroupsFor(PropertyInfoViewModel info)
     {
@@ -1312,6 +1351,251 @@
         #section-services .services-catalog { display: flex; flex-direction: column; gap: 14px; }
         .home-content .category-block { margin-bottom: 0; }
 
+        /* === Emergency Services === */
+        .emergency-section {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 20px;
+            padding: 16px 14px 18px;
+            box-shadow: 0 6px 20px rgba(10, 37, 64, .06);
+        }
+        .emergency-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+        .emergency-title-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .emergency-siren {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: #FEE2E2;
+            color: #DC2626;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+        }
+        .emergency-title {
+            margin: 0;
+            font-size: 1rem;
+            font-weight: 800;
+            color: #0A2540;
+        }
+        .emergency-badge-247 {
+            background: #FEE2E2;
+            color: #DC2626;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 3px 8px;
+            border-radius: 999px;
+            border: 1px solid #FECACA;
+        }
+        .emergency-subtitle {
+            margin: 6px 0 0;
+            font-size: 0.78rem;
+            color: #64748B;
+        }
+        .emergency-view-all {
+            border: none;
+            background: transparent;
+            color: #0066CC;
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+            padding: 4px 0;
+        }
+        .emergency-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+        .emergency-card {
+            border: 2px solid transparent;
+            background: #FFF;
+            border-radius: 14px;
+            padding: 0;
+            cursor: pointer;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, .06);
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+        .emergency-card.active {
+            border-color: #0066CC;
+            box-shadow: 0 0 0 1px rgba(0, 102, 204, .15);
+        }
+        .emergency-card-media {
+            position: relative;
+            height: 72px;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
+        }
+        .emergency-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .emergency-card-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0066CC;
+            font-size: 1.4rem;
+        }
+        .emergency-card-icon {
+            position: absolute;
+            left: 6px;
+            bottom: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            background: #DC2626;
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.62rem;
+            box-shadow: 0 2px 6px rgba(220, 38, 38, .35);
+        }
+        .emergency-card-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #0A2540;
+            line-height: 1.2;
+            padding: 0 4px;
+        }
+        .emergency-card-247 {
+            font-size: 0.66rem;
+            font-weight: 700;
+            color: #DC2626;
+            padding-bottom: 8px;
+        }
+        .emergency-detail {
+            background: #F8FAFC;
+            border: 1px solid #E5E7EB;
+            border-radius: 16px;
+            padding: 14px;
+        }
+        .emergency-detail-main {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 12px;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+        .emergency-detail-icon {
+            width: 46px;
+            height: 46px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.15rem;
+            flex-shrink: 0;
+        }
+        .emergency-detail-badge {
+            display: inline-block;
+            background: #EFF6FF;
+            color: #0066CC;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 999px;
+            margin-bottom: 6px;
+        }
+        .emergency-detail-badge.hidden { display: none; }
+        .emergency-detail-title {
+            font-size: 0.98rem;
+            font-weight: 800;
+            color: #0A2540;
+            line-height: 1.25;
+        }
+        .emergency-detail-desc {
+            font-size: 0.78rem;
+            color: #64748B;
+            margin-top: 4px;
+            line-height: 1.35;
+        }
+        .emergency-detail-arrival {
+            text-align: right;
+            white-space: nowrap;
+        }
+        .arrival-label {
+            display: block;
+            font-size: 0.68rem;
+            color: #16A34A;
+            font-weight: 600;
+        }
+        .arrival-time {
+            display: block;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #16A34A;
+            line-height: 1.1;
+        }
+        .emergency-features {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .emergency-feature {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            color: #475569;
+            background: #FFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 999px;
+            padding: 8px 6px;
+        }
+        .emergency-feature i { color: #0066CC; font-size: 0.72rem; }
+        .emergency-cta {
+            width: 100%;
+            border: none;
+            border-radius: 14px;
+            padding: 14px 18px;
+            background: linear-gradient(135deg, #0066CC, #004FA3);
+            color: #FFF;
+            font-size: 0.95rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        @@media (max-width: 420px) {
+            .emergency-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+            .emergency-card-media { height: 58px; }
+            .emergency-card-label { font-size: 0.62rem; }
+            .emergency-features { grid-template-columns: 1fr; }
+            .emergency-detail-main { grid-template-columns: auto 1fr; }
+            .emergency-detail-arrival { grid-column: 1 / -1; text-align: left; }
+        }
+        .services-catalog .emergency-section { margin-top: 18px; }
+
         /* Force light theme on Home & Services */
         #section-home,
         #section-home .home-content,
@@ -1712,6 +1996,10 @@
                                      ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
             var serviciosHome = (IEnumerable<IndorMvcApp.Models.Servicio>?)ViewBag.Servicios
                                 ?? Enumerable.Empty<IndorMvcApp.Models.Servicio>();
+            var inspeccionesHome = (IEnumerable<IndorMvcApp.Models.Inspeccion>?)ViewBag.Inspecciones
+                                   ?? Enumerable.Empty<IndorMvcApp.Models.Inspeccion>();
+            var serviciosEmergenciaHome = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
+                                          ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
         }
         <div class="home-content">
             @if (TempData["ScheduleSaved"] is string scheduleMsg)
@@ -1851,6 +2139,16 @@
             {
                 @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(serviciosHome, $"{serviciosHome.Count()} remodeling and installation projects"))
             }
+
+            @if (inspeccionesHome.Any())
+            {
+                @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspeccionesHome, $"{inspeccionesHome.Count()} professional inspections for your home"))
+            }
+
+            @if (serviciosEmergenciaHome.Any())
+            {
+                @await Html.PartialAsync("_EmergencyServicesSection", BuildEmergencySection(serviciosEmergenciaHome))
+            }
         </div>
 
         <!-- 4. Sección de Notificaciones -->
@@ -1896,6 +2194,8 @@
                              ?? Enumerable.Empty<IndorMvcApp.Models.Servicio>();
             var inspecciones = (IEnumerable<IndorMvcApp.Models.Inspeccion>?)ViewBag.Inspecciones
                                 ?? Enumerable.Empty<IndorMvcApp.Models.Inspeccion>();
+            var serviciosEmergencia = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
+                                      ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
             var totalOfferings = microservicios.Count() + servicios.Count() + inspecciones.Count();
         }
 
@@ -1930,6 +2230,11 @@
                 @if (inspecciones.Any())
                 {
                     @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count()} professional inspections for your home"))
+                }
+
+                @if (serviciosEmergencia.Any())
+                {
+                    @await Html.PartialAsync("_EmergencyServicesSection", BuildEmergencySection(serviciosEmergencia))
                 }
             </div>
         }
@@ -2871,6 +3176,64 @@
         }
 
         document.querySelectorAll('[data-track]').forEach(t => initSlider(t.dataset.track));
+
+        // === Emergency Services cards ===
+        document.querySelectorAll('[data-emergency-section]').forEach(section => {
+            const cards = section.querySelectorAll('.emergency-card');
+            const iconEl = section.querySelector('[data-emergency-detail-icon]');
+            const badgeEl = section.querySelector('[data-emergency-detail-badge]');
+            const titleEl = section.querySelector('[data-emergency-detail-title]');
+            const descEl = section.querySelector('[data-emergency-detail-desc]');
+            const arrivalEl = section.querySelector('[data-emergency-detail-arrival]');
+            const featuresEl = section.querySelector('[data-emergency-detail-features]');
+            const ctaEl = section.querySelector('[data-emergency-detail-cta]');
+
+            function renderFeatures(raw) {
+                if (!featuresEl) return;
+                featuresEl.innerHTML = '';
+                (raw || '').split('|').filter(Boolean).forEach(entry => {
+                    const parts = entry.split(':');
+                    const icon = parts[0] || 'fa-clock';
+                    const text = parts.slice(1).join(':') || '';
+                    const item = document.createElement('div');
+                    item.className = 'emergency-feature';
+                    item.innerHTML = `<i class="fas ${icon}"></i><span>${text}</span>`;
+                    featuresEl.appendChild(item);
+                });
+            }
+
+            cards.forEach(card => {
+                card.addEventListener('click', () => {
+                    cards.forEach(c => {
+                        c.classList.remove('active');
+                        c.setAttribute('aria-selected', 'false');
+                    });
+                    card.classList.add('active');
+                    card.setAttribute('aria-selected', 'true');
+
+                    if (iconEl) iconEl.className = `fas ${card.dataset.icon}`;
+                    if (titleEl) titleEl.textContent = card.dataset.title || '';
+                    if (descEl) descEl.textContent = card.dataset.desc || '';
+                    if (arrivalEl) arrivalEl.textContent = `${card.dataset.arrival || '45'} min`;
+
+                    const badge = card.dataset.badge || '';
+                    if (badgeEl) {
+                        if (badge) {
+                            badgeEl.textContent = badge;
+                            badgeEl.classList.remove('hidden');
+                        } else {
+                            badgeEl.textContent = '';
+                            badgeEl.classList.add('hidden');
+                        }
+                    }
+
+                    renderFeatures(card.dataset.features);
+                    if (ctaEl) {
+                        ctaEl.innerHTML = `<i class="fas fa-paper-plane"></i> ${card.dataset.cta || 'Request help'}`;
+                    }
+                });
+            });
+        });
 
         // === Atajos desde Home a otras secciones ===
         document.querySelectorAll('.home-shortcut[data-target], .nav-jump[data-target]').forEach(el => {

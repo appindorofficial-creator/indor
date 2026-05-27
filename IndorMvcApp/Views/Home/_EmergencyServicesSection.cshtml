@@ -1,0 +1,93 @@
+@model IndorMvcApp.ViewModels.EmergencyServicesSectionViewModel
+@if (Model.Items.Count > 0)
+{
+    var selected = Model.Items.FirstOrDefault(i => i.Id == Model.SelectedId) ?? Model.Items[0];
+    var sectionId = $"emergencySection_{Model.SelectedId}_{Guid.NewGuid():N}";
+
+    <div class="emergency-section" data-emergency-section>
+        <div class="emergency-header">
+            <div class="emergency-header-left">
+                <div class="emergency-title-row">
+                    <span class="emergency-siren"><i class="fas fa-truck-medical"></i></span>
+                    <h3 class="emergency-title">Emergency Services</h3>
+                    <span class="emergency-badge-247">24/7</span>
+                </div>
+                <p class="emergency-subtitle">Fast help for urgent home problems.</p>
+            </div>
+            <button type="button" class="emergency-view-all nav-jump" data-target="section-services">View all</button>
+        </div>
+
+        <div class="emergency-grid" role="listbox" aria-label="Emergency services">
+            @foreach (var item in Model.Items)
+            {
+                var imgSrc = !string.IsNullOrWhiteSpace(item.ImagenUrl)
+                    ? Url.Content("~" + (item.ImagenUrl.StartsWith("/") ? item.ImagenUrl : "/" + item.ImagenUrl))
+                    : "";
+                var isActive = item.Id == selected.Id;
+
+                <button type="button"
+                        class="emergency-card @(isActive ? "active" : "")"
+                        role="option"
+                        aria-selected="@(isActive ? "true" : "false")"
+                        data-id="@item.Id"
+                        data-title="@item.TituloEmergencia"
+                        data-desc="@item.Descripcion"
+                        data-arrival="@item.TiempoLlegadaMinutos"
+                        data-icon="@item.IconoClase"
+                        data-badge="@(item.BadgeTexto ?? "")"
+                        data-cta="@item.CtaTexto"
+                        data-features="@string.Join("|", item.Caracteristicas.Select(c => $"{c.Icon}:{c.Text}"))">
+                    <div class="emergency-card-media">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="@item.Nombre" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="emergency-card-fallback"><i class="fas @item.IconoClase"></i></div>
+                        }
+                        <span class="emergency-card-icon"><i class="fas @item.IconoClase"></i></span>
+                    </div>
+                    <span class="emergency-card-label">@item.Nombre</span>
+                    <span class="emergency-card-247">24/7</span>
+                </button>
+            }
+        </div>
+
+        <div class="emergency-detail">
+            <div class="emergency-detail-main">
+                <div class="emergency-detail-icon"><i class="fas @selected.IconoClase" data-emergency-detail-icon></i></div>
+                <div class="emergency-detail-copy">
+                    @if (!string.IsNullOrWhiteSpace(selected.BadgeTexto))
+                    {
+                        <span class="emergency-detail-badge" data-emergency-detail-badge>@selected.BadgeTexto</span>
+                    }
+                    else
+                    {
+                        <span class="emergency-detail-badge hidden" data-emergency-detail-badge></span>
+                    }
+                    <div class="emergency-detail-title" data-emergency-detail-title>@selected.TituloEmergencia</div>
+                    <div class="emergency-detail-desc" data-emergency-detail-desc>@selected.Descripcion</div>
+                </div>
+                <div class="emergency-detail-arrival">
+                    <span class="arrival-label">Avg. arrival</span>
+                    <span class="arrival-time" data-emergency-detail-arrival>@selected.TiempoLlegadaMinutos min</span>
+                </div>
+            </div>
+
+            <div class="emergency-features" data-emergency-detail-features>
+                @foreach (var feature in selected.Caracteristicas)
+                {
+                    <div class="emergency-feature">
+                        <i class="fas @feature.Icon"></i>
+                        <span>@feature.Text</span>
+                    </div>
+                }
+            </div>
+
+            <button type="button" class="emergency-cta nav-jump" data-emergency-detail-cta data-target="section-more">
+                <i class="fas fa-paper-plane"></i> @selected.CtaTexto
+            </button>
+        </div>
+    </div>
+}

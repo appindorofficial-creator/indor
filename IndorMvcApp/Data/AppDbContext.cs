@@ -14,6 +14,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<Propiedad> Propiedades { get; set; }
     public DbSet<Microservicio> Microservicios { get; set; }
     public DbSet<Servicio> Servicios { get; set; }
+    public DbSet<ServicioEmergencia> ServiciosEmergencia { get; set; }
     public DbSet<Inspeccion> Inspecciones { get; set; }
     public DbSet<PlanMembresia> PlanesMembresia { get; set; }
     public DbSet<MembresiaUsuario> MembresiasUsuario { get; set; }
