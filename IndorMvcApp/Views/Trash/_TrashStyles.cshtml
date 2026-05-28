@@ -9,14 +9,31 @@
     .hero-wrap { position: relative; margin-bottom: 16px; }
     .hero-wrap .hero-img { margin-bottom: 0; }
     .bin-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-    .bin-card { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 10px 8px; cursor: pointer; position: relative; text-align: center; min-height: 110px; }
+    .bin-card { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 10px 8px 12px; cursor: pointer; position: relative; text-align: center; min-height: 128px; }
     .bin-card.active { border-color: #0066CC; box-shadow: 0 0 0 1px rgba(0,102,204,0.15); }
-    .bin-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; color: transparent; }
+    .bin-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; color: transparent; background: #FFF; }
     .bin-card.active .check { border-color: #0066CC; background: #0066CC; color: #FFF; }
-    .bin-card .thumb { height: 58px; border-radius: 10px; background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%); display: flex; align-items: center; justify-content: center; margin-bottom: 8px; overflow: hidden; }
-    .bin-card .thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .bin-card .thumb {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        margin: 4px auto 10px;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
+    }
+    .bin-card .thumb.tone-green {
+        background: linear-gradient(135deg, #E8F7ED 0%, #D4F0DC 100%);
+    }
+    .bin-card .thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
     .bin-card .thumb i { color: #0066CC; font-size: 1.4rem; }
-    .bin-card .label { font-size: 0.72rem; font-weight: 700; line-height: 1.2; }
+    .bin-card .label { font-size: 0.72rem; font-weight: 700; line-height: 1.2; color: #0A2540; }
     .count-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .count-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; position: relative; }
     .count-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); }

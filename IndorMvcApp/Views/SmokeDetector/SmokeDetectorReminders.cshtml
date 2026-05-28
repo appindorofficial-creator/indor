@@ -1,0 +1,125 @@
+@model IndorMvcApp.ViewModels.SmokeDetectorRemindersViewModel
+@{
+    ViewData["Title"] = "Set your reminders - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_SmokeDetectorStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="sd-reminders-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_SmokeDetectorStepper", 3)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Set your reminders</h1>
+    <p class="page-lead" style="margin-bottom:16px;">Turn reminders on or off and choose how you'd like help.</p>
+
+    <div class="setup-summary">
+        <div class="badge">@Model.AlarmCountLabel</div>
+        <div class="row"><span class="label">Type</span><span class="value">@Model.AlarmTypeLabel</span></div>
+        <div class="row"><span class="label">Locations</span><span class="value">@Model.LocationsLabel</span></div>
+        <div class="row"><span class="label">Installed</span><span class="value">@Model.InstalledLabel</span></div>
+    </div>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="sd-reminders-form" asp-action="SmokeDetectorReminders" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="TipoAccionAyuda" id="TipoAccionAyuda" />
+
+        <div class="field-card">
+            <div class="toggle-row">
+                <div class="left">
+                    <strong>Monthly test reminder</strong>
+                    <span>We'll remind you to test your alarms.</span>
+                    <span class="next">Next: @Model.NextMonthlyTestLabel</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" asp-for="RecordatorioMensual" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="left">
+                    <strong>Yearly battery reminder</strong>
+                    <span>Check and replace batteries once a year.</span>
+                    <span class="next">Next: @Model.NextBatteryLabel</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" asp-for="RecordatorioBateriaAnual" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="left">
+                    <strong>Replace unit in 10 years</strong>
+                    <span>Alarms should be replaced 10 years from installation.</span>
+                    <span class="next">Next: @Model.NextReplacementLabel</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" asp-for="RecordatorioReemplazo10Anos" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="toggle-row">
+                <div class="left">
+                    <strong>Seasonal home safety review</strong>
+                    <span>A quick check to keep your home safe year-round.</span>
+                    <span class="next">Next: @Model.NextSeasonalLabel</span>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" asp-for="RecordatorioRevisionEstacional" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span>Need help now?</span></div>
+            <div class="help-grid">
+                <button type="button" class="help-btn" data-help="ReminderOnly">
+                    <i class="fas fa-bell"></i> Reminder only
+                </button>
+                <button type="button" class="help-btn" data-help="ScheduleSafetyCheck">
+                    <i class="fas fa-user-check"></i> Schedule safety check
+                </button>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            <i class="fas fa-shield-halved"></i> Review and confirm <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var helpInput = document.getElementById('TipoAccionAyuda');
+        document.querySelectorAll('[data-help]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-help]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                helpInput.value = btn.getAttribute('data-help');
+            });
+            if (btn.getAttribute('data-help') === helpInput.value) btn.classList.add('active');
+        });
+    })();
+</script>
+</body>
+</html>

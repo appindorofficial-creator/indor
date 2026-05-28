@@ -106,7 +106,7 @@
     {
         return new OfferingCarouselViewModel
         {
-            Title = "Microservices",
+            Title = "Home Care Essentials",
             Subtitle = subtitle,
             Icon = "fa-layer-group",
             Items = items.Select(s => new OfferingCardViewModel
@@ -854,12 +854,39 @@
             box-shadow: 0 6px 14px rgba(0, 102, 204, 0.25);
         }
 
-        /* === Grid compacto para Microservicios / Servicios / Inspecciones === */
-        .offering-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 10px;
+        /* === Carrusel horizontal (tarjetas compactas deslizables) === */
+        .offering-grid,
+        .emergency-grid,
+        .moving-setup-grid {
+            --scroll-gap: 10px;
+            --scroll-visible: 4;
+            display: flex;
+            gap: var(--scroll-gap);
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x proximity;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            overscroll-behavior-x: contain;
+            touch-action: pan-x;
+            margin: 0 -14px;
+            padding: 0 14px 4px;
         }
+        .offering-grid::-webkit-scrollbar,
+        .emergency-grid::-webkit-scrollbar,
+        .moving-setup-grid::-webkit-scrollbar {
+            display: none;
+        }
+        .offering-card,
+        .emergency-card,
+        .moving-setup-grid-item {
+            flex: 0 0 calc((100% - (var(--scroll-visible) - 1) * var(--scroll-gap)) / var(--scroll-visible));
+            min-width: 72px;
+            scroll-snap-align: start;
+        }
+
+        /* === Tarjetas compactas (Microservicios / Servicios / Inspecciones) === */
         .offering-card {
             border: 1px solid #E5E7EB;
             background: #FFF;
@@ -876,7 +903,6 @@
             text-decoration: none;
             color: inherit;
             font: inherit;
-            width: 100%;
         }
         .offering-card:hover {
             border-color: #BFDBFE;
@@ -964,8 +990,108 @@
         .category-badge-insp {
             background: #EFF6FF; color: #004FA3; border-color: #BFDBFE;
         }
+
+        /* === This Year Priorities === */
+        .category-block-priorities { margin-top: 18px; }
+        .category-icon-priorities {
+            background: linear-gradient(135deg, #0066CC, #004FA3) !important;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, .25) !important;
+        }
+        .priorities-view-all {
+            border: none;
+            background: transparent;
+            color: #0066CC;
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-decoration: none;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            padding: 0;
+        }
+        .priorities-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .priority-card {
+            border: 1px solid #E5E7EB;
+            background: #FFF;
+            border-radius: 16px;
+            overflow: hidden;
+            text-decoration: none;
+            color: inherit;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, .06);
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            width: 100%;
+            padding: 0;
+            font: inherit;
+            cursor: pointer;
+        }
+        .priority-card-media {
+            position: relative;
+            height: 96px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
+        }
+        .priority-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .priority-card-icon {
+            position: absolute;
+            left: 8px;
+            bottom: -14px;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #FFF;
+            border: 2px solid #E5E7EB;
+            color: #0066CC;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, .12);
+            z-index: 1;
+        }
+        .priority-card-body {
+            position: relative;
+            padding: 18px 28px 12px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .priority-card-body strong {
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: #0A2540;
+            line-height: 1.25;
+        }
+        .priority-card-body span {
+            font-size: 0.68rem;
+            font-weight: 600;
+            color: #0066CC;
+            line-height: 1.3;
+        }
+        .priority-card-arrow {
+            position: absolute;
+            right: 10px;
+            bottom: 12px;
+            font-size: 0.65rem;
+            color: #94A3B8;
+        }
+
         @@media (max-width: 380px) {
-            .offering-grid { gap: 8px; }
+            .offering-grid,
+            .emergency-grid,
+            .moving-setup-grid { --scroll-gap: 8px; }
             .offering-card-media { height: 58px; }
             .offering-card-label { font-size: 0.62rem; }
         }
@@ -1355,9 +1481,6 @@
             white-space: nowrap;
         }
         .moving-setup-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 10px;
             margin-bottom: 14px;
         }
         .moving-setup-grid-item {
@@ -1556,9 +1679,6 @@
             padding: 4px 0;
         }
         .emergency-grid {
-            display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 10px;
             margin-bottom: 14px;
         }
         .emergency-card {
@@ -1729,7 +1849,7 @@
             gap: 8px;
         }
         @@media (max-width: 420px) {
-            .emergency-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+            .emergency-grid { --scroll-gap: 8px; }
             .emergency-card-media { height: 58px; }
             .emergency-card-label { font-size: 0.62rem; }
             .emergency-features { grid-template-columns: 1fr; }
@@ -2143,6 +2263,7 @@
             var serviciosEmergenciaHome = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
                                           ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
             var movingSetupSectionHome = ViewBag.MovingSetupSection as IndorMvcApp.ViewModels.MovingSetupSectionViewModel;
+            var homeCarePrioritiesSectionHome = ViewBag.HomeCarePrioritiesSection as IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel;
         }
         <div class="home-content">
             @if (TempData["ScheduleSaved"] is string scheduleMsg)
@@ -2278,6 +2399,11 @@
                 @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microserviciosHome, $"{microserviciosHome.Count()} services available for your home"))
             }
 
+            @if (homeCarePrioritiesSectionHome != null)
+            {
+                @await Html.PartialAsync("_HomeCarePrioritiesSection", homeCarePrioritiesSectionHome)
+            }
+
             @if (movingSetupSectionHome != null)
             {
                 @await Html.PartialAsync("_MovingSetupSection", movingSetupSectionHome)
@@ -2345,6 +2471,7 @@
             var serviciosEmergencia = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
                                       ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
             var movingSetupSection = ViewBag.MovingSetupSection as IndorMvcApp.ViewModels.MovingSetupSectionViewModel;
+            var homeCarePrioritiesSection = ViewBag.HomeCarePrioritiesSection as IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel;
             var totalOfferings = microservicios.Count() + servicios.Count() + inspecciones.Count();
         }
 
@@ -2369,6 +2496,11 @@
                 @if (microservicios.Any())
                 {
                     @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, $"{microservicios.Count()} services available for your home"))
+                }
+
+                @if (homeCarePrioritiesSection != null)
+                {
+                    @await Html.PartialAsync("_HomeCarePrioritiesSection", homeCarePrioritiesSection)
                 }
 
                 @if (movingSetupSection != null)

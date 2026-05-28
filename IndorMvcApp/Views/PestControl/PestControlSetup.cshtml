@@ -1,0 +1,141 @@
+@model IndorMvcApp.ViewModels.PestControlSetupViewModel
+@{
+    ViewData["Title"] = "Tell us about your home - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PestControlStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="pc-setup-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_PestControlStepper", 2)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your home</h1>
+    <p class="page-lead" style="margin-bottom:16px;">A few details help us recommend the right pest control approach.</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="pc-setup-form" asp-action="PestControlSetup" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="UltimoServicio" id="UltimoServicio" />
+        <input type="hidden" asp-for="SignosSeleccionados" id="SignosSeleccionados" />
+        <input type="hidden" asp-for="AreasPreocupacion" id="AreasPreocupacion" />
+        <input type="hidden" asp-for="MascotasONinos" id="MascotasONinos" />
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">1</span><span>When was your last pest service?</span></div>
+            <div class="segment-row">
+                <button type="button" class="segment-btn" data-last="Within12Months">Within 12 months</button>
+                <button type="button" class="segment-btn" data-last="MoreThan12Months">More than 12 months</button>
+                <button type="button" class="segment-btn" data-last="DontKnow">I don't know</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">2</span><span>Have you noticed any signs?</span></div>
+            <div class="sign-grid">
+                <button type="button" class="sign-card" data-sign="Ants"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bug main"></i><span class="label">Ants</span></button>
+                <button type="button" class="sign-card" data-sign="Roaches"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-locust main"></i><span class="label">Roaches</span></button>
+                <button type="button" class="sign-card" data-sign="TermitesWoodDamage"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Termites / wood damage</span></button>
+                <button type="button" class="sign-card" data-sign="Rodents"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paw main"></i><span class="label">Rodents</span></button>
+                <button type="button" class="sign-card" data-sign="SpidersWasps"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spider main"></i><span class="label">Spiders / wasps</span></button>
+                <button type="button" class="sign-card" data-sign="NoSigns"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ban main"></i><span class="label">No signs</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">3</span><span>Areas of concern</span></div>
+            <div class="area-grid">
+                <button type="button" class="area-chip" data-area="Kitchen"><i class="fas fa-utensils"></i> Kitchen</button>
+                <button type="button" class="area-chip" data-area="Bathrooms"><i class="fas fa-bath"></i> Bathrooms</button>
+                <button type="button" class="area-chip" data-area="Garage"><i class="fas fa-warehouse"></i> Garage</button>
+                <button type="button" class="area-chip" data-area="Attic"><i class="fas fa-house-chimney"></i> Attic</button>
+                <button type="button" class="area-chip" data-area="CrawlspaceBasement"><i class="fas fa-stairs"></i> Crawlspace / basement</button>
+                <button type="button" class="area-chip" data-area="ExteriorPerimeter"><i class="fas fa-border-all"></i> Exterior perimeter</button>
+                <button type="button" class="area-chip" data-area="Yard"><i class="fas fa-leaf"></i> Yard</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">4</span><span>Do you have pets or children at home?</span></div>
+            <div class="yesno-row">
+                <button type="button" class="yesno-btn" data-pets="Yes">Yes</button>
+                <button type="button" class="yesno-btn" data-pets="No">No</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">5</span><span>Any extra notes?</span></div>
+            <textarea asp-for="Notas" placeholder="Tell us anything else that might help..." maxlength="300"></textarea>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        function bindMulti(groupSelector, attr, input) {
+            function getValues() {
+                return input.value ? input.value.split('|').filter(Boolean) : [];
+            }
+
+            function setValues(values) {
+                input.value = values.join('|');
+            }
+
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var code = btn.getAttribute(attr);
+                    var current = getValues();
+                    if (current.indexOf(code) >= 0) {
+                        current = current.filter(function (v) { return v !== code; });
+                        btn.classList.remove('active');
+                    } else {
+                        current.push(code);
+                        btn.classList.add('active');
+                    }
+                    setValues(current);
+                });
+                if (getValues().indexOf(btn.getAttribute(attr)) >= 0) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-last]', 'data-last', document.getElementById('UltimoServicio'));
+        bindMulti('[data-sign]', 'data-sign', document.getElementById('SignosSeleccionados'));
+        bindMulti('[data-area]', 'data-area', document.getElementById('AreasPreocupacion'));
+        bindSingle('[data-pets]', 'data-pets', document.getElementById('MascotasONinos'));
+    })();
+</script>
+</body>
+</html>

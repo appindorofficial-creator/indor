@@ -1,0 +1,146 @@
+@model IndorMvcApp.ViewModels.HvacMaintenanceScheduleViewModel
+@{
+    ViewData["Title"] = "Choose your visit - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_HvacMaintenanceStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="hvac-schedule-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_HvacMaintenanceStepper", 3)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Choose your visit</h1>
+    <p class="page-lead" style="margin-bottom:16px;">Pick the best time for your yearly tune-up.</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="hvac-schedule-form" asp-action="HvacMaintenanceSchedule" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
+            <input asp-for="FechaVisita" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <span asp-validation-for="FechaVisita" class="text-danger"></span>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred time window</span></div>
+            <div class="time-grid-3">
+                <button type="button" class="time-card" data-window="Morning">
+                    <span class="radio"></span>
+                    <i class="fas fa-sun main"></i>
+                    <span class="label">Morning</span>
+                    <span class="sub">8–11 AM</span>
+                </button>
+                <button type="button" class="time-card" data-window="Midday">
+                    <span class="radio"></span>
+                    <i class="fas fa-sun main"></i>
+                    <span class="label">Midday</span>
+                    <span class="sub">11 AM–2 PM</span>
+                </button>
+                <button type="button" class="time-card" data-window="Afternoon">
+                    <span class="radio"></span>
+                    <i class="fas fa-cloud-sun main"></i>
+                    <span class="label">Afternoon</span>
+                    <span class="sub">2–5 PM</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-wrench"></i><span>Service type</span></div>
+            <div class="service-type-row">
+                <button type="button" class="service-type-btn" data-type="OneTime">
+                    <i class="fas fa-check"></i> One-time tune-up
+                </button>
+                <button type="button" class="service-type-btn" data-type="YearlyReminder">
+                    <i class="fas fa-bell"></i> Add yearly reminder
+                </button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-house"></i><span>Your contact</span></div>
+            <div class="contact-card">
+                <div class="row"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
+                <div class="row"><i class="fas fa-phone"></i><span>@Model.TelefonoContacto</span></div>
+            </div>
+            <input type="hidden" asp-for="DireccionPropiedad" />
+            <input type="hidden" asp-for="TelefonoContacto" />
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
+        {
+            <div class="info-box-blue">
+                <i class="fas fa-shield-halved"></i>
+                <span>@Model.InfoBoxTexto</span>
+            </div>
+        }
+
+        <div class="sticky-footer">
+            <div class="sticky-footer-row">
+                <div>
+                    <div class="price-label"><i class="fas fa-tag"></i> Estimated starting price</div>
+                    <div class="price-value">@(Model.PrecioTexto ?? $"from ${Model.PrecioEstimado:0}")</div>
+                </div>
+            </div>
+            <button type="submit" name="action" value="continue" class="btn-primary">
+                Review request <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </form>
+</div>
+<script>
+    (function () {
+        var windowInput = document.getElementById('VentanaHorario');
+        var typeInput = document.getElementById('TipoServicio');
+
+        function setActive(collection, activeEl, attr) {
+            collection.forEach(function (el) {
+                el.classList.toggle('active', el === activeEl);
+            });
+            if (activeEl) windowInput.value = activeEl.getAttribute(attr);
+        }
+
+        document.querySelectorAll('.time-card').forEach(function (card) {
+            card.addEventListener('click', function () {
+                document.querySelectorAll('.time-card').forEach(function (c) { c.classList.remove('active'); });
+                card.classList.add('active');
+                windowInput.value = card.getAttribute('data-window');
+            });
+            if (card.getAttribute('data-window') === windowInput.value) card.classList.add('active');
+        });
+
+        document.querySelectorAll('.service-type-btn').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.service-type-btn').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                typeInput.value = btn.getAttribute('data-type');
+            });
+            if (btn.getAttribute('data-type') === typeInput.value) btn.classList.add('active');
+        });
+    })();
+</script>
+</body>
+</html>

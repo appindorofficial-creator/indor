@@ -1,0 +1,132 @@
+@model IndorMvcApp.ViewModels.GutterCleaningSetupViewModel
+@{
+    ViewData["Title"] = "Tell us about your home - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_GutterCleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="gc-setup-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_GutterCleaningStepper", 2)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Tell us about your home</span></p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="gc-setup-form" asp-action="GutterCleaningSetup" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
+        <input type="hidden" asp-for="TipoCanaletas" id="TipoCanaletas" />
+        <input type="hidden" asp-for="ProtectorCanaletas" id="ProtectorCanaletas" />
+        <input type="hidden" asp-for="UltimaLimpieza" id="UltimaLimpieza" />
+        <input type="hidden" asp-for="CantidadBajantes" id="CantidadBajantes" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-building"></i><span>Home size</span></div>
+            <div class="stories-grid">
+                <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">1 story</span></button>
+                <button type="button" class="story-card" data-stories="Two"><i class="fas fa-building main"></i><span class="label">2 stories</span></button>
+                <button type="button" class="story-card" data-stories="ThreePlus"><i class="fas fa-city main"></i><span class="label">3+ stories</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-water"></i><span>What type of gutters do you have?</span></div>
+            <div class="gutter-grid">
+                <button type="button" class="gutter-card" data-gutter="Aluminum"><i class="fas fa-grip-lines main"></i><span class="label">Aluminum</span></button>
+                <button type="button" class="gutter-card" data-gutter="Vinyl"><i class="fas fa-grip-lines main"></i><span class="label">Vinyl</span></button>
+                <button type="button" class="gutter-card" data-gutter="Copper"><i class="fas fa-grip-lines main"></i><span class="label">Copper</span></button>
+                <button type="button" class="gutter-card" data-gutter="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-shield-halved"></i><span>Do you have gutter guards?</span></div>
+            <div class="choice-grid-3">
+                <button type="button" class="choice-card" data-guard="Yes"><i class="fas fa-shield-halved main"></i><span class="label">Yes</span></button>
+                <button type="button" class="choice-card" data-guard="No"><i class="fas fa-xmark main"></i><span class="label">No</span></button>
+                <button type="button" class="choice-card" data-guard="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-calendar"></i><span>When were they last cleaned?</span></div>
+            <div class="gutter-grid" style="grid-template-columns:repeat(4,1fr);">
+                <button type="button" class="gutter-card" data-last="LessThan6Months"><i class="fas fa-calendar main"></i><span class="label">&lt; 6 months</span></button>
+                <button type="button" class="gutter-card" data-last="SixToTwelveMonths"><i class="fas fa-calendar main"></i><span class="label">6–12 months</span></button>
+                <button type="button" class="gutter-card" data-last="OnePlusYear"><i class="fas fa-calendar main"></i><span class="label">1+ year</span></button>
+                <button type="button" class="gutter-card" data-last="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-faucet"></i><span>Downspout count (optional)</span></div>
+            <p style="font-size:0.74rem;color:#64748B;margin-bottom:10px;">Help us estimate the scope of the job.</p>
+            <div class="stepper-control">
+                <button type="button" id="downMinus">−</button>
+                <span class="value" id="downValue">@(Model.CantidadBajantes ?? 4)</span>
+                <button type="button" id="downPlus">+</button>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-stories]', 'data-stories', document.getElementById('NumeroPisos'));
+        bindSingle('[data-gutter]', 'data-gutter', document.getElementById('TipoCanaletas'));
+        bindSingle('[data-guard]', 'data-guard', document.getElementById('ProtectorCanaletas'));
+        bindSingle('[data-last]', 'data-last', document.getElementById('UltimaLimpieza'));
+
+        var downInput = document.getElementById('CantidadBajantes');
+        var downValue = document.getElementById('downValue');
+        function syncDown() { downValue.textContent = downInput.value; }
+        document.getElementById('downMinus').addEventListener('click', function () {
+            var v = parseInt(downInput.value || '0', 10);
+            downInput.value = Math.max(0, v - 1);
+            syncDown();
+        });
+        document.getElementById('downPlus').addEventListener('click', function () {
+            var v = parseInt(downInput.value || '0', 10);
+            downInput.value = Math.min(50, v + 1);
+            syncDown();
+        });
+        syncDown();
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+@model IndorMvcApp.ViewModels.SmokeDetectorConfirmedViewModel
+@{
+    ViewData["Title"] = "Your smoke alarm reminders are ready - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_SmokeDetectorStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.NombreServicio</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_SmokeDetectorStepper", 4)
+
+    <div class="success-wrap">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Your smoke alarm reminders are ready</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">We've set up your reminders and tracking so you can stay protected with less to remember.</p>
+    </div>
+
+    <div class="feature-icons">
+        <div class="feature-icon"><div class="circle"><i class="fas fa-calendar"></i></div><span>Monthly testing reminders</span></div>
+        <div class="feature-icon"><div class="circle"><i class="fas fa-battery-full"></i></div><span>Yearly battery checks</span></div>
+        <div class="feature-icon"><div class="circle"><i class="fas fa-rotate"></i></div><span>10-year alarm replacement tracking</span></div>
+    </div>
+
+    <div class="reminder-list">
+        <div class="reminder-item">
+            <i class="fas fa-calendar"></i>
+            <div class="body">
+                <div class="label">Next monthly test</div>
+                <div class="value">@Model.NextMonthlyTestLabel</div>
+            </div>
+            <i class="fas fa-chevron-right chev"></i>
+        </div>
+        <div class="reminder-item">
+            <i class="fas fa-battery-full"></i>
+            <div class="body">
+                <div class="label">Next battery reminder</div>
+                <div class="value">@Model.NextBatteryLabel</div>
+            </div>
+            <i class="fas fa-chevron-right chev"></i>
+        </div>
+        <div class="reminder-item">
+            <i class="fas fa-shield-halved"></i>
+            <div class="body">
+                <div class="label">Alarm replacement tracking saved</div>
+                <div class="value">@Model.ReplacementLabel</div>
+            </div>
+            <i class="fas fa-chevron-right chev"></i>
+        </div>
+    </div>
+
+    @if (Model.ShowSafetyVisit)
+    {
+        <div class="safety-visit">
+            <i class="fas fa-house-chimney" style="color:#0066CC;font-size:1.2rem;"></i>
+            <div class="text">
+                <strong>Schedule a safety visit</strong>
+                A pro can inspect your alarms and recommend any updates.
+            </div>
+            <span class="btn-find-pro">Find a pro</span>
+        </div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn-primary">
+        <i class="fas fa-house"></i> Go to Home Care Guide <i class="fas fa-chevron-right"></i>
+    </a>
+    <a asp-controller="SmokeDetector" asp-action="SmokeDetectorReminders" asp-route-id="@Model.SolicitudId" class="btn-outline" style="margin-top:10px;">
+        Edit reminders
+    </a>
+</div>
+</body>
+</html>

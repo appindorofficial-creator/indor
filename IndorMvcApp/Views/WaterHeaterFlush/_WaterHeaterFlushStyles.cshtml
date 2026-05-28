@@ -1,0 +1,44 @@
+@await Html.PartialAsync("../HvacMaintenance/_HvacMaintenanceStyles")
+<style>
+    .whf-benefit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+    .whf-benefit-card { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 12px 8px; text-align: center; min-height: 88px; }
+    .whf-benefit-card i { color: #0066CC; font-size: 1rem; margin-bottom: 8px; display: block; }
+    .whf-benefit-card span { font-size: 0.68rem; font-weight: 700; line-height: 1.25; display: block; }
+    .why-box { background: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px; margin-bottom: 14px; display: flex; gap: 12px; align-items: flex-start; }
+    .why-box i { color: #0066CC; margin-top: 2px; }
+    .why-box strong { display: block; font-size: 0.82rem; margin-bottom: 6px; }
+    .why-box p { font-size: 0.78rem; line-height: 1.45; color: #64748B; margin: 0; }
+    .preview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .preview-chip { background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px; display: flex; align-items: center; gap: 8px; font-size: 0.74rem; font-weight: 600; min-height: 52px; }
+    .preview-chip i { color: #0066CC; width: 16px; }
+    .choice-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .choice-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 10px; cursor: pointer; text-align: center; position: relative; min-height: 88px; }
+    .choice-card i.main { display: block; font-size: 1.1rem; color: #94A3B8; margin-bottom: 8px; }
+    .choice-card .label { font-size: 0.78rem; font-weight: 700; }
+    .choice-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .choice-card.active i.main { color: #0066CC; }
+    .location-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+    .location-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 10px 4px; cursor: pointer; text-align: center; font-size: 0.62rem; font-weight: 700; min-height: 72px; }
+    .location-btn i { display: block; font-size: 0.95rem; color: #94A3B8; margin-bottom: 6px; }
+    .location-btn.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .location-btn.active i { color: #0066CC; }
+    .symptom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .symptom-pill { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 999px; padding: 10px 12px; cursor: pointer; font-size: 0.72rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+    .symptom-pill i { color: #0066CC; }
+    .symptom-pill.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .service-card { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 14px; cursor: pointer; position: relative; margin-bottom: 8px; text-align: left; width: 100%; }
+    .service-card.active { border-color: #0066CC; box-shadow: 0 0 0 1px rgba(0,102,204,0.12); }
+    .service-card .radio { position: absolute; top: 12px; right: 12px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #CBD5E1; }
+    .service-card.active .radio { border-color: #0066CC; background: #0066CC; box-shadow: inset 0 0 0 3px #FFF; }
+    .service-card strong { display: block; font-size: 0.82rem; margin-bottom: 4px; }
+    .service-card span { font-size: 0.72rem; color: #64748B; line-height: 1.35; }
+    .timing-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .estimate-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; font-size: 0.78rem; font-weight: 600; margin-bottom: 12px; }
+    .estimate-box i { color: #0066CC; }
+    .benefit-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; text-align: center; }
+    .benefit-row .item i { color: #0066CC; font-size: 1rem; margin-bottom: 6px; display: block; }
+    .benefit-row .item span { font-size: 0.68rem; font-weight: 700; line-height: 1.25; display: block; }
+    .next-flow { display: flex; justify-content: space-between; gap: 8px; margin-bottom: 14px; }
+    .next-flow .step { flex: 1; text-align: center; font-size: 0.62rem; font-weight: 600; color: #64748B; }
+    .next-flow .step i { display: block; font-size: 1rem; color: #0066CC; margin-bottom: 6px; }
+</style>

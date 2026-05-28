@@ -46,7 +46,16 @@
                 {
                     <button type="button" class="bin-card @(selectedBins.Contains(bin.Code) ? "active" : "")" data-code="@bin.Code">
                         <span class="check"><i class="fas fa-check"></i></span>
-                        <div class="thumb"><i class="fas @bin.Icon"></i></div>
+                        <div class="thumb tone-@bin.ThumbTone">
+                            @if (!string.IsNullOrWhiteSpace(bin.ImageUrl))
+                            {
+                                <img src="@Url.Content("~" + bin.ImageUrl)" alt="@bin.Label" loading="lazy" />
+                            }
+                            else
+                            {
+                                <i class="fas @bin.Icon"></i>
+                            }
+                        </div>
                         <div class="label">@bin.Label</div>
                     </button>
                 }

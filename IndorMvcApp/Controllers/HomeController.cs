@@ -76,6 +76,18 @@ public class HomeController : Controller
             movingEnlaces,
             Url);
 
+        var prioritiesConfig = await _db.HomeCarePrioritiesConfig.FirstOrDefaultAsync(c => c.Activo);
+        var prioritiesItems = await _db.HomeCarePriorities
+            .Where(p => p.Activo)
+            .OrderBy(p => p.Orden)
+            .ThenBy(p => p.Id)
+            .ToListAsync();
+        ViewBag.HomeCarePrioritiesSection = HomeCarePrioritiesDisplayService.Build(
+            prioritiesConfig,
+            prioritiesItems,
+            propiedades.FirstOrDefault()?.Id,
+            Url);
+
         // === Datos para sección "More" ===
         ViewBag.Planes = await _db.PlanesMembresia
             .Where(p => p.Activo)

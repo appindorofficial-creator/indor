@@ -1,0 +1,203 @@
+@model IndorMvcApp.ViewModels.PowerWashConditionViewModel
+@{
+    ViewData["Title"] = "Condition & Access - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PowerWashStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="pw-condition-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_PowerWashStepper", 3)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Condition & Access</h1>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Help us understand buildup and access.</span></p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="pw-condition-form" asp-action="PowerWashCondition" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="ProblemasSeleccionados" id="ProblemasSeleccionados" />
+        <input type="hidden" asp-for="AreasDelicadas" id="AreasDelicadas" />
+        <input type="hidden" asp-for="AccesoGrifo" id="AccesoGrifo" />
+        <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-eye"></i><span>What are you seeing?</span></div>
+            <div class="issue-grid">
+                <button type="button" class="issue-card" data-issue="LightDirt"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Light dirt</span></button>
+                <button type="button" class="issue-card" data-issue="HeavyDirt"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Heavy dirt</span></button>
+                <button type="button" class="issue-card" data-issue="MoldAlgae"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-leaf main"></i><span class="label">Mold / algae</span></button>
+                <button type="button" class="issue-card" data-issue="Pollen"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Pollen</span></button>
+                <button type="button" class="issue-card" data-issue="RustStains"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-droplet main"></i><span class="label">Rust stains</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-triangle-exclamation"></i><span>Any delicate areas?</span></div>
+            <div class="issue-grid" style="grid-template-columns:repeat(2,1fr);">
+                <button type="button" class="issue-card" data-delicate="LoosePaint"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paint-roller main"></i><span class="label">Loose paint</span></button>
+                <button type="button" class="issue-card" data-delicate="CrackedSiding"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Cracked siding</span></button>
+                <button type="button" class="issue-card" data-delicate="OldCaulking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spray-can main"></i><span class="label">Old caulking</span></button>
+                <button type="button" class="issue-card" data-delicate="None"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">None</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-faucet"></i><span>Do you have water spigot access?</span></div>
+            <div class="spigot-grid">
+                <button type="button" class="spigot-card" data-spigot="Yes"><i class="fas fa-droplet main"></i><span class="label">Yes</span></button>
+                <button type="button" class="spigot-card" data-spigot="No"><i class="fas fa-ban main"></i><span class="label">No</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-camera"></i><span>Upload photos (optional)</span></div>
+            <label class="upload-drop" for="photoInput">
+                <i class="fas fa-camera"></i>
+                <strong>Tap to upload photos</strong>
+                <span>JPG or PNG, up to 10 MB each</span>
+            </label>
+            <input type="file" name="files" id="photoInput" accept=".jpg,.jpeg,.png" multiple style="display:none;" />
+            @if (Model.ArchivosExistentes.Count > 0)
+            {
+                <div class="upload-preview">
+                    @foreach (var file in Model.ArchivosExistentes)
+                    {
+                        <img src="@Url.Content("~" + file.RutaArchivo)" alt="@file.NombreArchivo" />
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred timing</span></div>
+            <div class="time-grid-3" style="margin-bottom:10px;">
+                <button type="button" class="time-card" data-timing="NextWeek"><span class="radio"></span><i class="fas fa-calendar main"></i><span class="label">Next week</span></button>
+                <button type="button" class="time-card" data-timing="ThisMonth"><span class="radio"></span><i class="fas fa-calendar-days main"></i><span class="label">This month</span></button>
+                <button type="button" class="time-card" data-timing="Flexible"><span class="radio"></span><i class="fas fa-clock main"></i><span class="label">Flexible</span></button>
+            </div>
+            <div class="field-head" style="margin-top:8px;"><i class="fas fa-sun"></i><span>Preferred time window</span></div>
+            <div class="time-grid-3">
+                <button type="button" class="time-card" data-window="Morning"><span class="radio"></span><i class="fas fa-sun main"></i><span class="label">Morning</span></button>
+                <button type="button" class="time-card" data-window="Midday"><span class="radio"></span><i class="fas fa-sun main"></i><span class="label">Midday</span></button>
+                <button type="button" class="time-card" data-window="Afternoon"><span class="radio"></span><i class="fas fa-cloud-sun main"></i><span class="label">Afternoon</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
+            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.InfoCondicionTexto))
+        {
+            <div class="info-box-blue">
+                <i class="fas fa-shield-halved"></i>
+                <span>@Model.InfoCondicionTexto</span>
+            </div>
+        }
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Review request <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var issuesInput = document.getElementById('ProblemasSeleccionados');
+        var delicateInput = document.getElementById('AreasDelicadas');
+        var spigotInput = document.getElementById('AccesoGrifo');
+        var timingInput = document.getElementById('TimingPreferido');
+        var windowInput = document.getElementById('VentanaHorario');
+
+        function getPipe(input) { return input.value ? input.value.split('|').filter(Boolean) : []; }
+        function setPipe(input, values) { input.value = values.join('|'); }
+
+        document.querySelectorAll('[data-issue]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var code = btn.getAttribute('data-issue');
+                var current = getPipe(issuesInput);
+                if (current.indexOf(code) >= 0) {
+                    current = current.filter(function (v) { return v !== code; });
+                    btn.classList.remove('active');
+                } else {
+                    current.push(code);
+                    btn.classList.add('active');
+                }
+                setPipe(issuesInput, current);
+            });
+            if (getPipe(issuesInput).indexOf(btn.getAttribute('data-issue')) >= 0) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-delicate]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var code = btn.getAttribute('data-delicate');
+                if (code === 'None') {
+                    document.querySelectorAll('[data-delicate]').forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    setPipe(delicateInput, ['None']);
+                    return;
+                }
+                var current = getPipe(delicateInput).filter(function (v) { return v !== 'None'; });
+                if (current.indexOf(code) >= 0) {
+                    current = current.filter(function (v) { return v !== code; });
+                    btn.classList.remove('active');
+                } else {
+                    current.push(code);
+                    btn.classList.add('active');
+                }
+                setPipe(delicateInput, current);
+            });
+            if (getPipe(delicateInput).indexOf(btn.getAttribute('data-delicate')) >= 0) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-spigot]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-spigot]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                spigotInput.value = btn.getAttribute('data-spigot');
+            });
+            if (btn.getAttribute('data-spigot') === spigotInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-timing]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-timing]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                timingInput.value = btn.getAttribute('data-timing');
+            });
+            if (btn.getAttribute('data-timing') === timingInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-window]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-window]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                windowInput.value = btn.getAttribute('data-window');
+            });
+            if (btn.getAttribute('data-window') === windowInput.value) btn.classList.add('active');
+        });
+    })();
+</script>
+</body>
+</html>

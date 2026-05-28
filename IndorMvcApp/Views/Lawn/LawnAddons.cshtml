@@ -35,8 +35,8 @@
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="TipoServicio" />
         <input type="hidden" asp-for="AreaServicio" />
-        <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" />
-        <input type="hidden" asp-for="PreferenciaExtra" id="PreferenciaExtra" />
+        <input type="hidden" name="AddonsSeleccionados" id="AddonsSeleccionados" value="@Model.AddonsSeleccionados" />
+        <input type="hidden" name="PreferenciaExtra" id="PreferenciaExtra" value="@Model.PreferenciaExtra" />
         <input type="hidden" asp-for="PrecioBase" id="PrecioBase" />
         <input type="hidden" asp-for="PrecioAddons" id="PrecioAddons" />
         <input type="hidden" asp-for="DescuentoSuscripcion" id="DescuentoSuscripcion" />
@@ -137,15 +137,26 @@
             document.querySelectorAll('#' + groupId + ' .segment-btn').forEach(btn => {
                 if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
                 btn.addEventListener('click', () => {
+                    const isActive = btn.classList.contains('active');
                     document.querySelectorAll('#' + groupId + ' .segment-btn').forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    hidden.value = btn.dataset.value;
+                    if (isActive) {
+                        hidden.value = '';
+                    } else {
+                        btn.classList.add('active');
+                        hidden.value = btn.dataset.value;
+                    }
                 });
             });
         }
 
         initSingle('prefGroup', 'PreferenciaExtra', '@Model.PreferenciaExtra');
         renderSummary();
+
+        document.getElementById('addonsForm').addEventListener('submit', () => {
+            document.getElementById('AddonsSeleccionados').value = Array.from(selected).join('|');
+            const pref = document.getElementById('PreferenciaExtra');
+            if (!pref.value) pref.value = 'NoThanks';
+        });
     })();
 </script>
 </body>

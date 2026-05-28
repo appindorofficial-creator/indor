@@ -1,0 +1,56 @@
+@await Html.PartialAsync("../HvacMaintenance/_HvacMaintenanceStyles")
+<style>
+    .csc-check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
+    .csc-check-item { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 10px; text-align: center; min-height: 88px; }
+    .csc-check-item i { color: #0066CC; font-size: 1rem; margin-bottom: 8px; display: block; }
+    .csc-check-item span { font-size: 0.72rem; font-weight: 700; line-height: 1.25; display: block; }
+    .best-practice-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
+    .best-practice-box i { color: #0066CC; font-size: 1rem; margin-top: 2px; }
+    .best-practice-box strong { display: block; font-size: 0.82rem; margin-bottom: 4px; }
+    .best-practice-box p { font-size: 0.78rem; line-height: 1.45; color: #64748B; margin: 0; }
+    .choice-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .choice-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 8px; cursor: pointer; text-align: center; position: relative; min-height: 84px; }
+    .choice-card i.main { display: block; font-size: 1rem; color: #94A3B8; margin-bottom: 8px; }
+    .choice-card .label { font-size: 0.72rem; font-weight: 700; line-height: 1.25; }
+    .choice-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+    .choice-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .choice-card.active i.main { color: #0066CC; }
+    .choice-card.active .check { display: flex; }
+    .access-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .concern-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+    .concern-card { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; position: relative; min-height: 76px; }
+    .concern-card i.main { display: block; font-size: 0.95rem; color: #94A3B8; margin-bottom: 6px; }
+    .concern-card .label { font-size: 0.68rem; font-weight: 700; line-height: 1.25; }
+    .concern-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+    .concern-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .concern-card.active i.main { color: #0066CC; }
+    .concern-card.active .check { display: flex; }
+    .timing-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
+    .timing-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px; cursor: pointer; text-align: left; position: relative; width: 100%; }
+    .timing-card i.main { color: #94A3B8; margin-right: 8px; }
+    .timing-card .label { font-size: 0.82rem; font-weight: 700; }
+    .timing-card .radio { position: absolute; top: 14px; right: 14px; width: 18px; height: 18px; border-radius: 50%; border: 2px solid #CBD5E1; }
+    .timing-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .timing-card.active i.main { color: #0066CC; }
+    .timing-card.active .radio { border-color: #0066CC; background: #0066CC; box-shadow: inset 0 0 0 3px #FFF; }
+    .date-picker-card { border: 1.5px solid #E5E7EB; border-radius: 14px; padding: 14px; background: #FFF; }
+    .date-picker-card .sub { font-size: 0.72rem; color: #64748B; margin-top: 4px; }
+    .tip-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 12px 14px; display: flex; gap: 10px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px; align-items: flex-start; }
+    .tip-box i { color: #0066CC; margin-top: 2px; }
+    .summary-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .summary-mini { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px; }
+    .summary-mini i { color: #0066CC; font-size: 0.9rem; margin-bottom: 8px; display: block; }
+    .summary-mini .summary-label { font-size: 0.68rem; color: #64748B; font-weight: 600; margin-bottom: 4px; }
+    .summary-mini .summary-value { font-size: 0.78rem; font-weight: 700; color: #0066CC; line-height: 1.35; }
+    .service-desc-box { background: #FFF; border: 1.5px solid #0066CC; border-radius: 14px; padding: 14px; display: flex; gap: 10px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px; align-items: flex-start; }
+    .service-desc-box i { color: #0066CC; margin-top: 2px; }
+    .segment-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 999px; padding: 10px 14px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
+    .segment-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+    .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 1px solid rgba(229,231,235,0.9); }
+    .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid #F1F5F9; }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-row > i { color: #0066CC; width: 18px; margin-top: 2px; }
+    .summary-label { font-size: 0.72rem; color: #64748B; font-weight: 600; }
+    .summary-value { font-size: 0.82rem; font-weight: 700; color: #0066CC; }
+</style>

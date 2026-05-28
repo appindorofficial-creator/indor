@@ -1,0 +1,58 @@
+@model IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel
+@if (Model.Items.Count > 0)
+{
+<div class="category-block category-block-priorities">
+    <div class="category-header">
+        <div class="category-icon category-icon-priorities"><i class="fas @Model.IconClass"></i></div>
+        <div class="category-info">
+            <h3 class="category-title">@Model.Title</h3>
+            @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+            {
+                <span class="category-sub">@Model.Subtitle</span>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.ViewAllUrl))
+        {
+            <a href="@Model.ViewAllUrl" class="priorities-view-all">@Model.ViewAllText <i class="fas fa-chevron-right"></i></a>
+        }
+        else
+        {
+            <button type="button" class="priorities-view-all nav-jump" data-target="section-myhome">@Model.ViewAllText <i class="fas fa-chevron-right"></i></button>
+        }
+    </div>
+
+    <div class="priorities-grid">
+        @foreach (var item in Model.Items)
+        {
+            if (!string.IsNullOrWhiteSpace(item.Url))
+            {
+                <a href="@item.Url" class="priority-card">
+                    <div class="priority-card-media">
+                        <img src="@Url.Content("~" + item.ImageUrl)" alt="@item.Title" loading="lazy" />
+                        <span class="priority-card-icon"><i class="fas @item.Icon"></i></span>
+                    </div>
+                    <div class="priority-card-body">
+                        <strong>@item.Title</strong>
+                        <span>@item.Subtitle</span>
+                        <i class="fas fa-chevron-right priority-card-arrow"></i>
+                    </div>
+                </a>
+            }
+            else
+            {
+                <button type="button" class="priority-card nav-jump" data-target="section-myhome">
+                    <div class="priority-card-media">
+                        <img src="@Url.Content("~" + item.ImageUrl)" alt="@item.Title" loading="lazy" />
+                        <span class="priority-card-icon"><i class="fas @item.Icon"></i></span>
+                    </div>
+                    <div class="priority-card-body">
+                        <strong>@item.Title</strong>
+                        <span>@item.Subtitle</span>
+                        <i class="fas fa-chevron-right priority-card-arrow"></i>
+                    </div>
+                </button>
+            }
+        }
+    </div>
+</div>
+}

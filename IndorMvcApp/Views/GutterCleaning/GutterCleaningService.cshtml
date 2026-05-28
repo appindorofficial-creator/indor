@@ -1,0 +1,109 @@
+@model IndorMvcApp.ViewModels.GutterCleaningServiceViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_GutterCleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_GutterCleaningStepper", 1)
+
+    <div class="gc-title-row">
+        <div class="left">
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@Model.LandingTitulo</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
+            {
+                <div class="tagline">@Model.LandingTagline</div>
+            }
+        </div>
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    {
+        <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="gc-hero" />
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
+    {
+        <div class="info-box-blue">
+            <i class="fas fa-house-chimney"></i>
+            <span>@Model.InfoBoxTexto</span>
+        </div>
+    }
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="gc-service-form" asp-action="GutterCleaningService" method="post">
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="TipoAccionInicial" id="TipoAccionInicial" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-list-check"></i><span>What would you like to do?</span></div>
+            <button type="button" class="action-card" data-action="Reminder">
+                <span class="radio"></span>
+                <i class="fas fa-bell main"></i>
+                <div><strong>I need a reminder</strong><span>Remind me when it's time</span></div>
+            </button>
+            <button type="button" class="action-card" data-action="ScheduleService">
+                <span class="radio"></span>
+                <i class="fas fa-calendar main"></i>
+                <div><strong>I want to schedule service</strong><span>Book a pro to handle it</span></div>
+            </button>
+            <button type="button" class="action-card" data-action="AlreadyDone">
+                <span class="radio"></span>
+                <i class="fas fa-circle-check main"></i>
+                <div><strong>I already did it</strong><span>Mark this task as complete</span></div>
+            </button>
+        </div>
+
+        @if (Model.WhyItMattersItems.Count > 0)
+        {
+            <div class="why-checklist">
+                <h4>Why this matters</h4>
+                <ul>
+                    @foreach (var item in Model.WhyItMattersItems)
+                    {
+                        <li><i class="fas @item.Icon"></i><span>@item.Text</span></li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var input = document.getElementById('TipoAccionInicial');
+        document.querySelectorAll('[data-action]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-action]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                input.value = btn.getAttribute('data-action');
+            });
+            if (btn.getAttribute('data-action') === input.value) btn.classList.add('active');
+        });
+    })();
+</script>
+</body>
+</html>

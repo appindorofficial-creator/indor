@@ -1,0 +1,120 @@
+@model IndorMvcApp.ViewModels.PowerWashDetailsViewModel
+@{
+    ViewData["Title"] = "Property & Surface Details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PowerWashStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="pw-details-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_PowerWashStepper", 2)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Property & Surface Details</h1>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Tell us what needs to be cleaned.</span></p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="pw-details-form" asp-action="PowerWashDetails" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="AreasSeleccionadas" id="AreasSeleccionadas" />
+        <input type="hidden" asp-for="MaterialExterior" id="MaterialExterior" />
+        <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-house"></i><span>What area needs washing?</span></div>
+            <div class="area-grid">
+                <button type="button" class="area-card" data-area="FullExterior"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Full exterior</span></button>
+                <button type="button" class="area-card" data-area="FrontOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Front only</span></button>
+                <button type="button" class="area-card" data-area="BackOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Back only</span></button>
+                <button type="button" class="area-card" data-area="Driveway"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-road main"></i><span class="label">Driveway</span></button>
+                <button type="button" class="area-card" data-area="PatioDeck"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-umbrella-beach main"></i><span class="label">Patio / deck</span></button>
+                <button type="button" class="area-card" data-area="Fence"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Fence</span></button>
+            </div>
+            <span asp-validation-for="AreasSeleccionadas" class="text-danger"></span>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-layer-group"></i><span>Main exterior material</span></div>
+            <div class="material-grid">
+                <button type="button" class="material-card" data-material="VinylSiding"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines-vertical main"></i><span class="label">Vinyl siding</span></button>
+                <button type="button" class="material-card" data-material="Brick"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-table-cells main"></i><span class="label">Brick</span></button>
+                <button type="button" class="material-card" data-material="Stucco"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-braille main"></i><span class="label">Stucco</span></button>
+                <button type="button" class="material-card" data-material="FiberCement"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Fiber cement</span></button>
+                <button type="button" class="material-card" data-material="PaintedWood"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Painted wood</span></button>
+                <button type="button" class="material-card" data-material="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-building"></i><span>Home size</span></div>
+            <div class="stories-row">
+                <button type="button" class="story-pill" data-stories="One"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">1 story</span></button>
+                <button type="button" class="story-pill" data-stories="Two"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-building main"></i><span class="label">2 stories</span></button>
+                <button type="button" class="story-pill" data-stories="ThreePlus"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-city main"></i><span class="label">3+ stories</span></button>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var areasInput = document.getElementById('AreasSeleccionadas');
+
+        function getAreas() { return areasInput.value ? areasInput.value.split('|').filter(Boolean) : []; }
+        function setAreas(values) { areasInput.value = values.join('|'); }
+
+        document.querySelectorAll('[data-area]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var code = btn.getAttribute('data-area');
+                var current = getAreas();
+                if (current.indexOf(code) >= 0) {
+                    current = current.filter(function (v) { return v !== code; });
+                    btn.classList.remove('active');
+                } else {
+                    current.push(code);
+                    btn.classList.add('active');
+                }
+                setAreas(current);
+            });
+            if (getAreas().indexOf(btn.getAttribute('data-area')) >= 0) btn.classList.add('active');
+        });
+
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-material]', 'data-material', document.getElementById('MaterialExterior'));
+        bindSingle('[data-stories]', 'data-stories', document.getElementById('NumeroPisos'));
+    })();
+</script>
+</body>
+</html>

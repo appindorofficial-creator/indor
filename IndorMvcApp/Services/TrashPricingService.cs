@@ -4,9 +4,9 @@ public static class TrashPricingService
 {
     public static readonly IReadOnlyList<TrashBinOption> BinOptions =
     [
-        new("Trash", "Trash", "fa-trash"),
-        new("Recycle", "Recycle", "fa-recycle"),
-        new("YardWaste", "Yard waste", "fa-leaf")
+        new("Trash", "Trash", "fa-trash", "/trash-bin-trash.png", "blue"),
+        new("Recycle", "Recycle", "fa-recycle", "/trash-bin-recycle.png", "blue"),
+        new("YardWaste", "Yard waste", "fa-leaf", "/trash-bin-yardwaste.png", "green")
     ];
 
     public static readonly IReadOnlyDictionary<string, decimal> BinCountPrices =
@@ -37,4 +37,4 @@ public static class TrashPricingService
     }
 }
 
-public record TrashBinOption(string Code, string Label, string Icon);
+public record TrashBinOption(string Code, string Label, string Icon, string? ImageUrl = null, string ThumbTone = "blue");

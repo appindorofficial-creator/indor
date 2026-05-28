@@ -1,0 +1,199 @@
+@model IndorMvcApp.ViewModels.ExteriorPaintScheduleViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+    string PhotoFor(string category) =>
+        Model.ArchivosExistentes.FirstOrDefault(a => string.Equals(a.CategoriaFoto, category, StringComparison.OrdinalIgnoreCase))?.RutaArchivo ?? string.Empty;
+    var frontPhoto = PhotoFor("Front");
+    var backPhoto = PhotoFor("Back");
+    var problemPhoto = PhotoFor("ProblemArea");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_ExteriorPaintStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="ep-schedule-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_ExteriorPaintStepper", 3)
+
+    <div class="ep-title-row">
+        <div class="left">
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
+            {
+                <p class="page-lead" style="margin-bottom:0;">@Model.LandingSubtitulo</p>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+        {
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.PageTitle" class="ep-thumb" />
+        }
+    </div>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="ep-schedule-form" asp-action="ExteriorPaintSchedule" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="NumeroPisos" id="NumeroPisos" />
+        <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
+
+        <div class="field-card">
+            <div class="question-num">1</div>
+            <div class="field-head"><i class="fas fa-building"></i><span>How many stories is the home?</span></div>
+            <div class="stories-grid">
+                <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">1 story</span></button>
+                <button type="button" class="story-card" data-stories="Two"><i class="fas fa-building main"></i><span class="label">2 stories</span></button>
+                <button type="button" class="story-card" data-stories="ThreePlus"><i class="fas fa-city main"></i><span class="label">3+ stories</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">2</div>
+            <div class="field-head"><i class="fas fa-camera"></i><span>Add photos</span></div>
+            <p style="font-size:0.74rem;color:#64748B;margin-bottom:12px;">Add a few photos to help our pros prepare.</p>
+            <div class="photo-grid">
+                <div class="photo-slot">
+                    <label class="photo-upload" for="frontPhoto">
+                        @if (!string.IsNullOrWhiteSpace(frontPhoto))
+                        {
+                            <img src="@Url.Content("~" + frontPhoto)" alt="Front" id="frontPreview" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-camera" id="frontPreviewIcon"></i>
+                        }
+                    </label>
+                    <input type="file" name="frontPhoto" id="frontPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
+                    <span>Front</span>
+                </div>
+                <div class="photo-slot">
+                    <label class="photo-upload" for="backPhoto">
+                        @if (!string.IsNullOrWhiteSpace(backPhoto))
+                        {
+                            <img src="@Url.Content("~" + backPhoto)" alt="Back" id="backPreview" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-camera" id="backPreviewIcon"></i>
+                        }
+                    </label>
+                    <input type="file" name="backPhoto" id="backPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
+                    <span>Back</span>
+                </div>
+                <div class="photo-slot">
+                    <label class="photo-upload" for="problemPhoto">
+                        @if (!string.IsNullOrWhiteSpace(problemPhoto))
+                        {
+                            <img src="@Url.Content("~" + problemPhoto)" alt="Problem area" id="problemPreview" />
+                        }
+                        else
+                        {
+                            <i class="fas fa-camera" id="problemPreviewIcon"></i>
+                        }
+                    </label>
+                    <input type="file" name="problemPhoto" id="problemPhoto" accept=".jpg,.jpeg,.png" style="display:none;" />
+                    <span>Problem area</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">3</div>
+            <div class="field-head"><i class="fas fa-clock"></i><span>When would you like help?</span></div>
+            <div class="timing-row">
+                <button type="button" class="timing-card" data-timing="AsSoonAsPossible">
+                    <span class="radio"></span>
+                    <i class="fas fa-bolt main"></i><span class="label">As soon as possible</span>
+                </button>
+                <button type="button" class="timing-card" data-timing="ThisMonth">
+                    <span class="radio"></span>
+                    <i class="fas fa-calendar main"></i><span class="label">This month</span>
+                </button>
+                <button type="button" class="timing-card" data-timing="JustEstimate">
+                    <span class="radio"></span>
+                    <i class="fas fa-file-lines main"></i><span class="label">Just getting an estimate</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="review-so-far">
+            <h4><i class="fas fa-clipboard-list"></i> Review so far</h4>
+            <div class="review-mini-grid">
+                <div class="review-mini"><i class="fas fa-layer-group"></i><div class="lbl">Surface</div><div class="val">@Model.SurfaceLabel</div></div>
+                <div class="review-mini"><i class="fas fa-circle-exclamation"></i><div class="lbl">Issues</div><div class="val">@Model.IssuesLabel</div></div>
+                <div class="review-mini"><i class="fas fa-calendar"></i><div class="lbl">Last painted</div><div class="val">@Model.LastPaintedLabel</div></div>
+                <div class="review-mini"><i class="fas fa-location-dot"></i><div class="lbl">Scope</div><div class="val">@Model.ScopeLabel</div></div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
+            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            <i class="fas fa-paint-roller"></i> Request paint review <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var storiesInput = document.getElementById('NumeroPisos');
+        var timingInput = document.getElementById('TimingPreferido');
+
+        document.querySelectorAll('[data-stories]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-stories]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                storiesInput.value = btn.getAttribute('data-stories');
+            });
+            if (btn.getAttribute('data-stories') === storiesInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-timing]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-timing]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                timingInput.value = btn.getAttribute('data-timing');
+            });
+            if (btn.getAttribute('data-timing') === timingInput.value) btn.classList.add('active');
+        });
+
+        function previewFile(inputId, labelSelector) {
+            var input = document.getElementById(inputId);
+            if (!input) return;
+            input.addEventListener('change', function () {
+                if (!input.files || !input.files[0]) return;
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    var label = input.closest('.photo-slot').querySelector('.photo-upload');
+                    label.innerHTML = '<img src="' + e.target.result + '" alt="Preview" />';
+                };
+                reader.readAsDataURL(input.files[0]);
+            });
+        }
+
+        previewFile('frontPhoto');
+        previewFile('backPhoto');
+        previewFile('problemPhoto');
+    })();
+</script>
+</body>
+</html>

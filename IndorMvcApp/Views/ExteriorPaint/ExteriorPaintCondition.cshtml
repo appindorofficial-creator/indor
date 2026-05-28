@@ -1,0 +1,178 @@
+@model IndorMvcApp.ViewModels.ExteriorPaintConditionViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_ExteriorPaintStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="ep-condition-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_ExteriorPaintStepper", 2)
+
+    <div class="ep-title-row">
+        <div class="left">
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
+            {
+                <div class="tagline">@Model.LandingSubtitulo</div>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+        {
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.PageTitle" class="ep-thumb" />
+        }
+    </div>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="ep-condition-form" asp-action="ExteriorPaintCondition" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="ProblemasSeleccionados" id="ProblemasSeleccionados" />
+        <input type="hidden" asp-for="AreasSeleccionadas" id="AreasSeleccionadas" />
+        <input type="hidden" asp-for="ActualizacionColor" id="ActualizacionColor" />
+        <input type="hidden" asp-for="LavadoPresionReciente" id="LavadoPresionReciente" />
+
+        <div class="field-card">
+            <div class="question-num">1</div>
+            <div class="field-head"><i class="fas fa-eye"></i><span>What issues do you notice?</span></div>
+            <div class="issue-grid">
+                <button type="button" class="issue-card" data-issue="PeelingFlaking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-note-sticky main"></i><span class="label">Peeling / flaking</span></button>
+                <button type="button" class="issue-card" data-issue="Fading"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-sun main"></i><span class="label">Fading</span></button>
+                <button type="button" class="issue-card" data-issue="CrackedCaulk"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spray-can main"></i><span class="label">Cracked caulk</span></button>
+                <button type="button" class="issue-card" data-issue="MildewStains"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle main"></i><span class="label">Mildew / stains</span></button>
+                <button type="button" class="issue-card" data-issue="WoodRot"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Wood rot</span></button>
+                <button type="button" class="issue-card" data-issue="NoVisibleIssues"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-check main"></i><span class="label">No visible issues</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">2</div>
+            <div class="field-head"><i class="fas fa-house"></i><span>Which areas need attention?</span></div>
+            <div class="issue-grid">
+                <button type="button" class="issue-card" data-area="FullExterior"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Full exterior</span></button>
+                <button type="button" class="issue-card" data-area="TrimFascia"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-border-top-left main"></i><span class="label">Trim & fascia</span></button>
+                <button type="button" class="issue-card" data-area="DoorsShutters"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-door-closed main"></i><span class="label">Doors / shutters</span></button>
+                <button type="button" class="issue-card" data-area="GarageDoor"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-warehouse main"></i><span class="label">Garage door</span></button>
+                <button type="button" class="issue-card" data-area="PorchRails"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Porch / rails</span></button>
+                <button type="button" class="issue-card" data-area="TouchUpOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paintbrush main"></i><span class="label">Touch-up only</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">3</div>
+            <div class="field-head"><i class="fas fa-palette"></i><span>Do you want a color update?</span></div>
+            <button type="button" class="color-update-card" data-color-update="Yes">
+                <span class="radio"></span>
+                <strong><i class="fas fa-palette"></i> Yes</strong>
+                <span>Explore a new look</span>
+            </button>
+            <button type="button" class="color-update-card" data-color-update="No">
+                <span class="radio"></span>
+                <strong><i class="fas fa-paint-roller"></i> No</strong>
+                <span>Keep current colors</span>
+            </button>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">4</div>
+            <div class="field-head"><i class="fas fa-spray-can-sparkles"></i><span>Was the exterior power washed recently?</span></div>
+            <div class="choice-grid-3">
+                <button type="button" class="choice-card" data-wash="Yes"><i class="fas fa-droplet main"></i><span class="label">Yes</span></button>
+                <button type="button" class="choice-card" data-wash="No"><i class="fas fa-xmark main"></i><span class="label">No</span></button>
+                <button type="button" class="choice-card" data-wash="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var issuesInput = document.getElementById('ProblemasSeleccionados');
+        var areasInput = document.getElementById('AreasSeleccionadas');
+        var colorInput = document.getElementById('ActualizacionColor');
+        var washInput = document.getElementById('LavadoPresionReciente');
+
+        function getValues(input) {
+            return input.value ? input.value.split('|').filter(Boolean) : [];
+        }
+
+        function setValues(input, values) {
+            input.value = values.join('|');
+        }
+
+        function bindMulti(groupSelector, attr, input, exclusiveCode) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var code = btn.getAttribute(attr);
+                    var current = getValues(input);
+                    if (exclusiveCode && code === exclusiveCode) {
+                        document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                        btn.classList.add('active');
+                        setValues(input, [exclusiveCode]);
+                        return;
+                    }
+                    current = current.filter(function (v) { return v !== exclusiveCode; });
+                    if (current.indexOf(code) >= 0) {
+                        current = current.filter(function (v) { return v !== code; });
+                        btn.classList.remove('active');
+                    } else {
+                        current.push(code);
+                        btn.classList.add('active');
+                    }
+                    setValues(input, current);
+                    if (exclusiveCode) {
+                        document.querySelectorAll(groupSelector + '[data-' + attr.replace('data-', '') + '="' + exclusiveCode + '"]').forEach(function (b) {
+                            b.classList.toggle('active', current.indexOf(exclusiveCode) >= 0);
+                        });
+                    }
+                });
+                if (getValues(input).indexOf(btn.getAttribute(attr)) >= 0) btn.classList.add('active');
+            });
+        }
+
+        bindMulti('[data-issue]', 'data-issue', issuesInput, 'NoVisibleIssues');
+        bindMulti('[data-area]', 'data-area', areasInput, null);
+
+        document.querySelectorAll('[data-color-update]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-color-update]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                colorInput.value = btn.getAttribute('data-color-update');
+            });
+            if (btn.getAttribute('data-color-update') === colorInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-wash]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-wash]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                washInput.value = btn.getAttribute('data-wash');
+            });
+            if (btn.getAttribute('data-wash') === washInput.value) btn.classList.add('active');
+        });
+    })();
+</script>
+</body>
+</html>

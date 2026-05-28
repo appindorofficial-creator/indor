@@ -1,0 +1,196 @@
+@model IndorMvcApp.ViewModels.WaterHeaterFlushDetailsViewModel
+@{
+    ViewData["Title"] = "Maintenance details - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_WaterHeaterFlushStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="whf-details-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_WaterHeaterFlushStepper", 3)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Maintenance details</h1>
+    <p class="page-lead" style="margin-bottom:16px;">Help us understand the condition of your water heater.</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="whf-details-form" asp-action="WaterHeaterFlushDetails" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="UltimoFlush" id="UltimoFlush" />
+        <input type="hidden" asp-for="SintomasSeleccionados" id="SintomasSeleccionados" />
+        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+        <input type="hidden" asp-for="PreferenciaTiempo" id="PreferenciaTiempo" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-clock-rotate-left"></i><span>When was the last flush?</span></div>
+            <div class="segment-row">
+                <button type="button" class="segment-btn" data-flush="Within1Year">Within 1 year</button>
+                <button type="button" class="segment-btn" data-flush="OneToTwoYears">1–2 years ago</button>
+                <button type="button" class="segment-btn" data-flush="MoreThan2Years">More than 2 years</button>
+                <button type="button" class="segment-btn" data-flush="NotSure">Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-ear-listen"></i><span>What have you noticed?</span></div>
+            <div class="symptom-grid">
+                <button type="button" class="symptom-pill" data-symptom="RumblingNoise"><i class="fas fa-volume-high"></i>Rumbling noise</button>
+                <button type="button" class="symptom-pill" data-symptom="RustyWater"><i class="fas fa-droplet"></i>Rusty / cloudy water</button>
+                <button type="button" class="symptom-pill" data-symptom="SlowHotWater"><i class="fas fa-temperature-half"></i>Slow hot water</button>
+                <button type="button" class="symptom-pill" data-symptom="TempChanges"><i class="fas fa-temperature-arrow-up"></i>Temperature changes</button>
+                <button type="button" class="symptom-pill" data-symptom="NoIssues" style="grid-column:1/-1;"><i class="fas fa-shield-halved"></i>No issues — just maintenance</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-wrench"></i><span>Service preference</span></div>
+            <button type="button" class="service-card" data-service="OneTime">
+                <span class="radio"></span>
+                <strong>One-time flush</strong>
+                <span>Schedule a single service at a time that works for you.</span>
+            </button>
+            <button type="button" class="service-card" data-service="YearlyReminder">
+                <span class="radio"></span>
+                <strong>Set yearly reminder</strong>
+                <span>We'll remind you every year so you never miss it.</span>
+            </button>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-calendar"></i><span>When works best for you?</span></div>
+            <div class="timing-grid">
+                <button type="button" class="service-card" data-timing="NextAvailable">
+                    <span class="radio"></span>
+                    <strong>Next available</strong>
+                    <span>We'll find the earliest spot</span>
+                </button>
+                <button type="button" class="service-card" data-timing="ThisWeek">
+                    <span class="radio"></span>
+                    <strong>This week</strong>
+                    <span>Within the next 7 days</span>
+                </button>
+                <button type="button" class="service-card" data-timing="ChooseDate">
+                    <span class="radio"></span>
+                    <strong>Choose date</strong>
+                    <span>Pick a specific date</span>
+                </button>
+            </div>
+            <div id="datePickerWrap" style="margin-top:10px;display:none;">
+                <input asp-for="FechaVisita" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Anything else we should know?</span></div>
+            <textarea asp-for="NotasAdicionales" placeholder="Add notes (optional)" maxlength="200"></textarea>
+        </div>
+
+        <div class="estimate-box">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Estimated service: @Model.ResumenServicioTexto</span>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Review request <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var flushInput = document.getElementById('UltimoFlush');
+        var symptomsInput = document.getElementById('SintomasSeleccionados');
+        var serviceInput = document.getElementById('TipoServicio');
+        var timingInput = document.getElementById('PreferenciaTiempo');
+        var dateWrap = document.getElementById('datePickerWrap');
+
+        document.querySelectorAll('[data-flush]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-flush]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                flushInput.value = btn.getAttribute('data-flush');
+            });
+            if (btn.getAttribute('data-flush') === flushInput.value) btn.classList.add('active');
+        });
+
+        function setSymptoms(values) {
+            symptomsInput.value = values.join('|');
+        }
+
+        function getSymptoms() {
+            return symptomsInput.value ? symptomsInput.value.split('|').filter(Boolean) : [];
+        }
+
+        document.querySelectorAll('[data-symptom]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var code = btn.getAttribute('data-symptom');
+                var current = getSymptoms();
+                if (code === 'NoIssues') {
+                    document.querySelectorAll('[data-symptom]').forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    setSymptoms(['NoIssues']);
+                    return;
+                }
+                current = current.filter(function (v) { return v !== 'NoIssues'; });
+                if (current.indexOf(code) >= 0) {
+                    current = current.filter(function (v) { return v !== code; });
+                    btn.classList.remove('active');
+                } else {
+                    current.push(code);
+                    btn.classList.add('active');
+                }
+                if (current.length === 0) current = ['NoIssues'];
+                setSymptoms(current);
+                document.querySelectorAll('[data-symptom="NoIssues"]').forEach(function (b) {
+                    b.classList.toggle('active', current.indexOf('NoIssues') >= 0);
+                });
+            });
+            if (getSymptoms().indexOf(btn.getAttribute('data-symptom')) >= 0) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-service]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-service]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                serviceInput.value = btn.getAttribute('data-service');
+            });
+            if (btn.getAttribute('data-service') === serviceInput.value) btn.classList.add('active');
+        });
+
+        function syncDatePicker() {
+            dateWrap.style.display = timingInput.value === 'ChooseDate' ? 'block' : 'none';
+        }
+
+        document.querySelectorAll('[data-timing]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-timing]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                timingInput.value = btn.getAttribute('data-timing');
+                syncDatePicker();
+            });
+            if (btn.getAttribute('data-timing') === timingInput.value) btn.classList.add('active');
+        });
+
+        syncDatePicker();
+    })();
+</script>
+</body>
+</html>

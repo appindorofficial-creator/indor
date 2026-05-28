@@ -1,0 +1,122 @@
+@model IndorMvcApp.ViewModels.RoofInspectionScheduleViewModel
+@{
+    ViewData["Title"] = "Schedule roof check - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_RoofInspectionStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="roof-schedule-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">INDOR</div>
+        <div style="width:44px;text-align:right;color:#0066CC;"><i class="fas fa-shield-halved"></i></div>
+    </div>
+
+    @await Html.PartialAsync("_RoofInspectionStepper", 2)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Schedule roof check</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@Model.ScheduleIntro</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="roof-schedule-form" asp-action="RoofInspectionSchedule" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+        <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
+        <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-list-check"></i><span>Choose service</span></div>
+            <div class="choice-grid-2">
+                <button type="button" class="choice-card" data-service="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">Reminder only</span></button>
+                <button type="button" class="choice-card" data-service="BookInspection"><i class="fas fa-calendar main"></i><span class="label">Book inspection</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-rotate"></i><span>How often?</span></div>
+            <div class="freq-grid">
+                <button type="button" class="freq-card" data-freq="Yearly"><span class="badge">Recommended</span><i class="fas fa-calendar"></i><span class="label">Yearly</span></button>
+                <button type="button" class="freq-card" data-freq="Every2Years"><i class="fas fa-calendar-days"></i><span class="label">Every 2 years</span></button>
+                <button type="button" class="freq-card" data-freq="AfterStorms"><i class="fas fa-cloud-bolt"></i><span class="label">After major storms</span></button>
+                <button type="button" class="freq-card" data-freq="Custom"><i class="fas fa-sliders"></i><span class="label">Custom</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-seedling"></i><span>Preferred timing</span></div>
+            <div class="pill-row">
+                <button type="button" class="segment-btn" data-timing="Spring"><i class="fas fa-seedling"></i> Spring</button>
+                <button type="button" class="segment-btn" data-timing="Fall"><i class="fas fa-leaf"></i> Fall</button>
+                <button type="button" class="segment-btn" data-timing="ThisMonth"><i class="fas fa-calendar"></i> This month</button>
+                <button type="button" class="segment-btn" data-timing="Flexible"><i class="fas fa-clock"></i> Flexible</button>
+            </div>
+        </div>
+
+        @if (Model.CoverageItems.Count > 0)
+        {
+            <div class="field-card">
+                <div class="field-head"><i class="fas fa-clipboard-check"></i><span>Inspection covers</span></div>
+                <div class="coverage-grid">
+                    @foreach (var item in Model.CoverageItems)
+                    {
+                        <div class="coverage-item"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                    }
+                </div>
+            </div>
+        }
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
+            <input asp-for="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
+            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            <i class="fas fa-calendar"></i> Review request <i class="fas fa-chevron-right"></i>
+        </button>
+
+        @if (!string.IsNullOrWhiteSpace(Model.TrustTexto))
+        {
+            <div class="trust-footer"><i class="fas fa-shield-halved"></i><span>@Model.TrustTexto</span></div>
+        }
+    </form>
+</div>
+<script>
+    (function () {
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-service]', 'data-service', document.getElementById('TipoServicio'));
+        bindSingle('[data-freq]', 'data-freq', document.getElementById('Frecuencia'));
+        bindSingle('[data-timing]', 'data-timing', document.getElementById('TimingPreferido'));
+    })();
+</script>
+</body>
+</html>

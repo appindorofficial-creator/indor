@@ -146,6 +146,15 @@ public class LawnController : Controller
             return RedirectToAction(nameof(LawnSetup), new { id = solicitud.Id });
         }
 
+        model.AddonsSeleccionados ??= string.Empty;
+        if (string.IsNullOrWhiteSpace(model.PreferenciaExtra))
+        {
+            model.PreferenciaExtra = "NoThanks";
+        }
+
+        ModelState.Remove(nameof(model.AddonsSeleccionados));
+        ModelState.Remove(nameof(model.PreferenciaExtra));
+
         if (!ModelState.IsValid)
         {
             return View(BuildAddonsViewModel(solicitud, model));

@@ -63,7 +63,6 @@ public class LawnAddonsViewModel
 
     public string AddonsSeleccionados { get; set; } = string.Empty;
 
-    [Required]
     public string PreferenciaExtra { get; set; } = "NoThanks";
 
     public decimal PrecioBase { get; set; }

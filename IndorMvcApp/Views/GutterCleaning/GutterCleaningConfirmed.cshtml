@@ -1,0 +1,128 @@
+@model IndorMvcApp.ViewModels.GutterCleaningConfirmedViewModel
+@{
+    ViewData["Title"] = "Gutter Cleaning - All set - INDOR";
+    Layout = null;
+    var heading = Model.AlreadyCompleted ? "Task marked complete" : "All set!";
+    var subheading = Model.AlreadyCompleted
+        ? "Thanks for keeping your gutters on track."
+        : "Your gutter plan is ready. We'll help keep your home protected.";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_GutterCleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.NombreServicio</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_GutterCleaningStepper", 4)
+
+    <div class="success-wrap">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@heading</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;"><span class="tagline">All set</span></p>
+    </div>
+
+    <div class="confirm-hero">
+        <strong>Your gutter plan is ready</strong>
+        <p>@subheading</p>
+    </div>
+
+    @if (!Model.AlreadyCompleted)
+    {
+        <div class="summary-grid">
+            <div class="summary-mini"><i class="fas fa-calendar"></i><div class="summary-label">Frequency</div><div class="summary-value">@Model.FrequencyLabel</div></div>
+            <div class="summary-mini"><i class="fas fa-house"></i><div class="summary-label">Home</div><div class="summary-value">@Model.HomeLabel</div></div>
+            <div class="summary-mini"><i class="fas fa-shield-halved"></i><div class="summary-label">Gutter guards</div><div class="summary-value">@Model.GutterGuardsLabel</div></div>
+            <div class="summary-mini"><i class="fas fa-clock"></i><div class="summary-label">Last cleaned</div><div class="summary-value">@Model.LastCleanedLabel</div></div>
+            <div class="summary-mini"><i class="fas fa-user"></i><div class="summary-label">Need</div><div class="summary-value">@Model.NeedLabel</div></div>
+            <div class="summary-mini"><i class="fas fa-bell"></i><div class="summary-label">Reminder</div><div class="summary-value">@Model.ReminderLabel</div></div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.NextReminderLabel))
+        {
+            <div class="status-card">
+                <div class="head"><i class="fas fa-calendar-check"></i><div><div class="title">Reminder set</div><div class="value">@Model.FrequencyLabel</div></div></div>
+                <div class="desc">We'll remind you before spring and fall cleaning.</div>
+                <div class="status-badge"><i class="fas fa-calendar"></i> @Model.NextReminderLabel</div>
+            </div>
+        }
+
+        @if (Model.ShowServiceRequested && !string.IsNullOrWhiteSpace(Model.PreferredVisitLabel))
+        {
+            <div class="status-card">
+                <div class="head"><i class="fas fa-water"></i><div><div class="title">Service requested</div><div class="value">@Model.PreferredVisitLabel</div></div></div>
+                <div class="desc">We received your request. A pro will confirm soon.</div>
+                <div class="status-badge success"><i class="fas fa-check"></i> Request received</div>
+            </div>
+        }
+
+        @if (Model.NextStepsItems.Count > 0)
+        {
+            <div class="next-steps">
+                <h4>What happens next</h4>
+                @foreach (var item in Model.NextStepsItems)
+                {
+                    <div class="next-step-item"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                }
+            </div>
+        }
+
+        @if (Model.RecommendedTimingItems.Count > 0)
+        {
+            <div class="field-card">
+                <div class="field-head"><i class="fas fa-calendar"></i><span>Recommended timing</span></div>
+                <div class="timing-cards">
+                    @foreach (var item in Model.RecommendedTimingItems)
+                    {
+                        <div class="timing-card">
+                            <i class="fas @item.Icon"></i>
+                            <strong>@item.Text</strong>
+                            @if (!string.IsNullOrWhiteSpace(item.Subtext))
+                            {
+                                <span>@item.Subtext</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.InfoConfirmacionTexto))
+    {
+        <div class="info-box-blue">
+            <i class="fas fa-shield-halved"></i>
+            <span>@Model.InfoConfirmacionTexto</span>
+        </div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn-primary">Done</a>
+
+    @if (Model.PropiedadId.HasValue)
+    {
+        <a asp-action="GutterCleaningService" asp-route-id="@Model.HomeCarePriorityId" class="btn-outline" style="margin-top:10px;">
+            <i class="fas fa-pen"></i> Edit reminder or request
+        </a>
+    }
+    else
+    {
+        <a asp-action="GutterCleaningService" asp-route-id="@Model.HomeCarePriorityId" class="btn-outline" style="margin-top:10px;">
+            <i class="fas fa-pen"></i> Edit reminder or request
+        </a>
+    }
+</div>
+</body>
+</html>

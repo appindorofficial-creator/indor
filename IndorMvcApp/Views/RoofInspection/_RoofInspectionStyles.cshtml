@@ -1,0 +1,31 @@
+@await Html.PartialAsync("../WaterHeaterFlush/_WaterHeaterFlushStyles")
+<style>
+    .roof-rec-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 0; border-bottom: 1px solid #F1F5F9; font-size: 0.8rem; font-weight: 600; }
+    .roof-rec-row:last-child { border-bottom: none; }
+    .roof-rec-row .left { display: flex; align-items: center; gap: 10px; }
+    .roof-rec-row .left i { color: #0066CC; width: 16px; }
+    .roof-rec-row .right { color: #94A3B8; font-size: 0.72rem; }
+    .check-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .check-item { text-align: center; font-size: 0.68rem; font-weight: 700; line-height: 1.25; }
+    .check-item i { display: block; color: #0066CC; font-size: 1rem; margin-bottom: 8px; }
+    .reason-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .reason-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; min-height: 88px; position: relative; }
+    .reason-card i.main { display: block; font-size: 1rem; color: #94A3B8; margin-bottom: 8px; }
+    .reason-card .label { font-size: 0.72rem; font-weight: 700; line-height: 1.25; }
+    .reason-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .reason-card.active i.main { color: #0066CC; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .freq-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .freq-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 10px 6px; cursor: pointer; text-align: center; position: relative; min-height: 84px; }
+    .freq-card .badge { position: absolute; top: -8px; left: 50%; transform: translateX(-50%); background: #0066CC; color: #FFF; font-size: 0.55rem; font-weight: 700; padding: 2px 6px; border-radius: 999px; white-space: nowrap; }
+    .freq-card i { display: block; font-size: 0.95rem; color: #94A3B8; margin-bottom: 6px; }
+    .freq-card .label { font-size: 0.62rem; font-weight: 700; line-height: 1.2; }
+    .freq-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
+    .freq-card.active i { color: #0066CC; }
+    .coverage-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .coverage-item { text-align: center; font-size: 0.62rem; font-weight: 700; line-height: 1.2; }
+    .coverage-item i { display: block; width: 42px; height: 42px; border-radius: 50%; background: rgba(0,102,204,0.08); color: #0066CC; margin: 0 auto 6px; line-height: 42px; font-size: 0.9rem; }
+    .trust-footer { text-align: center; font-size: 0.72rem; color: #64748B; margin-top: 12px; display: flex; align-items: center; justify-content: center; gap: 6px; }
+    .storm-banner { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px; }
+    .storm-banner i { color: #0066CC; }
+</style>

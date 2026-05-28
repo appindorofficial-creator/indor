@@ -1,0 +1,63 @@
+@model IndorMvcApp.ViewModels.PestControlConfirmedViewModel
+@{
+    ViewData["Title"] = "You're all set - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PestControlStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.NombreServicio</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_PestControlStepper", 4)
+
+    <div class="success-wrap">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">You're all set</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your pest control reminder or service has been saved.</p>
+    </div>
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-house-medical"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.ServiceLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Timing</div><div class="summary-value">@Model.TimingLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Home concerns</div><div class="summary-value">@Model.ConcernsLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-people-group"></i><div><div class="summary-label">Pets/children</div><div class="summary-value">@Model.PetsChildrenLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-circle-check"></i><div><div class="summary-label">Status</div><div class="summary-value">@Model.StatusLabel</div></div></div>
+    </div>
+
+    @if (Model.WhyYearlyItems.Count > 0)
+    {
+        <div class="why-matters-box">
+            <h4><i class="fas fa-shield-halved"></i> Why yearly matters</h4>
+            <ul>
+                @foreach (var item in Model.WhyYearlyItems)
+                {
+                    <li><i class="fas fa-check"></i><span>@item.Text</span></li>
+                }
+            </ul>
+        </div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="btn-primary">
+        Back to Home Care Guide <i class="fas fa-chevron-right"></i>
+    </a>
+    <a asp-controller="PestControl" asp-action="PestControlPlan" asp-route-id="@Model.SolicitudId" class="btn-outline" style="margin-top:10px;">
+        Edit plan
+    </a>
+</div>
+</body>
+</html>

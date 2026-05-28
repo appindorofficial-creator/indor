@@ -1,0 +1,194 @@
+@model IndorMvcApp.ViewModels.SmokeDetectorSetupViewModel
+@{
+    ViewData["Title"] = "Tell us about your alarms - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_SmokeDetectorStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="sd-setup-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_SmokeDetectorStepper", 2)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your alarms</h1>
+    <p class="page-lead" style="margin-bottom:16px;">A few quick details to help us recommend the right care.</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="sd-setup-form" asp-action="SmokeDetectorSetup" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="CantidadAlarmas" id="CantidadAlarmas" />
+        <input type="hidden" asp-for="UbicacionesSeleccionadas" id="UbicacionesSeleccionadas" />
+        <input type="hidden" asp-for="TiposAlarmas" id="TiposAlarmas" />
+        <input type="hidden" asp-for="UltimaPrueba" id="UltimaPrueba" />
+        <input type="hidden" asp-for="UltimoCambioBateria" id="UltimoCambioBateria" />
+        <input type="hidden" asp-for="AnioInstalacionDesconocido" id="AnioInstalacionDesconocido" />
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">1</span><span>How many smoke alarms are in your home?</span></div>
+            <div class="count-grid">
+                <button type="button" class="count-btn" data-count="One">1</button>
+                <button type="button" class="count-btn" data-count="Two">2</button>
+                <button type="button" class="count-btn" data-count="Three">3</button>
+                <button type="button" class="count-btn" data-count="Four">4</button>
+                <button type="button" class="count-btn" data-count="FivePlus">5+</button>
+                <button type="button" class="count-btn" data-count="DontKnow">I don't know</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">2</span><span>Where are they located?</span></div>
+            <div class="area-grid">
+                <button type="button" class="area-chip" data-area="Bedrooms"><i class="fas fa-bed"></i> Bedrooms</button>
+                <button type="button" class="area-chip" data-area="Hallway"><i class="fas fa-door-open"></i> Hallway</button>
+                <button type="button" class="area-chip" data-area="LivingRoom"><i class="fas fa-couch"></i> Living room</button>
+                <button type="button" class="area-chip" data-area="Basement"><i class="fas fa-stairs"></i> Basement</button>
+                <button type="button" class="area-chip" data-area="UpstairsLanding"><i class="fas fa-arrow-up"></i> Upstairs landing</button>
+                <button type="button" class="area-chip" data-area="DontKnow"><i class="fas fa-circle-question"></i> I don't know</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">3</span><span>What type of alarms do you have?</span></div>
+            <div class="sign-grid">
+                <button type="button" class="sign-card" data-type="Battery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-full main"></i><span class="label">Battery</span></button>
+                <button type="button" class="sign-card" data-type="Hardwired"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug main"></i><span class="label">Hardwired</span></button>
+                <button type="button" class="sign-card" data-type="TenYearSealed"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">10-year sealed</span></button>
+                <button type="button" class="sign-card" data-type="SmokeCoCombo"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle main"></i><span class="label">Smoke + CO combo</span></button>
+                <button type="button" class="sign-card" data-type="DontKnow"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">I don't know</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">4</span><span>When were they last tested?</span></div>
+            <div class="segment-row">
+                <button type="button" class="segment-btn" data-test="WithinLastMonth"><i class="fas fa-calendar"></i> Within last month</button>
+                <button type="button" class="segment-btn" data-test="OneToSixMonths">1–6 months ago</button>
+                <button type="button" class="segment-btn" data-test="MoreThanSixMonths">More than 6 months ago</button>
+                <button type="button" class="segment-btn" data-test="DontKnow">I don't know</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">5</span><span>When was the battery last changed?</span></div>
+            <div class="segment-row">
+                <button type="button" class="segment-btn" data-battery="WithinLast6Months">Within last 6 months</button>
+                <button type="button" class="segment-btn" data-battery="SixToTwelveMonths">6–12 months ago</button>
+                <button type="button" class="segment-btn" data-battery="MoreThan12Months">More than 12 months ago</button>
+                <button type="button" class="segment-btn" data-battery="DontKnow">I don't know</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">6</span><span>What year were the alarms installed?</span></div>
+            <div class="year-row">
+                <input asp-for="AnioInstalacion" type="number" min="1990" max="@DateTime.Today.Year" placeholder="Select year or enter age" id="AnioInstalacion" />
+                <button type="button" class="segment-btn" id="year-unknown-btn">I don't know</button>
+            </div>
+            <span asp-validation-for="AnioInstalacion" class="text-danger"></span>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><span class="question-num">7</span><span>Are you experiencing any issues with your alarms?</span></div>
+            <div class="sign-grid">
+                <button type="button" class="sign-card" data-issue="Chirping"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-volume-high main"></i><span class="label">Chirping</span></button>
+                <button type="button" class="sign-card" data-issue="MissingBattery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-empty main"></i><span class="label">Missing battery</span></button>
+                <button type="button" class="sign-card" data-issue="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="sign-card" data-issue="AllWorking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-check main"></i><span class="label">All working</span></button>
+                <button type="button" class="sign-card" data-issue="DontKnow"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ban main"></i><span class="label">I don't know</span></button>
+            </div>
+            <input type="hidden" asp-for="ProblemasSeleccionados" id="ProblemasSeleccionados" />
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        function bindMulti(groupSelector, attr, input) {
+            function getValues() {
+                return input.value ? input.value.split('|').filter(Boolean) : [];
+            }
+
+            function setValues(values) {
+                input.value = values.join('|');
+            }
+
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var code = btn.getAttribute(attr);
+                    var current = getValues();
+                    if (current.indexOf(code) >= 0) {
+                        current = current.filter(function (v) { return v !== code; });
+                        btn.classList.remove('active');
+                    } else {
+                        current.push(code);
+                        btn.classList.add('active');
+                    }
+                    setValues(current);
+                });
+                if (getValues().indexOf(btn.getAttribute(attr)) >= 0) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-count]', 'data-count', document.getElementById('CantidadAlarmas'));
+        bindMulti('[data-area]', 'data-area', document.getElementById('UbicacionesSeleccionadas'));
+        bindMulti('[data-type]', 'data-type', document.getElementById('TiposAlarmas'));
+        bindSingle('[data-test]', 'data-test', document.getElementById('UltimaPrueba'));
+        bindSingle('[data-battery]', 'data-battery', document.getElementById('UltimoCambioBateria'));
+        bindMulti('[data-issue]', 'data-issue', document.getElementById('ProblemasSeleccionados'));
+
+        var yearUnknownInput = document.getElementById('AnioInstalacionDesconocido');
+        var yearInput = document.getElementById('AnioInstalacion');
+        var yearUnknownBtn = document.getElementById('year-unknown-btn');
+
+        function syncYearUnknown(active) {
+            yearUnknownInput.value = active ? 'true' : 'false';
+            yearUnknownBtn.classList.toggle('active', active);
+            if (active) yearInput.value = '';
+        }
+
+        yearUnknownBtn.addEventListener('click', function () {
+            syncYearUnknown(yearUnknownInput.value !== 'true');
+        });
+
+        yearInput.addEventListener('input', function () {
+            if (yearInput.value) syncYearUnknown(false);
+        });
+
+        if (yearUnknownInput.value === 'true') syncYearUnknown(true);
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,160 @@
+@model IndorMvcApp.ViewModels.WaterHeaterFlushSetupViewModel
+@{
+    ViewData["Title"] = "Tell us about your water heater - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_WaterHeaterFlushStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="whf-setup-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_WaterHeaterFlushStepper", 2)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your water heater</h1>
+    <p class="page-lead" style="margin-bottom:16px;">A few details help us bring the right maintenance plan.</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="whf-setup-form" asp-action="WaterHeaterFlushSetup" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="TipoCalentador" id="TipoCalentador" />
+        <input type="hidden" asp-for="FuenteEnergia" id="FuenteEnergia" />
+        <input type="hidden" asp-for="Ubicacion" id="Ubicacion" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-water"></i><span>Heater type</span></div>
+            <div class="choice-grid-2">
+                <button type="button" class="choice-card" data-heater="Tank"><i class="fas fa-droplet main"></i><span class="label">Tank</span></button>
+                <button type="button" class="choice-card" data-heater="Tankless"><i class="fas fa-water main"></i><span class="label">Tankless</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-bolt"></i><span>Power source</span></div>
+            <div class="choice-grid-2">
+                <button type="button" class="choice-card" data-power="Electric"><i class="fas fa-bolt main"></i><span class="label">Electric</span></button>
+                <button type="button" class="choice-card" data-power="Gas"><i class="fas fa-fire-flame-simple main"></i><span class="label">Gas</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-barcode"></i><span>Serial number</span></div>
+            <input asp-for="NumeroSerie" placeholder="Enter serial number" id="serialInput" />
+            <div class="toggle-row" style="margin-top:12px;">
+                <span>I don't know</span>
+                <label class="toggle-switch">
+                    <input asp-for="SerialDesconocido" type="checkbox" id="serialToggle" />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-tag"></i><span>Brand / model (optional)</span></div>
+            <input asp-for="MarcaModelo" placeholder="Enter brand or model" />
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-location-dot"></i><span>Location</span></div>
+            <div class="location-grid">
+                <button type="button" class="location-btn" data-location="Garage"><i class="fas fa-warehouse"></i>Garage</button>
+                <button type="button" class="location-btn" data-location="Basement"><i class="fas fa-stairs"></i>Basement</button>
+                <button type="button" class="location-btn" data-location="Closet"><i class="fas fa-door-closed"></i>Closet</button>
+                <button type="button" class="location-btn" data-location="Attic"><i class="fas fa-house"></i>Attic</button>
+                <button type="button" class="location-btn" data-location="Other"><i class="fas fa-ellipsis"></i>Other</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-camera"></i><span>Add a photo of the label</span></div>
+            <label class="upload-drop" for="photoInput">
+                <i class="fas fa-camera"></i>
+                <strong>Tap to take a photo or choose from gallery</strong>
+                <span>JPG or PNG, up to 10 MB</span>
+            </label>
+            <input type="file" name="files" id="photoInput" accept=".jpg,.jpeg,.png" multiple style="display:none;" />
+            @if (Model.ArchivosExistentes.Count > 0)
+            {
+                <div class="upload-preview">
+                    @foreach (var file in Model.ArchivosExistentes)
+                    {
+                        <img src="@Url.Content("~" + file.RutaArchivo)" alt="@file.NombreArchivo" />
+                    }
+                </div>
+            }
+            <div class="info-box-blue" style="margin-top:10px;margin-bottom:0;">
+                <i class="fas fa-circle-info"></i>
+                <span>A photo helps us identify the right unit if you don't know the serial number.</span>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var heaterInput = document.getElementById('TipoCalentador');
+        var powerInput = document.getElementById('FuenteEnergia');
+        var locationInput = document.getElementById('Ubicacion');
+        var serialToggle = document.getElementById('serialToggle');
+        var serialInput = document.getElementById('serialInput');
+
+        document.querySelectorAll('[data-heater]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-heater]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                heaterInput.value = btn.getAttribute('data-heater');
+            });
+            if (btn.getAttribute('data-heater') === heaterInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-power]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-power]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                powerInput.value = btn.getAttribute('data-power');
+            });
+            if (btn.getAttribute('data-power') === powerInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-location]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-location]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                locationInput.value = btn.getAttribute('data-location');
+            });
+            if (btn.getAttribute('data-location') === locationInput.value) btn.classList.add('active');
+        });
+
+        function syncSerial() {
+            var disabled = serialToggle.checked;
+            serialInput.disabled = disabled;
+            if (disabled) serialInput.value = '';
+        }
+
+        serialToggle.addEventListener('change', syncSerial);
+        syncSerial();
+    })();
+</script>
+</body>
+</html>

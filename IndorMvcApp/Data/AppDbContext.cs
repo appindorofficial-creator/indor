@@ -68,6 +68,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<MovingSetupConfig> MovingSetupConfig { get; set; }
     public DbSet<MovingSetupServicio> MovingSetupServicios { get; set; }
     public DbSet<MovingSetupEnlaceRapido> MovingSetupEnlacesRapidos { get; set; }
+    public DbSet<HomeCarePrioritiesConfig> HomeCarePrioritiesConfig { get; set; }
+    public DbSet<HomeCarePriority> HomeCarePriorities { get; set; }
     public DbSet<MovingServicioLanding> MovingServicioLanding { get; set; }
     public DbSet<SolicitudMoving> SolicitudesMoving { get; set; }
     public DbSet<ArchivoMoving> ArchivosMoving { get; set; }
@@ -97,6 +99,30 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SolicitudTrash> SolicitudesTrash { get; set; }
     public DbSet<CleaningProServicioLanding> CleaningProServicioLanding { get; set; }
     public DbSet<SolicitudCleaningPro> SolicitudesCleaningPro { get; set; }
+    public DbSet<HvacMaintenanceServicioLanding> HvacMaintenanceServicioLanding { get; set; }
+    public DbSet<SolicitudHvacMaintenance> SolicitudesHvacMaintenance { get; set; }
+    public DbSet<ArchivoHvacMaintenance> ArchivosHvacMaintenance { get; set; }
+    public DbSet<WaterHeaterFlushServicioLanding> WaterHeaterFlushServicioLanding { get; set; }
+    public DbSet<SolicitudWaterHeaterFlush> SolicitudesWaterHeaterFlush { get; set; }
+    public DbSet<ArchivoWaterHeaterFlush> ArchivosWaterHeaterFlush { get; set; }
+    public DbSet<RoofInspectionServicioLanding> RoofInspectionServicioLanding { get; set; }
+    public DbSet<SolicitudRoofInspection> SolicitudesRoofInspection { get; set; }
+    public DbSet<ArchivoRoofInspection> ArchivosRoofInspection { get; set; }
+    public DbSet<CrawlspaceCheckServicioLanding> CrawlspaceCheckServicioLanding { get; set; }
+    public DbSet<SolicitudCrawlspaceCheck> SolicitudesCrawlspaceCheck { get; set; }
+    public DbSet<ExteriorPaintServicioLanding> ExteriorPaintServicioLanding { get; set; }
+    public DbSet<SolicitudExteriorPaint> SolicitudesExteriorPaint { get; set; }
+    public DbSet<ArchivoExteriorPaint> ArchivosExteriorPaint { get; set; }
+    public DbSet<GutterCleaningServicioLanding> GutterCleaningServicioLanding { get; set; }
+    public DbSet<SolicitudGutterCleaning> SolicitudesGutterCleaning { get; set; }
+    public DbSet<ArchivoGutterCleaning> ArchivosGutterCleaning { get; set; }
+    public DbSet<PowerWashServicioLanding> PowerWashServicioLanding { get; set; }
+    public DbSet<SolicitudPowerWash> SolicitudesPowerWash { get; set; }
+    public DbSet<ArchivoPowerWash> ArchivosPowerWash { get; set; }
+    public DbSet<PestControlServicioLanding> PestControlServicioLanding { get; set; }
+    public DbSet<SolicitudPestControl> SolicitudesPestControl { get; set; }
+    public DbSet<SmokeDetectorServicioLanding> SmokeDetectorServicioLanding { get; set; }
+    public DbSet<SolicitudSmokeDetector> SolicitudesSmokeDetector { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -697,6 +723,282 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(s => s.Microservicio)
                   .WithMany()
                   .HasForeignKey(s => s.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<HvacMaintenanceServicioLanding>(entity =>
+        {
+            entity.Property(l => l.PrecioDesde).HasColumnType("decimal(10,2)");
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudHvacMaintenance>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoHvacMaintenance>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudHvacMaintenanceId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<WaterHeaterFlushServicioLanding>(entity =>
+        {
+            entity.Property(l => l.PrecioDesde).HasColumnType("decimal(10,2)");
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudWaterHeaterFlush>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoWaterHeaterFlush>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudWaterHeaterFlushId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<RoofInspectionServicioLanding>(entity =>
+        {
+            entity.Property(l => l.PrecioDesde).HasColumnType("decimal(10,2)");
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudRoofInspection>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoRoofInspection>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudRoofInspectionId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<CrawlspaceCheckServicioLanding>(entity =>
+        {
+            entity.Property(l => l.PrecioDesde).HasColumnType("decimal(10,2)");
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudCrawlspaceCheck>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ExteriorPaintServicioLanding>(entity =>
+        {
+            entity.Property(l => l.PrecioDesde).HasColumnType("decimal(10,2)");
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudExteriorPaint>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoExteriorPaint>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudExteriorPaintId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<GutterCleaningServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudGutterCleaning>(entity =>
+        {
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoGutterCleaning>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudGutterCleaningId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PowerWashServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudPowerWash>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoPowerWash>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudPowerWashId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<PestControlServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudPestControl>(entity =>
+        {
+            entity.Property(s => s.PrecioEstimado).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<SmokeDetectorServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(l => l.HomeCarePriorityId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudSmokeDetector>(entity =>
+        {
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.HomeCarePriority)
+                  .WithMany()
+                  .HasForeignKey(s => s.HomeCarePriorityId)
                   .OnDelete(DeleteBehavior.Restrict);
             entity.HasOne(s => s.Propiedad)
                   .WithMany()

@@ -1,0 +1,112 @@
+@model IndorMvcApp.ViewModels.PestControlPlanViewModel
+@{
+    ViewData["Title"] = "Choose reminder or service - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_PestControlStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="pc-plan-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_PestControlStepper", 3)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Choose reminder or service</h1>
+    <p class="page-lead" style="margin-bottom:16px;">You can set a yearly reminder or schedule protection now.</p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="pc-plan-form" asp-action="PestControlPlan" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+        <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
+
+        <div class="field-card">
+            <button type="button" class="service-option" data-service="ReminderOnly">
+                <span class="radio"></span>
+                <i class="fas fa-calendar main"></i>
+                <div class="body">
+                    <strong>Reminder only</strong>
+                    <span>Get a yearly check-in reminder.</span>
+                </div>
+                <span class="price-badge">Reminder: Free</span>
+            </button>
+            <button type="button" class="service-option" data-service="AnnualInspection">
+                <span class="radio"></span>
+                <i class="fas fa-magnifying-glass main"></i>
+                <div class="body">
+                    <strong>Annual inspection</strong>
+                    <span>Professional inspection for signs of termites, rodents, and entry points.</span>
+                </div>
+                <span class="price-badge">Inspection: From $99</span>
+            </button>
+            <button type="button" class="service-option" data-service="ProtectionPlan">
+                <span class="radio"></span>
+                <i class="fas fa-shield-halved main"></i>
+                <div class="body">
+                    <strong>Protection plan</strong>
+                    <span>Ongoing prevention with scheduled visits.</span>
+                </div>
+                <span class="price-badge">Plan: From $29/mo</span>
+            </button>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred timing</span></div>
+            <div class="timing-chips">
+                <button type="button" class="timing-chip" data-timing="ThisMonth"><i class="fas fa-calendar"></i> This month</button>
+                <button type="button" class="timing-chip" data-timing="NextMonth"><i class="fas fa-calendar"></i> Next month</button>
+                <button type="button" class="timing-chip" data-timing="In3Months"><i class="fas fa-calendar"></i> In 3 months</button>
+                <button type="button" class="timing-chip" data-timing="EveryYearSpring"><i class="fas fa-seedling"></i> Every year in spring</button>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.InfoPlanTexto))
+        {
+            <div class="info-box-blue">
+                <i class="fas fa-circle-info"></i>
+                <span>@Model.InfoPlanTexto</span>
+            </div>
+        }
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-service]', 'data-service', document.getElementById('TipoServicio'));
+        bindSingle('[data-timing]', 'data-timing', document.getElementById('TimingPreferido'));
+    })();
+</script>
+</body>
+</html>

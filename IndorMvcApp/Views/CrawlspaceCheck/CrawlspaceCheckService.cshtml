@@ -1,0 +1,85 @@
+@model IndorMvcApp.ViewModels.CrawlspaceCheckServiceViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_CrawlspaceCheckStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_CrawlspaceCheckStepper", 1)
+
+    @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+    {
+        <div class="hero-wrap">
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+            <span class="hvac-hero-icon"><i class="fas fa-warehouse"></i></span>
+        </div>
+    }
+
+    <div class="title-row">
+        <div class="left">
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.2rem;">@Model.LandingTitulo</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
+            {
+                <div class="tagline">@Model.LandingTagline</div>
+            }
+        </div>
+    </div>
+    <p class="page-lead">@Model.LandingSubtitulo</p>
+
+    @if (Model.CheckItems.Count > 0)
+    {
+        <div class="includes-box">
+            <div class="includes-label">What we'll check</div>
+            <div class="csc-check-grid">
+                @foreach (var item in Model.CheckItems)
+                {
+                    <div class="csc-check-item">
+                        <i class="fas @item.Icon"></i>
+                        <span>@item.Text</span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.BestPracticeTexto))
+    {
+        <div class="best-practice-box">
+            <i class="fas fa-shield-halved"></i>
+            <div>
+                <strong>Best practice</strong>
+                <p>@Model.BestPracticeTexto</p>
+            </div>
+        </div>
+    }
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="CrawlspaceCheckService" method="post">
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+</body>
+</html>

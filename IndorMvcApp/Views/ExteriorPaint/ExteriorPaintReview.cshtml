@@ -1,0 +1,117 @@
+@model IndorMvcApp.ViewModels.ExteriorPaintReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_ExteriorPaintStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_ExteriorPaintStepper", 1)
+
+    <div class="ep-title-row">
+        <div class="left">
+            <h1 class="page-heading" style="margin-bottom:4px;font-size:1.15rem;">@Model.LandingTitulo</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.LandingTagline))
+            {
+                <div class="tagline">@Model.LandingTagline</div>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+        {
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="ep-thumb" />
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))
+    {
+        <div class="info-box-blue">
+            <i class="fas fa-circle-info"></i>
+            <span>@Model.InfoBoxTexto</span>
+        </div>
+    }
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="ep-review-form" asp-action="ExteriorPaintReview" method="post">
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="UltimaPintura" id="UltimaPintura" />
+        <input type="hidden" asp-for="TipoSuperficie" id="TipoSuperficie" />
+        <input type="hidden" asp-for="MantenerMismoColor" id="MantenerMismoColor" />
+
+        <div class="field-card">
+            <div class="question-num">1</div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>When was the exterior last painted?</span></div>
+            <div class="paint-age-grid">
+                <button type="button" class="paint-age-btn" data-age="LessThan3Years"><i class="fas fa-calendar-check"></i><span>Less than 3 years</span></button>
+                <button type="button" class="paint-age-btn" data-age="ThreeToFiveYears"><i class="fas fa-calendar"></i><span>3–5 years</span></button>
+                <button type="button" class="paint-age-btn" data-age="FiveToSevenYears"><i class="fas fa-calendar"></i><span>5–7 years</span></button>
+                <button type="button" class="paint-age-btn" data-age="SevenPlusYears"><i class="fas fa-calendar-plus"></i><span>7+ years</span></button>
+                <button type="button" class="paint-age-btn" data-age="DontKnow"><i class="fas fa-circle-question"></i><span>I don't know</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">2</div>
+            <div class="field-head"><i class="fas fa-house"></i><span>What exterior surface do you have?</span></div>
+            <div class="surface-grid">
+                <button type="button" class="surface-card" data-surface="WoodSiding"><i class="fas fa-grip-lines-vertical main"></i><span class="label">Wood siding</span></button>
+                <button type="button" class="surface-card" data-surface="FiberCement"><i class="fas fa-grip-lines main"></i><span class="label">Fiber cement / Hardie</span></button>
+                <button type="button" class="surface-card" data-surface="Stucco"><i class="fas fa-braille main"></i><span class="label">Stucco</span></button>
+                <button type="button" class="surface-card" data-surface="Brick"><i class="fas fa-table-cells main"></i><span class="label">Brick</span><span class="sub">(painted or unpainted)</span></button>
+                <button type="button" class="surface-card" data-surface="VinylSiding"><i class="fas fa-layer-group main"></i><span class="label">Vinyl siding</span></button>
+                <button type="button" class="surface-card" data-surface="MetalAluminum"><i class="fas fa-bars main"></i><span class="label">Metal / aluminum</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="question-num">3</div>
+            <div class="field-head"><i class="fas fa-palette"></i><span>Would you like to keep the same color?</span></div>
+            <div class="color-grid-2">
+                <button type="button" class="color-card" data-color="Yes"><i class="fas fa-paint-roller main"></i><span class="label">Yes</span></button>
+                <button type="button" class="color-card" data-color="No"><i class="fas fa-paintbrush main"></i><span class="label">No</span></button>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        function bindSingle(groupSelector, attr, input) {
+            document.querySelectorAll(groupSelector).forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    input.value = btn.getAttribute(attr);
+                });
+                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
+            });
+        }
+
+        bindSingle('[data-age]', 'data-age', document.getElementById('UltimaPintura'));
+        bindSingle('[data-surface]', 'data-surface', document.getElementById('TipoSuperficie'));
+        bindSingle('[data-color]', 'data-color', document.getElementById('MantenerMismoColor'));
+    })();
+</script>
+</body>
+</html>

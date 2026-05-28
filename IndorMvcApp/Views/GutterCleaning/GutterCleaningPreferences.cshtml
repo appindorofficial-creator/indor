@@ -1,0 +1,194 @@
+@model IndorMvcApp.ViewModels.GutterCleaningPreferencesViewModel
+@{
+    ViewData["Title"] = "Condition & service preferences - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_GutterCleaningStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <button type="submit" form="gc-prefs-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_GutterCleaningStepper", 3)
+
+    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Condition & service preferences</span></p>
+
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
+    <form id="gc-prefs-form" asp-action="GutterCleaningPreferences" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="HomeCarePriorityId" />
+        <input type="hidden" asp-for="ProblemasSeleccionados" id="ProblemasSeleccionados" />
+        <input type="hidden" asp-for="AreaProblema" id="AreaProblema" />
+        <input type="hidden" asp-for="ObjetivoHoy" id="ObjetivoHoy" />
+        <input type="hidden" asp-for="PreferenciaRecordatorio" id="PreferenciaRecordatorio" />
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-eye"></i><span>What are you seeing?</span></div>
+            <div class="issue-grid">
+                <button type="button" class="issue-card" data-issue="LeavesDebris"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-leaf main"></i><span class="label">Leaves / debris</span></button>
+                <button type="button" class="issue-card" data-issue="OverflowingWater"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-water main"></i><span class="label">Overflowing water</span></button>
+                <button type="button" class="issue-card" data-issue="PlantsGrowing"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-seedling main"></i><span class="label">Plants growing</span></button>
+                <button type="button" class="issue-card" data-issue="SaggingSections"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Sagging sections</span></button>
+                <button type="button" class="issue-card" data-issue="DownspoutClogged"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-faucet main"></i><span class="label">Downspout clogged</span></button>
+                <button type="button" class="issue-card" data-issue="NoVisibleIssues"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">No visible issues</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-location-dot"></i><span>Any problem areas?</span></div>
+            <div class="area-row">
+                <button type="button" class="area-pill" data-area="FrontOnly"><i class="fas fa-house"></i> Front only</button>
+                <button type="button" class="area-pill" data-area="BackOnly"><i class="fas fa-house"></i> Back only</button>
+                <button type="button" class="area-pill" data-area="WholeHouse"><i class="fas fa-house"></i> Whole house</button>
+                <button type="button" class="area-pill" data-area="OneSideOnly"><i class="fas fa-house"></i> One side only</button>
+                <button type="button" class="area-pill" data-area="NotSure"><i class="fas fa-circle-question"></i> Not sure</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-hand-pointer"></i><span>What do you want today?</span></div>
+            <div class="goal-grid">
+                <button type="button" class="goal-card" data-goal="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">Reminder only</span><span class="sub">Remind me when it's time</span></button>
+                <button type="button" class="goal-card" data-goal="CleaningEstimate"><i class="fas fa-file-invoice-dollar main"></i><span class="label">Cleaning estimate</span><span class="sub">Get a price estimate first</span></button>
+                <button type="button" class="goal-card" data-goal="ScheduleService"><i class="fas fa-calendar main"></i><span class="label">Schedule service</span><span class="sub">Book a pro to handle it</span></button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-camera"></i><span>Add photos (optional)</span></div>
+            <label class="upload-drop" for="photoInput">
+                <i class="fas fa-camera"></i>
+                <strong>Help us see clogged areas, overflow, or sagging gutters</strong>
+                <span>Tap to upload photos</span>
+            </label>
+            <input type="file" name="files" id="photoInput" accept=".jpg,.jpeg,.png" multiple style="display:none;" />
+            @if (Model.ArchivosExistentes.Count > 0)
+            {
+                <div class="upload-preview">
+                    @foreach (var file in Model.ArchivosExistentes)
+                    {
+                        <img src="@Url.Content("~" + file.RutaArchivo)" alt="@file.NombreArchivo" />
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-bell"></i><span>Reminder preference</span></div>
+            <div class="reminder-grid">
+                <button type="button" class="reminder-card" data-reminder="SpringFall">
+                    <i class="fas fa-leaf main"></i>
+                    <span class="label">Spring & Fall</span>
+                    <span class="sub">Twice a year</span>
+                </button>
+                <button type="button" class="reminder-card" data-reminder="CustomDate">
+                    <i class="fas fa-calendar-check main"></i>
+                    <span class="label">Custom date</span>
+                    <span class="sub">Choose your date</span>
+                </button>
+            </div>
+            <div id="customDateWrap" style="margin-top:10px;display:none;">
+                <input asp-for="FechaRecordatorioPersonalizada" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                <span asp-validation-for="FechaRecordatorioPersonalizada" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
+            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Review request <i class="fas fa-chevron-right"></i>
+        </button>
+    </form>
+</div>
+<script>
+    (function () {
+        var issuesInput = document.getElementById('ProblemasSeleccionados');
+        var areaInput = document.getElementById('AreaProblema');
+        var goalInput = document.getElementById('ObjetivoHoy');
+        var reminderInput = document.getElementById('PreferenciaRecordatorio');
+        var customWrap = document.getElementById('customDateWrap');
+
+        function getPipe(input) { return input.value ? input.value.split('|').filter(Boolean) : []; }
+        function setPipe(input, values) { input.value = values.join('|'); }
+
+        document.querySelectorAll('[data-issue]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var code = btn.getAttribute('data-issue');
+                var current = getPipe(issuesInput);
+                if (code === 'NoVisibleIssues') {
+                    document.querySelectorAll('[data-issue]').forEach(function (b) { b.classList.remove('active'); });
+                    btn.classList.add('active');
+                    setPipe(issuesInput, ['NoVisibleIssues']);
+                    return;
+                }
+                current = current.filter(function (v) { return v !== 'NoVisibleIssues'; });
+                if (current.indexOf(code) >= 0) {
+                    current = current.filter(function (v) { return v !== code; });
+                    btn.classList.remove('active');
+                } else {
+                    current.push(code);
+                    btn.classList.add('active');
+                }
+                setPipe(issuesInput, current);
+            });
+            if (getPipe(issuesInput).indexOf(btn.getAttribute('data-issue')) >= 0) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-area]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-area]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                areaInput.value = btn.getAttribute('data-area');
+            });
+            if (btn.getAttribute('data-area') === areaInput.value) btn.classList.add('active');
+        });
+
+        document.querySelectorAll('[data-goal]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-goal]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                goalInput.value = btn.getAttribute('data-goal');
+            });
+            if (btn.getAttribute('data-goal') === goalInput.value) btn.classList.add('active');
+        });
+
+        function syncCustomDate() {
+            customWrap.style.display = reminderInput.value === 'CustomDate' ? 'block' : 'none';
+        }
+
+        document.querySelectorAll('[data-reminder]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('[data-reminder]').forEach(function (b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                reminderInput.value = btn.getAttribute('data-reminder');
+                syncCustomDate();
+            });
+            if (btn.getAttribute('data-reminder') === reminderInput.value) btn.classList.add('active');
+        });
+
+        syncCustomDate();
+    })();
+</script>
+</body>
+</html>
