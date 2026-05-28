@@ -28,14 +28,6 @@
     <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
     <p class="page-lead" style="margin-top:-8px;text-align:center;">Tell us what kind of moving help you need.</p>
 
-    <div class="location-card">
-        <i class="fas fa-house main"></i>
-        <div class="meta">
-            <input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
-            <a asp-controller="Home" asp-action="Index" class="change">Change address ></a>
-        </div>
-    </div>
-
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <form asp-action="GeneralHelpRequest" method="post">
@@ -44,6 +36,15 @@
         <input type="hidden" asp-for="TipoAyuda" id="TipoAyuda" />
         <input type="hidden" asp-for="VentanaTiempo" id="VentanaTiempo" />
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
+
+        <div class="location-card">
+            <i class="fas fa-house main"></i>
+            <div class="meta">
+                <input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
+                <a asp-controller="Home" asp-action="Index" class="change">Change address ></a>
+            </div>
+        </div>
+        <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
 
         <div class="field-card">
             <span class="field-label">What do you need help with?</span>

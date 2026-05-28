@@ -42,6 +42,7 @@ public class UtilitiesSetupController : Controller
         {
             solicitud.PropiedadId = propiedad.Id;
             solicitud.DireccionPropiedad ??= propiedad.Direccion;
+            await _db.SaveChangesAsync();
         }
 
         return View(new UtilitiesSetupAddressViewModel
@@ -69,6 +70,8 @@ public class UtilitiesSetupController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
+
+        await EnsureAddressFromPropertyAsync(userId!, model);
 
         if (!ModelState.IsValid)
         {
@@ -380,6 +383,23 @@ public class UtilitiesSetupController : Controller
         }
 
         return await query.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+    }
+
+    private async Task EnsureAddressFromPropertyAsync(string userId, UtilitiesSetupAddressViewModel model)
+    {
+        if (!string.IsNullOrWhiteSpace(model.DireccionPropiedad))
+        {
+            return;
+        }
+
+        var propiedad = await GetLatestPropertyAsync(userId);
+        if (string.IsNullOrWhiteSpace(propiedad?.Direccion))
+        {
+            return;
+        }
+
+        model.DireccionPropiedad = propiedad.Direccion;
+        ModelState.Remove(nameof(model.DireccionPropiedad));
     }
 
     private static bool NeedsInternetStep(string? servicios) =>

@@ -28,15 +28,6 @@
     <h2 class="page-heading" style="font-size:1.15rem;">@Model.PageTitle</h2>
     <p class="page-lead" style="margin-top:-8px;">@Model.Subtitulo</p>
 
-    <div class="location-card">
-        <div class="thumb"><i class="fas fa-house" style="color:#0066CC;"></i></div>
-        <div class="meta">
-            <div class="addr"><input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" /></div>
-            <div class="sub">Move-in setup</div>
-        </div>
-        <span style="color:#0066CC;font-weight:600;font-size:0.85rem;"><i class="fas fa-pen"></i> Edit</span>
-    </div>
-
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <form asp-action="UtilitiesSetupAddress" method="post">
@@ -44,6 +35,16 @@
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="ServiciosConectar" id="ServiciosConectar" />
         <input type="hidden" asp-for="PreferenciaContacto" id="PreferenciaContacto" />
+
+        <div class="location-card">
+            <div class="thumb"><i class="fas fa-house" style="color:#0066CC;"></i></div>
+            <div class="meta">
+                <div class="addr"><input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" /></div>
+                <div class="sub">Move-in setup</div>
+            </div>
+            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;"><i class="fas fa-pen"></i> Edit</span>
+        </div>
+        <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
 
         <div class="field-card">
             <span class="field-label">What do you need to connect?</span>

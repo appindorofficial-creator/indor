@@ -123,6 +123,8 @@ public class TvWallMountingController : Controller
             return RedirectToAction(nameof(TvWallMountingService), new { id = solicitud.MovingSetupServicioId });
         }
 
+        await EnsureAddressFromPropertyAsync(solicitud, model);
+
         if (!ModelState.IsValid)
         {
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
@@ -341,6 +343,46 @@ public class TvWallMountingController : Controller
             TipoParedLabel = TvWallMountingDisplayLabels.FormatWallType(solicitud.TipoPared),
             EstadoLabel = "Confirmed"
         });
+    }
+
+    private async Task EnsureAddressFromPropertyAsync(SolicitudTvWallMounting solicitud, TvWallMountingProjectViewModel model)
+    {
+        if (!string.IsNullOrWhiteSpace(model.DireccionPropiedad))
+        {
+            return;
+        }
+
+        if (solicitud.PropiedadId.HasValue)
+        {
+            var direccion = await _db.Propiedades.AsNoTracking()
+                .Where(p => p.Id == solicitud.PropiedadId.Value)
+                .Select(p => p.Direccion)
+                .FirstOrDefaultAsync();
+
+            if (!string.IsNullOrWhiteSpace(direccion))
+            {
+                model.DireccionPropiedad = direccion;
+                ModelState.Remove(nameof(model.DireccionPropiedad));
+                return;
+            }
+        }
+
+        var userId = RequireUserId();
+        if (userId == null)
+        {
+            return;
+        }
+
+        var propiedad = await _db.Propiedades
+            .Where(p => p.UserId == userId && p.Activo)
+            .OrderByDescending(p => p.FechaCreacion)
+            .FirstOrDefaultAsync();
+
+        if (!string.IsNullOrWhiteSpace(propiedad?.Direccion))
+        {
+            model.DireccionPropiedad = propiedad.Direccion;
+            ModelState.Remove(nameof(model.DireccionPropiedad));
+        }
     }
 
     private string? RequireUserId() => _userManager.GetUserId(User);

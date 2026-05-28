@@ -28,17 +28,18 @@
     <h2 class="page-heading" style="font-size:1.1rem;">Tell us about your TV mounting project</h2>
     <p class="page-lead" style="margin-top:-8px;">Help us send the right installer and tools.</p>
 
-    <div class="address-card">
-        <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="Service address" required /></div>
-        <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
-    </div>
-
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <form asp-action="TvWallMountingProject" method="post">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
+
+        <div class="address-card">
+            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="Service address" required /></div>
+            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+        </div>
+        <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
         <input type="hidden" asp-for="TipoSolicitud" id="TipoSolicitud" />
         <input type="hidden" asp-for="TamanoTv" id="TamanoTv" />
         <input type="hidden" asp-for="CantidadTvs" id="CantidadTvs" />

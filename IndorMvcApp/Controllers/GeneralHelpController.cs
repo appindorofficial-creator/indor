@@ -43,6 +43,7 @@ public class GeneralHelpController : Controller
         {
             solicitud.PropiedadId = propiedad.Id;
             solicitud.DireccionPropiedad ??= propiedad.Direccion;
+            await _db.SaveChangesAsync();
         }
 
         return View(new GeneralHelpRequestViewModel
@@ -67,6 +68,11 @@ public class GeneralHelpController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
+
+        var userId = RequireUserId();
+        if (userId == null) return Challenge();
+
+        await EnsureAddressFromPropertyAsync(userId, model);
 
         if (!ModelState.IsValid)
         {
@@ -248,6 +254,23 @@ public class GeneralHelpController : Controller
     }
 
     private string? RequireUserId() => _userManager.GetUserId(User);
+
+    private async Task EnsureAddressFromPropertyAsync(string userId, GeneralHelpRequestViewModel model)
+    {
+        if (!string.IsNullOrWhiteSpace(model.DireccionPropiedad))
+        {
+            return;
+        }
+
+        var propiedad = await GetLatestPropertyAsync(userId);
+        if (string.IsNullOrWhiteSpace(propiedad?.Direccion))
+        {
+            return;
+        }
+
+        model.DireccionPropiedad = propiedad.Direccion;
+        ModelState.Remove(nameof(model.DireccionPropiedad));
+    }
 
     private async Task<MovingSetupServicio?> LoadServicioAsync(int id) =>
         await _db.MovingSetupServicios.AsNoTracking()
