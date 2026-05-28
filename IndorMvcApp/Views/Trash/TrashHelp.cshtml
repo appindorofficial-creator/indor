@@ -1,0 +1,124 @@
+@model IndorMvcApp.ViewModels.TrashHelpViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_TrashStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="TrashSetup" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_TrashStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.05rem;">How should INDOR help?</h2>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="TrashHelp" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="TipoAyuda" id="TipoAyuda" />
+        <input type="hidden" asp-for="RecordatorioCuando" id="RecordatorioCuando" />
+        <input type="hidden" asp-for="VentanaRecoleccion" id="VentanaRecoleccion" />
+
+        <div class="field-card">
+            <div class="help-list" id="helpGroup">
+                <button type="button" class="help-row" data-value="ReminderOnly">
+                    <i class="fas fa-bell main"></i>
+                    <span class="copy"><strong>Reminder only</strong><span>Get notified before pickup day</span></span>
+                    <span class="radio"></span>
+                </button>
+                <button type="button" class="help-row" data-value="TakeOut">
+                    <i class="fas fa-trash-can main"></i>
+                    <span class="copy"><strong>Take bins out</strong><span>INDOR takes bins to the curb</span></span>
+                    <span class="radio"></span>
+                </button>
+                <button type="button" class="help-row" data-value="TakeOutReturn">
+                    <i class="fas fa-arrows-rotate main"></i>
+                    <span class="copy"><strong>Take out + bring back</strong><span>Full weekly service</span></span>
+                    <span class="radio"></span>
+                </button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Reminder settings</span>
+            <div class="reminder-row" id="reminderGroup">
+                <button type="button" class="reminder-btn" data-value="OneDayBefore"><i class="fas fa-bell"></i> 1 day before</button>
+                <button type="button" class="reminder-btn" data-value="EveningBefore"><i class="fas fa-moon"></i> Evening before</button>
+                <button type="button" class="reminder-btn" data-value="MorningOf"><i class="fas fa-sun"></i> Morning of</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Pickup time window</span>
+            <div class="picker-row">
+                <div class="left"><i class="fas fa-clock" style="color:#0066CC;"></i><span id="windowDisplay">7:00 AM – 12:00 PM</span></div>
+                <i class="fas fa-chevron-right" style="color:#94A3B8;"></i>
+            </div>
+            <div class="segment-group" id="windowGroup" style="margin-top:10px;">
+                <button type="button" class="segment-btn" data-value="Morning7_12">7:00 AM – 12:00 PM</button>
+                <button type="button" class="segment-btn" data-value="Afternoon12_5">12:00 PM – 5:00 PM</button>
+                <button type="button" class="segment-btn" data-value="Flexible">Flexible</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Special notes (optional)</span>
+            <div class="input-wrap">
+                <i class="fas fa-pen"></i>
+                <input asp-for="NotasEspeciales" placeholder="Gate code, where bins are stored" />
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            <i class="fas fa-calendar-plus"></i> Review request
+        </button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSingle(groupId, selector, hiddenId, initial, onChange) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                    if (onChange) onChange(btn);
+                });
+            });
+        }
+
+        const windowLabels = {
+            Morning7_12: '7:00 AM – 12:00 PM',
+            Afternoon12_5: '12:00 PM – 5:00 PM',
+            Flexible: 'Flexible'
+        };
+
+        initSingle('helpGroup', '.help-row', 'TipoAyuda', '@Model.TipoAyuda');
+        initSingle('reminderGroup', '.reminder-btn', 'RecordatorioCuando', '@Model.RecordatorioCuando');
+        initSingle('windowGroup', '.segment-btn', 'VentanaRecoleccion', '@Model.VentanaRecoleccion', btn => {
+            document.getElementById('windowDisplay').textContent = windowLabels[btn.dataset.value] || btn.textContent.trim();
+        });
+    })();
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+@model IndorMvcApp.ViewModels.CleaningProCustomizeViewModel
+@using IndorMvcApp.Services
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+    var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var selectedAddons = (Model.AddonsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_CleaningProStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="CleaningProSetup" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_CleaningProStepper", 2)
+
+    <p class="page-lead" style="margin-top:-8px;">Tell us what you need so we can match you with the right cleaner.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <span asp-validation-for="AreasLimpieza" class="text-danger" style="font-size:0.75rem;display:block;margin-bottom:8px;"></span>
+
+    <form asp-action="CleaningProCustomize" method="post" id="customizeForm">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
+        <input type="hidden" asp-for="CantidadLimpiadores" id="CantidadLimpiadores" />
+        <input type="hidden" asp-for="AreasLimpieza" id="AreasLimpieza" />
+        <input type="hidden" asp-for="HorasEstimadas" id="HorasEstimadas" />
+        <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" />
+
+        <div class="field-card">
+            <div class="section-num">What do you want cleaned?</div>
+            <div class="section-hint">You can select as many as you need.</div>
+            <div class="area-grid" id="areaGroup">
+                @foreach (var area in CleaningProPricingService.AreaOptions)
+                {
+                    <button type="button" class="area-chip @(selectedAreas.Contains(area.Code) ? "active" : "")" data-code="@area.Code">
+                        <i class="fas @area.Icon"></i>
+                        <span>@area.Label</span>
+                        <span class="check"><i class="fas fa-check"></i></span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="section-num">How often?</div>
+            <div class="freq-row" id="freqGroup">
+                <button type="button" class="freq-chip" data-value="OneTime"><i class="fas fa-calendar-day"></i>One-time</button>
+                <button type="button" class="freq-chip" data-value="Weekly"><i class="fas fa-rotate"></i>Weekly</button>
+                <button type="button" class="freq-chip" data-value="Biweekly"><i class="fas fa-calendar-week"></i>Biweekly</button>
+                <button type="button" class="freq-chip" data-value="Monthly"><i class="fas fa-calendar"></i>Monthly</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="section-num">Crew size</div>
+            <div class="section-hint">More cleaners = faster service.</div>
+            <div class="crew-grid" id="crewGroup">
+                <button type="button" class="crew-card" data-value="One" data-rate="35">
+                    <span class="check"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-user main"></i>
+                    <strong>1 cleaner</strong>
+                    <div class="rate">$35/hr</div>
+                </button>
+                <button type="button" class="crew-card" data-value="Two" data-rate="70">
+                    <span class="check"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-user-group main"></i>
+                    <strong>2 cleaners</strong>
+                    <div class="rate">$70/hr</div>
+                </button>
+                <button type="button" class="crew-card" data-value="Three" data-rate="105">
+                    <span class="check"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-users main"></i>
+                    <strong>3 cleaners</strong>
+                    <div class="rate">$105/hr</div>
+                </button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="section-num">Estimated hours</div>
+            <div class="section-hint">Not sure? You can adjust later.</div>
+            <div class="hours-row" id="hoursGroup">
+                @foreach (var hr in new[] { 2m, 3m, 4m, 5m })
+                {
+                    <button type="button" class="hour-btn" data-value="@hr.ToString(System.Globalization.CultureInfo.InvariantCulture)">@hr.ToString("0") hr</button>
+                }
+            </div>
+        </div>
+
+        <div class="field-card">
+            <div class="section-num">Optional add-ons</div>
+            <div class="section-hint">Deep-clean extras you can add now.</div>
+            <div class="addon-grid" id="addonGroup">
+                @foreach (var addon in CleaningProPricingService.AddonOptions)
+                {
+                    <button type="button" class="addon-row @(selectedAddons.Contains(addon.Code) ? "active" : "")" data-code="@addon.Code" data-price="@addon.Price.ToString(System.Globalization.CultureInfo.InvariantCulture)">
+                        <i class="fas @addon.Icon main"></i>
+                        <span class="copy">@addon.Label</span>
+                        <span class="price">$@addon.Price.ToString("0")</span>
+                        <span class="check"><i class="fas fa-check"></i></span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="sticky-footer">
+            <div class="summary-bar" id="summaryBar">@Model.SummaryLine</div>
+            <button type="submit" name="action" value="continue" class="btn-primary">
+                Next: Review <i class="fas fa-chevron-right"></i>
+            </button>
+            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        </div>
+    </form>
+</div>
+<script>
+    (function () {
+        const rates = { One: 35, Two: 70, Three: 105 };
+        const selectedAreas = new Set((document.getElementById('AreasLimpieza').value || '').split('|').map(s => s.trim()).filter(Boolean));
+        const selectedAddons = new Set((document.getElementById('AddonsSeleccionados').value || '').split('|').map(s => s.trim()).filter(Boolean));
+
+        function syncAreas() {
+            document.getElementById('AreasLimpieza').value = Array.from(selectedAreas).join('|');
+        }
+
+        function syncAddons() {
+            document.getElementById('AddonsSeleccionados').value = Array.from(selectedAddons).join('|');
+        }
+
+        document.querySelectorAll('#areaGroup .area-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const code = chip.dataset.code;
+                if (selectedAreas.has(code)) {
+                    if (selectedAreas.size > 1) {
+                        selectedAreas.delete(code);
+                        chip.classList.remove('active');
+                    }
+                } else {
+                    selectedAreas.add(code);
+                    chip.classList.add('active');
+                }
+                syncAreas();
+                updateSummary();
+            });
+        });
+
+        document.querySelectorAll('#addonGroup .addon-row').forEach(row => {
+            row.addEventListener('click', () => {
+                const code = row.dataset.code;
+                if (selectedAddons.has(code)) {
+                    selectedAddons.delete(code);
+                    row.classList.remove('active');
+                } else {
+                    selectedAddons.add(code);
+                    row.classList.add('active');
+                }
+                syncAddons();
+                updateSummary();
+            });
+        });
+
+        function initSingle(groupId, selector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                    updateSummary();
+                });
+            });
+        }
+
+        function formatFreq(v) {
+            return ({ OneTime: 'One-time', Weekly: 'Weekly', Biweekly: 'Biweekly', Monthly: 'Monthly' }[v] || v);
+        }
+
+        function formatCrew(v) {
+            return ({ One: '1 cleaner', Two: '2 cleaners', Three: '3 cleaners' }[v] || v);
+        }
+
+        function updateSummary() {
+            const crew = document.getElementById('CantidadLimpiadores').value || 'Two';
+            const hours = parseFloat(document.getElementById('HorasEstimadas').value || '3');
+            const rate = rates[crew] || 70;
+            let addonsTotal = 0;
+            selectedAddons.forEach(code => {
+                const row = document.querySelector('#addonGroup .addon-row[data-code="' + code + '"]');
+                if (row) addonsTotal += parseFloat(row.dataset.price || '0');
+            });
+            const subtotal = (rate * hours) + addonsTotal;
+            const freq = document.getElementById('Frecuencia').value || 'OneTime';
+            document.getElementById('summaryBar').textContent =
+                formatFreq(freq) + ' • ' + formatCrew(crew) + ' • Est. ' + hours + ' hr • From $' + Math.round(subtotal);
+        }
+
+        initSingle('freqGroup', '.freq-chip', 'Frecuencia', '@Model.Frecuencia');
+        initSingle('crewGroup', '.crew-card', 'CantidadLimpiadores', '@Model.CantidadLimpiadores');
+        initSingle('hoursGroup', '.hour-btn', 'HorasEstimadas', '@Model.HorasEstimadas.ToString(System.Globalization.CultureInfo.InvariantCulture)');
+        syncAreas();
+        syncAddons();
+        updateSummary();
+    })();
+</script>
+</body>
+</html>

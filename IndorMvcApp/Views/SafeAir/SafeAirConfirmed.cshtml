@@ -1,0 +1,79 @@
+@model IndorMvcApp.ViewModels.SafeAirConfirmedViewModel
+@{
+    ViewData["Title"] = "Request Confirmed - INDOR";
+    Layout = null;
+    var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? DateTime.Today.AddMonths(3).ToString("MMMM d, yyyy");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_SafeAirStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.NombreServicio</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    <div class="success-wrap">
+        <div class="success-icon"><i class="fas fa-check"></i></div>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">You're all set</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your @Model.NombreServicio request has been saved.</p>
+    </div>
+
+    <div class="summary-card">
+        <div class="summary-row"><i class="fas fa-wind"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Visit</div><div class="summary-value">@Model.VisitaLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">Filter size</div><div class="summary-value">@Model.FiltroTamanioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-user-gear"></i><div><div class="summary-label">Provider</div><div class="summary-value">@Model.ProveedorLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">Status</div><div class="summary-value"><span class="status-confirmed"><i class="fas fa-check"></i> Confirmed</span></div></div></div>
+    </div>
+
+    @if (Model.RecordatorioActivo)
+    {
+        <div class="info-banner">
+            <i class="fas fa-bell"></i>
+            <div>
+                <strong>Next reminder scheduled in 3 months</strong><br />
+                We'll remind you again around @reminderDate.
+            </div>
+        </div>
+    }
+
+    <div class="badge-row">
+        @if (Model.RecordatorioActivo)
+        {
+            <span class="badge-pill">Reminder active</span>
+        }
+        @if (Model.TieneFotos)
+        {
+            <span class="badge-pill">Photo received</span>
+        }
+        <span class="badge-pill">Filter tracked</span>
+    </div>
+
+    @if (string.Equals(Model.TipoNecesidad, "ChangedMyself", StringComparison.OrdinalIgnoreCase))
+    {
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>If you selected "I changed it myself," your reminder has been updated.</span></div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
+        <i class="fas fa-calendar"></i> View appointment <i class="fas fa-chevron-right"></i>
+    </a>
+    @if (string.Equals(Model.TipoNecesidad, "ChangedMyself", StringComparison.OrdinalIgnoreCase))
+    {
+        <a asp-action="SafeAirService" asp-route-id="@Model.MicroservicioId" class="btn-outline"><i class="fas fa-pen"></i> Mark as changed</a>
+    }
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-outline" style="border:none;color:#0066CC;">Go to My Home</a>
+</div>
+</body>
+</html>

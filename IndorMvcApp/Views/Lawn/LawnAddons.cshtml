@@ -1,0 +1,152 @@
+@model IndorMvcApp.ViewModels.LawnAddonsViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_LawnStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="LawnSetup" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_LawnStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.05rem;">Optional extras</h2>
+    <p class="page-lead" style="margin-top:-8px;">Add extras to make your lawn look its best.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="LawnAddons" method="post" id="addonsForm">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="TipoServicio" />
+        <input type="hidden" asp-for="AreaServicio" />
+        <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" />
+        <input type="hidden" asp-for="PreferenciaExtra" id="PreferenciaExtra" />
+        <input type="hidden" asp-for="PrecioBase" id="PrecioBase" />
+        <input type="hidden" asp-for="PrecioAddons" id="PrecioAddons" />
+        <input type="hidden" asp-for="DescuentoSuscripcion" id="DescuentoSuscripcion" />
+        <input type="hidden" asp-for="PrecioTotal" id="PrecioTotal" />
+
+        <div class="field-card">
+            <div class="addon-grid" id="addonGroup">
+                @foreach (var addon in Model.AddonOptions)
+                {
+                    <button type="button" class="addon-card @(addon.Selected ? "active" : "")" data-code="@addon.Code" data-price="@addon.Price">
+                        <span class="check"><i class="fas fa-check"></i></span>
+                        <span class="emoji"><i class="fas @addon.Icon"></i></span>
+                        <span class="copy">
+                            <strong>@addon.Label</strong>
+                            <span>+ $@addon.Price.ToString("0")</span>
+                        </span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Anything else?</span>
+            <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">Additional preferences for your service.</p>
+            <div class="segment-group" id="prefGroup">
+                <button type="button" class="segment-btn" data-value="FrontOnly"><i class="fas fa-house"></i> Front only</button>
+                <button type="button" class="segment-btn" data-value="BackOnly"><i class="fas fa-fence"></i> Back only</button>
+                <button type="button" class="segment-btn" data-value="ExtraCleanup"><i class="fas fa-wand-magic-sparkles"></i> Extra cleanup</button>
+                <button type="button" class="segment-btn" data-value="NoThanks"><i class="fas fa-ban"></i> No thanks</button>
+            </div>
+        </div>
+
+        <div class="price-summary">
+            <div class="price-line"><span>Base service</span><span>@Model.AreaLabel</span></div>
+            <div class="price-line sub"><span></span><span>$<span id="baseDisplay">@Model.PrecioBase.ToString("0")</span></span></div>
+            <div class="price-line"><span>Add-ons</span><span></span></div>
+            <div id="addonLines">
+                @foreach (var line in Model.SelectedAddonLines)
+                {
+                    <div class="price-line sub" data-code-line="@line.Label"><span>@line.Label</span><span>$@line.Amount.ToString("0")</span></div>
+                }
+            </div>
+            @if (Model.DescuentoSuscripcion > 0)
+            {
+                <div class="price-line discount"><span>Subscription discount</span><span>-$<span id="discountDisplay">@Model.DescuentoSuscripcion.ToString("0")</span></span></div>
+            }
+            <div class="price-line total"><span>Estimated total</span><span class="value">$<span id="totalDisplay">@Model.PrecioTotal.ToString("0")</span></span></div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        const selected = new Set(
+            (document.getElementById('AddonsSeleccionados').value || '')
+                .split('|').map(s => s.trim()).filter(Boolean)
+        );
+        const base = parseFloat(document.getElementById('PrecioBase').value || '0');
+        const discount = parseFloat(document.getElementById('DescuentoSuscripcion').value || '0');
+
+        function renderSummary() {
+            const addonLines = document.getElementById('addonLines');
+            addonLines.innerHTML = '';
+            let addonsTotal = 0;
+            document.querySelectorAll('#addonGroup .addon-card.active').forEach(card => {
+                const price = parseFloat(card.dataset.price || '0');
+                addonsTotal += price;
+                const row = document.createElement('div');
+                row.className = 'price-line sub';
+                row.innerHTML = `<span>${card.querySelector('strong').textContent}</span><span>$${price}</span>`;
+                addonLines.appendChild(row);
+            });
+            const total = Math.max(0, base + addonsTotal - discount);
+            document.getElementById('PrecioAddons').value = addonsTotal;
+            document.getElementById('PrecioTotal').value = total;
+            document.getElementById('totalDisplay').textContent = total;
+            document.getElementById('AddonsSeleccionados').value = Array.from(selected).join('|');
+        }
+
+        document.querySelectorAll('#addonGroup .addon-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const code = card.dataset.code;
+                if (selected.has(code)) {
+                    selected.delete(code);
+                    card.classList.remove('active');
+                } else {
+                    selected.add(code);
+                    card.classList.add('active');
+                }
+                renderSummary();
+            });
+        });
+
+        function initSingle(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' .segment-btn').forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' .segment-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                });
+            });
+        }
+
+        initSingle('prefGroup', 'PreferenciaExtra', '@Model.PreferenciaExtra');
+        renderSummary();
+    })();
+</script>
+</body>
+</html>

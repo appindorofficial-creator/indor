@@ -1,0 +1,132 @@
+@model IndorMvcApp.ViewModels.LawnReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_LawnStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="LawnAddons" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_LawnStepper", 3)
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="LawnReview" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="FechaPreferida" id="FechaPreferida" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+        <div class="review-card">
+            @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+            {
+                <img src="@Url.Content("~" + Model.ImagenUrl)" alt="Lawn service" loading="lazy" />
+            }
+            <div class="review-list">
+                <div class="review-item"><i class="fas fa-rotate"></i><span><strong>@Model.SubscriptionLabel</strong></span></div>
+                <div class="review-item"><i class="fas fa-house"></i><span><strong>Service area:</strong> @Model.AreaLabel</span></div>
+                <div class="review-item"><i class="fas fa-plus"></i><span><strong>Add-ons:</strong> @Model.AddonsLabel</span></div>
+                <div class="review-item"><i class="fas fa-calendar"></i><span><strong>Preferred day:</strong> @Model.PreferredDayLabel</span></div>
+                <div class="review-item"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Choose a date</span>
+            <div class="date-scroll" id="dateGroup">
+                @foreach (var date in Model.DateOptions)
+                {
+                    <button type="button"
+                            class="date-chip @(date.Selected ? "active" : "")"
+                            data-date="@date.Date.ToString("yyyy-MM-dd")">
+                        <div class="day">@date.DayLabel</div>
+                        <div class="num">@date.DateLabel</div>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Choose a time window</span>
+            <div class="time-grid" id="timeGroup">
+                <button type="button" class="time-btn" data-value="Morning8_11">8–11 AM<span class="check"><i class="fas fa-check"></i></span></button>
+                <button type="button" class="time-btn" data-value="Midday11_2">11 AM–2 PM<span class="check"><i class="fas fa-check"></i></span></button>
+                <button type="button" class="time-btn" data-value="Afternoon2_5">2–5 PM<span class="check"><i class="fas fa-check"></i></span></button>
+                <button type="button" class="time-btn" data-value="Evening5_8">5–8 PM<span class="check"><i class="fas fa-check"></i></span></button>
+            </div>
+            <div class="info-box-blue" style="margin-top:10px;margin-bottom:0;">
+                <i class="fas fa-clock"></i>
+                <span>Provider will confirm exact arrival time.</span>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Price breakdown</span>
+            <div class="breakdown-line">
+                <span class="left"><i class="fas fa-seedling"></i> Lawn service</span>
+                <span>$@Model.PrecioBase.ToString("0.00")</span>
+            </div>
+            @foreach (var line in Model.AddonLines)
+            {
+                <div class="breakdown-line">
+                    <span class="left"><i class="fas @line.Icon"></i> @line.Label</span>
+                    <span>$@line.Amount.ToString("0.00")</span>
+                </div>
+            }
+            @if (Model.DescuentoSuscripcion > 0)
+            {
+                <div class="breakdown-line discount">
+                    <span class="left"><i class="fas fa-tag"></i> Subscription discount</span>
+                    <span>-$@Model.DescuentoSuscripcion.ToString("0.00")</span>
+                </div>
+            }
+            <div class="breakdown-total">
+                <strong>Total</strong>
+                <span class="value">$@Model.PrecioTotal.ToString("0.00")</span>
+            </div>
+            <div class="disclaimer"><i class="fas fa-circle-info"></i> Taxes may apply at checkout.</div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            <i class="fas fa-calendar-plus"></i> Request service
+        </button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSingle(groupId, selector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
+                const val = btn.dataset.value || btn.dataset.date;
+                if (val === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value || btn.dataset.date;
+                });
+            });
+        }
+
+        initSingle('dateGroup', '.date-chip', 'FechaPreferida', '@Model.FechaPreferida.ToString("yyyy-MM-dd")');
+        initSingle('timeGroup', '.time-btn', 'VentanaHorario', '@Model.VentanaHorario');
+    })();
+</script>
+</body>
+</html>

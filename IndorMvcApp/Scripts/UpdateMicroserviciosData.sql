@@ -80,7 +80,7 @@ VALUES
 	N'/basura.jpeg', N'', 1
 ),
 (
-	N'Hogar Impecable Pro',
+	N'Cleaning Pro',
 	N'Limpieza profesional que se nota.',
 	N'Servicio de limpieza para mantener tu hogar en perfectas condiciones, sin esfuerzo.',
 	N'Disfruta de un hogar limpio, organizado y listo para vivir o alquilar. Nuestro equipo realiza limpiezas detalladas adaptadas a tus necesidades. Opciones: Limpieza estándar o Limpieza profunda.',

@@ -88,6 +88,15 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UtilitiesSetupContacto> UtilitiesSetupContactos { get; set; }
     public DbSet<SolicitudGeneralHelp> SolicitudesGeneralHelp { get; set; }
     public DbSet<ArchivoGeneralHelp> ArchivosGeneralHelp { get; set; }
+    public DbSet<SafeAirServicioLanding> SafeAirServicioLanding { get; set; }
+    public DbSet<SolicitudSafeAir> SolicitudesSafeAir { get; set; }
+    public DbSet<ArchivoSafeAir> ArchivosSafeAir { get; set; }
+    public DbSet<LawnServicioLanding> LawnServicioLanding { get; set; }
+    public DbSet<SolicitudLawn> SolicitudesLawn { get; set; }
+    public DbSet<TrashServicioLanding> TrashServicioLanding { get; set; }
+    public DbSet<SolicitudTrash> SolicitudesTrash { get; set; }
+    public DbSet<CleaningProServicioLanding> CleaningProServicioLanding { get; set; }
+    public DbSet<SolicitudCleaningPro> SolicitudesCleaningPro { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -574,6 +583,125 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany(s => s.Archivos)
                   .HasForeignKey(a => a.SolicitudGeneralHelpId)
                   .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SafeAirServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(l => l.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudSafeAir>(entity =>
+        {
+            entity.Property(s => s.FiltroAncho).HasColumnType("decimal(5,2)");
+            entity.Property(s => s.FiltroAlto).HasColumnType("decimal(5,2)");
+            entity.Property(s => s.FiltroProfundidad).HasColumnType("decimal(5,2)");
+            entity.Property(s => s.FechaProximoRecordatorio).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoSafeAir>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudSafeAirId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<LawnServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(l => l.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudLawn>(entity =>
+        {
+            entity.Property(s => s.PrecioBase).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.PrecioAddons).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.DescuentoSuscripcion).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.PrecioTotal).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.FechaPreferida).HasColumnType("date");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<TrashServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(l => l.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudTrash>(entity =>
+        {
+            entity.Property(s => s.PrecioMensual).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<CleaningProServicioLanding>(entity =>
+        {
+            entity.HasOne(l => l.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(l => l.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<SolicitudCleaningPro>(entity =>
+        {
+            entity.Property(s => s.HorasEstimadas).HasColumnType("decimal(4,1)");
+            entity.Property(s => s.TarifaHoraria).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.Subtotal).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.ImpuestoVenta).HasColumnType("decimal(10,2)");
+            entity.Property(s => s.PrecioTotal).HasColumnType("decimal(10,2)");
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
         });
     }
 }

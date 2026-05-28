@@ -78,7 +78,7 @@ BEGIN TRY
     WHERE Id = 3;
 
     UPDATE dbo.Microservicios SET
-        Nombre = N'Spotless Home Pro',
+        Nombre = N'Cleaning Pro',
         Subtitulo = N'Professional cleaning you can see.',
         Descripcion = N'Cleaning service to keep your home in perfect condition, effortlessly.',
         DescripcionCompleta = N'Enjoy a clean, organized home ready to live in or rent. Our team performs detailed cleanings tailored to your needs. Options: Standard cleaning or Deep cleaning.',

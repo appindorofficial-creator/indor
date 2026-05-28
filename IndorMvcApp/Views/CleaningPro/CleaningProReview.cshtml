@@ -1,0 +1,186 @@
+@model IndorMvcApp.ViewModels.CleaningProReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+    var dateOptions = Enumerable.Range(0, 14)
+        .Select(offset => DateTime.Today.AddDays(offset + 1))
+        .Select(d => new { Date = d, DayLabel = d.ToString("ddd"), DateLabel = d.ToString("MMM d"), Selected = d.Date == Model.FechaServicio.Date })
+        .ToList();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_CleaningProStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_CleaningProStepper", 3)
+
+    <p class="page-lead" style="margin-top:-8px;">Please review your selected details and pricing.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="CleaningProReview" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="AddonsSeleccionados" />
+        <input type="hidden" asp-for="FechaServicio" id="FechaServicio" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+        <div class="field-card">
+            <div class="review-card-head">
+                <h3>Your cleaning details</h3>
+                <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="edit-link"><i class="fas fa-pen"></i> Edit</a>
+            </div>
+            <div class="review-detail-row">
+                <i class="fas fa-sparkles"></i>
+                <div>
+                    <div class="label">Service</div>
+                    <div class="value">@Model.NombreServicio</div>
+                    <div style="font-size:0.72rem;color:#64748B;">General cleaning</div>
+                </div>
+            </div>
+            <div class="review-detail-row">
+                <i class="fas fa-rotate"></i>
+                <div><div class="label">Frequency</div><div class="value">@Model.FrequencyLabel</div></div>
+            </div>
+            <div class="review-detail-row">
+                <i class="fas fa-border-all"></i>
+                <div><div class="label">Cleaned areas</div><div class="value">@Model.AreasLabel</div></div>
+            </div>
+            <div class="review-detail-row">
+                <i class="fas fa-users"></i>
+                <div><div class="label">Crew size</div><div class="value">@Model.CrewLabel</div></div>
+            </div>
+            <div class="review-detail-row">
+                <i class="fas fa-clock"></i>
+                <div><div class="label">Estimated duration</div><div class="value">@Model.HoursLabel</div></div>
+            </div>
+            <div class="review-detail-row">
+                <i class="fas fa-location-dot"></i>
+                <div><div class="label">Address</div><div class="value">@Model.DireccionPropiedad</div></div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Choose date &amp; time</span>
+            <div class="date-scroll" id="dateGroup" style="margin-bottom:12px;">
+                @foreach (var date in dateOptions)
+                {
+                    <button type="button"
+                            class="date-chip @(date.Selected ? "active" : "")"
+                            data-date="@date.Date.ToString("yyyy-MM-dd")">
+                        <div class="day">@date.DayLabel</div>
+                        <div class="num">@date.DateLabel</div>
+                    </button>
+                }
+            </div>
+            <span asp-validation-for="FechaServicio" class="text-danger" style="font-size:0.75rem;"></span>
+            <div class="time-grid" id="timeGroup">
+                <button type="button" class="time-btn" data-value="Morning10">10:00 AM<span class="check"><i class="fas fa-check"></i></span></button>
+                <button type="button" class="time-btn" data-value="Morning9_12">9:00 AM – 12:00 PM<span class="check"><i class="fas fa-check"></i></span></button>
+                <button type="button" class="time-btn" data-value="Afternoon1_5">1:00 PM – 5:00 PM<span class="check"><i class="fas fa-check"></i></span></button>
+            </div>
+        </div>
+
+        @if (Model.AddonLines.Count > 0)
+        {
+            <div class="field-card">
+                <div class="review-card-head">
+                    <h3>Add-ons</h3>
+                    <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="edit-link"><i class="fas fa-pen"></i> Edit</a>
+                </div>
+                @foreach (var addon in Model.AddonLines)
+                {
+                    <div class="breakdown-line">
+                        <span class="left"><i class="fas fa-check" style="color:#0066CC;margin-right:6px;"></i>@addon.Label</span>
+                        <span class="right">$@addon.Amount.ToString("0.00")</span>
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="field-card">
+            <span class="field-label">Pricing breakdown</span>
+            <div class="breakdown-line">
+                <span class="left">Hourly rate<small>@Model.CrewLabel x $@Model.TarifaHoraria.ToString("0")/hr</small></span>
+                <span class="right">$@Model.TarifaHoraria.ToString("0.00")/hr</span>
+            </div>
+            <div class="breakdown-line">
+                <span class="left">Estimated duration<small>@Model.HoursLabel</small></span>
+                <span class="right">x @Model.HorasEstimadas.ToString("0") hrs</span>
+            </div>
+            <div class="breakdown-line">
+                <span class="left">Service subtotal</span>
+                <span class="right">$@Model.ServiceSubtotal.ToString("0.00")</span>
+            </div>
+            @if (Model.AddonsTotal > 0)
+            {
+                <div class="breakdown-line">
+                    <span class="left">Add-ons</span>
+                    <span class="right">$@Model.AddonsTotal.ToString("0.00")</span>
+                </div>
+            }
+            <div class="breakdown-line">
+                <span class="left">Subtotal</span>
+                <span class="right">$@Model.Subtotal.ToString("0.00")</span>
+            </div>
+            <div class="breakdown-line">
+                <span class="left">Sales tax (8.25%) <i class="fas fa-circle-info" style="font-size:0.65rem;color:#94A3B8;"></i></span>
+                <span class="right">$@Model.ImpuestoVenta.ToString("0.00")</span>
+            </div>
+            <div class="total-highlight">
+                <div>
+                    <div class="formula"><i class="fas fa-calculator"></i> $@Model.TarifaHoraria.ToString("0")/hr x @Model.HorasEstimadas.ToString("0") hrs =</div>
+                    <div class="amount">$@Model.PrecioTotal.ToString("0.00") Total (before tip)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Notes to your cleaner</span>
+            <div class="notes-row">
+                <i class="fas fa-comment-dots"></i>
+                <textarea asp-for="NotasLimpiador" placeholder="Any special instructions for your cleaner?"></textarea>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            Confirm cleaning request <i class="fas fa-chevron-right"></i>
+        </button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSingle(groupId, selector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
+                const val = btn.dataset.value || btn.dataset.date;
+                if (val === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value || btn.dataset.date;
+                });
+            });
+        }
+        initSingle('dateGroup', '.date-chip', 'FechaServicio', '@Model.FechaServicio.ToString("yyyy-MM-dd")');
+        initSingle('timeGroup', '.time-btn', 'VentanaHorario', '@Model.VentanaHorario');
+    })();
+</script>
+</body>
+</html>

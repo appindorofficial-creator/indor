@@ -1,0 +1,135 @@
+@model IndorMvcApp.ViewModels.SafeAirScheduleViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_SafeAirStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="SafeAirDetails" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_SafeAirStepper", 2)
+
+    <h2 class="page-heading" style="font-size:1.1rem;">Photos & schedule</h2>
+    <p class="page-lead" style="margin-top:-8px;">Add context so the provider arrives prepared.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="SafeAirSchedule" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="TipoNecesidad" />
+        <input type="hidden" asp-for="VentanaTiempo" id="VentanaTiempo" />
+        <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
+
+        <div class="field-card">
+            <span class="field-label">Add a photo of the filter or vent</span>
+            <div class="photo-row">
+                <label class="photo-upload">
+                    <i class="fas fa-camera"></i>
+                    <p><strong>Upload photo</strong></p>
+                    <p>Tap to add</p>
+                    <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:8px;width:100%;font-size:0.68rem;" />
+                </label>
+                <div class="photo-example">
+                    <span class="photo-badge">Good example</span>
+                    <img src="@Url.Content("~/aire.jpeg")" alt="Ceiling vent example" loading="lazy" onerror="this.style.display='none'" />
+                </div>
+                <div class="photo-example">
+                    <span class="photo-badge">Good example</span>
+                    <img src="@Url.Content("~/aire.jpeg")" alt="Filter size example" loading="lazy" onerror="this.style.display='none'" />
+                </div>
+            </div>
+            @foreach (var file in Model.ArchivosExistentes)
+            {
+                <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            }
+            <div class="info-box-blue" style="margin-top:10px;margin-bottom:0;">
+                <i class="fas fa-circle-info"></i>
+                <span>If you don't know the filter size, a photo helps us verify it.</span>
+            </div>
+        </div>
+
+        @if (Model.ShowScheduleOptions)
+        {
+            <div class="field-card">
+                <span class="field-label">Preferred time</span>
+                <div class="chip-scroll" id="timeGroup">
+                    <button type="button" class="chip-option" data-value="NextAvailable"><i class="fas fa-clock"></i> Next available</button>
+                    <button type="button" class="chip-option" data-value="Morning"><i class="fas fa-sun"></i> Morning</button>
+                    <button type="button" class="chip-option" data-value="Afternoon"><i class="fas fa-cloud-sun"></i> Afternoon</button>
+                    <button type="button" class="chip-option" data-value="Flexible"><i class="fas fa-calendar"></i> Flexible</button>
+                </div>
+            </div>
+        }
+
+        <div class="field-card">
+            <span class="field-label">Access details</span>
+            <div class="chip-scroll" id="accessGroup">
+                <button type="button" class="chip-option" data-value="House"><i class="fas fa-house"></i> House</button>
+                <button type="button" class="chip-option" data-value="Apartment"><i class="fas fa-building"></i> Apartment</button>
+                <button type="button" class="chip-option" data-value="AtticAccess"><i class="fas fa-stairs"></i> Attic access</button>
+                <button type="button" class="chip-option" data-value="GateCode"><i class="fas fa-lock"></i> Gate code</button>
+            </div>
+            <div class="input-wrap" style="margin-top:10px;">
+                <i class="fas fa-note-sticky"></i>
+                <input asp-for="NotasAcceso" placeholder="Add any access notes (optional)" />
+            </div>
+        </div>
+
+        <div class="summary-inline">
+            <i class="fas fa-clipboard-list main"></i>
+            <div>
+                <div class="line"><strong>Service:</strong> @Model.NombreServicio</div>
+                <div class="line"><strong>Filters:</strong> @Model.CantidadFiltrosLabel</div>
+                <div class="line"><strong>Size:</strong> @Model.FiltroTamanioLabel</div>
+                @if (Model.ShowScheduleOptions)
+                {
+                    <div class="line"><strong>Provider brings filter:</strong> @Model.ProveedorFiltroLabel</div>
+                }
+                <div class="line"><strong>Reminder:</strong> @Model.RecordatorioLabel</div>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            <i class="fas fa-calendar-plus"></i> Confirm request
+        </button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        function initSingle(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            if (!hidden) return;
+            document.querySelectorAll('#' + groupId + ' .chip-option').forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' .chip-option').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                });
+            });
+        }
+
+        initSingle('timeGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
+        initSingle('accessGroup', 'DetallesAcceso', '@Model.DetallesAcceso');
+    })();
+</script>
+</body>
+</html>

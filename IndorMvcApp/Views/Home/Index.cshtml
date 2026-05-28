@@ -73,6 +73,35 @@
     string BedsLabel(int? beds) => beds.HasValue ? $"{beds} bed{(beds.Value == 1 ? "" : "s")}" : "";
     string BathsLabel(decimal? baths) => baths.HasValue ? $"{Num(baths)} bath{(baths.Value == 1 ? "" : "s")}" : "";
 
+    bool IsSafeAirMicroservice(IndorMvcApp.Models.Microservicio s) =>
+        s.Id == 1 || string.Equals(s.Nombre, "Safe Air 365", StringComparison.OrdinalIgnoreCase);
+
+    bool IsLawnMicroservice(IndorMvcApp.Models.Microservicio s) =>
+        s.Id == 2 || string.Equals(s.Nombre, "Always Perfect Lawn", StringComparison.OrdinalIgnoreCase);
+
+    bool IsTrashMicroservice(IndorMvcApp.Models.Microservicio s) =>
+        s.Id == 3 || string.Equals(s.Nombre, "Stress-Free Trash", StringComparison.OrdinalIgnoreCase);
+
+    bool IsCleaningProMicroservice(IndorMvcApp.Models.Microservicio s) =>
+        s.Id == 4 || string.Equals(s.Nombre, "Cleaning Pro", StringComparison.OrdinalIgnoreCase);
+
+    string GetMicroserviceLinkController(IndorMvcApp.Models.Microservicio s) =>
+        IsSafeAirMicroservice(s) ? "SafeAir"
+        : IsLawnMicroservice(s) ? "Lawn"
+        : IsTrashMicroservice(s) ? "Trash"
+        : IsCleaningProMicroservice(s) ? "CleaningPro"
+        : "Microservicios";
+
+    string GetMicroserviceLinkAction(IndorMvcApp.Models.Microservicio s) =>
+        IsSafeAirMicroservice(s) ? "SafeAirService"
+        : IsLawnMicroservice(s) ? "LawnService"
+        : IsTrashMicroservice(s) ? "TrashService"
+        : IsCleaningProMicroservice(s) ? "CleaningProService"
+        : "Schedule";
+
+    bool HasDedicatedMicroserviceFlow(IndorMvcApp.Models.Microservicio s) =>
+        IsSafeAirMicroservice(s) || IsLawnMicroservice(s) || IsTrashMicroservice(s) || IsCleaningProMicroservice(s);
+
     OfferingCarouselViewModel BuildMicroCarousel(IEnumerable<IndorMvcApp.Models.Microservicio> items, string subtitle)
     {
         return new OfferingCarouselViewModel
@@ -94,10 +123,10 @@
                 ImageUrl = s.ImagenUrl,
                 ImageBase64 = s.ImagenBase64,
                 SourceId = s.Id,
-                EnableSchedule = true,
+                EnableSchedule = !HasDedicatedMicroserviceFlow(s),
                 EnableLink = true,
-                LinkController = "Microservicios",
-                LinkAction = "Schedule"
+                LinkController = GetMicroserviceLinkController(s),
+                LinkAction = GetMicroserviceLinkAction(s)
             }).ToList()
         };
     }
@@ -825,62 +854,62 @@
             box-shadow: 0 6px 14px rgba(0, 102, 204, 0.25);
         }
 
-        /* === Carrusel tipo slide para Microservicios / Servicios / Inspecciones === */
-        .services-grid {
-            position: relative;
+        /* === Grid compacto para Microservicios / Servicios / Inspecciones === */
+        .offering-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+        }
+        .offering-card {
+            border: 1px solid #E5E7EB;
+            background: #FFF;
+            border-radius: 14px;
+            padding: 0;
+            cursor: pointer;
+            text-align: center;
             display: flex;
-            flex-wrap: nowrap;
-            gap: 0;
-            overflow-x: auto;
-            overflow-y: hidden;
-            scroll-snap-type: x mandatory;
-            scroll-behavior: smooth;
-            -webkit-overflow-scrolling: touch;
-            padding: 4px 0 8px;
-            margin: 0;
-            scrollbar-width: none;
+            flex-direction: column;
+            align-items: stretch;
+            gap: 6px;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, .06);
+            transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+            text-decoration: none;
+            color: inherit;
+            font: inherit;
+            width: 100%;
         }
-        .services-grid::-webkit-scrollbar { display: none; height: 0; }
-        .services-grid > .ms-card {
-            flex: 0 0 92%;
-            width: 92%;
-            max-width: 92%;
-            scroll-snap-align: start;
-            scroll-snap-stop: always;
-            margin-right: 10px;
+        .offering-card:hover {
+            border-color: #BFDBFE;
+            box-shadow: 0 4px 12px rgba(0, 102, 204, .12);
+            transform: translateY(-1px);
         }
-        .carousel-wrap { position: relative; }
-        .carousel-nav {
-            position: absolute; top: 50%; transform: translateY(-50%);
-            width: 36px; height: 36px; border-radius: 50%;
-            border: none; background: rgba(255,255,255,.95);
-            color: #0A2540; font-size: 0.95rem;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 4px 12px rgba(10, 37, 64, .18);
-            cursor: pointer; z-index: 3;
-            transition: transform .15s ease, opacity .15s ease;
+        .offering-card-media {
+            position: relative;
+            height: 72px;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
         }
-        .carousel-nav:hover { transform: translateY(-50%) scale(1.06); }
-        .carousel-nav:disabled { opacity: 0.35; cursor: default; }
-        .carousel-nav.prev { left: 6px; }
-        .carousel-nav.next { right: 6px; }
-        .carousel-dots {
-            display: flex; justify-content: center; align-items: center;
-            gap: 6px; margin-top: 10px; flex-wrap: wrap;
+        .offering-card-media img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-        .carousel-dot {
-            width: 7px; height: 7px; border-radius: 999px;
-            background: #CBD5E1; border: none; padding: 0; cursor: pointer;
-            transition: width .2s ease, background .2s ease;
+        .offering-card-fallback {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #0066CC;
+            font-size: 1.4rem;
         }
-        .carousel-dot.active { width: 22px; background: #0066CC; }
-        .carousel-counter {
-            position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
-            background: rgba(10, 37, 64, .8); color: #FFF;
-            font-size: 0.68rem; font-weight: 700;
-            padding: 4px 10px; border-radius: 999px;
-            z-index: 3; backdrop-filter: blur(4px);
-            pointer-events: none;
+        .offering-card-label {
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #0A2540;
+            line-height: 1.2;
+            padding: 0 4px 8px;
         }
 
         /* === Contenedor de categoría (Microservicios) === */
@@ -935,89 +964,10 @@
         .category-badge-insp {
             background: #EFF6FF; color: #004FA3; border-color: #BFDBFE;
         }
-        .ms-amount-text {
-            font-size: 1.05rem; font-weight: 800; color: #0066CC;
-            text-transform: uppercase; letter-spacing: .5px;
-        }
-
-        .ms-card {
-            background: #FFF; border-radius: 18px; overflow: hidden;
-            box-shadow: 0 6px 18px rgba(10, 37, 64, .08);
-            display: flex; flex-direction: column;
-            transition: transform .2s ease, box-shadow .2s ease;
-            border: 1px solid #EEF2F7;
-        }
-        .ms-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(10, 37, 64, .12); }
-
-        .ms-media {
-            position: relative; height: 170px;
-            background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
-            display: flex; align-items: center; justify-content: center;
-            overflow: hidden;
-        }
-        .ms-media img { width: 100%; height: 100%; object-fit: cover; }
-        .ms-freq {
-            position: absolute; top: 10px; right: 10px;
-            background: rgba(10, 37, 64, .85); color: #FFF;
-            font-size: 0.68rem; font-weight: 600;
-            padding: 5px 10px; border-radius: 999px;
-            display: inline-flex; align-items: center; gap: 5px;
-            backdrop-filter: blur(4px);
-        }
-        .ms-freq i { font-size: 0.62rem; }
-
-        .ms-body { padding: 14px 14px 16px; display: flex; flex-direction: column; flex: 1; }
-        .ms-title { font-size: 1.05rem; font-weight: 800; color: #0A2540; margin-bottom: 2px; line-height: 1.25; }
-        .ms-subtitle { font-size: 0.78rem; color: #0066CC; font-weight: 600; margin-bottom: 8px; font-style: italic; }
-        .ms-desc {
-            font-size: 0.8rem; color: #4B5563; line-height: 1.45;
-            margin-bottom: 12px;
-        }
-
-        .ms-includes {
-            background: #F9FAFB; border: 1px solid #EEF2F7; border-radius: 12px;
-            padding: 10px 12px; margin-bottom: 14px;
-        }
-        .ms-includes-label {
-            display: block; font-size: 0.65rem; font-weight: 700; letter-spacing: .8px;
-            text-transform: uppercase; color: #6B7280; margin-bottom: 6px;
-        }
-        .ms-includes ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
-        .ms-includes li {
-            display: flex; align-items: flex-start; gap: 8px;
-            font-size: 0.78rem; color: #0A2540; line-height: 1.35;
-        }
-        .ms-includes li i {
-            color: #0066CC; font-size: 0.7rem; margin-top: 4px; flex-shrink: 0;
-        }
-
-        .ms-footer {
-            margin-top: auto; display: flex; align-items: center; justify-content: space-between; gap: 10px;
-            padding-top: 10px; border-top: 1px dashed #E5E7EB;
-        }
-        .ms-price { display: flex; flex-direction: column; gap: 1px; }
-        .ms-price-prefix { font-size: 0.62rem; text-transform: uppercase; letter-spacing: .8px; color: #6B7280; font-weight: 700; }
-        .ms-price-amount { display: flex; align-items: baseline; gap: 3px; color: #0A2540; }
-        .ms-currency { font-size: 0.85rem; font-weight: 700; color: #0066CC; }
-        .ms-amount { font-size: 1.5rem; font-weight: 800; color: #0066CC; line-height: 1; }
-        .ms-currency-code { font-size: 0.68rem; font-weight: 600; color: #6B7280; margin-left: 2px; }
-
-        .ms-book {
-            background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; border: none;
-            padding: 10px 14px; border-radius: 12px;
-            font-size: 0.78rem; font-weight: 700; cursor: pointer;
-            display: inline-flex; align-items: center; gap: 6px;
-            transition: transform .2s ease, box-shadow .2s ease;
-            white-space: nowrap;
-            box-shadow: 0 6px 14px rgba(0, 102, 204, .3);
-        }
-        .ms-book:hover { transform: translateY(-1px); box-shadow: 0 10px 18px rgba(0, 102, 204, .4); }
-        .ms-book i { font-size: 0.72rem; }
-        a.ms-book { text-decoration: none; color: #FFF; }
-
         @@media (max-width: 380px) {
-            .ms-media { height: 150px; }
-            .ms-amount { font-size: 1.3rem; }
+            .offering-grid { gap: 8px; }
+            .offering-card-media { height: 58px; }
+            .offering-card-label { font-size: 0.62rem; }
         }
 
         /* === Banner Home === */
@@ -3907,11 +3857,11 @@
         <button class="nav-item" data-target="section-services"><i class="fas fa-compass"></i><span>Services</span></button>
         @if (hasProperties && primaryProp != null)
         {
-            <a class="nav-item" href="@Url.Action("Index", "MyHome", new { id = primaryProp.Id })"><i class="fas fa-wand-magic-sparkles"></i><span>My Home</span></a>
+            <a class="nav-item" href="@Url.Action("Index", "MyHome", new { id = primaryProp.Id })"><i class="fas fa-wand-magic-sparkles"></i><span>House Fax</span></a>
         }
         else
         {
-            <button class="nav-item" data-target="section-myhome"><i class="fas fa-wand-magic-sparkles"></i><span>My Home</span></button>
+            <button class="nav-item" data-target="section-myhome"><i class="fas fa-wand-magic-sparkles"></i><span>House Fax</span></button>
         }
         <button class="nav-item" data-target="section-schedule"><i class="fas fa-calendar"></i><span>Schedule</span></button>
         <button class="nav-item" data-target="section-more"><i class="fas fa-ellipsis"></i><span>More</span></button>
@@ -4136,82 +4086,6 @@
             });
         });
 
-        // ===== Slide carousel para Microservicios / Servicios / Inspecciones =====
-        (function () {
-            function initCarousel(wrap) {
-                const grid = wrap.querySelector('.services-grid');
-                if (!grid) return;
-                const cards = Array.from(grid.querySelectorAll('.ms-card'));
-                if (cards.length === 0) return;
-
-                // Counter
-                const counter = document.createElement('div');
-                counter.className = 'carousel-counter';
-                counter.textContent = `1 / ${cards.length}`;
-                wrap.appendChild(counter);
-
-                // Prev / Next buttons (solo si hay más de 1)
-                let btnPrev, btnNext, dotsWrap, dots = [];
-                if (cards.length > 1) {
-                    btnPrev = document.createElement('button');
-                    btnPrev.type = 'button';
-                    btnPrev.className = 'carousel-nav prev';
-                    btnPrev.setAttribute('aria-label', 'Previous');
-                    btnPrev.innerHTML = '<i class="fas fa-chevron-left"></i>';
-                    wrap.appendChild(btnPrev);
-
-                    btnNext = document.createElement('button');
-                    btnNext.type = 'button';
-                    btnNext.className = 'carousel-nav next';
-                    btnNext.setAttribute('aria-label', 'Next');
-                    btnNext.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                    wrap.appendChild(btnNext);
-
-                    dotsWrap = document.createElement('div');
-                    dotsWrap.className = 'carousel-dots';
-                    cards.forEach((_, i) => {
-                        const d = document.createElement('button');
-                        d.type = 'button';
-                        d.className = 'carousel-dot' + (i === 0 ? ' active' : '');
-                        d.setAttribute('aria-label', `Ir al slide ${i + 1}`);
-                        d.addEventListener('click', () => goTo(i));
-                        dotsWrap.appendChild(d);
-                        dots.push(d);
-                    });
-                    wrap.appendChild(dotsWrap);
-                }
-
-                let current = 0;
-                function goTo(i) {
-                    current = Math.max(0, Math.min(cards.length - 1, i));
-                    cards[current].scrollIntoView({ behavior: 'smooth', inline: 'start', block: 'nearest' });
-                }
-                function update() {
-                    const cardStep = (cards[0]?.offsetWidth || grid.clientWidth) + 10;
-                    const idx = Math.round(grid.scrollLeft / cardStep);
-                    current = Math.max(0, Math.min(cards.length - 1, idx));
-                    counter.textContent = `${current + 1} / ${cards.length}`;
-                    if (dots.length) {
-                        dots.forEach((d, i) => d.classList.toggle('active', i === current));
-                    }
-                    if (btnPrev) btnPrev.disabled = current === 0;
-                    if (btnNext) btnNext.disabled = current === cards.length - 1;
-                }
-
-                if (btnPrev) btnPrev.addEventListener('click', () => goTo(current - 1));
-                if (btnNext) btnNext.addEventListener('click', () => goTo(current + 1));
-
-                let scrollTimer = null;
-                grid.addEventListener('scroll', () => {
-                    if (scrollTimer) clearTimeout(scrollTimer);
-                    scrollTimer = setTimeout(update, 60);
-                });
-                window.addEventListener('resize', update);
-                update();
-            }
-
-            document.querySelectorAll('.carousel-wrap').forEach(initCarousel);
-        })();
     </script>
 </body>
 </html>

@@ -1,0 +1,119 @@
+@model IndorMvcApp.ViewModels.LawnSetupViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_LawnStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="LawnService" asp-route-id="@Model.MicroservicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_LawnStepper", 1)
+
+    <h2 class="page-heading" style="font-size:1.05rem;">Choose your lawn service</h2>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="LawnSetup" method="post" id="setupForm">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
+        <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
+        <input type="hidden" asp-for="AreaServicio" id="AreaServicio" />
+        <input type="hidden" asp-for="EstimatedTotal" id="EstimatedTotal" />
+
+        <div class="field-card">
+            <span class="field-label">Service type</span>
+            <div class="segment-group" id="typeGroup">
+                <button type="button" class="segment-btn" data-value="OneTime"><i class="fas fa-calendar-day"></i> One-time</button>
+                <button type="button" class="segment-btn" data-value="Subscription"><i class="fas fa-rotate"></i> Subscription</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Frequency</span>
+            <div class="segment-group" id="freqGroup">
+                <button type="button" class="segment-btn" data-value="Weekly">Weekly</button>
+                <button type="button" class="segment-btn" data-value="Biweekly">Biweekly</button>
+                <button type="button" class="segment-btn" data-value="Monthly">Monthly</button>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Which area do you want serviced?</span>
+            <div class="area-grid" id="areaGroup">
+                @foreach (var area in Model.AreaOptions)
+                {
+                    <button type="button" class="area-card" data-value="@area.Code" data-price="@area.Price">
+                        <span class="radio"></span>
+                        <i class="fas @area.Icon main"></i>
+                        <div class="label">@area.Label</div>
+                        <div class="price">@area.PriceLabel</div>
+                    </button>
+                }
+            </div>
+            <div class="info-box-blue" style="margin-top:12px;margin-bottom:0;">
+                <i class="fas fa-circle-info"></i>
+                <span>Pricing updates based on selected areas.</span>
+            </div>
+        </div>
+
+        <div class="sticky-total">
+            <div class="sticky-total-row">
+                <span class="label">Estimated total</span>
+                <span class="value" id="totalDisplay">$@Model.EstimatedTotal.ToString("0")</span>
+            </div>
+            <button type="submit" name="action" value="continue" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        </div>
+    </form>
+</div>
+<script>
+    (function () {
+        const discount = 10;
+
+        function initSingle(groupId, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' .segment-btn, #' + groupId + ' .area-card').forEach(btn => {
+                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' .segment-btn, #' + groupId + ' .area-card').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value;
+                    updateTotal();
+                });
+            });
+        }
+
+        function updateTotal() {
+            const type = document.getElementById('TipoServicio').value;
+            const activeArea = document.querySelector('#areaGroup .area-card.active');
+            const base = activeArea ? parseFloat(activeArea.dataset.price || '45') : 45;
+            const total = Math.max(0, base - (type === 'Subscription' ? discount : 0));
+            document.getElementById('EstimatedTotal').value = total;
+            document.getElementById('totalDisplay').textContent = '$' + total;
+        }
+
+        initSingle('typeGroup', 'TipoServicio', '@Model.TipoServicio');
+        initSingle('freqGroup', 'Frecuencia', '@Model.Frecuencia');
+        initSingle('areaGroup', 'AreaServicio', '@Model.AreaServicio');
+        updateTotal();
+    })();
+</script>
+</body>
+</html>
