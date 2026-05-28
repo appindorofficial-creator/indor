@@ -48,7 +48,7 @@ BEGIN
     INSERT INTO dbo.HomeCarePrioritiesConfig (
         Titulo, Subtitulo, IconoClase, ViewAllTexto, ViewAllController, ViewAllAction, Activo)
     VALUES (
-        N'This Year Priorities',
+        N'Home Care Guide',
         N'Stay ahead of important home maintenance.',
         N'fa-shield-halved',
         N'View all tasks',
@@ -73,6 +73,14 @@ BEGIN
     (N'Pest control', N'Recommended yearly', N'/priority-pest-control.png', N'fa-bug', N'PestControl', N'PestControlService', 8, 1),
     (N'Smoke Detector', N'Test monthly', N'/priority-smoke-detector.png', N'fa-bell', N'SmokeDetector', N'SmokeDetectorService', 9, 1);
     PRINT 'HomeCarePriorities seeded.';
+END
+GO
+
+IF EXISTS (SELECT 1 FROM dbo.HomeCarePrioritiesConfig)
+BEGIN
+    UPDATE dbo.HomeCarePrioritiesConfig
+    SET Titulo = N'Home Care Guide'
+    WHERE Titulo <> N'Home Care Guide';
 END
 GO
 

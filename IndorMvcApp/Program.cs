@@ -41,9 +41,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 // Configurar cookies de autenticación
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login";
+    options.LoginPath = "/Account/LoginForm";
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.SlidingExpiration = true;
 });
 
 // Register HttpClient and AddressLookupService

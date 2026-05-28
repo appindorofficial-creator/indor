@@ -70,8 +70,13 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Login(string? returnUrl = null)
+    public async Task<IActionResult> Login(string? returnUrl = null)
     {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return await RedirectAuthenticatedUserAsync(returnUrl);
+        }
+
         ViewData["ReturnUrl"] = returnUrl;
         return View();
     }
@@ -81,11 +86,7 @@ public class AccountController : Controller
     {
         if (User.Identity?.IsAuthenticated == true)
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user != null && await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
-            {
-                return RedirectToAction("Index", "Home");
-            }
+            return await RedirectAuthenticatedUserAsync(returnUrl);
         }
 
         ViewData["ReturnUrl"] = returnUrl;
@@ -105,40 +106,13 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
-
-                if (user != null)
-                {
-                    var tienePropiedades = await _db.Propiedades
-                        .AnyAsync(p => p.UserId == user.Id && p.Activo);
-
-                    if (tienePropiedades)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-
-                    if (!string.IsNullOrEmpty(user.RolUsuario))
-                    {
-                        return user.RolUsuario switch
-                        {
-                            "Propietario" => RedirectToAction("AddProperty", "Propietario"),
-                            "Realtor" => RedirectToAction("Dashboard", "Realtor"),
-                            "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
-                            "ProveedorServicios" => RedirectToAction("Dashboard", "Proveedor"),
-                            _ => RedirectToLocal(returnUrl)
-                        };
-                    }
-                }
-
-                return RedirectToLocal(returnUrl);
+                return await RedirectAuthenticatedUserAsync(returnUrl, user);
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return View(model);
-            }
+
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
         }
 
-        return View(model);
+        return View("LoginForm", model);
     }
 
     [HttpPost]
@@ -188,15 +162,36 @@ public class AccountController : Controller
         return View(model);
     }
 
-    private IActionResult RedirectToLocal(string? returnUrl)
+    private async Task<IActionResult> RedirectAuthenticatedUserAsync(string? returnUrl = null, ApplicationUser? user = null)
     {
         if (Url.IsLocalUrl(returnUrl))
         {
             return Redirect(returnUrl);
         }
-        else
+
+        user ??= await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction(nameof(LoginForm));
+        }
+
+        if (await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
         {
             return RedirectToAction("Index", "Home");
         }
+
+        if (!string.IsNullOrEmpty(user.RolUsuario))
+        {
+            return user.RolUsuario switch
+            {
+                "Propietario" => RedirectToAction("AddProperty", "Propietario"),
+                "Realtor" => RedirectToAction("Dashboard", "Realtor"),
+                "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
+                "ProveedorServicios" => RedirectToAction("Dashboard", "Proveedor"),
+                _ => RedirectToAction("Index", "Home")
+            };
+        }
+
+        return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
     }
 }

@@ -3,7 +3,7 @@ namespace IndorMvcApp.ViewModels;
 public class HomeCarePrioritiesSectionViewModel
 {
     public int? PropiedadId { get; set; }
-    public string Title { get; set; } = "This Year Priorities";
+    public string Title { get; set; } = "Home Care Guide";
     public string Subtitle { get; set; } = "Stay ahead of important home maintenance.";
     public string IconClass { get; set; } = "fa-shield-halved";
     public string ViewAllText { get; set; } = "View all tasks";
