@@ -12,6 +12,7 @@ public static class HomeDashboardDisplayService
         Propiedad propiedad,
         PropertyInfoViewModel? info,
         PropiedadHvacSistema? hvacRecord,
+        PropiedadWaterHeaterSistema? waterHeaterRecord,
         IReadOnlyList<PropiedadMantenimiento> mantenimiento,
         IReadOnlyList<PropiedadDocumento> documentos,
         IReadOnlyList<PropiedadHistorial> historial,
@@ -19,8 +20,6 @@ public static class HomeDashboardDisplayService
         IUrlHelper url)
     {
         var d = info?.PropertyDetails;
-        var systems = TryBuildSystems(propiedad, info);
-        var waterHeater = systems?.Systems.FirstOrDefault(s => s.Id == "water-heater");
 
         var vm = new HomeDashboardViewModel
         {
@@ -42,7 +41,7 @@ public static class HomeDashboardDisplayService
             HouseFactsUrl = $"{url.Action("Index", "Home")}#section-myhome",
             NotificationCount = notificationCount,
             QuickActions = BuildQuickActions(),
-            TodayTasks = BuildTodayTasks(propiedad.Id, hvacRecord, waterHeater, documentos, mantenimiento, url),
+            TodayTasks = BuildTodayTasks(propiedad.Id, hvacRecord, waterHeaterRecord, documentos, mantenimiento, url),
             UpcomingSchedule = BuildSchedule(mantenimiento),
             RecentDocuments = BuildDocuments(propiedad.Id, documentos, url),
             RecentActivity = BuildActivity(historial)
@@ -96,21 +95,16 @@ public static class HomeDashboardDisplayService
                     Title = "Add your HVAC system details",
                     Subtitle = "Get personalized maintenance tips",
                     Url = url.Action("Add", "HvacSetup", new { propiedadId = propiedad.Id }) ?? "#"
+                },
+                new HomeTodayTaskViewModel
+                {
+                    Icon = "fa-fire-burner",
+                    Title = "Add water heater info",
+                    Subtitle = "Help us keep track age, model & warranty",
+                    Url = url.Action("Add", "WaterHeaterSetup", new { propiedadId = propiedad.Id }) ?? "#"
                 }
             ]
         };
-    }
-
-    private static SystemsProfileIndexViewModel? TryBuildSystems(Propiedad propiedad, PropertyInfoViewModel? info)
-    {
-        try
-        {
-            return SystemsProfileDisplayService.BuildIndex(propiedad, info);
-        }
-        catch
-        {
-            return null;
-        }
     }
 
     private static string FirstName(ApplicationUser? user)
@@ -143,7 +137,7 @@ public static class HomeDashboardDisplayService
     private static List<HomeTodayTaskViewModel> BuildTodayTasks(
         int propiedadId,
         PropiedadHvacSistema? hvacRecord,
-        SystemProfileItemViewModel? waterHeater,
+        PropiedadWaterHeaterSistema? waterHeaterRecord,
         IReadOnlyList<PropiedadDocumento> documentos,
         IReadOnlyList<PropiedadMantenimiento> mantenimiento,
         IUrlHelper url)
@@ -169,7 +163,7 @@ public static class HomeDashboardDisplayService
                 Icon = "fa-file-circle-plus",
                 Title = "Upload your inspection report",
                 Subtitle = "Keep your home records up to date",
-                Url = url.Action("Documents", "MyHome", new { id = propiedadId }) ?? "#"
+                Url = url.Action("Upload", "InspectionReportUpload", new { propiedadId }) ?? "#"
             });
         }
 
@@ -189,14 +183,14 @@ public static class HomeDashboardDisplayService
             });
         }
 
-        if (waterHeater == null || waterHeater.StatusTone is not "green")
+        if (waterHeaterRecord == null)
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
                 Icon = "fa-fire-burner",
                 Title = "Add water heater info",
                 Subtitle = "Help us keep track age, model & warranty",
-                Url = url.Action("Detail", "SystemsProfile", new { id = propiedadId, systemId = "water-heater" }) ?? "#"
+                Url = url.Action("Add", "WaterHeaterSetup", new { propiedadId }) ?? "#"
             });
         }
 

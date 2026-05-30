@@ -1,0 +1,73 @@
+@model IndorMvcApp.ViewModels.InspectionReportUploadedViewModel
+@{
+    ViewData["Title"] = "Report Uploaded";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/inspection-report-upload.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hvac-top">
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">Report Uploaded</div>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content">
+        <div class="ir-success-hero">
+            <div class="icon-wrap"><i class="fas fa-check"></i></div>
+            <strong>Your inspection report has been uploaded.</strong>
+            <p style="margin:8px 0 0;font-size:0.8125rem;color:#64748B;">Your home records are now up to date.</p>
+        </div>
+
+        <h2 class="hvac-section-title">What happens next</h2>
+        <div class="hvac-next-list ir-next-list">
+            <div class="hvac-next-item">
+                <span class="hvac-next-icon"><i class="far fa-file-lines"></i></span>
+                <span class="hvac-next-body">
+                    <strong>Saved to Documents</strong>
+                    <span>Your report is securely stored.</span>
+                </span>
+            </div>
+            <div class="hvac-next-item">
+                <span class="hvac-next-icon"><i class="fas fa-house"></i></span>
+                <span class="hvac-next-body">
+                    <strong>Available from Home</strong>
+                    <span>Access it anytime from your home.</span>
+                </span>
+            </div>
+            <div class="hvac-next-item">
+                <span class="hvac-next-icon"><i class="far fa-bell"></i></span>
+                <span class="hvac-next-body">
+                    <strong>Ready for future reminders</strong>
+                    <span>We'll use it to keep you on track.</span>
+                </span>
+            </div>
+        </div>
+
+        <h2 class="hvac-section-title">Uploaded document</h2>
+        <div class="ir-doc-preview">
+            <div class="pdf-badge">@Model.FileTypeLabel</div>
+            <div>
+                <strong>@Model.Title</strong>
+                <span>Uploaded @Model.UploadedDateLabel</span>
+            </div>
+        </div>
+
+        <a asp-controller="Home" asp-action="Index" class="hvac-save-btn" style="text-align:center;text-decoration:none;line-height:1.2;">Done</a>
+        <a asp-controller="Home" asp-action="Index" class="hvac-done-link">Back to Home</a>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+</body>
+</html>

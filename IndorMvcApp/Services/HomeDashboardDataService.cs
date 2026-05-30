@@ -11,6 +11,7 @@ public sealed class HomeDashboardData
     public List<PropiedadDocumento> Documentos { get; init; } = [];
     public List<PropiedadHistorial> Historial { get; init; } = [];
     public PropiedadHvacSistema? HvacRecord { get; init; }
+    public PropiedadWaterHeaterSistema? WaterHeaterRecord { get; init; }
 }
 
 public static class HomeDashboardDataService
@@ -41,13 +42,15 @@ public static class HomeDashboardDataService
                 .ToListAsync());
 
         var hvacRecord = await PropiedadHvacQueryHelper.TryGetByPropiedadIdAsync(db, propiedadId);
+        var waterHeaterRecord = await PropiedadWaterHeaterQueryHelper.TryGetByPropiedadIdAsync(db, propiedadId);
 
         return new HomeDashboardData
         {
             Mantenimiento = mantenimiento,
             Documentos = documentos,
             Historial = historial,
-            HvacRecord = hvacRecord
+            HvacRecord = hvacRecord,
+            WaterHeaterRecord = waterHeaterRecord
         };
     }
 

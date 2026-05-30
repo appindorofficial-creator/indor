@@ -1,0 +1,65 @@
+/* Water heater setup — segmented type toggle */
+
+.wh-type-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 10px;
+}
+
+.wh-type-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 10px;
+    border-radius: 12px;
+    border: 1.5px solid #E5E7EB;
+    background: #FFF;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.wh-type-btn input {
+    display: none;
+}
+
+.wh-type-btn.active {
+    border-color: #1867F2;
+    background: rgba(24, 103, 242, 0.08);
+    color: #1867F2;
+}
+
+.wh-field-hint {
+    margin-top: 6px;
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+.wh-pill-green {
+    background: rgba(16, 185, 129, 0.12);
+    color: #059669;
+}
+
+.wh-pill-gray {
+    background: #F1F5F9;
+    color: #64748B;
+}
+
+#tankSizeRow[data-hidden="true"] {
+    display: none;
+}
+
+.hvac-summary-item .v {
+    max-width: 52%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-align: right;
+}

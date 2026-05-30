@@ -139,5 +139,10 @@ public class PropiedadDocumento
 
     public long? SizeBytes { get; set; }
 
+    public DateTime? InspectionDate { get; set; }
+
+    [MaxLength(300)]
+    public string? Notes { get; set; }
+
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 }

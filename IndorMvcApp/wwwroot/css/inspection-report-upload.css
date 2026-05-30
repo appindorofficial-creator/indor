@@ -1,0 +1,269 @@
+/* Inspection report upload flow — extends mobile patterns from hvac-setup.css */
+
+.ir-dropzone {
+    margin: 0 0 14px;
+    padding: 28px 16px;
+    border: 2px dashed rgba(24, 103, 242, 0.45);
+    border-radius: 16px;
+    background: rgba(24, 103, 242, 0.04);
+    text-align: center;
+    cursor: pointer;
+    max-width: 100%;
+}
+
+.ir-dropzone.has-file {
+    border-style: solid;
+    background: #FFF;
+}
+
+.ir-dropzone-icon {
+    width: 48px;
+    height: 48px;
+    margin: 0 auto 10px;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.ir-dropzone strong {
+    display: block;
+    font-size: 0.875rem;
+    color: #0A2540;
+}
+
+.ir-dropzone span {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+.ir-file-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 16px;
+    max-width: 100%;
+}
+
+.ir-file-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    border-radius: 12px;
+    border: 1.5px solid #E5E7EB;
+    background: #FFF;
+    color: #1867F2;
+    font-family: inherit;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    cursor: pointer;
+    min-width: 0;
+}
+
+.ir-file-btn i {
+    font-size: 0.95rem;
+}
+
+.ir-hidden-input {
+    display: none;
+}
+
+.ir-field {
+    padding: 14px 16px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ir-field:last-child {
+    border-bottom: none;
+}
+
+.ir-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #0A2540;
+}
+
+.ir-field textarea {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    min-height: 96px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-family: inherit;
+    font-size: 16px;
+    background: #F9FAFB;
+    color: #0A2540;
+    resize: vertical;
+}
+
+.ir-field textarea:focus {
+    outline: none;
+    border-color: #1867F2;
+    background: #FFF;
+}
+
+.ir-char-count {
+    margin-top: 6px;
+    text-align: right;
+    font-size: 0.75rem;
+    color: #94A3B8;
+}
+
+.ir-file-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    margin-bottom: 16px;
+    max-width: 100%;
+    min-width: 0;
+}
+
+.ir-file-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+}
+
+.ir-file-card-body {
+    min-width: 0;
+    flex: 1;
+}
+
+.ir-file-card-body strong {
+    display: block;
+    font-size: 0.875rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ir-file-card-body span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    color: #64748B;
+}
+
+.ir-replace-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 0 16px;
+    color: #1867F2;
+    font-size: 0.875rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.ir-readonly-field {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 12px;
+    padding: 12px 14px;
+    background: #F9FAFB;
+    font-size: 0.875rem;
+    color: #0A2540;
+}
+
+.ir-readonly-field i {
+    color: #1867F2;
+    flex-shrink: 0;
+}
+
+.ir-readonly-field span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.ir-success-hero {
+    text-align: center;
+    padding: 24px 16px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    margin-bottom: 18px;
+}
+
+.ir-success-hero .icon-wrap {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: rgba(24, 103, 242, 0.12);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+}
+
+.ir-next-list .hvac-next-item {
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ir-doc-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    margin-bottom: 16px;
+}
+
+.ir-doc-preview .pdf-badge {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1.5px solid #1867F2;
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 800;
+    flex-shrink: 0;
+}
+
+.ir-doc-preview strong {
+    display: block;
+    font-size: 0.875rem;
+}
+
+.ir-doc-preview span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    color: #64748B;
+}

@@ -1,0 +1,129 @@
+@model IndorMvcApp.ViewModels.UploadInspectionReportViewModel
+@{
+    ViewData["Title"] = "Upload Inspection Report";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/inspection-report-upload.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hvac-top">
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">Upload Inspection Report</div>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content">
+        <div class="hvac-prop-card">
+            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
+            <p>@Model.Address</p>
+        </div>
+        <p class="hvac-lead">Keep your home records up to date.</p>
+
+        @if (TempData["UploadError"] is string uploadError)
+        {
+            <div class="text-danger" style="margin-bottom:12px;">@uploadError</div>
+        }
+
+        <form asp-action="Upload" method="post" enctype="multipart/form-data" id="uploadForm">
+            <input type="hidden" asp-for="PropiedadId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+
+            <label class="ir-dropzone @(string.IsNullOrEmpty(Model.SelectedFileName) ? "" : "has-file")" id="dropzone" for="reportFile">
+                <div class="ir-dropzone-icon"><i class="fas fa-file-arrow-up"></i></div>
+                <strong id="dropzoneTitle">@(string.IsNullOrEmpty(Model.SelectedFileName) ? "Drag or select your inspection report" : Model.SelectedFileName)</strong>
+                <span id="dropzoneSub">@(string.IsNullOrEmpty(Model.SelectedFileName) ? "PDF, JPG, or PNG" : Model.SelectedFileSizeLabel)</span>
+            </label>
+            <input type="file" name="reportFile" id="reportFile" class="ir-hidden-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png" />
+
+            <div class="ir-file-actions">
+                <button type="button" class="ir-file-btn" id="takePhotoBtn"><i class="fas fa-camera"></i> Take Photo</button>
+                <button type="button" class="ir-file-btn" id="chooseFileBtn"><i class="fas fa-folder-open"></i> Choose File</button>
+            </div>
+            <input type="file" id="cameraInput" class="ir-hidden-input" accept="image/*" capture="environment" />
+
+            <div class="hvac-form-card">
+                <div class="ir-field">
+                    <label asp-for="Title">Document title</label>
+                    <input asp-for="Title" class="hvac-input" placeholder="Annual Home Inspection Report" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+
+                <div class="ir-field">
+                    <label asp-for="InspectionDate">Inspection date</label>
+                    <input asp-for="InspectionDate" type="date" class="hvac-input" />
+                    <span asp-validation-for="InspectionDate" class="text-danger"></span>
+                </div>
+
+                <div class="ir-field">
+                    <label asp-for="Category">Document category</label>
+                    <select asp-for="Category" class="hvac-select">
+                        <option value="Inspections">Inspection Report</option>
+                    </select>
+                </div>
+
+                <div class="ir-field">
+                    <label asp-for="Notes">Notes (optional)</label>
+                    <textarea asp-for="Notes" maxlength="300" placeholder="Add any notes about this report..." id="notesField"></textarea>
+                    <div class="ir-char-count"><span id="notesCount">0</span>/300</div>
+                </div>
+            </div>
+
+            <button type="submit" class="hvac-save-btn">Continue</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    const reportFile = document.getElementById('reportFile');
+    const cameraInput = document.getElementById('cameraInput');
+    const dropzone = document.getElementById('dropzone');
+    const dropzoneTitle = document.getElementById('dropzoneTitle');
+    const dropzoneSub = document.getElementById('dropzoneSub');
+    const notesField = document.getElementById('notesField');
+    const notesCount = document.getElementById('notesCount');
+
+    function formatSize(bytes) {
+        if (bytes < 1024) return bytes + ' B';
+        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+        return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function setFile(file) {
+        if (!file) return;
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        reportFile.files = dt.files;
+        dropzone.classList.add('has-file');
+        dropzoneTitle.textContent = file.name;
+        dropzoneSub.textContent = formatSize(file.size);
+    }
+
+    reportFile.addEventListener('change', () => {
+        if (reportFile.files[0]) setFile(reportFile.files[0]);
+    });
+
+    cameraInput.addEventListener('change', () => {
+        if (cameraInput.files[0]) setFile(cameraInput.files[0]);
+    });
+
+    document.getElementById('takePhotoBtn').addEventListener('click', () => cameraInput.click());
+    document.getElementById('chooseFileBtn').addEventListener('click', () => reportFile.click());
+
+    notesField.addEventListener('input', () => {
+        notesCount.textContent = (notesField.value || '').length;
+    });
+    notesCount.textContent = (notesField.value || '').length;
+</script>
+</body>
+</html>

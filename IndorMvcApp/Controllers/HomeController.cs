@@ -672,6 +672,7 @@ public class HomeController : Controller
                     primaryPropiedad,
                     primaryInfo,
                     dashboardData.HvacRecord,
+                    dashboardData.WaterHeaterRecord,
                     dashboardData.Mantenimiento,
                     dashboardData.Documentos,
                     dashboardData.Historial,

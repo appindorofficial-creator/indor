@@ -163,19 +163,31 @@ public static class HvacOpenAiHintsService
 
         if (key.Contains("brand") || key.Contains("manufacturer") || key.Contains("make"))
         {
-            hints.Brand ??= text;
+            if (IsUsableShortField(text))
+            {
+                hints.Brand ??= text;
+            }
+
             return;
         }
 
         if (key.Contains("model"))
         {
-            hints.Model ??= text;
+            if (IsUsableShortField(text))
+            {
+                hints.Model ??= text;
+            }
+
             return;
         }
 
         if (key.Contains("serial"))
         {
-            hints.SerialNumber ??= text;
+            if (IsUsableShortField(text))
+            {
+                hints.SerialNumber ??= text;
+            }
+
             return;
         }
 
@@ -277,6 +289,21 @@ public static class HvacOpenAiHintsService
         var lower = value.Trim().ToLowerInvariant();
         return lower is "—" or "-" or "n/a" or "unknown" or "needs verification." or "needs verification"
                or "not publicly confirmed." or "not publicly confirmed";
+    }
+
+    private static bool IsUsableShortField(string value, int maxLength = 80)
+    {
+        if (IsMissingValue(value)) return false;
+
+        var text = value.Trim();
+        if (text.Length == 0 || text.Length > maxLength) return false;
+
+        var lower = text.ToLowerInvariant();
+        return !lower.Contains("not publicly confirmed")
+               && !lower.Contains("permit history")
+               && !lower.Contains("needs verification")
+               && !lower.Contains("should be verified")
+               && !lower.Contains("should be ve");
     }
 
     private static string? ReadString(JsonNode? node) =>

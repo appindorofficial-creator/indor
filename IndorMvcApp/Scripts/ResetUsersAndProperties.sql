@@ -137,7 +137,7 @@ BEGIN TRY
           AND t.name NOT LIKE N'Archivo%'
           AND t.name NOT LIKE N'Archivos%'
           AND t.name NOT IN (
-              N'Propiedades', N'PropiedadHistorial', N'PropiedadMantenimiento', N'PropiedadHvacSistemas',
+              N'Propiedades', N'PropiedadHistorial', N'PropiedadMantenimiento', N'PropiedadHvacSistemas', N'PropiedadWaterHeaterSistemas',
               N'PropiedadDocumentos', N'PropiedadProveedores',
               N'Pagos', N'MetodosPago', N'MembresiasUsuario',
               N'HistorialServicios', N'MensajesSoporte', N'ProgramacionesMicroservicio',
