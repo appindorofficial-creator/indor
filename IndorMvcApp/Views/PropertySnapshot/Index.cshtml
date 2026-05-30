@@ -1,0 +1,222 @@
+@model IndorMvcApp.ViewModels.PropertySnapshotViewModel
+@{
+    ViewData["Title"] = "Property Snapshot";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var tabs = new[] { ("overview", "Overview"), ("details", "Details"), ("lot", "Lot"), ("notes", "Notes") };
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/property-snapshot.css" asp-append-version="true" />
+}
+
+<div class="ps-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="ps-brand-row"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="ps-page-head">
+    <h1 class="ps-title">Property Snapshot</h1>
+    <p class="ps-sub">@Model.PageSubtitle</p>
+    <div class="ps-address">@Model.Address</div>
+    <div class="ps-badges">
+        <span class="ps-badge ps-badge-estimated"><i class="fas fa-circle-notch"></i> @Model.ConfidenceBadge</span>
+        <span class="ps-badge ps-badge-fields"><i class="fas fa-table-cells"></i> @Model.FieldCount fields</span>
+    </div>
+</div>
+
+<div class="ps-tabs">
+    @foreach (var (key, label) in tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="ps-tab @(Model.ActiveTab == key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="PropertySnapshot"
+               asp-route-tab="@key">@label</a>
+        }
+        else
+        {
+            <a class="ps-tab @(Model.ActiveTab == key ? "active" : "")"
+               asp-action="Index"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-tab="@key">@label</a>
+        }
+    }
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="ps-empty">
+        <i class="fas fa-table-cells" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No snapshot data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="ps-btn-primary">Refresh property data</a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-primary">Refresh property data</a>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "details")
+{
+    <div class="ps-field-grid">
+        @foreach (var field in Model.DetailFields)
+        {
+            <div class="ps-field @(field.FullWidth ? "full" : "")">
+                <i class="fas @field.Icon"></i>
+                <div class="k">@field.Label</div>
+                <div class="v">
+                    @field.Value
+                    @if (field.IsEstimated) { <span class="ps-estimated-dot"></span> }
+                </div>
+            </div>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "lot")
+{
+    <div class="ps-map-card">
+        <div class="ps-map-thumb"><i class="fas fa-map-location-dot"></i></div>
+        <div>
+            <div class="ps-section-title" style="margin:0;">Lot & location</div>
+            <div class="ps-sub" style="margin-top:4px;">View parcel outline and location from saved property coordinates.</div>
+            @if (Model.Latitude.HasValue && Model.Longitude.HasValue && Model.Latitude != 0 && Model.Longitude != 0)
+            {
+                <div class="ps-sub" style="margin-top:6px;">@Model.Latitude.Value.ToString("0.#####"), @Model.Longitude.Value.ToString("0.#####")</div>
+            }
+        </div>
+        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+    </div>
+
+    <div class="ps-field-grid">
+        @foreach (var field in Model.LotFields)
+        {
+            <div class="ps-field">
+                <i class="fas @field.Icon"></i>
+                <div class="k">@field.Label</div>
+                <div class="v">
+                    @field.Value
+                    @if (field.IsEstimated) { <span class="ps-estimated-dot"></span> }
+                </div>
+            </div>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "notes")
+{
+    <div class="ps-confidence-card">
+        <div class="ps-confidence-ring"><i class="fas fa-shield-check"></i></div>
+        <div>
+            <div class="ps-section-title" style="margin:0;">Snapshot confidence</div>
+            <div class="ps-legend">
+                <span class="c">Confirmed</span>
+                <span class="e">Estimated</span>
+                <span class="v">Needs verification</span>
+            </div>
+            <p class="ps-sub" style="margin-top:8px;">@Model.Notes.ConfidenceSummary</p>
+        </div>
+    </div>
+
+    <div class="ps-section-title">Main sources</div>
+    <div class="ps-sources">
+        @foreach (var source in Model.Notes.Sources)
+        {
+            <div class="ps-source"><i class="fas @source.Icon"></i>@source.Name</div>
+        }
+    </div>
+
+    <div class="ps-section-title">Missing info to confirm</div>
+    <div class="ps-missing-grid">
+        @foreach (var item in Model.Notes.MissingItems)
+        {
+            <div class="ps-missing">
+                <i class="fas @item.Icon"></i>
+                <div>
+                    <div class="t">@item.Title</div>
+                    <div class="s">@item.Status</div>
+                </div>
+                <i class="fas fa-chevron-right chev"></i>
+            </div>
+        }
+    </div>
+
+    @if (hfPreview)
+    {
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="ps-btn-primary">Done</a>
+        <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="ps-btn-secondary">Go to Systems</a>
+    }
+    else
+    {
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-primary">Done</a>
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="ps-btn-secondary">Go to Systems</a>
+    }
+}
+else
+{
+    <div class="ps-stat-grid">
+        @foreach (var stat in Model.CoreStats)
+        {
+            <div class="ps-stat">
+                <i class="fas @stat.Icon"></i>
+                <div class="v">@stat.Value</div>
+                <div class="k">@stat.Label</div>
+            </div>
+        }
+    </div>
+
+    <div class="ps-section-title">Quick sections</div>
+    <div class="ps-quick-scroll">
+        @foreach (var quick in Model.QuickSections)
+        {
+            if (hfPreview)
+            {
+                <a class="ps-quick-card" asp-controller="HouseFactPreview" asp-action="PropertySnapshot" asp-route-tab="@quick.Tab">
+                    <i class="fas @quick.Icon"></i>
+                    <div class="t">@quick.Title</div>
+                    <div class="s">@quick.Subtitle</div>
+                    <div class="a">Open <i class="fas fa-chevron-right"></i></div>
+                </a>
+            }
+            else
+            {
+                <a class="ps-quick-card" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@quick.Tab">
+                    <i class="fas @quick.Icon"></i>
+                    <div class="t">@quick.Title</div>
+                    <div class="s">@quick.Subtitle</div>
+                    <div class="a">Open <i class="fas fa-chevron-right"></i></div>
+                </a>
+            }
+        }
+    </div>
+
+    <div class="ps-section-title">Snapshot highlights</div>
+    <div class="ps-highlight-grid">
+        @foreach (var item in Model.Highlights)
+        {
+            <div class="ps-highlight">
+                <i class="fas @item.Icon"></i>
+                <div class="k">@item.Label</div>
+                <div class="v">
+                    @item.Value
+                    @if (item.IsEstimated) { <span class="ps-estimated-dot"></span> }
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (Model.ActiveTab != "notes")
+{
+    if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="PropertySnapshot" asp-route-tab="@Model.NextTab" class="ps-btn-primary">
+            @Model.NextTabLabel
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.NextTab" class="ps-btn-primary">
+            @Model.NextTabLabel
+        </a>
+    }
+}

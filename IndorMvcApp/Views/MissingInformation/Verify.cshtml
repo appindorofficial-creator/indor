@@ -1,0 +1,67 @@
+@model IndorMvcApp.ViewModels.MissingInformationVerifyViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/missing-information.css" asp-append-version="true" />
+}
+
+<div class="mi-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="mi-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="mi-head">
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px;">
+        <h1 class="mi-title">@Model.Title</h1>
+        <span class="mi-priority @Model.PriorityTone"><i class="fas fa-flag"></i> @Model.Priority</span>
+    </div>
+    <p class="mi-sub">@Model.Subtitle</p>
+</div>
+
+<div class="mi-panel">
+    <div class="mi-panel-title"><i class="fas fa-clipboard-list" style="color:#0066CC;"></i> What we need</div>
+    @foreach (var need in Model.Needs)
+    {
+        <div class="mi-need">
+            <span><i class="far fa-circle" style="color:#CBD5E1;margin-right:8px;"></i>@need.Label</span>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    }
+</div>
+
+<div class="mi-panel">
+    <div class="mi-panel-title"><i class="fas fa-screwdriver-wrench" style="color:#0066CC;"></i> How to complete this</div>
+    <div class="mi-action-grid">
+        @foreach (var action in Model.Actions)
+        {
+            <div class="mi-action">
+                <div class="icon @action.Tone"><i class="fas @action.Icon"></i></div>
+                <div class="label">@action.Label</div>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="mi-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>@Model.InfoBanner</div>
+</div>
+
+@if (hfPreview)
+{
+    <form asp-controller="HouseFactPreview" asp-action="MissingInformationComplete" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="itemId" value="@Model.ItemId" />
+        <button type="submit" class="mi-btn-primary"><i class="fas fa-plus"></i> @Model.PrimaryActionLabel</button>
+    </form>
+}
+else
+{
+    <form asp-action="Complete" asp-route-id="@Model.PropiedadId" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="itemId" value="@Model.ItemId" />
+        <button type="submit" class="mi-btn-primary"><i class="fas fa-plus"></i> @Model.PrimaryActionLabel</button>
+    </form>
+}

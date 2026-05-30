@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -72,7 +73,7 @@ public class PropietarioController : Controller
 
             // Guardar el resultado en TempData para pasarlo a la página de edición
             TempData["PropertyInfoJson"] = JsonSerializer.Serialize(propertyInfo);
-            return RedirectToAction("EditAddress");
+            return RedirectToAction("PropertyDetails");
         }
         catch (Exception ex)
         {
@@ -83,6 +84,32 @@ public class PropietarioController : Controller
     }
 
     [HttpGet]
+    public IActionResult PropertyDetails()
+    {
+        if (TempData["PropertyInfoJson"] is not string json || string.IsNullOrEmpty(json))
+        {
+            return RedirectToAction("AddProperty");
+        }
+
+        var propertyInfo = JsonSerializer.Deserialize<PropertyInfoViewModel>(json);
+        if (propertyInfo == null)
+        {
+            return RedirectToAction("AddProperty");
+        }
+
+        TempData.Keep("PropertyInfoJson");
+
+        HouseFactPreviewContext.Save(HttpContext.Session, propertyInfo);
+
+        ViewBag.HouseFactProfile = HouseFactDisplayService.BuildProfile(
+            propertyInfo.AttomRawJson,
+            propertyInfo.DataSource,
+            propertyInfo.FormattedAddress);
+
+        return View(propertyInfo);
+    }
+
+    [HttpGet]
     public IActionResult EditAddress()
     {
         if (TempData["PropertyInfoJson"] is string json && !string.IsNullOrEmpty(json))
@@ -90,6 +117,10 @@ public class PropietarioController : Controller
             var propertyInfo = JsonSerializer.Deserialize<PropertyInfoViewModel>(json);
             // Keep TempData for POST
             TempData.Keep("PropertyInfoJson");
+            if (propertyInfo != null)
+            {
+                HouseFactPreviewContext.Save(HttpContext.Session, propertyInfo);
+            }
             return View(propertyInfo);
         }
         return RedirectToAction("AddProperty");
@@ -211,10 +242,12 @@ public class PropietarioController : Controller
                 AttomPropertyId = fullModel.AttomPropertyId,
                 AttomRawJson = attomRawJson,
                 AttomLastSyncUtc = hasAttomPayload ? DateTime.UtcNow : null,
-                AttomSyncStatus = fullModel.AttomPropertyId.HasValue ? "Success" : (hasAttomPayload ? "Partial" : "Estimated"),
-                AttomSyncError = fullModel.AttomPropertyId.HasValue || hasAttomPayload
+                AttomSyncStatus = IsSuccessfulEnrichment(fullModel.DataSource) || fullModel.AttomPropertyId.HasValue
+                    ? "Success"
+                    : (hasAttomPayload ? "Partial" : "Estimated"),
+                AttomSyncError = hasAttomPayload || IsSuccessfulEnrichment(fullModel.DataSource)
                     ? null
-                    : "ATTOM response not available"
+                    : "Property enrichment not available"
             };
 
             _db.Propiedades.Add(propiedad);
@@ -230,5 +263,13 @@ public class PropietarioController : Controller
             ModelState.AddModelError("", "An error occurred while saving the address. Please try again.");
             return View(model);
         }
+    }
+
+    private static bool IsSuccessfulEnrichment(string? dataSource)
+    {
+        if (string.IsNullOrWhiteSpace(dataSource)) return false;
+
+        return dataSource.Contains("AI", StringComparison.OrdinalIgnoreCase)
+            || dataSource.Contains("ATTOM", StringComparison.OrdinalIgnoreCase);
     }
 }

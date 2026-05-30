@@ -523,6 +523,7 @@
     </style>
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
 </head>
 <body>
     <div class="page-container">
@@ -546,7 +547,7 @@
 
             <div asp-validation-summary="All" class="validation-summary"></div>
 
-            <form asp-controller="Propietario" asp-action="AddProperty" method="post">
+            <form asp-controller="Propietario" asp-action="AddProperty" method="post" data-property-research-loading>
                 <label asp-for="Address" class="input-label">Address</label>
                 <div class="input-wrapper">
                     <i class="fas fa-map-marker-alt input-icon"></i>
@@ -660,5 +661,6 @@
             </script>
         }
     </div>
+    @await Html.PartialAsync("_PropertyResearchLoading")
 </body>
 </html>

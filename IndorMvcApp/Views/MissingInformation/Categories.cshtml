@@ -1,0 +1,102 @@
+@model IndorMvcApp.ViewModels.MissingInformationCategoriesViewModel
+@{
+    ViewData["Title"] = "What would you like to complete?";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/missing-information.css" asp-append-version="true" />
+}
+
+<div class="mi-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="mi-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="mi-head">
+    <h1 class="mi-title">What would you like to complete?</h1>
+    <p class="mi-sub">Choose a category to add details and improve your home profile.</p>
+</div>
+
+<div class="mi-progress-inline">
+    <div class="mi-progress-ring-sm" style="--pct:@Model.ProfileStrengthPercent">
+        <span>@Model.ProfileStrengthPercent%</span>
+    </div>
+    <div>@Model.ProfileStrengthPercent% complete</div>
+</div>
+
+@if (Model.FeaturedStep != null)
+{
+    if (hfPreview)
+    {
+        <a class="mi-featured" asp-controller="HouseFactPreview" asp-action="MissingInformationVerify" asp-route-itemId="@Model.FeaturedStep.ItemId">
+            <div class="icon" style="width:42px;height:42px;border-radius:12px;background:#FEF3C7;color:#D97706;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-star"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:.72rem;font-weight:800;color:#D97706;">Best place to start</div>
+                <div style="font-size:.88rem;font-weight:800;margin-top:4px;">@Model.FeaturedStep.Title.Replace("Upload your ", "").Replace(" first.", "")</div>
+                <div style="font-size:.76rem;color:#64748B;margin-top:4px;">@Model.FeaturedStep.Detail</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+        </a>
+    }
+    else
+    {
+        <a class="mi-featured" asp-action="Verify" asp-route-id="@Model.PropiedadId" asp-route-itemId="@Model.FeaturedStep.ItemId">
+            <div class="icon" style="width:42px;height:42px;border-radius:12px;background:#FEF3C7;color:#D97706;display:flex;align-items:center;justify-content:center;">
+                <i class="fas fa-star"></i>
+            </div>
+            <div style="flex:1;">
+                <div style="font-size:.72rem;font-weight:800;color:#D97706;">Best place to start</div>
+                <div style="font-size:.88rem;font-weight:800;margin-top:4px;">Inspection report</div>
+                <div style="font-size:.76rem;color:#64748B;margin-top:4px;">@Model.FeaturedStep.Detail</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+        </a>
+    }
+}
+
+@foreach (var cat in Model.Categories)
+{
+    if (hfPreview)
+    {
+        <a class="mi-card" asp-controller="HouseFactPreview" asp-action="MissingInformationCategory" asp-route-categoryId="@cat.CategoryId">
+            <div class="icon @cat.Tone"><i class="fas @cat.Icon"></i></div>
+            <div class="body">
+                <div class="t">@cat.Title</div>
+                <div class="s">@cat.Subtitle</div>
+            </div>
+            <span class="mi-badge @cat.Tone">@cat.ItemCount items</span>
+            <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:.75rem;"></i>
+        </a>
+    }
+    else
+    {
+        <a class="mi-card" asp-action="Category" asp-route-id="@Model.PropiedadId" asp-route-categoryId="@cat.CategoryId">
+            <div class="icon @cat.Tone"><i class="fas @cat.Icon"></i></div>
+            <div class="body">
+                <div class="t">@cat.Title</div>
+                <div class="s">@cat.Subtitle</div>
+            </div>
+            <span class="mi-badge @cat.Tone">@cat.ItemCount items</span>
+            <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:.75rem;"></i>
+        </a>
+    }
+}
+
+<div class="mi-btn-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="DocumentsAdd" class="mi-btn-primary">
+            <i class="fas fa-upload"></i> Upload document
+        </a>
+        <a asp-controller="HouseFactPreview" asp-action="DocumentsRequests" class="mi-btn-secondary"><i class="fas fa-user"></i> Request from agent</a>
+    }
+    else
+    {
+        <a asp-controller="Documents" asp-action="Add" asp-route-id="@Model.PropiedadId" class="mi-btn-primary">
+            <i class="fas fa-upload"></i> Upload document
+        </a>
+        <a asp-controller="Documents" asp-action="Requests" asp-route-id="@Model.PropiedadId" class="mi-btn-secondary"><i class="fas fa-user"></i> Request from agent</a>
+    }
+</div>

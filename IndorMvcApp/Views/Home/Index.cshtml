@@ -698,6 +698,8 @@
         .verified .text small { color: #6B7280; font-size: 0.75rem; }
 
         /* === MyHome (slider con datos del JSON) === */
+        #section-myhome .hf-app { margin-bottom: 8px; }
+        #section-myhome .hf-json-panel-app { margin-bottom: 80px; }
         .hf-quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hf-quick-link { background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px; text-decoration: none; color: #0A2540; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 8px; }
         .hf-quick-link i { color: #0066CC; }
@@ -2462,11 +2464,20 @@
         }
     </section>
     <section class="section" id="section-myhome">
+        @{
+            var houseFactProfile = ViewBag.HouseFactProfile as HouseFactProfileViewModel;
+            var houseFactPreviewMode = ViewBag.HouseFactPreviewMode as bool? == true;
+            var houseFactPropiedadId = ViewBag.HouseFactPropiedadId as int?;
+        }
         <div class="section-title">
-            My Home
+            House Facts
             @if (hasProperties && primaryProp != null)
             {
-                <a asp-controller="MyHome" asp-action="Index" asp-route-id="@primaryProp.Id">Open House Facts</a>
+                <a asp-controller="MyHome" asp-action="Index" asp-route-id="@primaryProp.Id">My Property</a>
+            }
+            else if (houseFactPreviewMode)
+            {
+                <a asp-controller="Propietario" asp-action="PropertyDetails">Continue setup</a>
             }
             else
             {
@@ -2474,25 +2485,44 @@
             }
         </div>
 
-        @if (hasProperties && primaryProp != null)
+        @if (houseFactProfile != null && houseFactProfile.HasData)
         {
-            var d = primaryInfo?.PropertyDetails;
-            <div class="results-card" style="margin-bottom:16px;padding:16px;">
-                <div class="results-title" style="margin-bottom:8px;">House Facts</div>
-                <p style="color:#64748B;font-size:0.88rem;margin-bottom:12px;">View ATTOM property data, history, documents, providers, and maintenance in one place.</p>
-                <a asp-controller="MyHome" asp-action="Index" asp-route-id="@primaryProp.Id" class="btn-primary-link" style="display:inline-flex;align-items:center;gap:8px;">
-                    <i class="fas fa-house"></i> Open My Property
-                </a>
-                <div class="hf-quick-grid" style="margin-top:14px;">
-                    <a asp-controller="MyHome" asp-action="History" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-clock-rotate-left"></i> History</a>
-                    <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-file-lines"></i> Documents</a>
-                    <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-user-group"></i> Providers</a>
-                    <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-clipboard-check"></i> Maintenance</a>
-                </div>
-            </div>
-        }
+            if (houseFactPreviewMode)
+            {
+                ViewData["HouseFactPreview"] = true;
+            }
+            else if (houseFactPropiedadId.HasValue)
+            {
+                ViewData["PropiedadId"] = houseFactPropiedadId.Value;
+                ViewData["EditUrl"] = Url.Action("Edit", "MyHome", new { id = houseFactPropiedadId.Value });
+            }
 
-        @if (!hasProperties)
+            @await Html.PartialAsync("_HouseFactProfile", houseFactProfile)
+
+            @if (hasProperties && primaryProp != null)
+            {
+                <div class="results-card" style="margin-top:16px;padding:16px;">
+                    <div class="results-title" style="margin-bottom:10px;">Property management</div>
+                    <div class="hf-quick-grid">
+                        <a asp-controller="MyHome" asp-action="History" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-clock-rotate-left"></i> History</a>
+                        <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-file-lines"></i> Documents</a>
+                        <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-user-group"></i> Providers</a>
+                        <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-clipboard-check"></i> Maintenance</a>
+                    </div>
+                </div>
+            }
+            else if (houseFactPreviewMode)
+            {
+                <div class="results-card" style="margin-top:16px;padding:16px;">
+                    <div class="results-title" style="margin-bottom:8px;">Ready to save this property?</div>
+                    <p style="color:#64748B;font-size:0.88rem;margin-bottom:12px;">Confirm the address to add it to your account and unlock full property management.</p>
+                    <a asp-controller="Propietario" asp-action="PropertyDetails" class="btn-primary-link" style="display:inline-flex;align-items:center;gap:8px;">
+                        <i class="fas fa-check"></i> Continue to confirm property
+                    </a>
+                </div>
+            }
+        }
+        else if (!hasProperties && !houseFactPreviewMode)
         {
             <div class="empty-state">
                 <i class="fas fa-house-circle-exclamation"></i>
@@ -2504,169 +2534,22 @@
         }
         else
         {
-            <div class="property-selector" id="propertySelector">
-                @for (int idx = 0; idx < propertiesGrouped.Count; idx++)
+            <div class="empty-state">
+                <i class="fas fa-file-circle-question"></i>
+                <p>No House Fact data is available yet for this property.</p>
+                @if (hasProperties && primaryProp != null)
                 {
-                    var p = propertiesGrouped[idx].Prop;
-                    <button type="button" class="property-tab @(idx == 0 ? "active" : "")" data-prop-index="@idx">
-                        <i class="fas fa-map-marker-alt"></i>
-                        @(string.IsNullOrWhiteSpace(p.Direccion) ? $"Property #{p.Id}" : (p.Direccion!.Length > 30 ? p.Direccion.Substring(0, 30) + "…" : p.Direccion))
-                    </button>
+                    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@primaryProp.Id" asp-route-tab="attom" class="btn-primary-link">
+                        <i class="fas fa-rotate"></i> Refresh property data
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Propietario" asp-action="AddProperty" class="btn-primary-link">
+                        <i class="fas fa-magnifying-glass"></i> Search an address
+                    </a>
                 }
             </div>
-
-            @for (int idx = 0; idx < propertiesGrouped.Count; idx++)
-            {
-                var entry = propertiesGrouped[idx];
-                var slides = entry.Slides;
-                var totalSlides = slides.Count;
-                <div class="results-card property-panel" data-prop-panel="@idx" style="@(idx == 0 ? "" : "display:none;")">
-                    <div class="results-header">
-                        <div class="results-title">@entry.Prop.Direccion</div>
-                        <span class="slide-counter" data-counter="@idx">1 / @totalSlides</span>
-                    </div>
-
-                    <div class="slider-viewport">
-                        <div class="slider-track" data-track="@idx">
-                            @foreach (var slide in slides)
-                            {
-                                <div class="result-card">
-                                    <div class="group-header">
-                                        <div class="field-icon"><i class="fas @slide.Icon"></i></div>
-                                        <div class="group-title">@slide.Title</div>
-                                    </div>
-
-                                    @if (slide.Kind == "group")
-                                    {
-                                        <div class="group-list">
-                                            @foreach (var it in slide.Items)
-                                            {
-                                                <div class="group-item">
-                                                    <span class="k">@it.Label</span>
-                                                    <span class="v">@it.Value</span>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                    else if (slide.Kind == "utilities")
-                                    {
-                                        <div class="utility-grid">
-                                            @foreach (var up in slide.Utilities)
-                                            {
-                                                <div class="utility-card">
-                                                    <div class="utility-head">
-                                                        <div class="util-icon"><i class="fas @up.Icon"></i></div>
-                                                        <div>
-                                                            <div class="utility-name">@up.Provider.Name</div>
-                                                            <div class="utility-type">@up.Provider.ServiceType</div>
-                                                        </div>
-                                                    </div>
-                                                    @if (!string.IsNullOrWhiteSpace(up.Provider.Coverage))
-                                                    {
-                                                        <div class="utility-cov">@up.Provider.Coverage</div>
-                                                    }
-                                                    <div class="utility-actions">
-                                                        @if (!string.IsNullOrWhiteSpace(up.Provider.Phone))
-                                                        {
-                                                            <a class="util-btn" href="tel:@up.Provider.Phone"><i class="fas fa-phone"></i> @up.Provider.Phone</a>
-                                                        }
-                                                        @if (!string.IsNullOrWhiteSpace(up.Provider.Website))
-                                                        {
-                                                            <a class="util-btn" href="@up.Provider.Website" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Web</a>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                    else if (slide.Kind == "warranties")
-                                    {
-                                        <div class="warranty-list">
-                                            @foreach (var w in slide.Warranties)
-                                            {
-                                                var status = w.Warranty.Status ?? "—";
-                                                var statusClass = status.Equals("Active", StringComparison.OrdinalIgnoreCase) || status.Equals("Activa", StringComparison.OrdinalIgnoreCase) ? "pill-green"
-                                                    : status.Equals("Expired", StringComparison.OrdinalIgnoreCase) || status.Equals("Expirada", StringComparison.OrdinalIgnoreCase) ? "pill-red" : "pill-yellow";
-                                                <div class="warranty-card">
-                                                    <div class="warranty-head">
-                                                        <div class="util-icon"><i class="fas @w.Icon"></i></div>
-                                                        <div class="warranty-titles">
-                                                            <div class="warranty-name">@w.Warranty.SystemName</div>
-                                                            @if (!string.IsNullOrWhiteSpace(w.Warranty.WarrantyProvider))
-                                                            {
-                                                                <div class="warranty-prov">@w.Warranty.WarrantyProvider</div>
-                                                            }
-                                                        </div>
-                                                        <span class="pill @statusClass">@status</span>
-                                                    </div>
-
-                                                    <div class="warranty-grid">
-                                                        @if (!string.IsNullOrWhiteSpace(w.Warranty.PolicyNumber))
-                                                        {
-                                                            <div class="wg-item"><span class="k">Policy</span><span class="v">@w.Warranty.PolicyNumber</span></div>
-                                                        }
-                                                        @if (w.Warranty.WarrantyYears.HasValue)
-                                                        {
-                                                            <div class="wg-item"><span class="k">Term</span><span class="v">@w.Warranty.WarrantyYears years</span></div>
-                                                        }
-                                                        @if (w.Warranty.InstallationDate.HasValue)
-                                                        {
-                                                            <div class="wg-item"><span class="k">Installed</span><span class="v">@Date(w.Warranty.InstallationDate)</span></div>
-                                                        }
-                                                        @if (w.Warranty.CoverageStartDate.HasValue)
-                                                        {
-                                                            <div class="wg-item"><span class="k">Coverage start</span><span class="v">@Date(w.Warranty.CoverageStartDate)</span></div>
-                                                        }
-                                                        @if (w.Warranty.CoverageEndDate.HasValue)
-                                                        {
-                                                            <div class="wg-item"><span class="k">Coverage end</span><span class="v">@Date(w.Warranty.CoverageEndDate)</span></div>
-                                                        }
-                                                    </div>
-
-                                                    @if (!string.IsNullOrWhiteSpace(w.Warranty.ManufacturerWarranty))
-                                                    {
-                                                        <div class="warranty-extra"><strong>Manufacturer warranty:</strong> @w.Warranty.ManufacturerWarranty</div>
-                                                    }
-                                                    @if (!string.IsNullOrWhiteSpace(w.Warranty.CoverageDetails))
-                                                    {
-                                                        <div class="warranty-extra">@w.Warranty.CoverageDetails</div>
-                                                    }
-
-                                                    <div class="utility-actions">
-                                                        @if (!string.IsNullOrWhiteSpace(w.Warranty.ContactPhone))
-                                                        {
-                                                            <a class="util-btn" href="tel:@w.Warranty.ContactPhone"><i class="fas fa-phone"></i> @w.Warranty.ContactPhone</a>
-                                                        }
-                                                        @if (!string.IsNullOrWhiteSpace(w.Warranty.ContactWebsite))
-                                                        {
-                                                            <a class="util-btn" href="@w.Warranty.ContactWebsite" target="_blank" rel="noopener"><i class="fas fa-globe"></i> Web</a>
-                                                        }
-                                                    </div>
-                                                </div>
-                                            }
-                                        </div>
-                                    }
-                                </div>
-                            }
-                        </div>
-                    </div>
-
-                    <div class="slider-controls">
-                        <button type="button" class="nav-button" data-prev="@idx" aria-label="Previous">
-                            <i class="fas fa-chevron-left"></i>
-                        </button>
-                        <div class="dots-container" data-dots="@idx">
-                            @for (int i = 0; i < totalSlides; i++)
-                            {
-                                <div class="dot @(i == 0 ? "active" : "")" data-slide="@i"></div>
-                            }
-                        </div>
-                        <button type="button" class="nav-button" data-next="@idx" aria-label="Next">
-                            <i class="fas fa-chevron-right"></i>
-                        </button>
-                    </div>
-                </div>
-            }
         }
     </section>
 
@@ -3923,29 +3806,35 @@
     <nav class="bottom-nav">
         <button class="nav-item active" data-target="section-home"><i class="fas fa-house"></i><span>Home</span></button>
         <button class="nav-item" data-target="section-services"><i class="fas fa-compass"></i><span>Services</span></button>
-        @if (hasProperties && primaryProp != null)
-        {
-            <a class="nav-item" href="@Url.Action("Index", "MyHome", new { id = primaryProp.Id })"><i class="fas fa-wand-magic-sparkles"></i><span>House Fax</span></a>
-        }
-        else
-        {
-            <button class="nav-item" data-target="section-myhome"><i class="fas fa-wand-magic-sparkles"></i><span>House Fax</span></button>
-        }
+        <button class="nav-item" data-target="section-myhome"><i class="fas fa-wand-magic-sparkles"></i><span>House Fax</span></button>
         <button class="nav-item" data-target="section-schedule"><i class="fas fa-calendar"></i><span>Schedule</span></button>
         <button class="nav-item" data-target="section-more"><i class="fas fa-ellipsis"></i><span>More</span></button>
     </nav>
 
     <script>
+        function activateSection(sectionId) {
+            if (!sectionId) return;
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(b => {
+                b.classList.toggle('active', b.dataset.target === sectionId);
+            });
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            section.classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
         // === Bottom nav ===
         document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => {
             btn.addEventListener('click', () => {
-                document.querySelectorAll('.bottom-nav .nav-item').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-                document.getElementById(btn.dataset.target).classList.add('active');
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                activateSection(btn.dataset.target);
             });
         });
+
+        const initialHash = window.location.hash.replace('#', '');
+        if (initialHash) {
+            activateSection(initialHash);
+        }
 
         // === Slider por propiedad ===
         function initSlider(idx) {

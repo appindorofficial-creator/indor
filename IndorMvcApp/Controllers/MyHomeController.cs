@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -17,18 +18,18 @@ public class MyHomeController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
-    private readonly IAttomPropertyService _attomPropertyService;
+    private readonly IPropertyEnrichmentService _propertyEnrichmentService;
 
     public MyHomeController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         IWebHostEnvironment env,
-        IAttomPropertyService attomPropertyService)
+        IPropertyEnrichmentService propertyEnrichmentService)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
-        _attomPropertyService = attomPropertyService;
+        _propertyEnrichmentService = propertyEnrichmentService;
     }
 
     [HttpGet]
@@ -54,6 +55,14 @@ public class MyHomeController : Controller
             "attom" => "attom",
             _ => "information"
         };
+
+        if (model.ActiveTab == "attom")
+        {
+            HttpContext.Session.SetString(
+                HouseFactPreviewContext.ReturnUrlSessionKey,
+                Url.Action(nameof(Details), new { id, tab = "attom" })!);
+        }
+
         return View(model);
     }
 
@@ -74,7 +83,7 @@ public class MyHomeController : Controller
             info.FormattedAddress = propiedad.Direccion ?? string.Empty;
         }
 
-        var result = await _attomPropertyService.EnrichPropertyAsync(info);
+        var result = await _propertyEnrichmentService.EnrichPropertyAsync(info);
         if (!string.IsNullOrWhiteSpace(result.RawJson))
         {
             propiedad.AttomRawJson = result.RawJson;
@@ -83,10 +92,10 @@ public class MyHomeController : Controller
 
         if (result.Success)
         {
-            propiedad.AttomPropertyId = result.AttomPropertyId ?? info.AttomPropertyId;
+            propiedad.AttomPropertyId = result.ExternalPropertyId ?? info.AttomPropertyId;
             propiedad.AttomSyncStatus = "Success";
             propiedad.AttomSyncError = null;
-            info.DataSource = "ATTOM";
+            info.DataSource = result.DataSource;
             info.AttomPropertyId = propiedad.AttomPropertyId;
         }
         else
@@ -100,8 +109,8 @@ public class MyHomeController : Controller
         await _db.SaveChangesAsync();
 
         TempData["AttomSyncMessage"] = result.Success
-            ? "Property data refreshed from ATTOM."
-            : (result.ErrorMessage ?? "ATTOM sync did not return property data.");
+            ? $"Property data refreshed ({result.DataSource})."
+            : (result.ErrorMessage ?? "Property refresh did not return data.");
 
         return RedirectToAction(nameof(Details), new { id = propiedad.Id, tab = result.Success ? "attom" : "information" });
     }

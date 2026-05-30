@@ -1,0 +1,130 @@
+@model IndorMvcApp.ViewModels.RoofExteriorIndexViewModel
+@{
+    ViewData["Title"] = "Roof, Exterior & Structure";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/roof-exterior.css" asp-append-version="true" />
+}
+
+<div class="re-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="re-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="re-head">
+    <h1 class="re-title">Roof, Exterior &amp; Structure</h1>
+    <p class="re-sub">See key exterior and structural information in one place.</p>
+</div>
+
+<div class="re-tabs">
+    @foreach (var tab in Model.Tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="re-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="RoofExterior"
+               asp-route-tab="@tab.Key">
+                <i class="fas @tab.Icon"></i> @tab.Label
+            </a>
+        }
+        else
+        {
+            <a class="re-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-action="Index"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-tab="@tab.Key">
+                <i class="fas @tab.Icon"></i> @tab.Label
+            </a>
+        }
+    }
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="re-empty-note">
+        <i class="fas fa-house-chimney" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No roof or exterior data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="re-btn-primary" style="margin-top:16px;">Refresh property data</a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="re-btn-primary" style="margin-top:16px;">Refresh property data</a>
+        }
+    </div>
+}
+else
+{
+    <div class="re-summary-scroll">
+        @foreach (var card in Model.SummaryCards)
+        {
+            <div class="re-summary-card">
+                <div class="k"><i class="fas @card.Icon"></i> @card.Label</div>
+                <div class="v">@card.Value</div>
+                <span class="badge @card.StatusTone">@card.Status</span>
+            </div>
+        }
+    </div>
+
+    <div class="re-banner">
+        <i class="fas fa-circle-info"></i>
+        <div>@Model.InfoBanner</div>
+    </div>
+
+    @foreach (var item in Model.Items)
+    {
+        var sectionId = item.SectionId ?? Model.ActiveTab;
+        if (hfPreview)
+        {
+            <a class="re-list-item"
+               asp-controller="HouseFactPreview" asp-action="RoofExteriorSection"
+               asp-route-sectionId="@sectionId"
+               asp-route-tab="@Model.ActiveTab">
+                <div class="re-list-icon"><i class="fas @item.Icon"></i></div>
+                <div class="re-list-body">
+                    <div class="re-list-title">@item.Title</div>
+                    <div class="re-list-sub">@item.Subtitle</div>
+                </div>
+                <span class="re-status @item.StatusTone">@item.Status</span>
+                <i class="fas fa-chevron-right re-chev"></i>
+            </a>
+        }
+        else
+        {
+            <a class="re-list-item"
+               asp-action="Section"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-sectionId="@sectionId"
+               asp-route-tab="@Model.ActiveTab">
+                <div class="re-list-icon"><i class="fas @item.Icon"></i></div>
+                <div class="re-list-body">
+                    <div class="re-list-title">@item.Title</div>
+                    <div class="re-list-sub">@item.Subtitle</div>
+                </div>
+                <span class="re-status @item.StatusTone">@item.Status</span>
+                <i class="fas fa-chevron-right re-chev"></i>
+            </a>
+        }
+    }
+}
+
+@if (hfPreview)
+{
+    <a asp-controller="HouseFactPreview" asp-action="RoofExteriorCarePlan" class="re-btn-primary">
+        <i class="fas fa-file-lines"></i> View full section
+    </a>
+    <a asp-controller="Propietario" asp-action="PropertyDetails" class="re-btn-secondary">
+        <i class="fas fa-camera"></i> Add documents
+    </a>
+}
+else
+{
+    <a asp-action="CarePlan" asp-route-id="@Model.PropiedadId" class="re-btn-primary">
+        <i class="fas fa-file-lines"></i> View full section
+    </a>
+    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="re-btn-secondary">
+        <i class="fas fa-camera"></i> Add documents
+    </a>
+}

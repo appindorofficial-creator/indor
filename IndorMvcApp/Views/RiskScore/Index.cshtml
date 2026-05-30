@@ -1,0 +1,350 @@
+@model IndorMvcApp.ViewModels.RiskScoreIndexViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var addressParts = Model.Address.Split(',', 2);
+    var line1 = addressParts[0].Trim();
+    var line2 = addressParts.Length > 1 ? addressParts[1].Trim() : string.Empty;
+    var gaugePct = Model.OverallScore;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/risk-score.css" asp-append-version="true" />
+}
+
+<div class="rs-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="rs-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="rs-head">
+    <h1 class="rs-title">@Model.PageTitle</h1>
+    <p class="rs-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="rs-property-card">
+    <div class="rs-property-top">
+        <div class="rs-thumb"><i class="fas fa-house"></i></div>
+        <div>
+            <div class="rs-kicker">INDOR HOUSE FACT</div>
+            <div class="rs-address">
+                @line1
+                @if (!string.IsNullOrWhiteSpace(line2))
+                {
+                    <div style="font-size:.76rem;color:#64748B;font-weight:600;margin-top:2px;">@line2</div>
+                }
+            </div>
+        </div>
+        <div class="rs-photo"><i class="fas fa-image"></i></div>
+    </div>
+</div>
+
+<div class="rs-tabs">
+    @foreach (var tab in Model.Tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="rs-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="RiskScore"
+               asp-route-tab="@tab.Key">@tab.Label</a>
+        }
+        else
+        {
+            <a class="rs-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-action="Index"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-tab="@tab.Key">@tab.Label</a>
+        }
+    }
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="rs-empty-note">
+        <i class="fas fa-shield-halved" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No risk score data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="rs-btn-primary" style="margin-top:16px;display:inline-flex;">Back to House Facts</a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="rs-btn-primary" style="margin-top:16px;display:inline-flex;">Refresh property data</a>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "overview")
+{
+    <div class="rs-score-card">
+        <div class="rs-score-main">
+            <div class="k">Overall Risk Score</div>
+            <span class="rs-pill @Model.OverallLevelTone"><i class="fas fa-shield-halved"></i> @Model.OverallLevel</span>
+            <div class="s">@Model.InfoBanner</div>
+        </div>
+        <div class="rs-gauge" style="--pct:@gaugePct">
+            <div class="rs-gauge-inner">
+                <strong>@Model.OverallScore</strong>
+                / @Model.MaxScore
+            </div>
+        </div>
+    </div>
+
+    <div class="rs-cat-grid">
+        @foreach (var cat in Model.Categories)
+        {
+            <div class="rs-cat">
+                <div class="icon"><i class="fas @cat.Icon"></i></div>
+                <div class="t">@cat.Title</div>
+                <span class="rs-pill @cat.LevelTone badge">@cat.Level</span>
+            </div>
+        }
+    </div>
+
+    <div class="rs-panel">
+        <div class="rs-panel-title">
+            What affects this score
+            <i class="fas fa-circle-info" style="color:#0066CC;font-size:.85rem;"></i>
+        </div>
+        @foreach (var factor in Model.Factors)
+        {
+            <div class="rs-factor @factor.Tone">
+                <i class="fas @factor.Icon"></i>
+                <div>@factor.Text</div>
+            </div>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "categories")
+{
+    @if (!string.IsNullOrWhiteSpace(Model.CategoriesAlert))
+    {
+        <div class="rs-banner">
+            <i class="fas fa-circle-info"></i>
+            <div>@Model.CategoriesAlert</div>
+        </div>
+    }
+
+    <div class="rs-panel">
+        @foreach (var cat in Model.Categories)
+        {
+            <div class="rs-category-row">
+                <div class="icon"><i class="fas @cat.Icon"></i></div>
+                <div class="body">
+                    <div class="t">@cat.Title</div>
+                    <div class="s">@cat.Description</div>
+                    <div class="meta"><i class="fas fa-shield-check"></i> @cat.ConfidenceNote</div>
+                    <span class="rs-pill @cat.LevelTone" style="margin-top:8px;">@cat.Level</span>
+                </div>
+                <div class="score @cat.ScoreTone">@cat.ScoreDisplay</div>
+            </div>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "actions")
+{
+    <div class="rs-score-card">
+        <div class="rs-score-main">
+            <div class="k">@Model.OverallLevel Risk</div>
+            <div class="s">@Model.OverallSummary</div>
+        </div>
+        <div class="rs-gauge" style="--pct:@gaugePct">
+            <div class="rs-gauge-inner">
+                <strong>@Model.OverallScore</strong>
+                / @Model.MaxScore
+            </div>
+        </div>
+    </div>
+
+    <div class="rs-panel">
+        @foreach (var finding in Model.Findings)
+        {
+            <div class="rs-finding">
+                <div class="num">@finding.Order</div>
+                <div class="icon"><i class="fas @finding.Icon"></i></div>
+                <div class="body">
+                    <div class="t">@finding.Title</div>
+                    <div class="s">@finding.Description</div>
+                    <span class="rs-pill @finding.BadgeTone" style="margin-top:8px;">@finding.Badge</span>
+                    @if (!string.IsNullOrWhiteSpace(finding.ChecklistFilter))
+                    {
+                        if (hfPreview)
+                        {
+                            <a asp-controller="HouseFactPreview" asp-action="MissingInformationCategory" asp-route-categoryId="@(finding.ChecklistFilter == "documents" ? "documents" : finding.ChecklistFilter == "systems" ? "systems" : "property")" class="action">
+                                @finding.ActionLabel <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="MissingInformation" asp-action="Category" asp-route-id="@Model.PropiedadId" asp-route-categoryId="@(finding.ChecklistFilter == "documents" ? "documents" : finding.ChecklistFilter == "systems" ? "systems" : "property")" class="action">
+                                @finding.ActionLabel <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                    }
+                    else if (!string.IsNullOrWhiteSpace(finding.ActionTab))
+                    {
+                        if (hfPreview)
+                        {
+                            <a asp-controller="HouseFactPreview" asp-action="RiskScore" asp-route-tab="@finding.ActionTab" class="action">
+                                @finding.ActionLabel <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@finding.ActionTab" class="action">
+                                @finding.ActionLabel <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        if (hfPreview)
+                        {
+                            <a asp-controller="HouseFactPreview" asp-action="MissingInformation" class="action">
+                                @finding.ActionLabel <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <a asp-controller="MissingInformation" asp-action="Index" asp-route-id="@Model.PropiedadId" class="action">
+                                @finding.ActionLabel <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                    }
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <div class="rs-panel">
+        @foreach (var item in Model.HistoryItems)
+        {
+            <div class="rs-history-item">
+                <div class="icon"><i class="fas @item.Icon"></i></div>
+                <div>
+                    <div class="t">@item.Title</div>
+                    <div class="s">@item.Detail</div>
+                    <div class="when">@item.When</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="rs-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>@Model.InfoBanner</div>
+</div>
+
+<div class="rs-btn-row">
+    @if (Model.ActiveTab == "overview" && string.IsNullOrWhiteSpace(Model.PrimaryActionTab))
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="MissingInformation" class="rs-btn-secondary">
+                @Model.SecondaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="MissingInformation" asp-action="Index" asp-route-id="@Model.PropiedadId" class="rs-btn-secondary">
+                @Model.SecondaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.SecondaryActionTab))
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="RiskScore" asp-route-tab="@Model.SecondaryActionTab" class="rs-btn-secondary">
+                @Model.SecondaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.SecondaryActionTab" class="rs-btn-secondary">
+                @Model.SecondaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+    else if (Model.ActiveTab == "overview")
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="MissingInformation" class="rs-btn-secondary">
+                @Model.SecondaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="MissingInformation" asp-action="Index" asp-route-id="@Model.PropiedadId" class="rs-btn-secondary">
+                @Model.SecondaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+    else if (Model.ActiveTab == "actions")
+    {
+        <button type="button" class="rs-btn-secondary">@Model.SecondaryActionLabel</button>
+    }
+
+    @if (Model.ActiveTab == "actions")
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="MissingInformation" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-controller="MissingInformation" asp-action="Index" asp-route-id="@Model.PropiedadId" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.PrimaryActionTab))
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="RiskScore" asp-route-tab="@Model.PrimaryActionTab" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.PrimaryActionTab" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+    else if (Model.ActiveTab != "overview")
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="RiskScore" asp-route-tab="overview" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="overview" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+    else
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="RiskScore" asp-route-tab="categories" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="categories" class="rs-btn-primary">
+                @Model.PrimaryActionLabel <i class="fas fa-chevron-right"></i>
+            </a>
+        }
+    }
+</div>

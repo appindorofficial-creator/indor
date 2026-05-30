@@ -78,10 +78,56 @@ public static class AttomFieldExtractor
         ["pubDate"] = "Published date",
         ["transactionID"] = "Transaction ID",
         ["responseDateTime"] = "Response date",
-        ["msg"] = "Status message",
-        ["code"] = "Status code"
+        ["confidence"] = "Confidence",
+        ["formattedAddress"] = "Formatted address",
+        ["yearBuilt"] = "Year built",
+        ["yearRenovated"] = "Year renovated",
+        ["livingArea"] = "Living area (sq ft)",
+        ["lotSizeAcres"] = "Lot size (acres)",
+        ["lotSizeSqFt"] = "Lot size (sq ft)",
+        ["bedrooms"] = "Bedrooms",
+        ["bathrooms"] = "Bathrooms",
+        ["estimatedValue"] = "Estimated value",
+        ["estimatedValueYear"] = "Estimated value year",
+        ["annualTaxAmount"] = "Annual tax amount",
+        ["parcelNumber"] = "Parcel number",
+        ["legalDescription"] = "Legal description",
+        ["assignedSchool"] = "Assigned school",
+        ["countyName"] = "County",
+        ["architecturalStyle"] = "Architectural style",
+        ["buildingCondition"] = "Building condition",
+        ["heatingType"] = "Heating type",
+        ["heatingFuel"] = "Heating fuel",
+        ["coolingType"] = "Cooling type",
+        ["parkingType"] = "Parking type",
+        ["garageType"] = "Garage type",
+        ["basementSqFt"] = "Basement (sq ft)",
+        ["serviceType"] = "Service type",
+        ["website"] = "Website",
+        ["coverage"] = "Coverage",
+        ["notes"] = "Notes",
+        ["name"] = "Provider name",
+        ["phone"] = "Phone"
     };
 
+    private static readonly (string Key, string Title)[] HouseFactSections =
+    [
+        ("propertyIdentity", "1. Property Identity"),
+        ("basicPropertyFacts", "2. Basic Property Facts"),
+        ("listingMarketData", "3. Listing / Market Data"),
+        ("publicRecordsTaxes", "4. Public Records / Taxes"),
+        ("salesHistory", "5. Sales History"),
+        ("mechanicalUtilitySystems", "6. Mechanical / Utility Systems"),
+        ("roofExteriorSite", "7. Roof / Exterior / Site"),
+        ("foundationStructure", "8. Foundation / Structure"),
+        ("permitsImprovements", "9. Permits / Improvements"),
+        ("hoaCommunity", "10. HOA / Community"),
+        ("schoolsLocationUtilities", "11. Schools / Location / Utilities"),
+        ("itemsNeedingVerification", "12. Key Items Needing Verification"),
+        ("sources", "13. Sources")
+    ];
+
+    // Legacy section list retained for ATTOM fallback paths.
     public static List<AttomFieldGroupViewModel> ExtractGroups(string? rawJson)
     {
         if (string.IsNullOrWhiteSpace(rawJson))
@@ -94,7 +140,37 @@ public static class AttomFieldExtractor
             var root = JsonNode.Parse(rawJson);
             if (root == null) return new List<AttomFieldGroupViewModel>();
 
+            if (root["propertyIdentity"] != null)
+            {
+                return HouseFactDisplayService.BuildSections(root);
+            }
+
             var groups = new List<AttomFieldGroupViewModel>();
+            var propertyDetails = root["propertyDetails"] ?? root["PropertyDetails"];
+            if (propertyDetails != null)
+            {
+                groups.Add(BuildGroup("Property details", propertyDetails));
+
+                var utilities = root["utilityProviders"] ?? root["UtilityProviders"];
+                if (utilities != null)
+                {
+                    groups.Add(BuildGroup("Utility providers", utilities));
+                }
+
+                var formatted = root["formattedAddress"] ?? root["FormattedAddress"];
+                if (formatted != null)
+                {
+                    groups.Add(BuildGroup("Address", formatted));
+                }
+
+                var confidence = root["confidence"] ?? root["Confidence"];
+                if (confidence != null)
+                {
+                    groups.Add(BuildGroup("Confidence", confidence));
+                }
+
+                return groups.Where(g => g.Fields.Count > 0).ToList();
+            }
 
             var status = root["status"];
             if (status != null)
@@ -153,7 +229,7 @@ public static class AttomFieldExtractor
         };
     }
 
-    private static void Flatten(JsonNode? node, string path, List<AttomFieldItemViewModel> fields)
+    public static void FlattenFields(JsonNode? node, string path, List<AttomFieldItemViewModel> fields)
     {
         if (node == null) return;
 
@@ -164,35 +240,48 @@ public static class AttomFieldExtractor
                 {
                     var segment = kv.Key;
                     var childPath = string.IsNullOrEmpty(path) ? segment : $"{path}.{segment}";
-                    Flatten(kv.Value, childPath, fields);
+                    FlattenFields(kv.Value, childPath, fields);
                 }
                 break;
 
             case JsonArray arr when arr.Count == 0:
-                fields.Add(new AttomFieldItemViewModel
-                {
-                    Label = LabelFor(path),
-                    Value = "—"
-                });
+                fields.Add(CreateField(path, "—"));
                 break;
 
             case JsonArray arr when arr.All(x => x is JsonValue or null):
-                fields.Add(new AttomFieldItemViewModel
+                fields.Add(CreateField(path, string.Join(", ", arr.Select(FormatScalar))));
+                break;
+
+            case JsonArray arr:
+                var index = 0;
+                foreach (var item in arr)
                 {
-                    Label = LabelFor(path),
-                    Value = string.Join(", ", arr.Select(FormatScalar))
-                });
+                    var childPath = string.IsNullOrEmpty(path) ? $"[{index}]" : $"{path}[{index}]";
+                    FlattenFields(item, childPath, fields);
+                    index++;
+                }
                 break;
 
             default:
-                fields.Add(new AttomFieldItemViewModel
-                {
-                    Label = LabelFor(path),
-                    Value = FormatScalar(node)
-                });
+                fields.Add(CreateField(path, FormatScalar(node)));
                 break;
         }
     }
+
+    private static AttomFieldItemViewModel CreateField(string path, string value)
+    {
+        var display = string.IsNullOrWhiteSpace(value) ? "—" : value;
+        return new AttomFieldItemViewModel
+        {
+            Label = LabelFor(path),
+            Value = display,
+            NeedsVerification = display.Contains("needs verification", StringComparison.OrdinalIgnoreCase)
+                || display.Contains("not publicly confirmed", StringComparison.OrdinalIgnoreCase)
+        };
+    }
+
+    private static void Flatten(JsonNode? node, string path, List<AttomFieldItemViewModel> fields) =>
+        FlattenFields(node, path, fields);
 
     private static string LabelFor(string path)
     {

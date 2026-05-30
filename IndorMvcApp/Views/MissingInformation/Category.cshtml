@@ -1,0 +1,63 @@
+@model IndorMvcApp.ViewModels.MissingInformationCategoryViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/missing-information.css" asp-append-version="true" />
+}
+
+<div class="mi-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="mi-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="mi-head">
+    <h1 class="mi-title">@Model.Title</h1>
+    <p class="mi-sub">@Model.Subtitle</p>
+</div>
+
+<div class="mi-list">
+    @foreach (var item in Model.Items)
+    {
+        if (hfPreview)
+        {
+            <a class="mi-row" asp-controller="HouseFactPreview" asp-action="MissingInformationVerify" asp-route-itemId="@item.ItemId">
+                <div class="icon @Model.Tone"><i class="fas @item.Icon"></i></div>
+                <div class="body">
+                    <div class="t">@item.Title</div>
+                    <div class="s">@item.Impact</div>
+                </div>
+                <span class="mi-badge @item.ImpactTone">@item.Status</span>
+                <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:.75rem;"></i>
+            </a>
+        }
+        else
+        {
+            <a class="mi-row" asp-action="Verify" asp-route-id="@Model.PropiedadId" asp-route-itemId="@item.ItemId">
+                <div class="icon @Model.Tone"><i class="fas @item.Icon"></i></div>
+                <div class="body">
+                    <div class="t">@item.Title</div>
+                    <div class="s">@item.Impact</div>
+                </div>
+                <span class="mi-badge @item.ImpactTone">@item.Status</span>
+                <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:.75rem;"></i>
+            </a>
+        }
+    }
+</div>
+
+<div class="mi-btn-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="MissingInformationCategories" class="mi-btn-secondary" style="grid-column:1/-1;">
+            <i class="fas fa-arrow-left"></i> Back to categories
+        </a>
+    }
+    else
+    {
+        <a asp-action="Categories" asp-route-id="@Model.PropiedadId" class="mi-btn-secondary" style="grid-column:1/-1;">
+            <i class="fas fa-arrow-left"></i> Back to categories
+        </a>
+    }
+</div>

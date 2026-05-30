@@ -6,5 +6,5 @@ public class AttomOptions
 
     public string BaseUrl { get; set; } = "https://api.gateway.attomdata.com/";
     public string? ApiKey { get; set; }
-    public bool Enabled { get; set; } = true;
+    public bool Enabled { get; set; } = false;
 }

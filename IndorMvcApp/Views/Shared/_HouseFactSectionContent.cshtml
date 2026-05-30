@@ -1,0 +1,120 @@
+@model IndorMvcApp.ViewModels.AttomFieldGroupViewModel
+@{
+    string SchoolLevelClass(string level) => level.ToLowerInvariant() switch
+    {
+        "elementary" => "elementary",
+        "middle" => "middle",
+        "high" => "high",
+        "district" => "district",
+        _ => "school"
+    };
+
+    string SchoolLevelShort(string level) => level.ToUpperInvariant() switch
+    {
+        "ELEMENTARY" => "Elem",
+        "MIDDLE" => "Mid",
+        "HIGH" => "High",
+        "DISTRICT" => "Dist",
+        _ => "Sch"
+    };
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Paragraph))
+{
+    <p class="hf-narrative">@Model.Paragraph</p>
+}
+
+@if (Model.Schools.Count > 0)
+{
+    <div class="hf-schools-intro">
+        <i class="fas fa-graduation-cap"></i>
+        <span>Nearby and assigned schools based on public listing and district data. Confirm assignments with the school district before enrolling.</span>
+    </div>
+    <div class="hf-school-grid">
+        @foreach (var school in Model.Schools)
+        {
+            var levelClass = SchoolLevelClass(school.Level);
+            <article class="hf-school-card">
+                <div class="hf-school-level @levelClass">@SchoolLevelShort(school.Level)</div>
+                <div class="hf-school-info">
+                    <div class="hf-school-name">@school.Name</div>
+                    <div class="hf-school-detail">@school.Detail</div>
+                    @if (!string.IsNullOrWhiteSpace(school.Distance) || !string.IsNullOrWhiteSpace(school.Rating))
+                    {
+                        <div class="hf-school-tags">
+                            @if (!string.IsNullOrWhiteSpace(school.Distance))
+                            {
+                                <span class="hf-school-tag"><i class="fas fa-location-dot"></i> @school.Distance</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(school.Rating))
+                            {
+                                <span class="hf-school-tag"><i class="fas fa-star"></i> @school.Rating</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </article>
+        }
+    </div>
+}
+
+@if (Model.SectionKind is "checklist" or "questions" or "action-flow")
+{
+    <ul class="hf-checklist">
+        @foreach (var item in Model.ChecklistItems)
+        {
+            <li>
+                <i class="fas @(Model.SectionKind == "questions" ? "fa-comment-dots" : Model.SectionKind == "action-flow" ? "fa-route" : "fa-circle-exclamation")"></i>
+                <span>
+                    @item.Item
+                    @if (!string.IsNullOrWhiteSpace(item.Status))
+                    {
+                        <span class="hf-checklist-status">@item.Status</span>
+                    }
+                </span>
+            </li>
+        }
+    </ul>
+}
+else if (Model.SectionKind == "sources")
+{
+    <div class="hf-sources">
+        @foreach (var source in Model.Sources)
+        {
+            <div class="hf-source-card">
+                <div class="hf-source-name">@source.SourceName</div>
+                @if (!string.IsNullOrWhiteSpace(source.Link))
+                {
+                    <a class="hf-source-link" href="@source.Link" target="_blank" rel="noopener noreferrer">
+                        <i class="fas fa-arrow-up-right-from-square"></i> Open source
+                    </a>
+                }
+                <div class="hf-source-info">@source.InformationFound</div>
+                @if (!string.IsNullOrWhiteSpace(source.Conflicts))
+                {
+                    <div class="hf-source-conflict"><i class="fas fa-triangle-exclamation"></i> @source.Conflicts</div>
+                }
+            </div>
+        }
+    </div>
+}
+else if (Model.Fields.Count > 0)
+{
+    <div class="hf-field-grid">
+        @foreach (var field in Model.Fields)
+        {
+            var isLong = field.Value.Length > 56
+                || field.Label.Contains("description", StringComparison.OrdinalIgnoreCase)
+                || field.Label.Contains("legal", StringComparison.OrdinalIgnoreCase);
+            <div class="hf-field @(isLong ? "full" : "")">
+                <div class="hf-field-label">@field.Label</div>
+                <div class="hf-field-value @(field.NeedsVerification ? "verify" : "")">@field.Value</div>
+            </div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.Notes))
+{
+    <p class="hf-section-note"><i class="fas fa-circle-info"></i> @Model.Notes</p>
+}

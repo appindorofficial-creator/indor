@@ -1,0 +1,126 @@
+@model IndorMvcApp.ViewModels.UtilitiesDetailViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var addressParts = Model.Address.Split(',', 2);
+    var line1 = addressParts[0].Trim();
+    var line2 = addressParts.Length > 1 ? addressParts[1].Trim() : string.Empty;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/utilities.css" asp-append-version="true" />
+}
+
+<div class="util-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="util-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="util-step-row">
+    <span>Step 3 of 4</span>
+    <span class="label">Step 3 · Details</span>
+</div>
+<div class="util-progress">
+    <span class="on"></span>
+    <span class="on"></span>
+    <span class="on"></span>
+    <span></span>
+</div>
+
+<div class="util-head">
+    <h1 class="util-title">@Model.PageTitle</h1>
+    <p class="util-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="util-property-card">
+    <div class="util-property-top">
+        <div class="util-thumb"><i class="fas fa-house"></i></div>
+        <div>
+            <div class="util-address">
+                @line1
+                @if (!string.IsNullOrWhiteSpace(line2))
+                {
+                    <div class="line2">@line2</div>
+                }
+            </div>
+            @if (Model.ProviderCount > 0)
+            {
+                <span class="util-provider-pill"><i class="fas fa-users"></i> @Model.ProviderCount providers</span>
+            }
+        </div>
+        <div class="util-photo"><i class="fas fa-image"></i></div>
+    </div>
+</div>
+
+<div class="util-detail-head">
+    <div class="icon"><i class="fas @Model.Icon"></i></div>
+    <div>
+        <div class="type">@Model.UtilityType</div>
+        <div class="provider">@Model.ProviderName</div>
+        <div class="util-detail-badges">
+            <span class="util-pill @Model.StatusTone">@Model.Status</span>
+            <span class="util-pill @Model.ServiceBadgeTone">@Model.ServiceBadge</span>
+        </div>
+    </div>
+</div>
+
+<div class="util-panel">
+    @foreach (var row in Model.Rows)
+    {
+        if (row.IsLink && !string.IsNullOrWhiteSpace(row.LinkHref))
+        {
+            <a class="util-detail-row" href="@row.LinkHref" @(row.LinkHref.StartsWith("http") ? "target=\"_blank\" rel=\"noopener\"" : "")>
+                <div class="icon"><i class="fas @row.Icon"></i></div>
+                <div style="flex:1;">
+                    <div class="label">@row.Label</div>
+                    <div class="value link">@row.Value</div>
+                </div>
+                @if (row.ShowChevron)
+                {
+                    <i class="fas fa-chevron-right util-chev"></i>
+                }
+            </a>
+        }
+        else
+        {
+            <div class="util-detail-row">
+                <div class="icon"><i class="fas @row.Icon"></i></div>
+                <div style="flex:1;">
+                    <div class="label">@row.Label</div>
+                    <div class="value">@row.Value</div>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+<div class="util-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>@Model.InfoBanner</div>
+</div>
+
+<div class="util-btn-row">
+    @if (!string.IsNullOrWhiteSpace(Model.Phone))
+    {
+        <a href="tel:@Model.Phone" class="util-btn-primary"><i class="fas fa-phone"></i> Call provider</a>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.Website))
+    {
+        var site = Model.Website.StartsWith("http") ? Model.Website : $"https://{Model.Website}";
+        <a href="@site" target="_blank" rel="noopener" class="util-btn-secondary"><i class="fas fa-globe"></i> Open website</a>
+    }
+</div>
+
+<div class="util-btn-row" style="margin-top:10px;">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="Utilities" asp-route-tab="providers" class="util-btn-secondary" style="grid-column:1/-1;">
+            Back to providers
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="providers" class="util-btn-secondary" style="grid-column:1/-1;">
+            Back to providers
+        </a>
+    }
+</div>

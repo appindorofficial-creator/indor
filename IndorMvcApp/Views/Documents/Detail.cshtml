@@ -1,0 +1,81 @@
+@model IndorMvcApp.ViewModels.DocumentDetailViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/documents.css" asp-append-version="true" />
+}
+
+<div class="doc-back-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="Documents"><i class="fas fa-chevron-left"></i></a>
+    }
+    else
+    {
+        <a asp-action="Index" asp-route-id="@Model.PropiedadId"><i class="fas fa-chevron-left"></i></a>
+    }
+    <div class="doc-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="doc-head">
+    <h1 class="doc-title">@Model.Title</h1>
+    <p class="doc-sub">Document details & quick summary.</p>
+</div>
+
+<div class="doc-file-card">
+    <div class="doc-file-icon @Model.IconTone"><i class="fas @Model.Icon"></i></div>
+    <div>
+        <div class="doc-file-name">@Model.FileName</div>
+        <div class="doc-file-meta">@Model.SizeLabel • @Model.PageCountLabel</div>
+        <div class="doc-tags">
+            <span class="doc-badge blue"><i class="fas fa-file-lines"></i> @Model.CategoryLabel</span>
+            <span class="doc-badge" style="background:#F1F5F9;color:#64748B;"><i class="fas fa-clock"></i> @Model.UpdatedLabel</span>
+            <span class="doc-badge @Model.StatusTone"><i class="fas fa-circle-check"></i> @Model.Status</span>
+        </div>
+    </div>
+</div>
+
+<div class="doc-panel">
+    @foreach (var row in Model.Details)
+    {
+        <div class="doc-detail-row">
+            <div class="doc-detail-left"><i class="fas @row.Icon"></i> @row.Label</div>
+            <div class="doc-detail-value">@row.Value</div>
+        </div>
+    }
+</div>
+
+@if (Model.AiSummary.Count > 0)
+{
+    <div class="doc-ai">
+        <div class="doc-ai-title"><i class="fas fa-sparkles"></i> AI Summary</div>
+        <ul>
+            @foreach (var point in Model.AiSummary)
+            {
+                <li>@point</li>
+            }
+        </ul>
+    </div>
+}
+
+<div class="doc-action-grid">
+    @if (!string.IsNullOrWhiteSpace(Model.StoragePath))
+    {
+        <a class="doc-action" href="@Model.StoragePath" target="_blank" rel="noopener">
+            <i class="fas fa-arrow-up-right-from-square"></i> Open full file
+        </a>
+    }
+    else
+    {
+        <span class="doc-action"><i class="fas fa-arrow-up-right-from-square"></i> Open full file</span>
+    }
+    <span class="doc-action"><i class="fas fa-download"></i> Download</span>
+    <span class="doc-action"><i class="fas fa-share-from-square"></i> Share</span>
+    <span class="doc-action"><i class="fas fa-bookmark"></i> Save</span>
+</div>
+
+<button type="button" class="doc-btn-primary">
+    <i class="fas fa-circle-check"></i> @Model.PrimaryActionLabel
+</button>

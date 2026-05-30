@@ -1,0 +1,218 @@
+@model IndorMvcApp.ViewModels.SystemDetailViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    var isOverview = Model.ActiveTab == "overview";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/systems-profile.css" asp-append-version="true" />
+}
+
+<div class="sp-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="sp-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="sp-head">
+    <h1 class="sp-title">@Model.Name</h1>
+    <p class="sp-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="sp-tabs">
+    @foreach (var tab in Model.Tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="sp-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="SystemsDetail"
+               asp-route-systemId="@Model.SystemId"
+               asp-route-tab="@tab.Key">@tab.Label</a>
+        }
+        else
+        {
+            <a class="sp-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-action="Detail"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-systemId="@Model.SystemId"
+               asp-route-tab="@tab.Key">@tab.Label</a>
+        }
+    }
+</div>
+
+@if (isOverview)
+{
+    <div class="sp-detail-card">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px;">
+            <div class="sp-system-icon" style="width:56px;height:56px;">
+                <i class="fas @(Model.SystemId == "hvac" ? "fa-snowflake" : Model.SystemId == "water-heater" ? "fa-fire-burner" : "fa-screwdriver-wrench")"></i>
+            </div>
+            <div class="sp-summary-badges" style="justify-content:flex-end;">
+                @foreach (var badge in Model.StatusBadges)
+                {
+                    <span class="sp-pill sp-pill-@(badge.Tone == "red" ? "red" : badge.Tone == "orange" ? "orange" : "blue")">
+                        <i class="fas @badge.Icon"></i> @badge.Label
+                    </span>
+                }
+            </div>
+        </div>
+
+        @if (Model.SystemId == "water-heater")
+        {
+            <div class="sp-address" style="margin-bottom:12px;">@Model.Address</div>
+        }
+
+        @foreach (var attr in Model.Attributes)
+        {
+            <div class="sp-attr-row">
+                <span class="k">@attr.Label</span>
+                <span class="v @(attr.Tone != "default" ? attr.Tone : "")">@attr.Value</span>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.InfoBanner))
+        {
+            <div class="sp-banner" style="margin:12px 0 0;">
+                <i class="fas fa-circle-info"></i>
+                <div>@Model.InfoBanner</div>
+            </div>
+        }
+    </div>
+
+    @if (Model.KnownFacts.Count > 0)
+    {
+        <div class="sp-section-title">What we know</div>
+        <div class="sp-detail-card">
+            @foreach (var fact in Model.KnownFacts)
+            {
+                <div class="sp-known-row">
+                    <i class="fas @fact.Icon"></i>
+                    <div>
+                        <div style="font-weight:700;">@fact.Label</div>
+                        <div style="color:#64748B;font-size:.82rem;">@fact.Value</div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.MissingItems.Count > 0)
+    {
+        <div class="sp-section-title">What's missing</div>
+        <div class="sp-missing-scroll">
+            @foreach (var item in Model.MissingItems)
+            {
+                <div class="sp-missing-item">
+                    <i class="fas @item.Icon"></i>
+                    @item.Label
+                </div>
+            }
+        </div>
+    }
+
+    @if (Model.SuggestedActions.Count > 0)
+    {
+        <div class="sp-section-title">@(Model.SystemId == "water-heater" ? "Suggested actions" : "Recommended next step")</div>
+        <div class="sp-actions-grid">
+            @foreach (var action in Model.SuggestedActions)
+            {
+                if (!string.IsNullOrWhiteSpace(action.Url))
+                {
+                    <a class="sp-action" href="@action.Url">
+                        <i class="fas @action.Icon"></i>
+                        <div class="t">@action.Title</div>
+                        <div class="s">@action.Subtitle</div>
+                    </a>
+                }
+                else
+                {
+                    <div class="sp-action">
+                        <i class="fas @action.Icon"></i>
+                        <div class="t">@action.Title</div>
+                        <div class="s">@action.Subtitle</div>
+                    </div>
+                }
+            }
+        </div>
+    }
+
+    @if (Model.SystemId == "water-heater")
+    {
+        <div class="sp-section-title">Maintenance history</div>
+        <div class="sp-empty-note">
+            <i class="fas fa-clipboard-list" style="font-size:1.5rem;color:#94A3B8;margin-bottom:8px;"></i>
+            <div><strong>No flush or service records saved yet.</strong></div>
+            <div style="margin-top:6px;">Set a reminder or book service to keep your water heater in top shape.</div>
+        </div>
+    }
+
+    <button type="button" class="sp-btn-primary">
+        @(Model.SystemId == "water-heater" ? "Set yearly reminder" : "Save system info")
+        @if (Model.SystemId == "water-heater")
+        {
+            <i class="fas fa-bell"></i>
+        }
+    </button>
+    @if (hfPreview)
+    {
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-secondary">
+            <i class="fas fa-cloud-arrow-up"></i>
+            @(Model.SystemId == "water-heater" ? "Upload water heater photo" : "Upload documents")
+        </a>
+    }
+    else
+    {
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-secondary">
+            <i class="fas fa-cloud-arrow-up"></i>
+            @(Model.SystemId == "water-heater" ? "Upload water heater photo" : "Upload documents")
+        </a>
+    }
+}
+else if (Model.ActiveTab is "service" or "maintenance")
+{
+    <div class="sp-empty-note">
+        <i class="fas fa-wrench" style="font-size:1.5rem;color:#94A3B8;margin-bottom:8px;"></i>
+        <div>@Model.ServiceHistoryNote</div>
+    </div>
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="SystemsDetail" asp-route-systemId="@Model.SystemId" asp-route-tab="overview" class="sp-btn-secondary">Back to overview</a>
+    }
+    else
+    {
+        <a asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-systemId="@Model.SystemId" asp-route-tab="overview" class="sp-btn-secondary">Back to overview</a>
+    }
+}
+else if (Model.ActiveTab == "warranty")
+{
+    <div class="sp-empty-note">
+        <i class="fas fa-shield-check" style="font-size:1.5rem;color:#94A3B8;margin-bottom:8px;"></i>
+        <div>@Model.WarrantyNote</div>
+    </div>
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="SystemsDetail" asp-route-systemId="@Model.SystemId" asp-route-tab="overview" class="sp-btn-secondary">Back to overview</a>
+    }
+    else
+    {
+        <a asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-systemId="@Model.SystemId" asp-route-tab="overview" class="sp-btn-secondary">Back to overview</a>
+    }
+}
+else if (Model.ActiveTab == "documents")
+{
+    <div class="sp-empty-note">
+        <i class="fas fa-folder-open" style="font-size:1.5rem;color:#94A3B8;margin-bottom:8px;"></i>
+        <div>@Model.DocumentsNote</div>
+    </div>
+    @if (hfPreview)
+    {
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-primary">
+            <i class="fas fa-cloud-arrow-up"></i> Upload documents
+        </a>
+    }
+    else
+    {
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-primary">
+            <i class="fas fa-cloud-arrow-up"></i> Upload documents
+        </a>
+    }
+}

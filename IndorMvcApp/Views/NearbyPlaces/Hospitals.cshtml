@@ -1,0 +1,5 @@
+@model IndorMvcApp.ViewModels.NearbyPlacesIndexViewModel
+@section Head {
+    <link rel="stylesheet" href="~/css/nearby-places.css" asp-append-version="true" />
+}
+@await Html.PartialAsync("_NearbyPlacesList", Model)

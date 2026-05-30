@@ -1,0 +1,184 @@
+/* Property research loading overlay — INDOR brand */
+.prl-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.35s ease, visibility 0.35s ease;
+}
+
+.prl-overlay[hidden] {
+    display: none !important;
+}
+
+.prl-overlay.is-visible {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+}
+
+.prl-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(10, 37, 64, 0.55);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+.prl-panel {
+    position: relative;
+    width: 100%;
+    max-width: 380px;
+    background: #FFFFFF;
+    border-radius: 24px;
+    padding: 36px 28px 32px;
+    text-align: center;
+    box-shadow:
+        0 24px 64px rgba(10, 37, 64, 0.22),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    animation: prlPanelIn 0.5s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+@keyframes prlPanelIn {
+    from {
+        opacity: 0;
+        transform: translateY(24px) scale(0.96);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.prl-icon-wrap {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prl-radar {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    border: 2px solid rgba(0, 102, 204, 0.15);
+}
+
+.prl-radar::before,
+.prl-radar::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    border-top-color: #0066CC;
+    animation: prlSpin 1.4s linear infinite;
+}
+
+.prl-radar::after {
+    inset: 8px;
+    border-top-color: rgba(0, 102, 204, 0.45);
+    animation-duration: 2s;
+    animation-direction: reverse;
+}
+
+@keyframes prlSpin {
+    to { transform: rotate(360deg); }
+}
+
+.prl-icon-wrap > i {
+    font-size: 2rem;
+    color: #0066CC;
+    animation: prlPulse 2s ease-in-out infinite;
+}
+
+@keyframes prlPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+.prl-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0A2540;
+    letter-spacing: -0.3px;
+    margin-bottom: 8px;
+}
+
+.prl-step {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #0066CC;
+    min-height: 1.4em;
+    margin-bottom: 20px;
+    transition: opacity 0.3s ease;
+}
+
+.prl-step.is-changing {
+    opacity: 0;
+}
+
+.prl-progress {
+    height: 6px;
+    background: #E8F1FB;
+    border-radius: 999px;
+    overflow: hidden;
+    margin-bottom: 18px;
+}
+
+.prl-progress-bar {
+    height: 100%;
+    width: 35%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #0066CC, #38BDF8, #0066CC);
+    background-size: 200% 100%;
+    animation: prlProgress 2.2s ease-in-out infinite;
+}
+
+@keyframes prlProgress {
+    0% { transform: translateX(-120%); background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { transform: translateX(320%); background-position: 0% 50%; }
+}
+
+.prl-hint {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: #64748B;
+    max-width: 280px;
+    margin: 0 auto;
+}
+
+.prl-sources {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 18px;
+    flex-wrap: wrap;
+}
+
+.prl-source-pill {
+    font-size: 0.68rem;
+    font-weight: 700;
+    color: #475569;
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 999px;
+    padding: 5px 10px;
+    letter-spacing: 0.2px;
+}
+
+.prl-overlay.is-visible ~ body,
+body.prl-loading {
+    overflow: hidden;
+}

@@ -49,15 +49,23 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
-// Register HttpClient and AddressLookupService
-builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
+// Register HttpClient and property services
+builder.Services.Configure<OpenAiPropertyOptions>(builder.Configuration.GetSection(OpenAiPropertyOptions.SectionName));
 builder.Services.Configure<AttomOptions>(builder.Configuration.GetSection(AttomOptions.SectionName));
+builder.Services.AddHttpClient<OpenAiPropertyEnrichmentService>((sp, client) =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<OpenAiPropertyOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(180);
+});
 builder.Services.AddHttpClient<IAttomPropertyService, AttomPropertyService>((sp, client) =>
 {
     var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<AttomOptions>>().Value;
     client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
     client.Timeout = TimeSpan.FromSeconds(30);
 });
+builder.Services.AddScoped<IPropertyEnrichmentService, CompositePropertyEnrichmentService>();
+builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
 
 var app = builder.Build();
 

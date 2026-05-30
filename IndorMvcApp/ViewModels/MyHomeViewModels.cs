@@ -66,20 +66,7 @@ public class MyHomePropertyDetailsViewModel
     public List<string> Features { get; set; } = new();
     public string DataSource { get; set; } = "Estimated";
     public string ActiveTab { get; set; } = "information";
-    public List<AttomFieldGroupViewModel> AttomFieldGroups { get; set; } = new();
-    public string AttomRawJsonPretty { get; set; } = string.Empty;
-}
-
-public class AttomFieldGroupViewModel
-{
-    public string Title { get; set; } = string.Empty;
-    public List<AttomFieldItemViewModel> Fields { get; set; } = new();
-}
-
-public class AttomFieldItemViewModel
-{
-    public string Label { get; set; } = string.Empty;
-    public string Value { get; set; } = string.Empty;
+    public HouseFactProfileViewModel HouseFact { get; set; } = new();
 }
 
 public class MyHomeEditViewModel

@@ -1,110 +1,10 @@
 @model IndorMvcApp.ViewModels.PropertyInfoViewModel
+@using IndorMvcApp.ViewModels
 @{
-    ViewData["Title"] = "Property Information - INDOR";
+    ViewData["Title"] = "House Facts - INDOR";
     Layout = null;
-
-    // Cada slide es una SECCIÓN agrupada con varios items.
-    var sections = new List<(string Icon, string Title, List<(string Icon, string Label, string Value)> Items)>();
-
-    void AddItem(List<(string, string, string)> bag, string icon, string label, string? value)
-    {
-        if (!string.IsNullOrWhiteSpace(value))
-            bag.Add((icon, label, value!));
-    }
-
-    // ===== Sección: Ubicación =====
-    var ubic = new List<(string, string, string)>();
-    AddItem(ubic, "fa-map-marker-alt", "Address", Model.FormattedAddress);
-    AddItem(ubic, "fa-city", "City", Model.City);
-    AddItem(ubic, "fa-flag", "State", Model.State);
-    AddItem(ubic, "fa-mail-bulk", "Postal code", Model.PostalCode);
-    AddItem(ubic, "fa-globe", "Country", Model.Country);
-    if (Model.Latitude != 0 || Model.Longitude != 0)
-        AddItem(ubic, "fa-location-crosshairs", "Coordinates", $"{Model.Latitude}, {Model.Longitude}");
-    if (ubic.Count > 0) sections.Add(("fa-map-marker-alt", "Location", ubic));
-
-    var d = Model.PropertyDetails;
-    if (d != null)
-    {
-        // ===== Sección: Información General =====
-        var general = new List<(string, string, string)>();
-        AddItem(general, "fa-home", "Type", d.PropertyType);
-        if (d.YearBuilt.HasValue)
-            AddItem(general, "fa-calendar-alt", "Year built",
-                d.YearRenovated.HasValue ? $"{d.YearBuilt} (ren. {d.YearRenovated})" : d.YearBuilt.ToString());
-        if (d.Bedrooms.HasValue)
-            AddItem(general, "fa-bed", "Bedrooms", d.Bedrooms.ToString());
-        if (d.Bathrooms.HasValue)
-            AddItem(general, "fa-bath", "Bathrooms", d.Bathrooms.ToString());
-        if (d.Floors.HasValue)
-            AddItem(general, "fa-layer-group", "Floors", d.Floors.ToString());
-        AddItem(general, "fa-paint-brush", "Style", d.ArchitecturalStyle);
-        if (general.Count > 0) sections.Add(("fa-circle-info", "General information", general));
-
-        var dim = new List<(string, string, string)>();
-        if (d.LivingArea.HasValue)
-            AddItem(dim, "fa-ruler-combined", "Living area", $"{d.LivingArea:N0} sq ft");
-        if (d.LotSize.HasValue)
-            AddItem(dim, "fa-draw-polygon", "Lot size",
-                d.LotSizeSqFt.HasValue ? $"{d.LotSize} acres ({d.LotSizeSqFt:N0} sq ft)" : $"{d.LotSize} acres");
-        if (dim.Count > 0) sections.Add(("fa-ruler-combined", "Dimensions", dim));
-
-        var fin = new List<(string, string, string)>();
-        if (d.EstimatedValue.HasValue)
-            AddItem(fin, "fa-dollar-sign", "Estimated value",
-                d.EstimatedValueYear.HasValue ? $"${d.EstimatedValue:N0} ({d.EstimatedValueYear})" : $"${d.EstimatedValue:N0}");
-        if (d.LastSalePrice.HasValue)
-            AddItem(fin, "fa-handshake", "Last sale",
-                d.LastSaleDate.HasValue ? $"${d.LastSalePrice:N0} — {d.LastSaleDate:d MMM yyyy}" : $"${d.LastSalePrice:N0}");
-        if (d.AnnualTaxAmount.HasValue)
-            AddItem(fin, "fa-receipt", "Annual tax",
-                d.TaxYear.HasValue ? $"${d.AnnualTaxAmount:N0} ({d.TaxYear})" : $"${d.AnnualTaxAmount:N0}");
-        if (fin.Count > 0) sections.Add(("fa-dollar-sign", "Value and taxes", fin));
-
-        var ident = new List<(string, string, string)>();
-        AddItem(ident, "fa-fingerprint", "Parcel", d.ParcelNumber);
-        AddItem(ident, "fa-map", "Zoning", d.Zoning);
-        AddItem(ident, "fa-file-lines", "Legal description", d.LegalDescription);
-        if (ident.Count > 0) sections.Add(("fa-fingerprint", "Identification", ident));
-    }
-
-    // ===== Sección: Servicios Públicos =====
-    var u = Model.UtilityProviders;
-    if (u != null)
-    {
-        var serv = new List<(string, string, string)>();
-        if (u.Electric != null) AddItem(serv, "fa-bolt", "Electricity", u.Electric.Name);
-        if (u.Water != null) AddItem(serv, "fa-droplet", "Water", u.Water.Name);
-        if (u.Gas != null) AddItem(serv, "fa-fire", "Gas", u.Gas.Name);
-        if (u.Sewer != null) AddItem(serv, "fa-water", "Sewer", u.Sewer.Name);
-        foreach (var i in u.Internet) AddItem(serv, "fa-wifi", "Internet", i.Name);
-        foreach (var c in u.CableTV) AddItem(serv, "fa-tv", "Cable TV", c.Name);
-        if (serv.Count > 0) sections.Add(("fa-plug", "Utilities", serv));
-    }
-
-    // ===== Sección: Garantías del Hogar =====
-    var w = Model.HomeWarranties;
-    if (w != null)
-    {
-        var war = new List<(string, string, string)>();
-        void AddW(string icon, string label, IndorMvcApp.ViewModels.HomeWarranty? warranty)
-        {
-            if (warranty is null) return;
-            var provider = warranty.WarrantyProvider ?? warranty.SystemName;
-            var status = string.IsNullOrEmpty(warranty.Status) ? "" : $" — {warranty.Status}";
-            AddItem(war, icon, label, $"{provider}{status}");
-        }
-        AddW("fa-fan", "HVAC", w.HVACSystem);
-        AddW("fa-temperature-half", "Water heater", w.WaterHeater);
-        AddW("fa-house-chimney", "Roof", w.Roof);
-        AddW("fa-blender", "Appliances", w.Appliances);
-        AddW("fa-faucet", "Plumbing", w.Plumbing);
-        AddW("fa-plug", "Electrical system", w.Electrical);
-        AddW("fa-shield-halved", "Home policy", w.HomeWarrantyPolicy);
-        if (war.Count > 0) sections.Add(("fa-shield-halved", "Warranties", war));
-    }
-
-    var totalSlides = sections.Count;
+    var houseFact = ViewBag.HouseFactProfile as HouseFactProfileViewModel
+        ?? new HouseFactProfileViewModel();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -113,423 +13,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>@ViewData["Title"]</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px 16px 32px;
             color: #0A2540;
-            position: relative;
+            background: #F4F7FB;
         }
-
         .page-container {
             width: 100%;
-            max-width: 460px;
+            max-width: 520px;
             margin: 0 auto;
-            position: relative;
-            z-index: 10;
-            animation: fadeIn 0.6s ease-out;
         }
-
-        @@keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 18px;
-        }
-
-        .back-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #FFFFFF;
-            border: 1.5px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0A2540;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: all 0.25s ease;
-        }
-
-        .back-btn:hover {
-            border-color: #0066CC;
-            color: #0066CC;
-            transform: translateX(-2px);
-        }
-
-        .smart-home-logo {
-            max-height: 42px;
-            width: auto;
-            display: block;
-        }
-
-        .brand-section {
-            text-align: center;
-            margin-bottom: 22px;
-        }
-
-        .brand-tagline {
-            font-size: 0.95rem;
-            color: #6B7280;
-        }
-
-        .brand-tagline .highlight {
-            color: #0066CC;
-            font-weight: 600;
-        }
-
-        .results-card {
-            background: #FFFFFF;
-            border-radius: 20px;
-            padding: 22px 18px;
-            box-shadow: 0 12px 40px rgba(10, 37, 64, 0.08);
-            border: 1px solid rgba(229, 231, 235, 0.7);
-            animation: slideUp 0.7s ease-out 0.15s backwards;
-        }
-
-        @@keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        .results-header {
+        .app-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
             margin-bottom: 16px;
         }
-
-        .results-title {
-            font-size: 1.05rem;
-            font-weight: 700;
-            color: #0A2540;
-        }
-
-        .slide-counter {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #0066CC;
-            background: rgba(0, 102, 204, 0.1);
-            padding: 4px 10px;
-            border-radius: 999px;
-        }
-
-        .slider-viewport {
-            overflow: hidden;
-            border-radius: 16px;
-            background: #F9FAFB;
-            position: relative;
-        }
-
-        .nav-button.floating {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 5;
-            box-shadow: 0 4px 14px rgba(10, 37, 64, 0.12);
-            width: 40px;
-            height: 40px;
-        }
-
-        .nav-button.floating.prev { left: 8px; }
-        .nav-button.floating.next { right: 8px; }
-
-        .nav-button.floating:hover:not(:disabled) {
-            transform: translateY(-50%) scale(1.08);
-        }
-
-        .dots-bar {
-            display: flex;
-            justify-content: center;
-            margin-top: 14px;
-        }
-
-        .slider-track {
-            display: flex;
-            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
-        }
-
-        .result-card {
-            flex: 0 0 100%;
-            min-width: 100%;
-            padding: 24px 56px;
-            display: flex;
-            flex-direction: column;
-            min-height: 280px;
-        }
-
-        .section-header {
-            display: flex;
+        .app-header-title {
+            display: inline-flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 18px;
-            padding-bottom: 14px;
-            border-bottom: 1px solid #F1F3F5;
-        }
-
-        .section-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 79, 163, 0.12) 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0066CC;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-
-        .section-title {
+            gap: 8px;
             font-size: 1rem;
-            font-weight: 700;
+            font-weight: 800;
             color: #0A2540;
         }
-
-        .items-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        .item-cell {
-            background: #FFFFFF;
-            border: 1px solid #F1F3F5;
-            border-radius: 12px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            min-width: 0;
-        }
-
-        .item-cell.full {
-            grid-column: 1 / -1;
-        }
-
-        .item-head {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.4px;
-        }
-
-        .item-head i {
-            color: #0066CC;
-            font-size: 0.75rem;
-        }
-
-        .item-value {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: #0A2540;
-            word-break: break-word;
-            line-height: 1.3;
-        }
-
-        @@media (max-width: 360px) {
-            .items-grid { grid-template-columns: 1fr; }
-        }
-
-        .slider-controls {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 18px;
-            gap: 10px;
-        }
-
-        .nav-button {
-            width: 44px;
-            height: 44px;
+        .app-header-title i { color: #0066CC; }
+        .icon-btn {
+            width: 42px;
+            height: 42px;
             border-radius: 50%;
+            background: #fff;
             border: 1.5px solid #E5E7EB;
-            background: #FFFFFF;
-            color: #0A2540;
-            font-size: 0.95rem;
-            cursor: pointer;
-            display: flex;
+            display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.25s ease;
-            flex-shrink: 0;
+            color: #0A2540;
+            text-decoration: none;
         }
-
-        .nav-button:hover:not(:disabled) {
-            border-color: #0066CC;
-            color: #0066CC;
-            transform: scale(1.05);
-        }
-
-        .nav-button:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-        }
-
-        .dots-container {
+        .actions {
             display: flex;
-            gap: 6px;
-            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
             flex-wrap: wrap;
-            max-width: 240px;
         }
-
-        .dot {
-            width: 7px;
-            height: 7px;
-            border-radius: 50%;
-            background: #E5E7EB;
+        .btn {
+            border: none;
+            border-radius: 14px;
+            padding: 14px 18px;
+            font-size: 0.92rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-
-        .dot.active {
-            background: #0066CC;
-            width: 22px;
-            border-radius: 4px;
+        .btn-primary {
+            flex: 1;
+            min-width: 220px;
+            background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+            color: #fff;
+            box-shadow: 0 10px 24px rgba(0, 102, 204, 0.28);
         }
-
-        @@media (max-width: 480px) {
-            .field-value { font-size: 1.4rem; }
-            .results-card { padding: 20px 14px; }
+        .btn-secondary {
+            background: #EFF6FF;
+            color: #004FA3;
+            border: 1px solid #BFDBFE;
         }
     </style>
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
 </head>
 <body>
     <div class="page-container">
-        <div class="top-bar">
-            <a asp-controller="Propietario" asp-action="AddProperty" class="back-btn" aria-label="Back">
+        <header class="app-header">
+            <a asp-action="AddProperty" class="icon-btn" aria-label="Back">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
-            <div style="width:44px;"></div>
-        </div>
+            <div class="app-header-title"><i class="fas fa-house"></i> House Facts</div>
+            <span class="icon-btn" style="visibility:hidden;" aria-hidden="true"></span>
+        </header>
 
-        <div class="brand-section">
-            <p class="brand-tagline">
-                Your <span class="highlight">property</span> information
-            </p>
-        </div>
-
-        @if (totalSlides > 0)
-        {
-            <div class="results-card">
-                <div class="results-header">
-                    <h3 class="results-title">Details</h3>
-                    <span class="slide-counter" id="slideCounter">1 / @totalSlides</span>
-                </div>
-
-                <div class="slider-viewport">
-                    <button type="button" class="nav-button floating prev" id="btnPrev" aria-label="Previous">
-                        <i class="fas fa-chevron-left"></i>
-                    </button>
-                    <button type="button" class="nav-button floating next" id="btnNext" aria-label="Next">
-                        <i class="fas fa-chevron-right"></i>
-                    </button>
-                    <div class="slider-track" id="sliderTrack">
-                        @foreach (var sec in sections)
-                        {
-                            <div class="result-card">
-                                <div class="section-header">
-                                    <div class="section-icon"><i class="fas @sec.Icon"></i></div>
-                                    <div class="section-title">@sec.Title</div>
-                                </div>
-                                <div class="items-grid">
-                                    @foreach (var it in sec.Items)
-                                    {
-                                        var isLong = it.Value.Length > 28;
-                                        <div class="item-cell @(isLong ? "full" : "")">
-                                            <div class="item-head"><i class="fas @it.Icon"></i>@it.Label</div>
-                                            <div class="item-value">@it.Value</div>
-                                        </div>
-                                    }
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>
-
-                <div class="dots-bar">
-                    <div class="dots-container" id="dotsContainer">
-                        @for (int i = 0; i < totalSlides; i++)
-                        {
-                            <div class="dot @(i == 0 ? "active" : "")" data-slide="@i"></div>
-                        }
-                    </div>
-                </div>
-            </div>
-
-            <script>
-                (function () {
-                    let currentSlide = 0;
-                    const totalSlides = @totalSlides;
-                    const track = document.getElementById('sliderTrack');
-                    const btnPrev = document.getElementById('btnPrev');
-                    const btnNext = document.getElementById('btnNext');
-                    const counter = document.getElementById('slideCounter');
-                    const dots = document.querySelectorAll('#dotsContainer .dot');
-
-                    function updateSlider() {
-                        track.style.transform = `translateX(-${currentSlide * 100}%)`;
-                        counter.textContent = `${currentSlide + 1} / ${totalSlides}`;
-                        btnPrev.disabled = currentSlide === 0;
-                        btnNext.disabled = currentSlide === totalSlides - 1;
-                        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === currentSlide));
-                    }
-
-                    btnNext.addEventListener('click', () => {
-                        if (currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); }
-                    });
-                    btnPrev.addEventListener('click', () => {
-                        if (currentSlide > 0) { currentSlide--; updateSlider(); }
-                    });
-                    dots.forEach((dot, idx) => {
-                        dot.addEventListener('click', () => { currentSlide = idx; updateSlider(); });
-                    });
-                    document.addEventListener('keydown', (e) => {
-                        if (e.key === 'ArrowRight' && currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); }
-                        else if (e.key === 'ArrowLeft' && currentSlide > 0) { currentSlide--; updateSlider(); }
-                    });
-
-                    let startX = 0;
-                    const viewport = document.querySelector('.slider-viewport');
-                    viewport.addEventListener('touchstart', (e) => { startX = e.touches[0].clientX; }, { passive: true });
-                    viewport.addEventListener('touchend', (e) => {
-                        const dx = e.changedTouches[0].clientX - startX;
-                        if (dx < -40 && currentSlide < totalSlides - 1) { currentSlide++; updateSlider(); }
-                        else if (dx > 40 && currentSlide > 0) { currentSlide--; updateSlider(); }
-                    });
-
-                    updateSlider();
-                })();
-            </script>
+        @{
+            ViewData["EditUrl"] = Url.Action("EditAddress");
+            ViewData["HouseFactPreview"] = true;
         }
-        else
-        {
-            <div class="results-card" style="text-align:center;">
-                <i class="fas fa-circle-info" style="font-size:2rem;color:#0066CC;margin-bottom:12px;"></i>
-                <p style="color:#6B7280;">No information is available for this property.</p>
-            </div>
-        }
+        @await Html.PartialAsync("_HouseFactProfile", houseFact)
+
+        <div class="actions">
+            <a asp-action="EditAddress" class="btn btn-primary">
+                <i class="fas fa-check"></i> Continue to confirm property
+            </a>
+            <a asp-action="AddProperty" class="btn btn-secondary">
+                <i class="fas fa-magnifying-glass"></i> Search another address
+            </a>
+        </div>
     </div>
 </body>
 </html>

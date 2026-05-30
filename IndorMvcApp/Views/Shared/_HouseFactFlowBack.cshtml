@@ -1,0 +1,14 @@
+@using IndorMvcApp.Helpers
+@{
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var propiedadId = ViewBag.PropiedadId as int? ?? 0;
+    var sessionReturn = HouseFactPreviewContext.GetReturnUrl(Context.Session);
+    var backUrl = ViewBag.HouseFactReturnUrl as string
+        ?? sessionReturn
+        ?? (hfPreview
+            ? Url.Action("PropertyDetails", "Propietario")
+            : Url.Action("Details", "MyHome", new { id = propiedadId, tab = "attom" }));
+}
+<a href="@backUrl" aria-label="Back">
+    <i class="fas fa-arrow-left"></i>
+</a>

@@ -1,0 +1,420 @@
+@model IndorMvcApp.ViewModels.HouseFactProfileViewModel
+@{
+    var overview = Model.Overview;
+    var editUrl = ViewData["EditUrl"] as string;
+    var propiedadId = ViewData["PropiedadId"] as int?;
+    var isPreview = ViewData["HouseFactPreview"] as bool? == true;
+    var hasFlowLinks = isPreview || propiedadId.HasValue;
+}
+
+<section class="hf-overview">
+    <div class="hf-overview-heading">
+        <div>
+            <h2 class="hf-overview-title">Property Overview</h2>
+            <p class="hf-overview-subtitle">All key facts at a glance</p>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(editUrl))
+        {
+            <a href="@editUrl" class="hf-overview-edit"><i class="fas fa-pen"></i> Edit</a>
+        }
+    </div>
+
+    @if (isPreview)
+    {
+        <div class="hf-banner" style="display:flex;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:14px;padding:12px 14px;font-size:.82rem;color:#1E3A8A;margin-bottom:14px;">
+            <i class="fas fa-circle-info" style="color:#0066CC;margin-top:2px;"></i>
+            <div>Preview mode — explore all House Fact flows before you save this property.</div>
+        </div>
+    }
+
+    <article class="hf-property-card">
+        <div class="hf-property-card-top">
+            <div class="hf-property-thumb hf-property-thumb-icon">
+                <i class="fas fa-house"></i>
+            </div>
+            <div class="hf-property-card-main">
+                <div class="hf-property-kicker">INDOR HOUSE FACT</div>
+                <div class="hf-property-address">@(Model.FormattedAddress ?? "Property address")</div>
+                <div class="hf-property-badges">
+                    @if (!string.IsNullOrWhiteSpace(Model.DataSource))
+                    {
+                        <span class="hf-property-badge hf-property-badge-ai"><i class="fas fa-robot"></i> @Model.DataSource</span>
+                    }
+                    <span class="hf-property-badge hf-property-badge-data"><i class="fas fa-database"></i> @Model.FieldCount fields saved</span>
+                </div>
+            </div>
+            <div class="hf-property-thumb hf-property-thumb-photo" aria-hidden="true">
+                <i class="fas fa-image"></i>
+            </div>
+        </div>
+        <div class="hf-property-stats">
+            @foreach (var stat in overview.HeroStats)
+            {
+                <div class="hf-property-stat">
+                    <i class="fas @stat.Icon"></i>
+                    <div>
+                        <div class="hf-property-stat-label">@stat.Label</div>
+                        <div class="hf-property-stat-value">@stat.Value</div>
+                    </div>
+                </div>
+            }
+        </div>
+    </article>
+
+    <div class="hf-jump-row">
+        <div class="hf-jump-label">Jump to section</div>
+        <button type="button" class="hf-jump-customize" data-hf-expand-all><i class="fas fa-sliders"></i> Expand all</button>
+    </div>
+
+    <div class="hf-jump-scroll">
+        @foreach (var jump in overview.QuickJumps)
+        {
+            if (jump.Key == "schools" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="Schools">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="hf-jump-chip" asp-controller="Schools" asp-action="Index" asp-route-id="@propiedadId!.Value">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+            }
+            else if (jump.Key == "snapshot" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="PropertySnapshot">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="hf-jump-chip" asp-controller="PropertySnapshot" asp-action="Index" asp-route-id="@propiedadId!.Value">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+            }
+            else if (jump.Key == "systems" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="SystemsProfile">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="hf-jump-chip" asp-controller="SystemsProfile" asp-action="Index" asp-route-id="@propiedadId!.Value">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+            }
+            else if (jump.Key == "roof" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="RoofExterior">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="hf-jump-chip" asp-controller="RoofExterior" asp-action="Index" asp-route-id="@propiedadId!.Value">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+            }
+            else if (jump.Key == "permits" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="PermitsImprovements">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="hf-jump-chip" asp-controller="PermitsImprovements" asp-action="Index" asp-route-id="@propiedadId!.Value">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+            }
+            else if (jump.Key == "hoa" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a class="hf-jump-chip" asp-controller="HouseFactPreview" asp-action="HoaCommunity">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+                else
+                {
+                    <a class="hf-jump-chip" asp-controller="HoaCommunity" asp-action="Index" asp-route-id="@propiedadId!.Value">
+                        <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                        <span class="hf-jump-text">@jump.Label</span>
+                    </a>
+                }
+            }
+            else
+            {
+                <button type="button" class="hf-jump-chip" data-hf-open-category="@jump.Key" data-hf-title="@jump.Label">
+                    <span class="hf-jump-icon"><i class="fas @jump.Icon"></i></span>
+                    <span class="hf-jump-text">@jump.Label</span>
+                </button>
+            }
+        }
+    </div>
+
+    <div class="hf-category-grid">
+        @foreach (var card in overview.CategoryCards)
+        {
+            if (card.Key == "schools" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="Schools"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Schools" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "snapshot" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="PropertySnapshot"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="PropertySnapshot" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "systems" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="SystemsProfile"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="SystemsProfile" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "roof" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="RoofExterior"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="RoofExterior" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "permits" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="PermitsImprovements" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "utilities" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="Utilities"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Utilities" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "risk" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="RiskScore"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="RiskScore" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "missing" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="MissingInformation"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="MissingInformation" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "hoa" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="HoaCommunity"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="HoaCommunity" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "documents" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="Documents"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="Documents" asp-action="Index" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "parks" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="Parks"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="NearbyPlaces" asp-action="Parks" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "airports" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="Airports"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="NearbyPlaces" asp-action="Airports" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else if (card.Key == "hospitals" && hasFlowLinks)
+            {
+                if (isPreview)
+                {
+                    <a asp-controller="HouseFactPreview" asp-action="Hospitals"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="NearbyPlaces" asp-action="Hospitals" asp-route-id="@propiedadId!.Value"
+                       class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "") hf-category-link">
+                        @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                    </a>
+                }
+            }
+            else
+            {
+                <button type="button"
+                        class="hf-category-card hf-tone-@card.Tone @(card.IsWarning ? "is-warning" : "")"
+                        data-hf-open-category="@card.Key"
+                        data-hf-title="@card.Title"
+                        data-hf-section-ids="@string.Join(",", card.SectionIds)">
+                    @await Html.PartialAsync("_HouseFactCategoryCardBody", card)
+                </button>
+            }
+        }
+    </div>
+</section>

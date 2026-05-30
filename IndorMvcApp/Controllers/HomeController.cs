@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -635,6 +636,36 @@ public class HomeController : Controller
             }))
             .OrderBy(s => s.FechaCita)
             .ToList();
+
+        HttpContext.Session.SetString(
+            HouseFactPreviewContext.ReturnUrlSessionKey,
+            Url.Action(nameof(Index), "Home") + "#section-myhome");
+
+        var primaryPropiedad = propiedades.FirstOrDefault();
+        var previewInfo = HouseFactPreviewContext.Load(HttpContext.Session);
+        HouseFactProfileViewModel? houseFactProfile = null;
+        var houseFactPreview = false;
+
+        if (primaryPropiedad != null && !string.IsNullOrWhiteSpace(primaryPropiedad.AttomRawJson))
+        {
+            var info = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
+            houseFactProfile = HouseFactDisplayService.BuildProfile(
+                primaryPropiedad.AttomRawJson,
+                primaryPropiedad.AttomSyncStatus ?? info?.DataSource,
+                info?.FormattedAddress ?? primaryPropiedad.Direccion);
+        }
+        else if (previewInfo != null)
+        {
+            houseFactProfile = HouseFactDisplayService.BuildProfile(
+                previewInfo.AttomRawJson,
+                previewInfo.DataSource,
+                previewInfo.FormattedAddress);
+            houseFactPreview = true;
+        }
+
+        ViewBag.HouseFactProfile = houseFactProfile;
+        ViewBag.HouseFactPreviewMode = houseFactPreview;
+        ViewBag.HouseFactPropiedadId = primaryPropiedad?.Id;
 
         return View(propiedades);
     }

@@ -1,0 +1,9 @@
+@*
+    Include at top of House Fact flow views after @model.
+    Sets hfPreview, hfPc (preview controller), hfSavedId.
+*@
+@{
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var hfPc = hfPreview ? "HouseFactPreview" : ViewContext.RouteData.Values["controller"]?.ToString();
+    var hfSavedId = ViewBag.PropiedadId as int? ?? (Model?.GetType().GetProperty("PropiedadId")?.GetValue(Model) as int? ?? 0);
+}

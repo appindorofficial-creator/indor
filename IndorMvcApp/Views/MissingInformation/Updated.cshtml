@@ -1,0 +1,79 @@
+@model IndorMvcApp.ViewModels.MissingInformationUpdatedViewModel
+@{
+    ViewData["Title"] = "House Fax Updated";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/missing-information.css" asp-append-version="true" />
+}
+
+<div class="mi-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="mi-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="mi-head">
+    <h1 class="mi-title">House Fax Updated</h1>
+    <p class="mi-sub">Your upload helped improve your home profile.</p>
+</div>
+
+<div class="mi-updated-hero">
+    <div class="mi-updated-icon"><i class="fas fa-circle-check"></i></div>
+</div>
+
+<div class="mi-strength">
+    <div class="mi-updated-stats">
+        <div>
+            <div class="k">Before</div>
+            <div class="v">@Model.BeforePercent%</div>
+        </div>
+        <div class="mid">+@Model.ImprovementPercent% improvement</div>
+        <div>
+            <div class="k">Now</div>
+            <div class="v green">@Model.AfterPercent%</div>
+        </div>
+    </div>
+    <div class="mi-updated-bar">
+        <span class="before" style="width:@Model.BeforePercent%"></span>
+        <span class="gain" style="width:@Model.ImprovementPercent%"></span>
+        <span class="rest"></span>
+    </div>
+</div>
+
+<div class="mi-panel">
+    <div class="mi-panel-title">Updated items</div>
+    @foreach (var item in Model.UpdatedItems)
+    {
+        <div class="mi-row" style="padding:12px 0;border-bottom:1px solid #EEF2F7;">
+            <div class="icon green"><i class="fas fa-circle-check"></i></div>
+            <div class="body">
+                <div class="t">@item.Title</div>
+            </div>
+            <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:.75rem;"></i>
+        </div>
+    }
+</div>
+
+<div class="mi-panel">
+    <div class="mi-panel-title">What happens next?</div>
+    @foreach (var step in Model.NextSteps)
+    {
+        <div class="mi-next">
+            <i class="fas fa-circle-info"></i>
+            <div>@step</div>
+        </div>
+    }
+</div>
+
+<div class="mi-btn-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="mi-btn-primary">View updated House Fax</a>
+        <a asp-controller="HouseFactPreview" asp-action="MissingInformationCategories" class="mi-btn-secondary">Complete another item</a>
+    }
+    else
+    {
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="mi-btn-primary">View updated House Fax</a>
+        <a asp-action="Categories" asp-route-id="@Model.PropiedadId" class="mi-btn-secondary">Complete another item</a>
+    }
+</div>

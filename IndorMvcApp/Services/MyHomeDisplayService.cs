@@ -42,8 +42,7 @@ public static class MyHomeDisplayService
             AttomLastSyncUtc = propiedad.AttomLastSyncUtc,
             AttomPropertyId = propiedad.AttomPropertyId ?? info?.AttomPropertyId,
             HasAttomData = !string.IsNullOrWhiteSpace(propiedad.AttomRawJson),
-            AttomFieldCount = AttomFieldExtractor.ExtractGroups(propiedad.AttomRawJson)
-                .Sum(g => g.Fields.Count)
+            AttomFieldCount = HouseFactDisplayService.BuildProfile(propiedad.AttomRawJson).FieldCount
         };
     }
 
@@ -51,7 +50,10 @@ public static class MyHomeDisplayService
     {
         var details = info?.PropertyDetails ?? new PropertyDetailsInfo();
         var rawJson = propiedad.AttomRawJson;
-        var attomGroups = AttomFieldExtractor.ExtractGroups(rawJson);
+        var houseFact = HouseFactDisplayService.BuildProfile(
+            rawJson,
+            info?.DataSource ?? propiedad.AttomSyncStatus ?? "Estimated",
+            propiedad.Direccion ?? info?.FormattedAddress);
 
         return new MyHomePropertyDetailsViewModel
         {
@@ -98,8 +100,7 @@ public static class MyHomeDisplayService
             Longitude = info?.Longitude,
             Features = details.Features,
             DataSource = info?.DataSource ?? propiedad.AttomSyncStatus ?? "Estimated",
-            AttomFieldGroups = attomGroups,
-            AttomRawJsonPretty = AttomFieldExtractor.FormatPrettyJson(rawJson)
+            HouseFact = houseFact
         };
     }
 

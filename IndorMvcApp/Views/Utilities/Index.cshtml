@@ -1,0 +1,313 @@
+@model IndorMvcApp.ViewModels.UtilitiesIndexViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var addressParts = Model.Address.Split(',', 2);
+    var line1 = addressParts[0].Trim();
+    var line2 = addressParts.Length > 1 ? addressParts[1].Trim() : string.Empty;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/utilities.css" asp-append-version="true" />
+}
+
+<div class="util-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="util-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="util-step-row">
+    <span>Step @Model.CurrentStep of @Model.TotalSteps</span>
+    <span class="label">Step @Model.CurrentStep · @Model.StepLabel</span>
+</div>
+<div class="util-progress">
+    @for (var step = 1; step <= Model.TotalSteps; step++)
+    {
+        <span class="@(step <= Model.CurrentStep ? "on" : "")"></span>
+    }
+</div>
+
+<div class="util-head">
+    <h1 class="util-title">@Model.PageTitle</h1>
+    <p class="util-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="util-property-card">
+    <div class="util-property-top">
+        <div class="util-thumb"><i class="fas fa-house"></i></div>
+        <div>
+            <div class="util-address">
+                @line1
+                @if (!string.IsNullOrWhiteSpace(line2))
+                {
+                    <div class="line2">@line2</div>
+                }
+            </div>
+            @if (Model.ProviderCount > 0)
+            {
+                <span class="util-provider-pill"><i class="fas fa-users"></i> @Model.ProviderCount providers</span>
+            }
+        </div>
+        <div class="util-photo"><i class="fas fa-image"></i></div>
+    </div>
+</div>
+
+@if (Model.SavedToHouseFacts && Model.ActiveTab == "contacts")
+{
+    <div class="util-saved-banner">
+        <i class="fas fa-circle-check"></i> Utility info saved to House Facts.
+    </div>
+}
+
+<div class="util-tabs">
+    @foreach (var tab in Model.Tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="util-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="Utilities"
+               asp-route-tab="@tab.Key">@tab.Label</a>
+        }
+        else
+        {
+            <a class="util-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-action="Index"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-tab="@tab.Key">@tab.Label</a>
+        }
+    }
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="util-empty-note">
+        <i class="fas fa-droplet" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No utility data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="util-btn-primary" style="margin-top:16px;display:inline-flex;">Back to House Facts</a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="util-btn-primary" style="margin-top:16px;display:inline-flex;">Refresh property data</a>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "overview")
+{
+    <p class="util-intro">Here's a summary of the key utility services for this property. Tap any category to view more details and provider information.</p>
+    <div class="util-grid">
+        @foreach (var utility in Model.Utilities)
+        {
+            if (hfPreview)
+            {
+                <a class="util-card" asp-controller="HouseFactPreview" asp-action="UtilitiesDetail" asp-route-utilityId="@utility.Id">
+                    <div class="icon"><i class="fas @utility.Icon"></i></div>
+                    <div class="type">@utility.Type</div>
+                    <div class="provider">@utility.ProviderName</div>
+                    <div class="util-card-foot">
+                        <span class="util-pill @utility.StatusTone">@utility.Status</span>
+                        <i class="fas fa-chevron-right util-chev"></i>
+                    </div>
+                </a>
+            }
+            else
+            {
+                <a class="util-card" asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-utilityId="@utility.Id">
+                    <div class="icon"><i class="fas @utility.Icon"></i></div>
+                    <div class="type">@utility.Type</div>
+                    <div class="provider">@utility.ProviderName</div>
+                    <div class="util-card-foot">
+                        <span class="util-pill @utility.StatusTone">@utility.Status</span>
+                        <i class="fas fa-chevron-right util-chev"></i>
+                    </div>
+                </a>
+            }
+        }
+    </div>
+}
+else if (Model.ActiveTab == "providers")
+{
+    <p class="util-intro">Tap any provider to view contact details, service notes, and account information.</p>
+    <div class="util-list">
+        @foreach (var utility in Model.Utilities)
+        {
+            if (hfPreview)
+            {
+                <a class="util-row" asp-controller="HouseFactPreview" asp-action="UtilitiesDetail" asp-route-utilityId="@utility.Id">
+                    <div class="icon"><i class="fas @utility.Icon"></i></div>
+                    <div class="body">
+                        <div class="type">@utility.Type</div>
+                        <div class="provider">@utility.ProviderName</div>
+                    </div>
+                    <span class="util-pill @utility.StatusTone">@(utility.Status == "Available" ? "Active" : utility.Status)</span>
+                    <i class="fas fa-chevron-right util-chev"></i>
+                </a>
+            }
+            else
+            {
+                <a class="util-row" asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-utilityId="@utility.Id">
+                    <div class="icon"><i class="fas @utility.Icon"></i></div>
+                    <div class="body">
+                        <div class="type">@utility.Type</div>
+                        <div class="provider">@utility.ProviderName</div>
+                    </div>
+                    <span class="util-pill @utility.StatusTone">@(utility.Status == "Available" ? "Active" : utility.Status)</span>
+                    <i class="fas fa-chevron-right util-chev"></i>
+                </a>
+            }
+        }
+    </div>
+}
+else if (Model.ActiveTab == "contacts")
+{
+    <div class="util-contact-list">
+        @foreach (var contact in Model.ContactRows)
+        {
+            if (hfPreview)
+            {
+                <a class="util-row" asp-controller="HouseFactPreview" asp-action="UtilitiesDetail" asp-route-utilityId="@contact.UtilityId">
+                    <div class="icon"><i class="fas @contact.Icon"></i></div>
+                    <div class="body">
+                        <div class="type">@contact.Type</div>
+                        <div class="provider">@contact.ProviderName</div>
+                        <div class="meta">
+                            @if (!string.IsNullOrWhiteSpace(contact.Phone))
+                            {
+                                <span>Phone: @contact.Phone</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(contact.Website))
+                            {
+                                @if (!string.IsNullOrWhiteSpace(contact.Phone)) { <span> · </span> }
+                                <span>Website: @contact.Website</span>
+                            }
+                        </div>
+                    </div>
+                    <span class="util-pill @contact.StatusTone">@contact.Status</span>
+                    <i class="fas fa-chevron-right util-chev"></i>
+                </a>
+            }
+            else
+            {
+                <a class="util-row" asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-utilityId="@contact.UtilityId">
+                    <div class="icon"><i class="fas @contact.Icon"></i></div>
+                    <div class="body">
+                        <div class="type">@contact.Type</div>
+                        <div class="provider">@contact.ProviderName</div>
+                        <div class="meta">
+                            @if (!string.IsNullOrWhiteSpace(contact.Phone))
+                            {
+                                <span>Phone: @contact.Phone</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(contact.Website))
+                            {
+                                @if (!string.IsNullOrWhiteSpace(contact.Phone)) { <span> · </span> }
+                                <span>Website: @contact.Website</span>
+                            }
+                        </div>
+                    </div>
+                    <span class="util-pill @contact.StatusTone">@contact.Status</span>
+                    <i class="fas fa-chevron-right util-chev"></i>
+                </a>
+            }
+        }
+    </div>
+}
+else
+{
+    <div class="util-setup-list">
+        @foreach (var item in Model.SetupItems)
+        {
+            <div class="util-setup-item @(item.Completed ? "done" : "")">
+                <div class="icon"><i class="fas @item.Icon"></i></div>
+                <div>
+                    <div class="title">@item.Title</div>
+                    <div class="desc">@item.Description</div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<div class="util-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>@Model.InfoBanner</div>
+</div>
+
+<div class="util-btn-row @(Model.ActiveTab == "contacts" ? "single" : "")">
+    @if (Model.ActiveTab == "contacts")
+    {
+        if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="util-btn-primary">
+                <i class="fas fa-check"></i> @Model.PrimaryActionLabel
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="util-btn-primary">
+                <i class="fas fa-check"></i> @Model.PrimaryActionLabel
+            </a>
+        }
+    }
+    else
+    {
+        @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionTab))
+        {
+            if (hfPreview)
+            {
+                <a asp-controller="HouseFactPreview" asp-action="Utilities" asp-route-tab="@Model.SecondaryActionTab" class="util-btn-secondary">
+                    <i class="fas @Model.SecondaryActionIcon"></i> @Model.SecondaryActionLabel
+                </a>
+            }
+            else
+            {
+                <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.SecondaryActionTab" class="util-btn-secondary">
+                    <i class="fas @Model.SecondaryActionIcon"></i> @Model.SecondaryActionLabel
+                </a>
+            }
+        }
+        else if (Model.ActiveTab == "overview")
+        {
+            if (hfPreview)
+            {
+                <a asp-controller="Propietario" asp-action="PropertyDetails" class="util-btn-secondary">
+                    <i class="fas @Model.SecondaryActionIcon"></i> @Model.SecondaryActionLabel
+                </a>
+            }
+            else
+            {
+                <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="util-btn-secondary">
+                    <i class="fas @Model.SecondaryActionIcon"></i> @Model.SecondaryActionLabel
+                </a>
+            }
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.PrimaryActionTab))
+        {
+            if (hfPreview)
+            {
+                <a asp-controller="HouseFactPreview" asp-action="Utilities" asp-route-tab="@Model.PrimaryActionTab" class="util-btn-primary">
+                    <i class="fas @Model.PrimaryActionIcon"></i> @Model.PrimaryActionLabel
+                </a>
+            }
+            else
+            {
+                <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.PrimaryActionTab" class="util-btn-primary">
+                    <i class="fas @Model.PrimaryActionIcon"></i> @Model.PrimaryActionLabel
+                </a>
+            }
+        }
+    }
+</div>
+
+@if (Model.ActiveTab == "contacts")
+{
+    <div class="util-btn-row" style="margin-top:10px;">
+        <button type="button" class="util-btn-secondary" onclick="navigator.share?.({ title: 'Utility contacts', text: document.title })">
+            <i class="fas fa-share-from-square"></i> Share utility list
+        </button>
+        <button type="button" class="util-btn-secondary" onclick="window.print()">
+            <i class="fas fa-file-pdf"></i> Download PDF
+        </button>
+    </div>
+}

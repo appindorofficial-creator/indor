@@ -1,0 +1,61 @@
+@model IndorMvcApp.ViewModels.DocumentAddViewModel
+@{
+    ViewData["Title"] = "Add Document";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/documents.css" asp-append-version="true" />
+}
+
+<div class="doc-back-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="Documents"><i class="fas fa-chevron-left"></i></a>
+    }
+    else
+    {
+        <a asp-action="Index" asp-route-id="@Model.PropiedadId"><i class="fas fa-chevron-left"></i></a>
+    }
+    <div class="doc-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="doc-head">
+    <h1 class="doc-title">Add Document</h1>
+    <p class="doc-sub">Save reports, permits, invoices & disclosures</p>
+</div>
+
+<div class="doc-upload-box">
+    <div class="doc-upload-grid">
+        <span class="doc-upload-opt"><span class="icon"><i class="fas fa-camera"></i></span>Take photo</span>
+        <span class="doc-upload-opt"><span class="icon"><i class="fas fa-file-arrow-up"></i></span>Upload file</span>
+        <span class="doc-upload-opt"><span class="icon"><i class="fas fa-envelope"></i></span>Import from email</span>
+    </div>
+</div>
+
+@if (hfPreview)
+{
+    <form asp-controller="HouseFactPreview" asp-action="DocumentsAdd" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="PropiedadId" />
+        <partial name="_AddDocumentFields" model="Model" />
+        <button type="submit" class="doc-btn-primary"><i class="fas fa-plus"></i> Save document</button>
+    </form>
+}
+else
+{
+    <form asp-action="Add" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="PropiedadId" />
+        <partial name="_AddDocumentFields" model="Model" />
+        <div class="doc-field">
+            <label for="file">Attach file</label>
+            <input type="file" id="file" name="file" />
+        </div>
+        <button type="submit" class="doc-btn-primary"><i class="fas fa-plus"></i> Save document</button>
+    </form>
+}
+
+<div class="doc-banner">
+    <i class="fas fa-circle-info"></i>
+    You can attach files to keep your House Facts organized.
+</div>

@@ -1,0 +1,84 @@
+@model IndorMvcApp.ViewModels.DocumentRequestsViewModel
+@{
+    ViewData["Title"] = "Document Requests";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/documents.css" asp-append-version="true" />
+}
+
+<div class="doc-back-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="Documents"><i class="fas fa-chevron-left"></i></a>
+    }
+    else
+    {
+        <a asp-action="Index" asp-route-id="@Model.PropiedadId"><i class="fas fa-chevron-left"></i></a>
+    }
+    <div class="doc-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="doc-head">
+    <h1 class="doc-title">Document Requests</h1>
+    <p class="doc-sub">Track missing, pending, and shared files.</p>
+</div>
+
+<div class="doc-stats" style="margin-bottom:14px;">
+    <span class="doc-stat orange"><i class="fas fa-clock"></i> @Model.PendingCount pending</span>
+    <span class="doc-stat purple"><i class="fas fa-users"></i> @Model.SharedCount shared</span>
+    <span class="doc-stat blue"><i class="fas fa-paper-plane"></i> @Model.RemindersSent reminder sent</span>
+</div>
+
+<div class="doc-section-title">Pending from seller / agent</div>
+@foreach (var item in Model.PendingItems)
+{
+    <div class="doc-req-card">
+        <div class="doc-row-icon @item.IconTone"><i class="fas @item.Icon"></i></div>
+        <div class="doc-req-body">
+            <div class="doc-req-title">@item.Title</div>
+            <div class="doc-req-sub">@item.Subtitle</div>
+        </div>
+        <span class="doc-badge @item.StatusTone">@item.Status</span>
+        @if (hfPreview)
+        {
+            <a class="doc-req-action" asp-controller="HouseFactPreview" asp-action="DocumentsAdd">@item.ActionLabel</a>
+        }
+        else
+        {
+            <a class="doc-req-action" asp-action="Add" asp-route-id="@Model.PropiedadId">@item.ActionLabel</a>
+        }
+    </div>
+}
+
+<div class="doc-section-title">Shared with others</div>
+@foreach (var item in Model.SharedItems)
+{
+    <div class="doc-req-card">
+        <div class="doc-row-icon @item.IconTone"><i class="fas @item.Icon"></i></div>
+        <div class="doc-req-body">
+            <div class="doc-req-title">@item.Title</div>
+            <div class="doc-req-sub">@item.Subtitle</div>
+        </div>
+        <span class="doc-badge @item.StatusTone">@item.Status</span>
+        <span class="doc-req-action">@item.ActionLabel</span>
+    </div>
+}
+
+<div class="doc-banner">
+    <i class="fas fa-circle-info"></i>
+    Document requests help you collect important files faster and keep your property file complete.
+</div>
+
+@if (hfPreview)
+{
+    <a class="doc-btn-primary" asp-controller="HouseFactPreview" asp-action="DocumentsAdd">
+        <i class="fas fa-plus"></i> Request another document
+    </a>
+}
+else
+{
+    <a class="doc-btn-primary" asp-action="Add" asp-route-id="@Model.PropiedadId">
+        <i class="fas fa-plus"></i> Request another document
+    </a>
+}

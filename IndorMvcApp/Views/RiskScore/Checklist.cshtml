@@ -1,0 +1,158 @@
+@model IndorMvcApp.ViewModels.RiskScoreChecklistViewModel
+@{
+    ViewData["Title"] = "Missing Info Checklist";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var addressParts = Model.Address.Split(',', 2);
+    var line1 = addressParts[0].Trim();
+    var line2 = addressParts.Length > 1 ? addressParts[1].Trim() : string.Empty;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/risk-score.css" asp-append-version="true" />
+}
+
+<div class="rs-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="rs-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="rs-head">
+    <h1 class="rs-title">Missing Info Checklist</h1>
+    <p class="rs-sub">Items that can improve accuracy and confidence.</p>
+</div>
+
+<div class="rs-property-card">
+    <div class="rs-property-top">
+        <div class="rs-thumb"><i class="fas fa-house"></i></div>
+        <div>
+            <div class="rs-address">
+                @line1
+                @if (!string.IsNullOrWhiteSpace(line2))
+                {
+                    <div style="font-size:.76rem;color:#64748B;font-weight:600;margin-top:2px;">@line2</div>
+                }
+            </div>
+        </div>
+        <div class="rs-photo"><i class="fas fa-image"></i></div>
+    </div>
+</div>
+
+<div class="rs-stats">
+    <div class="rs-stat">
+        <div class="k"><i class="fas fa-database" style="color:#047857;"></i> Fields saved</div>
+        <div class="v">@Model.FieldCount fields saved</div>
+    </div>
+    <div class="rs-stat">
+        <div class="k">Completion</div>
+        <div class="v">@Model.CompletionPercent%</div>
+        <div class="rs-progress"><span style="width:@Model.CompletionPercent%"></span></div>
+    </div>
+    <div class="rs-stat">
+        <div class="k"><i class="fas fa-shield-check" style="color:#047857;"></i> Confidence</div>
+        <div class="v"><span class="rs-pill @Model.ConfidenceTone">@Model.ConfidenceLabel</span></div>
+    </div>
+</div>
+
+<div class="rs-filter-row">
+    @foreach (var filter in Model.Filters)
+    {
+        if (hfPreview)
+        {
+            <a class="rs-filter @(Model.ActiveFilter == filter.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="RiskScoreChecklist"
+               asp-route-filter="@(filter.Key == "all" ? null : filter.Key)">
+                @if (!string.IsNullOrWhiteSpace(filter.DotTone))
+                {
+                    <span class="dot @filter.DotTone"></span>
+                }
+                @if (!string.IsNullOrWhiteSpace(filter.Icon))
+                {
+                    <i class="fas @filter.Icon"></i>
+                }
+                @filter.Label
+            </a>
+        }
+        else
+        {
+            <a class="rs-filter @(Model.ActiveFilter == filter.Key ? "active" : "")"
+               asp-action="Checklist"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-filter="@(filter.Key == "all" ? null : filter.Key)">
+                @if (!string.IsNullOrWhiteSpace(filter.DotTone))
+                {
+                    <span class="dot @filter.DotTone"></span>
+                }
+                @if (!string.IsNullOrWhiteSpace(filter.Icon))
+                {
+                    <i class="fas @filter.Icon"></i>
+                }
+                @filter.Label
+            </a>
+        }
+    }
+</div>
+
+@if (!Model.HasData || Model.Items.Count == 0)
+{
+    <div class="rs-empty-note">
+        <i class="fas fa-clipboard-check" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No missing information items found yet.</div>
+    </div>
+}
+else
+{
+    <div class="rs-checklist">
+        @foreach (var item in Model.Items)
+        {
+            <div class="rs-check-row">
+                <div class="icon"><i class="fas @item.Icon"></i></div>
+                <div class="body">
+                    <div class="t">@item.Title</div>
+                    <div class="impact @item.ImpactTone">@item.Impact</div>
+                </div>
+                <span class="rs-pill @item.StatusTone">@item.Status</span>
+                <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:.75rem;"></i>
+            </div>
+        }
+    </div>
+}
+
+<div class="rs-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>@Model.InfoBanner</div>
+</div>
+
+<div class="rs-btn-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="rs-btn-secondary">
+            <i class="fas fa-clock"></i> Mark as verified later
+        </a>
+        <a asp-controller="MyHome" asp-action="Documents" class="rs-btn-primary">
+            <i class="fas fa-upload"></i> Upload documents
+        </a>
+    }
+    else
+    {
+        <button type="button" class="rs-btn-secondary">
+            <i class="fas fa-clock"></i> Mark as verified later
+        </button>
+        <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" class="rs-btn-primary">
+            <i class="fas fa-upload"></i> Upload documents
+        </a>
+    }
+</div>
+
+<div class="rs-btn-row" style="margin-top:10px;">
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="RiskScore" class="rs-btn-secondary" style="grid-column:1/-1;">
+            <i class="fas fa-shield-halved"></i> Back to Risk Score
+        </a>
+    }
+    else
+    {
+        <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="rs-btn-secondary" style="grid-column:1/-1;">
+            <i class="fas fa-shield-halved"></i> Back to Risk Score
+        </a>
+    }
+</div>

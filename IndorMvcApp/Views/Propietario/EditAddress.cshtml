@@ -1,8 +1,11 @@
 @model IndorMvcApp.ViewModels.PropertyInfoViewModel
+@using IndorMvcApp.Services
+@using IndorMvcApp.ViewModels
 @{
     ViewData["Title"] = "Edit Address - INDOR";
     Layout = null;
     var devices = Model.Devices ?? new List<IndorMvcApp.ViewModels.DeviceInfoViewModel>();
+    var houseFact = HouseFactDisplayService.BuildProfile(Model.AttomRawJson, Model.DataSource, Model.FormattedAddress);
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -298,6 +301,13 @@
         <div class="brand-section">
             <p class="brand-tagline">Review and <span class="highlight">confirm</span> your property details</p>
         </div>
+
+        @if (houseFact.HasData)
+        {
+            <div style="margin-bottom:18px;">
+                @await Html.PartialAsync("_HouseFactProfile", houseFact, new ViewDataDictionary(ViewData) { { "Compact", true }, { "ShowJson", false } })
+            </div>
+        }
 
         <form asp-action="EditAddress" method="post" id="mainForm">
             <input type="hidden" name="OriginalJson" value='@((TempData["PropertyInfoJson"] ?? "").ToString())' />

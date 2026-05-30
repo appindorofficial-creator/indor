@@ -1,0 +1,120 @@
+@model IndorMvcApp.ViewModels.SystemsProfileIndexViewModel
+@{
+    ViewData["Title"] = "Systems Profile";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/systems-profile.css" asp-append-version="true" />
+}
+
+<div class="sp-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="sp-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="sp-head">
+    <h1 class="sp-title">Systems Profile</h1>
+    <p class="sp-sub">HVAC, plumbing, electrical, appliances &amp; key home systems.</p>
+</div>
+
+<div class="sp-filters">
+    @foreach (var chip in Model.Filters)
+    {
+        if (hfPreview)
+        {
+            <a class="sp-filter @(Model.ActiveFilter == chip.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="SystemsProfile"
+               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@chip.Label</a>
+        }
+        else
+        {
+            <a class="sp-filter @(Model.ActiveFilter == chip.Key ? "active" : "")"
+               asp-action="Index" asp-route-id="@Model.PropiedadId"
+               asp-route-filter="@(chip.Key == "all" ? null : chip.Key)">@chip.Label</a>
+        }
+    }
+</div>
+
+<div class="sp-summary-card">
+    <div class="sp-thumb"><i class="fas fa-house"></i></div>
+    <div>
+        <div class="sp-address">@Model.Address</div>
+        <div class="sp-summary-badges">
+            <span class="sp-pill sp-pill-blue"><i class="fas fa-screwdriver-wrench"></i> @Model.SystemCount systems</span>
+            @if (Model.NeedsVerificationCount > 0)
+            {
+                <span class="sp-pill sp-pill-orange"><i class="fas fa-shield-check"></i> @Model.NeedsVerificationCount need verification</span>
+            }
+            @if (Model.AlertCount > 0)
+            {
+                <span class="sp-pill sp-pill-red"><i class="fas fa-triangle-exclamation"></i> @Model.AlertCount alert</span>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="sp-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>System data may include public records, uploaded documents, and owner-provided info. Add documents to improve accuracy.</div>
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="sp-empty-note">
+        <i class="fas fa-screwdriver-wrench" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No system data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-primary" style="margin-top:16px;">Back to House Facts</a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-primary" style="margin-top:16px;">Refresh property data</a>
+        }
+    </div>
+}
+else
+{
+    @foreach (var system in Model.Systems)
+    {
+        if (hfPreview)
+        {
+            <a class="sp-system-card" asp-controller="HouseFactPreview" asp-action="SystemsDetail" asp-route-systemId="@system.Id">
+                <div class="sp-system-icon"><i class="fas @system.Icon"></i></div>
+                <div class="sp-system-body">
+                    <div class="sp-system-name">@system.Name</div>
+                    <div class="sp-system-sub">@system.Subtitle</div>
+                </div>
+                <span class="sp-status @system.StatusTone">@system.Status</span>
+                <i class="fas fa-chevron-right sp-chev"></i>
+            </a>
+        }
+        else
+        {
+            <a class="sp-system-card" asp-action="Detail" asp-route-id="@Model.PropiedadId" asp-route-systemId="@system.Id">
+                <div class="sp-system-icon"><i class="fas @system.Icon"></i></div>
+                <div class="sp-system-body">
+                    <div class="sp-system-name">@system.Name</div>
+                    <div class="sp-system-sub">@system.Subtitle</div>
+                </div>
+                <span class="sp-status @system.StatusTone">@system.Status</span>
+                <i class="fas fa-chevron-right sp-chev"></i>
+            </a>
+        }
+    }
+}
+
+@if (hfPreview)
+{
+    <a asp-controller="HouseFactPreview" asp-action="SystemsVerification" class="sp-btn-primary">View full systems</a>
+    <a asp-controller="Propietario" asp-action="PropertyDetails" class="sp-btn-secondary">
+        <i class="fas fa-file-circle-plus"></i> Add documents
+    </a>
+}
+else
+{
+    <a asp-action="Verification" asp-route-id="@Model.PropiedadId" class="sp-btn-primary">View full systems</a>
+    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sp-btn-secondary">
+        <i class="fas fa-file-circle-plus"></i> Add documents
+    </a>
+}

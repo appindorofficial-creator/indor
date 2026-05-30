@@ -25,13 +25,13 @@
 <div class="hf-chip-row">
     <a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="information" class="hf-chip @(tab == "information" ? "active" : "")">Information</a>
     <a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="public" class="hf-chip @(tab == "public" ? "active" : "")">Public data</a>
-    <a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hf-chip @(tab == "attom" ? "active" : "")">All ATTOM data</a>
+    <a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hf-chip @(tab == "attom" ? "active" : "")">House Fact profile</a>
 </div>
 
 @if (tab == "information")
 {
     <div class="hf-card">
-        @Html.Raw(Row("ATTOM ID", Model.AttomPropertyId?.ToString(), "fa-fingerprint"))
+        @Html.Raw(Row("External ID", Model.AttomPropertyId?.ToString(), "fa-fingerprint"))
         @Html.Raw(Row("Property type", Model.PropertyType, "fa-house"))
         @Html.Raw(Row("Occupancy", Model.Occupancy, "fa-user-check"))
         @Html.Raw(Row("Year built", Model.YearBuilt?.ToString(), "fa-calendar"))
@@ -92,51 +92,35 @@ else
     @if (!Model.HasAttomData)
     {
         <div class="hf-card" style="text-align:center;color:#64748B;">
-            No ATTOM payload saved yet for this property.
-            <form asp-action="SyncAttom" asp-route-id="@Model.PropiedadId" method="post" style="margin-top:12px;">
+            No enriched property data saved yet for this property.
+            <form asp-action="SyncAttom" asp-route-id="@Model.PropiedadId" method="post" style="margin-top:12px;" data-property-research-loading>
                 @Html.AntiForgeryToken()
-                <button type="submit" class="hf-btn hf-btn-primary" style="width:auto;">Refresh from ATTOM</button>
+                <button type="submit" class="hf-btn hf-btn-primary" style="width:auto;">Refresh property data</button>
             </form>
         </div>
     }
     else
     {
-        @foreach (var group in Model.AttomFieldGroups)
-        {
-            <div class="hf-card">
-                <div class="hf-label" style="margin-bottom:10px;">@group.Title</div>
-                @foreach (var field in group.Fields)
-                {
-                    @Html.Raw(Row(field.Label, field.Value))
-                }
-            </div>
-        }
-
-        <details class="hf-card">
-            <summary class="hf-label" style="cursor:pointer;">Full ATTOM JSON response</summary>
-            <pre class="hf-json-block">@Model.AttomRawJsonPretty</pre>
-        </details>
+        ViewData["PropiedadId"] = Model.PropiedadId;
+        ViewData["EditUrl"] = Url.Action("Edit", new { id = Model.PropiedadId });
+        @await Html.PartialAsync("_HouseFactProfile", Model.HouseFact)
     }
 }
 
 <div class="hf-banner">
     <i class="fas fa-shield-check"></i>
     <div>
-        <strong>Verified public source.</strong>
+        <strong>Property data source.</strong>
         Data source: <strong>@Model.DataSource</strong>.
-        @if (Model.AttomPropertyId.HasValue) { <span> ATTOM ID @Model.AttomPropertyId.</span> }
+        @if (Model.AttomPropertyId.HasValue) { <span> External ID @Model.AttomPropertyId.</span> }
         @if (Model.AttomLastSyncUtc.HasValue) { <span> Last synced @Model.AttomLastSyncUtc.Value.ToLocalTime().ToString("MMM dd, yyyy HH:mm").</span> }
-        @if (Model.HasAttomData) { <span> @Model.AttomFieldGroups.Sum(g => g.Fields.Count) fields stored from ATTOM.</span> }
+        @if (Model.HasAttomData) { <span> @Model.HouseFact.FieldCount fields stored.</span> }
     </div>
 </div>
 
-<form asp-action="SyncAttom" asp-route-id="@Model.PropiedadId" method="post">
+<form asp-action="SyncAttom" asp-route-id="@Model.PropiedadId" method="post" data-property-research-loading>
     @Html.AntiForgeryToken()
-    <button type="submit" class="hf-btn hf-btn-primary"><i class="fas fa-rotate"></i> Refresh from ATTOM</button>
+    <button type="submit" class="hf-btn hf-btn-primary"><i class="fas fa-rotate"></i> Refresh property data</button>
 </form>
 
-@section Head {
-<style>
-    .hf-json-block { margin-top:12px; padding:12px; background:#0A2540; color:#E2E8F0; border-radius:12px; font-size:0.72rem; line-height:1.45; overflow:auto; max-height:420px; white-space:pre-wrap; word-break:break-word; }
-</style>
-}
+@await Html.PartialAsync("_PropertyResearchLoading")

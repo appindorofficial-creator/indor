@@ -1,0 +1,22 @@
+<div id="propertyResearchLoading" class="prl-overlay" aria-live="polite" aria-busy="true" hidden>
+    <div class="prl-backdrop"></div>
+    <div class="prl-panel" role="status">
+        <div class="prl-icon-wrap">
+            <div class="prl-radar" aria-hidden="true"></div>
+            <i class="fas fa-house" aria-hidden="true"></i>
+        </div>
+        <h2 class="prl-title">Researching your property</h2>
+        <p class="prl-step" id="prlStepText">Geocoding your address…</p>
+        <div class="prl-progress" aria-hidden="true">
+            <div class="prl-progress-bar"></div>
+        </div>
+        <p class="prl-hint">Searching Redfin, Realtor, Zillow and public records. This may take up to 90 seconds — please keep this tab open.</p>
+        <div class="prl-sources" aria-hidden="true">
+            <span class="prl-source-pill">Redfin</span>
+            <span class="prl-source-pill">Realtor</span>
+            <span class="prl-source-pill">Zillow</span>
+            <span class="prl-source-pill">County records</span>
+        </div>
+    </div>
+</div>
+<script src="~/js/property-loading.js" asp-append-version="true"></script>

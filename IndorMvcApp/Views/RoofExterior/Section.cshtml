@@ -1,0 +1,166 @@
+@model IndorMvcApp.ViewModels.RoofExteriorSectionViewModel
+@{
+    ViewData["Title"] = Model.Name;
+    var isRoof = Model.SectionId == "roof";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/roof-exterior.css" asp-append-version="true" />
+}
+
+<div class="re-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="re-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="re-head">
+    <h1 class="re-title">@Model.Name</h1>
+    <p class="re-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="re-tabs">
+    @foreach (var tab in Model.Tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="re-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="RoofExteriorSection"
+               asp-route-sectionId="@tab.Key"
+               asp-route-tab="@tab.Key">
+                <i class="fas @tab.Icon"></i> @tab.Label
+            </a>
+        }
+        else
+        {
+            <a class="re-tab @(Model.ActiveTab == tab.Key ? "active" : "")"
+               asp-action="Section"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-sectionId="@tab.Key"
+               asp-route-tab="@tab.Key">
+                <i class="fas @tab.Icon"></i> @tab.Label
+            </a>
+        }
+    }
+</div>
+
+<div class="re-property-card">
+    <div class="re-property-thumb"><i class="fas fa-house"></i></div>
+    <div style="flex:1;">
+        <div class="re-property-address">@Model.Address</div>
+        <span class="re-status green" style="display:inline-flex;margin-top:8px;"><i class="fas fa-database"></i> Exterior section</span>
+    </div>
+    <i class="fas fa-chevron-right re-chev"></i>
+</div>
+
+@if (isRoof && Model.HealthBadges.Count > 0)
+{
+    <div class="re-section-title">Roof Health Summary</div>
+    <div class="re-health-badges">
+        @foreach (var badge in Model.HealthBadges)
+        {
+            <span class="re-health-pill @badge.StatusTone"><i class="fas @badge.Icon"></i> @badge.Label</span>
+        }
+    </div>
+}
+
+@if (!isRoof && Model.SummaryCards.Count > 0)
+{
+    <div class="re-summary-scroll">
+        @foreach (var card in Model.SummaryCards)
+        {
+            <div class="re-summary-card">
+                <div class="k"><i class="fas @card.Icon"></i> @card.Label</div>
+                <div class="v">@card.Value</div>
+                <span class="badge @card.StatusTone">@card.Status</span>
+            </div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.InfoBanner))
+{
+    <div class="re-banner">
+        <i class="fas fa-circle-info"></i>
+        <div>@Model.InfoBanner</div>
+    </div>
+}
+
+<div class="re-care-card">
+    @foreach (var row in Model.Rows)
+    {
+        <div class="re-detail-row">
+            <div class="icon"><i class="fas @row.Icon"></i></div>
+            <div class="body">
+                <div class="t">@row.Title</div>
+                <div class="s">@row.Subtitle</div>
+            </div>
+            <span class="re-status @row.StatusTone">@row.Status</span>
+            <i class="fas fa-chevron-down re-chev" style="font-size:.75rem;"></i>
+        </div>
+    }
+</div>
+
+@if (Model.Reminders.Count > 0)
+{
+    <div class="re-section-title">Helpful reminders</div>
+    <div class="re-care-card">
+        @foreach (var reminder in Model.Reminders)
+        {
+            <div class="re-reminder"><i class="fas fa-circle-check"></i> @reminder</div>
+        }
+    </div>
+}
+
+@if (!string.IsNullOrWhiteSpace(Model.WhyItMattersText))
+{
+    <div class="re-banner">
+        <i class="fas fa-circle-info"></i>
+        <div>
+            <strong>@Model.WhyItMattersTitle</strong><br />
+            @Model.WhyItMattersText
+        </div>
+    </div>
+}
+
+@if (Model.SuggestedActions.Count > 0)
+{
+    @if (isRoof)
+    {
+        <div class="re-actions-grid">
+            @foreach (var action in Model.SuggestedActions)
+            {
+                if (!string.IsNullOrWhiteSpace(action.Url))
+                {
+                    <a class="re-btn-primary" href="@action.Url" style="margin-top:0;"><i class="fas @action.Icon"></i> @action.Title</a>
+                }
+                else
+                {
+                    <button type="button" class="re-btn-primary" style="margin-top:0;"><i class="fas @action.Icon"></i> @action.Title</button>
+                }
+            }
+        </div>
+    }
+    else
+    {
+        @foreach (var action in Model.SuggestedActions)
+        {
+            if (!string.IsNullOrWhiteSpace(action.Url))
+            {
+                <a class="re-btn-secondary" href="@action.Url"><i class="fas @action.Icon"></i> @action.Title</a>
+            }
+            else
+            {
+                <button type="button" class="re-btn-secondary"><i class="fas @action.Icon"></i> @action.Title</button>
+            }
+        }
+    }
+}
+
+@if (hfPreview)
+{
+    <a asp-controller="HouseFactPreview" asp-action="RoofExterior" asp-route-tab="@Model.ActiveTab" class="re-btn-secondary">Back to Roof &amp; Exterior</a>
+}
+else
+{
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="@Model.ActiveTab" class="re-btn-secondary">Back to Roof &amp; Exterior</a>
+}

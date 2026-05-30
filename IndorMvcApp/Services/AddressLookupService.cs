@@ -9,7 +9,7 @@ namespace IndorMvcApp.Services;
 public partial class AddressLookupService : IAddressLookupService
 {
     private readonly HttpClient _httpClient;
-    private readonly IAttomPropertyService _attomPropertyService;
+    private readonly IPropertyEnrichmentService _propertyEnrichmentService;
     private readonly ILogger<AddressLookupService> _logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -22,11 +22,11 @@ public partial class AddressLookupService : IAddressLookupService
 
     public AddressLookupService(
         HttpClient httpClient,
-        IAttomPropertyService attomPropertyService,
+        IPropertyEnrichmentService propertyEnrichmentService,
         ILogger<AddressLookupService> logger)
     {
         _httpClient = httpClient;
-        _attomPropertyService = attomPropertyService;
+        _propertyEnrichmentService = propertyEnrichmentService;
         _logger = logger;
     }
 
@@ -57,7 +57,7 @@ public partial class AddressLookupService : IAddressLookupService
                 return null;
             }
 
-            await TryEnrichWithAttomAsync(propertyInfo);
+            await TryEnrichPropertyAsync(propertyInfo);
             return propertyInfo;
         }
         catch (JsonException jsonEx)
@@ -363,37 +363,37 @@ public partial class AddressLookupService : IAddressLookupService
         return details;
     }
 
-    private async Task TryEnrichWithAttomAsync(PropertyInfoViewModel propertyInfo)
+    private async Task TryEnrichPropertyAsync(PropertyInfoViewModel propertyInfo)
     {
         try
         {
-            var attomResult = await _attomPropertyService.EnrichPropertyAsync(propertyInfo);
-            if (!string.IsNullOrWhiteSpace(attomResult.RawJson))
+            var result = await _propertyEnrichmentService.EnrichPropertyAsync(propertyInfo);
+            if (!string.IsNullOrWhiteSpace(result.RawJson))
             {
-                propertyInfo.AttomRawJson = attomResult.RawJson;
+                propertyInfo.AttomRawJson = result.RawJson;
             }
 
-            if (attomResult.Success)
+            if (result.Success)
             {
-                propertyInfo.DataSource = "ATTOM";
-                propertyInfo.AttomPropertyId = attomResult.AttomPropertyId;
+                propertyInfo.DataSource = result.DataSource;
+                propertyInfo.AttomPropertyId = result.ExternalPropertyId ?? propertyInfo.AttomPropertyId;
                 _logger.LogInformation(
-                    "ATTOM enrichment succeeded for {Address} (AttomId={AttomId})",
+                    "Property enrichment succeeded for {Address} (Source={Source})",
                     propertyInfo.FormattedAddress,
-                    attomResult.AttomPropertyId);
+                    result.DataSource);
                 return;
             }
 
             propertyInfo.DataSource ??= "Estimated";
             _logger.LogInformation(
-                "ATTOM enrichment skipped for {Address}: {Reason}",
+                "Property enrichment skipped for {Address}: {Reason}",
                 propertyInfo.FormattedAddress,
-                attomResult.ErrorMessage ?? "Unknown");
+                result.ErrorMessage ?? "Unknown");
         }
         catch (Exception ex)
         {
             propertyInfo.DataSource ??= "Estimated";
-            _logger.LogWarning(ex, "ATTOM enrichment failed for {Address}", propertyInfo.FormattedAddress);
+            _logger.LogWarning(ex, "Property enrichment failed for {Address}", propertyInfo.FormattedAddress);
         }
     }
 

@@ -1,0 +1,43 @@
+@model IndorMvcApp.ViewModels.DocumentAddViewModel
+
+<div class="doc-field">
+    <label asp-for="Title">Document title</label>
+    <input asp-for="Title" placeholder="Enter document title" />
+    <span asp-validation-for="Title" class="text-danger"></span>
+</div>
+
+<div class="doc-field">
+    <label>Category</label>
+    <div class="doc-chips">
+        @foreach (var cat in Model.CategoryOptions)
+        {
+            <label class="doc-chip">
+                <input type="radio" name="Category" value="@cat" @(Model.Category == cat ? "checked" : null) />
+                <span>@cat</span>
+            </label>
+        }
+    </div>
+</div>
+
+<div class="doc-field">
+    <label>Related section</label>
+    <div class="doc-chips">
+        @foreach (var sec in Model.SectionOptions)
+        {
+            <label class="doc-chip">
+                <input type="radio" name="RelatedSection" value="@sec" @(Model.RelatedSection == sec ? "checked" : null) />
+                <span>@sec</span>
+            </label>
+        }
+    </div>
+</div>
+
+<div class="doc-field">
+    <label asp-for="DocumentDate">Date</label>
+    <input asp-for="DocumentDate" type="date" />
+</div>
+
+<div class="doc-field">
+    <label asp-for="Notes">Notes</label>
+    <textarea asp-for="Notes" placeholder="Add any notes about this document (optional)"></textarea>
+</div>

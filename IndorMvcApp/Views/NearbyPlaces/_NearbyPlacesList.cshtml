@@ -1,0 +1,54 @@
+@model IndorMvcApp.ViewModels.NearbyPlacesIndexViewModel
+@{
+    ViewData["Title"] = Model.PageTitle;
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var addressParts = Model.Address.Split(',', 2);
+    var line1 = addressParts[0].Trim();
+    var line2 = addressParts.Length > 1 ? addressParts[1].Trim() : string.Empty;
+}
+
+<div class="np-back-row">
+    @await Html.PartialAsync("_HouseFactFlowBack")
+    <div class="np-brand"><i class="fas fa-house"></i> House Facts</div>
+</div>
+
+<div class="np-head">
+    <h1 class="np-title">@Model.PageTitle</h1>
+    <p class="np-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="np-property">
+    <div class="np-property-top">
+        <div class="np-thumb @Model.Tone"><i class="fas @Model.Icon"></i></div>
+        <div>
+            <div class="np-kicker">INDOR HOUSE FACT</div>
+            <div class="np-address">
+                @line1
+                @if (!string.IsNullOrWhiteSpace(line2))
+                {
+                    <div>@line2</div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="np-list">
+    @foreach (var place in Model.Places)
+    {
+        <div class="np-row">
+            <div class="np-row-icon @Model.Tone"><i class="fas @place.Icon"></i></div>
+            <div class="np-row-body">
+                <div class="np-row-title">@place.Name</div>
+                <div class="np-row-meta">@place.Subtitle</div>
+                <div class="np-row-distance"><i class="fas fa-location-dot"></i> @place.Distance away</div>
+            </div>
+            <span class="np-badge @place.BadgeTone">@place.Badge</span>
+        </div>
+    }
+</div>
+
+<div class="np-banner">
+    <i class="fas fa-circle-info"></i>
+    @Model.InfoBanner
+</div>
