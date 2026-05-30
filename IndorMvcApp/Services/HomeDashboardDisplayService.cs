@@ -19,8 +19,8 @@ public static class HomeDashboardDisplayService
         IUrlHelper url)
     {
         var d = info?.PropertyDetails;
-        var systems = SystemsProfileDisplayService.BuildIndex(propiedad, info);
-        var waterHeater = systems.Systems.FirstOrDefault(s => s.Id == "water-heater");
+        var systems = TryBuildSystems(propiedad, info);
+        var waterHeater = systems?.Systems.FirstOrDefault(s => s.Id == "water-heater");
 
         var vm = new HomeDashboardViewModel
         {
@@ -60,6 +60,57 @@ public static class HomeDashboardDisplayService
             HasProperty = false,
             QuickActions = BuildQuickActions()
         };
+    }
+
+    public static HomeDashboardViewModel BuildBasic(
+        ApplicationUser? user,
+        Propiedad propiedad,
+        PropertyInfoViewModel? info,
+        IUrlHelper url)
+    {
+        var d = info?.PropertyDetails;
+        return new HomeDashboardViewModel
+        {
+            UserFirstName = FirstName(user),
+            Greeting = GreetingForHour(DateTime.Now.Hour),
+            HasProperty = true,
+            PropiedadId = propiedad.Id,
+            Address = !string.IsNullOrWhiteSpace(info?.FormattedAddress)
+                ? info!.FormattedAddress!
+                : (propiedad.Direccion ?? "—"),
+            HomeValue = d?.EstimatedValue.HasValue == true
+                ? string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", d.EstimatedValue.Value)
+                : "—",
+            BedsLabel = d?.Bedrooms.HasValue == true ? $"{d.Bedrooms} bed{(d.Bedrooms == 1 ? "" : "s")}" : null,
+            BathsLabel = d?.Bathrooms.HasValue == true
+                ? $"{d.Bathrooms:0.#} bath{(d.Bathrooms == 1 ? "" : "s")}"
+                : null,
+            SqftLabel = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : null,
+            HouseFactsUrl = $"{url.Action("Index", "Home")}#section-myhome",
+            QuickActions = BuildQuickActions(),
+            TodayTasks =
+            [
+                new HomeTodayTaskViewModel
+                {
+                    Icon = "fa-fan",
+                    Title = "Add your HVAC system details",
+                    Subtitle = "Get personalized maintenance tips",
+                    Url = url.Action("Add", "HvacSetup", new { propiedadId = propiedad.Id }) ?? "#"
+                }
+            ]
+        };
+    }
+
+    private static SystemsProfileIndexViewModel? TryBuildSystems(Propiedad propiedad, PropertyInfoViewModel? info)
+    {
+        try
+        {
+            return SystemsProfileDisplayService.BuildIndex(propiedad, info);
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     private static string FirstName(ApplicationUser? user)

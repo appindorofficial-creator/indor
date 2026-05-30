@@ -15,11 +15,16 @@ public class HomeController : Controller
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly ILogger<HomeController> _logger;
 
-    public HomeController(AppDbContext db, UserManager<ApplicationUser> userManager)
+    public HomeController(
+        AppDbContext db,
+        UserManager<ApplicationUser> userManager,
+        ILogger<HomeController> logger)
     {
         _db = db;
         _userManager = userManager;
+        _logger = logger;
     }
 
     [Authorize]
@@ -648,39 +653,33 @@ public class HomeController : Controller
 
         if (primaryPropiedad != null)
         {
-            var primaryInfo = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
-            var mantenimiento = await _db.PropiedadMantenimiento
-                .Where(m => m.PropiedadId == primaryPropiedad.Id)
-                .OrderBy(m => m.DueDate)
-                .ToListAsync();
-            var documentos = await _db.PropiedadDocumentos
-                .Where(d => d.PropiedadId == primaryPropiedad.Id)
-                .OrderByDescending(d => d.FechaCreacion)
-                .Take(5)
-                .ToListAsync();
-            var historial = await _db.PropiedadHistorial
-                .Where(h => h.PropiedadId == primaryPropiedad.Id)
-                .OrderByDescending(h => h.FechaCreacion)
-                .Take(5)
-                .ToListAsync();
-            var hvacRecord = await _db.PropiedadHvacSistemas
-                .FirstOrDefaultAsync(h => h.PropiedadId == primaryPropiedad.Id);
+            try
+            {
+                var primaryInfo = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
+                var dashboardData = await HomeDashboardDataService.LoadAsync(_db, primaryPropiedad.Id);
 
-            var notificationCount = mantenimiento.Count(m =>
-                m.DueDate.HasValue
-                && m.Status != "Completed"
-                && (m.DueDate.Value.Date - DateTime.Today).Days <= 30);
+                var notificationCount = dashboardData.Mantenimiento.Count(m =>
+                    m.DueDate.HasValue
+                    && m.Status != "Completed"
+                    && (m.DueDate.Value.Date - DateTime.Today).Days <= 30);
 
-            ViewBag.HomeDashboard = HomeDashboardDisplayService.Build(
-                usuario,
-                primaryPropiedad,
-                primaryInfo,
-                hvacRecord,
-                mantenimiento,
-                documentos,
-                historial,
-                notificationCount,
-                Url);
+                ViewBag.HomeDashboard = HomeDashboardDisplayService.Build(
+                    usuario,
+                    primaryPropiedad,
+                    primaryInfo,
+                    dashboardData.HvacRecord,
+                    dashboardData.Mantenimiento,
+                    dashboardData.Documentos,
+                    dashboardData.Historial,
+                    notificationCount,
+                    Url);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to build home dashboard for propiedad {PropiedadId}", primaryPropiedad.Id);
+                var primaryInfo = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
+                ViewBag.HomeDashboard = HomeDashboardDisplayService.BuildBasic(usuario, primaryPropiedad, primaryInfo, Url);
+            }
         }
         else
         {
