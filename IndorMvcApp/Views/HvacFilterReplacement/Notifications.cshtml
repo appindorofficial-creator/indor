@@ -1,0 +1,122 @@
+@model IndorMvcApp.ViewModels.HvacFilterNotificationsViewModel
+@{
+    ViewData["Title"] = "Reminder Notifications";
+    Layout = null;
+    var reminderSummary = (Model.RemindOneWeekBefore, Model.RemindOneDayBefore) switch
+    {
+        (true, true) => "1 week before & 1 day before",
+        (true, false) => "1 week before",
+        (false, true) => "1 day before",
+        _ => "None selected"
+    };
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/hvac-filter-replacement.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hfr-header">
+        <a asp-action="ChooseDate" asp-route-id="@Model.PropiedadId" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <span class="hfr-logo">IND<span class="o">O</span>R</span>
+        <a asp-controller="Home" asp-action="Index" class="hfr-bell" aria-label="Notifications"><i class="far fa-bell"></i><span class="dot"></span></a>
+    </div>
+
+    <div class="hvac-content hfr-content">
+        @await Html.PartialAsync("_HvacFilterStepper", Model.Step)
+
+        <h1 class="hfr-title">Reminder Notifications</h1>
+        <p class="hfr-subtitle">Choose when INDOR should remind you.</p>
+
+        <form asp-action="Notifications" method="post" id="notifyForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PropiedadId" />
+            <input type="hidden" asp-for="HasPets" />
+            <input type="hidden" asp-for="FrequencyLabel" />
+            <input type="hidden" asp-for="NextChangeLabel" />
+
+            <p class="hfr-question">Send me a reminder</p>
+
+            <label class="hfr-check-card">
+                <input type="checkbox" asp-for="RemindOneWeekBefore" />
+                <span class="hfr-check-icon"><i class="far fa-calendar"></i></span>
+                <span class="hfr-check-copy">1 week before</span>
+                <span class="hfr-check-box"><i class="fas fa-check"></i></span>
+            </label>
+
+            <label class="hfr-check-card">
+                <input type="checkbox" asp-for="RemindOneDayBefore" />
+                <span class="hfr-check-icon"><i class="far fa-bell"></i></span>
+                <span class="hfr-check-copy">1 day before</span>
+                <span class="hfr-check-box"><i class="fas fa-check"></i></span>
+            </label>
+
+            <label class="hfr-consent">
+                <input type="checkbox" asp-for="FilterNotificationsConsent" />
+                <span>I agree to receive reminder notifications for this filter schedule.</span>
+            </label>
+            <span asp-validation-for="FilterNotificationsConsent" class="text-danger"></span>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="hfr-all-set">
+                <div class="hfr-all-set-head">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <strong>You're all set!</strong>
+                        <span>Here's a summary of your filter schedule.</span>
+                    </div>
+                </div>
+                <div class="hfr-all-set-row">
+                    <i class="fas fa-rotate"></i>
+                    <span>Frequency: <strong>@Model.FrequencyLabel</strong></span>
+                </div>
+                <div class="hfr-all-set-row">
+                    <i class="far fa-calendar"></i>
+                    <span>Next change: <strong>@Model.NextChangeLabel</strong></span>
+                </div>
+                <div class="hfr-all-set-row">
+                    <i class="far fa-bell"></i>
+                    <span>Reminders: <strong id="reminderSummary">@reminderSummary</strong></span>
+                </div>
+            </div>
+
+            <div class="hfr-info-box">
+                <i class="fas fa-circle-info"></i>
+                <span>When you mark the filter as changed, INDOR automatically moves the next reminder date.</span>
+            </div>
+
+            <button type="submit" class="hvac-save-btn hfr-continue">Done</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    (function () {
+        var week = document.getElementById('RemindOneWeekBefore');
+        var day = document.getElementById('RemindOneDayBefore');
+        var summary = document.getElementById('reminderSummary');
+
+        function updateSummary() {
+            var w = week.checked;
+            var d = day.checked;
+            summary.textContent = w && d ? '1 week before & 1 day before'
+                : w ? '1 week before'
+                : d ? '1 day before'
+                : 'None selected';
+        }
+
+        [week, day].forEach(function (el) {
+            el.addEventListener('change', updateSummary);
+        });
+    })();
+</script>
+</body>
+</html>

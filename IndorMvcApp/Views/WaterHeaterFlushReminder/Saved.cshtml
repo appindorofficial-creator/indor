@@ -1,0 +1,77 @@
+@model IndorMvcApp.ViewModels.WaterHeaterFlushReminderSavedViewModel
+@{
+    ViewData["Title"] = "Reminder Saved";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/water-heater-flush-reminder.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="whfr-header">
+        <div style="width:40px;"></div>
+        <span class="whfr-header-title">Reminder Saved</span>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content whfr-content">
+        <div class="whfr-success-hero">
+            <div class="whfr-success-icon-wrap">
+                <span class="spark a"><i class="fas fa-sparkles"></i></span>
+                <span class="spark b"><i class="fas fa-sparkles"></i></span>
+                <span class="spark c"><i class="fas fa-sparkles"></i></span>
+                <div class="main"><i class="fas fa-check"></i></div>
+            </div>
+            <h1>Reminder Saved</h1>
+            <p>You're all set. INDOR will remind you when it's time for your annual water heater flush.</p>
+        </div>
+
+        <div class="whfr-summary-list">
+            <div class="whfr-summary-row">
+                <i class="far fa-calendar"></i>
+                <span class="k">Task</span>
+                <span class="v">Annual Water Heater Flush</span>
+            </div>
+            <div class="whfr-summary-row">
+                <i class="fas fa-location-dot"></i>
+                <span class="k">Location</span>
+                <span class="v">@Model.LocationLabel</span>
+            </div>
+            <div class="whfr-summary-row">
+                <i class="fas fa-rotate"></i>
+                <span class="k">Frequency</span>
+                <span class="v">@(Model.AutoRepeatEnabled ? "Every 12 months" : "One time")</span>
+            </div>
+            <div class="whfr-summary-row">
+                <i class="far fa-calendar-check"></i>
+                <span class="k">Next flush</span>
+                <span class="v">@Model.NextFlushLabel</span>
+            </div>
+            <div class="whfr-summary-row">
+                <i class="far fa-bell"></i>
+                <span class="k">Reminders</span>
+                <span class="v">@Model.RemindersLabel</span>
+            </div>
+        </div>
+
+        <div class="whfr-info-box">
+            <i class="fas fa-circle-info"></i>
+            <span>When you mark this task completed, INDOR automatically moves the next reminder forward by 12 months.</span>
+        </div>
+
+        <a asp-controller="WaterHeaterSetup" asp-action="Saved" asp-route-id="@Model.PropiedadId" class="hvac-save-btn" style="text-decoration:none;text-align:center;">Done</a>
+        <a asp-action="Setup" asp-route-id="@Model.PropiedadId" class="whfr-edit-link">Edit reminder</a>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+</body>
+</html>

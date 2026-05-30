@@ -1,0 +1,94 @@
+@model IndorMvcApp.ViewModels.WaterHeaterFlushReminderIntroViewModel
+@{
+    ViewData["Title"] = "Annual Water Heater Flush";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/water-heater-flush-reminder.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="whfr-header">
+        <a asp-controller="WaterHeaterSetup" asp-action="Saved" asp-route-id="@Model.PropiedadId" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <span class="whfr-header-title">Annual Water Heater Flush</span>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content whfr-content">
+        <div class="whfr-hero-card">
+            <div class="whfr-hero-icon"><i class="fas fa-fire-burner"></i></div>
+            <div class="whfr-hero-copy">
+                <strong>Annual Water Heater Flush</strong>
+                <span>Recommended once every 12 months</span>
+            </div>
+        </div>
+
+        <h2 class="whfr-section-title">Why this matters</h2>
+        <div class="whfr-info-list">
+            <div class="whfr-info-item">
+                <span class="whfr-info-icon"><i class="fas fa-broom"></i></span>
+                <div class="whfr-info-copy">
+                    <strong>Helps remove sediment buildup</strong>
+                    <p>Flushing clears out sediment that settles at the bottom of the tank.</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="whfr-info-item">
+                <span class="whfr-info-icon"><i class="fas fa-chart-line"></i></span>
+                <div class="whfr-info-copy">
+                    <strong>Improves heating efficiency</strong>
+                    <p>A clean tank heats water faster and uses less energy.</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="whfr-info-item">
+                <span class="whfr-info-icon"><i class="fas fa-shield-halved"></i></span>
+                <div class="whfr-info-copy">
+                    <strong>Helps extend water heater life</strong>
+                    <p>Regular flushing reduces wear and helps your unit last longer.</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+            <div class="whfr-info-item">
+                <span class="whfr-info-icon"><i class="fas fa-volume-high"></i></span>
+                <div class="whfr-info-copy">
+                    <strong>Reduces corrosion, noise, and performance issues</strong>
+                    <p>Helps prevent rust, popping noises, and other common problems.</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+
+        <h2 class="whfr-section-title">Best for</h2>
+        <div class="whfr-info-list" style="margin-bottom:14px;">
+            <div class="whfr-info-item">
+                <span class="whfr-info-icon"><i class="fas fa-fire-burner"></i></span>
+                <div class="whfr-info-copy">
+                    <strong>@Model.HeaterTypeLabel</strong>
+                    <p>This maintenance is designed for traditional tank-style water heaters.</p>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+
+        <h2 class="whfr-section-title">What happens if you skip it?</h2>
+        <div class="whfr-warning-box">
+            <i class="fas fa-triangle-exclamation"></i>
+            <span>Sediment can build up inside the tank, making the unit work harder and increasing wear over time.</span>
+        </div>
+
+        <a asp-action="Setup" asp-route-id="@Model.PropiedadId" class="hvac-save-btn" style="text-decoration:none;text-align:center;">Continue</a>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+</body>
+</html>

@@ -59,6 +59,10 @@ public class HvacSavedViewModel
 
     public int FilterReminderDays { get; set; }
 
+    public bool FilterReminderSetupComplete { get; set; }
+
+    public string? FilterFrequencyLabel { get; set; }
+
     public string NextReminderTitle { get; set; } = "HVAC filter replacement";
 
     public string NextReminderDueLabel { get; set; } = string.Empty;

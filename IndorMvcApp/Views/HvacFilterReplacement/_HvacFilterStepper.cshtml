@@ -1,0 +1,17 @@
+@model int
+@{
+    var current = Model;
+}
+<div class="hfr-step-label">@current of 4</div>
+<div class="hfr-stepper">
+    @for (var i = 1; i <= 4; i++)
+    {
+        var css = i < current ? "hfr-step-dot done" : i == current ? "hfr-step-dot active" : "hfr-step-dot";
+        var content = i < current ? Html.Raw("<i class=\"fas fa-check\"></i>") : Html.Raw(i.ToString());
+        <div class="@css">@content</div>
+        @if (i < 4)
+        {
+            <div class="hfr-step-line @(i < current ? "done" : "")"></div>
+        }
+    }
+</div>

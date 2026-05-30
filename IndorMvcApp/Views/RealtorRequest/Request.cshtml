@@ -1,0 +1,143 @@
+@model IndorMvcApp.ViewModels.RealtorRequestFormViewModel
+@using IndorMvcApp.Services
+@{
+    ViewData["Title"] = "Request a Realtor";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-request.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hvac-top">
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">Request a Realtor</div>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content">
+        <h1 class="rr-page-title">Request a Realtor</h1>
+        <p class="rr-lead">Tell us what you need and we'll help connect you with a trusted real estate professional.</p>
+
+        <form asp-action="Request" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PropiedadId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">What do you need?</span>
+                <div class="rr-need-grid">
+                    <label class="rr-need-card @(Model.NeedType == "Buy" ? "selected" : "")">
+                        <input type="radio" asp-for="NeedType" value="Buy" />
+                        <i class="fas fa-house"></i>
+                        <span>Buy</span>
+                    </label>
+                    <label class="rr-need-card @(Model.NeedType == "Sell" ? "selected" : "")">
+                        <input type="radio" asp-for="NeedType" value="Sell" />
+                        <i class="fas fa-tag"></i>
+                        <span>Sell</span>
+                    </label>
+                    <label class="rr-need-card @(Model.NeedType == "Rent" ? "selected" : "")">
+                        <input type="radio" asp-for="NeedType" value="Rent" />
+                        <i class="fas fa-building"></i>
+                        <span>Rent</span>
+                    </label>
+                    <label class="rr-need-card @(Model.NeedType == "GeneralGuidance" ? "selected" : "")">
+                        <input type="radio" asp-for="NeedType" value="GeneralGuidance" />
+                        <i class="fas fa-user"></i>
+                        <span>General guidance</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <label class="rr-field-label" asp-for="PreferredArea">Preferred area</label>
+                <div class="rr-input-wrap">
+                    <i class="fas fa-location-dot"></i>
+                    <input asp-for="PreferredArea" class="hvac-input" placeholder="City or ZIP code" />
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">Timeframe</span>
+                <div class="rr-time-row">
+                    <label class="rr-time-btn @(Model.Timeframe == "ASAP" ? "selected" : "")">
+                        <input type="radio" asp-for="Timeframe" value="ASAP" />
+                        <i class="far fa-clock"></i>
+                        <span>ASAP</span>
+                    </label>
+                    <label class="rr-time-btn @(Model.Timeframe == "Days30" ? "selected" : "")">
+                        <input type="radio" asp-for="Timeframe" value="Days30" />
+                        <i class="far fa-calendar"></i>
+                        <span>30 days</span>
+                    </label>
+                    <label class="rr-time-btn @(Model.Timeframe == "Days60Plus" ? "selected" : "")">
+                        <input type="radio" asp-for="Timeframe" value="Days60Plus" />
+                        <i class="far fa-calendar-check"></i>
+                        <span>60+ days</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <label class="rr-field-label" asp-for="PriceRange">Price range <span style="color:#94A3B8;font-weight:500;">Optional</span></label>
+                <div class="rr-input-wrap">
+                    <i class="fas fa-dollar-sign"></i>
+                    <select asp-for="PriceRange" class="hvac-select">
+                        <option value="">Select range</option>
+                        @foreach (var opt in RealtorRequestDisplayService.PriceRangeOptions)
+                        {
+                            <option value="@opt.Value">@opt.Label</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <label class="rr-field-label" asp-for="Notes">Notes</label>
+                <div class="rr-notes-wrap">
+                    <i class="fas fa-pen note-icon"></i>
+                    <textarea asp-for="Notes" maxlength="500" placeholder="Tell us anything that may help us match you" id="notesField"></textarea>
+                    <span class="rr-char-count"><span id="notesCount">0</span>/500</span>
+                </div>
+            </div>
+
+            <button type="submit" class="hvac-save-btn">Submit request</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    (function () {
+        document.querySelectorAll('.rr-need-card input').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.rr-need-card').forEach(function (c) { c.classList.remove('selected'); });
+                radio.closest('.rr-need-card').classList.add('selected');
+            });
+        });
+        document.querySelectorAll('.rr-time-btn input').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.rr-time-btn').forEach(function (c) { c.classList.remove('selected'); });
+                radio.closest('.rr-time-btn').classList.add('selected');
+            });
+        });
+        var notes = document.getElementById('notesField');
+        var count = document.getElementById('notesCount');
+        if (notes && count) {
+            var update = function () { count.textContent = String(notes.value.length); };
+            notes.addEventListener('input', update);
+            update();
+        }
+    })();
+</script>
+</body>
+</html>

@@ -97,7 +97,11 @@ public class WaterHeaterSetupController : Controller
 
         await _db.SaveChangesAsync();
 
-        await UpsertFlushReminderAsync(propiedad.Id, record);
+        if (record.FlushReminderSetupComplete)
+        {
+            await WaterHeaterFlushReminderService.UpsertFlushMaintenanceAsync(_db, record);
+        }
+
         await AddHistoryEntryAsync(propiedad, record);
 
         return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
@@ -112,14 +116,17 @@ public class WaterHeaterSetupController : Controller
         var record = await PropiedadWaterHeaterQueryHelper.TryGetByPropiedadIdAsync(_db, propiedad.Id);
         if (record == null) return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
 
-        var dueDate = record.FlushRemindersEnabled
-            ? (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FlushReminderDays)
-            : (DateTime?)null;
+        var dueDate = record.FlushReminderSetupComplete && record.NextFlushDate.HasValue
+            ? record.NextFlushDate.Value.Date
+            : record.FlushRemindersEnabled && record.FlushReminderSetupComplete
+                ? (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FlushReminderDays)
+                : (DateTime?)null;
 
-        var dueDays = dueDate.HasValue ? (dueDate.Value.Date - DateTime.Today).Days : 0;
-        var dueLabel = dueDate.HasValue
-            ? dueDays >= 330 ? "Due in 12 months" : $"Due in {Math.Max(dueDays, 1)} days"
-            : "Reminders off";
+        var dueLabel = record.FlushReminderSetupComplete && dueDate.HasValue
+            ? dueDate.Value.ToString("MMM d, yyyy")
+            : record.FlushRemindersEnabled
+                ? "Set up your reminder"
+                : "Reminders off";
 
         return View(new WaterHeaterSavedViewModel
         {
@@ -133,6 +140,7 @@ public class WaterHeaterSetupController : Controller
                 : record.TankSize ?? "—",
             LastServiceLabel = record.LastServiceDate?.ToString("MMM d, yyyy") ?? "—",
             FlushRemindersEnabled = record.FlushRemindersEnabled,
+            FlushReminderSetupComplete = record.FlushReminderSetupComplete,
             FlushReminderMonths = 12,
             NextReminderDueLabel = dueLabel,
             HouseFactsUrl = Url.Action("Index", "Home") + "#section-myhome"
@@ -169,50 +177,6 @@ public class WaterHeaterSetupController : Controller
         };
     }
 
-    private async Task UpsertFlushReminderAsync(int propiedadId, PropiedadWaterHeaterSistema record)
-    {
-        var existing = await _db.PropiedadMantenimiento
-            .Where(m => m.PropiedadId == propiedadId && m.Title.Contains("water heater flush", StringComparison.OrdinalIgnoreCase))
-            .OrderByDescending(m => m.FechaCreacion)
-            .FirstOrDefaultAsync();
-
-        if (!record.FlushRemindersEnabled)
-        {
-            if (existing != null)
-            {
-                existing.Status = "Completed";
-                existing.FechaActualizacion = DateTime.UtcNow;
-            }
-
-            await _db.SaveChangesAsync();
-            return;
-        }
-
-        var baseDate = record.LastServiceDate?.Date ?? DateTime.Today;
-        var dueDate = baseDate.AddDays(record.FlushReminderDays);
-
-        if (existing == null)
-        {
-            _db.PropiedadMantenimiento.Add(new PropiedadMantenimiento
-            {
-                PropiedadId = propiedadId,
-                Title = "Annual water heater flush",
-                DueDate = dueDate,
-                Status = "Upcoming",
-                Notes = "Utility Room",
-                FechaCreacion = DateTime.UtcNow
-            });
-        }
-        else
-        {
-            existing.DueDate = dueDate;
-            existing.Status = "Upcoming";
-            existing.FechaActualizacion = DateTime.UtcNow;
-        }
-
-        await _db.SaveChangesAsync();
-    }
-
     private async Task AddHistoryEntryAsync(Propiedad propiedad, PropiedadWaterHeaterSistema record)
     {
         var brandModel = string.Join(" ", new[] { record.Brand, record.Model }.Where(s => !string.IsNullOrWhiteSpace(s)));
@@ -231,9 +195,10 @@ public class WaterHeaterSetupController : Controller
             FechaCreacion = DateTime.UtcNow
         });
 
-        if (record.FlushRemindersEnabled)
+        if (record.FlushRemindersEnabled && record.FlushReminderSetupComplete)
         {
-            var dueDate = (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FlushReminderDays);
+            var dueDate = record.NextFlushDate
+                ?? (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FlushReminderDays);
             _db.PropiedadHistorial.Add(new PropiedadHistorial
             {
                 PropiedadId = propiedad.Id,

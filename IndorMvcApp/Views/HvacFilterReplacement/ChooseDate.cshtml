@@ -1,0 +1,96 @@
+@model IndorMvcApp.ViewModels.HvacFilterChooseDateViewModel
+@{
+    ViewData["Title"] = "Choose Next Change Date";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/hvac-filter-replacement.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hfr-header">
+        <a asp-action="Schedule" asp-route-id="@Model.PropiedadId" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <span class="hfr-logo">IND<span class="o">O</span>R</span>
+        <a asp-controller="Home" asp-action="Index" class="hfr-bell" aria-label="Notifications"><i class="far fa-bell"></i><span class="dot"></span></a>
+    </div>
+
+    <div class="hvac-content hfr-content">
+        @await Html.PartialAsync("_HvacFilterStepper", Model.Step)
+
+        <h1 class="hfr-title">Choose Next Change Date</h1>
+        <p class="hfr-subtitle">Pick the date for your next filter replacement.</p>
+
+        <div class="hfr-summary-card">
+            <div class="hfr-summary-row">
+                <i class="far fa-calendar"></i>
+                <span>Frequency: <strong>@Model.FrequencyLabel</strong></span>
+            </div>
+            <div class="hfr-summary-row">
+                <i class="fas fa-paw"></i>
+                <span>Pet household: <strong>@(Model.HasPets ? "Yes" : "No")</strong></span>
+            </div>
+        </div>
+
+        <form asp-action="ChooseDate" method="post" id="dateForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PropiedadId" />
+            <input type="hidden" asp-for="HasPets" />
+            <input type="hidden" asp-for="ScheduleMode" />
+            <input type="hidden" asp-for="FrequencyLabel" />
+
+            <div class="hfr-date-wrap">
+                <label for="NextChangeDate" class="hfr-date-label">Select date</label>
+                <input asp-for="NextChangeDate" type="date" class="hvac-input hfr-date-input" id="NextChangeDate" />
+                <span asp-validation-for="NextChangeDate" class="text-danger"></span>
+            </div>
+
+            <div class="hfr-due-preview" id="duePreview">
+                <i class="far fa-calendar"></i>
+                <span>Next change due: <strong id="dueLabel">—</strong></span>
+            </div>
+
+            <div class="hfr-info-box">
+                <i class="fas fa-circle-info"></i>
+                <span>If you change the filter earlier or later, INDOR adjusts the next reminder automatically.</span>
+            </div>
+
+            <form asp-action="AlreadyChanged" asp-route-id="@Model.PropiedadId" method="post" class="hfr-already-form">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="hfr-link-btn">I already changed it</button>
+            </form>
+
+            <button type="submit" class="hvac-save-btn hfr-continue">Save date</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    (function () {
+        var input = document.getElementById('NextChangeDate');
+        var label = document.getElementById('dueLabel');
+
+        function formatDate(value) {
+            if (!value) return '—';
+            var d = new Date(value + 'T12:00:00');
+            return d.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function update() {
+            label.textContent = formatDate(input.value);
+        }
+
+        input.addEventListener('change', update);
+        update();
+    })();
+</script>
+</body>
+</html>

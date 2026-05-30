@@ -39,6 +39,21 @@ public class PropiedadWaterHeaterSistema
 
     public int FlushReminderDays { get; set; } = 365;
 
+    public DateTime? NextFlushDate { get; set; }
+
+    [MaxLength(80)]
+    public string? FlushLocation { get; set; }
+
+    public bool RemindOneWeekBefore { get; set; } = true;
+
+    public bool RemindOneDayBefore { get; set; } = true;
+
+    public bool AutoRepeatEnabled { get; set; } = true;
+
+    public bool FlushReminderSetupComplete { get; set; }
+
+    public bool FlushNotificationsConsent { get; set; }
+
     [MaxLength(120)]
     public string? OpenAiDataSource { get; set; }
 

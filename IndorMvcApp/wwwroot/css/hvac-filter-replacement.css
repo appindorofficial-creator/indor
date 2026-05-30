@@ -1,0 +1,500 @@
+/* HVAC Filter Replacement 4-step flow */
+.hfr-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    background: #FFF;
+    border-bottom: 1px solid #E5E7EB;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.hfr-logo {
+    font-size: 1.125rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0A2540;
+}
+
+.hfr-logo .o {
+    position: relative;
+}
+
+.hfr-bell {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0A2540;
+    text-decoration: none;
+    font-size: 1.1rem;
+}
+
+.hfr-bell .dot {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #1867F2;
+    border: 2px solid #FFF;
+}
+
+.hfr-content {
+    padding-top: 8px;
+}
+
+.hfr-step-label {
+    text-align: center;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: #64748B;
+    margin-bottom: 8px;
+}
+
+.hfr-stepper {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.hfr-step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid #CBD5E1;
+    color: #94A3B8;
+    background: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.hfr-step-dot.active,
+.hfr-step-dot.done {
+    border-color: #1867F2;
+    background: #1867F2;
+    color: #FFF;
+}
+
+.hfr-step-dot.done {
+    font-size: 0.65rem;
+}
+
+.hfr-step-line {
+    flex: 1;
+    height: 2px;
+    background: #E5E7EB;
+}
+
+.hfr-step-line.done {
+    background: #1867F2;
+}
+
+.hfr-title {
+    margin: 0 0 6px;
+    font-size: 1.375rem;
+    font-weight: 800;
+    line-height: 1.2;
+}
+
+.hfr-subtitle {
+    margin: 0 0 20px;
+    font-size: 0.875rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.hfr-question {
+    margin: 0 0 12px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.hfr-choice-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 16px;
+    margin-bottom: 10px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 16px;
+    background: #FFF;
+    cursor: pointer;
+    text-align: left;
+    font-family: inherit;
+    color: inherit;
+}
+
+.hfr-choice-card.selected {
+    border-color: #1867F2;
+    box-shadow: 0 0 0 1px rgba(24, 103, 242, 0.15);
+}
+
+.hfr-choice-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.hfr-choice-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.hfr-choice-body strong {
+    display: block;
+    font-size: 0.9375rem;
+    margin-bottom: 2px;
+}
+
+.hfr-choice-body span {
+    display: block;
+    font-size: 0.8125rem;
+    color: #64748B;
+}
+
+.hfr-chevron {
+    color: #94A3B8;
+    font-size: 0.75rem;
+}
+
+.hfr-info-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    margin: 16px 0;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.08);
+    font-size: 0.8125rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.hfr-info-box i {
+    color: #1867F2;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.hfr-continue {
+    margin-top: 8px;
+}
+
+.hfr-continue:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.hfr-pet-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    margin-bottom: 16px;
+    border-radius: 999px;
+    background: rgba(24, 103, 242, 0.08);
+    color: #1867F2;
+    font-size: 0.8125rem;
+    font-weight: 600;
+}
+
+.hfr-schedule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.hfr-schedule-option {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 16px;
+    background: #FFF;
+    cursor: pointer;
+}
+
+.hfr-schedule-option input {
+    display: none;
+}
+
+.hfr-schedule-option.selected {
+    border-color: #1867F2;
+    background: rgba(24, 103, 242, 0.04);
+}
+
+.hfr-schedule-icon {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.hfr-schedule-icon em {
+    position: absolute;
+    bottom: 6px;
+    right: 8px;
+    font-style: normal;
+    font-size: 0.65rem;
+    font-weight: 800;
+}
+
+.hfr-schedule-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.hfr-schedule-title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9375rem;
+    font-weight: 700;
+}
+
+.hfr-rec-badge {
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #1867F2;
+    color: #FFF;
+    font-size: 0.625rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+}
+
+.hfr-schedule-sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+    color: #64748B;
+}
+
+.hfr-note-inline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 16px;
+    font-size: 0.8125rem;
+    color: #64748B;
+}
+
+.hfr-note-inline i {
+    color: #1867F2;
+}
+
+.hfr-summary-card {
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 4px 0;
+    margin-bottom: 16px;
+}
+
+.hfr-summary-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    font-size: 0.875rem;
+    color: #334155;
+}
+
+.hfr-summary-row i {
+    width: 20px;
+    color: #1867F2;
+    text-align: center;
+}
+
+.hfr-date-wrap {
+    margin-bottom: 12px;
+}
+
+.hfr-date-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.hfr-date-input {
+    width: 100%;
+}
+
+.hfr-due-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    font-size: 0.875rem;
+}
+
+.hfr-due-preview i {
+    color: #1867F2;
+}
+
+.hfr-due-preview strong {
+    color: #1867F2;
+}
+
+.hfr-link-btn {
+    display: block;
+    width: 100%;
+    margin: 8px 0 12px;
+    padding: 10px;
+    border: none;
+    background: transparent;
+    color: #1867F2;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    cursor: pointer;
+    text-align: center;
+}
+
+.hfr-check-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 16px;
+    background: #FFF;
+    cursor: pointer;
+}
+
+.hfr-check-card input {
+    display: none;
+}
+
+.hfr-check-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hfr-check-copy {
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.hfr-check-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    font-size: 0.7rem;
+}
+
+.hfr-check-card input:checked ~ .hfr-check-box {
+    background: #1867F2;
+    border-color: #1867F2;
+    color: #FFF;
+}
+
+.hfr-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 16px 0;
+    font-size: 0.8125rem;
+    color: #334155;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.hfr-consent input {
+    margin-top: 3px;
+    flex-shrink: 0;
+    width: 18px;
+    height: 18px;
+    accent-color: #1867F2;
+}
+
+.hfr-all-set {
+    background: rgba(24, 103, 242, 0.08);
+    border: 1px solid rgba(24, 103, 242, 0.15);
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin: 16px 0;
+}
+
+.hfr-all-set-head {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.hfr-all-set-head > i {
+    color: #1867F2;
+    font-size: 1.25rem;
+    margin-top: 2px;
+}
+
+.hfr-all-set-head strong {
+    display: block;
+    font-size: 0.9375rem;
+}
+
+.hfr-all-set-head span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.8125rem;
+    color: #64748B;
+}
+
+.hfr-all-set-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 0;
+    font-size: 0.8125rem;
+    color: #334155;
+}
+
+.hfr-already-form {
+    margin: 0;
+}

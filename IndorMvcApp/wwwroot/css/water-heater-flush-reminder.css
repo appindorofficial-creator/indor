@@ -1,0 +1,440 @@
+/* Annual water heater flush reminder flow */
+.whfr-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #FFF;
+    border-bottom: 1px solid #E5E7EB;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.whfr-header-title {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0A2540;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.whfr-content {
+    padding-top: 8px;
+}
+
+.whfr-hero-card {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    padding: 16px;
+    margin-bottom: 18px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+}
+
+.whfr-hero-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.35rem;
+    flex-shrink: 0;
+}
+
+.whfr-hero-copy strong {
+    display: block;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.whfr-hero-copy span {
+    font-size: 0.8125rem;
+    color: #64748B;
+}
+
+.whfr-section-title {
+    margin: 0 0 10px;
+    font-size: 0.9375rem;
+    font-weight: 800;
+}
+
+.whfr-info-list {
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    margin-bottom: 18px;
+    overflow: hidden;
+}
+
+.whfr-info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.whfr-info-item:last-child {
+    border-bottom: none;
+}
+
+.whfr-info-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 0.9rem;
+}
+
+.whfr-info-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.whfr-info-copy strong {
+    display: block;
+    font-size: 0.875rem;
+    margin-bottom: 3px;
+}
+
+.whfr-info-copy p {
+    margin: 0;
+    font-size: 0.8125rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.whfr-info-item .fa-chevron-right {
+    color: #CBD5E1;
+    margin-top: 10px;
+    font-size: 0.75rem;
+}
+
+.whfr-warning-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.08);
+    border: 1px solid rgba(24, 103, 242, 0.15);
+    font-size: 0.8125rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.whfr-warning-box i {
+    color: #1867F2;
+    margin-top: 2px;
+}
+
+.whfr-card {
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 14px 16px;
+    margin-bottom: 14px;
+}
+
+.whfr-card-title {
+    margin: 0 0 12px;
+    font-size: 0.9375rem;
+    font-weight: 800;
+}
+
+.whfr-need-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.whfr-need-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.whfr-need-item i.icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.whfr-need-item i.check {
+    margin-left: auto;
+    color: #1867F2;
+    font-size: 0.85rem;
+}
+
+.whfr-help-note {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #F1F5F9;
+    font-size: 0.8125rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.whfr-help-note a {
+    color: #1867F2;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.whfr-field-label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 0.875rem;
+    font-weight: 700;
+}
+
+.whfr-due-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    border-radius: 12px;
+    background: rgba(24, 103, 242, 0.06);
+    font-size: 0.8125rem;
+    color: #334155;
+}
+
+.whfr-due-preview i {
+    color: #1867F2;
+}
+
+.whfr-due-preview strong {
+    color: #1867F2;
+}
+
+.whfr-check-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-bottom: 1px solid #F1F5F9;
+    cursor: pointer;
+}
+
+.whfr-check-row:last-child {
+    border-bottom: none;
+}
+
+.whfr-check-row input {
+    display: none;
+}
+
+.whfr-check-row .label {
+    flex: 1;
+    font-size: 0.9375rem;
+    font-weight: 600;
+}
+
+.whfr-check-box {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: transparent;
+    font-size: 0.7rem;
+}
+
+.whfr-check-row input:checked ~ .whfr-check-box {
+    background: #1867F2;
+    border-color: #1867F2;
+    color: #FFF;
+}
+
+.whfr-check-row .fa-chevron-right {
+    color: #CBD5E1;
+    font-size: 0.75rem;
+}
+
+.whfr-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 4px 0;
+}
+
+.whfr-toggle-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.whfr-toggle-copy {
+    flex: 1;
+    font-size: 0.875rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
+.whfr-consent {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin: 14px 0 0;
+    font-size: 0.8125rem;
+    color: #334155;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.whfr-consent input {
+    margin-top: 3px;
+    accent-color: #1867F2;
+}
+
+.whfr-success-hero {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.whfr-success-icon-wrap {
+    position: relative;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 14px;
+}
+
+.whfr-success-icon-wrap .main {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: #1867F2;
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+}
+
+.whfr-success-icon-wrap .spark {
+    position: absolute;
+    color: #1867F2;
+    font-size: 0.85rem;
+    opacity: 0.7;
+}
+
+.whfr-success-icon-wrap .spark.a { top: 0; right: 0; }
+.whfr-success-icon-wrap .spark.b { bottom: 4px; left: -2px; }
+.whfr-success-icon-wrap .spark.c { top: 8px; left: -6px; }
+
+.whfr-success-hero h1 {
+    margin: 0 0 8px;
+    font-size: 1.375rem;
+    font-weight: 800;
+}
+
+.whfr-success-hero p {
+    margin: 0 auto;
+    font-size: 0.875rem;
+    color: #64748B;
+    line-height: 1.45;
+    max-width: 320px;
+}
+
+.whfr-summary-list {
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 14px;
+}
+
+.whfr-summary-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.875rem;
+}
+
+.whfr-summary-row:last-child {
+    border-bottom: none;
+}
+
+.whfr-summary-row i {
+    width: 20px;
+    color: #1867F2;
+    text-align: center;
+}
+
+.whfr-summary-row .k {
+    flex: 1;
+    color: #64748B;
+}
+
+.whfr-summary-row .v {
+    font-weight: 700;
+    color: #0A2540;
+    text-align: right;
+}
+
+.whfr-info-box {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    padding: 12px 14px;
+    margin-bottom: 16px;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.08);
+    font-size: 0.8125rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.whfr-info-box i {
+    color: #1867F2;
+    margin-top: 2px;
+}
+
+.whfr-edit-link {
+    display: block;
+    text-align: center;
+    margin-top: 12px;
+    color: #1867F2;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.875rem;
+}
+
+.whfr-location-select {
+    width: 100%;
+    margin-bottom: 4px;
+}

@@ -57,6 +57,8 @@ public class WaterHeaterSavedViewModel
 
     public bool FlushRemindersEnabled { get; set; }
 
+    public bool FlushReminderSetupComplete { get; set; }
+
     public int FlushReminderMonths { get; set; } = 12;
 
     public string NextReminderTitle { get; set; } = "Annual water heater flush";

@@ -82,7 +82,11 @@ public class HvacSetupController : Controller
 
         await _db.SaveChangesAsync();
 
-        await UpsertFilterReminderAsync(propiedad.Id, record);
+        if (record.FilterReminderSetupComplete)
+        {
+            await HvacFilterReplacementService.UpsertFilterMaintenanceAsync(_db, record);
+        }
+
         await AddHistoryEntryAsync(propiedad, record);
 
         return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
@@ -97,13 +101,21 @@ public class HvacSetupController : Controller
         var record = await _db.PropiedadHvacSistemas.FirstOrDefaultAsync(h => h.PropiedadId == propiedad.Id);
         if (record == null) return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
 
-        var dueDate = record.FilterRemindersEnabled
-            ? (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FilterReminderDays)
-            : (DateTime?)null;
+        var dueDate = record.FilterReminderSetupComplete && record.NextFilterChangeDate.HasValue
+            ? record.NextFilterChangeDate.Value.Date
+            : record.FilterRemindersEnabled && record.FilterReminderSetupComplete
+                ? (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FilterReminderDays)
+                : (DateTime?)null;
 
-        var dueLabel = dueDate.HasValue
-            ? $"Due in {(dueDate.Value.Date - DateTime.Today).Days} days"
-            : "Reminders off";
+        var dueLabel = record.FilterReminderSetupComplete && dueDate.HasValue
+            ? dueDate.Value.ToString("MMM d, yyyy")
+            : record.FilterRemindersEnabled
+                ? "Set up your reminder"
+                : "Reminders off";
+
+        var frequencyLabel = record.FilterReminderSetupComplete
+            ? HvacFilterReplacementService.FrequencyLabel(record.FilterScheduleMode)
+            : null;
 
         return View(new HvacSavedViewModel
         {
@@ -116,6 +128,8 @@ public class HvacSetupController : Controller
             LastServiceLabel = record.LastServiceDate?.ToString("MMM d, yyyy") ?? "—",
             FilterRemindersEnabled = record.FilterRemindersEnabled,
             FilterReminderDays = record.FilterReminderDays,
+            FilterReminderSetupComplete = record.FilterReminderSetupComplete,
+            FilterFrequencyLabel = frequencyLabel,
             NextReminderDueLabel = dueLabel,
             HouseFactsUrl = Url.Action("Index", "Home") + "#section-myhome"
         });
@@ -151,50 +165,6 @@ public class HvacSetupController : Controller
         };
     }
 
-    private async Task UpsertFilterReminderAsync(int propiedadId, PropiedadHvacSistema record)
-    {
-        var existing = await _db.PropiedadMantenimiento
-            .Where(m => m.PropiedadId == propiedadId && m.Title.Contains("HVAC filter"))
-            .OrderByDescending(m => m.FechaCreacion)
-            .FirstOrDefaultAsync();
-
-        if (!record.FilterRemindersEnabled)
-        {
-            if (existing != null)
-            {
-                existing.Status = "Completed";
-                existing.FechaActualizacion = DateTime.UtcNow;
-            }
-
-            await _db.SaveChangesAsync();
-            return;
-        }
-
-        var baseDate = record.LastServiceDate?.Date ?? DateTime.Today;
-        var dueDate = baseDate.AddDays(record.FilterReminderDays);
-
-        if (existing == null)
-        {
-            _db.PropiedadMantenimiento.Add(new PropiedadMantenimiento
-            {
-                PropiedadId = propiedadId,
-                Title = "HVAC filter replacement",
-                DueDate = dueDate,
-                Status = "Upcoming",
-                Notes = "Living Room",
-                FechaCreacion = DateTime.UtcNow
-            });
-        }
-        else
-        {
-            existing.DueDate = dueDate;
-            existing.Status = "Upcoming";
-            existing.FechaActualizacion = DateTime.UtcNow;
-        }
-
-        await _db.SaveChangesAsync();
-    }
-
     private async Task AddHistoryEntryAsync(Propiedad propiedad, PropiedadHvacSistema record)
     {
         var brandModel = string.Join(" ", new[] { record.Brand, record.Model }.Where(s => !string.IsNullOrWhiteSpace(s)));
@@ -213,9 +183,10 @@ public class HvacSetupController : Controller
             FechaCreacion = DateTime.UtcNow
         });
 
-        if (record.FilterRemindersEnabled)
+        if (record.FilterRemindersEnabled && record.FilterReminderSetupComplete)
         {
-            var dueDate = (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FilterReminderDays);
+            var dueDate = record.NextFilterChangeDate
+                ?? (record.LastServiceDate?.Date ?? DateTime.Today).AddDays(record.FilterReminderDays);
             _db.PropiedadHistorial.Add(new PropiedadHistorial
             {
                 PropiedadId = propiedad.Id,

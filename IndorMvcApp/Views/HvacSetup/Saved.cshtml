@@ -22,6 +22,17 @@
     </div>
 
     <div class="hvac-content">
+        @if (TempData["FilterReminderSaved"] as bool? == true)
+        {
+            <div class="hvac-success-card" style="margin-bottom:14px;">
+                <div class="hvac-success-icon"><i class="fas fa-check"></i></div>
+                <div>
+                    <strong>Filter reminder saved.</strong>
+                    <p style="margin:6px 0 0;font-size:0.8125rem;color:#64748B;line-height:1.45;">INDOR will remind you before your next filter change.</p>
+                </div>
+            </div>
+        }
+
         <div class="hvac-success-card">
             <div class="hvac-success-icon"><i class="fas fa-check"></i></div>
             <div>
@@ -42,17 +53,25 @@
 
         <h2 class="hvac-section-title">What's next</h2>
         <div class="hvac-next-list">
-            <div class="hvac-next-item">
+            <a asp-controller="HvacFilterReplacement" asp-action="Pets" asp-route-id="@Model.PropiedadId" class="hvac-next-item">
                 <span class="hvac-next-icon"><i class="fas fa-bell"></i></span>
                 <span class="hvac-next-body">
                     <strong>Set filter replacement reminder</strong>
+                    @if (!Model.FilterReminderSetupComplete && Model.FilterRemindersEnabled)
+                    {
+                        <span>Recommended — takes about 2 minutes</span>
+                    }
                 </span>
-                @if (Model.FilterRemindersEnabled)
+                @if (Model.FilterReminderSetupComplete && !string.IsNullOrWhiteSpace(Model.FilterFrequencyLabel))
                 {
-                    <span class="hvac-pill">Every @Model.FilterReminderDays days</span>
+                    <span class="hvac-pill">@Model.FilterFrequencyLabel</span>
+                }
+                else if (Model.FilterRemindersEnabled)
+                {
+                    <span class="hvac-pill">Not set up</span>
                 }
                 <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.75rem;"></i>
-            </div>
+            </a>
             <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hvac-next-item">
                 <span class="hvac-next-icon"><i class="fas fa-file-arrow-up"></i></span>
                 <span class="hvac-next-body">
@@ -71,7 +90,7 @@
             </a>
         </div>
 
-        @if (Model.FilterRemindersEnabled)
+        @if (Model.FilterRemindersEnabled && Model.FilterReminderSetupComplete)
         {
             <div class="hvac-reminder-banner">
                 <i class="fas fa-bell"></i>

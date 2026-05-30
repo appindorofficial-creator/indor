@@ -154,6 +154,16 @@ public static class HomeDashboardDisplayService
                 Url = url.Action("Add", "HvacSetup", new { propiedadId }) ?? "#"
             });
         }
+        else if (hvacRecord.FilterRemindersEnabled && !hvacRecord.FilterReminderSetupComplete)
+        {
+            tasks.Add(new HomeTodayTaskViewModel
+            {
+                Icon = "fa-filter",
+                Title = "Set up HVAC filter reminders",
+                Subtitle = "Personalize your replacement schedule",
+                Url = url.Action("Pets", "HvacFilterReplacement", new { id = propiedadId }) ?? "#"
+            });
+        }
 
         if (!documentos.Any(d => d.Category.Contains("Inspection", StringComparison.OrdinalIgnoreCase)
                                  || d.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase)))
@@ -191,6 +201,16 @@ public static class HomeDashboardDisplayService
                 Title = "Add water heater info",
                 Subtitle = "Help us keep track age, model & warranty",
                 Url = url.Action("Add", "WaterHeaterSetup", new { propiedadId }) ?? "#"
+            });
+        }
+        else if (waterHeaterRecord.FlushRemindersEnabled && !waterHeaterRecord.FlushReminderSetupComplete)
+        {
+            tasks.Add(new HomeTodayTaskViewModel
+            {
+                Icon = "fa-droplet",
+                Title = "Set up annual water heater flush",
+                Subtitle = "Personalize your flush reminder schedule",
+                Url = url.Action("Intro", "WaterHeaterFlushReminder", new { id = propiedadId }) ?? "#"
             });
         }
 

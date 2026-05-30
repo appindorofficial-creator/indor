@@ -67,6 +67,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PropiedadDocumento> PropiedadDocumentos { get; set; }
     public DbSet<PropiedadHvacSistema> PropiedadHvacSistemas { get; set; }
     public DbSet<PropiedadWaterHeaterSistema> PropiedadWaterHeaterSistemas { get; set; }
+    public DbSet<SolicitudRealtor> SolicitudesRealtor { get; set; }
     public DbSet<MovingSetupConfig> MovingSetupConfig { get; set; }
     public DbSet<MovingSetupServicio> MovingSetupServicios { get; set; }
     public DbSet<MovingSetupEnlaceRapido> MovingSetupEnlacesRapidos { get; set; }

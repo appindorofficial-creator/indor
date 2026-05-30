@@ -39,6 +39,21 @@ public class PropiedadHvacSistema
 
     public int FilterReminderDays { get; set; } = 90;
 
+    public bool? HasPets { get; set; }
+
+    [MaxLength(20)]
+    public string? FilterScheduleMode { get; set; }
+
+    public DateTime? NextFilterChangeDate { get; set; }
+
+    public bool RemindOneWeekBefore { get; set; } = true;
+
+    public bool RemindOneDayBefore { get; set; } = true;
+
+    public bool FilterReminderSetupComplete { get; set; }
+
+    public bool FilterNotificationsConsent { get; set; }
+
     [MaxLength(120)]
     public string? OpenAiDataSource { get; set; }
 

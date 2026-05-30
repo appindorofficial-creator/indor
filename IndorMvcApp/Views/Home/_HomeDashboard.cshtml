@@ -181,7 +181,7 @@ else
             <strong>Need help with finding a professional realtor?</strong>
             <p>Our team can help connect you with a trusted real estate professional.</p>
             <div class="hd-realtor-actions">
-                <a href="#" class="hd-btn-primary-sm">Request</a>
+                <a asp-controller="RealtorRequest" asp-action="Request" asp-route-propiedadId="@Model.PropiedadId" class="hd-btn-primary-sm">Request</a>
                 <button type="button" class="hd-btn-outline-sm nav-jump" data-target="section-more">Contact Support</button>
             </div>
         </div>

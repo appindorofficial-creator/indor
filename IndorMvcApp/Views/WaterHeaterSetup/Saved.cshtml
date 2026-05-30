@@ -43,15 +43,25 @@
 
         <h2 class="hvac-section-title">What's next</h2>
         <div class="hvac-next-list">
-            <div class="hvac-next-item">
+            <a asp-controller="WaterHeaterFlushReminder" asp-action="Intro" asp-route-id="@Model.PropiedadId" class="hvac-next-item">
                 <span class="hvac-next-icon"><i class="fas fa-bell"></i></span>
-                <span class="hvac-next-body"><strong>Set annual flush reminder</strong></span>
-                @if (Model.FlushRemindersEnabled)
+                <span class="hvac-next-body">
+                    <strong>Set annual flush reminder</strong>
+                    @if (!Model.FlushReminderSetupComplete && Model.FlushRemindersEnabled)
+                    {
+                        <span>Recommended — takes about 2 minutes</span>
+                    }
+                </span>
+                @if (Model.FlushReminderSetupComplete)
                 {
                     <span class="hvac-pill">Every @Model.FlushReminderMonths months</span>
                 }
+                else if (Model.FlushRemindersEnabled)
+                {
+                    <span class="hvac-pill">Not set up</span>
+                }
                 <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.75rem;"></i>
-            </div>
+            </a>
             <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hvac-next-item">
                 <span class="hvac-next-icon"><i class="fas fa-file-arrow-up"></i></span>
                 <span class="hvac-next-body">
@@ -72,7 +82,7 @@
             </a>
         </div>
 
-        @if (Model.FlushRemindersEnabled)
+        @if (Model.FlushRemindersEnabled && Model.FlushReminderSetupComplete)
         {
             <div class="hvac-reminder-banner">
                 <i class="fas fa-bell"></i>

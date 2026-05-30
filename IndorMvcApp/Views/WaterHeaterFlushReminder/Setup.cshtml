@@ -1,0 +1,122 @@
+@model IndorMvcApp.ViewModels.WaterHeaterFlushReminderSetupViewModel
+@{
+    ViewData["Title"] = "Set Annual Flush Reminder";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/water-heater-flush-reminder.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="whfr-header">
+        <a asp-action="Intro" asp-route-id="@Model.PropiedadId" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <span class="whfr-header-title">Set Annual Flush Reminder</span>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content whfr-content">
+        <form asp-action="Setup" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="PropiedadId" />
+
+            <div class="whfr-card">
+                <h2 class="whfr-card-title">What you'll need</h2>
+                <div class="whfr-need-list">
+                    <div class="whfr-need-item"><i class="fas fa-hose icon"></i><span>Garden hose</span><i class="fas fa-check check"></i></div>
+                    <div class="whfr-need-item"><i class="fas fa-bucket icon"></i><span>Safe drain area or bucket</span><i class="fas fa-check check"></i></div>
+                    <div class="whfr-need-item"><i class="fas fa-mitten icon"></i><span>Gloves</span><i class="fas fa-check check"></i></div>
+                    <div class="whfr-need-item"><i class="far fa-clock icon"></i><span>About 30–45 minutes</span><i class="fas fa-check check"></i></div>
+                </div>
+                <p class="whfr-help-note">
+                    <i class="fas fa-circle-info" style="color:#1867F2;margin-right:4px;"></i>
+                    If you're not comfortable doing this yourself, you can
+                    <a asp-controller="Home" asp-action="Index" asp-fragment="section-services">request help</a>.
+                </p>
+            </div>
+
+            <div class="whfr-card">
+                <h2 class="whfr-card-title">Choose next flush date</h2>
+                <label class="whfr-field-label" for="NextFlushDate">Select date</label>
+                <input asp-for="NextFlushDate" type="date" class="hvac-input" id="NextFlushDate" />
+                <span asp-validation-for="NextFlushDate" class="text-danger"></span>
+                <div class="whfr-due-preview">
+                    <i class="far fa-calendar"></i>
+                    <span>Selected: <strong id="dueLabel">—</strong></span>
+                </div>
+            </div>
+
+            <div class="whfr-card">
+                <label class="whfr-field-label" for="FlushLocation">Location</label>
+                <select asp-for="FlushLocation" class="hvac-select whfr-location-select" id="FlushLocation">
+                    @foreach (var loc in Model.LocationOptions)
+                    {
+                        <option value="@loc">@loc</option>
+                    }
+                </select>
+            </div>
+
+            <div class="whfr-card">
+                <h2 class="whfr-card-title">Reminder notifications</h2>
+                <label class="whfr-check-row">
+                    <input type="checkbox" asp-for="RemindOneWeekBefore" />
+                    <span class="label">1 week before</span>
+                    <span class="whfr-check-box"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-chevron-right"></i>
+                </label>
+                <label class="whfr-check-row">
+                    <input type="checkbox" asp-for="RemindOneDayBefore" />
+                    <span class="label">1 day before</span>
+                    <span class="whfr-check-box"><i class="fas fa-check"></i></span>
+                    <i class="fas fa-chevron-right"></i>
+                </label>
+            </div>
+
+            <div class="whfr-card">
+                <div class="whfr-toggle-row">
+                    <span class="whfr-toggle-icon"><i class="fas fa-rotate"></i></span>
+                    <span class="whfr-toggle-copy">Repeat every 12 months automatically</span>
+                    <label class="hvac-switch">
+                        <input asp-for="AutoRepeatEnabled" type="checkbox" />
+                        <span></span>
+                    </label>
+                </div>
+            </div>
+
+            <label class="whfr-consent">
+                <input type="checkbox" asp-for="FlushNotificationsConsent" />
+                <span>I agree to receive reminder notifications for this flush schedule.</span>
+            </label>
+            <span asp-validation-for="FlushNotificationsConsent" class="text-danger"></span>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <button type="submit" class="hvac-save-btn" style="margin-top:16px;">Save reminder</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    (function () {
+        var input = document.getElementById('NextFlushDate');
+        var label = document.getElementById('dueLabel');
+
+        function formatDate(value) {
+            if (!value) return '—';
+            var d = new Date(value + 'T12:00:00');
+            return d.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        input.addEventListener('change', function () { label.textContent = formatDate(input.value); });
+        label.textContent = formatDate(input.value);
+    })();
+</script>
+</body>
+</html>
