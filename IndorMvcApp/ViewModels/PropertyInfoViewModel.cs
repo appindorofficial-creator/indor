@@ -6,6 +6,7 @@ public class PropertyInfoViewModel
 {
     // Dirección completa
     public string FormattedAddress { get; set; } = string.Empty;
+    public string? Unit { get; set; }
 
     // Coordenadas geográficas
     public decimal Latitude { get; set; }

@@ -1,0 +1,54 @@
+@{
+    ViewData["Title"] = "Terms & Conditions - INDOR";
+    Layout = null;
+    ViewBag.OnboardingShowBack = true;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+</head>
+<body class="ob-page ob-page--white">
+    <div class="ob-shell">
+        <div class="ob-shell-inner">
+            @await Html.PartialAsync("_OnboardingNav")
+
+            <article class="ob-legal-doc">
+                <h1>Terms &amp; Conditions</h1>
+                <p class="ob-legal-updated">Last updated: May 2026</p>
+
+                <p>Welcome to INDOR. These Terms &amp; Conditions govern your use of the INDOR platform operated by Home Indor Technology Inc. By creating an account or using our services, you agree to these terms.</p>
+
+                <h2>1. Your Account</h2>
+                <p>You are responsible for maintaining the confidentiality of your login credentials and for all activity under your account. You agree to provide accurate information when registering and to keep your profile up to date.</p>
+
+                <h2>2. Home &amp; Property Information</h2>
+                <p>INDOR helps you manage information about your home, including address details, house facts, documents, services, and maintenance. Property data may be enriched from third-party sources to improve your experience. You confirm that you have the right to add and manage the property information you provide.</p>
+
+                <h2>3. Acceptable Use</h2>
+                <p>You agree not to misuse the platform, attempt unauthorized access, upload harmful content, or use INDOR for unlawful purposes. We may suspend or terminate accounts that violate these terms.</p>
+
+                <h2>4. Services &amp; Third Parties</h2>
+                <p>INDOR may connect you with service providers, inspections, or informational resources. Unless explicitly stated, Home Indor Technology Inc is not a party to agreements between you and third-party providers.</p>
+
+                <h2>5. Disclaimers</h2>
+                <p>INDOR is provided on an &ldquo;as is&rdquo; basis. We do not guarantee that property data, recommendations, or service outcomes will be complete, accurate, or suitable for every situation. You should verify important decisions independently.</p>
+
+                <h2>6. Limitation of Liability</h2>
+                <p>To the fullest extent permitted by law, Home Indor Technology Inc shall not be liable for indirect, incidental, or consequential damages arising from your use of the platform.</p>
+
+                <h2>7. Changes</h2>
+                <p>We may update these Terms from time to time. Continued use of INDOR after changes are posted constitutes acceptance of the revised Terms.</p>
+
+                <h2>8. Contact</h2>
+                <p>Questions about these Terms may be directed to Home Indor Technology Inc through the support channels available in the app.</p>
+            </article>
+        </div>
+    </div>
+</body>
+</html>

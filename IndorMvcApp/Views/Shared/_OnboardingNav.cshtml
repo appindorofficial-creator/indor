@@ -1,0 +1,17 @@
+@{
+    var title = ViewBag.OnboardingTitle as string ?? "Create Account";
+    var backUrl = ViewBag.OnboardingBackUrl as string;
+    var showBack = ViewBag.OnboardingShowBack as bool? ?? !string.IsNullOrEmpty(backUrl);
+}
+<div class="ob-nav">
+    @if (showBack && !string.IsNullOrEmpty(backUrl))
+    {
+        <a href="@backUrl" class="ob-nav-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+    }
+    else
+    {
+        <span class="ob-nav-spacer"></span>
+    }
+    <div class="ob-nav-title">@title</div>
+    <span class="ob-nav-spacer"></span>
+</div>

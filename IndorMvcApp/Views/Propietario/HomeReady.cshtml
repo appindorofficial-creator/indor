@@ -1,0 +1,37 @@
+@{
+    ViewData["Title"] = "Welcome to INDOR";
+    Layout = null;
+    var propiedadId = ViewBag.PropiedadId as int? ?? 0;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+</head>
+<body class="ob-page ob-page--white">
+    <div class="ob-success-wrap">
+        <div class="ob-success-art" aria-hidden="true">
+            <i class="fas fa-house ob-success-house"></i>
+            <i class="fas fa-location-dot ob-success-pin"></i>
+            <div class="ob-success-check"><i class="fas fa-check"></i></div>
+        </div>
+
+        <h1>Welcome to INDOR!</h1>
+        <p>Your account has been created successfully.</p>
+
+        @if (propiedadId > 0)
+        {
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="ob-btn ob-btn-primary">Let's Go</a>
+        }
+        else
+        {
+            <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-primary">Let's Go</a>
+        }
+    </div>
+</body>
+</html>

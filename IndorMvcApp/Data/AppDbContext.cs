@@ -65,6 +65,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<PropiedadProveedor> PropiedadProveedores { get; set; }
     public DbSet<PropiedadMantenimiento> PropiedadMantenimiento { get; set; }
     public DbSet<PropiedadDocumento> PropiedadDocumentos { get; set; }
+    public DbSet<PropiedadHvacSistema> PropiedadHvacSistemas { get; set; }
     public DbSet<MovingSetupConfig> MovingSetupConfig { get; set; }
     public DbSet<MovingSetupServicio> MovingSetupServicios { get; set; }
     public DbSet<MovingSetupEnlaceRapido> MovingSetupEnlacesRapidos { get; set; }

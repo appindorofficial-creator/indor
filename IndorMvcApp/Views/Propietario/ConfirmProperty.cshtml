@@ -13,7 +13,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
 </head>
 <body class="ob-page">
     <div class="ob-shell">
@@ -27,28 +26,30 @@
             </div>
 
             <div class="ob-form-card">
-                @if (!ViewData.ModelState.IsValid)
-                {
-                    <div asp-validation-summary="All" class="ob-summary"></div>
-                }
+                <div class="ob-field">
+                    <label class="ob-label">Property Address</label>
+                    <div class="ob-search">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="text" readonly value="@Model.Address" />
+                    </div>
+                </div>
 
-                <form asp-action="AddProperty" method="post" data-property-research-loading>
+                <div class="ob-address-card">
+                    <i class="fas fa-location-dot"></i>
+                    <div class="addr">@Model.Address</div>
+                </div>
+
+                <form asp-action="ConfirmProperty" method="post">
                     @Html.AntiForgeryToken()
                     <div class="ob-field">
-                        <label asp-for="Address" class="ob-label">Property Address</label>
-                        <div class="ob-search">
-                            <i class="fas fa-magnifying-glass"></i>
-                            <input asp-for="Address" placeholder="Search your address..." autocomplete="street-address" />
-                        </div>
-                        <span asp-validation-for="Address" class="ob-error"></span>
+                        <label for="unit" class="ob-label">Apt, Suite, Unit <span style="font-weight:400;color:#94A3B8;">(Optional)</span></label>
+                        <input type="text" name="unit" id="unit" class="ob-control" value="@Model.Unit" placeholder="e.g. Apt 4B" maxlength="50" />
                     </div>
 
-                    <button type="submit" class="ob-btn ob-btn-primary">Search Address</button>
+                    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
                 </form>
             </div>
         </div>
     </div>
-    @await Html.PartialAsync("_PropertyResearchLoading")
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 </body>
 </html>

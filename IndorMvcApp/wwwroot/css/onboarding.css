@@ -1,0 +1,111 @@
+/* INDOR onboarding — mobile-first, matches create-account mockup */
+*,*::before,*::after{box-sizing:border-box}
+.ob-page{min-height:100vh;margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0F172A;background:#F1F5F9}
+.ob-page--white{background:#fff}
+
+/* Welcome hero */
+.ob-welcome{position:relative;min-height:100vh;display:flex;flex-direction:column;background:#0a1628}
+.ob-welcome-hero{position:absolute;inset:0;background:url('/inspeccion2.jpeg') center/cover no-repeat}
+.ob-welcome-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,20,40,.55) 0%,rgba(8,20,40,.72) 45%,rgba(8,20,40,.92) 100%)}
+.ob-welcome-body{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:28px 24px 32px;max-width:430px;margin:0 auto;width:100%;min-height:100vh}
+.ob-welcome-logo{margin-top:8px}
+.ob-welcome-logo img{height:40px;width:auto;display:block}
+.ob-welcome-copy{margin-bottom:auto;padding-top:8px}
+.ob-welcome-bottom{margin-top:auto;width:100%;padding-top:24px}
+.ob-welcome-copy h1{font-size:1.35rem;font-weight:800;color:#fff;line-height:1.35;margin:0 0 10px;max-width:280px}
+.ob-welcome-copy p{font-size:.88rem;color:rgba(255,255,255,.82);line-height:1.5;margin:0;max-width:300px}
+.ob-welcome-actions{display:flex;flex-direction:column;gap:12px;width:100%}
+.ob-welcome-divider{display:flex;align-items:center;gap:12px;margin:4px 0;color:rgba(255,255,255,.65);font-size:.78rem}
+.ob-welcome-divider::before,.ob-welcome-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.25)}
+.ob-welcome-footer{text-align:center;margin-top:16px;font-size:.88rem;color:rgba(255,255,255,.75)}
+.ob-welcome-footer a{color:#fff;font-weight:700;text-decoration:none}
+.ob-welcome-legal{text-align:center;margin-top:14px;font-size:.68rem;line-height:1.55;color:rgba(255,255,255,.6);padding:0 8px}
+.ob-welcome-legal a{color:rgba(255,255,255,.95);font-weight:700;text-decoration:underline;text-underline-offset:2px}
+
+/* Shared layout */
+.ob-shell{min-height:100vh;padding:0 0 40px;background:#F1F5F9}
+.ob-shell-inner{max-width:430px;margin:0 auto;padding:0 20px 24px}
+.ob-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;min-height:52px}
+.ob-nav-back{width:40px;height:40px;border:none;background:transparent;color:#0F172A;font-size:1.1rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:10px}
+.ob-nav-back:hover{background:rgba(15,23,42,.06)}
+.ob-nav-title{flex:1;text-align:center;font-size:1rem;font-weight:700;color:#0F172A;padding:0 8px}
+.ob-nav-spacer{width:40px}
+
+/* Progress bar — 4 segments */
+.ob-progress{display:flex;gap:6px;padding:0 0 18px}
+.ob-progress-seg{flex:1;height:4px;border-radius:999px;background:#CBD5E1;transition:background .2s}
+.ob-progress-seg.is-done,.ob-progress-seg.is-active{background:#0066CC}
+
+.ob-head-block{margin-bottom:22px}
+.ob-head-block h1{font-size:1.55rem;font-weight:800;line-height:1.2;margin:0 0 8px;color:#0F172A}
+.ob-head-block p{font-size:.9rem;color:#64748B;line-height:1.45;margin:0}
+
+/* Form */
+.ob-form-card{background:transparent}
+.ob-field{margin-bottom:18px}
+.ob-label{display:block;font-size:.82rem;font-weight:600;color:#334155;margin-bottom:8px}
+.ob-control{width:100%;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:12px;font-size:.95rem;font-family:inherit;background:#fff;color:#0F172A;transition:border-color .15s,box-shadow .15s}
+.ob-control:focus{outline:none;border-color:#0066CC;box-shadow:0 0 0 3px rgba(0,102,204,.12)}
+.ob-control::placeholder{color:#94A3B8}
+.ob-control-wrap{position:relative}
+.ob-control-wrap .ob-control{padding-right:44px}
+.ob-pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:none;background:none;color:#94A3B8;cursor:pointer;padding:6px;font-size:1rem}
+.ob-phone-row{display:flex;gap:10px}
+.ob-phone-code{display:flex;align-items:center;gap:6px;padding:0 12px;border:1.5px solid #E2E8F0;border-radius:12px;background:#fff;font-size:.88rem;font-weight:600;color:#334155;white-space:nowrap;min-width:72px;justify-content:center}
+.ob-phone-row .ob-control{flex:1}
+
+.ob-pw-rules{margin:10px 0 4px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}
+.ob-pw-rules li{font-size:.78rem;color:#64748B;display:flex;align-items:center;gap:8px}
+.ob-pw-rules li i{font-size:.65rem;width:14px;text-align:center}
+.ob-pw-rules li.is-valid{color:#059669}
+.ob-pw-rules li.is-valid i{color:#059669}
+
+.ob-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 20px;border:none;border-radius:14px;font-weight:700;font-size:.95rem;cursor:pointer;text-decoration:none;font-family:inherit;transition:transform .12s,box-shadow .12s}
+.ob-btn:active{transform:scale(.98)}
+.ob-btn-primary{background:#0066CC;color:#fff;box-shadow:0 8px 20px rgba(0,102,204,.28)}
+.ob-btn-primary:hover{background:#005BB5}
+.ob-btn-outline{background:#fff;color:#0F172A;border:1.5px solid #E2E8F0;font-weight:600}
+.ob-btn-social{background:#fff;color:#0F172A;border:1.5px solid rgba(255,255,255,.35);font-weight:600}
+.ob-welcome .ob-btn-social{border-color:rgba(255,255,255,.35);background:rgba(255,255,255,.12);color:#fff;backdrop-filter:blur(8px)}
+.ob-welcome .ob-btn-primary{box-shadow:0 10px 28px rgba(0,0,0,.25)}
+.ob-btn-social i,.ob-btn-social svg{width:20px;text-align:center;font-size:1.05rem}
+
+.ob-legal{font-size:.72rem;color:#64748B;line-height:1.55;text-align:center;margin-top:16px}
+.ob-legal a{color:#0066CC;font-weight:600;text-decoration:none}
+
+.ob-legal-doc{padding:0 0 32px}
+.ob-legal-doc h1{font-size:1.45rem;font-weight:800;margin:8px 0 6px;color:#0F172A;line-height:1.25}
+.ob-legal-doc h2{font-size:.95rem;font-weight:800;margin:22px 0 8px;color:#0F172A}
+.ob-legal-doc p{font-size:.88rem;line-height:1.6;color:#475569;margin:0 0 12px}
+.ob-legal-updated{font-size:.78rem;color:#94A3B8;margin-bottom:18px!important}
+.ob-error{color:#DC2626;font-size:.78rem;margin-top:6px;display:block}
+.ob-summary{color:#DC2626;background:#FEF2F2;border:1px solid #FECACA;border-radius:12px;padding:12px;margin-bottom:14px;font-size:.84rem}
+.ob-summary.validation-summary-valid{display:none!important}
+.ob-summary ul{margin:0;padding-left:18px}
+
+/* Property step */
+.ob-search{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #E2E8F0;border-radius:12px;padding:12px 14px;margin-bottom:14px}
+.ob-search i{color:#94A3B8;font-size:.95rem}
+.ob-search input{flex:1;border:none;background:transparent;font-size:.92rem;font-family:inherit;outline:none;color:#0F172A}
+.ob-search button{border:none;background:none;color:#64748B;cursor:pointer;padding:4px}
+.ob-address-card{display:flex;align-items:flex-start;gap:12px;padding:14px;background:#fff;border:1.5px solid #0066CC;border-radius:12px;margin-bottom:16px;box-shadow:0 4px 14px rgba(0,102,204,.08)}
+.ob-address-card i{color:#0066CC;font-size:1.1rem;margin-top:2px;flex-shrink:0}
+.ob-address-card .addr{font-weight:700;font-size:.9rem;line-height:1.4;color:#0F172A}
+
+/* Review cards */
+.ob-review-stack{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}
+.ob-review-card{background:#fff;border-radius:16px;padding:18px;border:1px solid #E2E8F0}
+.ob-review-card h2{font-size:.95rem;font-weight:800;margin:0 0 14px;color:#0F172A}
+.ob-review-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #F1F5F9}
+.ob-review-item:last-child{border-bottom:none;padding-bottom:0}
+.ob-review-item i{width:20px;color:#0066CC;text-align:center;font-size:.95rem}
+.ob-review-item .val{font-size:.88rem;font-weight:600;color:#334155;line-height:1.35}
+
+/* Success */
+.ob-success-wrap{text-align:center;padding:40px 20px 24px;max-width:430px;margin:0 auto}
+.ob-success-art{position:relative;width:200px;height:160px;margin:0 auto 28px}
+.ob-success-house{font-size:4.5rem;color:#0066CC;opacity:.25;position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+.ob-success-pin{font-size:2rem;color:#0066CC;position:absolute;top:20px;left:50%;transform:translateX(-50%)}
+.ob-success-check{width:72px;height:72px;border-radius:50%;background:#0066CC;color:#fff;display:flex;align-items:center;justify-content:center;font-size:2rem;position:absolute;top:50%;left:50%;transform:translate(-50%,-20%);box-shadow:0 12px 32px rgba(0,102,204,.35)}
+.ob-success-wrap h1{font-size:1.65rem;font-weight:800;margin:0 0 10px;color:#0F172A}
+.ob-success-wrap p{font-size:.92rem;color:#64748B;margin:0 0 28px;line-height:1.45}

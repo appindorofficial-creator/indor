@@ -646,6 +646,47 @@ public class HomeController : Controller
         HouseFactProfileViewModel? houseFactProfile = null;
         var houseFactPreview = false;
 
+        if (primaryPropiedad != null)
+        {
+            var primaryInfo = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
+            var mantenimiento = await _db.PropiedadMantenimiento
+                .Where(m => m.PropiedadId == primaryPropiedad.Id)
+                .OrderBy(m => m.DueDate)
+                .ToListAsync();
+            var documentos = await _db.PropiedadDocumentos
+                .Where(d => d.PropiedadId == primaryPropiedad.Id)
+                .OrderByDescending(d => d.FechaCreacion)
+                .Take(5)
+                .ToListAsync();
+            var historial = await _db.PropiedadHistorial
+                .Where(h => h.PropiedadId == primaryPropiedad.Id)
+                .OrderByDescending(h => h.FechaCreacion)
+                .Take(5)
+                .ToListAsync();
+            var hvacRecord = await _db.PropiedadHvacSistemas
+                .FirstOrDefaultAsync(h => h.PropiedadId == primaryPropiedad.Id);
+
+            var notificationCount = mantenimiento.Count(m =>
+                m.DueDate.HasValue
+                && m.Status != "Completed"
+                && (m.DueDate.Value.Date - DateTime.Today).Days <= 30);
+
+            ViewBag.HomeDashboard = HomeDashboardDisplayService.Build(
+                usuario,
+                primaryPropiedad,
+                primaryInfo,
+                hvacRecord,
+                mantenimiento,
+                documentos,
+                historial,
+                notificationCount,
+                Url);
+        }
+        else
+        {
+            ViewBag.HomeDashboard = HomeDashboardDisplayService.BuildEmpty(usuario);
+        }
+
         if (primaryPropiedad != null && !string.IsNullOrWhiteSpace(primaryPropiedad.AttomRawJson))
         {
             var info = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);

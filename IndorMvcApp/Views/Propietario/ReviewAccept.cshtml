@@ -1,0 +1,70 @@
+@model IndorMvcApp.ViewModels.OnboardingReviewViewModel
+@{
+    ViewData["Title"] = "Review & Confirm - INDOR";
+    Layout = null;
+    ViewBag.OnboardingStep = 3;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+</head>
+<body class="ob-page">
+    <div class="ob-shell">
+        <div class="ob-shell-inner">
+            @await Html.PartialAsync("_OnboardingNav")
+            @await Html.PartialAsync("_OnboardingStepper")
+
+            <div class="ob-head-block">
+                <h1>Review &amp; Confirm</h1>
+                <p>Please confirm your information.</p>
+            </div>
+
+            <div class="ob-review-stack">
+                <div class="ob-review-card">
+                    <h2>Your Account</h2>
+                    <div class="ob-review-item">
+                        <i class="fas fa-user"></i>
+                        <span class="val">@Model.FullName</span>
+                    </div>
+                    <div class="ob-review-item">
+                        <i class="fas fa-envelope"></i>
+                        <span class="val">@Model.Email</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                    {
+                        <div class="ob-review-item">
+                            <i class="fas fa-phone"></i>
+                            <span class="val">@Model.Phone</span>
+                        </div>
+                    }
+                </div>
+
+                <div class="ob-review-card">
+                    <h2>Your Property</h2>
+                    <div class="ob-review-item">
+                        <i class="fas fa-house"></i>
+                        <span class="val">
+                            @Model.Address
+                            @if (!string.IsNullOrWhiteSpace(Model.Unit))
+                            {
+                                <text>, @Model.Unit</text>
+                            }
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="ReviewAccept" method="post">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="ob-btn ob-btn-primary">Create Account</button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

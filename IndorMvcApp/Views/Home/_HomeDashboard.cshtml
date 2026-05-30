@@ -1,0 +1,189 @@
+@model IndorMvcApp.ViewModels.HomeDashboardViewModel
+
+<div class="hd-greeting">
+    <h1>@Model.Greeting, @Model.UserFirstName</h1>
+    <p>What would you like to do today?</p>
+</div>
+
+@if (!Model.HasProperty)
+{
+    <div class="hd-empty">
+        <p>You have no registered properties yet.</p>
+        <a asp-controller="Propietario" asp-action="AddProperty">Add your home</a>
+    </div>
+}
+else
+{
+    <article class="hd-property-card">
+        <img class="hd-property-photo" src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
+        <div class="hd-property-body">
+            <p class="hd-property-address">@Model.Address</p>
+            <p class="hd-value-label">Home Value</p>
+            <p class="hd-value">@Model.HomeValue</p>
+            @if (!string.IsNullOrEmpty(Model.BedsLabel) || !string.IsNullOrEmpty(Model.BathsLabel) || !string.IsNullOrEmpty(Model.SqftLabel))
+            {
+                <div class="hd-specs">
+                    @if (!string.IsNullOrEmpty(Model.BedsLabel))
+                    {
+                        <span class="hd-spec"><i class="fas fa-bed"></i> @Model.BedsLabel</span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.BathsLabel))
+                    {
+                        <span class="hd-spec"><i class="fas fa-bath"></i> @Model.BathsLabel</span>
+                    }
+                    @if (!string.IsNullOrEmpty(Model.SqftLabel))
+                    {
+                        <span class="hd-spec"><i class="fas fa-ruler-combined"></i> @Model.SqftLabel</span>
+                    }
+                </div>
+            }
+            <a href="@Model.HouseFactsUrl" class="hd-house-facts-btn">
+                View House Facts
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </article>
+
+    <h2 class="hd-section-title">Start here</h2>
+    <div class="hd-start-grid">
+        @foreach (var action in Model.QuickActions)
+        {
+            <button type="button" class="hd-start-item @(action.Tone == "red" ? "red" : "") nav-jump" data-target="@action.TargetSection">
+                <i class="fas @action.Icon"></i>
+                @action.Label
+            </button>
+        }
+    </div>
+
+    @if (Model.TodayTasks.Count > 0)
+    {
+        <h2 class="hd-section-title">For your home today</h2>
+        <div class="hd-task-list">
+            @foreach (var todayTask in Model.TodayTasks)
+            {
+                var isHash = todayTask.Url.StartsWith("#");
+                if (isHash)
+                {
+                    <button type="button" class="hd-task nav-jump" data-target="@todayTask.Url.TrimStart('#')" style="width:100%;border:none;background:transparent;text-align:left;cursor:pointer;">
+                        <span class="hd-task-icon"><i class="fas @todayTask.Icon"></i></span>
+                        <span class="hd-task-body">
+                            <span class="hd-task-title">@todayTask.Title</span>
+                            <span class="hd-task-sub">
+                                @if (!string.IsNullOrEmpty(todayTask.Badge))
+                                {
+                                    @($"{todayTask.Subtitle.Split('•')[0].Trim()} • ")
+                                    <span class="badge">@todayTask.Badge</span>
+                                }
+                                else
+                                {
+                                    @todayTask.Subtitle
+                                }
+                            </span>
+                        </span>
+                        <i class="fas fa-chevron-right hd-task-chevron"></i>
+                    </button>
+                }
+                else
+                {
+                    <a href="@todayTask.Url" class="hd-task">
+                        <span class="hd-task-icon"><i class="fas @todayTask.Icon"></i></span>
+                        <span class="hd-task-body">
+                            <span class="hd-task-title">@todayTask.Title</span>
+                            <span class="hd-task-sub">
+                                @if (!string.IsNullOrEmpty(todayTask.Badge))
+                                {
+                                    @($"{todayTask.Subtitle.Split('•')[0].Trim()} • ")
+                                    <span class="badge">@todayTask.Badge</span>
+                                }
+                                else
+                                {
+                                    @todayTask.Subtitle
+                                }
+                            </span>
+                        </span>
+                        <i class="fas fa-chevron-right hd-task-chevron"></i>
+                    </a>
+                }
+            }
+        </div>
+    }
+
+    @if (Model.UpcomingSchedule.Count > 0)
+    {
+        <div class="hd-card">
+            <div class="hd-card-head">
+                <h3>Upcoming schedule</h3>
+            </div>
+            @foreach (var item in Model.UpcomingSchedule)
+            {
+                <div class="hd-schedule-item">
+                    <span class="hd-schedule-icon"><i class="fas @item.Icon"></i></span>
+                    <div class="hd-schedule-body">
+                        <div class="hd-schedule-title">@item.Title</div>
+                        <div class="hd-schedule-loc"><i class="fas fa-location-dot"></i>@item.Location</div>
+                    </div>
+                    <span class="hd-due-pill">@item.DueLabel</span>
+                </div>
+            }
+            <button type="button" class="hd-schedule-footer nav-jump" data-target="section-schedule">
+                View full schedule
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    }
+
+    @if (Model.RecentDocuments.Count > 0)
+    {
+        <div class="hd-card">
+            <div class="hd-card-head">
+                <h3>Recent documents</h3>
+                <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hd-link">See all</a>
+            </div>
+            @foreach (var doc in Model.RecentDocuments)
+            {
+                <a href="@doc.Url" class="hd-doc-item">
+                    <span class="hd-doc-icon"><i class="fas @doc.Icon"></i></span>
+                    <span>
+                        <div class="hd-doc-title">@doc.Title</div>
+                        <div class="hd-doc-meta">@doc.Meta</div>
+                    </span>
+                    <i class="fas fa-chevron-right hd-task-chevron"></i>
+                </a>
+            }
+        </div>
+    }
+
+    @if (Model.RecentActivity.Count > 0)
+    {
+        <div class="hd-card">
+            <div class="hd-card-head">
+                <h3>Home activity</h3>
+                <a asp-controller="MyHome" asp-action="History" asp-route-id="@Model.PropiedadId" class="hd-link">View all</a>
+            </div>
+            <div class="hd-activity-timeline">
+                @foreach (var act in Model.RecentActivity)
+                {
+                    <div class="hd-activity-item">
+                        <span class="hd-activity-dot"><i class="fas @act.Icon"></i></span>
+                        <div class="hd-activity-body">
+                            <div class="title">@act.Title</div>
+                            <div class="time">@act.Timestamp</div>
+                            <div class="desc">@act.Description</div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div class="hd-realtor-card">
+        <div style="flex:1;">
+            <strong>Need help with finding a professional realtor?</strong>
+            <p>Our team can help connect you with a trusted real estate professional.</p>
+            <div class="hd-realtor-actions">
+                <a href="#" class="hd-btn-primary-sm">Request</a>
+                <button type="button" class="hd-btn-outline-sm nav-jump" data-target="section-more">Contact Support</button>
+            </div>
+        </div>
+    </div>
+}

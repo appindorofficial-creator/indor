@@ -1,0 +1,93 @@
+@model IndorMvcApp.ViewModels.HvacSavedViewModel
+@{
+    ViewData["Title"] = "HVAC Saved";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hvac-top">
+        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">HVAC Saved</div>
+        <div style="width:40px;"></div>
+    </div>
+
+    <div class="hvac-content">
+        <div class="hvac-success-card">
+            <div class="hvac-success-icon"><i class="fas fa-check"></i></div>
+            <div>
+                <strong>Your HVAC system has been added.</strong>
+                <p style="margin:6px 0 0;font-size:0.8125rem;color:#64748B;line-height:1.45;">INDOR can now personalize reminders and maintenance guidance.</p>
+            </div>
+        </div>
+
+        <h2 class="hvac-section-title">System summary</h2>
+        <div class="hvac-summary-list">
+            <div class="hvac-summary-item"><i class="fas fa-snowflake icon"></i><span class="k">System type</span><span class="v">@Model.SystemTypeLabel</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">Brand</span><span class="v">@Model.Brand</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">Model</span><span class="v">@Model.Model</span></div>
+            <div class="hvac-summary-item"><i class="far fa-calendar icon"></i><span class="k">Install year</span><span class="v">@Model.InstallYearLabel</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-table-cells icon"></i><span class="k">Filter size</span><span class="v">@Model.FilterSize</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-wrench icon"></i><span class="k">Last service</span><span class="v">@Model.LastServiceLabel</span></div>
+        </div>
+
+        <h2 class="hvac-section-title">What's next</h2>
+        <div class="hvac-next-list">
+            <div class="hvac-next-item">
+                <span class="hvac-next-icon"><i class="fas fa-bell"></i></span>
+                <span class="hvac-next-body">
+                    <strong>Set filter replacement reminder</strong>
+                </span>
+                @if (Model.FilterRemindersEnabled)
+                {
+                    <span class="hvac-pill">Every @Model.FilterReminderDays days</span>
+                }
+                <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.75rem;"></i>
+            </div>
+            <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hvac-next-item">
+                <span class="hvac-next-icon"><i class="fas fa-file-arrow-up"></i></span>
+                <span class="hvac-next-body">
+                    <strong>Upload warranty or manual</strong>
+                    <span>Optional</span>
+                </span>
+                <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.75rem;"></i>
+            </a>
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="hvac-next-item">
+                <span class="hvac-next-icon"><i class="fas fa-calendar-check"></i></span>
+                <span class="hvac-next-body">
+                    <strong>Schedule maintenance</strong>
+                    <span>Recommended annually</span>
+                </span>
+                <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.75rem;"></i>
+            </a>
+        </div>
+
+        @if (Model.FilterRemindersEnabled)
+        {
+            <div class="hvac-reminder-banner">
+                <i class="fas fa-bell"></i>
+                <div>
+                    <strong>Next reminder</strong>
+                    <span class="title">@Model.NextReminderTitle</span>
+                    <span class="sub">@Model.NextReminderDueLabel</span>
+                </div>
+            </div>
+        }
+
+        <a asp-controller="Home" asp-action="Index" class="hvac-save-btn" style="text-align:center;text-decoration:none;">Done</a>
+        <a href="@Model.HouseFactsUrl" class="hvac-done-link">View in House Facts</a>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+</body>
+</html>

@@ -577,6 +577,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home-dashboard.css" asp-append-version="true" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -601,18 +602,22 @@
             box-shadow: 0 2px 8px rgba(10, 37, 64, 0.05);
         }
 
-        .avatar {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #0066CC, #004FA3);
+        .hd-brand {
+            flex-shrink: 0;
+            text-decoration: none;
+            font-size: 1.125rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            color: #0A2540;
             display: flex;
             align-items: center;
-            justify-content: center;
-            color: #FFF;
-            font-weight: 700;
-            font-size: 0.95rem;
-            flex-shrink: 0;
+            gap: 1px;
+        }
+
+        .hd-brand-house {
+            width: 1.1rem;
+            height: 1.1rem;
+            color: #1867F2;
         }
 
         .search-bar {
@@ -790,8 +795,17 @@
             transition: color .2s;
         }
         .nav-item i { font-size: 1.2rem; }
-        .nav-item.active { color: #0066CC; }
-        .nav-item.active i { transform: translateY(-2px); }
+        .nav-item.active { color: #1867F2; }
+        .nav-item.active i { transform: none; }
+        .nav-item.active::after {
+            content: '';
+            display: block;
+            width: 22px;
+            height: 3px;
+            margin-top: 4px;
+            border-radius: 999px;
+            background: #1867F2;
+        }
 
         @@media (max-width: 480px) {
             .field-value { font-size: 1.2rem; }
@@ -2133,20 +2147,14 @@
 </head>
 <body>
     <header class="top-bar">
-        <div class="avatar">
-            @{
-                var topUser = (IndorMvcApp.Models.ApplicationUser?)ViewBag.UsuarioActual;
-            }
-            @if (!string.IsNullOrWhiteSpace(topUser?.FotoUrl))
-            {
-                <img src="@Url.Content("~" + topUser!.FotoUrl)" alt="Foto" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />
-            }
-            else
-            {
-                @(topUser?.Nombre?.Substring(0, 1).ToUpper() ?? User.Identity?.Name?.Substring(0, 1).ToUpper() ?? "U")
-            }
-        </div>
-        <div class="search-bar"><i class="fas fa-search"></i><span>Search services...</span></div>
+        <a class="hd-brand" asp-controller="Home" asp-action="Index" aria-label="INDOR">
+            IND
+            <svg class="hd-brand-house" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+                <path d="M14 3 L26 14 V26 H2 V14 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+            </svg>
+            R
+        </a>
+        <div class="search-bar"><i class="fas fa-search"></i><span>Search your home...</span></div>
         <div class="bell" id="bellToggle" role="button" aria-label="Notifications">
             <i class="far fa-bell"></i>
             @if (notificaciones.Count > 0)
@@ -2185,211 +2193,21 @@
 
     <!-- ====== HOME ====== -->
     <section class="section active" id="section-home">
-        <!-- 1. Banner -->
-        <div class="home-banner">
-            <img src="@Url.Content("~/logoindor.png")" alt="Indor - The Home Operating System" />
-        </div>
-
-        <!-- 2. Property summary + services -->
         @{
-            var microserviciosHome = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
-                                     ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
-            var serviciosHome = (IEnumerable<IndorMvcApp.Models.Servicio>?)ViewBag.Servicios
-                                ?? Enumerable.Empty<IndorMvcApp.Models.Servicio>();
-            var inspeccionesHome = (IEnumerable<IndorMvcApp.Models.Inspeccion>?)ViewBag.Inspecciones
-                                   ?? Enumerable.Empty<IndorMvcApp.Models.Inspeccion>();
-            var serviciosEmergenciaHome = (IEnumerable<IndorMvcApp.Models.ServicioEmergencia>?)ViewBag.ServiciosEmergencia
-                                          ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
-            var movingSetupSectionHome = ViewBag.MovingSetupSection as IndorMvcApp.ViewModels.MovingSetupSectionViewModel;
-            var homeCarePrioritiesSectionHome = ViewBag.HomeCarePrioritiesSection as IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel;
+            var homeDashboard = ViewBag.HomeDashboard as IndorMvcApp.ViewModels.HomeDashboardViewModel;
         }
-        <div class="home-content">
-            @if (TempData["ScheduleSaved"] is string scheduleMsg)
-            {
-                <div class="alert-schedule-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
-            }
-            @if (TempData["InspectionSaved"] is string inspectionMsg)
-            {
-                <div class="alert-schedule-ok"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
-            }
-            @if (primaryProp != null)
-            {
-                var d = primaryInfo?.PropertyDetails;
-                var direccion = !string.IsNullOrWhiteSpace(primaryInfo?.FormattedAddress)
-                                ? primaryInfo!.FormattedAddress
-                                : (primaryProp.Direccion ?? "—");
-                var valorEstimado = d?.EstimatedValue.HasValue == true ? Money(d.EstimatedValue) : "—";
-                var beds = BedsLabel(d?.Bedrooms);
-                var baths = BathsLabel(d?.Bathrooms);
-                var sqft = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : "";
-                var priceSqft = PricePerSqft(d?.EstimatedValue, d?.LivingArea);
-                var whatsSpecial = d?.Features?.Count > 0
-                    ? string.Join(". ", d!.Features) + "."
-                    : (!string.IsNullOrWhiteSpace(d?.LegalDescription)
-                        ? d!.LegalDescription!
-                        : (!string.IsNullOrWhiteSpace(d?.ArchitecturalStyle)
-                            ? $"This {d!.PropertyType.ToLower()} features {d.ArchitecturalStyle} architecture."
-                            : "Your home profile is managed through Indor — track warranties, services, and property details in one place."));
-                var factItems = new List<(string Icon, string Label, string Value)>();
-                if (priceSqft != "—") factItems.Add(("fa-ruler-combined", "Price per sqft", priceSqft));
-                if (!string.IsNullOrWhiteSpace(d?.PropertyType)) factItems.Add(("fa-house", "Property type", d!.PropertyType));
-                if (d?.YearBuilt.HasValue == true) factItems.Add(("fa-calendar", "Built in", d.YearBuilt!.Value.ToString()));
-                if (d?.LotSize.HasValue == true) factItems.Add(("fa-tree", "Lot size", $"{d.LotSize} acres"));
-                else if (d?.LotSizeSqFt.HasValue == true) factItems.Add(("fa-tree", "Lot size", $"{d.LotSizeSqFt:N0} sq ft"));
-                if (d?.Bedrooms.HasValue == true) factItems.Add(("fa-bed", "Bedrooms", d.Bedrooms!.Value.ToString()));
-                if (d?.Bathrooms.HasValue == true) factItems.Add(("fa-bath", "Bathrooms", Num(d.Bathrooms)));
-                if (!string.IsNullOrWhiteSpace(d?.ArchitecturalStyle)) factItems.Add(("fa-building", "Style", d!.ArchitecturalStyle!));
-                if (!string.IsNullOrWhiteSpace(d?.Zoning)) factItems.Add(("fa-map", "Zoning", d!.Zoning!));
-                if (d?.Floors.HasValue == true) factItems.Add(("fa-stairs", "Floors", d.Floors!.Value.ToString()));
-                var visibleFacts = factItems.Take(4).ToList();
-                var monthlyTax = d?.AnnualTaxAmount.HasValue == true ? Money(d.AnnualTaxAmount / 12) : null;
-
-                <div class="prop-hero">
-                    <div class="prop-price">@valorEstimado</div>
-                    @if (!string.IsNullOrEmpty(beds) || !string.IsNullOrEmpty(baths) || !string.IsNullOrEmpty(sqft))
-                    {
-                        <div class="prop-stats">
-                            @if (!string.IsNullOrEmpty(beds))
-                            {
-                                <span><i class="fas fa-bed"></i> @beds</span>
-                            }
-                            @if (!string.IsNullOrEmpty(baths))
-                            {
-                                <span><i class="fas fa-bath"></i> @baths</span>
-                            }
-                            @if (!string.IsNullOrEmpty(sqft))
-                            {
-                                <span><i class="fas fa-ruler-combined"></i> @sqft</span>
-                            }
-                        </div>
-                    }
-                    <div class="prop-address">@direccion</div>
-                    <div class="prop-est-bar">
-                        @if (monthlyTax != null)
-                        {
-                            <span>Est. @monthlyTax/mo property tax</span>
-                        }
-                        else
-                        {
-                            <span>Home value tracked in Indor</span>
-                        }
-                        <button type="button" class="prop-est-link nav-jump" data-target="section-myhome">View full details</button>
-                    </div>
-                </div>
-
-                @if (visibleFacts.Count > 0)
-                {
-                    <div class="prop-card">
-                        <h3 class="prop-card-title"><i class="fas fa-list-check"></i> Facts &amp; features</h3>
-                        <div class="facts-grid">
-                            @foreach (var fact in visibleFacts)
-                            {
-                                <div class="fact-item">
-                                    <i class="fas @fact.Icon"></i>
-                                    <div>
-                                        <span class="fact-label">@fact.Label</span>
-                                        <span class="fact-value">@fact.Value</span>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                        @if (primaryInfo != null)
-                        {
-                            <div class="prop-details-expand" id="propDetailsExpand" hidden>
-                                @foreach (var g in BuildGroupsFor(primaryInfo))
-                                {
-                                    <div class="detail-group">
-                                        <h4>@g.Title</h4>
-                                        <ul class="detail-bullets">
-                                            @foreach (var item in g.Items)
-                                            {
-                                                <li><strong>@item.Label:</strong> @item.Value</li>
-                                            }
-                                        </ul>
-                                    </div>
-                                }
-                            </div>
-                            <button type="button" class="show-more-link" id="btnShowFacts" aria-expanded="false">
-                                Show more <i class="fas fa-chevron-right"></i>
-                            </button>
-                        }
-                    </div>
-                }
-
-                <div class="prop-card">
-                    <h3 class="prop-card-title"><i class="fas fa-star"></i> What's special</h3>
-                    <p class="whats-special-text">@whatsSpecial</p>
-                </div>
-            }
-            else
-            {
-                <div class="empty-state">
-                    <i class="fas fa-house-circle-exclamation"></i>
-                    <p>You have no registered properties yet.</p>
-                    <a asp-controller="Propietario" asp-action="AddProperty" class="btn-primary-link">
-                        <i class="fas fa-plus"></i> Add property
-                    </a>
-                </div>
-            }
-
-            @if (microserviciosHome.Any())
-            {
-                @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microserviciosHome, $"{microserviciosHome.Count()} services available for your home"))
-            }
-
-            @if (homeCarePrioritiesSectionHome != null)
-            {
-                @await Html.PartialAsync("_HomeCarePrioritiesSection", homeCarePrioritiesSectionHome)
-            }
-
-            @if (movingSetupSectionHome != null)
-            {
-                @await Html.PartialAsync("_MovingSetupSection", movingSetupSectionHome)
-            }
-
-            @if (serviciosHome.Any())
-            {
-                @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(serviciosHome, $"{serviciosHome.Count()} remodeling and installation projects"))
-            }
-
-            @if (inspeccionesHome.Any())
-            {
-                @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspeccionesHome, $"{inspeccionesHome.Count()} professional inspections for your home"))
-            }
-
-            @if (serviciosEmergenciaHome.Any())
-            {
-                @await Html.PartialAsync("_EmergencyServicesSection", BuildEmergencySection(serviciosEmergenciaHome))
-            }
-        </div>
-
-        <!-- 4. Sección de Notificaciones -->
-        <div class="notif-section">
-            <div class="ns-header">
-                <h3><i class="far fa-bell"></i> Notifications</h3>
-                <span class="ns-badge">@notificaciones.Count</span>
-            </div>
-            <div class="notif-list">
-                @if (notificaciones.Count == 0)
-                {
-                    <div class="notif-empty">You have no notifications right now.</div>
-                }
-                else
-                {
-                    @foreach (var n in notificaciones)
-                    {
-                        <div class="notif-item">
-                            <div class="notif-icon @n.Severity"><i class="fas @n.Icon"></i></div>
-                            <div class="notif-text">
-                                <div class="nt-title">@n.Title</div>
-                                <div class="nt-sub">@n.Subtitle</div>
-                                <div class="nt-date"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
-                            </div>
-                        </div>
-                    }
-                }
-            </div>
-        </div>
+        @if (TempData["ScheduleSaved"] is string scheduleMsg)
+        {
+            <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
+        }
+        @if (TempData["InspectionSaved"] is string inspectionMsg)
+        {
+            <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
+        }
+        @if (homeDashboard != null)
+        {
+            @await Html.PartialAsync("_HomeDashboard", homeDashboard)
+        }
     </section>
 
     <!-- ====== SERVICES ====== -->
@@ -3805,9 +3623,9 @@
 	<!-- ====== BOTTOM NAV ====== -->
     <nav class="bottom-nav">
         <button class="nav-item active" data-target="section-home"><i class="fas fa-house"></i><span>Home</span></button>
-        <button class="nav-item" data-target="section-services"><i class="fas fa-compass"></i><span>Services</span></button>
-        <button class="nav-item" data-target="section-myhome"><i class="fas fa-wand-magic-sparkles"></i><span>House Fax</span></button>
-        <button class="nav-item" data-target="section-schedule"><i class="fas fa-calendar"></i><span>Schedule</span></button>
+        <button class="nav-item" data-target="section-services"><i class="fas fa-screwdriver-wrench"></i><span>Services</span></button>
+        <button class="nav-item" data-target="section-myhome"><i class="fas fa-house-circle-arrow-up"></i><span>House Facts</span></button>
+        <button class="nav-item" data-target="section-schedule"><i class="fas fa-clipboard-list"></i><span>Schedule</span></button>
         <button class="nav-item" data-target="section-more"><i class="fas fa-ellipsis"></i><span>More</span></button>
     </nav>
 

@@ -24,26 +24,23 @@ public class AccountController : Controller
         _db = db;
     }
 
-    [HttpGet]
-    public IActionResult Register()
-    {
-        return View();
-    }
-
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
         if (ModelState.IsValid)
         {
+            SplitFullName(model);
+
             var user = new ApplicationUser
             {
                 UserName = model.Email,
                 Email = model.Email,
                 Nombre = model.Nombre,
                 Apellidos = model.Apellidos,
-                Telefono = model.Telefono,
-                PhoneNumber = model.Telefono
+                Telefono = model.Telefono ?? string.Empty,
+                PhoneNumber = model.Telefono,
+                RolUsuario = "Propietario"
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -51,7 +48,7 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("SelectRole", new { userId = user.Id });
+                return RedirectToAction("AddProperty", "Propietario");
             }
 
             foreach (var error in result.Errors)
@@ -60,12 +57,61 @@ public class AccountController : Controller
             }
         }
 
+        ViewBag.OnboardingStep = 1;
+        ViewBag.OnboardingTitle = "Create Account";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
+        ViewBag.OnboardingShowBack = true;
         return View(model);
     }
 
     [HttpGet]
-    public IActionResult Welcome()
+    public IActionResult Register()
     {
+        ViewBag.OnboardingStep = 1;
+        ViewBag.OnboardingTitle = "Create Account";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
+        ViewBag.OnboardingShowBack = true;
+        return View();
+    }
+
+    private static void SplitFullName(RegisterViewModel model)
+    {
+        var parts = model.FullName.Trim().Split(' ', 2, StringSplitOptions.RemoveEmptyEntries);
+        model.Nombre = parts.Length > 0 ? parts[0] : model.FullName.Trim();
+        model.Apellidos = parts.Length > 1 ? parts[1] : string.Empty;
+    }
+
+    [HttpGet]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> Welcome()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            return await RedirectAuthenticatedUserAsync();
+        }
+
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Terms(string? from = null)
+    {
+        ViewBag.OnboardingTitle = "Terms & Conditions";
+        ViewBag.OnboardingBackUrl = from == "register"
+            ? Url.Action(nameof(Register))
+            : Url.Action(nameof(Welcome));
+        ViewBag.OnboardingShowBack = true;
+        return View();
+    }
+
+    [HttpGet]
+    public IActionResult Privacy(string? from = null)
+    {
+        ViewBag.OnboardingTitle = "Privacy Policy";
+        ViewBag.OnboardingBackUrl = from == "register"
+            ? Url.Action(nameof(Register))
+            : Url.Action(nameof(Welcome));
+        ViewBag.OnboardingShowBack = true;
         return View();
     }
 
@@ -77,11 +123,11 @@ public class AccountController : Controller
             return await RedirectAuthenticatedUserAsync(returnUrl);
         }
 
-        ViewData["ReturnUrl"] = returnUrl;
-        return View();
+        return RedirectToAction(nameof(Welcome));
     }
 
     [HttpGet]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public async Task<IActionResult> LoginForm(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -120,7 +166,7 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
-        return RedirectToAction("Index", "Home");
+        return RedirectToAction(nameof(Welcome));
     }
 
     [HttpGet]
