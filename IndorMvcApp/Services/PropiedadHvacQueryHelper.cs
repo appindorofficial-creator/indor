@@ -1,6 +1,5 @@
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Services;
@@ -23,6 +22,4 @@ public static class PropiedadHvacQueryHelper
             return null;
         }
     }
-
-    private static bool IsMissingTable(Exception ex) => HomeDashboardDataService.IsMissingTable(ex);
 }

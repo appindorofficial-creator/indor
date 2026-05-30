@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,15 +17,18 @@ public class HomeController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<HomeController> _logger;
+    private readonly IConfiguration _configuration;
 
     public HomeController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        ILogger<HomeController> logger)
+        ILogger<HomeController> logger,
+        IConfiguration configuration)
     {
         _db = db;
         _userManager = userManager;
         _logger = logger;
+        _configuration = configuration;
     }
 
     [Authorize]
@@ -718,6 +722,26 @@ public class HomeController : Controller
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        var showDetails = _configuration.GetValue("Diagnostics:ShowDetailedErrors", true);
+        var feature = HttpContext.Features.Get<IExceptionHandlerFeature>();
+        var error = feature?.Error;
+
+        var model = new ErrorViewModel
+        {
+            RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+            ShowDetails = showDetails,
+            Path = feature?.Path ?? HttpContext.Request.Path
+        };
+
+        if (showDetails && error != null)
+        {
+            model.ExceptionType = error.GetType().FullName;
+            model.ExceptionMessage = error.Message;
+            model.InnerExceptionMessage = error.InnerException?.Message;
+            model.StackTrace = error.StackTrace;
+            _logger.LogError(error, "Unhandled exception at {Path}", model.Path);
+        }
+
+        return View(model);
     }
 }
