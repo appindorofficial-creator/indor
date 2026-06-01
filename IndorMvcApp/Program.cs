@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Infrastructure;
 using IndorMvcApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ if (builder.Environment.IsDevelopment())
     mvcBuilder.AddRazorRuntimeCompilation();
 }
 
+builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
+AppCombinedFileVersionProvider.Register(builder.Services);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -87,7 +90,20 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseStaticFiles();
+app.UseMiddleware<HtmlNoCacheMiddleware>();
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        var path = ctx.Context.Request.Path.Value ?? string.Empty;
+        if (path.StartsWith("/css", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWith("/js", StringComparison.OrdinalIgnoreCase)
+            || path.StartsWith("/lib", StringComparison.OrdinalIgnoreCase))
+        {
+            ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+        }
+    }
+});
 app.UseRouting();
 app.UseSession();
 
