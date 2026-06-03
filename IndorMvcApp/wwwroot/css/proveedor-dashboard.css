@@ -1,0 +1,14 @@
+.prv-dash { max-width: 520px; }
+.prv-dash-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; margin-bottom: 20px; }
+.prv-status { font-size: .72rem; font-weight: 700; padding: 6px 10px; border-radius: 999px; white-space: nowrap; }
+.prv-status--approved { background: #DCFCE7; color: #15803D; }
+.prv-status--pending { background: #FEF3C7; color: #B45309; }
+.prv-status--rejected { background: #FEE2E2; color: #B91C1C; }
+.prv-status--draft { background: #E2E8F0; color: #475569; }
+.prv-dash-card { background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px; margin-bottom: 12px; }
+.prv-dash-card h2 { font-size: .82rem; text-transform: uppercase; letter-spacing: .04em; color: #64748B; margin: 0 0 10px; }
+.prv-dash-muted { background: #F8FAFC; }
+.prv-dash-tags { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.prv-dash-tags li { background: #E8F1FB; color: #0066CC; font-size: .78rem; font-weight: 700; padding: 6px 10px; border-radius: 999px; }
+.prv-dash-list { list-style: none; margin: 0; padding: 0; }
+.prv-dash-list li { display: flex; align-items: center; gap: 8px; font-size: .88rem; padding: 4px 0; }

@@ -1,0 +1,152 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+
+@{
+    var isHandyman = ViewBag.IsHandyman as bool? == true;
+    var isConstruction = ViewBag.IsConstruction as bool? == true;
+    var isBathroom = ViewBag.IsBathroom as bool? == true;
+    var isKitchen = ViewBag.IsKitchen as bool? == true;
+    var isRoofing = ViewBag.IsRoofing as bool? == true;
+    var topics = isRoofing
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-house-chimney", "Roofing systems"),
+            ("fa-magnifying-glass-droplet", "Leak diagnosis"),
+            ("fa-wind", "Flashing & ventilation"),
+            ("fa-layer-group", "Material basics"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isKitchen
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-ruler-combined", "Measurements & layout"),
+            ("fa-hammer", "Demolition basics"),
+            ("fa-box-archive", "Cabinet installation"),
+            ("fa-paint-roller", "Finish work"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isBathroom
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-hammer", "Demolition basics"),
+            ("fa-droplet", "Waterproofing"),
+            ("fa-border-all", "Tile & finish installation"),
+            ("fa-faucet", "Fixture installation"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isHandyman
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-wrench", "Tool use"),
+            ("fa-screwdriver-wrench", "Basic repairs"),
+            ("fa-screwdriver", "Mounting & installation"),
+            ("fa-fill-drip", "Caulking & patching"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isConstruction
+            ? new (string Icon, string Label)[]
+            {
+                ("fa-shield-halved", "Safety"),
+                ("fa-user-helmet-safety", "Site supervision"),
+                ("fa-clipboard-check", "Code awareness"),
+                ("fa-calculator", "Estimating basics"),
+                ("fa-calendar-days", "Project planning"),
+                ("fa-users", "Customer best practices"),
+            }
+            : new (string Icon, string Label)[]
+            {
+                ("fa-shield-halved", "Safety"),
+                ("fa-stethoscope", "Diagnostics"),
+                ("fa-snowflake", "Refrigerant basics"),
+                ("fa-bolt", "Electrical basics"),
+                ("fa-wind", "Airflow"),
+                ("fa-users", "Customer best practices"),
+            };
+    var jobsNote = isRoofing
+        ? "Only providers who pass the exam and verification can receive roofing jobs."
+        : isKitchen
+            ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs."
+            : isBathroom
+            ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs."
+            : isHandyman
+            ? "Only providers who pass the exam and verification can receive handyman jobs."
+            : isConstruction
+                ? "Only providers who pass the exam and verification can receive construction company jobs."
+                : "Only providers who pass the exam and verification can receive HVAC jobs.";
+}
+
+<div class="ob-head-block">
+
+    <h1>@Model.Title</h1>
+
+    <p>@Model.Subtitle</p>
+
+</div>
+
+<div class="prv-exam-stats">
+
+    <div class="prv-exam-stat">
+
+        <i class="fas fa-bullseye"></i>
+
+        <span>Passing score</span>
+
+        <strong>80%</strong>
+
+    </div>
+
+    <div class="prv-exam-stat">
+
+        <i class="fas fa-file-lines"></i>
+
+        <span>Questions</span>
+
+        <strong>20</strong>
+
+    </div>
+
+</div>
+
+<h2 class="prv-topics-heading">Topics covered</h2>
+
+<div class="prv-topics-grid">
+
+    @foreach (var t in topics)
+
+    {
+
+        <div class="prv-topic-card">
+
+            <i class="fas @t.Icon"></i>
+
+            <span>@t.Label</span>
+
+        </div>
+
+    }
+
+</div>
+
+<div class="prv-rule-banner">
+
+    <i class="fas fa-circle-info"></i>
+
+    <span>@jobsNote</span>
+
+</div>
+
+<form asp-action="ExamIntro" method="post" class="prv-exam-intro-actions">
+
+    @Html.AntiForgeryToken()
+
+    <button type="submit" name="action" value="start" class="ob-btn ob-btn-primary">Start exam</button>
+
+    <button type="submit" name="action" value="review" class="ob-btn ob-btn-outline">Review topics</button>
+
+    <a href="@Model.BackUrl" class="prv-save-later">Back</a>
+
+</form>
+

@@ -1,9 +1,88 @@
+@using IndorMvcApp.Services
 @{
     ViewData["Title"] = "Provider dashboard";
     Layout = "_Layout";
+    var status = ViewBag.Status as string ?? "Draft";
+    var statusLabel = ProviderDisplayLabels.FormatRegistrationStatus(status);
+    var statusClass = ProviderDisplayLabels.StatusBadgeClass(status);
+    var trades = ViewBag.Trades as IReadOnlyList<string> ?? Array.Empty<string>();
+    var services = ViewBag.Services as IReadOnlyList<string> ?? Array.Empty<string>();
+    var docs = ViewBag.Documents as IReadOnlyList<string> ?? Array.Empty<string>();
 }
-<div class="container py-4">
-    <h1 class="h4 fw-bold">@(ViewBag.CompanyName ?? "Provider")</h1>
-    <p class="text-muted">Status: @ViewBag.Status</p>
-    <p>Your provider profile is on file. Job requests will appear here when INDOR enables dispatch for your trade.</p>
+<link rel="stylesheet" href="~/css/proveedor-dashboard.css" asp-append-version="true" />
+<div class="container py-4 prv-dash">
+    <div class="prv-dash-header">
+        <div>
+            <h1 class="h4 fw-bold mb-1">@(ViewBag.CompanyName ?? "Provider")</h1>
+            <p class="text-muted mb-0 small">@ViewBag.ContactEmail</p>
+        </div>
+        <span class="prv-status @statusClass">@statusLabel</span>
+    </div>
+
+    @if (ViewBag.ExamScore is int score && ViewBag.ExamPassed is bool passed)
+    {
+        <div class="prv-dash-card">
+            <h2>Electrical exam</h2>
+            <p class="@(passed ? "text-success" : "text-danger") mb-0">
+                Score: @score% — @(passed ? "Passed" : "Not passed")
+            </p>
+        </div>
+    }
+
+    <div class="prv-dash-card">
+        <h2>Trades</h2>
+        @if (trades.Count == 0)
+        {
+            <p class="text-muted mb-0">No trades selected yet.</p>
+        }
+        else
+        {
+            <ul class="prv-dash-tags">
+                @foreach (var t in trades) { <li>@t</li> }
+            </ul>
+        }
+    </div>
+
+    <div class="prv-dash-card">
+        <h2>Services</h2>
+        @if (services.Count == 0)
+        {
+            <p class="text-muted mb-0">No services listed.</p>
+        }
+        else
+        {
+            <ul class="prv-dash-tags">
+                @foreach (var s in services) { <li>@s</li> }
+            </ul>
+        }
+    </div>
+
+    @if (docs.Count > 0)
+    {
+        <div class="prv-dash-card">
+            <h2>Documents on file</h2>
+            <ul class="prv-dash-list">
+                @foreach (var d in docs) { <li><i class="fas fa-check text-success"></i> @d</li> }
+            </ul>
+        </div>
+    }
+
+    <div class="prv-dash-card prv-dash-muted">
+        <h2>Job requests</h2>
+        <p class="mb-0">When INDOR enables dispatch for your trades and area, new job requests will appear here.</p>
+    </div>
+
+    @if (string.Equals(status, "Draft", StringComparison.OrdinalIgnoreCase))
+    {
+        <a asp-controller="ProviderRegistration" asp-action="Categories" class="btn btn-primary mt-2">
+            Continue registration
+        </a>
+    }
+
+    @if (string.Equals(status, "Rejected", StringComparison.OrdinalIgnoreCase))
+    {
+        <a asp-controller="ProviderRegistration" asp-action="Categories" class="btn btn-outline-primary mt-2">
+            Update profile
+        </a>
+    }
 </div>

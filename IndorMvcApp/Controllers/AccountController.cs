@@ -273,21 +273,30 @@ public class AccountController : Controller
             return RedirectToAction(nameof(LoginForm));
         }
 
-        if (await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
         if (!string.IsNullOrEmpty(user.RolUsuario))
         {
+            if (string.Equals(user.RolUsuario, "ProveedorServicios", StringComparison.OrdinalIgnoreCase))
+            {
+                return await RedirectProveedorAsync(user);
+            }
+
+            if (await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             return user.RolUsuario switch
             {
                 "Propietario" => RedirectToAction("AddProperty", "Propietario"),
                 "Realtor" => RedirectToAction("Dashboard", "Realtor"),
                 "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
-                "ProveedorServicios" => await RedirectProveedorAsync(user),
                 _ => RedirectToAction("Index", "Home")
             };
+        }
+
+        if (await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
+        {
+            return RedirectToAction("Index", "Home");
         }
 
         return RedirectToAction(nameof(SelectRole), new { userId = user.Id });

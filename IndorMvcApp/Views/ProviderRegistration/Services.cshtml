@@ -2,6 +2,12 @@
 @{
     var offerings = ViewBag.Offerings as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? [];
     var selected = ViewBag.SelectedIds as IList<string> ?? new List<string>();
+    var isHvac = ViewBag.IsHvac as bool? == true;
+    var isHandyman = ViewBag.IsHandyman as bool? == true;
+    var isConstruction = ViewBag.IsConstruction as bool? == true;
+    var isBathroom = ViewBag.IsBathroom as bool? == true;
+    var isKitchen = ViewBag.IsKitchen as bool? == true;
+    var isRoofing = ViewBag.IsRoofing as bool? == true;
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
@@ -10,16 +16,66 @@
 <form asp-action="Services" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
-    <div class="prv-chip-grid" data-chip-group>
+    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing)
+    {
+        <div class="prv-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? "Search roofing service" : isKitchen ? "Search kitchen service" : isBathroom ? "Search bathroom service" : isConstruction ? "Search construction work" : isHandyman ? "Search handyman service" : "Search HVAC service")" autocomplete="off" />
+        </div>
+    }
+    <div class="prv-chip-grid" data-chip-group id="serviceGrid">
         @foreach (var item in offerings)
         {
             var isOn = selected.Contains(item.Id, StringComparer.OrdinalIgnoreCase);
-            <label class="prv-chip @(isOn ? "is-selected" : "")">
+            <label class="prv-chip @(isOn ? "is-selected" : "")" data-label="@item.Label">
                 <input type="checkbox" name="serviceIds" value="@item.Id" @(isOn ? "checked" : "") />
                 <i class="fas @item.IconClass"></i>
                 <span>@item.Label</span>
             </label>
         }
     </div>
+    @if (isRoofing)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>You will only receive roofing jobs that match your selected specialties.</span>
+        </div>
+    }
+    else if (isKitchen)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>You can only receive kitchen remodeling jobs related to the services selected here.</span>
+        </div>
+    }
+    else if (isBathroom)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-circle-info"></i>
+            <span>Only choose services your business is trained and insured to perform.</span>
+        </div>
+    }
+    else if (isHandyman)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>INDOR rule: Handyman providers cannot perform HVAC, plumbing, or electrical work unless separately licensed and approved.</span>
+        </div>
+    }
+    else if (isConstruction)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>Only select work your company is licensed, insured, and qualified to perform.</span>
+        </div>
+    }
+    else if (isHvac)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-circle-info"></i>
+            <span>You will only receive HVAC jobs that match your approved specialties.</span>
+        </div>
+    }
     <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">Save and finish later</a>
 </form>

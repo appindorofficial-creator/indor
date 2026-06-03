@@ -4,6 +4,13 @@ public class ProviderRegistrationState
 {
     public const int TotalSteps = 6;
     public const string ElectricalCategoryId = "electrical";
+    public const string PlumbingCategoryId = "plumbing";
+    public const string HvacCategoryId = "hvac";
+    public const string HandymanCategoryId = "handyman";
+    public const string ConstructionCategoryId = "construction";
+    public const string BathroomCategoryId = "bathroom";
+    public const string KitchenCategoryId = "kitchen";
+    public const string RoofingCategoryId = "roofing";
     public const int ExamPassingPercent = 80;
 
     public List<string> SelectedCategoryIds { get; set; } = [];
@@ -33,10 +40,75 @@ public class ProviderRegistrationState
     public int ExamScorePercent { get; set; }
     public bool? ExamPassed { get; set; }
     public bool ProfileSubmitted { get; set; }
+    public bool SubmitConfirmed { get; set; }
+    public string BusinessAddress { get; set; } = "";
+    public string? EpaCertificationNumber { get; set; }
+    public bool BackgroundCheckConsent { get; set; }
+    public bool ExamIntroAcknowledged { get; set; }
+    public string ServiceDescription { get; set; } = "";
+    public bool IsInsured { get; set; }
+    public bool IsLicensed { get; set; }
+    public string TeamSize { get; set; } = "";
+
+    public string ServiceZipCodes { get; set; } = "";
+
+    public string ServiceZipCodesDisplay =>
+        !string.IsNullOrWhiteSpace(ServiceZipCodes)
+            ? ServiceZipCodes
+            : ZipOrNeighborhoods.Count > 0 ? string.Join(", ", ZipOrNeighborhoods) : "";
+
+    public bool IsSingleTrade =>
+        SelectedCategoryIds.Count == 1;
+
+    public string? PrimaryTradeId =>
+        SelectedCategoryIds.Count == 1 ? SelectedCategoryIds[0] : null;
+
+    public bool IsPlumbingOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(PlumbingCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsHvacOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(HvacCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsHandymanOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(HandymanCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsConstructionOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(ConstructionCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsBathroomOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(BathroomCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsKitchenOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(KitchenCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsRoofingOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(RoofingCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool UsesServicesFirstFlow => IsHvacOnly || IsHandymanOnly || IsBathroomOnly;
+
+    public bool UsesExamIntroFlow =>
+        IsHvacOnly || IsHandymanOnly || IsConstructionOnly || IsBathroomOnly || IsKitchenOnly || IsRoofingOnly;
+
+    public bool UsesBusinessBeforeServicesFlow =>
+        IsPlumbingOnly || IsConstructionOnly || IsKitchenOnly || IsRoofingOnly;
+
+    public bool UsesServicesBeforeExamIntro =>
+        IsConstructionOnly || IsKitchenOnly || IsRoofingOnly;
 
     public bool IsElectricianOnly =>
         SelectedCategoryIds.Count == 1 &&
         SelectedCategoryIds[0].Equals(ElectricalCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool SelectedIncludesElectrical =>
+        SelectedCategoryIds.Any(id =>
+            id.Equals(ElectricalCategoryId, StringComparison.OrdinalIgnoreCase));
 
     public string DisplayCompanyName =>
         !string.IsNullOrWhiteSpace(DbaName) ? DbaName :

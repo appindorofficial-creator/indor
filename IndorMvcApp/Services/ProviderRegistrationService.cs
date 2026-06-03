@@ -86,17 +86,148 @@ public class ProviderRegistrationService(
             : rows.Select(c => new OnboardingOption(c.Id, c.LabelEn, c.IconClass)).ToList();
     }
 
-    public async Task<IReadOnlyList<OnboardingOption>> GetServiceOfferingsAsync(CancellationToken cancellationToken = default)
+    public async Task<IReadOnlyList<OnboardingOption>> GetServiceOfferingsAsync(CancellationToken cancellationToken = default) =>
+        await GetServiceOfferingsForTradeAsync(cancellationToken);
+
+    public async Task<IReadOnlyList<OnboardingOption>> GetServiceOfferingsForTradeAsync(CancellationToken cancellationToken = default)
     {
+        var state = await GetAsync(cancellationToken);
+        var trade = state.PrimaryTradeId;
+        var plumbingIds = OnboardingCatalog.PlumbingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var hvacIds = OnboardingCatalog.HvacServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var handymanIds = OnboardingCatalog.HandymanServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var constructionIds = OnboardingCatalog.ConstructionServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var bathroomIds = OnboardingCatalog.BathroomServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var kitchenIds = OnboardingCatalog.KitchenServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var roofingIds = OnboardingCatalog.RoofingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
         var rows = await db.IndorProveedorOfertasCatalogo
             .AsNoTracking()
             .Where(o => o.Activo)
             .OrderBy(o => o.SortOrder)
             .ToListAsync(cancellationToken);
 
+        if (state.IsPlumbingOnly)
+        {
+            var plumbingRows = rows.Where(o => plumbingIds.Contains(o.Id)).ToList();
+            return plumbingRows.Count > 0
+                ? plumbingRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.PlumbingServiceOfferings;
+        }
+
+        if (state.IsHvacOnly)
+        {
+            var hvacRows = rows.Where(o => hvacIds.Contains(o.Id)).ToList();
+            return hvacRows.Count > 0
+                ? hvacRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.HvacServiceOfferings;
+        }
+
+        if (state.IsHandymanOnly)
+        {
+            var handymanRows = rows.Where(o => handymanIds.Contains(o.Id)).ToList();
+            return handymanRows.Count > 0
+                ? handymanRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.HandymanServiceOfferings;
+        }
+
+        if (state.IsConstructionOnly)
+        {
+            var constructionRows = rows.Where(o => constructionIds.Contains(o.Id)).ToList();
+            return constructionRows.Count > 0
+                ? constructionRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.ConstructionServiceOfferings;
+        }
+
+        if (state.IsBathroomOnly)
+        {
+            var bathroomRows = rows.Where(o => bathroomIds.Contains(o.Id)).ToList();
+            return bathroomRows.Count > 0
+                ? bathroomRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.BathroomServiceOfferings;
+        }
+
+        if (state.IsKitchenOnly)
+        {
+            var kitchenRows = rows.Where(o => kitchenIds.Contains(o.Id)).ToList();
+            return kitchenRows.Count > 0
+                ? kitchenRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.KitchenServiceOfferings;
+        }
+
+        if (state.IsRoofingOnly)
+        {
+            var roofingRows = rows.Where(o => roofingIds.Contains(o.Id)).ToList();
+            return roofingRows.Count > 0
+                ? roofingRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.RoofingServiceOfferings;
+        }
+
         return rows.Count == 0
             ? OnboardingCatalog.ServiceOfferings
             : rows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList();
+    }
+
+    public async Task<string?> GetPrimaryTradeLabelAsync(CancellationToken cancellationToken = default)
+    {
+        var state = await GetAsync(cancellationToken);
+        if (string.IsNullOrEmpty(state.PrimaryTradeId))
+        {
+            return null;
+        }
+
+        var cat = await db.IndorProveedorCategoriasCatalogo.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == state.PrimaryTradeId, cancellationToken);
+        return cat?.LabelEn ?? OnboardingCatalog.ProviderCategories
+            .FirstOrDefault(c => c.Id.Equals(state.PrimaryTradeId, StringComparison.OrdinalIgnoreCase))?.Label;
+    }
+
+    public async Task<string> ResolveTradeCodeAsync(ProviderRegistrationState? state = null, CancellationToken cancellationToken = default)
+    {
+        state ??= await GetAsync(cancellationToken);
+        if (state.IsPlumbingOnly)
+        {
+            return PlumbingExamCatalog.TradeCode;
+        }
+
+        if (state.IsHvacOnly)
+        {
+            return HvacExamCatalog.TradeCode;
+        }
+
+        if (state.IsHandymanOnly)
+        {
+            return HandymanExamCatalog.TradeCode;
+        }
+
+        if (state.IsConstructionOnly)
+        {
+            return ConstructionExamCatalog.TradeCode;
+        }
+
+        if (state.IsBathroomOnly)
+        {
+            return BathroomExamCatalog.TradeCode;
+        }
+
+        if (state.IsKitchenOnly)
+        {
+            return KitchenExamCatalog.TradeCode;
+        }
+
+        if (state.IsRoofingOnly)
+        {
+            return RoofingExamCatalog.TradeCode;
+        }
+
+        if (state.IsElectricianOnly || state.SelectedIncludesElectrical)
+        {
+            return ElectricalExamCatalog.Questions.FirstOrDefault() != null
+                ? "electrical"
+                : ProviderRegistrationState.ElectricalCategoryId;
+        }
+
+        return state.PrimaryTradeId ?? ProviderRegistrationState.ElectricalCategoryId;
     }
 
     public Task<int> GetExamPassingPercentAsync(CancellationToken cancellationToken = default) =>
@@ -107,7 +238,47 @@ public class ProviderRegistrationService(
         var count = await db.IndorProveedorExamPreguntas
             .AsNoTracking()
             .CountAsync(q => q.TradeCode == tradeCode && q.Activo, cancellationToken);
-        return count > 0 ? count : ElectricalExamCatalog.Questions.Count;
+        if (count > 0)
+        {
+            return count;
+        }
+
+        if (tradeCode.Equals(PlumbingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return PlumbingExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(HvacExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return HvacExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(HandymanExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return HandymanExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(ConstructionExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return ConstructionExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(BathroomExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return BathroomExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(KitchenExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return KitchenExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(RoofingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return RoofingExamCatalog.Questions.Count;
+        }
+
+        return ElectricalExamCatalog.Questions.Count;
     }
 
     public async Task<int> GetExamTotalPagesAsync(string tradeCode = ElectricalTrade, CancellationToken cancellationToken = default)
@@ -127,6 +298,41 @@ public class ProviderRegistrationService(
 
         if (dbQuestions.Count == 0)
         {
+            if (tradeCode.Equals(PlumbingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return PlumbingExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(HvacExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return HvacExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(HandymanExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return HandymanExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(ConstructionExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return ConstructionExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(BathroomExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return BathroomExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(KitchenExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return KitchenExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(RoofingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return RoofingExamCatalog.PageQuestions(page);
+            }
+
             return ElectricalExamCatalog.PageQuestions(page);
         }
 
@@ -155,7 +361,18 @@ public class ProviderRegistrationService(
 
         if (questions.Count == 0)
         {
-            questions = ElectricalExamCatalog.Questions
+            IReadOnlyList<ExamQuestion> fallback = tradeCode switch
+            {
+                _ when tradeCode.Equals(PlumbingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PlumbingExamCatalog.Questions,
+                _ when tradeCode.Equals(HvacExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => HvacExamCatalog.Questions,
+                _ when tradeCode.Equals(HandymanExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => HandymanExamCatalog.Questions,
+                _ when tradeCode.Equals(ConstructionExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => ConstructionExamCatalog.Questions,
+                _ when tradeCode.Equals(BathroomExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => BathroomExamCatalog.Questions,
+                _ when tradeCode.Equals(KitchenExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => KitchenExamCatalog.Questions,
+                _ when tradeCode.Equals(RoofingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => RoofingExamCatalog.Questions,
+                _ => ElectricalExamCatalog.Questions,
+            };
+            questions = fallback
                 .Select(q => new IndorProveedorExamPregunta
                 {
                     TradeCode = tradeCode,
@@ -260,12 +477,181 @@ public class ProviderRegistrationService(
     public async Task CompleteRegistrationAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default)
     {
         var proveedorId = await EnsureDraftAsync(cancellationToken);
-        var entity = await db.IndorProveedores.FirstAsync(p => p.Id == proveedorId, cancellationToken);
+        var entity = await db.IndorProveedores
+            .Include(p => p.Categorias)
+            .Include(p => p.Ofertas)
+            .FirstAsync(p => p.Id == proveedorId, cancellationToken);
+
         ApplyToEntity(entity, state, ProviderRegistrationState.TotalSteps);
-        entity.RegistrationStatus = ProviderRegistrationStatuses.Submitted;
+        SyncCategoriesOnEntity(entity, state.SelectedCategoryIds);
+        SyncOfertasOnEntity(entity, state.SelectedServiceIds);
+        entity.RegistrationStatus = ProviderRegistrationStatuses.PendingReview;
         entity.ProfileSubmittedUtc = DateTime.UtcNow;
         entity.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task SubmitApplicationAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default)
+    {
+        state.ProfileSubmitted = true;
+        state.SubmitConfirmed = true;
+        await SaveAsync(state, ProviderRegistrationState.TotalSteps, cancellationToken);
+        await CompleteRegistrationAsync(state, cancellationToken);
+    }
+
+    public async Task<bool> RequiresTradeExamAsync(
+        ProviderRegistrationState? state = null,
+        CancellationToken cancellationToken = default)
+    {
+        state ??= await GetAsync(cancellationToken);
+        var tradeId = state.PrimaryTradeId;
+        if (string.IsNullOrEmpty(tradeId))
+        {
+            return false;
+        }
+
+        var catalog = await db.IndorProveedorCategoriasCatalogo
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == tradeId, cancellationToken);
+
+        if (catalog != null)
+        {
+            return catalog.RequiresTradeExam;
+        }
+
+        return tradeId.Equals(ProviderRegistrationState.ElectricalCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.PlumbingCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.HvacCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.HandymanCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.ConstructionCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.BathroomCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.KitchenCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.RoofingCategoryId, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public async Task EnsureDocumentSlotsAsync(CancellationToken cancellationToken = default)
+    {
+        var proveedorId = await EnsureDraftAsync(cancellationToken);
+        var existing = await db.IndorProveedorDocumentos
+            .Where(d => d.ProveedorId == proveedorId)
+            .Select(d => d.DocumentType)
+            .ToListAsync(cancellationToken);
+
+        var existingSet = existing.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var trade = (await GetAsync(cancellationToken)).PrimaryTradeId;
+        foreach (var (type, _, required) in ProviderDocumentTypes.GetSlotsForTrade(trade))
+        {
+            if (existingSet.Contains(type))
+            {
+                continue;
+            }
+
+            db.IndorProveedorDocumentos.Add(new IndorProveedorDocumento
+            {
+                ProveedorId = proveedorId,
+                DocumentType = type,
+                Status = required ? "Required" : "Optional",
+            });
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<IReadOnlyList<ProviderDocumentSlot>> GetDocumentSlotsAsync(CancellationToken cancellationToken = default)
+    {
+        await EnsureDocumentSlotsAsync(cancellationToken);
+        var proveedorId = await ResolveProveedorIdAsync(cancellationToken);
+        if (proveedorId is not > 0)
+        {
+            return [];
+        }
+
+        var rows = await db.IndorProveedorDocumentos
+            .AsNoTracking()
+            .Where(d => d.ProveedorId == proveedorId)
+            .ToListAsync(cancellationToken);
+
+        var trade = (await GetAsync(cancellationToken)).PrimaryTradeId;
+        return ProviderDocumentTypes.GetSlotsForTrade(trade).Select(slot =>
+        {
+            var row = rows.FirstOrDefault(r =>
+                r.DocumentType.Equals(slot.Type, StringComparison.OrdinalIgnoreCase));
+            var uploaded = !string.IsNullOrWhiteSpace(row?.FileUrl);
+            var status = uploaded ? "Uploaded" : row?.Status ?? (slot.Required ? "Required" : "Optional");
+            var fileName = uploaded && row?.FileUrl != null
+                ? Path.GetFileName(row.FileUrl.TrimStart('/'))
+                : null;
+            return new ProviderDocumentSlot(
+                slot.Type,
+                slot.Label,
+                slot.Required,
+                status,
+                row?.FileUrl,
+                fileName);
+        }).ToList();
+    }
+
+    public async Task RegisterDocumentUploadAsync(
+        string documentType,
+        string relativeUrl,
+        CancellationToken cancellationToken = default)
+    {
+        var proveedorId = await EnsureDraftAsync(cancellationToken);
+        await EnsureDocumentSlotsAsync(cancellationToken);
+
+        var doc = await db.IndorProveedorDocumentos.FirstOrDefaultAsync(
+            d => d.ProveedorId == proveedorId &&
+                 d.DocumentType == documentType,
+            cancellationToken);
+
+        if (doc == null)
+        {
+            doc = new IndorProveedorDocumento
+            {
+                ProveedorId = proveedorId,
+                DocumentType = documentType,
+            };
+            db.IndorProveedorDocumentos.Add(doc);
+        }
+
+        doc.FileUrl = relativeUrl;
+        doc.Status = "Uploaded";
+        doc.UploadedUtc = DateTime.UtcNow;
+
+        if (documentType.Equals(ProviderDocumentTypes.Logo, StringComparison.OrdinalIgnoreCase))
+        {
+            var entity = await db.IndorProveedores.FirstAsync(p => p.Id == proveedorId, cancellationToken);
+            entity.LogoUploaded = true;
+            entity.FechaActualizacion = DateTime.UtcNow;
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<bool> HasRequiredDocumentsAsync(CancellationToken cancellationToken = default)
+    {
+        var slots = await GetDocumentSlotsAsync(cancellationToken);
+        return slots.Where(s => s.Required).All(s =>
+            string.Equals(s.Status, "Uploaded", StringComparison.OrdinalIgnoreCase) &&
+            !string.IsNullOrWhiteSpace(s.FileUrl));
+    }
+
+    public async Task<IndorProveedor?> GetProveedorForCurrentUserAsync(CancellationToken cancellationToken = default)
+    {
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return null;
+        }
+
+        return await db.IndorProveedores
+            .AsNoTracking()
+            .Include(p => p.Categorias)
+            .ThenInclude(c => c.Categoria)
+            .Include(p => p.Ofertas)
+            .ThenInclude(o => o.Oferta)
+            .Include(p => p.Documentos)
+            .FirstOrDefaultAsync(p => p.UserId == userId, cancellationToken);
     }
 
     private async Task<int> EnsureDraftAsync(CancellationToken cancellationToken)
@@ -407,6 +793,13 @@ public class ProviderRegistrationService(
         entity.YearsExperience = state.YearsExperience;
         entity.LanguagesJson = JsonSerializer.Serialize(state.Languages, JsonOptions);
         entity.LicenseNumber = state.LicenseNumber;
+        entity.EpaCertificationNumber = state.EpaCertificationNumber;
+        entity.BackgroundCheckConsent = state.BackgroundCheckConsent;
+        entity.ServiceDescription = state.ServiceDescription;
+        entity.IsInsured = state.IsInsured;
+        entity.IsLicensed = state.IsLicensed;
+        entity.TeamSize = state.TeamSize;
+        entity.BusinessAddress = state.BusinessAddress;
         entity.PrimaryCity = state.PrimaryCity;
         entity.TravelRadiusMiles = state.TravelRadiusMiles;
         entity.ZipNeighborhoodsJson = JsonSerializer.Serialize(state.ZipOrNeighborhoods, JsonOptions);
@@ -434,6 +827,13 @@ public class ProviderRegistrationService(
             Email = entity.Email ?? "",
             YearsExperience = entity.YearsExperience ?? "",
             LicenseNumber = entity.LicenseNumber,
+            EpaCertificationNumber = entity.EpaCertificationNumber,
+            BackgroundCheckConsent = entity.BackgroundCheckConsent,
+            ServiceDescription = entity.ServiceDescription ?? "",
+            IsInsured = entity.IsInsured,
+            IsLicensed = entity.IsLicensed,
+            TeamSize = entity.TeamSize ?? "",
+            BusinessAddress = entity.BusinessAddress ?? "",
             PrimaryCity = entity.PrimaryCity ?? "Charlotte, NC",
             TravelRadiusMiles = entity.TravelRadiusMiles,
             EmergencyService = entity.EmergencyService,
@@ -451,6 +851,7 @@ public class ProviderRegistrationService(
 
         state.Languages = DeserializeList(entity.LanguagesJson, ["English"]);
         state.ZipOrNeighborhoods = DeserializeList(entity.ZipNeighborhoodsJson, ["28202", "28203", "28205"]);
+        state.ServiceZipCodes = state.ServiceZipCodesDisplay;
         state.AvailableDays = DeserializeList(entity.AvailableDaysJson, ["Mon", "Tue", "Wed", "Thu", "Fri"]);
         state.JobSizes = DeserializeList(entity.JobSizesJson, ["small", "standard", "large"]);
 

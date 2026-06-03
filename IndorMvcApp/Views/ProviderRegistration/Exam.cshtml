@@ -2,20 +2,45 @@
 @{
     var examPage = (int)(ViewBag.ExamPage ?? 1);
     var totalPages = (int)(ViewBag.ExamTotalPages ?? 1);
+    var questionCount = (int)(ViewBag.ExamQuestionCount ?? 20);
     var questions = ViewBag.Questions as IReadOnlyList<IndorMvcApp.Models.ExamQuestion> ?? [];
     var answers = ViewBag.Answers as IDictionary<int, string> ?? new Dictionary<int, string>();
     var failedScore = ViewBag.ExamFailedScore as int?;
     var passing = (int)(ViewBag.PassingPercent ?? 80);
+    var tradeLabel = ViewBag.TradeLabel as string ?? "trade";
+    var qStart = (int)(ViewBag.QuestionRangeStart ?? 1);
+    var qEnd = (int)(ViewBag.QuestionRangeEnd ?? questionCount);
+    var isHvac = Model.State.IsHvacOnly;
+    var isHandyman = Model.State.IsHandymanOnly;
+    var isConstruction = Model.State.IsConstructionOnly;
+    var isBathroom = Model.State.IsBathroomOnly;
+    var isKitchen = Model.State.IsKitchenOnly;
+    var isRoofing = Model.State.IsRoofingOnly;
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
-    <p style="font-size:.85rem;color:#64748B">Page @examPage of @totalPages</p>
 </div>
 @if (failedScore.HasValue)
 {
     <div class="prv-exam-alert">You scored @failedScore%. You need @passing% to pass. Review your answers and try again.</div>
 }
+<div class="prv-exam-stats">
+    <div class="prv-exam-stat">
+        <i class="fas fa-bullseye"></i>
+        <span>Passing score</span>
+        <strong>@passing%</strong>
+    </div>
+    <div class="prv-exam-stat">
+        <i class="fas fa-file-circle-question"></i>
+        <span>Questions</span>
+        <strong>@questionCount</strong>
+    </div>
+</div>
+<p class="prv-exam-page-meta">
+    <span>Questions @qStart–@qEnd of @questionCount</span>
+    <span>Page @examPage of @totalPages</span>
+</p>
 <form asp-action="Exam" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" name="page" value="@examPage" />
@@ -23,7 +48,7 @@
     {
         var selected = answers.TryGetValue(q.Number, out var a) ? a : "";
         <div class="prv-exam-q">
-            <h3>@q.Number. @q.Text</h3>
+            <h3><span class="prv-q-num">@q.Number</span> @q.Text</h3>
             @for (var i = 0; i < q.Options.Count; i++)
             {
                 <div class="prv-exam-opt">
@@ -33,7 +58,25 @@
             }
         </div>
     }
-    <button type="submit" class="ob-btn ob-btn-primary">
-        @(examPage >= totalPages ? "Submit exam" : "Next page")
-    </button>
+    <div class="prv-rule-banner">
+        <i class="fas fa-circle-info"></i>
+        <span>@(isRoofing ? "Only providers who pass the exam and verification can receive roofing jobs." : isKitchen ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs." : isBathroom ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs." : isHandyman ? "Only providers who pass the exam and verification can receive handyman jobs." : isConstruction ? "Only providers who pass the exam and verification can receive construction company jobs." : isHvac ? "Only providers who pass the exam and verification can receive HVAC jobs." : "Only providers who pass the exam and verification can receive jobs.")</span>
+    </div>
+    @if (examPage >= totalPages && !isHandyman)
+    {
+        <p class="prv-exam-review-hint">Review your answers before submitting.</p>
+    }
+    @if (examPage >= totalPages && (isHandyman || isConstruction))
+    {
+        <p class="prv-exam-review-hint">@(isConstruction ? "Review your answers before submitting." : "Final questions before submission.")</p>
+    }
+    <div class="prv-exam-nav">
+        @if (!string.IsNullOrEmpty(Model.BackUrl))
+        {
+            <a href="@Model.BackUrl" class="ob-btn ob-btn-outline">Back</a>
+        }
+        <button type="submit" class="ob-btn ob-btn-primary">
+            @(examPage >= totalPages ? "Submit exam" : "Continue exam")
+        </button>
+    </div>
 </form>

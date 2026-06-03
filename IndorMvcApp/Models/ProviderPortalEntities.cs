@@ -84,6 +84,24 @@ public class IndorProveedor
     [MaxLength(80)]
     public string? LicenseNumber { get; set; }
 
+    [MaxLength(80)]
+    public string? EpaCertificationNumber { get; set; }
+
+    public bool BackgroundCheckConsent { get; set; }
+
+    [MaxLength(200)]
+    public string? ServiceDescription { get; set; }
+
+    public bool IsInsured { get; set; }
+
+    public bool IsLicensed { get; set; }
+
+    [MaxLength(40)]
+    public string? TeamSize { get; set; }
+
+    [MaxLength(300)]
+    public string? BusinessAddress { get; set; }
+
     [MaxLength(120)]
     public string? PrimaryCity { get; set; }
 

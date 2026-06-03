@@ -2,24 +2,38 @@
 @{
     var categories = ViewBag.Categories as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? [];
     var selected = ViewBag.SelectedIds as IList<string> ?? new List<string>();
+    var selectedId = selected.FirstOrDefault() ?? "";
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
-<form asp-action="Categories" method="post">
+<form asp-action="Categories" method="post" id="categoryForm">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
-    <div class="prv-chip-grid" data-chip-group>
+    <div class="prv-search-wrap">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="search" id="categorySearch" placeholder="Search provider type" autocomplete="off" />
+    </div>
+    <div class="prv-chip-grid prv-chip-grid--single" data-chip-group data-single-select="true" id="categoryGrid">
         @foreach (var cat in categories)
         {
-            var isOn = selected.Contains(cat.Id, StringComparer.OrdinalIgnoreCase);
-            <label class="prv-chip @(isOn ? "is-selected" : "")">
-                <input type="checkbox" name="categoryIds" value="@cat.Id" @(isOn ? "checked" : "") />
+            var isOn = selectedId.Equals(cat.Id, StringComparison.OrdinalIgnoreCase);
+            <label class="prv-chip prv-chip--radio @(isOn ? "is-selected" : "")" data-label="@cat.Label">
+                <input type="radio" name="categoryId" value="@cat.Id" @(isOn ? "checked" : "") />
                 <i class="fas @cat.IconClass"></i>
                 <span>@cat.Label</span>
+                @if (isOn)
+                {
+                    <i class="fas fa-circle-check prv-chip-check"></i>
+                }
             </label>
         }
     </div>
+    <div class="prv-rule-banner">
+        <i class="fas fa-circle-info"></i>
+        <span>Only one main trade can be selected. Additional work categories require separate INDOR approval.</span>
+    </div>
     <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">Save and finish later</a>
 </form>
