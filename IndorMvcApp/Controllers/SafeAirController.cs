@@ -2,6 +2,7 @@ using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
@@ -21,6 +22,8 @@ public class SafeAirController : Controller
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     private const long MaxFileSize = 10_000_000;
     private const int MaxFiles = 3;
+    private const decimal FilterSizeMinInches = 0.25m;
+    private const decimal FilterSizeMaxInches = 99.99m;
 
     public SafeAirController(
         AppDbContext db,
@@ -77,10 +80,10 @@ public class SafeAirController : Controller
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(SafeAirDetails), new { id = solicitud.Id });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            ModelState.AddModelError("",
-                "Could not start your Safe Air 365 request. Please ensure the Safe Air flow tables exist in the database and try again.");
+            _logger.LogError(ex, "Safe Air service start failed for microservicio {MicroservicioId}", model.MicroservicioId);
+            ModelState.AddModelError("", FormatSafeAirPersistenceError(ex, "start your Safe Air 365 request"));
             return View(BuildServiceViewModel(bundle.Value.Microservicio, bundle.Value.Landing, null, model));
         }
     }
@@ -165,10 +168,10 @@ public class SafeAirController : Controller
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(SafeAirSchedule), new { id = solicitud.Id });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            ModelState.AddModelError("",
-                "Could not save filter details. Please ensure the Safe Air flow tables exist in the database and try again.");
+            _logger.LogError(ex, "Safe Air details save failed for solicitud {SolicitudId}", model.SolicitudId);
+            ModelState.AddModelError("", FormatSafeAirPersistenceError(ex, "save filter details"));
             return View(model);
         }
     }
@@ -612,10 +615,48 @@ public class SafeAirController : Controller
             return;
         }
 
-        if (!decimal.TryParse(raw.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out _))
+        if (!decimal.TryParse(raw.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out var value))
         {
             ModelState.Remove(fieldName);
             ModelState.AddModelError(fieldName, "Please enter a number.");
+            return;
         }
+
+        if (value < FilterSizeMinInches || value > FilterSizeMaxInches)
+        {
+            ModelState.Remove(fieldName);
+            ModelState.AddModelError(fieldName,
+                $"Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between {FilterSizeMinInches} and {FilterSizeMaxInches}.");
+        }
+    }
+
+    private static string FormatSafeAirPersistenceError(Exception ex, string actionPhrase)
+    {
+        if (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return $"Could not {actionPhrase}. The Safe Air tables are missing in the database — run Scripts/CreateSafeAirFlowTables.sql on the server and try again.";
+        }
+
+        if (IsSqlOverflowOrTruncation(ex))
+        {
+            return "Could not save filter details. One or more dimensions are too large — use inches (typical filter: 20 x 25 x 1). Each side must be 99.99 or less.";
+        }
+
+        return $"Could not {actionPhrase}. Please check your entries and try again.";
+    }
+
+    private static bool IsSqlOverflowOrTruncation(Exception ex)
+    {
+        for (var current = ex; current != null; current = current.InnerException)
+        {
+            if (current is SqlException sql && (sql.Number == 8115 || sql.Number == 8152))
+            {
+                return true;
+            }
+        }
+
+        var message = ex.ToString();
+        return message.Contains("Arithmetic overflow", StringComparison.OrdinalIgnoreCase)
+               || message.Contains("would be truncated", StringComparison.OrdinalIgnoreCase);
     }
 }

@@ -28,7 +28,7 @@
     <h2 class="page-heading" style="font-size:1.1rem;">Filter details</h2>
     <p class="page-lead" style="margin-top:-8px;">Help us identify the right filter for your home.</p>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <div asp-validation-summary="All" class="validation-summary"></div>
 
     <form asp-action="SafeAirDetails" method="post" novalidate id="safeAirDetailsForm">
         <input type="hidden" asp-for="SolicitudId" />
@@ -163,11 +163,36 @@
         updateSections();
 
         const sizeInvalidMessage = 'Please enter a number.';
+        const sizeRangeMessage = 'Enter a realistic size in inches (e.g. 20 x 25 x 1). Each side must be between 0.25 and 99.99.';
         const sizePattern = /^\d+(\.\d+)?$/;
+        const sizeMin = 0.25;
+        const sizeMax = 99.99;
 
         function isValidFilterSize(value) {
             const trimmed = (value || '').trim();
-            return trimmed === '' || sizePattern.test(trimmed);
+            if (trimmed === '') {
+                return true;
+            }
+            if (!sizePattern.test(trimmed)) {
+                return false;
+            }
+            const n = parseFloat(trimmed);
+            return !Number.isNaN(n) && n >= sizeMin && n <= sizeMax;
+        }
+
+        function filterSizeErrorMessage(value) {
+            const trimmed = (value || '').trim();
+            if (trimmed === '') {
+                return '';
+            }
+            if (!sizePattern.test(trimmed)) {
+                return sizeInvalidMessage;
+            }
+            const n = parseFloat(trimmed);
+            if (Number.isNaN(n) || n < sizeMin || n > sizeMax) {
+                return sizeRangeMessage;
+            }
+            return '';
         }
 
         document.getElementById('safeAirDetailsForm').addEventListener('submit', function (e) {
@@ -181,12 +206,10 @@
 
             let firstInvalid = null;
             sizeInputs.querySelectorAll('.filter-size-input').forEach(function (input) {
-                input.setCustomValidity('');
-                if (!isValidFilterSize(input.value)) {
-                    input.setCustomValidity(sizeInvalidMessage);
-                    if (!firstInvalid) {
-                        firstInvalid = input;
-                    }
+                const msg = filterSizeErrorMessage(input.value);
+                input.setCustomValidity(msg);
+                if (msg && !firstInvalid) {
+                    firstInvalid = input;
                 }
             });
 

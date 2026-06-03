@@ -51,14 +51,24 @@
     .photo-upload-slot { position: relative; min-height: 120px; }
     .photo-upload {
         border: 2px dashed #CBD5E1; border-radius: 14px; padding: 14px 10px; text-align: center;
-        background: rgba(248,250,252,0.8); min-height: 120px; display: flex; flex-direction: column;
+        background: rgba(248,250,252,0.8); min-height: 100px; display: flex; flex-direction: column;
         align-items: center; justify-content: center; cursor: pointer; margin: 0;
+        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
     }
     .photo-upload.has-files { border-color: #0066CC; background: rgba(0,102,204,0.06); }
     .photo-upload i { color: #0066CC; font-size: 1.25rem; margin-bottom: 6px; pointer-events: none; }
     .photo-upload p { font-size: 0.68rem; color: #64748B; margin: 0; line-height: 1.35; pointer-events: none; }
     .photo-upload strong { pointer-events: none; }
-    .photo-input-hidden { display: none; }
+    .photo-camera-btn {
+        width: 100%; margin-top: 8px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC;
+        border-radius: 12px; padding: 10px 12px; font-weight: 700; font-size: 0.82rem; font-family: inherit;
+        cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .photo-input-sr-only {
+        position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+        overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; opacity: 0;
+    }
     .photo-selected-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
     .photo-selected-item {
         display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #0A2540;

@@ -41,13 +41,18 @@
             <span class="field-label">Add a photo of the filter or vent</span>
             <div class="photo-row">
                 <div class="photo-upload-slot">
-                    <input type="file" name="files" id="safeAirPhotos" class="photo-input-hidden"
-                           accept="image/jpeg,image/png,image/webp,image/heic,.jpg,.jpeg,.png,.webp,.heic" multiple />
-                    <label class="photo-upload" id="safeAirPhotoLabel" for="safeAirPhotos">
-                        <i class="fas fa-camera"></i>
+                    <input type="file" name="files" id="safeAirPhotos" class="photo-input-sr-only" multiple
+                           accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" tabindex="-1" aria-hidden="true" />
+                    <input type="file" id="safeAirCamera" class="photo-input-sr-only"
+                           accept="image/*" capture="environment" tabindex="-1" aria-hidden="true" />
+                    <div class="photo-upload" id="safeAirPhotoDropzone" role="button" tabindex="0" aria-label="Upload photos from gallery">
+                        <i class="fas fa-images"></i>
                         <p><strong>Upload photo</strong></p>
-                        <p>Tap to add (JPG, PNG)</p>
-                    </label>
+                        <p>Tap to add (JPG, PNG, HEIC)</p>
+                    </div>
+                    <button type="button" class="photo-camera-btn" id="safeAirCameraBtn">
+                        <i class="fas fa-camera"></i> Take photo
+                    </button>
                     <div class="photo-selected-list" id="safeAirPhotoList" hidden></div>
                 </div>
                 <div class="photo-example">
@@ -135,28 +140,53 @@
         initSingle('accessGroup', 'DetallesAcceso', '@Model.DetallesAcceso');
 
         const photoInput = document.getElementById('safeAirPhotos');
-        const photoLabel = document.getElementById('safeAirPhotoLabel');
+        const cameraInput = document.getElementById('safeAirCamera');
+        const photoDropzone = document.getElementById('safeAirPhotoDropzone');
+        const cameraBtn = document.getElementById('safeAirCameraBtn');
         const photoList = document.getElementById('safeAirPhotoList');
         const maxPhotos = 3;
+        let pendingPhotos = [];
 
-        function renderPhotoSelection(fileList) {
-            if (!photoList || !photoLabel) return;
-            const files = Array.from(fileList || []).filter(f => f && f.size > 0);
+        function syncPhotoInputFiles() {
+            if (!photoInput) return;
+            const dt = new DataTransfer();
+            pendingPhotos.slice(0, maxPhotos).forEach(function (file) {
+                dt.items.add(file);
+            });
+            photoInput.files = dt.files;
+        }
+
+        function mergePhotoFiles(newFiles) {
+            Array.from(newFiles || []).forEach(function (file) {
+                if (file && file.size > 0) {
+                    pendingPhotos.push(file);
+                }
+            });
+            if (pendingPhotos.length > maxPhotos) {
+                pendingPhotos = pendingPhotos.slice(0, maxPhotos);
+            }
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function renderPhotoSelection(files) {
+            if (!photoList || !photoDropzone) return;
+            const list = Array.from(files || []).filter(function (f) { return f && f.size > 0; });
             photoList.innerHTML = '';
-            if (files.length === 0) {
+            if (list.length === 0) {
                 photoList.hidden = true;
-                photoLabel.classList.remove('has-files');
+                photoDropzone.classList.remove('has-files');
                 return;
             }
-            photoLabel.classList.add('has-files');
+            photoDropzone.classList.add('has-files');
             photoList.hidden = false;
-            files.slice(0, maxPhotos).forEach(function (file, index) {
+            list.forEach(function (file, index) {
                 const row = document.createElement('div');
                 row.className = 'photo-selected-item';
                 const icon = document.createElement('i');
                 icon.className = 'fas fa-image';
                 row.appendChild(icon);
-                if (file.type && file.type.indexOf('image/') === 0) {
+                if (!file.type || file.type.indexOf('image/') === 0) {
                     const img = document.createElement('img');
                     img.className = 'photo-preview-thumb';
                     img.alt = 'Selected photo ' + (index + 1);
@@ -166,21 +196,40 @@
                     reader.readAsDataURL(file);
                 }
                 const name = document.createElement('span');
-                name.textContent = file.name;
+                name.textContent = file.name || ('Photo ' + (index + 1));
                 row.appendChild(name);
                 photoList.appendChild(row);
             });
-            if (files.length > maxPhotos) {
-                const warn = document.createElement('div');
-                warn.className = 'photo-selected-item';
-                warn.style.color = '#B45309';
-                warn.textContent = 'Only the first ' + maxPhotos + ' photos will be uploaded.';
-                photoList.appendChild(warn);
+        }
+
+        function openGallery() {
+            if (photoInput) {
+                photoInput.click();
             }
         }
 
         photoInput?.addEventListener('change', function () {
-            renderPhotoSelection(this.files);
+            mergePhotoFiles(this.files);
+            this.value = '';
+        });
+
+        cameraInput?.addEventListener('change', function () {
+            mergePhotoFiles(this.files);
+            this.value = '';
+        });
+
+        photoDropzone?.addEventListener('click', openGallery);
+        photoDropzone?.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                openGallery();
+            }
+        });
+
+        cameraBtn?.addEventListener('click', function () {
+            if (cameraInput) {
+                cameraInput.click();
+            }
         });
     })();
 </script>

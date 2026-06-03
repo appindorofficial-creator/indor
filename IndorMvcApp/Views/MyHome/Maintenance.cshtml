@@ -3,7 +3,7 @@
     ViewData["Title"] = "Maintenance";
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
-    ViewBag.MyHomeNav = "summary";
+    ViewBag.MyHomeNav = "maintenance";
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
 }
 <div class="hf-title-row">
