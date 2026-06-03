@@ -42,9 +42,8 @@ public static class WaterHeaterOpenAiHintsService
     {
         if (warranty == null) return;
 
+        // Warranty records may be estimated; do not pre-fill install year or last service from installation date.
         hints.Brand ??= ExtractBrand(warranty.SystemName, warranty.WarrantyProvider, warranty.CoverageDetails);
-        hints.InstallYear ??= warranty.InstallationDate?.Year;
-        hints.LastServiceDate ??= warranty.InstallationDate;
         hints.HeaterType ??= MapHeaterType(warranty.SystemName);
     }
 

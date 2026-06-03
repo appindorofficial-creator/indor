@@ -248,7 +248,7 @@
     opacity: 0.92;
 }
 
-.wl-login {
+.wl-secondary-cta {
     margin: 20px 0 0;
     padding: 0;
     text-align: center;
@@ -258,13 +258,13 @@
     line-height: 1.4;
 }
 
-.wl-login a {
+.wl-secondary-cta a {
     color: var(--wl-blue);
     font-weight: 700;
     text-decoration: none;
 }
 
-.wl-login a:active {
+.wl-secondary-cta a:active {
     opacity: 0.75;
 }
 

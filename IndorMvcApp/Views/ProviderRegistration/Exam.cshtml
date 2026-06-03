@@ -1,0 +1,39 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var examPage = (int)(ViewBag.ExamPage ?? 1);
+    var totalPages = (int)(ViewBag.ExamTotalPages ?? 1);
+    var questions = ViewBag.Questions as IReadOnlyList<IndorMvcApp.Models.ExamQuestion> ?? [];
+    var answers = ViewBag.Answers as IDictionary<int, string> ?? new Dictionary<int, string>();
+    var failedScore = ViewBag.ExamFailedScore as int?;
+    var passing = (int)(ViewBag.PassingPercent ?? 80);
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+    <p style="font-size:.85rem;color:#64748B">Page @examPage of @totalPages</p>
+</div>
+@if (failedScore.HasValue)
+{
+    <div class="prv-exam-alert">You scored @failedScore%. You need @passing% to pass. Review your answers and try again.</div>
+}
+<form asp-action="Exam" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="page" value="@examPage" />
+    @foreach (var q in questions)
+    {
+        var selected = answers.TryGetValue(q.Number, out var a) ? a : "";
+        <div class="prv-exam-q">
+            <h3>@q.Number. @q.Text</h3>
+            @for (var i = 0; i < q.Options.Count; i++)
+            {
+                <div class="prv-exam-opt">
+                    <input type="radio" name="answers[@q.Number]" id="q@(q.Number)_@i" value="@i" @(selected == i.ToString() ? "checked" : "") required />
+                    <label for="q@(q.Number)_@i">@q.Options[i]</label>
+                </div>
+            }
+        </div>
+    }
+    <button type="submit" class="ob-btn ob-btn-primary">
+        @(examPage >= totalPages ? "Submit exam" : "Next page")
+    </button>
+</form>

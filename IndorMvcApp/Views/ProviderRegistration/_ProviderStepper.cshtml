@@ -1,0 +1,8 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+<div class="prv-progress" aria-label="Provider registration progress">
+    @for (var i = 1; i <= Model.TotalSteps; i++)
+    {
+        var cls = i < Model.Step ? "is-done" : i == Model.Step ? "is-active" : "";
+        <div class="prv-progress-seg @cls"></div>
+    }
+</div>

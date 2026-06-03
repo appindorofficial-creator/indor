@@ -26,6 +26,8 @@ public class HomeQuickActionViewModel
     public string Icon { get; set; } = "fa-circle";
     public string Label { get; set; } = string.Empty;
     public string TargetSection { get; set; } = "section-services";
+    public string? ScrollTarget { get; set; }
+    public string? Url { get; set; }
     public string Tone { get; set; } = "blue";
 }
 

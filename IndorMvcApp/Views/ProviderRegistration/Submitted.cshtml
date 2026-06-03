@@ -1,0 +1,11 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+<div class="ob-success-wrap">
+    <div class="prv-success-icon"><i class="fas fa-check"></i></div>
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+    @if (Model.State.ExamPassed == true)
+    {
+        <p style="font-size:.9rem;color:#059669;font-weight:700">Exam score: @Model.State.ExamScorePercent%</p>
+    }
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="ob-btn ob-btn-primary">Go to dashboard</a>
+</div>

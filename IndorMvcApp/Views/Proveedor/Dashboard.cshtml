@@ -1,0 +1,9 @@
+@{
+    ViewData["Title"] = "Provider dashboard";
+    Layout = "_Layout";
+}
+<div class="container py-4">
+    <h1 class="h4 fw-bold">@(ViewBag.CompanyName ?? "Provider")</h1>
+    <p class="text-muted">Status: @ViewBag.Status</p>
+    <p>Your provider profile is on file. Job requests will appear here when INDOR enables dispatch for your trade.</p>
+</div>

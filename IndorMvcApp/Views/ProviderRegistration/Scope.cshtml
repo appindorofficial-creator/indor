@@ -1,0 +1,40 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var allowed = ViewBag.Allowed as IReadOnlyList<string> ?? [];
+    var disallowed = ViewBag.Disallowed as IReadOnlyList<string> ?? [];
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+<div class="prv-scope-block">
+    <h3>You may accept</h3>
+    <ul class="prv-scope-list prv-scope-list--allowed">
+        @foreach (var item in allowed)
+        {
+            <li><i class="fas fa-circle-check"></i> @item</li>
+        }
+    </ul>
+</div>
+<div class="prv-scope-block">
+    <h3>Not through INDOR electrical</h3>
+    <ul class="prv-scope-list prv-scope-list--disallowed">
+        @foreach (var item in disallowed)
+        {
+            <li><i class="fas fa-circle-xmark"></i> @item</li>
+        }
+    </ul>
+</div>
+<form asp-action="Scope" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+    <label class="prv-check-row">
+        <input type="checkbox" name="scopeTradeUnderstood" value="true" required />
+        <span>I understand the electrical scope limits for INDOR jobs.</span>
+    </label>
+    <label class="prv-check-row">
+        <input type="checkbox" name="scopeStandardsAgreed" value="true" required />
+        <span>I agree to INDOR provider standards and verification.</span>
+    </label>
+    <button type="submit" class="ob-btn ob-btn-primary">Submit qualification</button>
+</form>

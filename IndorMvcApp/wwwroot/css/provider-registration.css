@@ -1,0 +1,26 @@
+/* Provider registration — chips, exam, scope */
+.prv-page .ob-shell-inner { max-width: 430px; }
+.prv-chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.prv-chip { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 10px; border: 1.5px solid #E2E8F0; border-radius: 14px; background: #fff; cursor: pointer; text-align: center; transition: border-color .15s, background .15s, box-shadow .15s; }
+.prv-chip input { position: absolute; opacity: 0; pointer-events: none; }
+.prv-chip i { font-size: 1.25rem; color: #0066CC; }
+.prv-chip span { font-size: .78rem; font-weight: 700; color: #334155; line-height: 1.25; }
+.prv-chip.is-selected, .prv-chip:has(input:checked) { border-color: #0066CC; background: #E8F1FB; box-shadow: 0 4px 14px rgba(0,102,204,.12); }
+.prv-exam-q { background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.prv-exam-q h3 { font-size: .9rem; font-weight: 700; margin: 0 0 12px; color: #0F172A; line-height: 1.4; }
+.prv-exam-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #E2E8F0; cursor: pointer; }
+.prv-exam-opt:has(input:checked) { border-color: #0066CC; background: #E8F1FB; }
+.prv-exam-opt input { margin-top: 3px; }
+.prv-exam-opt label { font-size: .86rem; font-weight: 500; color: #334155; cursor: pointer; flex: 1; }
+.prv-exam-alert { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; border-radius: 12px; padding: 12px; margin-bottom: 16px; font-size: .88rem; }
+.prv-scope-block { margin-bottom: 18px; }
+.prv-scope-block h3 { font-size: .82rem; text-transform: uppercase; letter-spacing: .05em; color: #64748B; margin: 0 0 10px; }
+.prv-scope-list { list-style: none; margin: 0; padding: 0; }
+.prv-scope-list li { display: flex; align-items: center; gap: 10px; padding: 8px 0; font-size: .88rem; font-weight: 600; }
+.prv-scope-list--allowed li i { color: #059669; }
+.prv-scope-list--disallowed li i { color: #DC2626; }
+.prv-check-row { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; font-size: .86rem; line-height: 1.45; }
+.prv-progress { display: flex; gap: 5px; padding: 0 0 16px; }
+.prv-progress-seg { flex: 1; height: 4px; border-radius: 999px; background: #CBD5E1; }
+.prv-progress-seg.is-done, .prv-progress-seg.is-active { background: #0066CC; }
+.prv-success-icon { width: 72px; height: 72px; border-radius: 50%; background: #0066CC; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 2rem; margin: 0 auto 20px; }

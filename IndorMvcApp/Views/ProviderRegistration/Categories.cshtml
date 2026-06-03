@@ -1,0 +1,25 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var categories = ViewBag.Categories as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? [];
+    var selected = ViewBag.SelectedIds as IList<string> ?? new List<string>();
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+<form asp-action="Categories" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div class="prv-chip-grid" data-chip-group>
+        @foreach (var cat in categories)
+        {
+            var isOn = selected.Contains(cat.Id, StringComparer.OrdinalIgnoreCase);
+            <label class="prv-chip @(isOn ? "is-selected" : "")">
+                <input type="checkbox" name="categoryIds" value="@cat.Id" @(isOn ? "checked" : "") />
+                <i class="fas @cat.IconClass"></i>
+                <span>@cat.Label</span>
+            </label>
+        }
+    </div>
+    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+</form>

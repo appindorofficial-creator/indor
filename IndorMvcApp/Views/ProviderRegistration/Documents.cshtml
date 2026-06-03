@@ -1,0 +1,13 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+<form asp-action="Documents" method="post">
+    @Html.AntiForgeryToken()
+    <label class="prv-check-row">
+        <input type="checkbox" name="logoUploaded" value="true" />
+        <span>I will upload license and insurance documents when prompted.</span>
+    </label>
+    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+</form>

@@ -272,7 +272,8 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
+            position: relative;
             text-decoration: none;
             border: none;
         }
@@ -295,11 +296,18 @@
         .btn-content {
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
         }
 
         .btn-icon {
             font-size: 1.1rem;
+        }
+
+        .btn-arrow {
+            position: absolute;
+            right: 22px;
+            font-size: 1rem;
         }
 
         .signup-link {
@@ -383,9 +391,9 @@
                 <button type="submit" class="btn btn-primary">
                     <div class="btn-content">
                         <i class="fas fa-right-to-bracket btn-icon"></i>
-                        <span>Sign in</span>
+                        <span>Sign In</span>
                     </div>
-                    <i class="fas fa-chevron-right btn-icon"></i>
+                    <i class="fas fa-chevron-right btn-arrow" aria-hidden="true"></i>
                 </button>
 
                 <div class="signup-link">

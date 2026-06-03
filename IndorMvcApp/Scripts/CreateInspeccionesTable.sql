@@ -1,6 +1,7 @@
 -- =============================================================
 -- Tabla Inspecciones + seed con las 15 inspecciones del hogar.
--- Cada inspección usa su propia imagen: /inspeccion1..inspeccion15.jpeg
+-- Cada inspección usa la imagen cuyo CONTENIDO coincide con el servicio.
+-- Ver FixInspeccionesImagenUrl.sql para el inventario completo.
 -- Idempotente: puede ejecutarse varias veces.
 -- =============================================================
 
@@ -76,7 +77,7 @@ VALUES
  N'Identificamos fugas, presión inadecuada y posibles daños ocultos que pueden afectar la estructura del hogar.',
  N'Tuberías|Drenajes|Presión de agua',
  N'Cada 1–2 años', 99.00, N'USD', N'Desde', NULL, N'Inspeccionar plomería',
- N'/inspeccion4.jpeg', 4, 1),
+ N'/inspeccion5.jpeg', 4, 1),
 
 (N'Inspección HVAC',
  N'Aire limpio, sistema eficiente.',
@@ -84,7 +85,7 @@ VALUES
  N'Evaluamos el funcionamiento del sistema HVAC para asegurar eficiencia, ahorro energético y confort.',
  N'Unidad de aire|Filtros|Funcionamiento general',
  N'Cada 6–12 meses', 89.00, N'USD', N'Desde', NULL, N'Revisar aire acondicionado',
- N'/inspeccion5.jpeg', 5, 1),
+ N'/inspeccion8.jpeg', 5, 1),
 
 (N'Inspección Estructural',
  N'La base de tu inversión.',
@@ -108,7 +109,7 @@ VALUES
  N'Identificamos grietas, asentamientos o fallas que pueden comprometer la estabilidad del inmueble.',
  N'Base estructural|Grietas|Nivelación',
  N'Cada 2–3 años', 129.00, N'USD', N'Desde', NULL, N'Revisar fundación',
- N'/inspeccion8.jpeg', 8, 1),
+ N'/inspeccion9.jpeg', 8, 1),
 
 (N'Inspección de Moho y Humedad',
  N'Protege tu salud y tu hogar.',
@@ -116,7 +117,7 @@ VALUES
  N'Localizamos problemas de humedad que pueden generar moho y afectar tanto la estructura como la salud.',
  N'Detección de humedad|Evaluación de paredes|Identificación de moho',
  N'Cuando haya señales o cada 2 años', 119.00, N'USD', N'Desde', NULL, N'Detectar humedad',
- N'/inspeccion9.jpeg', 9, 1),
+ N'/inspeccion10.jpeg', 9, 1),
 
 (N'Inspección de Ventanas y Aislamiento',
  N'Ahorra energía sin darte cuenta.',
@@ -124,7 +125,7 @@ VALUES
  N'Revisamos ventanas y aislamiento para evitar fugas de energía y mejorar la eficiencia del hogar.',
  N'Sellado|Aislamiento|Pérdidas térmicas',
  N'Cada 2–3 años', 89.00, N'USD', N'Desde', NULL, N'Evaluar eficiencia',
- N'/inspeccion10.jpeg', 10, 1),
+ N'/inspeccion11.jpeg', 10, 1),
 
 (N'Inspección de Seguridad del Hogar',
  N'Tu familia primero.',
@@ -132,7 +133,7 @@ VALUES
  N'Evaluamos detectores de humo, riesgos potenciales y condiciones que puedan comprometer la seguridad del hogar.',
  N'Detectores|Riesgos básicos|Recomendaciones',
  N'Anual', 79.00, N'USD', N'Desde', NULL, N'Mejorar seguridad',
- N'/inspeccion11.jpeg', 11, 1),
+ N'/priority-smoke-detector.png', 11, 1),
 
 (N'Inspección con Reporte Profesional',
  N'Decisiones con datos reales.',
@@ -156,7 +157,7 @@ VALUES
  N'Identificamos daños ocultos que no son visibles a simple vista pero pueden generar costos altos.',
  N'Evaluación profunda|Detección de riesgos|Diagnóstico técnico',
  N'Cuando haya sospechas', 129.00, N'USD', N'Desde', NULL, N'Detectar problemas',
- N'/inspeccion14.jpeg', 14, 1),
+ N'/inspeccion4.jpeg', 14, 1),
 
 (N'Inspección Express',
  N'Rápido, claro y efectivo.',

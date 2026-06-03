@@ -67,7 +67,7 @@
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="InstallYear"><span class="hvac-label-num">5.</span>Approx. install year</label>
+                    <label class="hvac-label" asp-for="InstallYear"><span class="hvac-label-num">5.</span>Approx. install year (optional)</label>
                     <select asp-for="InstallYear" class="hvac-select">
                         <option value="">Select year</option>
                         @foreach (var year in Model.InstallYearOptions)
@@ -91,7 +91,7 @@
 
                 <div class="hvac-row hvac-row-stacked">
                     <label class="hvac-label" asp-for="LastServiceDate"><span class="hvac-label-num">7.</span>Last service date (optional)</label>
-                    <input asp-for="LastServiceDate" type="date" class="hvac-input" />
+                    <input asp-for="LastServiceDate" type="date" class="hvac-input" placeholder="Select date" />
                 </div>
             </div>
 

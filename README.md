@@ -1,6 +1,14 @@
 # indor
 
-ASP.NET Core MVC app for Indor — property management, services, microservices scheduling, and owner dashboard.
+ASP.NET Core MVC app for Indor — property management and home services.
+
+## Project
+
+| Project | Purpose |
+|---------|---------|
+| `IndorMvcApp` | Homeowner app (WebView / mobile-first) |
+
+Open `Indor.slnx` in Visual Studio.
 
 ## Setup
 

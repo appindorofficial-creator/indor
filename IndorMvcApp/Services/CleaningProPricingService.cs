@@ -25,14 +25,22 @@ public static class CleaningProPricingService
         new("InsideFridge", "Inside fridge cleaning", 20m, "fa-snowflake")
     ];
 
-    public static decimal GetHourlyRate(string? crewCode) => crewCode switch
+    public static string NormalizeCrewCode(string? crewCode) => crewCode?.Trim() switch
+    {
+        "1" or "One" => "One",
+        "2" or "Two" => "Two",
+        "3" or "Three" => "Three",
+        _ => string.IsNullOrWhiteSpace(crewCode) ? "Two" : crewCode!
+    };
+
+    public static decimal GetHourlyRate(string? crewCode) => NormalizeCrewCode(crewCode) switch
     {
         "Two" => 70m,
         "Three" => 105m,
         _ => 35m
     };
 
-    public static int GetCleanerCount(string? crewCode) => crewCode switch
+    public static int GetCleanerCount(string? crewCode) => NormalizeCrewCode(crewCode) switch
     {
         "Two" => 2,
         "Three" => 3,

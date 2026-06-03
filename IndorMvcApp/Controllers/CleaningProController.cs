@@ -115,9 +115,9 @@ public class CleaningProController : Controller
         try
         {
             solicitud.Frecuencia = model.Frecuencia;
-            solicitud.CantidadLimpiadores = model.CantidadLimpiadores;
+            solicitud.CantidadLimpiadores = CleaningProPricingService.NormalizeCrewCode(model.CantidadLimpiadores);
             solicitud.DireccionPropiedad = model.DireccionPropiedad.Trim();
-            solicitud.TarifaHoraria = CleaningProPricingService.GetHourlyRate(model.CantidadLimpiadores);
+            solicitud.TarifaHoraria = CleaningProPricingService.GetHourlyRate(solicitud.CantidadLimpiadores);
             solicitud.Estado = "SetupCompleted";
             solicitud.FechaActualizacion = DateTime.Now;
 
@@ -171,7 +171,7 @@ public class CleaningProController : Controller
         try
         {
             solicitud.Frecuencia = model.Frecuencia;
-            solicitud.CantidadLimpiadores = model.CantidadLimpiadores;
+            solicitud.CantidadLimpiadores = CleaningProPricingService.NormalizeCrewCode(model.CantidadLimpiadores);
             solicitud.AreasLimpieza = model.AreasLimpieza;
             solicitud.HorasEstimadas = model.HorasEstimadas;
             solicitud.AddonsSeleccionados = model.AddonsSeleccionados;
@@ -368,7 +368,8 @@ public class CleaningProController : Controller
         CleaningProCustomizeViewModel? posted = null)
     {
         var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? "OneTime";
-        var crew = posted?.CantidadLimpiadores ?? solicitud.CantidadLimpiadores ?? "Two";
+        var crew = CleaningProPricingService.NormalizeCrewCode(
+            posted?.CantidadLimpiadores ?? solicitud.CantidadLimpiadores);
         var hours = posted?.HorasEstimadas ?? solicitud.HorasEstimadas ?? 3m;
         var addons = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty;
         var breakdown = CleaningProPricingService.Calculate(crew, hours, addons);

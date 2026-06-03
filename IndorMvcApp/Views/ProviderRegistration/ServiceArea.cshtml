@@ -1,0 +1,28 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+<form asp-action="ServiceArea" method="post">
+    @Html.AntiForgeryToken()
+    <div class="ob-field">
+        <label class="ob-label">Primary city</label>
+        <input class="ob-control" name="PrimaryCity" value="@s.PrimaryCity" />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">Travel radius (miles)</label>
+        <input class="ob-control" name="TravelRadiusMiles" type="number" min="5" max="100" value="@s.TravelRadiusMiles" />
+    </div>
+    <label class="prv-check-row">
+        <input type="checkbox" name="EmergencyService" value="true" @(s.EmergencyService ? "checked" : "") />
+        <span>Emergency service</span>
+    </label>
+    <label class="prv-check-row">
+        <input type="checkbox" name="SameDayJobs" value="true" @(s.SameDayJobs ? "checked" : "") />
+        <span>Same-day jobs</span>
+    </label>
+    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+</form>

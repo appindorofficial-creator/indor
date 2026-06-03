@@ -34,13 +34,18 @@
 
                     <div class="ob-field">
                         <label asp-for="FullName" class="ob-label">Full Name</label>
-                        <input asp-for="FullName" class="ob-control" placeholder="John Smith" autocomplete="name" />
+                        <input asp-for="FullName" class="ob-control" placeholder="John Smith" autocomplete="name"
+                               inputmode="text" autocapitalize="words" spellcheck="false"
+                               aria-describedby="fullNameHint" />
+                        <span id="fullNameHint" class="ob-error" style="color:#64748B;font-size:.75rem;margin-top:4px;display:block">
+                            Use your first and last name (letters only).
+                        </span>
                         <span asp-validation-for="FullName" class="ob-error"></span>
                     </div>
 
                     <div class="ob-field">
                         <label asp-for="Email" class="ob-label">Email</label>
-                        <input asp-for="Email" type="email" class="ob-control" placeholder="john@email.com" autocomplete="email" />
+                        <input asp-for="Email" type="email" class="ob-control" placeholder="john@gmail.com" autocomplete="email" id="Email" />
                         <span asp-validation-for="Email" class="ob-error"></span>
                     </div>
 
@@ -48,8 +53,12 @@
                         <label asp-for="Telefono" class="ob-label">Phone <span style="font-weight:400;color:#94A3B8;">(Optional)</span></label>
                         <div class="ob-phone-row">
                             <div class="ob-phone-code"><span>🇺🇸</span> +1</div>
-                            <input asp-for="Telefono" type="tel" class="ob-control" placeholder="555 123 4567" autocomplete="tel" />
+                            <input asp-for="Telefono" type="tel" class="ob-control" placeholder="5551234567" autocomplete="tel"
+                                   inputmode="numeric" maxlength="10" pattern="[0-9]{10}" id="Telefono" />
                         </div>
+                        <span class="ob-error" style="color:#64748B;font-size:.75rem;margin-top:4px;display:block">
+                            Optional — if entered, use 10 digits (US).
+                        </span>
                         <span asp-validation-for="Telefono" class="ob-error"></span>
                     </div>
 
@@ -109,6 +118,71 @@
 
             input?.addEventListener('input', function () { validatePassword(this.value); });
             if (input?.value) validatePassword(input.value);
+
+            const fullName = document.getElementById('FullName');
+            const hasLetter = /\p{L}/u;
+            const onlyDigits = /^[\d\s]+$/;
+
+            function validateFullName(value) {
+                const v = (value || '').trim();
+                if (!v) return true;
+                if (!hasLetter.test(v) || onlyDigits.test(v)) return false;
+                const parts = v.split(/\s+/).filter(Boolean);
+                return parts.length >= 2 && parts.every(p => /\p{L}/u.test(p));
+            }
+
+            fullName?.addEventListener('input', function () {
+                this.setCustomValidity(validateFullName(this.value) ? '' : 'Enter your first and last name using letters.');
+            });
+            if (fullName?.value) fullName.dispatchEvent(new Event('input'));
+
+            const emailInput = document.getElementById('Email');
+            const blockedDomains = {
+                'hmail.com': 'gmail.com', 'hmial.com': 'gmail.com', 'gmial.com': 'gmail.com',
+                'gmal.com': 'gmail.com', 'gamil.com': 'gmail.com', 'gnail.com': 'gmail.com',
+                'hotmial.com': 'hotmail.com', 'outlok.com': 'outlook.com', 'yahooo.com': 'yahoo.com'
+            };
+            const emailPattern = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
+
+            function validateEmail(value) {
+                const v = (value || '').trim();
+                if (!v) return '';
+                if (!emailPattern.test(v)) return 'Enter a valid email address.';
+                const domain = v.split('@@')[1]?.toLowerCase();
+                if (domain && blockedDomains[domain]) {
+                    return 'Check your email address. Did you mean @@' + blockedDomains[domain] + '?';
+                }
+                return '';
+            }
+
+            emailInput?.addEventListener('input', function () {
+                this.setCustomValidity(validateEmail(this.value));
+            });
+            if (emailInput?.value) emailInput.dispatchEvent(new Event('input'));
+
+            const phoneInput = document.getElementById('Telefono');
+            function normalizePhoneDigits(value) {
+                let digits = (value || '').replace(/\D/g, '');
+                if (digits.length === 11 && digits[0] === '1') digits = digits.slice(1);
+                return digits.slice(0, 10);
+            }
+            function validatePhone(value) {
+                const digits = normalizePhoneDigits(value);
+                if (!digits) return true;
+                return digits.length === 10;
+            }
+            phoneInput?.addEventListener('input', function () {
+                const digits = normalizePhoneDigits(this.value);
+                if (this.value !== digits) this.value = digits;
+                this.setCustomValidity(validatePhone(digits) ? '' : 'Enter a valid 10-digit US phone number.');
+            });
+            phoneInput?.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const text = (e.clipboardData || window.clipboardData).getData('text');
+                this.value = normalizePhoneDigits(text);
+                this.dispatchEvent(new Event('input'));
+            });
+            if (phoneInput?.value) phoneInput.dispatchEvent(new Event('input'));
         })();
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

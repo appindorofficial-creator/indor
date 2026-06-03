@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Controllers;
@@ -12,15 +13,18 @@ public class AccountController : Controller
 {
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
+    private readonly RoleManager<IdentityRole> _roleManager;
     private readonly AppDbContext _db;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
+        RoleManager<IdentityRole> roleManager,
         AppDbContext db)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _roleManager = roleManager;
         _db = db;
     }
 
@@ -28,9 +32,21 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Register(RegisterViewModel model)
     {
+        if (!string.IsNullOrWhiteSpace(model.Email) && !ValidEmailAttribute.IsValidAddress(model.Email, out var emailError))
+        {
+            ModelState.AddModelError(nameof(model.Email), emailError ?? "Enter a valid email address.");
+        }
+
+        if (!UsPhoneOptionalAttribute.IsValidOptional(model.Telefono))
+        {
+            ModelState.AddModelError(nameof(model.Telefono),
+                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+        }
+
         if (ModelState.IsValid)
         {
             SplitFullName(model);
+            var phone = UsPhoneOptionalAttribute.NormalizeToStorage(model.Telefono);
 
             var user = new ApplicationUser
             {
@@ -38,9 +54,8 @@ public class AccountController : Controller
                 Email = model.Email,
                 Nombre = model.Nombre,
                 Apellidos = model.Apellidos,
-                Telefono = model.Telefono ?? string.Empty,
-                PhoneNumber = model.Telefono,
-                RolUsuario = "Propietario"
+                Telefono = phone ?? string.Empty,
+                PhoneNumber = phone,
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -48,7 +63,7 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("AddProperty", "Propietario");
+                return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
             }
 
             foreach (var error in result.Errors)
@@ -116,6 +131,12 @@ public class AccountController : Controller
     }
 
     [HttpGet]
+    public IActionResult AccessDenied()
+    {
+        return View();
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Login(string? returnUrl = null)
     {
         if (User.Identity?.IsAuthenticated == true)
@@ -151,8 +172,9 @@ public class AccountController : Controller
 
             if (result.Succeeded)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
-                return await RedirectAuthenticatedUserAsync(returnUrl, user);
+                // PasswordSignInAsync uses UserName (email at registration), not Email lookup.
+                // FindByEmailAsync throws if duplicate emails exist in AspNetUsers.
+                return await RedirectAuthenticatedUserAsync(returnUrl);
             }
 
             ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -173,18 +195,23 @@ public class AccountController : Controller
     [Authorize]
     public async Task<IActionResult> SelectRole(string userId)
     {
-        var user = await _userManager.FindByIdAsync(userId);
-        if (user == null)
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser == null || currentUser.Id != userId)
         {
-            return RedirectToAction("Index", "Home");
+            return Challenge();
         }
 
-        var model = new SelectRoleViewModel
+        if (!string.IsNullOrEmpty(currentUser.RolUsuario))
         {
-            UserId = userId
-        };
+            return await RedirectAuthenticatedUserAsync(user: currentUser);
+        }
 
-        return View(model);
+        ViewBag.OnboardingStep = 2;
+        ViewBag.OnboardingTitle = "Select your role";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
+        ViewBag.OnboardingShowBack = true;
+
+        return View(new SelectRoleViewModel { UserId = userId });
     }
 
     [HttpPost]
@@ -195,16 +222,41 @@ public class AccountController : Controller
         if (ModelState.IsValid && !string.IsNullOrEmpty(model.SelectedRole))
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user != null)
+            if (user == null || user.Id != _userManager.GetUserId(User))
             {
-                user.RolUsuario = model.SelectedRole;
-                await _userManager.UpdateAsync(user);
-
-                // Tras seleccionar el rol, llevar siempre a la captura de dirección de propiedad
-                return RedirectToAction("AddProperty", "Propietario");
+                return Challenge();
             }
+
+            user.RolUsuario = model.SelectedRole;
+            await _userManager.UpdateAsync(user);
+
+            if (!await _roleManager.RoleExistsAsync(model.SelectedRole))
+            {
+                await _roleManager.CreateAsync(new IdentityRole(model.SelectedRole));
+            }
+
+            if (!await _userManager.IsInRoleAsync(user, model.SelectedRole))
+            {
+                await _userManager.AddToRoleAsync(user, model.SelectedRole);
+            }
+
+            // Refresh cookie so [Authorize(Roles = ...)] sees the new role immediately.
+            await _signInManager.RefreshSignInAsync(user);
+
+            return model.SelectedRole switch
+            {
+                "Propietario" => RedirectToAction("AddProperty", "Propietario"),
+                "ProveedorServicios" => RedirectToAction("Categories", "ProviderRegistration"),
+                "Realtor" => RedirectToAction("Dashboard", "Realtor"),
+                "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
+                _ => RedirectToAction("Index", "Home")
+            };
         }
 
+        ViewBag.OnboardingStep = 2;
+        ViewBag.OnboardingTitle = "Select your role";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
+        ViewBag.OnboardingShowBack = true;
         return View(model);
     }
 
@@ -233,11 +285,26 @@ public class AccountController : Controller
                 "Propietario" => RedirectToAction("AddProperty", "Propietario"),
                 "Realtor" => RedirectToAction("Dashboard", "Realtor"),
                 "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
-                "ProveedorServicios" => RedirectToAction("Dashboard", "Proveedor"),
+                "ProveedorServicios" => await RedirectProveedorAsync(user),
                 _ => RedirectToAction("Index", "Home")
             };
         }
 
         return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
+    }
+
+    private async Task<IActionResult> RedirectProveedorAsync(ApplicationUser user)
+    {
+        var proveedor = await _db.IndorProveedores
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.UserId == user.Id);
+
+        if (proveedor == null ||
+            proveedor.RegistrationStatus == ProviderRegistrationStatuses.Draft)
+        {
+            return RedirectToAction("Categories", "ProviderRegistration");
+        }
+
+        return RedirectToAction("Dashboard", "Proveedor");
     }
 }

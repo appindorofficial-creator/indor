@@ -28,7 +28,7 @@
     <h2 class="page-heading" style="font-size:1.1rem;">Photos & schedule</h2>
     <p class="page-lead" style="margin-top:-8px;">Add context so the provider arrives prepared.</p>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <div asp-validation-summary="All" class="validation-summary"></div>
 
     <form asp-action="SafeAirSchedule" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="SolicitudId" />
@@ -40,12 +40,16 @@
         <div class="field-card">
             <span class="field-label">Add a photo of the filter or vent</span>
             <div class="photo-row">
-                <label class="photo-upload">
-                    <i class="fas fa-camera"></i>
-                    <p><strong>Upload photo</strong></p>
-                    <p>Tap to add</p>
-                    <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:8px;width:100%;font-size:0.68rem;" />
-                </label>
+                <div class="photo-upload-slot">
+                    <input type="file" name="files" id="safeAirPhotos" class="photo-input-hidden"
+                           accept="image/jpeg,image/png,image/webp,image/heic,.jpg,.jpeg,.png,.webp,.heic" multiple />
+                    <label class="photo-upload" id="safeAirPhotoLabel" for="safeAirPhotos">
+                        <i class="fas fa-camera"></i>
+                        <p><strong>Upload photo</strong></p>
+                        <p>Tap to add (JPG, PNG)</p>
+                    </label>
+                    <div class="photo-selected-list" id="safeAirPhotoList" hidden></div>
+                </div>
                 <div class="photo-example">
                     <span class="photo-badge">Good example</span>
                     <img src="@Url.Content("~/aire.jpeg")" alt="Ceiling vent example" loading="lazy" onerror="this.style.display='none'" />
@@ -129,6 +133,55 @@
 
         initSingle('timeGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
         initSingle('accessGroup', 'DetallesAcceso', '@Model.DetallesAcceso');
+
+        const photoInput = document.getElementById('safeAirPhotos');
+        const photoLabel = document.getElementById('safeAirPhotoLabel');
+        const photoList = document.getElementById('safeAirPhotoList');
+        const maxPhotos = 3;
+
+        function renderPhotoSelection(fileList) {
+            if (!photoList || !photoLabel) return;
+            const files = Array.from(fileList || []).filter(f => f && f.size > 0);
+            photoList.innerHTML = '';
+            if (files.length === 0) {
+                photoList.hidden = true;
+                photoLabel.classList.remove('has-files');
+                return;
+            }
+            photoLabel.classList.add('has-files');
+            photoList.hidden = false;
+            files.slice(0, maxPhotos).forEach(function (file, index) {
+                const row = document.createElement('div');
+                row.className = 'photo-selected-item';
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-image';
+                row.appendChild(icon);
+                if (file.type && file.type.indexOf('image/') === 0) {
+                    const img = document.createElement('img');
+                    img.className = 'photo-preview-thumb';
+                    img.alt = 'Selected photo ' + (index + 1);
+                    row.appendChild(img);
+                    const reader = new FileReader();
+                    reader.onload = function (e) { img.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                }
+                const name = document.createElement('span');
+                name.textContent = file.name;
+                row.appendChild(name);
+                photoList.appendChild(row);
+            });
+            if (files.length > maxPhotos) {
+                const warn = document.createElement('div');
+                warn.className = 'photo-selected-item';
+                warn.style.color = '#B45309';
+                warn.textContent = 'Only the first ' + maxPhotos + ' photos will be uploaded.';
+                photoList.appendChild(warn);
+            }
+        }
+
+        photoInput?.addEventListener('change', function () {
+            renderPhotoSelection(this.files);
+        });
     })();
 </script>
 </body>

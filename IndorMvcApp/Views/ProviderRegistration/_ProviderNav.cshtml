@@ -1,0 +1,9 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var backUrl = Model.BackUrl ?? Url.Action("Dashboard", "Proveedor");
+}
+<nav class="ob-nav">
+    <a href="@backUrl" class="ob-nav-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+    <span class="ob-nav-title">Provider setup</span>
+    <span class="ob-nav-spacer"></span>
+</nav>

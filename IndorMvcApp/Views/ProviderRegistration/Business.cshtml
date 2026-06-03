@@ -1,0 +1,57 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var s = Model.State;
+    var isCompany = !string.Equals(s.ProviderType, "Individual", StringComparison.OrdinalIgnoreCase);
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+<form asp-action="Business" method="post" class="ob-form-card">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+    <input type="hidden" name="ProviderType" id="providerType" value="@s.ProviderType" />
+    <div class="prv-chip-grid" style="grid-template-columns:1fr 1fr;margin-bottom:16px">
+        <button type="button" class="prv-chip @(isCompany ? "is-selected" : "")" data-provider-type="Company">Company</button>
+        <button type="button" class="prv-chip @(!isCompany ? "is-selected" : "")" data-provider-type="Individual">Individual</button>
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">Business / company name</label>
+        <input class="ob-control" name="BusinessName" value="@s.BusinessName" />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">DBA (optional)</label>
+        <input class="ob-control" name="DbaName" value="@s.DbaName" />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">Primary contact</label>
+        <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" required />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">Phone</label>
+        <input class="ob-control" name="Phone" value="@s.Phone" type="tel" />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">Email</label>
+        <input class="ob-control" name="Email" value="@s.Email" type="email" required />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">Years of experience</label>
+        <input class="ob-control" name="YearsExperience" value="@s.YearsExperience" placeholder="e.g. 5+" />
+    </div>
+    <div class="ob-field">
+        <label class="ob-label">License number (optional)</label>
+        <input class="ob-control" name="LicenseNumber" value="@s.LicenseNumber" />
+    </div>
+    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+</form>
+@section Scripts {
+<script>
+document.querySelectorAll('[data-provider-type]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.getElementById('providerType').value = btn.dataset.providerType;
+        document.querySelectorAll('[data-provider-type]').forEach(b => b.classList.toggle('is-selected', b === btn));
+    });
+});
+</script>
+}

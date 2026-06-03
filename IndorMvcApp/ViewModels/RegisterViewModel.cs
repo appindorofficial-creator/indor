@@ -1,22 +1,24 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
 public class RegisterViewModel
 {
     [Required(ErrorMessage = "Full name is required")]
+    [PersonName]
     [Display(Name = "Full name")]
     [StringLength(120)]
     public string FullName { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Email is required")]
-    [EmailAddress(ErrorMessage = "Invalid email address")]
+    [ValidEmail]
     [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
 
     [Display(Name = "Phone")]
-    [Phone(ErrorMessage = "Invalid phone number")]
-    [StringLength(20)]
+    [UsPhoneOptional]
+    [StringLength(10, ErrorMessage = "Phone must be 10 digits.")]
     public string? Telefono { get; set; }
 
     [Required(ErrorMessage = "Password is required")]

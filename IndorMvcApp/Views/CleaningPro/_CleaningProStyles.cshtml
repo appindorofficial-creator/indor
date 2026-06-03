@@ -1,5 +1,18 @@
 @await Html.PartialAsync("../Cleaning/_CleaningStyles")
 <style>
+    /* Bug #24: prevent iOS Safari zoom when tapping option buttons (needs 16px+ on controls). */
+    html {
+        -webkit-text-size-adjust: 100%;
+    }
+
+    .page-container {
+        touch-action: manipulation;
+    }
+
+    .page-container button {
+        touch-action: manipulation;
+        -webkit-tap-highlight-color: transparent;
+    }
     .cp-stepper { display: flex; align-items: center; gap: 0; margin-bottom: 18px; }
     .cp-stepper .line { flex: 1; height: 3px; background: #E5E7EB; border-radius: 2px; }
     .cp-stepper .line.done { background: #0066CC; }
@@ -11,15 +24,29 @@
     .section-num { font-size: 0.92rem; font-weight: 800; color: #0A2540; margin-bottom: 4px; }
     .section-hint { font-size: 0.78rem; color: #64748B; margin-bottom: 10px; }
     .freq-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
-    .freq-chip { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 10px 6px; cursor: pointer; text-align: center; position: relative; font-size: 0.68rem; font-weight: 700; color: #64748B; }
-    .freq-chip i { display: block; font-size: 0.95rem; margin-bottom: 6px; color: #94A3B8; }
+    .freq-chip {
+        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 10px 4px;
+        cursor: pointer; text-align: center; position: relative; overflow: hidden;
+        font-size: 16px; font-weight: 700; color: #64748B; line-height: 1.2;
+    }
+    .freq-chip > i {
+        display: block; font-size: 0.95rem; margin-bottom: 6px; color: #94A3B8;
+    }
     .freq-chip.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-    .freq-chip.active i { color: #0066CC; }
+    .freq-chip.active > i { color: #0066CC; }
     .crew-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-    .crew-card { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; position: relative; }
+    .crew-card {
+        border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 12px 8px;
+        cursor: pointer; text-align: center; position: relative; overflow: hidden; font-size: 16px;
+    }
     .crew-card.active { border-color: #0066CC; box-shadow: 0 0 0 1px rgba(0,102,204,0.12); }
-    .crew-card .check { position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; color: transparent; }
-    .crew-card.active .check { border-color: #0066CC; background: #0066CC; color: #FFF; }
+    .crew-card .check {
+        position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; border-radius: 50%;
+        border: 2px solid #CBD5E1; display: flex; align-items: center; justify-content: center; background: #FFF;
+    }
+    .crew-card .check i { font-size: 0.5rem; margin: 0; line-height: 1; color: transparent; }
+    .crew-card.active .check { border-color: #0066CC; background: #0066CC; }
+    .crew-card.active .check i { color: #FFF; }
     .crew-card i.main { font-size: 1.1rem; color: #0066CC; margin-bottom: 6px; }
     .crew-card strong { display: block; font-size: 0.82rem; margin-bottom: 2px; }
     .crew-card .rate { font-size: 0.72rem; color: #0066CC; font-weight: 700; }
@@ -27,24 +54,45 @@
     .trust-badge { display: flex; align-items: center; gap: 8px; font-size: 0.72rem; color: #64748B; margin-top: 10px; }
     .trust-badge i { color: #0066CC; }
     .area-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-    .area-chip { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 10px; cursor: pointer; position: relative; font-size: 0.76rem; font-weight: 700; color: #64748B; text-align: left; display: flex; align-items: center; gap: 8px; }
-    .area-chip i { color: #94A3B8; width: 16px; text-align: center; }
+    .area-chip {
+        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 10px;
+        cursor: pointer; position: relative; font-size: 16px; font-weight: 700; color: #64748B;
+        text-align: left; display: flex; align-items: center; gap: 8px; min-width: 0;
+    }
+    .area-chip > i { color: #94A3B8; width: 16px; text-align: center; flex-shrink: 0; font-size: 0.95rem; }
     .area-chip.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-    .area-chip.active i { color: #0066CC; }
-    .area-chip .check { margin-left: auto; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 0.5rem; color: transparent; flex-shrink: 0; }
-    .area-chip.active .check { border-color: #0066CC; background: #0066CC; color: #FFF; }
-    .hours-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .hour-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 700; font-size: 0.82rem; color: #64748B; cursor: pointer; text-align: center; }
+    .area-chip.active > i { color: #0066CC; }
+    .area-chip .check {
+        margin-left: auto; width: 16px; height: 16px; border-radius: 50%; border: 2px solid #CBD5E1;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #FFF;
+    }
+    .area-chip .check i { font-size: 0.5rem; margin: 0; line-height: 1; color: transparent; }
+    .area-chip.active .check { border-color: #0066CC; background: #0066CC; }
+    .area-chip.active .check i { color: #FFF; }
+    .hours-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .hour-btn {
+        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px;
+        font-weight: 700; font-size: 16px; color: #64748B; cursor: pointer; text-align: center;
+    }
     .hour-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
     .summary-bar { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 12px; padding: 12px 14px; margin-bottom: 12px; font-size: 0.78rem; font-weight: 600; color: #0A2540; text-align: center; }
     .addon-grid { display: flex; flex-direction: column; gap: 8px; }
-    .addon-row { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; text-align: left; width: 100%; }
+    .addon-row {
+        border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 12px; padding: 12px 14px;
+        display: flex; align-items: center; gap: 10px; cursor: pointer; text-align: left; width: 100%;
+        font-size: 16px;
+    }
     .addon-row.active { border-color: #0066CC; background: rgba(0,102,204,0.06); }
     .addon-row i.main { width: 32px; height: 32px; border-radius: 8px; background: rgba(0,102,204,0.1); color: #0066CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
     .addon-row .copy { flex: 1; font-size: 0.82rem; font-weight: 600; }
     .addon-row .price { font-weight: 700; color: #0066CC; font-size: 0.82rem; }
-    .addon-row .check { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #CBD5E1; display: flex; align-items: center; justify-content: center; font-size: 0.55rem; color: transparent; flex-shrink: 0; }
-    .addon-row.active .check { border-color: #0066CC; background: #0066CC; color: #FFF; }
+    .addon-row .check {
+        width: 18px; height: 18px; border-radius: 50%; border: 2px solid #CBD5E1;
+        display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: #FFF;
+    }
+    .addon-row .check i { font-size: 0.55rem; margin: 0; line-height: 1; color: transparent; }
+    .addon-row.active .check { border-color: #0066CC; background: #0066CC; }
+    .addon-row.active .check i { color: #FFF; }
     .review-card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
     .review-card-head h3 { font-size: 0.88rem; font-weight: 800; margin: 0; }
     .edit-link { font-size: 0.72rem; font-weight: 700; color: #0066CC; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }

@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,16 +16,22 @@ public class SafeAirController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly ILogger<SafeAirController> _logger;
 
-    private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
+    private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     private const long MaxFileSize = 10_000_000;
     private const int MaxFiles = 3;
 
-    public SafeAirController(AppDbContext db, UserManager<ApplicationUser> userManager, IWebHostEnvironment env)
+    public SafeAirController(
+        AppDbContext db,
+        UserManager<ApplicationUser> userManager,
+        IWebHostEnvironment env,
+        ILogger<SafeAirController> logger)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _logger = logger;
     }
 
     [HttpGet]
@@ -129,6 +136,13 @@ public class SafeAirController : Controller
             ModelState.Remove(nameof(model.ProveedorFiltro));
         }
 
+        if (!model.FiltroTamanioDesconocido)
+        {
+            ValidateFilterSizeFormValue(Request.Form["FiltroAncho"].ToString(), nameof(model.FiltroAncho));
+            ValidateFilterSizeFormValue(Request.Form["FiltroAlto"].ToString(), nameof(model.FiltroAlto));
+            ValidateFilterSizeFormValue(Request.Form["FiltroProfundidad"].ToString(), nameof(model.FiltroProfundidad));
+        }
+
         if (!ModelState.IsValid)
         {
             return View(model);
@@ -174,7 +188,7 @@ public class SafeAirController : Controller
     public async Task<IActionResult> SafeAirSchedule(
         SafeAirScheduleViewModel model,
         string? action,
-        List<IFormFile>? files)
+        [FromForm] List<IFormFile>? files)
     {
         var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId, includeArchivos: true);
         if (solicitud == null) return NotFound();
@@ -184,10 +198,20 @@ public class SafeAirController : Controller
             return RedirectToAction(nameof(SafeAirDetails), new { id = solicitud.Id });
         }
 
+        var userId = RequireUserId();
+        if (string.IsNullOrEmpty(userId))
+        {
+            return RedirectToAction("LoginForm", "Account");
+        }
+
+        if (files != null && files.Count > 0)
+        {
+            await SaveFilesAsync(solicitud, userId, files);
+        }
+
         if (!ModelState.IsValid)
         {
-            model.ArchivosExistentes = MapExistingFiles(solicitud);
-            return View(model);
+            return View(MergeScheduleViewModel(solicitud, model));
         }
 
         try
@@ -204,27 +228,17 @@ public class SafeAirController : Controller
                 solicitud.FechaProximoRecordatorio = DateTime.Today.AddMonths(3);
             }
 
-            if (files != null && files.Count > 0)
-            {
-                await SaveFilesAsync(solicitud, RequireUserId()!, files);
-                if (!ModelState.IsValid)
-                {
-                    model.ArchivosExistentes = MapExistingFiles(solicitud);
-                    return View(model);
-                }
-            }
-
             await UpsertProgramacionAsync(solicitud);
             await _db.SaveChangesAsync();
 
             return RedirectToAction(nameof(SafeAirConfirmed), new { id = solicitud.Id });
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            _logger.LogError(ex, "SafeAir schedule confirm failed for solicitud {SolicitudId}", solicitud.Id);
             ModelState.AddModelError("",
-                "Could not confirm your request. Please ensure the Safe Air flow tables exist in the database and try again.");
-            model.ArchivosExistentes = MapExistingFiles(solicitud);
-            return View(model);
+                "Could not confirm your request. Please try again. If uploading photos, use JPG or PNG under 10 MB each.");
+            return View(MergeScheduleViewModel(solicitud, model));
         }
     }
 
@@ -329,8 +343,26 @@ public class SafeAirController : Controller
         return textItems.Select((text, index) => new SafeAirFeatureItemViewModel
         {
             Text = text,
-            Icon = index < iconItems.Length ? iconItems[index] : "fa-check"
+            Icon = NormalizeFeatureIcon(index < iconItems.Length ? iconItems[index] : null)
         }).ToList();
+    }
+
+    private static string NormalizeFeatureIcon(string? icon)
+    {
+        var value = (icon ?? string.Empty).Trim();
+        if (string.IsNullOrEmpty(value))
+        {
+            return "fa-check";
+        }
+
+        if (!value.StartsWith("fa-", StringComparison.Ordinal))
+        {
+            value = $"fa-{value}";
+        }
+
+        return value.Equals("fa-user-hard-hat", StringComparison.OrdinalIgnoreCase)
+            ? "fa-screwdriver-wrench"
+            : value;
     }
 
     private static string? ResolveImageUrl(string? url) =>
@@ -425,6 +457,15 @@ public class SafeAirController : Controller
             ArchivosExistentes = MapExistingFiles(solicitud)
         };
 
+    private SafeAirScheduleViewModel MergeScheduleViewModel(SolicitudSafeAir solicitud, SafeAirScheduleViewModel posted)
+    {
+        var vm = BuildScheduleViewModel(solicitud);
+        vm.VentanaTiempo = posted.VentanaTiempo;
+        vm.DetallesAcceso = posted.DetallesAcceso;
+        vm.NotasAcceso = posted.NotasAcceso;
+        return vm;
+    }
+
     private static List<ExistingSafeAirFileViewModel> MapExistingFiles(SolicitudSafeAir solicitud) =>
         solicitud.Archivos
             .OrderByDescending(a => a.FechaSubida)
@@ -456,10 +497,23 @@ public class SafeAirController : Controller
         foreach (var file in incoming)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
-            if (!AllowedExtensions.Contains(ext))
+            if (string.IsNullOrEmpty(ext)
+                && file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                ext = ".jpg";
+            }
+
+            var allowedType = AllowedExtensions.Contains(ext)
+                || file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase);
+            if (!allowedType)
             {
                 ModelState.AddModelError("", $"File type not allowed: {file.FileName}. Use JPG or PNG.");
                 continue;
+            }
+
+            if (!AllowedExtensions.Contains(ext))
+            {
+                ext = ".jpg";
             }
 
             if (file.Length > MaxFileSize)
@@ -549,5 +603,19 @@ public class SafeAirController : Controller
         }
 
         return string.Join(" | ", parts);
+    }
+
+    private void ValidateFilterSizeFormValue(string raw, string fieldName)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return;
+        }
+
+        if (!decimal.TryParse(raw.Trim(), NumberStyles.Number, CultureInfo.InvariantCulture, out _))
+        {
+            ModelState.Remove(fieldName);
+            ModelState.AddModelError(fieldName, "Please enter a number.");
+        }
     }
 }

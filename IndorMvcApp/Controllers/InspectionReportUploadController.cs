@@ -53,8 +53,8 @@ public class InspectionReportUploadController : Controller
         {
             PropiedadId = propiedad.Id,
             Address = info?.FormattedAddress ?? propiedad.Direccion ?? "—",
-            Title = pending?.Title ?? "Annual Home Inspection Report",
-            InspectionDate = pending?.InspectionDate ?? DateTime.Today,
+            Title = pending?.Title ?? string.Empty,
+            InspectionDate = pending?.InspectionDate,
             Category = pending?.Category ?? "Inspections",
             Notes = pending?.Notes,
             SelectedFileName = pending?.OriginalFileName,

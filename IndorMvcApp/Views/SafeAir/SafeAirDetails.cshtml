@@ -30,7 +30,7 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="SafeAirDetails" method="post">
+    <form asp-action="SafeAirDetails" method="post" novalidate id="safeAirDetailsForm">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="TipoNecesidad" id="TipoNecesidad" />
@@ -63,17 +63,17 @@
             <div class="size-row" id="sizeInputs">
                 <div class="size-field">
                     <label>Width (in)</label>
-                    <input asp-for="FiltroAncho" type="number" step="0.1" min="0" placeholder="20" />
+                    <input asp-for="FiltroAncho" type="text" inputmode="decimal" autocomplete="off" class="filter-size-input" placeholder="20" />
                 </div>
                 <span class="size-sep">x</span>
                 <div class="size-field">
                     <label>Height (in)</label>
-                    <input asp-for="FiltroAlto" type="number" step="0.1" min="0" placeholder="25" />
+                    <input asp-for="FiltroAlto" type="text" inputmode="decimal" autocomplete="off" class="filter-size-input" placeholder="25" />
                 </div>
                 <span class="size-sep">x</span>
                 <div class="size-field">
                     <label>Depth (in)</label>
-                    <input asp-for="FiltroProfundidad" type="number" step="0.1" min="0" placeholder="1" />
+                    <input asp-for="FiltroProfundidad" type="text" inputmode="decimal" autocomplete="off" class="filter-size-input" placeholder="1" />
                 </div>
             </div>
             <button type="button" class="link-btn" id="unknownSizeBtn">I don't know</button>
@@ -161,6 +161,40 @@
         initSingle('locationGroup', '.location-tile', 'UbicacionFiltro', '@Model.UbicacionFiltro');
         initSingle('providerGroup', '.provider-card', 'ProveedorFiltro', '@Model.ProveedorFiltro');
         updateSections();
+
+        const sizeInvalidMessage = 'Please enter a number.';
+        const sizePattern = /^\d+(\.\d+)?$/;
+
+        function isValidFilterSize(value) {
+            const trimmed = (value || '').trim();
+            return trimmed === '' || sizePattern.test(trimmed);
+        }
+
+        document.getElementById('safeAirDetailsForm').addEventListener('submit', function (e) {
+            const submitter = e.submitter;
+            if (submitter && submitter.value === 'back') {
+                return;
+            }
+            if (unknownHidden.value === 'true') {
+                return;
+            }
+
+            let firstInvalid = null;
+            sizeInputs.querySelectorAll('.filter-size-input').forEach(function (input) {
+                input.setCustomValidity('');
+                if (!isValidFilterSize(input.value)) {
+                    input.setCustomValidity(sizeInvalidMessage);
+                    if (!firstInvalid) {
+                        firstInvalid = input;
+                    }
+                }
+            });
+
+            if (firstInvalid) {
+                e.preventDefault();
+                firstInvalid.reportValidity();
+            }
+        });
     })();
 </script>
 </body>

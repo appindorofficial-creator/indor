@@ -13,12 +13,12 @@ public class UploadInspectionReportViewModel
     [Required(ErrorMessage = "Enter a document title.")]
     [MaxLength(200)]
     [Display(Name = "Document title")]
-    public string Title { get; set; } = "Annual Home Inspection Report";
+    public string Title { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Select an inspection date.")]
     [DataType(DataType.Date)]
     [Display(Name = "Inspection date")]
-    public DateTime? InspectionDate { get; set; } = DateTime.Today;
+    public DateTime? InspectionDate { get; set; }
 
     [Required(ErrorMessage = "Select a category.")]
     [MaxLength(40)]

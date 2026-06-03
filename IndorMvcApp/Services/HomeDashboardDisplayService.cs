@@ -40,7 +40,7 @@ public static class HomeDashboardDisplayService
             SqftLabel = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : null,
             HouseFactsUrl = $"{url.Action("Index", "Home")}#section-myhome",
             NotificationCount = notificationCount,
-            QuickActions = BuildQuickActions(),
+            QuickActions = BuildQuickActions(propiedad.Id, url),
             TodayTasks = BuildTodayTasks(propiedad.Id, hvacRecord, waterHeaterRecord, documentos, mantenimiento, url),
             UpcomingSchedule = BuildSchedule(mantenimiento),
             RecentDocuments = BuildDocuments(propiedad.Id, documentos, url),
@@ -57,7 +57,7 @@ public static class HomeDashboardDisplayService
             UserFirstName = FirstName(user),
             Greeting = GreetingForHour(DateTime.Now.Hour),
             HasProperty = false,
-            QuickActions = BuildQuickActions()
+            QuickActions = BuildQuickActions(null, null)
         };
     }
 
@@ -86,7 +86,7 @@ public static class HomeDashboardDisplayService
                 : null,
             SqftLabel = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : null,
             HouseFactsUrl = $"{url.Action("Index", "Home")}#section-myhome",
-            QuickActions = BuildQuickActions(),
+            QuickActions = BuildQuickActions(propiedad.Id, url),
             TodayTasks =
             [
                 new HomeTodayTaskViewModel
@@ -126,13 +126,42 @@ public static class HomeDashboardDisplayService
             _ => "Good evening"
         };
 
-    private static List<HomeQuickActionViewModel> BuildQuickActions() =>
-    [
-        new() { Icon = "fa-screwdriver-wrench", Label = "Request Service", TargetSection = "section-services" },
-        new() { Icon = "fa-house-chimney", Label = "Home Maintenance", TargetSection = "section-schedule" },
-        new() { Icon = "fa-triangle-exclamation", Label = "Emergency Help", TargetSection = "section-services", Tone = "red" },
-        new() { Icon = "fa-file-lines", Label = "Documents", TargetSection = "section-myhome" }
-    ];
+    private static List<HomeQuickActionViewModel> BuildQuickActions(int? propiedadId, IUrlHelper? url)
+    {
+        var maintenanceUrl = propiedadId.HasValue && url != null
+            ? url.Action("Maintenance", "MyHome", new { id = propiedadId.Value })
+            : null;
+        var documentsUrl = propiedadId.HasValue && url != null
+            ? url.Action("Documents", "MyHome", new { id = propiedadId.Value })
+            : null;
+
+        return
+        [
+            new() { Icon = "fa-screwdriver-wrench", Label = "Request Service", TargetSection = "section-services" },
+            new()
+            {
+                Icon = "fa-house-chimney",
+                Label = "Home Maintenance",
+                TargetSection = "section-myhome",
+                Url = maintenanceUrl
+            },
+            new()
+            {
+                Icon = "fa-triangle-exclamation",
+                Label = "Emergency Help",
+                TargetSection = "section-services",
+                ScrollTarget = "emergency-services",
+                Tone = "red"
+            },
+            new()
+            {
+                Icon = "fa-file-lines",
+                Label = "Documents",
+                TargetSection = "section-myhome",
+                Url = documentsUrl
+            }
+        ];
+    }
 
     private static List<HomeTodayTaskViewModel> BuildTodayTasks(
         int propiedadId,
@@ -189,7 +218,7 @@ public static class HomeDashboardDisplayService
                 Title = "Review this month's reminders",
                 Subtitle = $"{dueSoon} task{(dueSoon == 1 ? "" : "s")} • Due soon",
                 Badge = "Due soon",
-                Url = "#section-schedule"
+                Url = url.Action("Maintenance", "MyHome", new { id = propiedadId }) ?? "#section-myhome"
             });
         }
 

@@ -51,21 +51,14 @@ public static class HvacOpenAiHintsService
         if (d == null) return;
 
         hints.SystemType ??= MapSystemType($"{d.CoolingType} {d.HeatingType} {d.HeatingFuel}");
-        if (d.YearBuilt.HasValue && !hints.InstallYear.HasValue)
-        {
-            hints.InstallYear = d.YearBuilt.Value + 5 <= DateTime.Today.Year
-                ? Math.Min(d.YearBuilt.Value + 8, DateTime.Today.Year)
-                : d.YearBuilt.Value;
-        }
     }
 
     private static void ApplyWarranty(HvacOpenAiHints hints, HomeWarranty? warranty)
     {
         if (warranty == null) return;
 
+        // Warranty records may be estimated; do not pre-fill install year or last service from installation date.
         hints.Brand ??= ExtractBrand(warranty.SystemName, warranty.WarrantyProvider, warranty.CoverageDetails);
-        hints.InstallYear ??= warranty.InstallationDate?.Year;
-        hints.LastServiceDate ??= warranty.InstallationDate;
     }
 
     private static void ApplyRawJson(HvacOpenAiHints hints, string? rawJson)

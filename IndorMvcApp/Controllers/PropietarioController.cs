@@ -41,9 +41,9 @@ public class PropietarioController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Create Account";
-        ViewBag.OnboardingBackUrl = Url.Action("Register", "Account");
+        ViewBag.OnboardingStep = 3;
+        ViewBag.OnboardingTitle = "Your property";
+        ViewBag.OnboardingBackUrl = Url.Action("SelectRole", "Account", new { userId = _userManager.GetUserId(User) });
         ViewBag.OnboardingShowBack = false;
         return View(new AddPropertyViewModel());
     }
@@ -142,7 +142,7 @@ public class PropietarioController : Controller
         ViewBag.OnboardingBackUrl = Url.Action(nameof(ConfirmProperty));
         ViewBag.OnboardingShowBack = true;
 
-        var fullName = $"{user.Nombre} {user.Apellidos}".Trim();
+        var fullName = UserDisplayName.Format(user);
         return View(new OnboardingReviewViewModel
         {
             FullName = string.IsNullOrWhiteSpace(fullName) ? user.Email ?? string.Empty : fullName,
@@ -403,9 +403,11 @@ public class PropietarioController : Controller
 
     private void SetPropertyStepViewBag(bool showBack)
     {
-        ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Create Account";
-        ViewBag.OnboardingBackUrl = showBack ? Url.Action(nameof(AddProperty)) : Url.Action("Register", "Account");
+        ViewBag.OnboardingStep = 3;
+        ViewBag.OnboardingTitle = "Your property";
+        ViewBag.OnboardingBackUrl = showBack
+            ? Url.Action(nameof(AddProperty))
+            : Url.Action("SelectRole", "Account", new { userId = _userManager.GetUserId(User) });
         ViewBag.OnboardingShowBack = showBack;
     }
 }

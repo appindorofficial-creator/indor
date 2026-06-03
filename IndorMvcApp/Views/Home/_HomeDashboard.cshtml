@@ -48,10 +48,20 @@ else
     <div class="hd-start-grid">
         @foreach (var action in Model.QuickActions)
         {
-            <button type="button" class="hd-start-item @(action.Tone == "red" ? "red" : "") nav-jump" data-target="@action.TargetSection">
-                <i class="fas @action.Icon"></i>
-                @action.Label
-            </button>
+            if (!string.IsNullOrWhiteSpace(action.Url))
+            {
+                <a href="@action.Url" class="hd-start-item @(action.Tone == "red" ? "red" : "")">
+                    <i class="fas @action.Icon"></i>
+                    @action.Label
+                </a>
+            }
+            else
+            {
+                <button type="button" class="hd-start-item @(action.Tone == "red" ? "red" : "") nav-jump" data-target="@action.TargetSection" data-scroll-target="@(action.ScrollTarget ?? "")">
+                    <i class="fas @action.Icon"></i>
+                    @action.Label
+                </button>
+            }
         }
     </div>
 

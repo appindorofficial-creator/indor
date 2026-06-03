@@ -1,19 +1,75 @@
 /* Inspection report upload flow — extends mobile patterns from hvac-setup.css */
 
+#uploadForm {
+    position: relative;
+}
+
+#uploadForm input[type="file"] {
+    position: absolute !important;
+    left: -9999px !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+    opacity: 0 !important;
+}
+
+.ir-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+    opacity: 0;
+}
+
+.ir-upload-panel {
+    position: relative;
+    margin-bottom: 16px;
+    padding: 16px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.ir-upload-lead {
+    margin: 0 0 14px;
+    font-size: 0.8125rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
 .ir-dropzone {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
     margin: 0 0 14px;
     padding: 28px 16px;
-    border: 2px dashed rgba(24, 103, 242, 0.45);
-    border-radius: 16px;
-    background: rgba(24, 103, 242, 0.04);
+    border: 1.5px solid #E5E7EB;
+    border-radius: 14px;
+    background: #F8FAFC;
     text-align: center;
     cursor: pointer;
     max-width: 100%;
 }
 
+.ir-dropzone:focus-visible {
+    outline: 2px solid #1867F2;
+    outline-offset: 2px;
+}
+
 .ir-dropzone.has-file {
-    border-style: solid;
-    background: #FFF;
+    border-color: rgba(24, 103, 242, 0.35);
+    background: rgba(24, 103, 242, 0.04);
 }
 
 .ir-dropzone-icon {
@@ -46,7 +102,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px;
-    margin-bottom: 16px;
+    margin: 0;
     max-width: 100%;
 }
 
@@ -69,10 +125,6 @@
 
 .ir-file-btn i {
     font-size: 0.95rem;
-}
-
-.ir-hidden-input {
-    display: none;
 }
 
 .ir-field {

@@ -194,9 +194,15 @@
 .hd-task-body {
     flex: 1;
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
 }
 
 .hd-task-title {
+    display: block;
+    width: 100%;
     font-size: 0.875rem;
     font-weight: 700;
     color: #0A2540;
@@ -204,7 +210,8 @@
 }
 
 .hd-task-sub {
-    margin-top: 2px;
+    display: block;
+    width: 100%;
     font-size: 0.75rem;
     color: #64748B;
     line-height: 1.35;

@@ -1,0 +1,20 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+<div class="ob-review-stack">
+    <div class="ob-review-card">
+        <h2>Business</h2>
+        <div class="ob-review-item"><i class="fas fa-building"></i><span class="val">@s.DisplayCompanyName</span></div>
+        <div class="ob-review-item"><i class="fas fa-envelope"></i><span class="val">@s.Email</span></div>
+        <div class="ob-review-item"><i class="fas fa-location-dot"></i><span class="val">@s.PrimaryCity · @s.TravelRadiusMiles mi</span></div>
+    </div>
+</div>
+<form asp-action="Review" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="ob-btn ob-btn-primary">Submit profile</button>
+</form>

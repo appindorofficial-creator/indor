@@ -1,8 +1,8 @@
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
-using IndorMvcApp.Infrastructure;
 using IndorMvcApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +16,6 @@ if (builder.Environment.IsDevelopment())
 }
 
 builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
-AppCombinedFileVersionProvider.Register(builder.Services);
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -32,6 +31,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // Configurar Identity
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
+    options.User.RequireUniqueEmail = true;
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = false;
     options.Password.RequireUppercase = true;
@@ -69,6 +69,15 @@ builder.Services.AddHttpClient<IAttomPropertyService, AttomPropertyService>((sp,
 });
 builder.Services.AddScoped<IPropertyEnrichmentService, CompositePropertyEnrichmentService>();
 builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IProviderRegistrationService, ProviderRegistrationService>();
+
+builder.Services.Configure<FormOptions>(options =>
+{
+    options.MultipartBodyLengthLimit = 40_000_000;
+    options.ValueLengthLimit = int.MaxValue;
+    options.MultipartHeadersLengthLimit = int.MaxValue;
+});
 
 var app = builder.Build();
 
@@ -90,20 +99,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.UseMiddleware<HtmlNoCacheMiddleware>();
-app.UseStaticFiles(new StaticFileOptions
-{
-    OnPrepareResponse = ctx =>
-    {
-        var path = ctx.Context.Request.Path.Value ?? string.Empty;
-        if (path.StartsWith("/css", StringComparison.OrdinalIgnoreCase)
-            || path.StartsWith("/js", StringComparison.OrdinalIgnoreCase)
-            || path.StartsWith("/lib", StringComparison.OrdinalIgnoreCase))
-        {
-            ctx.Context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
-        }
-    }
-});
+app.UseStaticFiles();
 app.UseRouting();
 app.UseSession();
 

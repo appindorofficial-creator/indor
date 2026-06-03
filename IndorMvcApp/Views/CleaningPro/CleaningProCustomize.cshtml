@@ -10,7 +10,7 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
     <title>@ViewData["Title"]</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
@@ -174,17 +174,68 @@
             });
         });
 
+        function normalizeCrewCode(value) {
+            const map = { '1': 'One', '2': 'Two', '3': 'Three', One: 'One', Two: 'Two', Three: 'Three' };
+            return map[value] || value || 'Two';
+        }
+
+        function getSelectedHours() {
+            const activeHour = document.querySelector('#hoursGroup .hour-btn.active');
+            if (activeHour?.dataset.value) return parseFloat(activeHour.dataset.value);
+            const hiddenHours = document.getElementById('HorasEstimadas');
+            return parseFloat(hiddenHours?.value || '3') || 3;
+        }
+
+        function getAddonsTotal() {
+            let total = 0;
+            selectedAddons.forEach(code => {
+                const row = document.querySelector('#addonGroup .addon-row[data-code="' + code + '"]');
+                if (row) total += parseFloat(row.dataset.price || '0');
+            });
+            return total;
+        }
+
+        function getActiveCrewCard() {
+            return document.querySelector('#crewGroup .crew-card.active');
+        }
+
+        function getHourlyRateForCrew(crewCode) {
+            const card = getActiveCrewCard();
+            if (card?.dataset.value === crewCode && card.dataset.rate) {
+                return parseFloat(card.dataset.rate);
+            }
+            const match = document.querySelector('#crewGroup .crew-card[data-value="' + crewCode + '"]');
+            if (match?.dataset.rate) return parseFloat(match.dataset.rate);
+            return rates[normalizeCrewCode(crewCode)] || 70;
+        }
+
         function initSingle(groupId, selector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
-            document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
-                btn.addEventListener('click', () => {
-                    document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
+            if (!hidden) return;
+
+            const buttons = document.querySelectorAll('#' + groupId + ' ' + selector);
+            const initialValue = (initial || hidden.value || '').trim();
+
+            function activate(btn) {
+                buttons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                hidden.value = btn.dataset.value;
+                updateSummary();
+            }
+
+            let matched = false;
+            buttons.forEach(btn => {
+                if (btn.dataset.value === initialValue) {
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
-                    updateSummary();
-                });
+                    matched = true;
+                }
+                btn.addEventListener('click', () => activate(btn));
             });
+
+            if (!matched && buttons.length > 0) {
+                activate(buttons[0]);
+            }
         }
 
         function formatFreq(v) {
@@ -192,22 +243,26 @@
         }
 
         function formatCrew(v) {
-            return ({ One: '1 cleaner', Two: '2 cleaners', Three: '3 cleaners' }[v] || v);
+            const code = normalizeCrewCode(v);
+            return ({ One: '1 cleaner', Two: '2 cleaners', Three: '3 cleaners' }[code] || v);
         }
 
         function updateSummary() {
-            const crew = document.getElementById('CantidadLimpiadores').value || 'Two';
-            const hours = parseFloat(document.getElementById('HorasEstimadas').value || '3');
-            const rate = rates[crew] || 70;
-            let addonsTotal = 0;
-            selectedAddons.forEach(code => {
-                const row = document.querySelector('#addonGroup .addon-row[data-code="' + code + '"]');
-                if (row) addonsTotal += parseFloat(row.dataset.price || '0');
-            });
-            const subtotal = (rate * hours) + addonsTotal;
-            const freq = document.getElementById('Frecuencia').value || 'OneTime';
-            document.getElementById('summaryBar').textContent =
-                formatFreq(freq) + ' • ' + formatCrew(crew) + ' • Est. ' + hours + ' hr • From $' + Math.round(subtotal);
+            const crewHidden = document.getElementById('CantidadLimpiadores');
+            const activeCrew = getActiveCrewCard();
+            const crew = normalizeCrewCode(activeCrew?.dataset.value || crewHidden?.value || 'Two');
+            if (crewHidden) crewHidden.value = crew;
+
+            const hours = getSelectedHours();
+            const hourlyRate = getHourlyRateForCrew(crew);
+            const subtotal = (hourlyRate * hours) + getAddonsTotal();
+            const freq = document.getElementById('Frecuencia')?.value || 'OneTime';
+
+            const summary = document.getElementById('summaryBar');
+            if (summary) {
+                summary.textContent =
+                    formatFreq(freq) + ' • ' + formatCrew(crew) + ' • Est. ' + hours + ' hr • From $' + Math.round(subtotal);
+            }
         }
 
         initSingle('freqGroup', '.freq-chip', 'Frecuencia', '@Model.Frecuencia');

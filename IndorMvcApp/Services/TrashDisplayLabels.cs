@@ -66,9 +66,9 @@ public static class TrashDisplayLabels
 
     public static string FormatPickupWindow(string? value) => value switch
     {
-        "Morning7_12" => "7:00 AM – 12:00 PM",
-        "Afternoon12_5" => "12:00 PM – 5:00 PM",
+        "Morning7_12" => "07:00 – 12:00",
+        "Afternoon12_5" => "12:00 – 17:00",
         "Flexible" => "Flexible",
-        _ => value ?? "7:00 AM – 12:00 PM"
+        _ => value ?? "07:00 – 12:00"
     };
 }

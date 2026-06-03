@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -196,6 +197,12 @@ public class PerfilController : Controller
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 
+        if (!PaymentMethodValidation.TryValidate(tipo, marca, ultimos4, titular, expiracion, out var errors))
+        {
+            TempData["PerfilError"] = string.Join(" ", errors.Values);
+            return RedirectToAction(nameof(Opciones));
+        }
+
         if (predeterminado)
         {
             var existentes = await _db.MetodosPago.Where(m => m.UserId == userId && m.EsPredeterminado).ToListAsync();
@@ -205,11 +212,11 @@ public class PerfilController : Controller
         _db.MetodosPago.Add(new MetodoPago
         {
             UserId = userId,
-            Tipo = string.IsNullOrWhiteSpace(tipo) ? "Card" : tipo,
-            Marca = marca,
-            Ultimos4 = ultimos4,
-            Titular = titular,
-            Expiracion = expiracion,
+            Tipo = string.IsNullOrWhiteSpace(tipo) ? "Card" : tipo.Trim(),
+            Marca = (marca ?? string.Empty).Trim(),
+            Ultimos4 = PaymentMethodValidation.NormalizeLastFour(ultimos4),
+            Titular = PaymentMethodValidation.NormalizeCardholder(titular),
+            Expiracion = PaymentMethodValidation.NormalizeExpiry(expiracion),
             EsPredeterminado = predeterminado
         });
         await _db.SaveChangesAsync();

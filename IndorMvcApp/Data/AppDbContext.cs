@@ -127,6 +127,16 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<SmokeDetectorServicioLanding> SmokeDetectorServicioLanding { get; set; }
     public DbSet<SolicitudSmokeDetector> SolicitudesSmokeDetector { get; set; }
 
+    public DbSet<IndorProveedorCategoriaCatalogo> IndorProveedorCategoriasCatalogo { get; set; }
+    public DbSet<IndorProveedorOfertaCatalogo> IndorProveedorOfertasCatalogo { get; set; }
+    public DbSet<IndorProveedor> IndorProveedores { get; set; }
+    public DbSet<IndorProveedorCategoriaSel> IndorProveedorCategoriasSel { get; set; }
+    public DbSet<IndorProveedorOfertaSel> IndorProveedorOfertasSel { get; set; }
+    public DbSet<IndorProveedorExamPregunta> IndorProveedorExamPreguntas { get; set; }
+    public DbSet<IndorProveedorExamRespuesta> IndorProveedorExamRespuestas { get; set; }
+    public DbSet<IndorProveedorDocumento> IndorProveedorDocumentos { get; set; }
+    public DbSet<IndorProveedorAlcanceRegla> IndorProveedorAlcanceReglas { get; set; }
+
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
     // public DbSet<Cliente> Clientes { get; set; }
@@ -1006,6 +1016,46 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(s => s.Propiedad)
                   .WithMany()
                   .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<IndorProveedorCategoriaSel>(entity =>
+        {
+            entity.HasKey(e => new { e.ProveedorId, e.CategoriaId });
+            entity.HasOne(e => e.Proveedor)
+                  .WithMany(p => p.Categorias)
+                  .HasForeignKey(e => e.ProveedorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Categoria)
+                  .WithMany()
+                  .HasForeignKey(e => e.CategoriaId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<IndorProveedorOfertaSel>(entity =>
+        {
+            entity.HasKey(e => new { e.ProveedorId, e.OfertaId });
+            entity.HasOne(e => e.Proveedor)
+                  .WithMany(p => p.Ofertas)
+                  .HasForeignKey(e => e.ProveedorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Oferta)
+                  .WithMany()
+                  .HasForeignKey(e => e.OfertaId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<IndorProveedorExamPregunta>(entity =>
+        {
+            entity.HasKey(e => new { e.TradeCode, e.QuestionNumber });
+        });
+
+        modelBuilder.Entity<IndorProveedor>(entity =>
+        {
+            entity.HasIndex(e => e.RegistrationToken).IsUnique();
+            entity.HasOne(e => e.User)
+                  .WithMany()
+                  .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.SetNull);
         });
     }

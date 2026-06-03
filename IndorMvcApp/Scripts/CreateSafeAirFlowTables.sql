@@ -147,7 +147,7 @@ BEGIN
             49,
             N'From $49 for provider replacement',
             N'Filter reminders|Size tracking|DIY or pro service|Basic airflow check',
-            N'fa-bell|fa-ruler|fa-user-hard-hat|fa-wind',
+            N'fa-bell|fa-ruler|fa-screwdriver-wrench|fa-wind',
             N'Don''t know your filter size? Add a photo or choose "I don''t know" and your provider can verify it.',
             N'Schedule with INDOR',
             N'I changed it myself',
@@ -156,6 +156,11 @@ BEGIN
     END
 END
 GO
+
+-- Fix Pro-only icon on existing landing rows (fa-user-hard-hat does not render in FA Free CDN).
+UPDATE dbo.SafeAirServicioLanding
+SET IncluyeIconos = REPLACE(IncluyeIconos, N'fa-user-hard-hat', N'fa-screwdriver-wrench')
+WHERE IncluyeIconos LIKE N'%fa-user-hard-hat%';
 
 PRINT 'Safe Air 365 flow schema ready.';
 GO
