@@ -1,0 +1,75 @@
+@model IndorMvcApp.ViewModels.RealtorGuidanceStep1ViewModel
+@using IndorMvcApp.Services
+@{
+    ViewData["Title"] = "General Guidance";
+    Layout = null;
+    ViewBag.GuidanceStep = 1;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-request.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hvac-top">
+        <a asp-controller="Home" asp-action="Index" class="hvac-back"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">General Guidance</div>
+        <div style="width:40px;"></div>
+    </div>
+    <div class="hvac-content">
+        <h1 class="rr-page-title">General Guidance</h1>
+        <p class="rr-lead">Answer a few quick questions so a real estate professional can better guide you.</p>
+        @await Html.PartialAsync("_GuidanceProgress")
+
+        <form asp-action="GuidanceStep1" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="SolicitudId" />
+            <input type="hidden" asp-for="PropiedadId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">What monthly rent payment would you feel comfortable with?</span>
+                <div class="rr-rent-grid">
+                    @foreach (var opt in RealtorRequestDisplayService.RentComfortOptions)
+                    {
+                        <label class="rr-chip-btn @(Model.RentComfortRange == opt.Value ? "selected" : "")">
+                            <input type="radio" asp-for="RentComfortRange" value="@opt.Value" />
+                            <span>@opt.Label</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">When are you hoping to move?</span>
+                <div class="rr-time-row">
+                    <label class="rr-time-btn @(Model.Timeframe == "ASAP" ? "selected" : "")">
+                        <input type="radio" asp-for="Timeframe" value="ASAP" />
+                        <i class="far fa-clock"></i><span>ASAP</span>
+                    </label>
+                    <label class="rr-time-btn @(Model.Timeframe == "Days30" ? "selected" : "")">
+                        <input type="radio" asp-for="Timeframe" value="Days30" />
+                        <i class="far fa-calendar"></i><span>30 days</span>
+                    </label>
+                    <label class="rr-time-btn @(Model.Timeframe == "Days60Plus" ? "selected" : "")">
+                        <input type="radio" asp-for="Timeframe" value="Days60Plus" />
+                        <i class="far fa-calendar-check"></i><span>60+ days</span>
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit" class="hvac-save-btn">Continue</button>
+        </form>
+    </div>
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script src="~/js/realtor-request.js" asp-append-version="true"></script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+@model IndorMvcApp.ViewModels.RealtorGuidanceStep3ViewModel
+@using IndorMvcApp.Services
+@{
+    ViewData["Title"] = "Lifestyle & Needs";
+    Layout = null;
+    ViewBag.GuidanceStep = 3;
+    var selectedPriorities = Model.Priorities.ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-request.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    <div class="hvac-top">
+        <a asp-action="GuidanceStep2" asp-route-id="@Model.SolicitudId" class="hvac-back"><i class="fas fa-chevron-left"></i></a>
+        <div class="hvac-title">Lifestyle &amp; Needs</div>
+        <div style="width:40px;"></div>
+    </div>
+    <div class="hvac-content">
+        <h1 class="rr-page-title">Lifestyle &amp; Needs</h1>
+        @await Html.PartialAsync("_GuidanceProgress")
+
+        <form asp-action="GuidanceStep3" method="post" id="guidanceStep3Form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="SolicitudId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">Do you have pets?</span>
+                <div class="rr-icon-row">
+                    @foreach (var opt in RealtorRequestDisplayService.PetOptions)
+                    {
+                        <label class="rr-icon-card @(Model.Pets == opt.Value ? "selected" : "")">
+                            <input type="radio" asp-for="Pets" value="@opt.Value" />
+                            <i class="fas @opt.Icon"></i><span>@opt.Label</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">Is outdoor space important to you?</span>
+                <div class="rr-icon-row rr-icon-row--3">
+                    @foreach (var opt in RealtorRequestDisplayService.OutdoorOptions)
+                    {
+                        <label class="rr-icon-card @(Model.OutdoorSpaceImportance == opt.Value ? "selected" : "")">
+                            <input type="radio" asp-for="OutdoorSpaceImportance" value="@opt.Value" />
+                            <i class="fas @opt.Icon"></i><span>@opt.Label</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">Do you need parking?</span>
+                <div class="rr-icon-row rr-icon-row--3">
+                    @foreach (var opt in RealtorRequestDisplayService.ParkingOptions)
+                    {
+                        <label class="rr-icon-card @(Model.ParkingNeed == opt.Value ? "selected" : "")">
+                            <input type="radio" asp-for="ParkingNeed" value="@opt.Value" />
+                            <i class="fas @opt.Icon"></i><span>@opt.Label</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="rr-field">
+                <label class="rr-field-label" asp-for="PreferredArea">Preferred area</label>
+                <div class="rr-input-wrap">
+                    <i class="fas fa-location-dot"></i>
+                    <input asp-for="PreferredArea" class="hvac-input" placeholder="City or ZIP code" />
+                </div>
+                <label class="rr-nearby-pill">
+                    <input type="checkbox" asp-for="OpenToNearbyAreas" />
+                    <span>Open to nearby areas</span>
+                </label>
+            </div>
+
+            <div class="rr-field">
+                <span class="rr-field-label">What matters most? <span style="color:#94A3B8;font-weight:500;">(Select up to 3)</span></span>
+                <div class="rr-priority-grid" data-max="3">
+                    @foreach (var opt in RealtorRequestDisplayService.PriorityOptions)
+                    {
+                        <label class="rr-priority-chip @(selectedPriorities.Contains(opt.Value) ? "selected" : "")">
+                            <input type="checkbox" name="Priorities" value="@opt.Value" @(selectedPriorities.Contains(opt.Value) ? "checked" : "") />
+                            <span>@opt.Label</span>
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <button type="submit" class="hvac-save-btn">Continue</button>
+        </form>
+    </div>
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script src="~/js/realtor-request.js" asp-append-version="true"></script>
+</body>
+</html>

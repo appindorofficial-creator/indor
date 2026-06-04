@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorRequestSentViewModel
 @{
-    ViewData["Title"] = "Request Sent";
+    ViewData["Title"] = Model.IsGeneralGuidance ? "Request Submitted" : "Request Sent";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -18,70 +18,132 @@
 <div class="hvac-page">
     <div class="hvac-top">
         <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Request Sent</div>
+        <div class="hvac-title">@ViewData["Title"]</div>
         <div style="width:40px;"></div>
     </div>
 
     <div class="hvac-content">
-        <div class="rr-sent-hero">
+        <div class="rr-sent-hero rr-sent-hero--stars">
             <div class="rr-sent-icon"><i class="fas fa-check"></i></div>
-            <h1>Request Sent</h1>
-            <p>
-                <strong>We received your realtor request.</strong>
-                Our team will review your information and help connect you with a trusted real estate professional.
-            </p>
+            <h1>@ViewData["Title"]</h1>
+            @if (Model.IsGeneralGuidance)
+            {
+                <p>
+                    <strong>Your General Guidance request has been sent.</strong>
+                    A real estate professional will review your answers and contact you soon to help guide your next step.
+                </p>
+            }
+            else
+            {
+                <p>
+                    <strong>We received your realtor request.</strong>
+                    Our team will review your information and help connect you with a trusted real estate professional.
+                </p>
+            }
         </div>
 
         <div class="rr-summary-list">
-            <div class="rr-summary-row">
-                <i class="fas fa-house"></i>
-                <span class="k">Need</span>
-                <span class="v">@Model.NeedLabel</span>
-            </div>
-            <div class="rr-summary-row">
-                <i class="fas fa-location-dot"></i>
-                <span class="k">Area</span>
-                <span class="v">@Model.AreaLabel</span>
-            </div>
-            <div class="rr-summary-row">
-                <i class="far fa-calendar"></i>
-                <span class="k">Timeframe</span>
-                <span class="v">@Model.TimeframeLabel</span>
-            </div>
-            <div class="rr-summary-row">
-                <i class="fas fa-rotate"></i>
-                <span class="k">Status</span>
-                <span class="v status">@Model.StatusLabel</span>
-            </div>
+            @if (Model.IsGeneralGuidance)
+            {
+                <div class="rr-summary-row">
+                    <i class="fas fa-dollar-sign"></i>
+                    <span class="k">Monthly rent comfort</span>
+                    <span class="v">@Model.RentComfortLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="far fa-calendar"></i>
+                    <span class="k">Move timeline</span>
+                    <span class="v">@Model.TimeframeLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-building"></i>
+                    <span class="k">Property type</span>
+                    <span class="v">@Model.HomeTypeLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-bed"></i>
+                    <span class="k">Bedrooms</span>
+                    <span class="v">@Model.BedroomsLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-bath"></i>
+                    <span class="k">Bathrooms</span>
+                    <span class="v">@Model.BathroomsLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-paw"></i>
+                    <span class="k">Pets</span>
+                    <span class="v">@Model.PetsLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-location-dot"></i>
+                    <span class="k">Preferred area</span>
+                    <span class="v">@Model.AreaLabel</span>
+                </div>
+            }
+            else
+            {
+                <div class="rr-summary-row">
+                    <i class="fas fa-house"></i>
+                    <span class="k">Need</span>
+                    <span class="v">@Model.NeedLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-location-dot"></i>
+                    <span class="k">Area</span>
+                    <span class="v">@Model.AreaLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="far fa-calendar"></i>
+                    <span class="k">Timeframe</span>
+                    <span class="v">@Model.TimeframeLabel</span>
+                </div>
+                <div class="rr-summary-row">
+                    <i class="fas fa-rotate"></i>
+                    <span class="k">Status</span>
+                    <span class="v status">@Model.StatusLabel</span>
+                </div>
+            }
         </div>
 
-        <h2 class="rr-next-title">What happens next</h2>
-        <div class="rr-steps">
-            <div class="rr-step">
-                <span class="rr-step-num"><i class="fas fa-file-lines"></i></span>
-                <div class="rr-step-copy">
-                    <strong>We review your request</strong>
-                    <span>Our team will review your information.</span>
+        @if (Model.IsGeneralGuidance)
+        {
+            <div class="rr-info-banner">
+                <i class="fas fa-circle-info"></i>
+                <span>You can edit this information later if needed.</span>
+            </div>
+            <a asp-controller="Home" asp-action="Index" class="hvac-save-btn" style="text-decoration:none;text-align:center;display:block;">Back to Home</a>
+            <a asp-action="Request" class="rr-secondary-btn">Request another consultation</a>
+        }
+        else
+        {
+            <h2 class="rr-next-title">What happens next</h2>
+            <div class="rr-steps">
+                <div class="rr-step">
+                    <span class="rr-step-num"><i class="fas fa-file-lines"></i></span>
+                    <div class="rr-step-copy">
+                        <strong>We review your request</strong>
+                        <span>Our team will review your information.</span>
+                    </div>
+                </div>
+                <div class="rr-step">
+                    <span class="rr-step-num"><i class="fas fa-users"></i></span>
+                    <div class="rr-step-copy">
+                        <strong>We identify a trusted match</strong>
+                        <span>We'll find a real estate professional that fits your needs.</span>
+                    </div>
+                </div>
+                <div class="rr-step">
+                    <span class="rr-step-num"><i class="fas fa-comment-dots"></i></span>
+                    <div class="rr-step-copy">
+                        <strong>We contact you with next steps</strong>
+                        <span>We'll reach out with your match and next steps.</span>
+                    </div>
                 </div>
             </div>
-            <div class="rr-step">
-                <span class="rr-step-num"><i class="fas fa-users"></i></span>
-                <div class="rr-step-copy">
-                    <strong>We identify a trusted match</strong>
-                    <span>We'll find a real estate professional that fits your needs.</span>
-                </div>
-            </div>
-            <div class="rr-step">
-                <span class="rr-step-num"><i class="fas fa-comment-dots"></i></span>
-                <div class="rr-step-copy">
-                    <strong>We contact you with next steps</strong>
-                    <span>We'll reach out with your match and next steps.</span>
-                </div>
-            </div>
-        </div>
-
-        <a asp-controller="Home" asp-action="Index" class="hvac-save-btn" style="text-decoration:none;text-align:center;">Done</a>
-        <a asp-controller="Home" asp-action="Index" class="rr-back-link">Back to Home</a>
+            <a asp-controller="Home" asp-action="Index" class="hvac-save-btn" style="text-decoration:none;text-align:center;display:block;">Done</a>
+            <a asp-controller="Home" asp-action="Index" class="rr-back-link">Back to Home</a>
+        }
     </div>
 
     @await Html.PartialAsync("_AppBottomNav", "home")

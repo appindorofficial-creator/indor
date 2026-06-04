@@ -71,6 +71,7 @@ builder.Services.AddScoped<IPropertyEnrichmentService, CompositePropertyEnrichme
 builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProviderRegistrationService, ProviderRegistrationService>();
+builder.Services.AddScoped<RealtorGuidanceService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {

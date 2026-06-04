@@ -1,0 +1,11 @@
+@{
+    var step = (int)(ViewBag.GuidanceStep ?? 1);
+    var total = 4;
+}
+<p class="rr-step-meta">Step @step of @total</p>
+<div class="rr-progress" aria-hidden="true">
+    @for (var i = 1; i <= total; i++)
+    {
+        <span class="rr-progress-seg @(i <= step ? "is-on" : "")"></span>
+    }
+</div>

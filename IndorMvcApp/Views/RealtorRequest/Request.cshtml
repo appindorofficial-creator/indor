@@ -34,7 +34,7 @@
 
             <div class="rr-field">
                 <span class="rr-field-label">What do you need?</span>
-                <div class="rr-need-grid">
+                <div class="rr-need-grid rr-need-grid--3">
                     <label class="rr-need-card @(Model.NeedType == "Buy" ? "selected" : "")">
                         <input type="radio" asp-for="NeedType" value="Buy" />
                         <i class="fas fa-house"></i>
@@ -50,13 +50,17 @@
                         <i class="fas fa-building"></i>
                         <span>Rent</span>
                     </label>
-                    <label class="rr-need-card @(Model.NeedType == "GeneralGuidance" ? "selected" : "")">
-                        <input type="radio" asp-for="NeedType" value="GeneralGuidance" />
-                        <i class="fas fa-user"></i>
-                        <span>General guidance</span>
-                    </label>
                 </div>
             </div>
+
+            <a asp-action="StartGuidance" asp-route-propiedadId="@Model.PropiedadId" class="rr-guidance-banner">
+                <span class="rr-guidance-icon"><i class="fas fa-compass"></i></span>
+                <span class="rr-guidance-copy">
+                    <strong>General Guidance</strong>
+                    <span>Not sure if you should buy, sell, or rent? Connect with a real estate professional to explore your options and see what you may qualify for.</span>
+                </span>
+                <i class="fas fa-chevron-right rr-guidance-chevron"></i>
+            </a>
 
             <div class="rr-field">
                 <label class="rr-field-label" asp-for="PreferredArea">Preferred area</label>
@@ -116,28 +120,6 @@
 
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
-<script>
-    (function () {
-        document.querySelectorAll('.rr-need-card input').forEach(function (radio) {
-            radio.addEventListener('change', function () {
-                document.querySelectorAll('.rr-need-card').forEach(function (c) { c.classList.remove('selected'); });
-                radio.closest('.rr-need-card').classList.add('selected');
-            });
-        });
-        document.querySelectorAll('.rr-time-btn input').forEach(function (radio) {
-            radio.addEventListener('change', function () {
-                document.querySelectorAll('.rr-time-btn').forEach(function (c) { c.classList.remove('selected'); });
-                radio.closest('.rr-time-btn').classList.add('selected');
-            });
-        });
-        var notes = document.getElementById('notesField');
-        var count = document.getElementById('notesCount');
-        if (notes && count) {
-            var update = function () { count.textContent = String(notes.value.length); };
-            notes.addEventListener('input', update);
-            update();
-        }
-    })();
-</script>
+<script src="~/js/realtor-request.js" asp-append-version="true"></script>
 </body>
 </html>
