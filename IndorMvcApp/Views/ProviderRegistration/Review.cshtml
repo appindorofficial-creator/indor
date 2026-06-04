@@ -29,8 +29,9 @@
     var isConstruction = s.IsConstructionOnly;
     var isBathroom = s.IsBathroomOnly;
     var isKitchen = s.IsKitchenOnly;
+    var isPainting = s.IsPaintingOnly;
     var isRoofing = s.IsRoofingOnly;
-    var usesTradeReview = isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing;
+    var usesTradeReview = isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isRoofing;
     var selectedServiceLabels = offerings
         .Where(o => s.SelectedServiceIds.Contains(o.Id, StringComparer.OrdinalIgnoreCase))
         .Select(o => o.Label)
@@ -64,9 +65,9 @@
 
         <a asp-action="Categories" class="prv-review-link">
 
-            <i class="fas @(isRoofing ? "fa-house-chimney" : isKitchen ? "fa-utensils" : isBathroom ? "fa-bath" : isHandyman ? "fa-wrench" : isConstruction ? "fa-hard-hat" : "fa-fan")"></i>
+            <i class="fas @(isRoofing ? "fa-house-chimney" : isPainting ? "fa-paint-roller" : isKitchen ? "fa-utensils" : isBathroom ? "fa-bath" : isHandyman ? "fa-wrench" : isConstruction ? "fa-hard-hat" : "fa-fan")"></i>
 
-            <div><strong>@(isRoofing ? "Provider category" : isBathroom || isKitchen ? "Provider type" : isHandyman ? "Category" : isConstruction ? "Selected trade" : "Primary trade")</strong><span>@tradeName</span></div>
+            <div><strong>@(isRoofing ? "Provider category" : isBathroom || isKitchen || isPainting ? "Provider type" : isHandyman ? "Category" : isConstruction ? "Selected trade" : "Primary trade")</strong><span>@tradeName</span></div>
 
             <i class="fas fa-chevron-right"></i>
 
@@ -78,7 +79,7 @@
 
             <i class="fas fa-star"></i>
 
-            <div><strong>@(isBathroom || isKitchen ? "Selected services" : isHandyman || isConstruction ? "Selected specialties" : "Approved specialties")</strong><span>@((isBathroom || isKitchen) ? servicesSummary : $"{serviceCount} selected")</span></div>
+            <div><strong>@(isBathroom || isKitchen || isPainting ? "Selected services" : isHandyman || isConstruction ? "Selected specialties" : "Approved specialties")</strong><span>@((isBathroom || isKitchen || isPainting) ? servicesSummary : $"{serviceCount} selected")</span></div>
 
             <i class="fas fa-chevron-right"></i>
 
@@ -91,7 +92,7 @@
 
             <div>
 
-                <strong>@(isRoofing ? "Business profile" : isBathroom || isKitchen ? "Business information" : isConstruction ? "Business info" : "Business details")</strong>
+                <strong>@(isRoofing ? "Business profile" : isBathroom || isKitchen || isPainting ? "Business profile" : isConstruction ? "Business info" : "Business details")</strong>
 
                 @if (isRoofing)
                 {
@@ -101,7 +102,7 @@
                     <span>@s.Email</span>
                     @if (!string.IsNullOrWhiteSpace(s.LicenseNumber)) { <span>@s.LicenseNumber</span> }
                 }
-                else if (isBathroom || isKitchen)
+                else if (isBathroom || isKitchen || isPainting)
                 {
                     <span>@s.BusinessName</span>
                     @if (!string.IsNullOrWhiteSpace(businessArea))
@@ -285,7 +286,7 @@ else
     {
         <label class="prv-check-row">
             <input type="checkbox" name="confirmAccurate" value="true" />
-            <span>@(isRoofing ? "I confirm my information is accurate" : isKitchen ? "I confirm that all information is accurate and that I will only perform approved kitchen remodeling work through INDOR." : isBathroom ? "I confirm that all information is accurate and that I will only perform approved bathroom remodeling work through INDOR." : isHandyman || isConstruction ? "I confirm that I only offer services I am qualified and approved to perform through INDOR." : $"I confirm that all information is accurate and that I will only perform approved {tradeName.ToLowerInvariant()} work.")</span>
+            <span>@(isRoofing ? "I confirm my information is accurate" : isPainting ? "I confirm that all information is accurate and that I will only perform approved painting work through INDOR." : isKitchen ? "I confirm that all information is accurate and that I will only perform approved kitchen remodeling work through INDOR." : isBathroom ? "I confirm that all information is accurate and that I will only perform approved bathroom remodeling work through INDOR." : isHandyman || isConstruction ? "I confirm that I only offer services I am qualified and approved to perform through INDOR." : $"I confirm that all information is accurate and that I will only perform approved {tradeName.ToLowerInvariant()} work.")</span>
         </label>
         @if (isRoofing)
         {

@@ -5,6 +5,7 @@
     var isConstruction = ViewBag.IsConstruction as bool? == true;
     var isBathroom = ViewBag.IsBathroom as bool? == true;
     var isKitchen = ViewBag.IsKitchen as bool? == true;
+    var isPainting = ViewBag.IsPainting as bool? == true;
     var isRoofing = ViewBag.IsRoofing as bool? == true;
     var topics = isRoofing
         ? new (string Icon, string Label)[]
@@ -24,6 +25,16 @@
             ("fa-hammer", "Demolition basics"),
             ("fa-box-archive", "Cabinet installation"),
             ("fa-paint-roller", "Finish work"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isPainting
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-trowel", "Surface preparation"),
+            ("fa-fill-drip", "Paints & finishes"),
+            ("fa-paint-roller", "Application techniques"),
+            ("fa-sheet-plastic", "Jobsite protection"),
             ("fa-users", "Customer best practices"),
         }
         : isBathroom
@@ -69,6 +80,8 @@
         ? "Only providers who pass the exam and verification can receive roofing jobs."
         : isKitchen
             ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs."
+            : isPainting
+                ? "Only providers who pass the exam and verification can receive painting jobs."
             : isBathroom
             ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs."
             : isHandyman

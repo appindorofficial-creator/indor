@@ -100,6 +100,7 @@ public class ProviderRegistrationService(
         var bathroomIds = OnboardingCatalog.BathroomServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var kitchenIds = OnboardingCatalog.KitchenServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var roofingIds = OnboardingCatalog.RoofingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var paintingIds = OnboardingCatalog.PaintingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var rows = await db.IndorProveedorOfertasCatalogo
             .AsNoTracking()
@@ -163,6 +164,14 @@ public class ProviderRegistrationService(
                 : OnboardingCatalog.RoofingServiceOfferings;
         }
 
+        if (state.IsPaintingOnly)
+        {
+            var paintingRows = rows.Where(o => paintingIds.Contains(o.Id)).ToList();
+            return paintingRows.Count > 0
+                ? paintingRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.PaintingServiceOfferings;
+        }
+
         return rows.Count == 0
             ? OnboardingCatalog.ServiceOfferings
             : rows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList();
@@ -218,6 +227,11 @@ public class ProviderRegistrationService(
         if (state.IsRoofingOnly)
         {
             return RoofingExamCatalog.TradeCode;
+        }
+
+        if (state.IsPaintingOnly)
+        {
+            return PaintingExamCatalog.TradeCode;
         }
 
         if (state.IsElectricianOnly || state.SelectedIncludesElectrical)
@@ -278,6 +292,11 @@ public class ProviderRegistrationService(
             return RoofingExamCatalog.Questions.Count;
         }
 
+        if (tradeCode.Equals(PaintingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return PaintingExamCatalog.Questions.Count;
+        }
+
         return ElectricalExamCatalog.Questions.Count;
     }
 
@@ -333,6 +352,11 @@ public class ProviderRegistrationService(
                 return RoofingExamCatalog.PageQuestions(page);
             }
 
+            if (tradeCode.Equals(PaintingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return PaintingExamCatalog.PageQuestions(page);
+            }
+
             return ElectricalExamCatalog.PageQuestions(page);
         }
 
@@ -370,6 +394,7 @@ public class ProviderRegistrationService(
                 _ when tradeCode.Equals(BathroomExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => BathroomExamCatalog.Questions,
                 _ when tradeCode.Equals(KitchenExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => KitchenExamCatalog.Questions,
                 _ when tradeCode.Equals(RoofingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => RoofingExamCatalog.Questions,
+                _ when tradeCode.Equals(PaintingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PaintingExamCatalog.Questions,
                 _ => ElectricalExamCatalog.Questions,
             };
             questions = fallback
@@ -514,11 +539,12 @@ public class ProviderRegistrationService(
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == tradeId, cancellationToken);
 
-        if (catalog != null)
+        if (catalog?.RequiresTradeExam == true)
         {
-            return catalog.RequiresTradeExam;
+            return true;
         }
 
+        // Catalog rows may exist with RequiresTradeExam = 0 until seed scripts run; honor known exam trades.
         return tradeId.Equals(ProviderRegistrationState.ElectricalCategoryId, StringComparison.OrdinalIgnoreCase)
                || tradeId.Equals(ProviderRegistrationState.PlumbingCategoryId, StringComparison.OrdinalIgnoreCase)
                || tradeId.Equals(ProviderRegistrationState.HvacCategoryId, StringComparison.OrdinalIgnoreCase)
@@ -526,7 +552,8 @@ public class ProviderRegistrationService(
                || tradeId.Equals(ProviderRegistrationState.ConstructionCategoryId, StringComparison.OrdinalIgnoreCase)
                || tradeId.Equals(ProviderRegistrationState.BathroomCategoryId, StringComparison.OrdinalIgnoreCase)
                || tradeId.Equals(ProviderRegistrationState.KitchenCategoryId, StringComparison.OrdinalIgnoreCase)
-               || tradeId.Equals(ProviderRegistrationState.RoofingCategoryId, StringComparison.OrdinalIgnoreCase);
+               || tradeId.Equals(ProviderRegistrationState.RoofingCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.PaintingCategoryId, StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task EnsureDocumentSlotsAsync(CancellationToken cancellationToken = default)

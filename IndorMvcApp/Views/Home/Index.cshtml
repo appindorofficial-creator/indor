@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<IndorMvcApp.Models.Propiedad>
 @using System.Text.Json
+@using IndorMvcApp.Services
 @using IndorMvcApp.ViewModels
 @{
     ViewData["Title"] = "Home - InDor";
@@ -131,7 +132,10 @@
         };
     }
 
-    OfferingCarouselViewModel BuildServicioCarousel(IEnumerable<IndorMvcApp.Models.Servicio> items, string subtitle)
+    OfferingCarouselViewModel BuildServicioCarousel(
+        IEnumerable<IndorMvcApp.Models.Servicio> items,
+        string subtitle,
+        IReadOnlyDictionary<string, int> homeCarePriorityIds)
     {
         return new OfferingCarouselViewModel
         {
@@ -141,21 +145,38 @@
             BlockClass = "category-block-services",
             IconClass = "category-icon-alt",
             BadgeClass = "category-badge-alt",
-            Items = items.Select(sv => new OfferingCardViewModel
+            Items = items.Select(sv =>
             {
-                Name = sv.Nombre,
-                Subtitle = sv.Subtitulo,
-                Description = sv.Descripcion,
-                Includes = SplitIncludes(sv.Incluye),
-                Frequency = sv.Frecuencia,
-                Price = sv.Valor,
-                PricePrefix = sv.PrecioPrefijo,
-                PriceText = sv.PrecioTexto,
-                Currency = sv.Moneda,
-                Cta = string.IsNullOrWhiteSpace(sv.CtaTexto) ? "Request quote" : sv.CtaTexto,
-                ImageUrl = sv.ImagenUrl,
-                FreqIcon = "fa-clock",
-                CtaIcon = "fa-paper-plane"
+                var route = ServicioFlowRules.TryGetRoute(sv.Nombre, sv.Orden, out var mapped)
+                    ? mapped
+                    : ServicioFlowRules.SupportRoute;
+                var routeId = ServicioFlowRules.ResolveRouteId(route, homeCarePriorityIds);
+                if (!string.IsNullOrWhiteSpace(route.HomeCarePriorityName) && !routeId.HasValue)
+                {
+                    route = ServicioFlowRules.SupportRoute;
+                    routeId = null;
+                }
+
+                return new OfferingCardViewModel
+                {
+                    Name = sv.Nombre,
+                    Subtitle = sv.Subtitulo,
+                    Description = sv.Descripcion,
+                    Includes = SplitIncludes(sv.Incluye),
+                    Frequency = sv.Frecuencia,
+                    Price = sv.Valor,
+                    PricePrefix = sv.PrecioPrefijo,
+                    PriceText = sv.PrecioTexto,
+                    Currency = sv.Moneda,
+                    Cta = string.IsNullOrWhiteSpace(sv.CtaTexto) ? "Request quote" : sv.CtaTexto,
+                    ImageUrl = sv.ImagenUrl,
+                    FreqIcon = "fa-clock",
+                    CtaIcon = ServicioFlowRules.HasFlow(sv.Nombre, sv.Orden) ? "fa-arrow-right" : "fa-paper-plane",
+                    SourceId = routeId,
+                    EnableLink = true,
+                    LinkController = route.Controller,
+                    LinkAction = route.Action
+                };
             }).ToList()
         };
     }
@@ -2360,6 +2381,8 @@
                                       ?? Enumerable.Empty<IndorMvcApp.Models.ServicioEmergencia>();
             var movingSetupSection = ViewBag.MovingSetupSection as IndorMvcApp.ViewModels.MovingSetupSectionViewModel;
             var homeCarePrioritiesSection = ViewBag.HomeCarePrioritiesSection as IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel;
+            var homeCarePriorityIds = ViewBag.HomeCarePriorityIds as IReadOnlyDictionary<string, int>
+                                      ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
             var totalOfferings = microservicios.Count() + servicios.Count() + inspecciones.Count();
         }
 
@@ -2398,7 +2421,7 @@
 
                 @if (servicios.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, $"{servicios.Count()} remodeling and installation projects"))
+                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, $"{servicios.Count()} remodeling and installation projects", homeCarePriorityIds))
                 }
 
                 @if (inspecciones.Any())

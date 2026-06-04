@@ -9,6 +9,7 @@
     var isConstruction = ViewBag.IsConstruction as bool? == true || Model.State.IsConstructionOnly;
     var isBathroom = ViewBag.IsBathroom as bool? == true || Model.State.IsBathroomOnly;
     var isKitchen = ViewBag.IsKitchen as bool? == true || Model.State.IsKitchenOnly;
+    var isPainting = ViewBag.IsPainting as bool? == true || Model.State.IsPaintingOnly;
     var isRoofing = ViewBag.IsRoofing as bool? == true || Model.State.IsRoofingOnly;
 }
 <div class="ob-head-block">
@@ -22,7 +23,7 @@
 {
     var uploaded = string.Equals(slot.Status, "Uploaded", StringComparison.OrdinalIgnoreCase);
     var statusClass = uploaded ? "is-uploaded" : slot.Required ? "is-required" : "is-optional";
-    var statusText = uploaded ? "Uploaded" : ((isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing) && slot.Required) ? "Required" : slot.Required ? "Required" : "Optional";
+    var statusText = uploaded ? "Uploaded" : ((isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isRoofing) && slot.Required) ? "Required" : slot.Required ? "Required" : "Optional";
     <div class="prv-doc-row @statusClass">
         <div class="prv-doc-row-icon"><i class="fas @(uploaded ? "fa-circle-check" : "fa-file-lines")"></i></div>
         <div class="prv-doc-row-body">

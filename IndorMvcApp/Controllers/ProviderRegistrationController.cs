@@ -138,6 +138,11 @@ public class ProviderRegistrationController(
                 title = "What kitchen remodeling services do you provide?";
                 subtitle = "Select the services your company is qualified to perform within kitchen remodeling.";
             }
+            else if (state?.IsPaintingOnly == true)
+            {
+                title = "What painting services do you provide?";
+                subtitle = "Choose the services your painting business is qualified to perform.";
+            }
             else if (state?.IsConstructionOnly == true)
             {
                 title = "What construction work do you perform?";
@@ -165,6 +170,7 @@ public class ProviderRegistrationController(
         ViewBag.IsBathroom = state.IsBathroomOnly;
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
+        ViewBag.IsPainting = state.IsPaintingOnly;
         ViewBag.TradeLabel = await registration.GetPrimaryTradeLabelAsync() ?? "your trade";
 
         return View(StepVm(step, title, subtitle, state, backUrl));
@@ -187,6 +193,7 @@ public class ProviderRegistrationController(
             ViewBag.IsBathroom = state.IsBathroomOnly;
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
+            ViewBag.IsPainting = state.IsPaintingOnly;
             var back = state.UsesServicesFirstFlow ? Url.Action(nameof(Categories)) : Url.Action(nameof(Business));
             return View(StepVm(state.UsesServicesFirstFlow ? 2 : 3, "What services do you offer?", "Select at least one.", state, back));
         }
@@ -258,6 +265,7 @@ public class ProviderRegistrationController(
         ViewBag.IsBathroom = state.IsBathroomOnly;
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
+        ViewBag.IsPainting = state.IsPaintingOnly;
         state.ServiceZipCodes = state.ServiceZipCodesDisplay;
 
         if (state.IsConstructionOnly)
@@ -280,6 +288,11 @@ public class ProviderRegistrationController(
             state.ProviderType = "RoofingContractor";
         }
 
+        if (state.IsPaintingOnly)
+        {
+            state.ProviderType = "PaintingContractor";
+        }
+
         string title;
         string subtitle;
         if (state.IsRoofingOnly)
@@ -290,6 +303,11 @@ public class ProviderRegistrationController(
         else if (state.IsKitchenOnly)
         {
             title = "Tell us about your kitchen remodeling business";
+            subtitle = "Complete your provider profile to continue.";
+        }
+        else if (state.IsPaintingOnly)
+        {
+            title = "Tell us about your painting business";
             subtitle = "Complete your provider profile to continue.";
         }
         else if (state.IsBathroomOnly)
@@ -384,6 +402,7 @@ public class ProviderRegistrationController(
             ViewBag.IsBathroom = state.IsBathroomOnly;
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
+            ViewBag.IsPainting = state.IsPaintingOnly;
             return View(StepVm(state.UsesServicesFirstFlow ? 3 : 2, "Tell us about your business", "", state,
                 state.UsesServicesFirstFlow ? Url.Action(nameof(Services))! : Url.Action(nameof(Categories))!));
         }
@@ -428,16 +447,13 @@ public class ProviderRegistrationController(
     [HttpGet]
     public async Task<IActionResult> ExamIntro()
     {
-        var state = await registration.GetAsync();
-        var (readyState, redirect) = state.UsesServicesBeforeExamIntro
-            ? await RequireServicesCompletedAsync()
-            : await RequireBusinessCompletedAsync();
+        var (readyState, redirect) = await RequireExamReadyAsync();
         if (redirect != null)
         {
             return redirect;
         }
 
-        state = readyState!;
+        var state = readyState!;
 
         if (!state.UsesExamIntroFlow)
         {
@@ -456,10 +472,9 @@ public class ProviderRegistrationController(
         ViewBag.IsBathroom = state.IsBathroomOnly;
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
+        ViewBag.IsPainting = state.IsPaintingOnly;
 
-        var introBack = state.UsesServicesBeforeExamIntro
-            ? Url.Action(nameof(Services))!
-            : Url.Action(nameof(Business))!;
+        var introBack = GetExamIntroBackUrl(state);
 
         return View(StepVm(4, introTitle, introSubtitle, state, introBack));
     }
@@ -468,7 +483,13 @@ public class ProviderRegistrationController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ExamIntro(string? action)
     {
-        var state = await registration.GetAsync();
+        var (readyState, redirect) = await RequireExamReadyAsync();
+        if (redirect != null)
+        {
+            return redirect;
+        }
+
+        var state = readyState!;
         state.ExamIntroAcknowledged = true;
         await registration.SaveAsync(state, 4);
 
@@ -482,9 +503,8 @@ public class ProviderRegistrationController(
             ViewBag.IsBathroom = state.IsBathroomOnly;
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
-            var introBack = state.UsesServicesBeforeExamIntro
-                ? Url.Action(nameof(Services))!
-                : Url.Action(nameof(Business))!;
+            ViewBag.IsPainting = state.IsPaintingOnly;
+            var introBack = GetExamIntroBackUrl(state);
             return View(StepVm(4, introTitle, introSubtitle, state, introBack));
         }
 
@@ -494,7 +514,7 @@ public class ProviderRegistrationController(
     [HttpGet]
     public async Task<IActionResult> Exam(int page = 1)
     {
-        var (state, redirect) = await RequireBusinessCompletedAsync();
+        var (state, redirect) = await RequireExamReadyAsync();
         if (redirect != null)
         {
             return redirect;
@@ -562,25 +582,30 @@ public class ProviderRegistrationController(
                                 ? "INDOR kitchen remodeling exam"
                                 : state.IsRoofingOnly
                                     ? "INDOR roofing qualification"
-                                    : $"INDOR {tradeLabel.ToLowerInvariant()} exam";
+                                    : state.IsPaintingOnly
+                                        ? "INDOR painting qualification exam"
+                                        : $"INDOR {tradeLabel.ToLowerInvariant()} exam";
 
-        var examSubtitle = state.IsHandymanOnly || state.IsConstructionOnly
-            ? "Answer the questions below to continue your qualification."
-            : state.IsRoofingOnly
-                ? "Answer the roofing trade questions to continue your qualification."
-                : state.IsBathroomOnly
-                    ? "Pass the trade qualification to unlock bathroom remodeling jobs only."
-                    : state.IsKitchenOnly
-                        ? "Pass the trade qualification to unlock kitchen remodeling jobs only."
-                        : state.IsHvacOnly
-                            ? "Pass the trade qualification to unlock HVAC jobs only."
-                            : $"Pass the trade qualification to unlock {tradeLabel.ToLowerInvariant()} jobs only.";
+        var examSubtitle = state.IsPaintingOnly
+            ? "Answer the questions below to continue your painting qualification."
+            : state.IsHandymanOnly || state.IsConstructionOnly
+                ? "Answer the questions below to continue your qualification."
+                : state.IsRoofingOnly
+                    ? "Answer the roofing trade questions to continue your qualification."
+                    : state.IsBathroomOnly
+                        ? "Pass the trade qualification to unlock bathroom remodeling jobs only."
+                        : state.IsKitchenOnly
+                            ? "Pass the trade qualification to unlock kitchen remodeling jobs only."
+                            : state.IsHvacOnly
+                                ? "Pass the trade qualification to unlock HVAC jobs only."
+                                : $"Pass the trade qualification to unlock {tradeLabel.ToLowerInvariant()} jobs only.";
 
         ViewBag.IsHandyman = state.IsHandymanOnly;
         ViewBag.IsConstruction = state.IsConstructionOnly;
         ViewBag.IsBathroom = state.IsBathroomOnly;
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
+        ViewBag.IsPainting = state.IsPaintingOnly;
 
         return View(StepVm(4, examTitle, examSubtitle, state, backUrl));
     }
@@ -736,9 +761,11 @@ public class ProviderRegistrationController(
                             ? "Add the documents needed for bathroom remodeling approval."
                             : state.IsKitchenOnly
                                 ? "Add the documents needed for kitchen remodeling approval."
-                                : state.IsRoofingOnly
-                                    ? "Submit the required files so INDOR can verify your company."
-                                    : "Upload required documents (PDF or image).";
+                                : state.IsPaintingOnly
+                                    ? "Submit the items needed to verify your painting provider account."
+                                    : state.IsRoofingOnly
+                                        ? "Submit the required files so INDOR can verify your company."
+                                        : "Upload required documents (PDF or image).";
 
         var documentsBack = state.UsesServicesFirstFlow
             ? Url.Action(nameof(Business))!
@@ -758,14 +785,17 @@ public class ProviderRegistrationController(
         ViewBag.IsBathroom = state.IsBathroomOnly;
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
+        ViewBag.IsPainting = state.IsPaintingOnly;
 
-        var docTitle = state.IsRoofingOnly
-            ? "Upload your roofing documents"
-            : state.IsBathroomOnly || state.IsKitchenOnly
-                ? "Upload your supporting documents"
-                : state.IsHandymanOnly || state.IsConstructionOnly
-                    ? "Upload documents"
-                    : "Upload required documents";
+        var docTitle = state.IsPaintingOnly
+            ? "Upload your documents"
+            : state.IsRoofingOnly
+                ? "Upload your roofing documents"
+                : state.IsBathroomOnly || state.IsKitchenOnly
+                    ? "Upload your supporting documents"
+                    : state.IsHandymanOnly || state.IsConstructionOnly
+                        ? "Upload documents"
+                        : "Upload required documents";
 
         return View(StepVm(5, docTitle, docSubtitle, state, documentsBack));
     }
@@ -848,7 +878,8 @@ public class ProviderRegistrationController(
             state.ExamPassed != true &&
             !state.IsBathroomOnly &&
             !state.IsKitchenOnly &&
-            !state.IsRoofingOnly)
+            !state.IsRoofingOnly &&
+            !state.IsPaintingOnly)
         {
             return RedirectToAction(nameof(Exam));
         }
@@ -868,14 +899,16 @@ public class ProviderRegistrationController(
                     ? "Review your roofing application"
                     : state.IsKitchenOnly
                         ? "Review your kitchen remodeling application"
-                        : state.IsConstructionOnly
-                        ? "Review your application"
-                        : state.IsBathroomOnly
-                            ? "Review your bathroom remodeling application"
-                            : "Review & submit";
+                        : state.IsPaintingOnly
+                            ? "Review your painting application"
+                            : state.IsConstructionOnly
+                                ? "Review your application"
+                                : state.IsBathroomOnly
+                                    ? "Review your bathroom remodeling application"
+                                    : "Review & submit";
         var reviewSubtitle = state.IsHvacOnly
             ? "Confirm your information before submitting for INDOR approval."
-            : state.IsBathroomOnly || state.IsKitchenOnly || state.IsRoofingOnly
+            : state.IsBathroomOnly || state.IsKitchenOnly || state.IsRoofingOnly || state.IsPaintingOnly
                 ? state.IsRoofingOnly
                     ? "Check your information before sending it to INDOR for approval."
                     : "Confirm your information before submitting to INDOR."
@@ -889,6 +922,7 @@ public class ProviderRegistrationController(
         ViewBag.IsBathroom = state.IsBathroomOnly;
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
+        ViewBag.IsPainting = state.IsPaintingOnly;
 
         return View(StepVm(6, reviewTitle, reviewSubtitle, state, Url.Action(nameof(Documents))));
     }
@@ -916,6 +950,7 @@ public class ProviderRegistrationController(
             ViewBag.IsBathroom = state.IsBathroomOnly;
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
+            ViewBag.IsPainting = state.IsPaintingOnly;
             var errTitle = state.IsHandymanOnly
                 ? "Review your handyman application"
                 : state.IsHvacOnly
@@ -924,11 +959,13 @@ public class ProviderRegistrationController(
                         ? "Review your roofing application"
                         : state.IsKitchenOnly
                             ? "Review your kitchen remodeling application"
-                            : state.IsBathroomOnly
-                            ? "Review your bathroom remodeling application"
-                            : state.IsConstructionOnly
-                                ? "Review your application"
-                                : "Review & submit";
+                            : state.IsPaintingOnly
+                                ? "Review your painting application"
+                                : state.IsBathroomOnly
+                                    ? "Review your bathroom remodeling application"
+                                    : state.IsConstructionOnly
+                                        ? "Review your application"
+                                        : "Review & submit";
             return View(StepVm(6, errTitle, "", state, Url.Action(nameof(Documents))));
         }
 
@@ -1050,6 +1087,32 @@ public class ProviderRegistrationController(
         return redirect != null ? (null, redirect) : (state, null);
     }
 
+    private async Task<(ProviderRegistrationState? State, IActionResult? Redirect)> RequireExamReadyAsync()
+    {
+        var state = await registration.GetAsync();
+        if (state.UsesServicesFirstFlow || state.UsesServicesBeforeExamIntro)
+        {
+            return await RequireServicesCompletedAsync();
+        }
+
+        return await RequireBusinessCompletedAsync();
+    }
+
+    private string GetExamIntroBackUrl(ProviderRegistrationState state)
+    {
+        if (state.UsesServicesFirstFlow)
+        {
+            return Url.Action(nameof(Business))!;
+        }
+
+        if (state.UsesServicesBeforeExamIntro)
+        {
+            return Url.Action(nameof(Services))!;
+        }
+
+        return Url.Action(nameof(Business))!;
+    }
+
     private static (string Title, string Subtitle) GetExamIntroCopy(ProviderRegistrationState state)
     {
         if (state.IsHandymanOnly)
@@ -1070,6 +1133,11 @@ public class ProviderRegistrationController(
         if (state.IsKitchenOnly)
         {
             return ("INDOR kitchen remodeling qualification", "Pass the trade qualification to unlock kitchen remodeling jobs only.");
+        }
+
+        if (state.IsPaintingOnly)
+        {
+            return ("INDOR painting qualification", "Pass the trade qualification to unlock painting jobs only.");
         }
 
         if (state.IsRoofingOnly)
@@ -1093,6 +1161,7 @@ public class ProviderRegistrationController(
         "BathroomRemodeler" => "Bathroom remodeling",
         "KitchenRemodeler" => "Kitchen remodeling",
         "RoofingContractor" => "Roofing",
+        "PaintingContractor" => "Painting",
         _ => providerType,
     };
 

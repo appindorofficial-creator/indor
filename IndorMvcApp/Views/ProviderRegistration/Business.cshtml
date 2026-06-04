@@ -7,6 +7,7 @@
     var isConstruction = ViewBag.IsConstruction as bool? == true;
     var isBathroom = ViewBag.IsBathroom as bool? == true;
     var isKitchen = ViewBag.IsKitchen as bool? == true;
+    var isPainting = ViewBag.IsPainting as bool? == true;
     var isRoofing = ViewBag.IsRoofing as bool? == true;
     var tradeLabel = ViewBag.TradeLabel as string ?? "Construction Company";
     var defaultCities = new[] { "Charlotte", "Mint Hill", "Matthews", "Indianapolis", "Carmel", "Fishers" };
@@ -195,6 +196,52 @@
                     <option value="@opt" selected="@(s.TeamSize == opt)">@opt</option>
                 }
             </select>
+        </div>
+    }
+    else if (isPainting)
+    {
+        <input type="hidden" name="ProviderType" value="PaintingContractor" />
+        <div class="prv-selected-trade-card">
+            <i class="fas fa-paint-roller"></i>
+            <div>
+                <span>Provider type (pre-selected)</span>
+                <strong>@tradeLabel</strong>
+            </div>
+            <i class="fas fa-circle-check"></i>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-building"></i>
+            <input class="ob-control" name="BusinessName" value="@s.BusinessName" placeholder="Business name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-user"></i>
+            <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" placeholder="Owner or manager name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-phone"></i>
+            <input class="ob-control" name="Phone" value="@s.Phone" type="tel" placeholder="Business phone" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-envelope"></i>
+            <input class="ob-control" name="Email" value="@s.Email" type="email" placeholder="Business email" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-calendar"></i>
+            <select class="ob-control" name="YearsExperience">
+                <option value="">Years of experience</option>
+                @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
+                {
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-location-dot"></i>
+            <input class="ob-control" name="ServiceZipCodes" value="@s.ServiceZipCodesDisplay" placeholder="Service area" />
+        </div>
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>You are applying as a Painting provider only.</span>
         </div>
     }
     else if (isBathroom)

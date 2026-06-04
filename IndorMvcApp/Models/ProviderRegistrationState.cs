@@ -11,6 +11,7 @@ public class ProviderRegistrationState
     public const string BathroomCategoryId = "bathroom";
     public const string KitchenCategoryId = "kitchen";
     public const string RoofingCategoryId = "roofing";
+    public const string PaintingCategoryId = "painting";
     public const int ExamPassingPercent = 80;
 
     public List<string> SelectedCategoryIds { get; set; } = [];
@@ -91,16 +92,20 @@ public class ProviderRegistrationState
         SelectedCategoryIds.Count == 1 &&
         SelectedCategoryIds[0].Equals(RoofingCategoryId, StringComparison.OrdinalIgnoreCase);
 
+    public bool IsPaintingOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(PaintingCategoryId, StringComparison.OrdinalIgnoreCase);
+
     public bool UsesServicesFirstFlow => IsHvacOnly || IsHandymanOnly || IsBathroomOnly;
 
     public bool UsesExamIntroFlow =>
-        IsHvacOnly || IsHandymanOnly || IsConstructionOnly || IsBathroomOnly || IsKitchenOnly || IsRoofingOnly;
+        IsHvacOnly || IsHandymanOnly || IsConstructionOnly || IsBathroomOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly;
 
     public bool UsesBusinessBeforeServicesFlow =>
-        IsPlumbingOnly || IsConstructionOnly || IsKitchenOnly || IsRoofingOnly;
+        IsPlumbingOnly || IsConstructionOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly;
 
     public bool UsesServicesBeforeExamIntro =>
-        IsConstructionOnly || IsKitchenOnly || IsRoofingOnly;
+        IsConstructionOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly;
 
     public bool IsElectricianOnly =>
         SelectedCategoryIds.Count == 1 &&

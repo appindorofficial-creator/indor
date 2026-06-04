@@ -38,6 +38,18 @@ public static class OnboardingCatalog
         new("fixture_install", "Fixture installation", "fa-faucet-drip"),
     ];
 
+    public static readonly IReadOnlyList<OnboardingOption> PaintingServiceOfferings =
+    [
+        new("interior_painting", "Interior Painting", "fa-paint-roller"),
+        new("exterior_painting", "Exterior Painting", "fa-house"),
+        new("cabinet_painting", "Cabinet Painting", "fa-box-archive"),
+        new("drywall_prep_patching", "Drywall Prep & Patching", "fa-trowel"),
+        new("trim_doors", "Trim & Doors", "fa-door-open"),
+        new("deck_fence_staining", "Deck & Fence Staining", "fa-tree"),
+        new("wallpaper_removal", "Wallpaper Removal", "fa-scroll"),
+        new("pressure_washing_prep", "Pressure Washing Prep", "fa-spray-can"),
+    ];
+
     public static readonly IReadOnlyList<OnboardingOption> RoofingServiceOfferings =
     [
         new("shingle_roof_replacement", "Shingle roof replacement", "fa-house-chimney"),

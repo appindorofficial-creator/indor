@@ -58,6 +58,11 @@ public class HomeController : Controller
             .ToListAsync();
         ViewBag.Servicios = servicios;
 
+        ViewBag.HomeCarePriorityIds = await _db.HomeCarePriorities
+            .Where(p => p.Activo)
+            .AsNoTracking()
+            .ToDictionaryAsync(p => p.Nombre.Trim(), p => p.Id, StringComparer.OrdinalIgnoreCase);
+
         var inspecciones = await _db.Inspecciones
             .Where(i => i.Activo)
             .OrderBy(i => i.Orden)

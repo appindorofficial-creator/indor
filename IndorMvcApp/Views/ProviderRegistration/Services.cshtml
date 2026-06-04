@@ -7,6 +7,7 @@
     var isConstruction = ViewBag.IsConstruction as bool? == true;
     var isBathroom = ViewBag.IsBathroom as bool? == true;
     var isKitchen = ViewBag.IsKitchen as bool? == true;
+    var isPainting = ViewBag.IsPainting as bool? == true;
     var isRoofing = ViewBag.IsRoofing as bool? == true;
 }
 <div class="ob-head-block">
@@ -16,11 +17,11 @@
 <form asp-action="Services" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
-    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing)
+    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isRoofing)
     {
         <div class="prv-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? "Search roofing service" : isKitchen ? "Search kitchen service" : isBathroom ? "Search bathroom service" : isConstruction ? "Search construction work" : isHandyman ? "Search handyman service" : "Search HVAC service")" autocomplete="off" />
+            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? "Search roofing service" : isPainting ? "Search painting service" : isKitchen ? "Search kitchen service" : isBathroom ? "Search bathroom service" : isConstruction ? "Search construction work" : isHandyman ? "Search handyman service" : "Search HVAC service")" autocomplete="off" />
         </div>
     }
     <div class="prv-chip-grid" data-chip-group id="serviceGrid">
@@ -46,6 +47,13 @@
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
             <span>You can only receive kitchen remodeling jobs related to the services selected here.</span>
+        </div>
+    }
+    else if (isPainting)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>Only painting-related services can be activated under this provider account.</span>
         </div>
     }
     else if (isBathroom)

@@ -19,6 +19,7 @@ public static class ProviderDocumentTypes
     public const string WorkPhotos = "work_photos";
     public const string ContractorLicense = "contractor_license";
     public const string RoofingLicense = "roofing_license";
+    public const string PaintingProjectPhotos = "painting_project_photos";
 
     public static readonly IReadOnlyList<(string Type, string Label, bool Required)> DefaultSlots =
     [
@@ -56,6 +57,16 @@ public static class ProviderDocumentTypes
         (BusinessRegistration, "Business registration or W-9", true),
         (Portfolio, "Project photos", true),
         (TradeCerts, "Additional certification (optional)", false),
+    ];
+
+    public static readonly IReadOnlyList<(string Type, string Label, bool Required)> PaintingSlots =
+    [
+        (BusinessRegistration, "Business license or registration", true),
+        (LiabilityInsurance, "Certificate of insurance", true),
+        (GovernmentId, "Government photo ID", true),
+        (PaintingProjectPhotos, "Painting project photos", true),
+        (Portfolio, "Portfolio or references", false),
+        (TradeCerts, "Optional certifications", false),
     ];
 
     public static readonly IReadOnlyList<(string Type, string Label, bool Required)> KitchenSlots =
@@ -133,6 +144,11 @@ public static class ProviderDocumentTypes
         if (string.Equals(tradeCode, ProviderRegistrationState.RoofingCategoryId, StringComparison.OrdinalIgnoreCase))
         {
             return RoofingSlots;
+        }
+
+        if (string.Equals(tradeCode, ProviderRegistrationState.PaintingCategoryId, StringComparison.OrdinalIgnoreCase))
+        {
+            return PaintingSlots;
         }
 
         return DefaultSlots;

@@ -21,21 +21,40 @@
                 ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
                 : item.ImageBase64;
 
-            if (item.EnableLink && item.SourceId.HasValue && !string.IsNullOrWhiteSpace(item.LinkController) && !string.IsNullOrWhiteSpace(item.LinkAction))
+            if (item.EnableLink && !string.IsNullOrWhiteSpace(item.LinkController) && !string.IsNullOrWhiteSpace(item.LinkAction))
             {
-                <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" asp-route-id="@item.SourceId" class="offering-card">
-                    <div class="offering-card-media">
-                        @if (!string.IsNullOrWhiteSpace(imgSrc))
-                        {
-                            <img src="@imgSrc" alt="@item.Name" loading="lazy" />
-                        }
-                        else
-                        {
-                            <div class="offering-card-fallback"><i class="fas @item.CtaIcon"></i></div>
-                        }
-                    </div>
-                    <span class="offering-card-label">@item.Name</span>
-                </a>
+                if (item.SourceId.HasValue)
+                {
+                    <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" asp-route-id="@item.SourceId" class="offering-card">
+                        <div class="offering-card-media">
+                            @if (!string.IsNullOrWhiteSpace(imgSrc))
+                            {
+                                <img src="@imgSrc" alt="@item.Name" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="offering-card-fallback"><i class="fas @item.CtaIcon"></i></div>
+                            }
+                        </div>
+                        <span class="offering-card-label">@item.Name</span>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="@item.LinkController" asp-action="@item.LinkAction" class="offering-card">
+                        <div class="offering-card-media">
+                            @if (!string.IsNullOrWhiteSpace(imgSrc))
+                            {
+                                <img src="@imgSrc" alt="@item.Name" loading="lazy" />
+                            }
+                            else
+                            {
+                                <div class="offering-card-fallback"><i class="fas @item.CtaIcon"></i></div>
+                            }
+                        </div>
+                        <span class="offering-card-label">@item.Name</span>
+                    </a>
+                }
             }
             else if (item.EnableSchedule && item.SourceId.HasValue)
             {
