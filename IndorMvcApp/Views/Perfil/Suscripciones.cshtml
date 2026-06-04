@@ -1,71 +1,117 @@
+@using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Subscriptions";
-    ViewData["Subtitulo"] = "Plans available for your home";
+    ViewData["Title"] = "Choose your membership";
+    ViewData["Subtitulo"] = "Pick the plan that fits your home care needs.";
+    ViewData["MembershipStep"] = 1;
+    ViewData["MembershipTotalSteps"] = 6;
     var planes = (IEnumerable<IndorMvcApp.Models.PlanMembresia>?)ViewBag.Planes ?? Enumerable.Empty<IndorMvcApp.Models.PlanMembresia>();
     var membresia = (IndorMvcApp.Models.MembresiaUsuario?)ViewBag.MembresiaActual;
+    var selectedId = ViewBag.SelectedPlanId as int?;
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    var defaultPlan = planes.FirstOrDefault(p => ProfileDisplayService.IsHomeCarePlan(p.Nombre))
+        ?? planes.FirstOrDefault(p => p.Recomendado)
+        ?? planes.FirstOrDefault();
+    var initialId = selectedId ?? defaultPlan?.Id ?? planes.First().Id;
 }
 
-<style>
-    .plan-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .plan-card {
-        background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px;
-        padding: 16px; position: relative;
-    }
-    .plan-card.active { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.15); }
-    .plan-card.recommended { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.15); }
-    .pc-flag {
-        position: absolute; top: -10px; right: 12px;
-        background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
-        font-size: .68rem; font-weight: 700; padding: 4px 10px; border-radius: 999px;
-    }
-    .plan-card h4 { margin: 0 0 4px; font-size: 1rem; }
-    .pc-sub { font-size: .78rem; color: #6B7280; margin-bottom: 8px; }
-    .pc-price { font-size: 1.4rem; font-weight: 800; color: #0066CC; margin-bottom: 10px; }
-    .pc-price small { font-size: .7rem; color: #6B7280; font-weight: 500; }
-    .plan-card ul { list-style: none; padding: 0; margin: 0 0 12px; display: flex; flex-direction: column; gap: 4px; }
-    .plan-card li { font-size: .8rem; color: #0A2540; display: flex; gap: 6px; align-items: flex-start; }
-    .plan-card li i { color: #0066CC; font-size: .7rem; margin-top: 5px; }
-    .pc-action {
-        width: 100%; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
-        border: none; padding: 10px; border-radius: 10px; font-weight: 700; cursor: pointer;
-    }
-    .pc-action[disabled] { background: #E5E7EB; color: #6B7280; cursor: default; }
-</style>
+@if (!planes.Any())
+{
+    <div class="empty">No plans available. Run <code>SeedIndorMembershipPlans.sql</code> on your database.</div>
+}
+else
+{
+    <form method="post" asp-action="SeleccionarPlan" id="planPickForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="planId" id="selectedPlanId" value="@initialId" />
 
-<div class="pf-card">
-    <h3><i class="fas fa-crown"></i> Available plans</h3>
-    @if (!planes.Any())
-    {
-        <div class="empty">No plans available.</div>
-    }
-    else
-    {
-        <div class="plan-grid">
-            @foreach (var pl in planes)
-            {
-                var feats = string.IsNullOrWhiteSpace(pl.Caracteristicas)
-                    ? Array.Empty<string>()
-                    : pl.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-                var esActual = membresia?.PlanMembresiaId == pl.Id;
-                <div class="plan-card @(esActual ? "active" : (pl.Recomendado ? "recommended" : ""))">
-                    @if (esActual) { <span class="pc-flag">Current plan</span> }
-                    else if (pl.Recomendado) { <span class="pc-flag">Recommended</span> }
+        @foreach (var pl in planes)
+        {
+            var feats = string.IsNullOrWhiteSpace(pl.Caracteristicas)
+                ? Array.Empty<string>()
+                : pl.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            var kind = ProfileDisplayService.GetPlanKind(pl);
+            var esActual = membresia?.PlanMembresiaId == pl.Id;
+            var isSelected = pl.Id == initialId;
+            var icon = ProfileDisplayService.PlanIconClass(pl.Nombre);
+            var solidCheck = ProfileDisplayService.UseSolidCheckmarks(kind);
+            var sub = string.IsNullOrWhiteSpace(pl.Subtitulo)
+                ? (kind == MembershipPlanKind.Free ? "Basic reminders only." : "")
+                : pl.Subtitulo;
+            <div class="plan-pick-card @(isSelected ? "selected" : "")"
+                 data-plan-id="@pl.Id" role="button" tabindex="0">
+                <span class="plan-badge-area">
+                    @if (isSelected)
+                    {
+                        <span class="plan-badge"><i class="fas fa-check"></i> Selected</span>
+                    }
+                    else if (pl.Recomendado)
+                    {
+                        <span class="plan-badge"><i class="fas fa-star"></i> Most popular</span>
+                    }
+                    else if (esActual)
+                    {
+                        <span class="plan-badge">Current plan</span>
+                    }
+                </span>
+                <span class="plan-pick-icon"><i class="fas @icon"></i></span>
+                <div class="plan-pick-body">
                     <h4>@pl.Nombre</h4>
-                    <div class="pc-sub">@pl.Subtitulo</div>
-                    <div class="pc-price">@pl.PrecioMensual.ToString("C0", culture) <small>/ month</small></div>
+                    @if (!string.IsNullOrWhiteSpace(sub))
+                    {
+                        <div class="sub">@sub</div>
+                    }
                     <ul>
-                        @foreach (var f in feats) { <li><i class="fas fa-check"></i><span>@f</span></li> }
+                        @foreach (var f in feats)
+                        {
+                            <li>
+                                <i class="fas fa-check @(solidCheck ? "check-solid" : "check-outline")"></i>
+                                <span>@f</span>
+                            </li>
+                        }
                     </ul>
-                    <form method="post" asp-controller="Perfil" asp-action="ActivarPlan">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="planId" value="@pl.Id" />
-                        <button type="submit" class="pc-action" @(esActual ? "disabled" : "")>
-                            @(esActual ? "Current plan" : "Activate plan")
-                        </button>
-                    </form>
                 </div>
-            }
+                <div class="plan-pick-price @(isSelected ? "price-selected" : "")">
+                    @pl.PrecioMensual.ToString("C0", culture)<em>/mo</em>
+                </div>
+            </div>
+        }
+
+        <div class="mem-footer">
+            <button type="submit" class="pf-btn">Continue <i class="fas fa-chevron-right"></i></button>
+            <a class="compare-link" href="#" onclick="return false;">Compare plan details</a>
+            <div class="mem-trust"><i class="fas fa-shield-check"></i> Cancel anytime. No long-term contracts.</div>
         </div>
-    }
-</div>
+    </form>
+}
+
+<script>
+    (function () {
+        const form = document.getElementById('planPickForm');
+        if (!form) return;
+        const hidden = document.getElementById('selectedPlanId');
+
+        function refreshBadges(selectedCard) {
+            document.querySelectorAll('.plan-pick-card').forEach(c => {
+                c.classList.remove('selected');
+                const price = c.querySelector('.plan-pick-price');
+                if (price) price.classList.remove('price-selected');
+                const area = c.querySelector('.plan-badge-area');
+                if (area) area.innerHTML = '';
+            });
+            selectedCard.classList.add('selected');
+            const priceEl = selectedCard.querySelector('.plan-pick-price');
+            if (priceEl) priceEl.classList.add('price-selected');
+            const area = selectedCard.querySelector('.plan-badge-area');
+            if (area) {
+                area.innerHTML = '<span class="plan-badge"><i class="fas fa-check"></i> Selected</span>';
+            }
+            hidden.value = selectedCard.dataset.planId;
+        }
+
+        document.querySelectorAll('.plan-pick-card').forEach(card => {
+            const pick = () => refreshBadges(card);
+            card.addEventListener('click', pick);
+            card.addEventListener('keypress', e => { if (e.key === 'Enter') pick(); });
+        });
+    })();
+</script>

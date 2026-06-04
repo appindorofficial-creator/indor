@@ -1,7 +1,10 @@
 using System.Security.Claims;
+using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
+using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,6 +15,7 @@ namespace IndorMvcApp.Controllers;
 [Authorize]
 public class PerfilController : Controller
 {
+    private const string MembershipSessionKey = "MembershipSignup";
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -28,7 +32,30 @@ public class PerfilController : Controller
         _env = env;
     }
 
-    // ====== Vistas (GET) ======
+    private async Task<MoreProfileViewModel> BuildMoreProfileAsync()
+    {
+        var userId = _userManager.GetUserId(User);
+        var user = await _userManager.GetUserAsync(User);
+        var membresia = await _db.MembresiasUsuario
+            .Include(m => m.Plan)
+            .Where(m => m.UserId == userId && m.Activa)
+            .OrderByDescending(m => m.FechaInicio)
+            .FirstOrDefaultAsync();
+
+        var homeCount = await _db.Propiedades.CountAsync(p => p.UserId == userId && p.Activo);
+        var propIds = await _db.Propiedades
+            .Where(p => p.UserId == userId && p.Activo)
+            .Select(p => p.Id)
+            .ToListAsync();
+        var docCount = propIds.Count == 0
+            ? 0
+            : await _db.PropiedadDocumentos.CountAsync(d => propIds.Contains(d.PropiedadId));
+        var serviceCount = await _db.HistorialServicios.CountAsync(h => h.UserId == userId)
+            + await _db.ProgramacionesMicroservicio.CountAsync(p => p.UserId == userId);
+
+        return ProfileDisplayService.Build(user, membresia, homeCount, docCount, serviceCount);
+    }
+
     private async Task CargarUsuarioYMembresiaAsync()
     {
         var userId = _userManager.GetUserId(User);
@@ -38,12 +65,39 @@ public class PerfilController : Controller
             .Where(m => m.UserId == userId && m.Activa)
             .OrderByDescending(m => m.FechaInicio)
             .FirstOrDefaultAsync();
+        ViewBag.MoreProfile = await BuildMoreProfileAsync();
+    }
+
+    private MembershipSignupState? GetMembershipSignup()
+    {
+        var json = HttpContext.Session.GetString(MembershipSessionKey);
+        return string.IsNullOrEmpty(json)
+            ? null
+            : JsonSerializer.Deserialize<MembershipSignupState>(json);
+    }
+
+    private void SaveMembershipSignup(MembershipSignupState state)
+    {
+        HttpContext.Session.SetString(MembershipSessionKey,
+            JsonSerializer.Serialize(state));
+    }
+
+    private void ClearMembershipSignup() =>
+        HttpContext.Session.Remove(MembershipSessionKey);
+
+    private async Task<PlanMembresia?> GetSignupPlanAsync()
+    {
+        var state = GetMembershipSignup();
+        if (state == null || state.PlanId <= 0) return null;
+        return await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == state.PlanId && p.Activo);
     }
 
     [HttpGet]
     public async Task<IActionResult> Opciones()
     {
         await CargarUsuarioYMembresiaAsync();
+        ViewData["Title"] = "Profile Options";
+        ViewData["Subtitulo"] = "Manage your account details and preferences.";
         return View();
     }
 
@@ -61,17 +115,415 @@ public class PerfilController : Controller
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.FechaCreacion)
             .ToListAsync();
+        ViewData["Title"] = "Payments & History";
+        ViewData["Subtitulo"] = "Track services, billing, and financing in one place.";
         return View();
     }
 
     [HttpGet]
-    public async Task<IActionResult> Suscripciones()
+    public async Task<IActionResult> Suscripciones(int? planId)
     {
         await CargarUsuarioYMembresiaAsync();
         ViewBag.Planes = await _db.PlanesMembresia
             .Where(p => p.Activo)
             .OrderBy(p => p.Orden)
             .ToListAsync();
+        ViewBag.SelectedPlanId = planId ?? GetMembershipSignup()?.PlanId;
+        ViewData["Title"] = "Choose your membership";
+        ViewData["Subtitulo"] = "Pick the plan that fits your home care needs.";
+        ViewData["MembershipStep"] = 1;
+        ViewData["MembershipTotalSteps"] = 6;
+        ViewData["MembershipBackUrl"] = Url.Action("Index", "Home", new { section = "more" });
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SeleccionarPlan(int planId)
+    {
+        var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == planId && p.Activo);
+        if (plan == null)
+        {
+            TempData["PerfilError"] = "Plan not found.";
+            return RedirectToAction(nameof(Suscripciones));
+        }
+
+        SaveMembershipSignup(new MembershipSignupState { PlanId = planId });
+
+        if (plan.PrecioMensual <= 0)
+        {
+            return await ActivarPlanInternal(planId);
+        }
+
+        return RedirectToAction(nameof(PlanDetalle), new { id = planId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PlanDetalle(int id)
+    {
+        var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == id && p.Activo);
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+
+        var state = GetMembershipSignup() ?? new MembershipSignupState { PlanId = id };
+        state.PlanId = id;
+        SaveMembershipSignup(state);
+
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        var kind = ProfileDisplayService.GetPlanKind(plan);
+        SetPlanDetalleViewData(plan, kind);
+        ViewData["MembershipBackUrl"] = Url.Action(nameof(Suscripciones));
+        ViewBag.PlanKind = kind;
+        return View();
+    }
+
+    private void SetPlanDetalleViewData(PlanMembresia plan, MembershipPlanKind kind)
+    {
+        var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+        var price = plan.PrecioMensual.ToString("C0", culture);
+        switch (kind)
+        {
+            case MembershipPlanKind.Filter:
+                ViewData["Title"] = "Filter Plan details";
+                ViewData["Subtitulo"] = $"See how your {price}/month plan works.";
+                ViewData["MembershipStep"] = 2;
+                break;
+            case MembershipPlanKind.HomeCare:
+                ViewData["Title"] = "Home Care Plan";
+                ViewData["Subtitulo"] = "Everything you need for ongoing home care.";
+                ViewData["MembershipStep"] = 2;
+                break;
+            case MembershipPlanKind.Premium:
+                ViewData["Title"] = "Premium Care Plan";
+                ViewData["Subtitulo"] = "Best for proactive homeowners.";
+                ViewData["MembershipStep"] = 2;
+                break;
+            default:
+                ViewData["Title"] = plan.Nombre;
+                ViewData["Subtitulo"] = $"See how your {price}/month plan works.";
+                ViewData["MembershipStep"] = 2;
+                break;
+        }
+        ViewData["MembershipTotalSteps"] = 6;
+    }
+
+    private async Task PrefillAddressFromPropertyAsync(MembershipSignupState state)
+    {
+        var userId = _userManager.GetUserId(User);
+        var prop = await _db.Propiedades
+            .Where(p => p.UserId == userId && p.Activo)
+            .OrderByDescending(p => p.FechaCreacion)
+            .FirstOrDefaultAsync();
+        if (prop == null) return;
+        if (string.IsNullOrWhiteSpace(state.PropertyAddress))
+            state.PropertyAddress = prop.Direccion;
+        if (string.IsNullOrWhiteSpace(state.ShippingAddress))
+            state.ShippingAddress = prop.Direccion;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MembresiaFiltro()
+    {
+        var plan = await GetSignupPlanAsync();
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+        if (!ProfileDisplayService.IsFilterPlan(plan.Nombre))
+            return RedirectToAction(nameof(MembresiaEntregaHogar));
+
+        var state = GetMembershipSignup() ?? new MembershipSignupState { PlanId = plan.Id };
+        await PrefillAddressFromPropertyAsync(state);
+        SaveMembershipSignup(state);
+
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        ViewBag.Signup = state;
+        ViewData["Title"] = "Tell us about your filter";
+        ViewData["Subtitulo"] = "We'll send the right filter to your home.";
+        ViewData["MembershipStep"] = 3;
+        ViewData["MembershipBackUrl"] = Url.Action(nameof(PlanDetalle), new { id = plan.Id });
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> MembresiaFiltro(
+        string? propertyAddress, string? hvacNickname, string? filterSize,
+        string? filterType, bool petsAtHome = false, IFormFile? filterPhoto = null)
+    {
+        var state = GetMembershipSignup();
+        if (state == null) return RedirectToAction(nameof(Suscripciones));
+
+        state.PropertyAddress = propertyAddress?.Trim();
+        state.HvacNickname = hvacNickname?.Trim();
+        state.FilterSize = filterSize?.Trim();
+        state.FilterType = filterType?.Trim();
+        state.PetsAtHome = petsAtHome;
+
+        if (filterPhoto != null && filterPhoto.Length > 0)
+        {
+            var ext = Path.GetExtension(filterPhoto.FileName).ToLowerInvariant();
+            if (new[] { ".jpg", ".jpeg", ".png", ".webp" }.Contains(ext))
+            {
+                var userId = _userManager.GetUserId(User) ?? "anon";
+                var carpeta = Path.Combine(_env.WebRootPath, "uploads", "membership", userId);
+                Directory.CreateDirectory(carpeta);
+                var nombre = $"filter_{DateTime.Now.Ticks}{ext}";
+                var ruta = Path.Combine(carpeta, nombre);
+                await using (var fs = new FileStream(ruta, FileMode.Create))
+                    await filterPhoto.CopyToAsync(fs);
+                state.FilterPhotoUrl = $"/uploads/membership/{userId}/{nombre}";
+            }
+        }
+
+        SaveMembershipSignup(state);
+        return RedirectToAction(nameof(MembresiaEntrega));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MembresiaEntregaHogar()
+    {
+        var plan = await GetSignupPlanAsync();
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+        var kind = ProfileDisplayService.GetPlanKind(plan);
+        if (kind is not MembershipPlanKind.HomeCare and not MembershipPlanKind.Premium)
+            return RedirectToAction(nameof(MembresiaFiltro));
+
+        var state = GetMembershipSignup() ?? new MembershipSignupState { PlanId = plan.Id };
+        await PrefillAddressFromPropertyAsync(state);
+        if (state.FirstDeliveryDate == null)
+            state.FirstDeliveryDate = DateTime.Today.AddDays(30);
+        if (string.IsNullOrWhiteSpace(state.FilterSize))
+            state.FilterSize = "16x20x1";
+        SaveMembershipSignup(state);
+
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        ViewBag.Signup = state;
+        ViewBag.PlanKind = kind;
+        ViewData["Title"] = "Set up your filter delivery";
+        ViewData["Subtitulo"] = "Confirm where and what we should send every 3 months.";
+        ViewData["MembershipStep"] = 3;
+        ViewData["MembershipTotalSteps"] = 6;
+        ViewData["MembershipBackUrl"] = Url.Action(nameof(PlanDetalle), new { id = plan.Id });
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult MembresiaEntregaHogar(
+        string? propertyAddress, string? filterSize,
+        string? deliveryCycle, DateTime? firstDeliveryDate,
+        int filterQuantity, bool petsAtHome = false)
+    {
+        var state = GetMembershipSignup();
+        if (state == null) return RedirectToAction(nameof(Suscripciones));
+
+        state.PropertyAddress = propertyAddress?.Trim();
+        state.ShippingAddress = propertyAddress?.Trim();
+        state.FilterSize = filterSize?.Trim();
+        state.FilterQuantity = filterQuantity <= 0 ? 1 : Math.Clamp(filterQuantity, 1, 10);
+        state.DeliveryCycle = string.IsNullOrWhiteSpace(deliveryCycle) ? "Every 3 months" : deliveryCycle.Trim();
+        state.FirstDeliveryDate = firstDeliveryDate;
+        state.PetsAtHome = petsAtHome;
+        SaveMembershipSignup(state);
+        return RedirectToAction(nameof(MembresiaBeneficios));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MembresiaBeneficios()
+    {
+        var plan = await GetSignupPlanAsync();
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+        var kind = ProfileDisplayService.GetPlanKind(plan);
+        if (kind is not MembershipPlanKind.HomeCare and not MembershipPlanKind.Premium)
+            return RedirectToAction(nameof(MembresiaEntrega));
+
+        var state = GetMembershipSignup() ?? new MembershipSignupState { PlanId = plan.Id };
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        ViewBag.Signup = state;
+        ViewBag.PlanKind = kind;
+        ViewData["Title"] = "Reminders & member benefits";
+        ViewData["Subtitulo"] = "Choose the maintenance alerts you want and see how your savings work.";
+        ViewData["MembershipStep"] = 4;
+        ViewData["MembershipTotalSteps"] = 6;
+        ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaEntregaHogar));
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult MembresiaBeneficios(
+        bool reminderAirFilter = true, bool reminderHvac = true,
+        bool reminderSmokeDetector = true, bool reminderSeasonal = true)
+    {
+        var state = GetMembershipSignup();
+        if (state == null) return RedirectToAction(nameof(Suscripciones));
+
+        state.ReminderAirFilter = reminderAirFilter;
+        state.ReminderHvac = reminderHvac;
+        state.ReminderSmokeDetector = reminderSmokeDetector;
+        state.ReminderSeasonal = reminderSeasonal;
+        SaveMembershipSignup(state);
+        return RedirectToAction(nameof(MembresiaRevision));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MembresiaEntrega()
+    {
+        var plan = await GetSignupPlanAsync();
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+        if (!ProfileDisplayService.IsFilterPlan(plan.Nombre))
+            return RedirectToAction(nameof(MembresiaEntregaHogar));
+
+        var state = GetMembershipSignup()!;
+        if (string.IsNullOrWhiteSpace(state.ShippingAddress))
+            state.ShippingAddress = state.PropertyAddress;
+        if (state.FirstDeliveryDate == null)
+            state.FirstDeliveryDate = DateTime.Today.AddDays(30);
+        SaveMembershipSignup(state);
+
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        ViewBag.Signup = state;
+        ViewData["Title"] = "Delivery setup";
+        ViewData["Subtitulo"] = "Choose where and when your filter should arrive.";
+        ViewData["MembershipStep"] = 4;
+        ViewData["MembershipTotalSteps"] = 6;
+        ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaFiltro));
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult MembresiaEntrega(
+        string? shippingAddress, string? deliveryCycle, DateTime? firstDeliveryDate,
+        bool shipmentReminder = true, bool replaceFilterReminder = true, bool lowInventoryReminder = true)
+    {
+        var state = GetMembershipSignup();
+        if (state == null) return RedirectToAction(nameof(Suscripciones));
+
+        state.ShippingAddress = shippingAddress?.Trim();
+        state.DeliveryCycle = string.IsNullOrWhiteSpace(deliveryCycle) ? "Every 3 months" : deliveryCycle.Trim();
+        state.FirstDeliveryDate = firstDeliveryDate;
+        state.ShipmentReminder = shipmentReminder;
+        state.ReplaceFilterReminder = replaceFilterReminder;
+        state.LowInventoryReminder = lowInventoryReminder;
+        SaveMembershipSignup(state);
+        return RedirectToAction(nameof(MembresiaRevision));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MembresiaRevision()
+    {
+        var plan = await GetSignupPlanAsync();
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+
+        var userId = _userManager.GetUserId(User);
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        ViewBag.Signup = GetMembershipSignup();
+        ViewBag.MetodosPago = await _db.MetodosPago
+            .Where(m => m.UserId == userId && m.Activo)
+            .OrderByDescending(m => m.EsPredeterminado)
+            .FirstOrDefaultAsync();
+        var kind = ProfileDisplayService.GetPlanKind(plan);
+        ViewBag.PlanKind = kind;
+        switch (kind)
+        {
+            case MembershipPlanKind.Filter:
+                ViewData["Title"] = "Review & payment";
+                ViewData["Subtitulo"] = "Confirm your Filter Plan before subscribing.";
+                ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaEntrega));
+                break;
+            case MembershipPlanKind.HomeCare:
+            case MembershipPlanKind.Premium:
+                ViewData["Title"] = "Review & payment";
+                ViewData["Subtitulo"] = $"Confirm your {plan.Nombre} before activating your membership.";
+                ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaBeneficios));
+                break;
+            default:
+                ViewData["Title"] = "Review & confirm your plan";
+                ViewData["Subtitulo"] = "Almost there! Complete your subscription setup.";
+                ViewData["MembershipBackUrl"] = Url.Action(nameof(PlanDetalle), new { id = plan.Id });
+                break;
+        }
+        ViewData["MembershipStep"] = 5;
+        ViewData["MembershipTotalSteps"] = 6;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ConfirmarMembresia(bool agreeBilling = false)
+    {
+        var state = GetMembershipSignup();
+        if (state == null) return RedirectToAction(nameof(Suscripciones));
+
+        var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == state.PlanId && p.Activo);
+        if (plan == null) return RedirectToAction(nameof(Suscripciones));
+
+        var kind = ProfileDisplayService.GetPlanKind(plan);
+        var skipBillingCheckbox = kind is MembershipPlanKind.Filter or MembershipPlanKind.HomeCare or MembershipPlanKind.Premium;
+        if (plan.PrecioMensual > 0 && !skipBillingCheckbox && !agreeBilling)
+        {
+            TempData["PerfilError"] = "Please agree to recurring billing to continue.";
+            return RedirectToAction(nameof(MembresiaRevision));
+        }
+
+        var result = await ActivarPlanInternal(state.PlanId);
+        if (result is RedirectToActionResult r && r.ActionName == nameof(MembresiaExito))
+            return result;
+
+        return RedirectToAction(nameof(MembresiaExito));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MembresiaExito()
+    {
+        var plan = await GetSignupPlanAsync();
+        if (plan == null)
+        {
+            var membresia = await _db.MembresiasUsuario
+                .Include(m => m.Plan)
+                .Where(m => m.UserId == _userManager.GetUserId(User) && m.Activa)
+                .OrderByDescending(m => m.FechaInicio)
+                .FirstOrDefaultAsync();
+            plan = membresia?.Plan;
+        }
+
+        var signup = GetMembershipSignup();
+        await CargarUsuarioYMembresiaAsync();
+        ViewBag.Plan = plan;
+        ViewBag.Signup = signup;
+        if (signup?.FirstDeliveryDate != null)
+            ViewBag.NextReminderDate = signup.FirstDeliveryDate.Value.AddDays(-7);
+
+        var kind = plan != null ? ProfileDisplayService.GetPlanKind(plan) : MembershipPlanKind.Other;
+        ViewBag.PlanKind = kind;
+        switch (kind)
+        {
+            case MembershipPlanKind.Filter:
+                ViewData["Title"] = "You're all set!";
+                ViewData["Subtitulo"] = "Your Filter Plan is now active.";
+                break;
+            case MembershipPlanKind.HomeCare:
+                ViewData["Title"] = "Welcome to Home Care Plan";
+                ViewData["Subtitulo"] = "Your membership is active.";
+                break;
+            case MembershipPlanKind.Premium:
+                ViewData["Title"] = "Welcome to Premium Care Plan";
+                ViewData["Subtitulo"] = "Your membership is active.";
+                break;
+            default:
+                ViewData["Title"] = "You're enrolled";
+                ViewData["Subtitulo"] = plan != null ? $"Your membership in {plan.Nombre} is active." : "Your plan is now active.";
+                break;
+        }
+        ViewData["MembershipStep"] = 6;
+        ViewData["MembershipTotalSteps"] = 6;
+        ViewData["MembershipBackUrl"] = Url.Action(nameof(Suscripciones));
+        ClearMembershipSignup();
         return View();
     }
 
@@ -84,6 +536,8 @@ public class PerfilController : Controller
             .Where(h => h.UserId == userId)
             .OrderByDescending(h => h.Fecha)
             .ToListAsync();
+        ViewData["Title"] = "History";
+        ViewData["Subtitulo"] = "Microservices, inspections, and past services";
         return View();
     }
 
@@ -95,6 +549,8 @@ public class PerfilController : Controller
             .Where(p => p.Activo)
             .OrderBy(p => p.Orden)
             .ToListAsync();
+        ViewData["Title"] = "Internet comparison";
+        ViewData["Subtitulo"] = "Compare internet plans and providers";
         return View();
     }
 
@@ -107,6 +563,8 @@ public class PerfilController : Controller
             .Where(m => m.UserId == userId)
             .OrderBy(m => m.Fecha)
             .ToListAsync();
+        ViewData["Title"] = "Support";
+        ViewData["Subtitulo"] = "Chat with our team";
         return View();
     }
 
@@ -148,7 +606,7 @@ public class PerfilController : Controller
                 Directory.CreateDirectory(carpeta);
                 var nombreArchivo = $"{user.Id}_{DateTime.Now.Ticks}{ext}";
                 var ruta = Path.Combine(carpeta, nombreArchivo);
-                using (var fs = new FileStream(ruta, FileMode.Create))
+                await using (var fs = new FileStream(ruta, FileMode.Create))
                 {
                     await foto.CopyToAsync(fs);
                 }
@@ -241,7 +699,6 @@ public class PerfilController : Controller
             Remitente = "User",
             Contenido = contenido.Trim()
         });
-        // Auto-respuesta del bot de soporte
         _db.MensajesSoporte.Add(new MensajeSoporte
         {
             UserId = userId,
@@ -254,10 +711,19 @@ public class PerfilController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ActivarPlan(int planId)
+    public Task<IActionResult> ActivarPlan(int planId) => ActivarPlanInternal(planId);
+
+    private async Task<IActionResult> ActivarPlanInternal(int planId)
     {
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
+
+        var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == planId && p.Activo);
+        if (plan == null)
+        {
+            TempData["PerfilError"] = "Plan not found.";
+            return RedirectToAction(nameof(Suscripciones));
+        }
 
         var actuales = await _db.MembresiasUsuario.Where(m => m.UserId == userId && m.Activa).ToListAsync();
         foreach (var m in actuales)
@@ -274,7 +740,10 @@ public class PerfilController : Controller
             Activa = true
         });
         await _db.SaveChangesAsync();
-        TempData["PerfilOk"] = "Plan activated.";
-        return RedirectToAction(nameof(Suscripciones));
+        TempData["PerfilOk"] = $"You're enrolled in {plan.Nombre}.";
+        var signupState = GetMembershipSignup() ?? new MembershipSignupState();
+        signupState.PlanId = planId;
+        SaveMembershipSignup(signupState);
+        return RedirectToAction(nameof(MembresiaExito));
     }
 }

@@ -1,0 +1,21 @@
+@using IndorMvcApp.Services
+@{
+    var plan = (IndorMvcApp.Models.PlanMembresia)ViewBag.Plan!;
+    var kind = ViewBag.PlanKind as MembershipPlanKind? ?? ProfileDisplayService.GetPlanKind(plan);
+}
+
+@switch (kind)
+{
+    case MembershipPlanKind.Filter:
+        @await Html.PartialAsync("_PlanDetalleFilter", plan)
+        break;
+    case MembershipPlanKind.HomeCare:
+        @await Html.PartialAsync("_PlanDetalleHomeCare", plan)
+        break;
+    case MembershipPlanKind.Premium:
+        @await Html.PartialAsync("_PlanDetallePremium", plan)
+        break;
+    default:
+        @await Html.PartialAsync("_PlanDetalleHomeCare", plan)
+        break;
+}

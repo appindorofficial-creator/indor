@@ -109,11 +109,21 @@ public class HomeController : Controller
             .OrderBy(p => p.Orden)
             .ToListAsync();
 
-        ViewBag.MembresiaActual = await _db.MembresiasUsuario
+        var membresiaActual = await _db.MembresiasUsuario
             .Include(m => m.Plan)
             .Where(m => m.UserId == userId && m.Activa)
             .OrderByDescending(m => m.FechaInicio)
             .FirstOrDefaultAsync();
+        ViewBag.MembresiaActual = membresiaActual;
+
+        var propIds = propiedades.Select(p => p.Id).ToList();
+        var docCount = propIds.Count == 0
+            ? 0
+            : await _db.PropiedadDocumentos.CountAsync(d => propIds.Contains(d.PropiedadId));
+        var serviceCount = await _db.HistorialServicios.CountAsync(h => h.UserId == userId)
+            + await _db.ProgramacionesMicroservicio.CountAsync(p => p.UserId == userId);
+        ViewBag.MoreProfile = ProfileDisplayService.Build(
+            usuario, membresiaActual, propiedades.Count, docCount, serviceCount);
 
         ViewBag.MetodosPago = await _db.MetodosPago
             .Where(m => m.UserId == userId && m.Activo)

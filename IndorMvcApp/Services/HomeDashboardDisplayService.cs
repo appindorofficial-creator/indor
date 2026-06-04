@@ -293,12 +293,37 @@ public static class HomeDashboardDisplayService
             .Take(3)
             .Select(d => new HomeDocumentItemViewModel
             {
-                Icon = d.Category.Contains("Warranty", StringComparison.OrdinalIgnoreCase) ? "fa-shield-halved" : "fa-file-lines",
+                Icon = DocumentIcon(d),
                 Title = d.Title,
-                Meta = $"Uploaded {d.FechaCreacion.ToLocalTime():MMM d, yyyy} • {FileTypeLabel(d.FileName, d.ContentType)}",
+                Meta = $"Uploaded {d.FechaCreacion.ToLocalTime():MMM d, yyyy}",
                 Url = url.Action("Documents", "MyHome", new { id = propiedadId }) ?? "#"
             })
             .ToList();
+    }
+
+    private static string DocumentIcon(PropiedadDocumento d)
+    {
+        var title = d.Title ?? "";
+        var cat = d.Category ?? "";
+        if (cat.Contains("Warranty", StringComparison.OrdinalIgnoreCase)
+            || title.Contains("warranty", StringComparison.OrdinalIgnoreCase))
+        {
+            return "fa-shield-halved";
+        }
+
+        if (title.Contains("deed", StringComparison.OrdinalIgnoreCase)
+            || cat.Contains("Deed", StringComparison.OrdinalIgnoreCase))
+        {
+            return "fa-file-contract";
+        }
+
+        if (title.Contains("inspection", StringComparison.OrdinalIgnoreCase)
+            || cat.Contains("Inspection", StringComparison.OrdinalIgnoreCase))
+        {
+            return "fa-file-lines";
+        }
+
+        return "fa-file-lines";
     }
 
     private static string FileTypeLabel(string? fileName, string? contentType)
@@ -319,9 +344,12 @@ public static class HomeDashboardDisplayService
             .Take(3)
             .Select(h => new HomeActivityItemViewModel
             {
-                Icon = h.RecordType.Contains("Water", StringComparison.OrdinalIgnoreCase) ? "fa-droplet"
-                    : h.Title.Contains("filter", StringComparison.OrdinalIgnoreCase) ? "fa-fan"
-                    : h.Title.Contains("upload", StringComparison.OrdinalIgnoreCase) ? "fa-file-arrow-up"
+                Icon = h.RecordType.Contains("Water", StringComparison.OrdinalIgnoreCase)
+                    || h.Title.Contains("water heater", StringComparison.OrdinalIgnoreCase) ? "fa-droplet"
+                    : h.Title.Contains("filter", StringComparison.OrdinalIgnoreCase) ? "fa-table-cells"
+                    : h.Title.Contains("upload", StringComparison.OrdinalIgnoreCase)
+                      || h.Title.Contains("report", StringComparison.OrdinalIgnoreCase) ? "fa-file-arrow-up"
+                    : h.Title.Contains("realtor", StringComparison.OrdinalIgnoreCase) ? "fa-circle-check"
                     : "fa-circle-check",
                 Title = h.Title,
                 Timestamp = h.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy 'at' h:mm tt", CultureInfo.GetCultureInfo("en-US")),

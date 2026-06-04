@@ -1,0 +1,108 @@
+@using IndorMvcApp.Services
+@{
+    var plan = (IndorMvcApp.Models.PlanMembresia)ViewBag.Plan!;
+    var signup = (IndorMvcApp.ViewModels.MembershipSignupState)ViewBag.Signup!;
+    var kind = (MembershipPlanKind)(ViewBag.PlanKind ?? MembershipPlanKind.HomeCare);
+    var deliveryDate = signup.FirstDeliveryDate ?? DateTime.Today.AddDays(30);
+    var planLabel = kind == MembershipPlanKind.Premium ? "Premium Care Plan" : "Home Care Plan";
+    var address = signup.PropertyAddress ?? signup.ShippingAddress ?? "1234 Maple Street, Austin, TX 78701";
+    var filterSize = signup.FilterSize ?? "16x20x1";
+    var frequency = signup.DeliveryCycle ?? "Every 3 months";
+}
+
+<form method="post" asp-action="MembresiaEntregaHogar" class="pf-form mem-delivery-setup-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="firstDeliveryDate" value="@deliveryDate.ToString("yyyy-MM-dd")" />
+
+    <div class="mem-setup-list">
+        <div class="mem-setup-row">
+            <span class="mw-icon"><i class="fas fa-house"></i></span>
+            <div class="mw-stack">
+                <span class="mw-label">Home address</span>
+                <input type="text" name="propertyAddress" class="mw-input-line" value="@address"
+                       placeholder="1234 Maple Street, Austin, TX 78701" required autocomplete="street-address" />
+            </div>
+            <span class="mw-trail" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+        </div>
+
+        <div class="mem-setup-row">
+            <span class="mw-icon"><i class="fas fa-wind"></i></span>
+            <div class="mw-stack">
+                <span class="mw-label">Filter size</span>
+                <input type="text" name="filterSize" class="mw-input-line" value="@filterSize"
+                       placeholder="16x20x1" />
+            </div>
+            <span class="mw-trail" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+        </div>
+
+        <div class="mem-setup-row mem-setup-row--qty">
+            <span class="mw-icon"><i class="fas fa-box"></i></span>
+            <div class="mw-stack">
+                <span class="mw-label">Quantity</span>
+            </div>
+            <div class="qty-stepper" role="group" aria-label="Quantity">
+                <button type="button" class="qty-btn" data-qty="-1" aria-label="Decrease quantity">−</button>
+                <input type="number" name="filterQuantity" id="filterQuantity" value="@signup.FilterQuantity"
+                       min="1" max="10" readonly aria-label="Quantity" />
+                <button type="button" class="qty-btn" data-qty="1" aria-label="Increase quantity">+</button>
+            </div>
+        </div>
+
+        <div class="mem-setup-row">
+            <span class="mw-icon"><i class="far fa-calendar"></i></span>
+            <div class="mw-stack">
+                <span class="mw-label">Delivery frequency</span>
+                <input type="text" name="deliveryCycle" class="mw-input-line mw-input-line--blue" value="@frequency" />
+            </div>
+            <span class="mw-trail" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
+        </div>
+
+        <div class="mem-setup-row mem-setup-row--pets">
+            <span class="mw-icon"><i class="fas fa-paw"></i></span>
+            <div class="mw-stack">
+                <span class="mw-label">Pets in the home (optional)</span>
+                <span class="mw-hint">We can help recommend replacement frequency.</span>
+            </div>
+            <label class="mem-switch" aria-label="Pets in the home">
+                <input type="checkbox" name="petsAtHome" value="true" @(signup.PetsAtHome ? "checked" : "") />
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="mem-info-banner">
+        <i class="fas fa-circle-info"></i>
+        <span>Your @planLabel includes filter delivery and maintenance reminders.</span>
+    </div>
+
+    <div class="mem-sticky-footer">
+        <button type="submit" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></button>
+        <p class="mem-help-link-wrap">
+            <a href="#" class="mem-help-link" onclick="return false;">Need help finding your filter size?</a>
+        </p>
+    </div>
+</form>
+
+<script>
+    (function () {
+        const qty = document.getElementById('filterQuantity');
+        if (!qty) return;
+        document.querySelectorAll('.qty-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const delta = parseInt(btn.dataset.qty, 10);
+                qty.value = Math.min(10, Math.max(1, (parseInt(qty.value, 10) || 1) + delta));
+            });
+        });
+        document.querySelectorAll('.mem-setup-row .mw-trail').forEach(trail => {
+            const row = trail.closest('.mem-setup-row');
+            const input = row?.querySelector('.mw-input-line');
+            if (!input) return;
+            row.style.cursor = 'pointer';
+            row.addEventListener('click', (e) => {
+                if (e.target.closest('.qty-stepper, .mem-switch, button')) return;
+                input.focus();
+                input.select();
+            });
+        });
+    })();
+</script>

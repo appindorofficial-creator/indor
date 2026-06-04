@@ -599,6 +599,7 @@
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home-dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/profile-more.css" asp-append-version="true" />
     @await Html.PartialAsync("_AppVersionHead")
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -3626,27 +3627,11 @@
     <!-- ====== MORE ====== -->
     <section class="section" id="section-more">
         @{
-            var usr = (IndorMvcApp.Models.ApplicationUser?)ViewBag.UsuarioActual;
-            var membresia = (IndorMvcApp.Models.MembresiaUsuario?)ViewBag.MembresiaActual;
-            var planes = (IEnumerable<IndorMvcApp.Models.PlanMembresia>?)ViewBag.Planes ?? Enumerable.Empty<IndorMvcApp.Models.PlanMembresia>();
-            var metodosPago = (IEnumerable<IndorMvcApp.Models.MetodoPago>?)ViewBag.MetodosPago ?? Enumerable.Empty<IndorMvcApp.Models.MetodoPago>();
-            var pagos = (IEnumerable<IndorMvcApp.Models.Pago>?)ViewBag.Pagos ?? Enumerable.Empty<IndorMvcApp.Models.Pago>();
-            var planesInternet = (IEnumerable<IndorMvcApp.Models.PlanInternet>?)ViewBag.PlanesInternet ?? Enumerable.Empty<IndorMvcApp.Models.PlanInternet>();
-            var historial = (IEnumerable<IndorMvcApp.Models.HistorialServicio>?)ViewBag.Historial ?? Enumerable.Empty<IndorMvcApp.Models.HistorialServicio>();
-            var mensajes = (IEnumerable<IndorMvcApp.Models.MensajeSoporte>?)ViewBag.MensajesSoporte ?? Enumerable.Empty<IndorMvcApp.Models.MensajeSoporte>();
-
-            string EstadoBadgeClass(string? estado) => (estado ?? "").ToLower() switch
-            {
-                "completado" => "badge badge-completado",
-                "pendiente" => "badge badge-pendiente",
-                "financiado" => "badge badge-financiado",
-                "vencido" => "badge badge-vencido",
-                _ => "badge badge-default"
-            };
-
-            var pagosPendientes = pagos.Where(p => p.Estado == "Pendiente" || p.Estado == "Vencido").ToList();
-            var pagosFinanciados = pagos.Where(p => p.Estado == "Financiado").ToList();
-            var pagosHistorial = pagos.Where(p => p.Estado == "Completado").ToList();
+            var moreProfile = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
+                ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
+            var homeLabel = moreProfile.HomeCount == 1 ? "1 Home" : $"{moreProfile.HomeCount} Homes";
+            var docLabel = moreProfile.DocumentCount == 1 ? "1 Document" : $"{moreProfile.DocumentCount} Documents";
+            var svcLabel = moreProfile.ServiceCount == 1 ? "1 Service" : $"{moreProfile.ServiceCount} Services";
         }
 
         @if (TempData["PerfilOk"] != null)
@@ -3658,120 +3643,99 @@
             <div class="alert-err"><i class="fas fa-exclamation-triangle"></i> @TempData["PerfilError"]</div>
         }
 
-        <!-- 1. Tarjeta del usuario -->
-        <div class="more-card">
-            <div class="user-card">
-                <div class="user-avatar-lg">
-                    @if (!string.IsNullOrWhiteSpace(usr?.FotoUrl))
-                    {
-                        <img src="@Url.Content("~" + usr!.FotoUrl)" alt="Foto de perfil" />
-                    }
-                    else
-                    {
-                        <span class="avatar-placeholder"><i class="fas fa-user"></i></span>
-                    }
+        <div class="more-hub">
+            @{
+                ViewData["ShowActions"] = true;
+            }
+            @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHero.cshtml", moreProfile)
+
+            <div class="more-stats">
+                <div class="more-stat">
+                    <i class="fas fa-shield-alt"></i>
+                    <div class="ms-label">Membership status</div>
+                    <div class="ms-value">@moreProfile.MembershipLabel</div>
                 </div>
-                <div class="user-info">
-                    @{
-                        var fullName = IndorMvcApp.Helpers.UserDisplayName.Format(usr);
-                        var hasName = !string.IsNullOrWhiteSpace(fullName);
-                        var hasEmail = !string.IsNullOrWhiteSpace(usr?.Email);
-                        var hasPhone = !string.IsNullOrWhiteSpace(usr?.Telefono);
-                    }
-                    <div class="uline @(hasName ? "" : "muted")">
-                        <span class="ulabel">@(hasName ? fullName : "Name")</span>
-                        <i class="far fa-user uicon"></i>
-                    </div>
-                    <div class="uline @(hasEmail ? "" : "muted")">
-                        <span class="ulabel">@(hasEmail ? usr!.Email : "Email")</span>
-                        <i class="far fa-envelope uicon"></i>
-                    </div>
-                    <div class="uline @(hasPhone ? "" : "muted")">
-                        <span class="ulabel">
-                            <i class="fas fa-phone-alt lead-icon"></i>
-                            @(hasPhone ? usr!.Telefono : "Phone")
-                        </span>
-                        <i class="fas fa-phone-alt uicon"></i>
-                    </div>
-                    <div class="uline">
-                        <span class="ulabel">
-                            @if (membresia?.Plan != null)
-                            {
-                                <span class="membership-pill"><i class="fas fa-crown"></i> @membresia.Plan.Nombre</span>
-                            }
-                            else
-                            {
-                                <span class="membership-pill none">No active membership</span>
-                            }
-                        </span>
-                        <i class="fas fa-shield-alt uicon"></i>
-                    </div>
+                <div class="more-stat">
+                    <i class="fas fa-house"></i>
+                    <div class="ms-label">Home Added</div>
+                    <div class="ms-value">@homeLabel</div>
+                </div>
+                <div class="more-stat">
+                    <i class="far fa-file-alt"></i>
+                    <div class="ms-label">Documents</div>
+                    <div class="ms-value">@docLabel</div>
+                </div>
+                <div class="more-stat">
+                    <i class="far fa-clock"></i>
+                    <div class="ms-label">Services</div>
+                    <div class="ms-value">@svcLabel</div>
                 </div>
             </div>
+
+            <p class="more-section-title">Account &amp; Membership</p>
+            <div class="more-menu-card">
+                <a class="more-menu-item" asp-controller="Perfil" asp-action="Opciones">
+                    <span class="mm-icon"><i class="fas fa-user"></i></span>
+                    <span class="mm-body">
+                        <strong>Profile Options</strong>
+                        <small>Edit details, photo, password and payment methods</small>
+                    </span>
+                    <i class="fas fa-chevron-right mm-chevron"></i>
+                </a>
+                <a class="more-menu-item" asp-controller="Perfil" asp-action="Pagos">
+                    <span class="mm-icon"><i class="fas fa-wallet"></i></span>
+                    <span class="mm-body">
+                        <strong>Payments</strong>
+                        <small>View payments, financing and billing history</small>
+                    </span>
+                    <i class="fas fa-chevron-right mm-chevron"></i>
+                </a>
+                <a class="more-menu-item" asp-controller="Perfil" asp-action="Suscripciones">
+                    <span class="mm-icon"><i class="fas fa-crown"></i></span>
+                    <span class="mm-body">
+                        <strong>Subscriptions</strong>
+                        <small>Manage plans, add-ons and renewals</small>
+                    </span>
+                    <i class="fas fa-chevron-right mm-chevron"></i>
+                </a>
+                <a class="more-menu-item" asp-controller="Perfil" asp-action="Historial">
+                    <span class="mm-icon"><i class="fas fa-clock-rotate-left"></i></span>
+                    <span class="mm-body">
+                        <strong>History</strong>
+                        <small>Microservices, inspections and past services</small>
+                    </span>
+                    <i class="fas fa-chevron-right mm-chevron"></i>
+                </a>
+            </div>
+
+            <p class="more-section-title">Home &amp; Services</p>
+            <div class="more-menu-card">
+                <a class="more-menu-item" asp-controller="Perfil" asp-action="Internet">
+                    <span class="mm-icon"><i class="fas fa-wifi"></i></span>
+                    <span class="mm-body">
+                        <strong>Internet Comparison</strong>
+                        <small>Compare internet plans and providers</small>
+                    </span>
+                    <i class="fas fa-chevron-right mm-chevron"></i>
+                </a>
+                <a class="more-menu-item" asp-controller="Perfil" asp-action="Opciones" asp-fragment="notifications">
+                    <span class="mm-icon"><i class="fas fa-bell"></i></span>
+                    <span class="mm-body">
+                        <strong>Notifications &amp; Security</strong>
+                        <small>Manage alerts, preferences and account security</small>
+                    </span>
+                    <i class="fas fa-chevron-right mm-chevron"></i>
+                </a>
+            </div>
+
+            <form method="post" asp-controller="Account" asp-action="Logout" style="margin-top:8px;">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="pf-btn danger" style="width:100%;">
+                    <i class="fas fa-right-from-bracket"></i> Sign out
+                </button>
+            </form>
         </div>
-
-		<!-- 2. MenÃº del perfil (links a vistas separadas) -->
-		<div class="more-card">
-			<h3><i class="fas fa-bars"></i> My account</h3>
-			<nav class="more-menu">
-				<a class="more-link" asp-controller="Perfil" asp-action="Opciones">
-					<span class="ml-icon"><i class="fas fa-user-gear"></i></span>
-					<span class="ml-text">
-						<strong>Profile options</strong>
-						<small>Edit details, photo, password, and payment methods</small>
-					</span>
-					<i class="fas fa-chevron-right ml-arrow"></i>
-				</a>
-				<a class="more-link" asp-controller="Perfil" asp-action="Pagos">
-					<span class="ml-icon"><i class="fas fa-money-bill-wave"></i></span>
-					<span class="ml-text">
-						<strong>Payments</strong>
-						<small>Pending, financing, and history</small>
-					</span>
-					<i class="fas fa-chevron-right ml-arrow"></i>
-				</a>
-				<a class="more-link" asp-controller="Perfil" asp-action="Suscripciones">
-					<span class="ml-icon"><i class="fas fa-crown"></i></span>
-					<span class="ml-text">
-						<strong>Subscriptions</strong>
-						<small>Plans and descriptions</small>
-					</span>
-					<i class="fas fa-chevron-right ml-arrow"></i>
-				</a>
-				<a class="more-link" asp-controller="Perfil" asp-action="Historial">
-					<span class="ml-icon"><i class="fas fa-clock-rotate-left"></i></span>
-					<span class="ml-text">
-						<strong>History</strong>
-						<small>Microservices, inspections, and services</small>
-					</span>
-					<i class="fas fa-chevron-right ml-arrow"></i>
-				</a>
-				<a class="more-link" asp-controller="Perfil" asp-action="Internet">
-					<span class="ml-icon"><i class="fas fa-wifi"></i></span>
-					<span class="ml-text">
-						<strong>Internet comparison</strong>
-						<small>Current plan vs market plans</small>
-					</span>
-					<i class="fas fa-chevron-right ml-arrow"></i>
-				</a>
-				<a class="more-link" asp-controller="Perfil" asp-action="Soporte">
-					<span class="ml-icon"><i class="fas fa-headset"></i></span>
-					<span class="ml-text">
-						<strong>Support</strong>
-						<small>Chat with our team</small>
-					</span>
-					<i class="fas fa-chevron-right ml-arrow"></i>
-				</a>
-			</nav>
-
-			<form method="post" asp-controller="Account" asp-action="Logout" style="margin-top:12px;">
-				@Html.AntiForgeryToken()
-				<button type="submit" class="opt-btn danger" style="width:100%;flex-direction:row;justify-content:center;">
-					<i class="fas fa-right-from-bracket"></i> Sign out
-				</button>
-			</form>
-		</div>
-	</section>
+    </section>
 
 	<!-- ====== BOTTOM NAV ====== -->
     <nav class="bottom-nav">

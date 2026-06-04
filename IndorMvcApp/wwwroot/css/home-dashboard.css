@@ -332,112 +332,226 @@
     cursor: pointer;
 }
 
-.hd-doc-item,
-.hd-activity-item {
+/* Recent documents + Home activity (mockup panels) */
+.hd-panel-section {
+    margin-bottom: 24px;
+}
+
+.hd-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.hd-panel-head h3 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0A2540;
+}
+
+.hd-doc-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.hd-doc-card {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 12px 0;
+    padding: 14px 16px;
     text-decoration: none;
     color: inherit;
-    border-bottom: 1px solid #F1F5F9;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    box-shadow: 0 4px 16px rgba(10, 37, 64, 0.04);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.hd-doc-item:last-child,
-.hd-activity-item:last-child {
-    border-bottom: none;
+.hd-doc-card:active {
+    border-color: #BFDBFE;
+    box-shadow: 0 6px 20px rgba(24, 103, 242, 0.08);
 }
 
 .hd-doc-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
-    border: 1.5px solid rgba(24, 103, 242, 0.25);
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    border: 1.5px solid rgba(24, 103, 242, 0.22);
+    background: #FFF;
     color: #1867F2;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 1rem;
+}
+
+.hd-doc-text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .hd-doc-title {
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
     font-weight: 700;
     color: #0A2540;
+    line-height: 1.3;
 }
 
 .hd-doc-meta {
-    margin-top: 2px;
-    font-size: 0.75rem;
+    font-size: 0.8125rem;
     color: #64748B;
+    line-height: 1.35;
+}
+
+.hd-doc-chevron {
+    color: #94A3B8;
+    font-size: 0.75rem;
+    flex-shrink: 0;
 }
 
 .hd-activity-timeline {
     position: relative;
-    padding-left: 4px;
+    margin-left: 4px;
+    padding-left: 28px;
+    border-left: 2px solid #E2E8F0;
 }
 
 .hd-activity-item {
     position: relative;
-    align-items: flex-start;
-    padding-left: 8px;
+    display: block;
+    padding: 0 0 22px;
+}
+
+.hd-activity-item:last-child {
+    padding-bottom: 0;
 }
 
 .hd-activity-dot {
-    width: 32px;
-    height: 32px;
+    position: absolute;
+    left: -41px;
+    top: 0;
+    width: 34px;
+    height: 34px;
     border-radius: 50%;
-    background: rgba(24, 103, 242, 0.12);
+    background: #FFF;
+    border: 2px solid #E2E8F0;
     color: #1867F2;
     display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 0.8125rem;
     z-index: 1;
+    box-shadow: 0 0 0 4px #F8FAFC;
 }
 
-.hd-activity-body .title {
-    font-size: 0.875rem;
+.hd-activity-body {
+    min-width: 0;
+}
+
+.hd-activity-title {
+    font-size: 0.9375rem;
     font-weight: 700;
     color: #0A2540;
+    line-height: 1.3;
 }
 
-.hd-activity-body .time {
-    margin-top: 2px;
-    font-size: 0.6875rem;
-    color: #94A3B8;
-}
-
-.hd-activity-body .desc {
+.hd-activity-time {
     margin-top: 4px;
     font-size: 0.75rem;
+    color: #94A3B8;
+    line-height: 1.35;
+}
+
+.hd-activity-desc {
+    margin-top: 6px;
+    font-size: 0.8125rem;
     color: #64748B;
-    line-height: 1.4;
+    line-height: 1.45;
 }
 
 .hd-realtor-card {
     display: flex;
-    gap: 12px;
-    align-items: flex-start;
+    gap: 8px;
+    align-items: stretch;
     padding: 16px;
-    border-radius: 16px;
-    background: linear-gradient(135deg, #EAF3FC 0%, #F4F8FD 100%);
+    border-radius: 18px;
+    background: linear-gradient(145deg, #EAF3FC 0%, #F8FBFF 55%, #EEF4FF 100%);
     border: 1px solid #DBEAFE;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.hd-realtor-content {
+    flex: 1;
+    min-width: 0;
+    z-index: 1;
 }
 
 .hd-realtor-card p {
     margin: 0;
     font-size: 0.8125rem;
     line-height: 1.5;
-    color: #334155;
+    color: #475569;
 }
 
 .hd-realtor-card strong {
     display: block;
     margin-bottom: 6px;
-    font-size: 0.875rem;
+    font-size: 0.9375rem;
+    font-weight: 800;
     color: #0A2540;
+    line-height: 1.35;
+}
+
+.hd-realtor-art {
+    position: relative;
+    width: 88px;
+    flex-shrink: 0;
+    align-self: flex-end;
+    min-height: 72px;
+}
+
+.hd-realtor-house {
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.65);
+    color: #1867F2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+.hd-realtor-tree {
+    position: absolute;
+    color: #22C55E;
+    font-size: 0.875rem;
+    opacity: 0.85;
+}
+
+.hd-realtor-tree--l {
+    left: 0;
+    bottom: 10px;
+}
+
+.hd-realtor-tree--r {
+    right: 0;
+    bottom: 28px;
+    font-size: 0.75rem;
+    opacity: 0.65;
 }
 
 .hd-realtor-actions {

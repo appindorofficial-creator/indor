@@ -144,30 +144,32 @@ else
 
     @if (Model.RecentDocuments.Count > 0)
     {
-        <div class="hd-card">
-            <div class="hd-card-head">
-                <h3>Recent documents</h3>
+        <section class="hd-panel-section" aria-labelledby="hd-recent-docs-title">
+            <div class="hd-panel-head">
+                <h3 id="hd-recent-docs-title">Recent documents</h3>
                 <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hd-link">See all</a>
             </div>
-            @foreach (var doc in Model.RecentDocuments)
-            {
-                <a href="@doc.Url" class="hd-doc-item">
-                    <span class="hd-doc-icon"><i class="fas @doc.Icon"></i></span>
-                    <span>
-                        <div class="hd-doc-title">@doc.Title</div>
-                        <div class="hd-doc-meta">@doc.Meta</div>
-                    </span>
-                    <i class="fas fa-chevron-right hd-task-chevron"></i>
-                </a>
-            }
-        </div>
+            <div class="hd-doc-list">
+                @foreach (var doc in Model.RecentDocuments)
+                {
+                    <a href="@doc.Url" class="hd-doc-card">
+                        <span class="hd-doc-icon"><i class="fas @doc.Icon"></i></span>
+                        <span class="hd-doc-text">
+                            <span class="hd-doc-title">@doc.Title</span>
+                            <span class="hd-doc-meta">@doc.Meta</span>
+                        </span>
+                        <i class="fas fa-chevron-right hd-doc-chevron" aria-hidden="true"></i>
+                    </a>
+                }
+            </div>
+        </section>
     }
 
     @if (Model.RecentActivity.Count > 0)
     {
-        <div class="hd-card">
-            <div class="hd-card-head">
-                <h3>Home activity</h3>
+        <section class="hd-panel-section" aria-labelledby="hd-home-activity-title">
+            <div class="hd-panel-head">
+                <h3 id="hd-home-activity-title">Home activity</h3>
                 <a asp-controller="MyHome" asp-action="History" asp-route-id="@Model.PropiedadId" class="hd-link">View all</a>
             </div>
             <div class="hd-activity-timeline">
@@ -176,24 +178,32 @@ else
                     <div class="hd-activity-item">
                         <span class="hd-activity-dot"><i class="fas @act.Icon"></i></span>
                         <div class="hd-activity-body">
-                            <div class="title">@act.Title</div>
-                            <div class="time">@act.Timestamp</div>
-                            <div class="desc">@act.Description</div>
+                            <div class="hd-activity-title">@act.Title</div>
+                            <div class="hd-activity-time">@act.Timestamp</div>
+                            @if (!string.IsNullOrWhiteSpace(act.Description))
+                            {
+                                <div class="hd-activity-desc">@act.Description</div>
+                            }
                         </div>
                     </div>
                 }
             </div>
-        </div>
+        </section>
     }
 
     <div class="hd-realtor-card">
-        <div style="flex:1;">
+        <div class="hd-realtor-content">
             <strong>Need help with finding a professional realtor?</strong>
             <p>Our team can help connect you with a trusted real estate professional.</p>
             <div class="hd-realtor-actions">
                 <a asp-controller="RealtorRequest" asp-action="Request" asp-route-propiedadId="@Model.PropiedadId" class="hd-btn-primary-sm">Request</a>
                 <button type="button" class="hd-btn-outline-sm nav-jump" data-target="section-more">Contact Support</button>
             </div>
+        </div>
+        <div class="hd-realtor-art" aria-hidden="true">
+            <span class="hd-realtor-house"><i class="fas fa-house"></i></span>
+            <span class="hd-realtor-tree hd-realtor-tree--l"><i class="fas fa-tree"></i></span>
+            <span class="hd-realtor-tree hd-realtor-tree--r"><i class="fas fa-tree"></i></span>
         </div>
     </div>
 }

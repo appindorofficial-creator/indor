@@ -1,0 +1,79 @@
+@{
+    var signup = (IndorMvcApp.ViewModels.MembershipSignupState)ViewBag.Signup!;
+    ViewData["MembershipTotalSteps"] = 6;
+}
+
+<form method="post" asp-action="MembresiaFiltro" enctype="multipart/form-data" class="pf-form">
+    @Html.AntiForgeryToken()
+
+    <div class="mem-wizard-row">
+        <span class="mw-icon"><i class="fas fa-house"></i></span>
+        <div class="mw-body">
+            <strong>Property address</strong>
+            <input class="mw-value" type="text" name="propertyAddress" value="@signup.PropertyAddress" placeholder="5317 Quail Ridge Dr" required />
+        </div>
+        <i class="fas fa-chevron-right mw-chevron"></i>
+    </div>
+
+    <div class="mem-wizard-row">
+        <span class="mw-icon"><i class="fas fa-fan"></i></span>
+        <div class="mw-body">
+            <strong>HVAC system nickname</strong>
+            <input class="mw-value" type="text" name="hvacNickname" value="@(signup.HvacNickname ?? "Main unit")" placeholder="Main unit" />
+        </div>
+        <i class="fas fa-chevron-right mw-chevron"></i>
+    </div>
+
+    <div class="mem-wizard-row">
+        <span class="mw-icon"><i class="fas fa-wind"></i></span>
+        <div class="mw-body">
+            <strong>Filter size</strong>
+            <input class="mw-value" type="text" name="filterSize" value="@(signup.FilterSize ?? "20 x 20 x 1")" placeholder="20 x 20 x 1" />
+        </div>
+        <i class="fas fa-chevron-right mw-chevron"></i>
+    </div>
+
+    <div class="mem-wizard-row">
+        <span class="mw-icon"><i class="fas fa-grip-lines"></i></span>
+        <div class="mw-body">
+            <strong>Filter type</strong>
+            <input class="mw-value" type="text" name="filterType" value="@(signup.FilterType ?? "Standard pleated")" placeholder="Standard pleated" />
+        </div>
+        <i class="fas fa-chevron-right mw-chevron"></i>
+    </div>
+
+    <label class="mem-wizard-row upload-row" style="cursor:pointer;">
+        <span class="mw-icon upload"><i class="fas fa-camera"></i></span>
+        <div class="mw-body">
+            <strong>Upload a photo of your current filter</strong>
+            <small style="color:#6B7280;">(optional)</small>
+            <input type="file" name="filterPhoto" accept="image/*" style="font-size:.75rem;margin-top:6px;width:100%;" />
+            @if (!string.IsNullOrWhiteSpace(signup.FilterPhotoUrl))
+            {
+                <small style="color:#16A34A;display:block;margin-top:4px;"><i class="fas fa-check"></i> Photo saved</small>
+            }
+        </div>
+        <i class="fas fa-chevron-right mw-chevron"></i>
+    </label>
+
+    <div class="mem-pets-row">
+        <div class="pets-copy">
+            <strong>Pets at home</strong>
+            <small>Homes with pets may need more frequent replacement reminders.</small>
+        </div>
+        <div class="mem-segment" role="group" aria-label="Pets at home">
+            <label>
+                <input type="radio" name="petsAtHome" value="true" @(signup.PetsAtHome ? "checked" : "") />
+                Yes
+            </label>
+            <label>
+                <input type="radio" name="petsAtHome" value="false" @(!signup.PetsAtHome ? "checked" : "") />
+                No
+            </label>
+        </div>
+    </div>
+
+    <div class="mem-sticky-footer">
+        <button type="submit" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></button>
+    </div>
+</form>

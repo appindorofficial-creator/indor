@@ -1,0 +1,68 @@
+@using IndorMvcApp.Services
+@{
+    var plan = (IndorMvcApp.Models.PlanMembresia)ViewBag.Plan!;
+    var signup = (IndorMvcApp.ViewModels.MembershipSignupState)ViewBag.Signup!;
+    var kind = (MembershipPlanKind)(ViewBag.PlanKind ?? MembershipPlanKind.HomeCare);
+    var discount = kind == MembershipPlanKind.Premium ? "10%" : "5%";
+}
+
+<form method="post" asp-action="MembresiaBeneficios">
+    @Html.AntiForgeryToken()
+
+    <div class="mem-delivery-card reminder-toggles" style="padding:8px 14px;">
+        <div style="display:flex;align-items:center;gap:10px;padding:12px 0;">
+            <span class="mw-icon"><i class="fas fa-bell"></i></span>
+            <strong style="font-size:.95rem;">Maintenance reminders</strong>
+        </div>
+        <div class="rt-row">
+            <span><i class="fas fa-wind" style="color:#0066CC;margin-right:8px;"></i> Air filter replacement</span>
+            <label class="mem-switch">
+                <input type="checkbox" name="reminderAirFilter" value="true" @(signup.ReminderAirFilter ? "checked" : "") />
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="rt-row">
+            <span><i class="fas fa-fan" style="color:#0066CC;margin-right:8px;"></i> HVAC maintenance</span>
+            <label class="mem-switch">
+                <input type="checkbox" name="reminderHvac" value="true" @(signup.ReminderHvac ? "checked" : "") />
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="rt-row">
+            <span><i class="fas fa-bell" style="color:#0066CC;margin-right:8px;"></i> Smoke detector check</span>
+            <label class="mem-switch">
+                <input type="checkbox" name="reminderSmokeDetector" value="true" @(signup.ReminderSmokeDetector ? "checked" : "") />
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="rt-row">
+            <span><i class="far fa-calendar" style="color:#0066CC;margin-right:8px;"></i> Seasonal home care reminders</span>
+            <label class="mem-switch">
+                <input type="checkbox" name="reminderSeasonal" value="true" @(signup.ReminderSeasonal ? "checked" : "") />
+                <span class="slider"></span>
+            </label>
+        </div>
+    </div>
+
+    <div class="mem-benefit-highlight">
+        <span class="discount-badge">@discount</span>
+        <div>
+            <small style="color:#0066CC;font-weight:600;">Included with @plan.Nombre</small>
+            <strong style="display:block;font-size:1rem;">@discount off INDOR services</strong>
+            <small style="color:#6B7280;">Discount is applied automatically when booking eligible services.</small>
+        </div>
+    </div>
+
+    <div class="mem-wizard-row" style="margin-top:10px;">
+        <span class="mw-icon"><i class="fas fa-wind"></i></span>
+        <div class="mw-body">
+            <strong>Filter delivery every 3 months</strong>
+        </div>
+        <i class="fas fa-circle-check" style="color:#0066CC;font-size:1.2rem;"></i>
+    </div>
+
+    <div class="mem-sticky-footer" style="display:flex;flex-direction:column;gap:10px;">
+        <button type="submit" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></button>
+        <a asp-action="MembresiaEntregaHogar" class="pf-btn outline" style="width:100%;">Review benefits</a>
+    </div>
+</form>

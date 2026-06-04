@@ -1,0 +1,134 @@
+@using IndorMvcApp.Services
+@{
+    var plan = (IndorMvcApp.Models.PlanMembresia?)ViewBag.Plan;
+    var signup = (IndorMvcApp.ViewModels.MembershipSignupState?)ViewBag.Signup;
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    var kind = plan != null ? ProfileDisplayService.GetPlanKind(plan) : MembershipPlanKind.Other;
+    var isFilter = kind == MembershipPlanKind.Filter;
+    var isHomeStyle = kind is MembershipPlanKind.HomeCare or MembershipPlanKind.Premium;
+    var nextReminder = ViewBag.NextReminderDate as DateTime?;
+    if (nextReminder == null && signup?.FirstDeliveryDate != null)
+        nextReminder = signup.FirstDeliveryDate.Value.AddDays(-7);
+    ViewData["MembershipTotalSteps"] = 6;
+}
+
+@if (isFilter && plan != null)
+{
+    <div class="mem-success-active">
+        <span class="check-bubble"><i class="fas fa-check"></i></span>
+        <div style="flex:1;">
+            <div class="sa-label">Filter Plan Active</div>
+            <div class="sa-price">@plan.PrecioMensual.ToString("C0", culture)<small>/month</small></div>
+        </div>
+    </div>
+
+    @if (signup?.FirstDeliveryDate != null)
+    {
+        <div class="mem-info-tile">
+            <span class="mit-icon"><i class="far fa-calendar"></i></span>
+            <div>
+                <div class="mit-label">Next filter delivery</div>
+                <div class="mit-value">@signup.FirstDeliveryDate.Value.ToString("MMMM d")</div>
+            </div>
+        </div>
+    }
+    @if (nextReminder != null)
+    {
+        <div class="mem-info-tile">
+            <span class="mit-icon"><i class="far fa-bell"></i></span>
+            <div>
+                <div class="mit-label">Next reminder</div>
+                <div class="mit-value">@nextReminder.Value.ToString("MMMM d")</div>
+            </div>
+        </div>
+    }
+    @if (!string.IsNullOrWhiteSpace(signup?.ShippingAddress))
+    {
+        <div class="mem-info-tile">
+            <span class="mit-icon"><i class="fas fa-location-dot"></i></span>
+            <div>
+                <div class="mit-label">Shipping to</div>
+                <div class="mit-value">@signup.ShippingAddress</div>
+            </div>
+        </div>
+    }
+
+    <div class="mem-what-next">
+        <h3>What happens next</h3>
+        <div class="wn-item"><i class="fas fa-truck"></i> We'll ship your first filter</div>
+        <div class="wn-item"><i class="far fa-bell"></i> You'll receive reminder notifications</div>
+        <div class="wn-item"><i class="fas fa-shield-check"></i> You can manage or cancel anytime</div>
+    </div>
+
+    <div class="mem-sticky-footer">
+        <a asp-action="Suscripciones" class="pf-btn" style="width:100%;">Go to my plan <i class="fas fa-chevron-right"></i></a>
+        <a asp-controller="Home" asp-action="Index" class="pf-btn outline" style="width:100%;margin-top:10px;"><i class="fas fa-house"></i> Back to home</a>
+    </div>
+}
+else if (isHomeStyle && plan != null)
+{
+    <div class="mem-success-hero-icon"><i class="fas fa-house-heart"></i></div>
+
+    <div class="pf-card" style="padding:14px;">
+        <div class="mem-welcome-row">
+            <i class="fas fa-circle-check"></i>
+            <div>
+                <strong>@plan.Nombre activated</strong>
+                <small>Your membership is now active.</small>
+            </div>
+        </div>
+        <div class="mem-welcome-row" style="border-top:1px solid #F1F5F9;">
+            <i class="fas fa-truck"></i>
+            <div>
+                <strong>First filter delivery scheduled</strong>
+                <small>Your first filter will arrive in 2–3 business days.</small>
+            </div>
+        </div>
+        <div class="mem-welcome-row" style="border-top:1px solid #F1F5F9;">
+            <i class="fas fa-bell"></i>
+            <div>
+                <strong>Maintenance reminders turned on</strong>
+                <small>We'll help you stay on top of your home care.</small>
+            </div>
+        </div>
+        <div class="mem-welcome-row" style="border-top:1px solid #F1F5F9;">
+            <i class="fas fa-tag"></i>
+            <div>
+                <strong>@(kind == MembershipPlanKind.Premium ? "10%" : "5%") service discount ready</strong>
+                <small>Your discount will be applied at checkout.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="mem-what-next">
+        <h3>What happens next</h3>
+        <div class="wn-item"><i class="fas fa-truck"></i> We'll send your filter every 3 months</div>
+        <div class="wn-item"><i class="far fa-bell"></i> You'll receive reminder notifications</div>
+        <div class="wn-item"><i class="fas fa-tag"></i> Your discount applies when booking services</div>
+    </div>
+
+    <div class="mem-sticky-footer">
+        <a asp-action="Suscripciones" class="pf-btn" style="width:100%;">Go to membership <i class="fas fa-chevron-right"></i></a>
+        <a asp-controller="Home" asp-action="Index" class="pf-btn outline" style="width:100%;margin-top:10px;">Back to home</a>
+    </div>
+}
+else if (plan != null)
+{
+    <div class="mem-success-icon"><i class="fas fa-shield-check"></i></div>
+    <div class="mem-success-title">
+        <h1>You're enrolled in @plan.Nombre</h1>
+        <p>Your membership is active.</p>
+    </div>
+    <a asp-action="Suscripciones" class="pf-btn" style="width:100%;">Go to membership</a>
+}
+else
+{
+    <div class="mem-success-icon"><i class="fas fa-check"></i></div>
+    <div class="mem-success-title"><h1>You're all set!</h1><p>Your plan is now active.</p></div>
+    <a asp-controller="Home" asp-action="Index" class="pf-btn" style="width:100%;"><i class="fas fa-house"></i> Back to home</a>
+}
+
+<p class="mem-trust" style="margin-top:20px;">
+    <i class="fas fa-shield-check"></i>
+    Thank you for choosing INDOR. We're here to make home care effortless.
+</p>

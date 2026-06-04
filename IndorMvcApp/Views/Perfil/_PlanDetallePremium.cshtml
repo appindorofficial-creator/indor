@@ -1,0 +1,33 @@
+@model IndorMvcApp.Models.PlanMembresia
+@{
+    var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    var feats = string.IsNullOrWhiteSpace(Model.Caracteristicas)
+        ? Array.Empty<string>()
+        : Model.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
+<div class="mem-filter-hero">
+    <span class="plan-pick-icon" style="width:56px;height:56px;"><i class="fas fa-shield-halved"></i></span>
+    <div class="mf-body">
+        <h2>@Model.Nombre</h2>
+        @if (!string.IsNullOrWhiteSpace(Model.Subtitulo))
+        {
+            <small style="color:#6B7280;">@Model.Subtitulo</small>
+        }
+    </div>
+    <div class="plan-pick-price">@Model.PrecioMensual.ToString("C0", culture)<em>/mo</em></div>
+</div>
+
+@foreach (var f in feats)
+{
+    <div class="mem-benefit-card">
+        <span class="mb-icon"><i class="fas fa-circle-check"></i></span>
+        <div class="mb-text"><strong>@f</strong></div>
+        <i class="fas fa-chevron-right mb-chevron"></i>
+    </div>
+}
+
+<div class="mem-sticky-footer">
+    <a asp-action="MembresiaEntregaHogar" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></a>
+    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-shield-check"></i> Cancel anytime. No long-term contracts.</div>
+</div>
