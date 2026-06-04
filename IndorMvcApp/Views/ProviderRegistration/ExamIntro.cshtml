@@ -6,8 +6,63 @@
     var isBathroom = ViewBag.IsBathroom as bool? == true;
     var isKitchen = ViewBag.IsKitchen as bool? == true;
     var isPainting = ViewBag.IsPainting as bool? == true;
+    var isFlooring = ViewBag.IsFlooring as bool? == true;
+    var isCleaning = ViewBag.IsCleaning as bool? == true;
+    var isLandscaping = ViewBag.IsLandscaping as bool? == true;
+    var isPest = ViewBag.IsPest as bool? == true;
+    var isAppliance = ViewBag.IsAppliance as bool? == true;
     var isRoofing = ViewBag.IsRoofing as bool? == true;
-    var topics = isRoofing
+    var topics = isAppliance
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-stethoscope", "Diagnostics"),
+            ("fa-bolt", "Electrical basics"),
+            ("fa-blender", "Appliance parts & components"),
+            ("fa-screwdriver-wrench", "Troubleshooting"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isPest
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-flask", "Chemical handling"),
+            ("fa-bug", "Pest identification"),
+            ("fa-clipboard-list", "Treatment planning"),
+            ("fa-spray-can", "Equipment basics"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isLandscaping
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-leaf", "Plant & lawn basics"),
+            ("fa-droplet", "Irrigation basics"),
+            ("fa-seedling", "Equipment use"),
+            ("fa-border-all", "Hardscape basics"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isCleaning
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-flask", "Chemical handling"),
+            ("fa-sparkles", "Surface care"),
+            ("fa-door-open", "Room-by-room standards"),
+            ("fa-vacuum", "Equipment basics"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isFlooring
+        ? new (string Icon, string Label)[]
+        {
+            ("fa-shield-halved", "Safety"),
+            ("fa-ruler-combined", "Measuring & layout"),
+            ("fa-layer-group", "Subfloor basics"),
+            ("fa-cubes", "Material basics"),
+            ("fa-trowel", "Installation methods"),
+            ("fa-users", "Customer best practices"),
+        }
+        : isRoofing
         ? new (string Icon, string Label)[]
         {
             ("fa-shield-halved", "Safety"),
@@ -78,6 +133,16 @@
             };
     var jobsNote = isRoofing
         ? "Only providers who pass the exam and verification can receive roofing jobs."
+        : isAppliance
+            ? "Only providers who pass the exam and verification can receive appliance repair jobs."
+        : isPest
+            ? "Only providers who pass the exam and verification can receive pest control jobs."
+        : isLandscaping
+            ? "Only providers who pass the exam and verification can receive landscaping jobs."
+        : isCleaning
+            ? "Only providers who pass the exam and verification can receive cleaning jobs."
+        : isFlooring
+            ? "Only providers who pass the exam and verification can receive flooring jobs."
         : isKitchen
             ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs."
             : isPainting

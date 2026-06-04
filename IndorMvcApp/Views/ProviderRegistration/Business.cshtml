@@ -8,7 +8,13 @@
     var isBathroom = ViewBag.IsBathroom as bool? == true;
     var isKitchen = ViewBag.IsKitchen as bool? == true;
     var isPainting = ViewBag.IsPainting as bool? == true;
+    var isFlooring = ViewBag.IsFlooring as bool? == true;
+    var isCleaning = ViewBag.IsCleaning as bool? == true;
+    var isLandscaping = ViewBag.IsLandscaping as bool? == true;
+    var isPest = ViewBag.IsPest as bool? == true;
+    var isAppliance = ViewBag.IsAppliance as bool? == true;
     var isRoofing = ViewBag.IsRoofing as bool? == true;
+    var clientSegment = s.ServiceDescription;
     var tradeLabel = ViewBag.TradeLabel as string ?? "Construction Company";
     var defaultCities = new[] { "Charlotte", "Mint Hill", "Matthews", "Indianapolis", "Carmel", "Fishers" };
     var selectedCities = s.ZipOrNeighborhoods.Count > 0 ? s.ZipOrNeighborhoods : defaultCities.Take(3).ToList();
@@ -196,6 +202,286 @@
                     <option value="@opt" selected="@(s.TeamSize == opt)">@opt</option>
                 }
             </select>
+        </div>
+    }
+    else if (isPest)
+    {
+        <input type="hidden" name="ProviderType" value="PestControlCompany" />
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-building"></i>
+            <input class="ob-control" name="BusinessName" value="@s.BusinessName" placeholder="Business name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-user"></i>
+            <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" placeholder="Owner / contact name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-phone"></i>
+            <input class="ob-control" name="Phone" value="@s.Phone" type="tel" placeholder="Phone number" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-envelope"></i>
+            <input class="ob-control" name="Email" value="@s.Email" type="email" placeholder="Email address" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-map"></i>
+            <input class="ob-control" name="ServiceZipCodes" value="@s.ServiceZipCodesDisplay" placeholder="Service area" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-calendar"></i>
+            <select class="ob-control" name="YearsExperience">
+                <option value="">Years in business</option>
+                @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
+                {
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-id-card"></i>
+            <input class="ob-control" name="LicenseNumber" value="@s.LicenseNumber" placeholder="License number" />
+        </div>
+        <p class="prv-field-label">Insured</p>
+        <div class="prv-chip-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+            <label class="prv-chip @(!s.IsInsured ? "is-selected" : "")">
+                <input type="radio" name="IsInsured" value="false" @(!s.IsInsured ? "checked" : "") /> No
+            </label>
+            <label class="prv-chip @(s.IsInsured ? "is-selected" : "")">
+                <input type="radio" name="IsInsured" value="true" @(s.IsInsured ? "checked" : "") /> Yes
+            </label>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-file-lines"></i>
+            <textarea class="ob-control" name="ServiceDescription" rows="3" maxlength="500" placeholder="Business description (optional)">@s.ServiceDescription</textarea>
+        </div>
+        <p class="prv-field-hint text-end"><span id="pestDescCount">@(s.ServiceDescription?.Length ?? 0)</span>/500</p>
+    }
+    else if (isAppliance)
+    {
+        <input type="hidden" name="ProviderType" value="ApplianceRepairCompany" />
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-building"></i>
+            <input class="ob-control" name="BusinessName" value="@s.BusinessName" placeholder="Business name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-user"></i>
+            <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" placeholder="Owner / contact name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-phone"></i>
+            <input class="ob-control" name="Phone" value="@s.Phone" type="tel" placeholder="Phone number" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-envelope"></i>
+            <input class="ob-control" name="Email" value="@s.Email" type="email" placeholder="Email address" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-location-dot"></i>
+            <input class="ob-control" name="BusinessAddress" value="@s.BusinessAddress" placeholder="Business address" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-map"></i>
+            <input class="ob-control" name="ServiceZipCodes" value="@s.ServiceZipCodesDisplay" placeholder="Service area" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-clock"></i>
+            <select class="ob-control" name="YearsExperience">
+                <option value="">Years of experience</option>
+                @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
+                {
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-certificate"></i>
+            <input class="ob-control" name="LicenseNumber" value="@s.LicenseNumber" placeholder="License / certification (if applicable)" />
+        </div>
+        <p class="prv-field-label">Mobile service available</p>
+        <div class="prv-chip-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+            <label class="prv-chip @(!s.EmergencyService ? "is-selected" : "")">
+                <input type="radio" name="EmergencyService" value="false" @(!s.EmergencyService ? "checked" : "") /> Off
+            </label>
+            <label class="prv-chip @(s.EmergencyService ? "is-selected" : "")">
+                <input type="radio" name="EmergencyService" value="true" @(s.EmergencyService ? "checked" : "") /> On
+            </label>
+        </div>
+    }
+    else if (isLandscaping)
+    {
+        <input type="hidden" name="ProviderType" value="LandscapingCompany" />
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-building"></i>
+            <input class="ob-control" name="BusinessName" value="@s.BusinessName" placeholder="Business name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-user"></i>
+            <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" placeholder="Owner / contact name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-phone"></i>
+            <input class="ob-control" name="Phone" value="@s.Phone" type="tel" placeholder="Phone number" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-envelope"></i>
+            <input class="ob-control" name="Email" value="@s.Email" type="email" placeholder="Email address" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-location-dot"></i>
+            <input class="ob-control" name="BusinessAddress" value="@s.BusinessAddress" placeholder="Business address" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-map"></i>
+            <input class="ob-control" name="ServiceZipCodes" value="@s.ServiceZipCodesDisplay" placeholder="e.g., City, County, or ZIP codes" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-calendar"></i>
+            <select class="ob-control" name="YearsExperience">
+                <option value="">Years of experience</option>
+                @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
+                {
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <p class="prv-field-label">Licensed</p>
+        <div class="prv-chip-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+            <label class="prv-chip @(!s.IsLicensed ? "is-selected" : "")">
+                <input type="radio" name="IsLicensed" value="false" @(!s.IsLicensed ? "checked" : "") /> No
+            </label>
+            <label class="prv-chip @(s.IsLicensed ? "is-selected" : "")">
+                <input type="radio" name="IsLicensed" value="true" @(s.IsLicensed ? "checked" : "") /> Yes
+            </label>
+        </div>
+        <p class="prv-field-label">Insured</p>
+        <div class="prv-chip-grid" style="grid-template-columns:1fr 1fr;margin-bottom:12px">
+            <label class="prv-chip @(!s.IsInsured ? "is-selected" : "")">
+                <input type="radio" name="IsInsured" value="false" @(!s.IsInsured ? "checked" : "") /> No
+            </label>
+            <label class="prv-chip @(s.IsInsured ? "is-selected" : "")">
+                <input type="radio" name="IsInsured" value="true" @(s.IsInsured ? "checked" : "") /> Yes
+            </label>
+        </div>
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>Your landscaping profile will only receive landscaping-related jobs.</span>
+        </div>
+    }
+    else if (isCleaning)
+    {
+        <input type="hidden" name="ProviderType" value="CleaningCompany" />
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-building"></i>
+            <input class="ob-control" name="BusinessName" value="@s.BusinessName" placeholder="Business name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-user"></i>
+            <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" placeholder="Owner or contact name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-phone"></i>
+            <input class="ob-control" name="Phone" value="@s.Phone" type="tel" placeholder="Phone number" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-envelope"></i>
+            <input class="ob-control" name="Email" value="@s.Email" type="email" placeholder="Email address" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-location-dot"></i>
+            <input class="ob-control" name="BusinessAddress" value="@s.BusinessAddress" placeholder="Business address" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-calendar"></i>
+            <select class="ob-control" name="YearsExperience">
+                <option value="">Years in business</option>
+                @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
+                {
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-users"></i>
+            <select class="ob-control" name="TeamSize">
+                <option value="">Team size</option>
+                @foreach (var opt in new[] { "Solo", "2-5 crew", "6+ crew" })
+                {
+                    <option value="@opt" selected="@(s.TeamSize == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-map"></i>
+            <input class="ob-control" name="ServiceZipCodes" value="@s.ServiceZipCodesDisplay" placeholder="Service area" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-route"></i>
+            <select class="ob-control" name="TravelRadiusMiles">
+                @foreach (var miles in new[] { 10, 15, 25, 35, 50 })
+                {
+                    <option value="@miles" selected="@(s.TravelRadiusMiles == miles)">@miles miles radius</option>
+                }
+            </select>
+        </div>
+        <p class="prv-field-label">Who do you primarily serve?</p>
+        <div class="prv-provider-type-row">
+            @foreach (var seg in new[] { ("Residential", "fa-house"), ("Commercial", "fa-building"), ("Both", "fa-city") })
+            {
+                <button type="button" class="prv-type-card @(string.Equals(clientSegment, seg.Item1, StringComparison.OrdinalIgnoreCase) ? "is-selected" : "")" data-client-segment="@seg.Item1">
+                    <i class="fas @seg.Item2"></i><span>@seg.Item1</span>
+                </button>
+            }
+        </div>
+        <input type="hidden" name="ServiceDescription" id="clientSegment" value="@clientSegment" />
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>Cleaning providers will only receive cleaning-related jobs.</span>
+        </div>
+    }
+    else if (isFlooring)
+    {
+        <input type="hidden" name="ProviderType" value="FlooringContractor" />
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-building"></i>
+            <input class="ob-control" name="BusinessName" value="@s.BusinessName" placeholder="Business name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-user"></i>
+            <input class="ob-control" name="PrimaryContact" value="@s.PrimaryContact" placeholder="Owner / contact name" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-phone"></i>
+            <input class="ob-control" name="Phone" value="@s.Phone" type="tel" placeholder="Phone number" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-envelope"></i>
+            <input class="ob-control" name="Email" value="@s.Email" type="email" placeholder="Email address" required />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-location-dot"></i>
+            <input class="ob-control" name="BusinessAddress" value="@s.BusinessAddress" placeholder="Business address" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-calendar"></i>
+            <select class="ob-control" name="YearsExperience">
+                <option value="">Years of experience</option>
+                @foreach (var opt in new[] { "Less than 1 year", "1-2 years", "3-5 years", "6-10 years", "10+ years" })
+                {
+                    <option value="@opt" selected="@(s.YearsExperience == opt)">@opt</option>
+                }
+            </select>
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-shield-halved"></i>
+            <input class="ob-control" name="LicenseNumber" value="@s.LicenseNumber" placeholder="License or certification" />
+        </div>
+        <div class="ob-field prv-field-icon">
+            <i class="fas fa-map"></i>
+            <input class="ob-control" name="ServiceZipCodes" value="@s.ServiceZipCodesDisplay" placeholder="Primary service area" />
+        </div>
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>Your account will only be approved for flooring-related work.</span>
         </div>
     }
     else if (isPainting)
@@ -539,7 +825,7 @@
     }
 
     <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
-    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing)
+    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance)
     {
         <a href="@Model.BackUrl" class="prv-save-later">Save and finish later</a>
     }
@@ -556,6 +842,13 @@ document.querySelectorAll('[data-provider-type]').forEach(btn => {
         document.querySelectorAll('[data-provider-type]').forEach(b => b.classList.toggle('is-selected', b === btn));
     });
 });
+document.querySelectorAll('[data-client-segment]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const hidden = document.getElementById('clientSegment');
+        if (hidden) hidden.value = btn.dataset.clientSegment;
+        document.querySelectorAll('[data-client-segment]').forEach(b => b.classList.toggle('is-selected', b === btn));
+    });
+});
 document.querySelectorAll('[data-handyman-role-val]').forEach(btn => {
     btn.addEventListener('click', () => {
         const val = btn.dataset.handymanRoleVal;
@@ -565,7 +858,7 @@ document.querySelectorAll('[data-handyman-role-val]').forEach(btn => {
     });
 });
 const desc = document.querySelector('textarea[name="ServiceDescription"]');
-const count = document.getElementById('svcDescCount');
+const count = document.getElementById('svcDescCount') || document.getElementById('pestDescCount');
 if (desc && count) {
     desc.addEventListener('input', () => { count.textContent = desc.value.length; });
 }

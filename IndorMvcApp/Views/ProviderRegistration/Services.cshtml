@@ -8,6 +8,11 @@
     var isBathroom = ViewBag.IsBathroom as bool? == true;
     var isKitchen = ViewBag.IsKitchen as bool? == true;
     var isPainting = ViewBag.IsPainting as bool? == true;
+    var isFlooring = ViewBag.IsFlooring as bool? == true;
+    var isCleaning = ViewBag.IsCleaning as bool? == true;
+    var isLandscaping = ViewBag.IsLandscaping as bool? == true;
+    var isPest = ViewBag.IsPest as bool? == true;
+    var isAppliance = ViewBag.IsAppliance as bool? == true;
     var isRoofing = ViewBag.IsRoofing as bool? == true;
 }
 <div class="ob-head-block">
@@ -17,11 +22,11 @@
 <form asp-action="Services" method="post">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
-    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isRoofing)
+    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance || isRoofing)
     {
         <div class="prv-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? "Search roofing service" : isPainting ? "Search painting service" : isKitchen ? "Search kitchen service" : isBathroom ? "Search bathroom service" : isConstruction ? "Search construction work" : isHandyman ? "Search handyman service" : "Search HVAC service")" autocomplete="off" />
+            <input type="search" id="serviceSearch" placeholder="@(isRoofing ? "Search roofing service" : isAppliance ? "Search appliance type" : isPest ? "Search pest control service" : isLandscaping ? "Search landscaping service" : isCleaning ? "Search cleaning service" : isFlooring ? "Search flooring services" : isPainting ? "Search painting service" : isKitchen ? "Search kitchen service" : isBathroom ? "Search bathroom service" : isConstruction ? "Search construction work" : isHandyman ? "Search handyman service" : "Search HVAC service")" autocomplete="off" />
         </div>
     }
     <div class="prv-chip-grid" data-chip-group id="serviceGrid">
@@ -54,6 +59,46 @@
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
             <span>Only painting-related services can be activated under this provider account.</span>
+        </div>
+    }
+    else if (isFlooring)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>INDOR rule: only flooring-related services can be enabled on this account.</span>
+        </div>
+    }
+    else if (isLandscaping)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>INDOR rule: stay within your landscaping specialty only.</span>
+        </div>
+    }
+    else if (isPest)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-shield-halved"></i>
+            <span>Only choose services your company is trained and licensed to perform.</span>
+        </div>
+    }
+    else if (isAppliance)
+    {
+        <div class="prv-rule-banner">
+            <i class="fas fa-circle-info"></i>
+            <span>Only choose appliance types your team is qualified to repair.</span>
+        </div>
+    }
+    else if (isCleaning)
+    {
+        <div class="prv-trust-badges">
+            <span><i class="fas fa-shield-halved"></i> Licensed where required</span>
+            <span><i class="fas fa-shield"></i> Insured</span>
+            <span><i class="fas fa-user-check"></i> Background checked</span>
+        </div>
+        <div class="prv-rule-banner">
+            <i class="fas fa-circle-info"></i>
+            <span>INDOR will only send cleaning jobs that match your approved service scope.</span>
         </div>
     }
     else if (isBathroom)

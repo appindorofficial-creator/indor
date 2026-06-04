@@ -30,8 +30,22 @@
     var isBathroom = s.IsBathroomOnly;
     var isKitchen = s.IsKitchenOnly;
     var isPainting = s.IsPaintingOnly;
+    var isFlooring = s.IsFlooringOnly;
+    var isCleaning = s.IsCleaningOnly;
+    var isLandscaping = s.IsLandscapingOnly;
+    var isPest = s.IsPestOnly;
+    var isAppliance = s.IsApplianceOnly;
     var isRoofing = s.IsRoofingOnly;
-    var usesTradeReview = isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isRoofing;
+    var usesTradeReview = isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance || isRoofing;
+    var pendingDocCount = Math.Max(0, requiredDocCount - uploadedDocCount);
+    var qualificationSummary = isLandscaping && s.IsLicensed && s.IsInsured
+        ? "Licensed & insured"
+        : isLandscaping
+            ? (s.IsLicensed ? "Licensed" : s.IsInsured ? "Insured" : "Requirements pending")
+            : "";
+    var serviceAreaSummary = !string.IsNullOrWhiteSpace(s.ServiceZipCodesDisplay)
+        ? $"{s.ServiceZipCodesDisplay} + {s.TravelRadiusMiles} miles"
+        : $"{s.PrimaryCity} + {s.TravelRadiusMiles} miles";
     var selectedServiceLabels = offerings
         .Where(o => s.SelectedServiceIds.Contains(o.Id, StringComparer.OrdinalIgnoreCase))
         .Select(o => o.Label)
@@ -65,9 +79,9 @@
 
         <a asp-action="Categories" class="prv-review-link">
 
-            <i class="fas @(isRoofing ? "fa-house-chimney" : isPainting ? "fa-paint-roller" : isKitchen ? "fa-utensils" : isBathroom ? "fa-bath" : isHandyman ? "fa-wrench" : isConstruction ? "fa-hard-hat" : "fa-fan")"></i>
+            <i class="fas @(isRoofing ? "fa-house-chimney" : isAppliance ? "fa-plug-circle-bolt" : isPest ? "fa-bug" : isLandscaping ? "fa-leaf" : isCleaning ? "fa-spray-can-sparkles" : isFlooring ? "fa-border-all" : isPainting ? "fa-paint-roller" : isKitchen ? "fa-utensils" : isBathroom ? "fa-bath" : isHandyman ? "fa-wrench" : isConstruction ? "fa-hard-hat" : "fa-fan")"></i>
 
-            <div><strong>@(isRoofing ? "Provider category" : isBathroom || isKitchen || isPainting ? "Provider type" : isHandyman ? "Category" : isConstruction ? "Selected trade" : "Primary trade")</strong><span>@tradeName</span></div>
+            <div><strong>@(isAppliance || isPest ? "Provider category" : isLandscaping ? "Provider category" : isCleaning ? "Specialty" : isRoofing ? "Provider category" : isBathroom || isKitchen || isPainting || isFlooring ? "Provider type" : isHandyman ? "Category" : isConstruction ? "Selected trade" : "Primary trade")</strong><span>@tradeName</span></div>
 
             <i class="fas fa-chevron-right"></i>
 
@@ -79,7 +93,7 @@
 
             <i class="fas fa-star"></i>
 
-            <div><strong>@(isBathroom || isKitchen || isPainting ? "Selected services" : isHandyman || isConstruction ? "Selected specialties" : "Approved specialties")</strong><span>@((isBathroom || isKitchen || isPainting) ? servicesSummary : $"{serviceCount} selected")</span></div>
+            <div><strong>@(isAppliance ? "Appliance types" : isPest || isLandscaping ? "Selected services" : isCleaning ? "Service types selected" : isBathroom || isKitchen || isPainting || isFlooring ? "Selected services" : isHandyman || isConstruction ? "Selected specialties" : "Approved specialties")</strong><span>@((isBathroom || isKitchen || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance) ? servicesSummary : $"{serviceCount} selected")</span></div>
 
             <i class="fas fa-chevron-right"></i>
 
@@ -92,14 +106,33 @@
 
             <div>
 
-                <strong>@(isRoofing ? "Business profile" : isBathroom || isKitchen || isPainting ? "Business profile" : isConstruction ? "Business info" : "Business details")</strong>
+                <strong>@(isPest ? "Business details" : isLandscaping || isCleaning ? "Business profile" : isRoofing || isFlooring ? "Business info" : isBathroom || isKitchen || isPainting ? "Business profile" : isConstruction ? "Business info" : "Business details")</strong>
 
-                @if (isRoofing)
+                @if (isAppliance)
+                {
+                    <span>@s.BusinessName</span>
+                    @if (!string.IsNullOrWhiteSpace(s.PrimaryContact)) { <span>@s.PrimaryContact</span> }
+                    @if (!string.IsNullOrWhiteSpace(businessArea)) { <span>@businessArea</span> }
+                }
+                else if (isPest)
+                {
+                    <span>@s.BusinessName</span>
+                    @if (!string.IsNullOrWhiteSpace(s.Phone) && !string.IsNullOrWhiteSpace(s.Email))
+                    {
+                        <span>@s.Phone • @s.Email</span>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(s.Email)) { <span>@s.Email</span> }
+                    @if (!string.IsNullOrWhiteSpace(businessArea)) { <span>@businessArea</span> }
+                    @if (!string.IsNullOrWhiteSpace(s.YearsExperience)) { <span>@s.YearsExperience</span> }
+                }
+                else if (isRoofing || isFlooring || isCleaning || isLandscaping)
                 {
                     <span>@s.BusinessName</span>
                     @if (!string.IsNullOrWhiteSpace(s.BusinessAddress)) { <span>@s.BusinessAddress</span> }
+                    else if (!string.IsNullOrWhiteSpace(businessArea)) { <span>@businessArea</span> }
                     @if (!string.IsNullOrWhiteSpace(s.Phone)) { <span>@s.Phone</span> }
                     <span>@s.Email</span>
+                    @if (isCleaning && !string.IsNullOrWhiteSpace(s.ServiceDescription)) { <span>Serves: @s.ServiceDescription</span> }
                     @if (!string.IsNullOrWhiteSpace(s.LicenseNumber)) { <span>@s.LicenseNumber</span> }
                 }
                 else if (isBathroom || isKitchen || isPainting)
@@ -150,7 +183,56 @@
         </a>
         }
 
-        @if (!isBathroom && !isKitchen && !isRoofing)
+        @if (isAppliance)
+        {
+        <a asp-action="@(examCompleted ? "Exam" : "ExamIntro")" asp-route-page="@(examCompleted ? 5 : null)" class="prv-review-link">
+            <i class="fas fa-award"></i>
+            <div>
+                <strong>Qualification</strong>
+                @if (examCompleted)
+                {
+                    <span class="prv-status-pill prv-status-pill--ok"><i class="fas fa-circle-check"></i> Passed @s.ExamScorePercent%</span>
+                }
+                else if (s.ExamPassed == false)
+                {
+                    <span>Not passed</span>
+                }
+                else
+                {
+                    <span>20-question exam required</span>
+                    <span>Passing score: @ProviderRegistrationState.ExamPassingPercent%</span>
+                }
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        }
+        else if (isLandscaping || isPest)
+        {
+        <a asp-action="@(examCompleted ? "Exam" : "ExamIntro")" asp-route-page="@(examCompleted ? 5 : null)" class="prv-review-link">
+            <i class="fas fa-award"></i>
+            <div>
+                <strong>Qualification status</strong>
+                @if (examCompleted)
+                {
+                    <span class="prv-status-pill prv-status-pill--ok"><i class="fas fa-circle-check"></i> Passed @s.ExamScorePercent%</span>
+                    @if (isLandscaping && !string.IsNullOrWhiteSpace(qualificationSummary)) { <span>@qualificationSummary</span> }
+                    @if (isPest && s.IsInsured) { <span>Insured</span> }
+                    <span>All requirements met</span>
+                }
+                else if (s.ExamPassed == false)
+                {
+                    <span>Not passed</span>
+                }
+                else
+                {
+                    <span class="prv-status-pill prv-status-pill--ok"><i class="fas fa-circle-check"></i> Ready for exam</span>
+                    @if (isPest) { <span>All requirements met</span> }
+                }
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        }
+        else if (!isBathroom && !isKitchen && !isRoofing)
         {
         <a asp-action="Exam" asp-route-page="5" class="prv-review-link">
 
@@ -189,7 +271,9 @@
 
             <i class="fas fa-file-lines"></i>
 
-            <div><strong>@(isRoofing || isBathroom || isKitchen ? "Documents" : isHandyman || isConstruction ? "Documents status" : "Documents uploaded")</strong><span>@((isRoofing || isBathroom || isKitchen) ? $"{uploadedDocCount} uploaded" : isHandyman || isConstruction ? $"{uploadedDocCount} items" : $"{uploadedDocCount} of {requiredDocCount} required")</span></div>
+            <div><strong>@(isPest || isAppliance ? "Documents" : isLandscaping ? "Documents uploaded" : isRoofing || isBathroom || isKitchen || isPainting || isFlooring || isCleaning ? "Documents" : isHandyman || isConstruction ? "Documents status" : "Documents uploaded")</strong>
+                <span>@((isPest || isAppliance) ? $"{uploadedDocCount} uploaded, {pendingDocCount} pending" : (isRoofing || isBathroom || isKitchen || isPainting || isFlooring || isCleaning || isLandscaping) ? (isLandscaping ? $"{uploadedDocCount} documents" : $"{uploadedDocCount} of {requiredDocCount} uploaded") : isHandyman || isConstruction ? $"{uploadedDocCount} items" : $"{uploadedDocCount} of {requiredDocCount} required")</span>
+            </div>
 
             <i class="fas fa-chevron-right"></i>
 
@@ -218,6 +302,23 @@
         </a>
         }
 
+        @if (isCleaning)
+        {
+        <a asp-action="Business" class="prv-review-link">
+            <i class="fas fa-location-dot"></i>
+            <div><strong>Service area</strong><span>@serviceAreaSummary</span><span>Primary service area</span></div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        }
+
+        @if (isAppliance)
+        {
+        <div class="prv-rule-banner" style="margin-top:12px">
+            <i class="fas fa-shield-halved"></i>
+            <span>INDOR rule: one provider category per account.</span>
+        </div>
+        }
+
     </div>
 
     <div class="prv-rule-banner">
@@ -226,7 +327,7 @@
 
         <div>
 
-            <strong>@(isRoofing ? "INDOR will review your roofing application before activating your account." : (isBathroom || isKitchen) ? "Your application will be reviewed by the INDOR team before approval." : isConstruction ? "Once submitted, INDOR will review your profile, license, insurance, and qualifications before activation." : isHandyman ? "Applications are reviewed before activation." : "INDOR reviews each provider manually before activating job access.")</strong>
+            <strong>@(isAppliance ? "Applications are reviewed before approval." : isPest ? "After submission, INDOR will review your profile and documents." : isLandscaping ? "INDOR will review your profile after submission." : isCleaning ? "Your application will be reviewed before your provider account is activated." : isFlooring || isPainting ? "INDOR will review your application before activating your account." : isRoofing ? "INDOR will review your roofing application before activating your account." : (isBathroom || isKitchen) ? "Your application will be reviewed by the INDOR team before approval." : isConstruction ? "Once submitted, INDOR will review your profile, license, insurance, and qualifications before activation." : isHandyman ? "Applications are reviewed before activation." : "INDOR reviews each provider manually before activating job access.")</strong>
 
             @if (!isHandyman && !isConstruction) { <span>You'll receive an email once your application is reviewed.</span> }
 
@@ -286,7 +387,7 @@ else
     {
         <label class="prv-check-row">
             <input type="checkbox" name="confirmAccurate" value="true" />
-            <span>@(isRoofing ? "I confirm my information is accurate" : isPainting ? "I confirm that all information is accurate and that I will only perform approved painting work through INDOR." : isKitchen ? "I confirm that all information is accurate and that I will only perform approved kitchen remodeling work through INDOR." : isBathroom ? "I confirm that all information is accurate and that I will only perform approved bathroom remodeling work through INDOR." : isHandyman || isConstruction ? "I confirm that I only offer services I am qualified and approved to perform through INDOR." : $"I confirm that all information is accurate and that I will only perform approved {tradeName.ToLowerInvariant()} work.")</span>
+            <span>@(isRoofing ? "I confirm my information is accurate" : isAppliance ? "I confirm that all information is accurate and that I will only perform approved appliance repair work through INDOR." : isPest ? "I confirm that all information is accurate and that I will only perform approved pest control work through INDOR." : isLandscaping ? "I confirm that all information is accurate and that I will only perform approved landscaping work through INDOR." : isCleaning ? "I confirm that all information is accurate and that I will only perform approved cleaning work through INDOR." : isFlooring ? "I confirm that all information is accurate and that I will only perform approved flooring work through INDOR." : isPainting ? "I confirm that all information is accurate and that I will only perform approved painting work through INDOR." : isKitchen ? "I confirm that all information is accurate and that I will only perform approved kitchen remodeling work through INDOR." : isBathroom ? "I confirm that all information is accurate and that I will only perform approved bathroom remodeling work through INDOR." : isHandyman || isConstruction ? "I confirm that I only offer services I am qualified and approved to perform through INDOR." : $"I confirm that all information is accurate and that I will only perform approved {tradeName.ToLowerInvariant()} work.")</span>
         </label>
         @if (isRoofing)
         {
@@ -299,7 +400,7 @@ else
 
     <button type="submit" class="ob-btn ob-btn-primary">Submit application</button>
 
-    <a asp-action="Categories" class="ob-btn ob-btn-outline prv-review-edit-btn">@(isRoofing ? "Edit answers" : usesTradeReview ? "Edit information" : "Edit application")</a>
+    <a asp-action="Documents" class="ob-btn ob-btn-outline prv-review-edit-btn">@(isAppliance ? "Back" : isPest || isLandscaping ? "Edit information" : isRoofing ? "Edit answers" : usesTradeReview ? "Edit information" : "Edit application")</a>
 
 </form>
 

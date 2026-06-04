@@ -10,6 +10,11 @@
     var isBathroom = ViewBag.IsBathroom as bool? == true || Model.State.IsBathroomOnly;
     var isKitchen = ViewBag.IsKitchen as bool? == true || Model.State.IsKitchenOnly;
     var isPainting = ViewBag.IsPainting as bool? == true || Model.State.IsPaintingOnly;
+    var isFlooring = ViewBag.IsFlooring as bool? == true || Model.State.IsFlooringOnly;
+    var isCleaning = ViewBag.IsCleaning as bool? == true || Model.State.IsCleaningOnly;
+    var isLandscaping = ViewBag.IsLandscaping as bool? == true || Model.State.IsLandscapingOnly;
+    var isPest = ViewBag.IsPest as bool? == true || Model.State.IsPestOnly;
+    var isAppliance = ViewBag.IsAppliance as bool? == true || Model.State.IsApplianceOnly;
     var isRoofing = ViewBag.IsRoofing as bool? == true || Model.State.IsRoofingOnly;
 }
 <div class="ob-head-block">
@@ -23,7 +28,7 @@
 {
     var uploaded = string.Equals(slot.Status, "Uploaded", StringComparison.OrdinalIgnoreCase);
     var statusClass = uploaded ? "is-uploaded" : slot.Required ? "is-required" : "is-optional";
-    var statusText = uploaded ? "Uploaded" : ((isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isRoofing) && slot.Required) ? "Required" : slot.Required ? "Required" : "Optional";
+    var statusText = uploaded ? "Uploaded" : ((isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance || isRoofing) && slot.Required) ? "Required" : slot.Required ? "Required" : (isAppliance ? "Pending" : "Optional");
     <div class="prv-doc-row @statusClass">
         <div class="prv-doc-row-icon"><i class="fas @(uploaded ? "fa-circle-check" : "fa-file-lines")"></i></div>
         <div class="prv-doc-row-body">
@@ -66,6 +71,57 @@
         <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Certificate of insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
         <div class="prv-doc-upload"><label for="portfolioFile">Portfolio photos</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
         <div class="prv-doc-upload"><label for="referencesFile">Customer references (optional)</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+    }
+    else if (isPainting)
+    {
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="paintingProjectPhotosFile">Painting project photos</label><input type="file" id="paintingProjectPhotosFile" name="paintingProjectPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">Certifications (if applicable)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+    }
+    else if (isFlooring)
+    {
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="flooringProjectPhotosFile">Flooring project photos</label><input type="file" id="flooringProjectPhotosFile" name="flooringProjectPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">Certifications (if applicable)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+    }
+    else if (isPest)
+    {
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="pestControlLicenseFile">Pest control license</label><input type="file" id="pestControlLicenseFile" name="pestControlLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Insurance certificate</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">Optional certifications</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+    }
+    else if (isAppliance)
+    {
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">Photo ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Proof of insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="applianceRepairCertificationFile">Appliance repair certification (if applicable)</label><input type="file" id="applianceRepairCertificationFile" name="applianceRepairCertificationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">W-9 / tax form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">Portfolio or job photos</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+    }
+    else if (isLandscaping)
+    {
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">General liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">Photo ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">Project photos / past work</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+    }
+    else if (isCleaning)
+    {
+        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license (if applicable)</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">W-9 / Tax form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="cleaningWorkPhotosFile">Before &amp; after work photos</label><input type="file" id="cleaningWorkPhotosFile" name="cleaningWorkPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     else if (isConstruction)
     {
@@ -112,7 +168,7 @@
     }
     <div class="prv-rule-banner">
         <i class="fas @(isHvac ? "fa-shield-halved" : "fa-circle-info")"></i>
-        <span>@(isRoofing ? "Only complete and valid documents allow account approval." : isKitchen || isBathroom ? "INDOR reviews every provider before activation." : isConstruction || isHandyman ? "Your documents are reviewed by INDOR before your account can receive jobs." : isHvac ? "Required documents help protect homeowners and keep the provider network exclusive." : $"Documents help verify that you can only receive {tradeLabel.ToLowerInvariant()} jobs you are licensed or qualified to perform.")</span>
+        <span>@(isAppliance ? "Your documents are reviewed before your profile goes live." : isPest ? "Your documents are reviewed before your account is approved." : isLandscaping ? "Accepted formats: PDF, JPG, PNG" : isCleaning ? "All documents are reviewed by INDOR before approval." : isFlooring || isPainting ? "Your documents will be reviewed before account activation." : isRoofing ? "Only complete and valid documents allow account approval." : isKitchen || isBathroom ? "INDOR reviews every provider before activation." : isConstruction || isHandyman ? "Your documents are reviewed by INDOR before your account can receive jobs." : isHvac ? "Required documents help protect homeowners and keep the provider network exclusive." : $"Documents help verify that you can only receive {tradeLabel.ToLowerInvariant()} jobs you are licensed or qualified to perform.")</span>
     </div>
     <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">Save uploads</button>
     <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">Continue</button>

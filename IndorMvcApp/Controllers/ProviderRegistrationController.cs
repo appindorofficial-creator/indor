@@ -143,6 +143,31 @@ public class ProviderRegistrationController(
                 title = "What painting services do you provide?";
                 subtitle = "Choose the services your painting business is qualified to perform.";
             }
+            else if (state?.IsFlooringOnly == true)
+            {
+                title = "What flooring services do you provide?";
+                subtitle = "Choose the flooring services your business performs.";
+            }
+            else if (state?.IsCleaningOnly == true)
+            {
+                title = "What cleaning services do you offer?";
+                subtitle = "Choose the cleaning services your business is qualified to provide.";
+            }
+            else if (state?.IsLandscapingOnly == true)
+            {
+                title = "What landscaping services do you provide?";
+                subtitle = "Choose the landscaping services your business offers.";
+            }
+            else if (state?.IsPestOnly == true)
+            {
+                title = "What pest control services do you offer?";
+                subtitle = "Choose the services your company is qualified to provide.";
+            }
+            else if (state?.IsApplianceOnly == true)
+            {
+                title = "Which appliances do you repair?";
+                subtitle = "Choose the appliance types your business is qualified to service.";
+            }
             else if (state?.IsConstructionOnly == true)
             {
                 title = "What construction work do you perform?";
@@ -171,6 +196,11 @@ public class ProviderRegistrationController(
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
         ViewBag.IsPainting = state.IsPaintingOnly;
+        ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
         ViewBag.TradeLabel = await registration.GetPrimaryTradeLabelAsync() ?? "your trade";
 
         return View(StepVm(step, title, subtitle, state, backUrl));
@@ -194,6 +224,11 @@ public class ProviderRegistrationController(
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
             ViewBag.IsPainting = state.IsPaintingOnly;
+            ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
             var back = state.UsesServicesFirstFlow ? Url.Action(nameof(Categories)) : Url.Action(nameof(Business));
             return View(StepVm(state.UsesServicesFirstFlow ? 2 : 3, "What services do you offer?", "Select at least one.", state, back));
         }
@@ -266,6 +301,11 @@ public class ProviderRegistrationController(
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
         ViewBag.IsPainting = state.IsPaintingOnly;
+        ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
         state.ServiceZipCodes = state.ServiceZipCodesDisplay;
 
         if (state.IsConstructionOnly)
@@ -293,6 +333,31 @@ public class ProviderRegistrationController(
             state.ProviderType = "PaintingContractor";
         }
 
+        if (state.IsFlooringOnly)
+        {
+            state.ProviderType = "FlooringContractor";
+        }
+
+        if (state.IsCleaningOnly)
+        {
+            state.ProviderType = "CleaningCompany";
+        }
+
+        if (state.IsLandscapingOnly)
+        {
+            state.ProviderType = "LandscapingCompany";
+        }
+
+        if (state.IsPestOnly)
+        {
+            state.ProviderType = "PestControlCompany";
+        }
+
+        if (state.IsApplianceOnly)
+        {
+            state.ProviderType = "ApplianceRepairCompany";
+        }
+
         string title;
         string subtitle;
         if (state.IsRoofingOnly)
@@ -309,6 +374,31 @@ public class ProviderRegistrationController(
         {
             title = "Tell us about your painting business";
             subtitle = "Complete your provider profile to continue.";
+        }
+        else if (state.IsFlooringOnly)
+        {
+            title = "Tell us about your flooring business";
+            subtitle = "Add your company details to continue.";
+        }
+        else if (state.IsCleaningOnly)
+        {
+            title = "Tell us about your cleaning business";
+            subtitle = "Enter the core details for your cleaning provider profile.";
+        }
+        else if (state.IsLandscapingOnly)
+        {
+            title = "Tell us about your landscaping business";
+            subtitle = "Add your business details to continue.";
+        }
+        else if (state.IsPestOnly)
+        {
+            title = "Tell us about your pest control business";
+            subtitle = "Add your company details to start the qualification process.";
+        }
+        else if (state.IsApplianceOnly)
+        {
+            title = "Tell us about your appliance repair business";
+            subtitle = "Enter your company details to start your appliance repair application.";
         }
         else if (state.IsBathroomOnly)
         {
@@ -369,6 +459,10 @@ public class ProviderRegistrationController(
         state.EmergencyService = posted.EmergencyService;
         state.ServiceZipCodes = posted.ServiceZipCodes?.Trim() ?? "";
         state.TeamSize = posted.TeamSize?.Trim() ?? "";
+        if (posted.TravelRadiusMiles > 0)
+        {
+            state.TravelRadiusMiles = posted.TravelRadiusMiles;
+        }
 
         if (serviceAreas is { Length: > 0 })
         {
@@ -403,6 +497,11 @@ public class ProviderRegistrationController(
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
             ViewBag.IsPainting = state.IsPaintingOnly;
+            ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
             return View(StepVm(state.UsesServicesFirstFlow ? 3 : 2, "Tell us about your business", "", state,
                 state.UsesServicesFirstFlow ? Url.Action(nameof(Services))! : Url.Action(nameof(Categories))!));
         }
@@ -473,6 +572,11 @@ public class ProviderRegistrationController(
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
         ViewBag.IsPainting = state.IsPaintingOnly;
+        ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
 
         var introBack = GetExamIntroBackUrl(state);
 
@@ -504,6 +608,11 @@ public class ProviderRegistrationController(
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
             ViewBag.IsPainting = state.IsPaintingOnly;
+            ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
             var introBack = GetExamIntroBackUrl(state);
             return View(StepVm(4, introTitle, introSubtitle, state, introBack));
         }
@@ -584,9 +693,29 @@ public class ProviderRegistrationController(
                                     ? "INDOR roofing qualification"
                                     : state.IsPaintingOnly
                                         ? "INDOR painting qualification exam"
-                                        : $"INDOR {tradeLabel.ToLowerInvariant()} exam";
+                                        : state.IsFlooringOnly
+                                            ? "INDOR flooring qualification exam"
+                                            : state.IsCleaningOnly
+                                                ? "INDOR cleaning qualification"
+                                                : state.IsLandscapingOnly
+                                                    ? "INDOR landscaping exam"
+                                                    : state.IsPestOnly
+                                                        ? "INDOR pest control exam"
+                                                        : state.IsApplianceOnly
+                                                            ? "INDOR appliance repair qualification"
+                                                            : $"INDOR {tradeLabel.ToLowerInvariant()} exam";
 
-        var examSubtitle = state.IsPaintingOnly
+        var examSubtitle = state.IsApplianceOnly
+            ? "Pass the trade qualification to unlock appliance repair jobs only."
+            : state.IsPestOnly
+            ? "Answer the qualification questions to unlock pest control jobs only."
+            : state.IsLandscapingOnly
+            ? "Pass the trade qualification to unlock landscaping jobs only."
+            : state.IsCleaningOnly
+            ? "Pass the trade qualification to unlock cleaning jobs only."
+            : state.IsFlooringOnly
+            ? "Answer the questions below to continue."
+            : state.IsPaintingOnly
             ? "Answer the questions below to continue your painting qualification."
             : state.IsHandymanOnly || state.IsConstructionOnly
                 ? "Answer the questions below to continue your qualification."
@@ -606,6 +735,11 @@ public class ProviderRegistrationController(
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
         ViewBag.IsPainting = state.IsPaintingOnly;
+        ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
 
         return View(StepVm(4, examTitle, examSubtitle, state, backUrl));
     }
@@ -763,7 +897,17 @@ public class ProviderRegistrationController(
                                 ? "Add the documents needed for kitchen remodeling approval."
                                 : state.IsPaintingOnly
                                     ? "Submit the items needed to verify your painting provider account."
-                                    : state.IsRoofingOnly
+                                    : state.IsFlooringOnly
+                                        ? "Required documents for flooring provider approval."
+                                        : state.IsCleaningOnly
+                                            ? "Submit the required files to complete your cleaning provider application."
+                                            : state.IsLandscapingOnly
+                                                ? "Add the required files to complete your landscaping application."
+                                                : state.IsPestOnly
+                                                    ? "Submit the documents needed to verify your pest control business."
+                                                    : state.IsApplianceOnly
+                                                        ? "Submit the required documents to verify your appliance repair business."
+                                                        : state.IsRoofingOnly
                                         ? "Submit the required files so INDOR can verify your company."
                                         : "Upload required documents (PDF or image).";
 
@@ -786,8 +930,13 @@ public class ProviderRegistrationController(
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
         ViewBag.IsPainting = state.IsPaintingOnly;
+        ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
 
-        var docTitle = state.IsPaintingOnly
+        var docTitle = state.IsPaintingOnly || state.IsFlooringOnly || state.IsCleaningOnly || state.IsLandscapingOnly || state.IsPestOnly || state.IsApplianceOnly
             ? "Upload your documents"
             : state.IsRoofingOnly
                 ? "Upload your roofing documents"
@@ -821,6 +970,11 @@ public class ProviderRegistrationController(
         IFormFile? referencesFile,
         IFormFile? contractorLicenseFile,
         IFormFile? roofingLicenseFile,
+        IFormFile? paintingProjectPhotosFile,
+        IFormFile? flooringProjectPhotosFile,
+        IFormFile? cleaningWorkPhotosFile,
+        IFormFile? pestControlLicenseFile,
+        IFormFile? applianceRepairCertificationFile,
         string? action)
     {
         var state = await registration.GetAsync();
@@ -844,6 +998,11 @@ public class ProviderRegistrationController(
             await SaveDocumentFileAsync(workPhotosFile, ProviderDocumentTypes.WorkPhotos);
             await SaveDocumentFileAsync(referencesFile, ProviderDocumentTypes.References);
             await SaveDocumentFileAsync(contractorLicenseFile, ProviderDocumentTypes.ContractorLicense);
+            await SaveDocumentFileAsync(paintingProjectPhotosFile, ProviderDocumentTypes.PaintingProjectPhotos);
+            await SaveDocumentFileAsync(flooringProjectPhotosFile, ProviderDocumentTypes.FlooringProjectPhotos);
+            await SaveDocumentFileAsync(cleaningWorkPhotosFile, ProviderDocumentTypes.CleaningWorkPhotos);
+            await SaveDocumentFileAsync(pestControlLicenseFile, ProviderDocumentTypes.PestControlLicense);
+            await SaveDocumentFileAsync(applianceRepairCertificationFile, ProviderDocumentTypes.ApplianceRepairCertification);
             return RedirectToAction(nameof(Documents));
         }
 
@@ -879,7 +1038,12 @@ public class ProviderRegistrationController(
             !state.IsBathroomOnly &&
             !state.IsKitchenOnly &&
             !state.IsRoofingOnly &&
-            !state.IsPaintingOnly)
+            !state.IsPaintingOnly &&
+            !state.IsFlooringOnly &&
+            !state.IsCleaningOnly &&
+            !state.IsLandscapingOnly &&
+            !state.IsPestOnly &&
+            !state.IsApplianceOnly)
         {
             return RedirectToAction(nameof(Exam));
         }
@@ -901,17 +1065,29 @@ public class ProviderRegistrationController(
                         ? "Review your kitchen remodeling application"
                         : state.IsPaintingOnly
                             ? "Review your painting application"
-                            : state.IsConstructionOnly
+                            : state.IsFlooringOnly
+                                ? "Review your flooring application"
+                                : state.IsCleaningOnly
+                                    ? "Review your cleaning application"
+                                    : state.IsLandscapingOnly
+                                        ? "Review your landscaping application"
+                                        : state.IsPestOnly
+                                            ? "Review your pest control application"
+                                            : state.IsApplianceOnly
+                                                ? "Review your appliance repair application"
+                                                : state.IsConstructionOnly
                                 ? "Review your application"
                                 : state.IsBathroomOnly
                                     ? "Review your bathroom remodeling application"
                                     : "Review & submit";
         var reviewSubtitle = state.IsHvacOnly
             ? "Confirm your information before submitting for INDOR approval."
-            : state.IsBathroomOnly || state.IsKitchenOnly || state.IsRoofingOnly || state.IsPaintingOnly
+            : state.IsApplianceOnly
+                ? "Confirm your details before submitting for INDOR review."
+                : state.IsBathroomOnly || state.IsKitchenOnly || state.IsRoofingOnly || state.IsPaintingOnly || state.IsFlooringOnly || state.IsCleaningOnly || state.IsLandscapingOnly || state.IsPestOnly
                 ? state.IsRoofingOnly
                     ? "Check your information before sending it to INDOR for approval."
-                    : "Confirm your information before submitting to INDOR."
+                    : "Confirm your information before submitting."
                 : state.IsHandymanOnly || state.IsConstructionOnly
                     ? "Confirm everything before submission."
                     : "Confirm your information before submitting your application.";
@@ -923,6 +1099,11 @@ public class ProviderRegistrationController(
         ViewBag.IsKitchen = state.IsKitchenOnly;
         ViewBag.IsRoofing = state.IsRoofingOnly;
         ViewBag.IsPainting = state.IsPaintingOnly;
+        ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
 
         return View(StepVm(6, reviewTitle, reviewSubtitle, state, Url.Action(nameof(Documents))));
     }
@@ -951,6 +1132,11 @@ public class ProviderRegistrationController(
             ViewBag.IsKitchen = state.IsKitchenOnly;
             ViewBag.IsRoofing = state.IsRoofingOnly;
             ViewBag.IsPainting = state.IsPaintingOnly;
+            ViewBag.IsFlooring = state.IsFlooringOnly;
+        ViewBag.IsCleaning = state.IsCleaningOnly;
+        ViewBag.IsLandscaping = state.IsLandscapingOnly;
+        ViewBag.IsPest = state.IsPestOnly;
+        ViewBag.IsAppliance = state.IsApplianceOnly;
             var errTitle = state.IsHandymanOnly
                 ? "Review your handyman application"
                 : state.IsHvacOnly
@@ -961,6 +1147,16 @@ public class ProviderRegistrationController(
                             ? "Review your kitchen remodeling application"
                             : state.IsPaintingOnly
                                 ? "Review your painting application"
+                                : state.IsFlooringOnly
+                                    ? "Review your flooring application"
+                                : state.IsCleaningOnly
+                                    ? "Review your cleaning application"
+                                : state.IsLandscapingOnly
+                                    ? "Review your landscaping application"
+                                : state.IsPestOnly
+                                    ? "Review your pest control application"
+                                : state.IsApplianceOnly
+                                    ? "Review your appliance repair application"
                                 : state.IsBathroomOnly
                                     ? "Review your bathroom remodeling application"
                                     : state.IsConstructionOnly
@@ -1140,6 +1336,31 @@ public class ProviderRegistrationController(
             return ("INDOR painting qualification", "Pass the trade qualification to unlock painting jobs only.");
         }
 
+        if (state.IsFlooringOnly)
+        {
+            return ("INDOR flooring qualification", "Pass the trade qualification to unlock flooring jobs only.");
+        }
+
+        if (state.IsCleaningOnly)
+        {
+            return ("INDOR cleaning qualification", "Pass the trade qualification to unlock cleaning jobs only.");
+        }
+
+        if (state.IsLandscapingOnly)
+        {
+            return ("INDOR landscaping qualification", "Pass the trade qualification to unlock landscaping jobs only.");
+        }
+
+        if (state.IsPestOnly)
+        {
+            return ("INDOR pest control qualification", "Pass the trade qualification to unlock pest control jobs only.");
+        }
+
+        if (state.IsApplianceOnly)
+        {
+            return ("INDOR appliance repair qualification", "Pass the trade qualification to unlock appliance repair jobs only.");
+        }
+
         if (state.IsRoofingOnly)
         {
             return ("INDOR roofing qualification", "Pass the trade qualification to unlock roofing jobs only.");
@@ -1162,6 +1383,11 @@ public class ProviderRegistrationController(
         "KitchenRemodeler" => "Kitchen remodeling",
         "RoofingContractor" => "Roofing",
         "PaintingContractor" => "Painting",
+        "FlooringContractor" => "Flooring",
+        "CleaningCompany" => "Cleaning",
+        "LandscapingCompany" => "Landscaping",
+        "PestControlCompany" => "Pest Control",
+        "ApplianceRepairCompany" => "Appliance Repair",
         _ => providerType,
     };
 

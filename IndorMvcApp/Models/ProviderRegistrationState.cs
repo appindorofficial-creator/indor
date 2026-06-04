@@ -12,6 +12,11 @@ public class ProviderRegistrationState
     public const string KitchenCategoryId = "kitchen";
     public const string RoofingCategoryId = "roofing";
     public const string PaintingCategoryId = "painting";
+    public const string FlooringCategoryId = "flooring";
+    public const string CleaningCategoryId = "cleaning";
+    public const string LandscapingCategoryId = "landscaping";
+    public const string PestCategoryId = "pest";
+    public const string ApplianceCategoryId = "appliance";
     public const int ExamPassingPercent = 80;
 
     public List<string> SelectedCategoryIds { get; set; } = [];
@@ -96,16 +101,36 @@ public class ProviderRegistrationState
         SelectedCategoryIds.Count == 1 &&
         SelectedCategoryIds[0].Equals(PaintingCategoryId, StringComparison.OrdinalIgnoreCase);
 
+    public bool IsFlooringOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(FlooringCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsCleaningOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(CleaningCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsLandscapingOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(LandscapingCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsPestOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(PestCategoryId, StringComparison.OrdinalIgnoreCase);
+
+    public bool IsApplianceOnly =>
+        SelectedCategoryIds.Count == 1 &&
+        SelectedCategoryIds[0].Equals(ApplianceCategoryId, StringComparison.OrdinalIgnoreCase);
+
     public bool UsesServicesFirstFlow => IsHvacOnly || IsHandymanOnly || IsBathroomOnly;
 
     public bool UsesExamIntroFlow =>
-        IsHvacOnly || IsHandymanOnly || IsConstructionOnly || IsBathroomOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly;
+        IsHvacOnly || IsHandymanOnly || IsConstructionOnly || IsBathroomOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly || IsFlooringOnly || IsCleaningOnly || IsLandscapingOnly || IsPestOnly || IsApplianceOnly;
 
     public bool UsesBusinessBeforeServicesFlow =>
-        IsPlumbingOnly || IsConstructionOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly;
+        IsPlumbingOnly || IsConstructionOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly || IsFlooringOnly || IsCleaningOnly || IsLandscapingOnly || IsPestOnly || IsApplianceOnly;
 
     public bool UsesServicesBeforeExamIntro =>
-        IsConstructionOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly;
+        IsConstructionOnly || IsKitchenOnly || IsRoofingOnly || IsPaintingOnly || IsFlooringOnly || IsCleaningOnly || IsLandscapingOnly || IsPestOnly || IsApplianceOnly;
 
     public bool IsElectricianOnly =>
         SelectedCategoryIds.Count == 1 &&

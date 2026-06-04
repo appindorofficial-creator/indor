@@ -38,6 +38,74 @@ public static class OnboardingCatalog
         new("fixture_install", "Fixture installation", "fa-faucet-drip"),
     ];
 
+    public static readonly IReadOnlyList<OnboardingOption> ApplianceRepairServiceOfferings =
+    [
+        new("refrigerator", "Refrigerator", "fa-snowflake"),
+        new("freezer", "Freezer", "fa-icicles"),
+        new("dishwasher", "Dishwasher", "fa-sink"),
+        new("oven_range", "Oven / Range", "fa-fire-burner"),
+        new("cooktop", "Cooktop", "fa-kitchen-set"),
+        new("microwave", "Microwave", "fa-box"),
+        new("washer", "Washer", "fa-shirt"),
+        new("dryer", "Dryer", "fa-wind"),
+        new("garbage_disposal", "Garbage Disposal", "fa-recycle"),
+        new("ice_maker", "Ice Maker", "fa-cubes"),
+        new("trash_compactor", "Trash Compactor", "fa-trash-can"),
+        new("other_small_appliances", "Other Small Appliances", "fa-blender"),
+    ];
+
+    public static readonly IReadOnlyList<OnboardingOption> PestControlServiceOfferings =
+    [
+        new("general_pest_control", "General Pest Control", "fa-bug"),
+        new("ant_control", "Ant Control", "fa-bug"),
+        new("roach_control", "Roach Control", "fa-bug"),
+        new("rodent_control", "Rodent Control", "fa-paw"),
+        new("termite_inspection", "Termite Inspection", "fa-magnifying-glass"),
+        new("termite_treatment", "Termite Treatment", "fa-shield-halved"),
+        new("mosquito_treatment", "Mosquito Treatment", "fa-mosquito"),
+        new("bed_bug_service", "Bed Bug Service", "fa-bed"),
+        new("wasp_bee_removal", "Wasp / Bee Removal", "fa-bee"),
+        new("preventive_maintenance", "Preventive Maintenance", "fa-calendar-check"),
+    ];
+
+    public static readonly IReadOnlyList<OnboardingOption> LandscapingServiceOfferings =
+    [
+        new("lawn_mowing", "Lawn mowing", "fa-seedling"),
+        new("lawn_maintenance", "Lawn maintenance", "fa-leaf"),
+        new("mulching", "Mulching", "fa-tree"),
+        new("planting", "Planting", "fa-seedling"),
+        new("tree_trimming", "Tree trimming", "fa-tree"),
+        new("hedge_trimming", "Hedge trimming", "fa-scissors"),
+        new("sod_installation", "Sod installation", "fa-layer-group"),
+        new("irrigation", "Irrigation", "fa-droplet"),
+        new("seasonal_cleanup", "Seasonal cleanup", "fa-broom"),
+        new("hardscape_maintenance", "Hardscape maintenance", "fa-border-all"),
+    ];
+
+    public static readonly IReadOnlyList<OnboardingOption> CleaningServiceOfferings =
+    [
+        new("standard_cleaning", "Standard Cleaning", "fa-spray-can"),
+        new("deep_cleaning", "Deep Cleaning", "fa-bucket"),
+        new("move_in_move_out", "Move-In / Move-Out", "fa-box-open"),
+        new("post_construction_cleaning", "Post-Construction Cleaning", "fa-hard-hat"),
+        new("office_cleaning", "Office Cleaning", "fa-building"),
+        new("airbnb_turnover", "Airbnb Turnover", "fa-key"),
+        new("recurring_cleaning", "Recurring Cleaning", "fa-calendar-days"),
+        new("window_cleaning", "Window Cleaning", "fa-window-maximize"),
+    ];
+
+    public static readonly IReadOnlyList<OnboardingOption> FlooringServiceOfferings =
+    [
+        new("hardwood_installation", "Hardwood Installation", "fa-tree"),
+        new("laminate", "Laminate", "fa-layer-group"),
+        new("vinyl_lvp", "Vinyl / LVP", "fa-square"),
+        new("tile_flooring", "Tile Flooring", "fa-border-all"),
+        new("carpet_installation", "Carpet Installation", "fa-rug"),
+        new("floor_repair", "Floor Repair", "fa-hammer"),
+        new("subfloor_repair", "Subfloor Repair", "fa-table-cells"),
+        new("refinishing", "Refinishing", "fa-spray-can"),
+    ];
+
     public static readonly IReadOnlyList<OnboardingOption> PaintingServiceOfferings =
     [
         new("interior_painting", "Interior Painting", "fa-paint-roller"),

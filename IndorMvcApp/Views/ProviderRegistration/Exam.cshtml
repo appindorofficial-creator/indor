@@ -16,6 +16,11 @@
     var isBathroom = Model.State.IsBathroomOnly;
     var isKitchen = Model.State.IsKitchenOnly;
     var isPainting = Model.State.IsPaintingOnly;
+    var isFlooring = Model.State.IsFlooringOnly;
+    var isCleaning = Model.State.IsCleaningOnly;
+    var isLandscaping = Model.State.IsLandscapingOnly;
+    var isPest = Model.State.IsPestOnly;
+    var isAppliance = Model.State.IsApplianceOnly;
     var isRoofing = Model.State.IsRoofingOnly;
 }
 <div class="ob-head-block">
@@ -61,7 +66,7 @@
     }
     <div class="prv-rule-banner">
         <i class="fas fa-circle-info"></i>
-        <span>@(isRoofing ? "Only providers who pass the exam and verification can receive roofing jobs." : isPainting ? "Only providers who pass the exam and verification can receive painting jobs." : isKitchen ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs." : isBathroom ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs." : isHandyman ? "Only providers who pass the exam and verification can receive handyman jobs." : isConstruction ? "Only providers who pass the exam and verification can receive construction company jobs." : isHvac ? "Only providers who pass the exam and verification can receive HVAC jobs." : "Only providers who pass the exam and verification can receive jobs.")</span>
+        <span>@(isRoofing ? "Only providers who pass the exam and verification can receive roofing jobs." : isAppliance ? "Only providers who pass the exam and verification can receive appliance repair jobs." : isPest ? "Only providers who pass the exam and verification can receive pest control jobs." : isLandscaping ? "Only providers who pass the exam and verification can receive landscaping jobs." : isCleaning ? "Only providers who pass the exam and verification can receive cleaning jobs." : isFlooring ? "Only providers who pass the exam and verification can receive flooring jobs." : isPainting ? "Only providers who pass the exam and verification can receive painting jobs." : isKitchen ? "Only providers who pass the exam and verification can receive kitchen remodeling jobs." : isBathroom ? "Only providers who pass the exam and verification can receive bathroom remodeling jobs." : isHandyman ? "Only providers who pass the exam and verification can receive handyman jobs." : isConstruction ? "Only providers who pass the exam and verification can receive construction company jobs." : isHvac ? "Only providers who pass the exam and verification can receive HVAC jobs." : "Only providers who pass the exam and verification can receive jobs.")</span>
     </div>
     @if (examPage >= totalPages && !isHandyman)
     {

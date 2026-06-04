@@ -101,6 +101,11 @@ public class ProviderRegistrationService(
         var kitchenIds = OnboardingCatalog.KitchenServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var roofingIds = OnboardingCatalog.RoofingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var paintingIds = OnboardingCatalog.PaintingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var flooringIds = OnboardingCatalog.FlooringServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var cleaningIds = OnboardingCatalog.CleaningServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var landscapingIds = OnboardingCatalog.LandscapingServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var pestIds = OnboardingCatalog.PestControlServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var applianceIds = OnboardingCatalog.ApplianceRepairServiceOfferings.Select(o => o.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         var rows = await db.IndorProveedorOfertasCatalogo
             .AsNoTracking()
@@ -172,6 +177,46 @@ public class ProviderRegistrationService(
                 : OnboardingCatalog.PaintingServiceOfferings;
         }
 
+        if (state.IsFlooringOnly)
+        {
+            var flooringRows = rows.Where(o => flooringIds.Contains(o.Id)).ToList();
+            return flooringRows.Count > 0
+                ? flooringRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.FlooringServiceOfferings;
+        }
+
+        if (state.IsCleaningOnly)
+        {
+            var cleaningRows = rows.Where(o => cleaningIds.Contains(o.Id)).ToList();
+            return cleaningRows.Count > 0
+                ? cleaningRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.CleaningServiceOfferings;
+        }
+
+        if (state.IsLandscapingOnly)
+        {
+            var landscapingRows = rows.Where(o => landscapingIds.Contains(o.Id)).ToList();
+            return landscapingRows.Count > 0
+                ? landscapingRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.LandscapingServiceOfferings;
+        }
+
+        if (state.IsPestOnly)
+        {
+            var pestRows = rows.Where(o => pestIds.Contains(o.Id)).ToList();
+            return pestRows.Count > 0
+                ? pestRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.PestControlServiceOfferings;
+        }
+
+        if (state.IsApplianceOnly)
+        {
+            var applianceRows = rows.Where(o => applianceIds.Contains(o.Id)).ToList();
+            return applianceRows.Count > 0
+                ? applianceRows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList()
+                : OnboardingCatalog.ApplianceRepairServiceOfferings;
+        }
+
         return rows.Count == 0
             ? OnboardingCatalog.ServiceOfferings
             : rows.Select(o => new OnboardingOption(o.Id, o.LabelEn, o.IconClass)).ToList();
@@ -232,6 +277,31 @@ public class ProviderRegistrationService(
         if (state.IsPaintingOnly)
         {
             return PaintingExamCatalog.TradeCode;
+        }
+
+        if (state.IsFlooringOnly)
+        {
+            return FlooringExamCatalog.TradeCode;
+        }
+
+        if (state.IsCleaningOnly)
+        {
+            return CleaningExamCatalog.TradeCode;
+        }
+
+        if (state.IsLandscapingOnly)
+        {
+            return LandscapingExamCatalog.TradeCode;
+        }
+
+        if (state.IsPestOnly)
+        {
+            return PestControlExamCatalog.TradeCode;
+        }
+
+        if (state.IsApplianceOnly)
+        {
+            return ApplianceRepairExamCatalog.TradeCode;
         }
 
         if (state.IsElectricianOnly || state.SelectedIncludesElectrical)
@@ -297,6 +367,31 @@ public class ProviderRegistrationService(
             return PaintingExamCatalog.Questions.Count;
         }
 
+        if (tradeCode.Equals(FlooringExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return FlooringExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(CleaningExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return CleaningExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(LandscapingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return LandscapingExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(PestControlExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return PestControlExamCatalog.Questions.Count;
+        }
+
+        if (tradeCode.Equals(ApplianceRepairExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+        {
+            return ApplianceRepairExamCatalog.Questions.Count;
+        }
+
         return ElectricalExamCatalog.Questions.Count;
     }
 
@@ -357,6 +452,31 @@ public class ProviderRegistrationService(
                 return PaintingExamCatalog.PageQuestions(page);
             }
 
+            if (tradeCode.Equals(FlooringExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return FlooringExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(CleaningExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return CleaningExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(LandscapingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return LandscapingExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(PestControlExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return PestControlExamCatalog.PageQuestions(page);
+            }
+
+            if (tradeCode.Equals(ApplianceRepairExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase))
+            {
+                return ApplianceRepairExamCatalog.PageQuestions(page);
+            }
+
             return ElectricalExamCatalog.PageQuestions(page);
         }
 
@@ -395,6 +515,11 @@ public class ProviderRegistrationService(
                 _ when tradeCode.Equals(KitchenExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => KitchenExamCatalog.Questions,
                 _ when tradeCode.Equals(RoofingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => RoofingExamCatalog.Questions,
                 _ when tradeCode.Equals(PaintingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PaintingExamCatalog.Questions,
+                _ when tradeCode.Equals(FlooringExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => FlooringExamCatalog.Questions,
+                _ when tradeCode.Equals(CleaningExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => CleaningExamCatalog.Questions,
+                _ when tradeCode.Equals(LandscapingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => LandscapingExamCatalog.Questions,
+                _ when tradeCode.Equals(PestControlExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PestControlExamCatalog.Questions,
+                _ when tradeCode.Equals(ApplianceRepairExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => ApplianceRepairExamCatalog.Questions,
                 _ => ElectricalExamCatalog.Questions,
             };
             questions = fallback
@@ -553,7 +678,12 @@ public class ProviderRegistrationService(
                || tradeId.Equals(ProviderRegistrationState.BathroomCategoryId, StringComparison.OrdinalIgnoreCase)
                || tradeId.Equals(ProviderRegistrationState.KitchenCategoryId, StringComparison.OrdinalIgnoreCase)
                || tradeId.Equals(ProviderRegistrationState.RoofingCategoryId, StringComparison.OrdinalIgnoreCase)
-               || tradeId.Equals(ProviderRegistrationState.PaintingCategoryId, StringComparison.OrdinalIgnoreCase);
+               || tradeId.Equals(ProviderRegistrationState.PaintingCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.FlooringCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.CleaningCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.LandscapingCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.PestCategoryId, StringComparison.OrdinalIgnoreCase)
+               || tradeId.Equals(ProviderRegistrationState.ApplianceCategoryId, StringComparison.OrdinalIgnoreCase);
     }
 
     public async Task EnsureDocumentSlotsAsync(CancellationToken cancellationToken = default)

@@ -20,6 +20,10 @@ public static class ProviderDocumentTypes
     public const string ContractorLicense = "contractor_license";
     public const string RoofingLicense = "roofing_license";
     public const string PaintingProjectPhotos = "painting_project_photos";
+    public const string FlooringProjectPhotos = "flooring_project_photos";
+    public const string CleaningWorkPhotos = "cleaning_work_photos";
+    public const string PestControlLicense = "pest_control_license";
+    public const string ApplianceRepairCertification = "appliance_repair_certification";
 
     public static readonly IReadOnlyList<(string Type, string Label, bool Required)> DefaultSlots =
     [
@@ -57,6 +61,53 @@ public static class ProviderDocumentTypes
         (BusinessRegistration, "Business registration or W-9", true),
         (Portfolio, "Project photos", true),
         (TradeCerts, "Additional certification (optional)", false),
+    ];
+
+    public static readonly IReadOnlyList<(string Type, string Label, bool Required)> ApplianceRepairSlots =
+    [
+        (BusinessRegistration, "Business license", true),
+        (GovernmentId, "Photo ID", true),
+        (LiabilityInsurance, "Proof of insurance", true),
+        (ApplianceRepairCertification, "Appliance repair certification (if applicable)", false),
+        (W9, "W-9 / tax form", true),
+        (Portfolio, "Portfolio or job photos", false),
+    ];
+
+    public static readonly IReadOnlyList<(string Type, string Label, bool Required)> PestControlSlots =
+    [
+        (BusinessRegistration, "Business license", true),
+        (PestControlLicense, "Pest control license", true),
+        (LiabilityInsurance, "Insurance certificate", true),
+        (GovernmentId, "Government ID", true),
+        (TradeCerts, "Optional certifications", false),
+    ];
+
+    public static readonly IReadOnlyList<(string Type, string Label, bool Required)> LandscapingSlots =
+    [
+        (BusinessRegistration, "Business license", true),
+        (LiabilityInsurance, "General liability insurance", true),
+        (GovernmentId, "Photo ID", true),
+        (W9, "W-9 form", true),
+        (Portfolio, "Project photos / past work", true),
+    ];
+
+    public static readonly IReadOnlyList<(string Type, string Label, bool Required)> CleaningSlots =
+    [
+        (GovernmentId, "Government ID", true),
+        (LiabilityInsurance, "Liability insurance", true),
+        (BusinessRegistration, "Business license (if applicable)", false),
+        (W9, "W-9 / Tax form", true),
+        (CleaningWorkPhotos, "Before & after work photos", true),
+    ];
+
+    public static readonly IReadOnlyList<(string Type, string Label, bool Required)> FlooringSlots =
+    [
+        (BusinessRegistration, "Business license", true),
+        (LiabilityInsurance, "Liability insurance", true),
+        (GovernmentId, "Government ID", true),
+        (FlooringProjectPhotos, "Flooring project photos", true),
+        (TradeCerts, "Certifications (if applicable)", false),
+        (W9, "W-9 form", true),
     ];
 
     public static readonly IReadOnlyList<(string Type, string Label, bool Required)> PaintingSlots =
@@ -149,6 +200,31 @@ public static class ProviderDocumentTypes
         if (string.Equals(tradeCode, ProviderRegistrationState.PaintingCategoryId, StringComparison.OrdinalIgnoreCase))
         {
             return PaintingSlots;
+        }
+
+        if (string.Equals(tradeCode, ProviderRegistrationState.FlooringCategoryId, StringComparison.OrdinalIgnoreCase))
+        {
+            return FlooringSlots;
+        }
+
+        if (string.Equals(tradeCode, ProviderRegistrationState.CleaningCategoryId, StringComparison.OrdinalIgnoreCase))
+        {
+            return CleaningSlots;
+        }
+
+        if (string.Equals(tradeCode, ProviderRegistrationState.LandscapingCategoryId, StringComparison.OrdinalIgnoreCase))
+        {
+            return LandscapingSlots;
+        }
+
+        if (string.Equals(tradeCode, ProviderRegistrationState.PestCategoryId, StringComparison.OrdinalIgnoreCase))
+        {
+            return PestControlSlots;
+        }
+
+        if (string.Equals(tradeCode, ProviderRegistrationState.ApplianceCategoryId, StringComparison.OrdinalIgnoreCase))
+        {
+            return ApplianceRepairSlots;
         }
 
         return DefaultSlots;
