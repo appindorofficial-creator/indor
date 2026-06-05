@@ -1,0 +1,363 @@
+/* INDOR Schedule tab (mockup) */
+.sch-alert-ok {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(22, 163, 74, 0.1);
+    color: #15803D;
+    font-size: 0.84rem;
+    font-weight: 600;
+}
+
+#section-schedule {
+    padding: 0 16px 28px;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.sch-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.sch-title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: #0A2540;
+}
+
+.sch-subtitle {
+    margin: 4px 0 0;
+    font-size: 0.84rem;
+    color: #64748B;
+    line-height: 1.45;
+    max-width: 220px;
+}
+
+.sch-free-badge {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    background: rgba(0, 102, 204, 0.1);
+    color: #0066CC;
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.sch-quick-head,
+.sch-coming-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+
+.sch-quick-label,
+.sch-coming-label {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #0A2540;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sch-link-btn {
+    border: none;
+    background: none;
+    padding: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0066CC;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.sch-link-inline {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    text-decoration: none;
+}
+
+.sch-quick-row {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 22px;
+    scrollbar-width: none;
+}
+
+.sch-quick-row::-webkit-scrollbar {
+    display: none;
+}
+
+.sch-quick-card {
+    flex: 0 0 72px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.sch-quick-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: #F8FAFC;
+    border: 1px solid #E5E7EB;
+}
+
+.sch-quick-name {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #334155;
+    text-align: center;
+}
+
+.sch-quick-plus {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #0066CC;
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.62rem;
+    margin-top: -14px;
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.25);
+}
+
+.sch-tone-trash { color: #0066CC; background: rgba(0, 102, 204, 0.1); }
+.sch-tone-filter { color: #7C3AED; background: rgba(124, 58, 237, 0.1); }
+.sch-tone-lawn { color: #16A34A; background: rgba(22, 163, 74, 0.1); }
+.sch-tone-hvac { color: #0066CC; background: rgba(0, 102, 204, 0.1); }
+.sch-tone-water { color: #EA580C; background: rgba(234, 88, 12, 0.1); }
+.sch-tone-general { color: #475569; background: rgba(71, 85, 105, 0.1); }
+
+.sch-reminder-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 16px;
+}
+
+.sch-reminder-card {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: #FFF;
+    border: 1px solid #EEF2F7;
+    border-radius: 16px;
+    padding: 14px;
+    box-shadow: 0 6px 18px rgba(10, 37, 64, 0.05);
+}
+
+.sch-reminder-icon {
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+}
+
+.sch-reminder-body {
+    flex: 1;
+    min-width: 0;
+}
+
+.sch-reminder-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.sch-reminder-title {
+    margin: 0;
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #0A2540;
+}
+
+.sch-edit-link {
+    flex-shrink: 0;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #0066CC;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.sch-reminder-sub {
+    margin: 0 0 6px;
+    font-size: 0.8rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+
+.sch-reminder-date {
+    margin: 0;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.sch-empty {
+    text-align: center;
+    padding: 28px 16px;
+    background: #FFF;
+    border: 1px dashed #CBD5E1;
+    border-radius: 16px;
+    margin-bottom: 16px;
+}
+
+.sch-empty i {
+    font-size: 1.75rem;
+    color: #94A3B8;
+    margin-bottom: 10px;
+}
+
+.sch-empty p {
+    margin: 0 0 6px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.sch-empty small {
+    display: block;
+    font-size: 0.8rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.sch-create-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    text-decoration: none;
+    color: inherit;
+    margin-bottom: 12px;
+    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.05);
+}
+
+.sch-create-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(0, 102, 204, 0.1);
+    color: #0066CC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.sch-create-text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.sch-create-text strong {
+    font-size: 0.9rem;
+    color: #0A2540;
+}
+
+.sch-create-text small {
+    font-size: 0.78rem;
+    color: #64748B;
+}
+
+.sch-create-chevron {
+    color: #94A3B8;
+    font-size: 0.85rem;
+}
+
+.sch-pro-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+}
+
+.sch-pro-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sch-pro-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.sch-pro-text strong {
+    display: block;
+    font-size: 0.88rem;
+    color: #0A2540;
+    margin-bottom: 2px;
+}
+
+.sch-pro-text p {
+    margin: 0;
+    font-size: 0.76rem;
+    color: #64748B;
+    line-height: 1.35;
+}
+
+.sch-pro-btn {
+    flex-shrink: 0;
+    border: none;
+    border-radius: 10px;
+    padding: 10px 14px;
+    background: #0066CC;
+    color: #FFF;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}

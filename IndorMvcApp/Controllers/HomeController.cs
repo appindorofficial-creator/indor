@@ -743,6 +743,12 @@ public class HomeController : Controller
         ViewBag.HouseFactPreviewMode = houseFactPreview;
         ViewBag.HouseFactPropiedadId = primaryPropiedad?.Id;
 
+        ViewBag.ScheduleSection = await ScheduleDisplayService.BuildAsync(
+            _db,
+            userId!,
+            primaryPropiedad?.Id,
+            Url);
+
         return View(propiedades);
     }
 

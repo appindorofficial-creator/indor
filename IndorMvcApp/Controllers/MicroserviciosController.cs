@@ -125,7 +125,7 @@ public class MicroserviciosController : Controller
         await _db.SaveChangesAsync();
 
         TempData["ScheduleSaved"] = $"{microservicio.Nombre} scheduled for {model.FechaProgramada:MM/dd/yyyy}.";
-        return RedirectToAction("Index", "Home");
+        return Redirect(Url.Action("Index", "Home") + "#section-schedule");
     }
 
     private async Task PopulateScheduleViewModelAsync(

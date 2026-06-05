@@ -1,0 +1,107 @@
+@model IndorMvcApp.ViewModels.ScheduleSectionViewModel
+
+<section class="section" id="section-schedule">
+    @if (TempData["ScheduleSaved"] is string scheduleMsg)
+    {
+        <div class="sch-alert-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
+    }
+    <div class="sch-header">
+        <div class="sch-header-text">
+            <h2 class="sch-title">Schedule</h2>
+            <p class="sch-subtitle">Free reminders for your home tasks and maintenance.</p>
+        </div>
+        <span class="sch-free-badge">
+            <i class="fas fa-gift"></i>
+            Free reminders
+        </span>
+    </div>
+
+    @if (Model.QuickAddItems.Count > 0)
+    {
+        <div class="sch-quick-head">
+            <span class="sch-quick-label">Quick add</span>
+            <button type="button" class="sch-link-btn nav-jump" data-target="section-services">
+                Add common reminders
+            </button>
+        </div>
+        <div class="sch-quick-row">
+            @foreach (var quick in Model.QuickAddItems)
+            {
+                <a href="@quick.Url" class="sch-quick-card">
+                    <span class="sch-quick-icon @quick.ToneClass">
+                        <i class="fas @quick.IconClass"></i>
+                    </span>
+                    <span class="sch-quick-name">@quick.Label</span>
+                    <span class="sch-quick-plus"><i class="fas fa-plus"></i></span>
+                </a>
+            }
+        </div>
+    }
+
+    <div class="sch-coming-head">
+        <span class="sch-coming-label">
+            <i class="far fa-calendar"></i>
+            Coming up
+        </span>
+        <a href="#section-schedule" class="sch-link-btn sch-link-inline">
+            View calendar
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    @if (Model.ComingUpItems.Count == 0)
+    {
+        <div class="sch-empty">
+            <i class="fas fa-calendar-days"></i>
+            <p>No reminders yet.</p>
+            <small>Add trash, lawn, HVAC filter, or water heater reminders using Quick add above.</small>
+        </div>
+    }
+    else
+    {
+        <div class="sch-reminder-list">
+            @foreach (var item in Model.ComingUpItems)
+            {
+                <article class="sch-reminder-card">
+                    <span class="sch-reminder-icon @item.ToneClass">
+                        <i class="fas @item.IconClass"></i>
+                    </span>
+                    <div class="sch-reminder-body">
+                        <div class="sch-reminder-top">
+                            <h3 class="sch-reminder-title">@item.Title</h3>
+                            <a href="@item.EditUrl" class="sch-edit-link">
+                                <i class="fas fa-pen"></i>
+                                @item.EditLabel
+                            </a>
+                        </div>
+                        <p class="sch-reminder-sub">@item.Subtitle</p>
+                        <p class="sch-reminder-date">
+                            <i class="far fa-calendar"></i>
+                            @item.DateLabel
+                        </p>
+                    </div>
+                </article>
+            }
+        </div>
+    }
+
+    <a href="@Model.CreateReminderUrl" class="sch-create-card">
+        <span class="sch-create-icon"><i class="fas fa-plus"></i></span>
+        <span class="sch-create-text">
+            <strong>Create custom reminder</strong>
+            <small>Add any task or maintenance to your schedule.</small>
+        </span>
+        <i class="fas fa-chevron-right sch-create-chevron"></i>
+    </a>
+
+    <div class="sch-pro-card">
+        <span class="sch-pro-icon"><i class="fas fa-screwdriver-wrench"></i></span>
+        <div class="sch-pro-text">
+            <strong>Need a pro?</strong>
+            <p>Book a vetted service provider for bigger jobs.</p>
+        </div>
+        <button type="button" class="sch-pro-btn nav-jump" data-target="section-services">
+            Book service
+        </button>
+    </div>
+</section>
