@@ -114,8 +114,17 @@ BEGIN
     UPDATE dbo.HomeCarePriorities
     SET LinkController = N'PowerWash',
         LinkAction = N'PowerWashService',
-        LinkUrl = NULL
+        LinkUrl = NULL,
+        ImagenUrl = CASE
+            WHEN ImagenUrl IS NULL OR ImagenUrl = N'/servicio5.jpeg' THEN N'/priority-power-wash-exterior.png'
+            ELSE ImagenUrl
+        END
     WHERE Id = @PwPriorityId;
+
+    UPDATE dbo.PowerWashServicioLanding
+    SET ImagenUrl = N'/priority-power-wash-exterior.png'
+    WHERE HomeCarePriorityId = @PwPriorityId
+      AND (ImagenUrl IS NULL OR ImagenUrl = N'/servicio5.jpeg');
 
     IF NOT EXISTS (SELECT 1 FROM dbo.PowerWashServicioLanding WHERE HomeCarePriorityId = @PwPriorityId)
     BEGIN
@@ -128,7 +137,7 @@ BEGIN
             N'Power Wash Exterior',
             N'Recommended every 1–2 years',
             N'This service helps remove dirt, algae, mildew, pollen, and surface buildup from the exterior of your home.',
-            N'/servicio5.jpeg',
+            N'/priority-power-wash-exterior.png',
             N'Vinyl siding|Brick|Stucco|Driveway|Patio|Fence',
             N'fa-house|fa-table-cells|fa-braille|fa-road|fa-umbrella-beach|fa-grip-lines',
             N'We''ll use your answers to understand your surface type, condition, and access so we can recommend the right approach.',

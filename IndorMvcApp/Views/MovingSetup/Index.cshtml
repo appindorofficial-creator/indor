@@ -1,33 +1,94 @@
 @model IndorMvcApp.ViewModels.MovingSetupSectionViewModel
 @{
-    ViewData["Title"] = "Moving Setup";
-    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewData["Title"] = Model.Titulo;
+    Layout = null;
 }
-<div class="hf-title-row">
-    <a asp-controller="Home" asp-action="Index" class="hf-back"><i class="fas fa-arrow-left"></i></a>
-    <h1 class="hf-title">@Model.Titulo</h1>
-</div>
-<p style="color:#64748B;margin-bottom:16px;">@Model.Subtitulo</p>
-<div class="hf-grid-2" style="margin-bottom:16px;">
-    @foreach (var item in Model.Servicios)
-    {
-        var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
-        <a href="@href" class="hf-action" style="min-height:96px;">
-            <i class="fas @item.IconoClase"></i>
-            @item.Nombre
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@Model.Titulo - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/moving-setup-page.css" asp-append-version="true" />
+</head>
+<body>
+<div class="ms-page">
+    <div class="ms-top">
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="ms-back" aria-label="Back">
+            <i class="fas fa-chevron-left"></i>
         </a>
-    }
-</div>
-@if (Model.EnlacesRapidos.Count > 0)
-{
-    <div class="hf-label">Quick links</div>
-    @foreach (var link in Model.EnlacesRapidos)
+        <h1 class="ms-title">@Model.Titulo</h1>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Subtitulo))
     {
-        var href = !string.IsNullOrWhiteSpace(link.Url) ? link.Url : "#";
-        <a href="@href" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
-            <i class="fas @link.IconoClase icon"></i>
-            <div class="meta"><div class="value">@link.Nombre</div></div>
-            <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
-        </a>
+        <p class="ms-sub">@Model.Subtitulo</p>
     }
-}
+
+    <div class="moving-setup-section">
+        <div class="moving-setup-grid">
+            @foreach (var item in Model.Servicios)
+            {
+                var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
+                <a href="@href" class="moving-setup-grid-item">
+                    <span class="moving-setup-grid-icon"><i class="fas @item.IconoClase"></i></span>
+                    <span class="moving-setup-grid-label">@item.Nombre</span>
+                </a>
+            }
+        </div>
+
+        <div class="moving-setup-featured">
+            <div class="moving-setup-featured-media">
+                @if (!string.IsNullOrWhiteSpace(Model.FeaturedImagenUrl))
+                {
+                    <img src="@Url.Content("~" + (Model.FeaturedImagenUrl.StartsWith("/") ? Model.FeaturedImagenUrl : "/" + Model.FeaturedImagenUrl))" alt="@Model.FeaturedTitulo" loading="lazy" />
+                }
+                else
+                {
+                    <div class="moving-setup-featured-fallback"><i class="fas fa-box-open"></i></div>
+                }
+            </div>
+            <div class="moving-setup-featured-body">
+                <span class="moving-setup-featured-badge">@Model.FeaturedEtiqueta</span>
+                <div class="moving-setup-featured-title">@Model.FeaturedTitulo</div>
+                <div class="moving-setup-featured-desc">@Model.FeaturedDescripcion</div>
+                @if (Model.FeaturedCaracteristicas.Count > 0)
+                {
+                    <div class="moving-setup-featured-tags">
+                        @foreach (var feature in Model.FeaturedCaracteristicas)
+                        {
+                            <span class="moving-setup-tag"><i class="fas @feature.Icon"></i> @feature.Text</span>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.FeaturedCtaUrl))
+        {
+            <a href="@Model.FeaturedCtaUrl" class="moving-setup-cta">
+                <i class="fas fa-paper-plane"></i> @Model.FeaturedCtaTexto
+            </a>
+        }
+
+        @if (Model.EnlacesRapidos.Count > 0)
+        {
+            <div class="ms-quick-heading">Quick links</div>
+            <div class="moving-setup-quick-links">
+                @foreach (var link in Model.EnlacesRapidos)
+                {
+                    var href = !string.IsNullOrWhiteSpace(link.Url) ? link.Url : "#";
+                    <a href="@href" class="moving-setup-quick-link">
+                        <i class="fas @link.IconoClase"></i>
+                        <span>@link.Nombre</span>
+                    </a>
+                }
+            </div>
+        }
+    </div>
+</div>
+</body>
+</html>

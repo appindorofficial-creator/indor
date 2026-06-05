@@ -1,6 +1,9 @@
 /*
   ServiciosEmergencia — 24/7 emergency services grid for Home / Services.
   Safe to run multiple times (idempotent seed).
+
+  IMPORTANT: Use dedicated /emergency-*.png or /priority-*.png assets only.
+  Do NOT reuse /servicio*.jpeg or /inspeccion*.jpeg (wrong context and duplicates).
 */
 
 IF OBJECT_ID(N'dbo.ServiciosEmergencia', N'U') IS NULL
@@ -69,28 +72,28 @@ BEGIN
         (Nombre, TituloEmergencia, Descripcion, TiempoLlegadaMinutos, IconoClase, ImagenUrl,
          BadgeTexto, EsPredeterminado, Caracteristicas, IconosCaracteristicas, CtaTexto, Activo, Orden)
     VALUES
-    (N'HVAC', N'HVAC Emergency', N'No heat, no cool, or system failure.', 45, N'fa-snowflake', N'/inspeccion5.jpeg',
+    (N'HVAC', N'HVAC Emergency', N'No heat, no cool, or system failure.', 45, N'fa-snowflake', N'/emergency-hvac.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 1),
 
-    (N'Water Heater', N'Water Heater Emergency', N'No hot water, leaks, or pilot issues.', 45, N'fa-fire-flame-simple', N'/servicio4.jpeg',
+    (N'Water Heater', N'Water Heater Emergency', N'No hot water, leaks, or pilot issues.', 45, N'fa-fire-flame-simple', N'/emergency-water-heater.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 2),
 
-    (N'Plumbing', N'Plumbing Emergency', N'Leaks, clogs, pipe bursts & more.', 45, N'fa-droplet', N'/inspeccion4.jpeg',
+    (N'Plumbing', N'Plumbing Emergency', N'Leaks, clogs, pipe bursts & more.', 45, N'fa-droplet', N'/emergency-plumbing.png',
      N'Most requested', 1, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 3),
 
-    (N'Flood', N'Flood Emergency', N'Standing water, basement flooding, and urgent water removal.', 45, N'fa-water', N'/inspeccion4.jpeg',
+    (N'Flood', N'Flood Emergency', N'Standing water, basement flooding, and urgent water removal.', 45, N'fa-water', N'/emergency-flood.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 4),
 
-    (N'Electrical', N'Electrical Emergency', N'Power loss, sparks, tripped breakers & more.', 45, N'fa-bolt', N'/inspeccion3.jpeg',
+    (N'Electrical', N'Electrical Emergency', N'Power loss, sparks, tripped breakers & more.', 45, N'fa-bolt', N'/emergency-electrical.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 5),
 
-    (N'Roof Leak', N'Roof Leak Emergency', N'Active leaks, storm damage, and urgent patches.', 45, N'fa-house-chimney-crack', N'/inspeccion7.jpeg',
+    (N'Roof Leak', N'Roof Leak Emergency', N'Active leaks, storm damage, and urgent patches.', 45, N'fa-house-chimney-crack', N'/emergency-roof-leak.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 6),
 
-    (N'Tree Damage', N'Tree Damage Emergency', N'Fallen trees, limbs on structures, and storm-related hazards.', 45, N'fa-tree', N'/inspeccion9.jpeg',
+    (N'Tree Damage', N'Tree Damage Emergency', N'Fallen trees, limbs on structures, and storm-related hazards.', 45, N'fa-tree', N'/emergency-tree-damage.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 7),
 
-    (N'Smoke Detector', N'Smoke Detector & CO Alert', N'Chirping alarms, dead batteries, missing detectors, and urgent smoke alarm help.', 45, N'fa-bell', N'/inspeccion2.jpeg',
+    (N'Smoke Detector', N'Smoke Detector & CO Alert', N'Chirping alarms, dead batteries, missing detectors, and urgent smoke alarm help.', 45, N'fa-bell', N'/emergency-smoke-detector.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 8);
 
     PRINT 'ServiciosEmergencia seed data inserted.';
@@ -98,5 +101,20 @@ END
 ELSE
 BEGIN
     PRINT 'ServiciosEmergencia already has data — seed skipped.';
+END
+GO
+
+-- Sync images for existing rows
+IF EXISTS (SELECT 1 FROM dbo.ServiciosEmergencia)
+BEGIN
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-hvac.png'              WHERE Nombre = N'HVAC';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-water-heater.png'     WHERE Nombre = N'Water Heater';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-plumbing.png'         WHERE Nombre = N'Plumbing';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-flood.png'              WHERE Nombre = N'Flood';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-electrical.png'       WHERE Nombre = N'Electrical';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-roof-leak.png'       WHERE Nombre = N'Roof Leak';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-tree-damage.png'     WHERE Nombre = N'Tree Damage';
+    UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-smoke-detector.png'  WHERE Nombre = N'Smoke Detector';
+    PRINT 'ServiciosEmergencia images synced to emergency-*.png assets.';
 END
 GO

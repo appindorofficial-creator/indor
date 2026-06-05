@@ -3,16 +3,77 @@ namespace IndorMvcApp.Services;
 public readonly record struct ServicioFlowRoute(
     string Controller,
     string Action,
-    string? HomeCarePriorityName = null);
+    string? HomeCarePriorityName = null,
+    bool RouteUsesServicioId = false);
 
 /// <summary>
 /// Maps catalog <see cref="Models.Servicio"/> entries to existing booking flows.
 /// When <see cref="HomeCarePriorityName"/> is set, resolve its Id from HomeCarePriorities at render time.
+/// When <see cref="RouteUsesServicioId"/> is true, use the catalog Servicio Id as asp-route-id.
 /// </summary>
 public static class ServicioFlowRules
 {
+    public static readonly ServicioFlowRoute RemodelingRoute =
+        new("RemodelingServicio", "RemodelingService", RouteUsesServicioId: true);
+
     private static readonly (string[] Names, ServicioFlowRoute Route)[] Routes =
     [
+        (
+            [
+                "Dream Kitchen",
+                "Cocina de Ensueño",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Modern Bath Pro",
+                "Baño Moderno Pro",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Total Interior Renovation",
+                "Renovación Interior Total",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Space Expansion",
+                "Expansión de Espacios",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Perfect Patio",
+                "Terraza Perfecta",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Perfect Floors",
+                "Pisos Perfectos",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Professional Interior Painting",
+                "Pintura Interior Profesional",
+            ],
+            RemodelingRoute
+        ),
+        (
+            [
+                "Pro Concrete Driveway",
+                "Entrada de Concreto Pro",
+            ],
+            RemodelingRoute
+        ),
         (
             [
                 "Premium Exterior Painting",
@@ -51,7 +112,7 @@ public static class ServicioFlowRules
         ),
     ];
 
-    /// <summary>Fallback for remodeling / custom projects until dedicated quote flows exist.</summary>
+    /// <summary>Legacy fallback — should not be used when all services are mapped.</summary>
     public static readonly ServicioFlowRoute SupportRoute = new("Perfil", "Soporte");
 
     public static bool TryGetRoute(string? nombre, int orden, out ServicioFlowRoute route)
@@ -70,11 +131,12 @@ public static class ServicioFlowRules
 
         route = orden switch
         {
-            11 => Routes[0].Route,
-            12 => Routes[1].Route,
-            7 => Routes[2].Route,
-            8 => Routes[3].Route,
-            5 => Routes[4].Route,
+            1 or 2 or 3 or 4 or 6 or 9 or 10 or 13 => RemodelingRoute,
+            11 => new ServicioFlowRoute("ExteriorPaint", "ExteriorPaintReview", "Exterior paint"),
+            12 => new ServicioFlowRoute("SmokeDetector", "SmokeDetectorService", "Smoke Detector"),
+            7 => new ServicioFlowRoute("HvacMaintenance", "HvacMaintenanceService", "HVAC maintenance"),
+            8 => new ServicioFlowRoute("WaterHeaterFlush", "WaterHeaterFlushService", "Water heater flush"),
+            5 => new ServicioFlowRoute("PowerWash", "PowerWashService", "Power wash exterior"),
             _ => default,
         };
 
@@ -88,6 +150,11 @@ public static class ServicioFlowRules
         ServicioFlowRoute route,
         IReadOnlyDictionary<string, int> homeCarePriorityIds)
     {
+        if (route.RouteUsesServicioId)
+        {
+            return null;
+        }
+
         if (string.IsNullOrWhiteSpace(route.HomeCarePriorityName))
         {
             return null;

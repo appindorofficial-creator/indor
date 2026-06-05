@@ -122,5 +122,30 @@ BEGIN
 END
 GO
 
+-- Sync navigation to real flows (not this index page)
+DECLARE @MsMovingId INT = (SELECT TOP 1 Id FROM dbo.MovingSetupServicios WHERE Nombre = N'Moving' ORDER BY Id);
+IF @MsMovingId IS NOT NULL
+BEGIN
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'Moving', LinkAction = N'MovingService', LinkRouteId = Id
+    WHERE Nombre = N'Moving';
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'Cleaning', LinkAction = N'CleaningService', LinkRouteId = Id
+    WHERE Nombre = N'Cleaning';
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'Packing', LinkAction = N'PackingService', LinkRouteId = Id
+    WHERE Nombre = N'Packing Help';
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'FurnitureAssembly', LinkAction = N'FurnitureAssemblyService', LinkRouteId = Id
+    WHERE Nombre = N'Furniture & Assembly';
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'TvWallMounting', LinkAction = N'TvWallMountingService', LinkRouteId = Id
+    WHERE Nombre = N'TV Wall Mounting';
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'UtilitiesSetup', LinkAction = N'UtilitiesSetupAddress', LinkRouteId = Id
+    WHERE Nombre = N'Utilities Setup';
+    UPDATE dbo.MovingSetupServicios SET LinkController = N'GeneralHelp', LinkAction = N'GeneralHelpRequest', LinkRouteId = Id
+    WHERE Nombre = N'General Help';
+
+    UPDATE dbo.MovingSetupConfig
+    SET FeaturedCtaController = N'Moving', FeaturedCtaAction = N'MovingService', FeaturedCtaRouteId = @MsMovingId
+    WHERE Activo = 1;
+END
+GO
+
 PRINT 'Moving Setup schema ready.';
 GO

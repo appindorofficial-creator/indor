@@ -19,7 +19,11 @@
                 </div>
                 <p class="emergency-subtitle">Fast help for urgent home problems.</p>
             </div>
-            <button type="button" class="emergency-view-all nav-jump" data-target="section-services">View all</button>
+            <a href="@(Model.ViewAllUrl ?? Url.Action("EmergencyGuide", "Home"))"
+               class="emergency-view-all"
+               data-emergency-view-all>
+                View all <i class="fas fa-chevron-right"></i>
+            </a>
         </div>
 
         <div class="emergency-grid" role="listbox" aria-label="Emergency services">

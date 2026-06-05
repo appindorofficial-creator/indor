@@ -119,8 +119,17 @@ BEGIN
     UPDATE dbo.HomeCarePriorities
     SET LinkController = N'ExteriorPaint',
         LinkAction = N'ExteriorPaintReview',
-        LinkUrl = NULL
+        LinkUrl = NULL,
+        ImagenUrl = CASE
+            WHEN ImagenUrl IS NULL OR ImagenUrl IN (N'/servicio6.jpeg', N'/servicio10.jpeg', N'/servicio5.jpeg') THEN N'/priority-exterior-paint.png'
+            ELSE ImagenUrl
+        END
     WHERE Id = @EpPriorityId;
+
+    UPDATE dbo.ExteriorPaintServicioLanding
+    SET ImagenUrl = N'/priority-exterior-paint.png'
+    WHERE HomeCarePriorityId = @EpPriorityId
+      AND (ImagenUrl IS NULL OR ImagenUrl IN (N'/servicio6.jpeg', N'/servicio10.jpeg', N'/servicio5.jpeg'));
 
     IF NOT EXISTS (SELECT 1 FROM dbo.ExteriorPaintServicioLanding WHERE HomeCarePriorityId = @EpPriorityId)
     BEGIN
@@ -134,7 +143,7 @@ BEGIN
             N'Exterior Paint Review',
             N'Recommended every 5 years',
             N'Help us understand your exterior so we can schedule the right paint review.',
-            N'/servicio6.jpeg',
+            N'/priority-exterior-paint.png',
             0,
             NULL,
             N'Paint sooner if you see peeling, fading, or damaged caulk.',

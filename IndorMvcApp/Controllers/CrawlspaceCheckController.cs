@@ -245,7 +245,7 @@ public class CrawlspaceCheckController : Controller
                 LandingTitulo = priority.Nombre,
                 LandingTagline = "Recommended yearly",
                 LandingSubtitulo = "Inspect moisture, insulation, structure, and air quality before small issues become expensive repairs.",
-                ImagenUrl = priority.ImagenUrl ?? "/inspeccion3.jpeg",
+                ImagenUrl = priority.ImagenUrl ?? "/priority-crawlspace-check.png",
                 IncluyeItems = "Moisture|Encapsulation|Insulation|Air leaks|Pests|Cracks",
                 IncluyeIconos = "fa-droplet|fa-layer-group|fa-scroll|fa-wind|fa-bug|fa-bolt",
                 PreocupacionItems = "Standing water|Musty odor|Mold / mildew|Air leaks|Pest signs|Cracks|Pipe leaks|Damaged ducts",

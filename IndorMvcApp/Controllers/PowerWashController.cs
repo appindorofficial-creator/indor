@@ -256,7 +256,7 @@ public class PowerWashController : Controller
             LandingTitulo = priority.Nombre,
             LandingTagline = "Recommended every 1–2 years",
             InfoBoxTexto = "This service helps remove dirt, algae, mildew, pollen, and surface buildup from the exterior of your home.",
-            ImagenUrl = priority.ImagenUrl ?? "/servicio5.jpeg",
+            ImagenUrl = priority.ImagenUrl ?? "/priority-power-wash-exterior.png",
             BestForItems = "Vinyl siding|Brick|Stucco|Driveway|Patio|Fence",
             BestForIconos = "fa-house|fa-table-cells|fa-braille|fa-road|fa-umbrella-beach|fa-grip-lines",
             PreviewTexto = "We'll use your answers to understand your surface type, condition, and access so we can recommend the right approach.",

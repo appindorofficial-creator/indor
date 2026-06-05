@@ -1,0 +1,76 @@
+@model IndorMvcApp.ViewModels.WaterHeaterDetailsFoundViewModel
+@{
+    ViewData["Title"] = "Water Heater Details Found";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/water-heater-setup.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    @await Html.PartialAsync("_WaterHeaterSetupHeader", Model)
+
+    <div class="hvac-content">
+        @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
+
+        <div class="wh-scan-success">
+            <div class="wh-scan-success-copy">
+                <span class="wh-scan-success-icon"><i class="fas fa-check"></i></span>
+                <div>
+                    <strong>Label scanned successfully</strong>
+                    <p>We automatically extracted the water heater details below.</p>
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.LabelImageUrl))
+            {
+                <img src="@Url.Content($"~{Model.LabelImageUrl}")" alt="Your uploaded label photo" class="wh-label-thumb" />
+            }
+        </div>
+
+        <div class="hvac-summary-list">
+            <div class="hvac-summary-item"><i class="fas fa-droplet icon"></i><span class="k">Water heater type</span><span class="v">@Model.HeaterTypeLabel</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">Brand</span><span class="v">@Model.Brand</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">Model</span><span class="v">@Model.Model</span></div>
+            <div class="hvac-summary-item"><i class="fas fa-barcode icon"></i><span class="k">Serial number</span><span class="v">@Model.SerialNumber</span></div>
+            <div class="hvac-summary-item"><i class="far fa-calendar icon"></i><span class="k">Install year</span><span class="v">@Model.InstallYearLabel</span></div>
+            @if (Model.HeaterTypeLabel == "Tank")
+            {
+                <div class="hvac-summary-item"><i class="fas fa-droplet icon"></i><span class="k">Capacity</span><span class="v">@Model.TankSizeLabel</span></div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.EstimatedAgeLabel))
+        {
+            <div class="wh-age-banner">
+                <i class="fas fa-calendar-check"></i>
+                <span>Estimated age: <strong>@Model.EstimatedAgeLabel</strong></span>
+            </div>
+        }
+
+        <div class="hvac-info-banner">
+            <i class="fas fa-bell"></i>
+            <span>Maintenance reminders can be enabled. INDOR will keep you on track with service reminders.</span>
+        </div>
+
+        <form asp-action="DetailsFound" method="post">
+            <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
+            @Html.AntiForgeryToken()
+            <button type="submit" class="hvac-save-btn">Continue</button>
+            <button type="submit" name="action" value="rescan" class="hvac-outline-btn hvac-btn-with-icon">
+                <i class="fas fa-rotate-right"></i> Rescan label
+            </button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+</body>
+</html>

@@ -1,6 +1,6 @@
-@model IndorMvcApp.ViewModels.AddWaterHeaterViewModel
+@model IndorMvcApp.ViewModels.WaterHeaterSetupStartViewModel
 @{
-    ViewData["Title"] = "Add Water Heater";
+    ViewData["Title"] = "Scan Water Heater Label";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -16,114 +16,36 @@
 </head>
 <body>
 <div class="hvac-page">
-    <div class="hvac-top">
-        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Add Water Heater</div>
-        <div style="width:40px;"></div>
-    </div>
+    @await Html.PartialAsync("_WaterHeaterSetupHeader", Model)
 
     <div class="hvac-content">
-        <div class="hvac-prop-card">
-            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
-            <p>@Model.Address</p>
+        @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
+
+        <p class="hvac-lead">Scan the label on your water heater to automatically fill in brand, model, serial number, and maintenance reminders.</p>
+
+        <div class="wh-scan-intro">
+            <div class="wh-scan-intro-icon"><i class="fas fa-camera"></i></div>
+            <strong>Scan the equipment label</strong>
+            <p>Point your camera at the manufacturer label on your water heater.</p>
         </div>
-        <p class="hvac-lead">@Model.OpenAiHintNote</p>
 
-        <form asp-action="Add" method="post">
-            <input type="hidden" asp-for="PropiedadId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+        <a asp-action="ScanLabel" asp-route-propiedadId="@Model.PropiedadId" class="hvac-save-btn hvac-btn-with-icon">
+            <i class="fas fa-camera"></i> Scan label now
+        </a>
 
-            <div class="hvac-form-card">
-                <div class="hvac-row hvac-row-stacked">
-                    <div class="hvac-label">
-                        <span class="hvac-label-num">1.</span>Water heater type
-                        <i class="far fa-circle-question" style="color:#94A3B8;margin-left:4px;font-size:0.8rem;"></i>
-                    </div>
-                    <div class="wh-type-toggle">
-                        <label class="wh-type-btn @(Model.HeaterType == "Tank" ? "active" : "")">
-                            <input type="radio" asp-for="HeaterType" value="Tank" />
-                            <i class="fas fa-database"></i> Tank
-                        </label>
-                        <label class="wh-type-btn @(Model.HeaterType == "Tankless" ? "active" : "")">
-                            <input type="radio" asp-for="HeaterType" value="Tankless" />
-                            <i class="fas fa-bolt"></i> Tankless
-                        </label>
-                    </div>
-                </div>
+        <div class="wh-or-divider"><span>OR</span></div>
 
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Brand"><span class="hvac-label-num">2.</span>Brand</label>
-                    <input asp-for="Brand" class="hvac-input" placeholder="e.g., Rheem" />
-                </div>
+        <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn hvac-btn-with-icon">
+            <i class="fas fa-pen-to-square"></i> Enter details manually
+        </a>
 
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Model"><span class="hvac-label-num">3.</span>Model (optional)</label>
-                    <input asp-for="Model" class="hvac-input" placeholder="e.g., PROG50-38N RH62" />
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="SerialNumber"><span class="hvac-label-num">4.</span>Serial number (optional)</label>
-                    <input asp-for="SerialNumber" class="hvac-input" placeholder="e.g., M123456789" />
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="InstallYear"><span class="hvac-label-num">5.</span>Approx. install year (optional)</label>
-                    <select asp-for="InstallYear" class="hvac-select">
-                        <option value="">Select year</option>
-                        @foreach (var year in Model.InstallYearOptions)
-                        {
-                            <option value="@year">@year</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="hvac-row hvac-row-stacked" id="tankSizeRow" data-hidden="@(Model.HeaterType == "Tankless" ? "true" : "false")">
-                    <label class="hvac-label" asp-for="TankSize"><span class="hvac-label-num">6.</span>Tank size</label>
-                    <select asp-for="TankSize" class="hvac-select">
-                        <option value="">Select tank size</option>
-                        @foreach (var size in Model.TankSizeOptions)
-                        {
-                            <option value="@size">@size</option>
-                        }
-                    </select>
-                    <div class="wh-field-hint">Examples: 40 gal, 50 gal, 75 gal</div>
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="LastServiceDate"><span class="hvac-label-num">7.</span>Last service date (optional)</label>
-                    <input asp-for="LastServiceDate" type="date" class="hvac-input" placeholder="Select date" />
-                </div>
-            </div>
-
-            <div class="hvac-toggle-card">
-                <div class="hvac-toggle-icon"><i class="far fa-bell"></i></div>
-                <div class="hvac-toggle-copy">
-                    <strong>Enable annual flush reminder</strong>
-                    <span>We'll remind you once a year to flush your water heater.</span>
-                </div>
-                <label class="hvac-switch">
-                    <input asp-for="FlushRemindersEnabled" type="checkbox" />
-                    <span></span>
-                </label>
-            </div>
-
-            <button type="submit" class="hvac-save-btn">Save &amp; Continue</button>
-        </form>
+        <div class="hvac-info-banner">
+            <i class="fas fa-circle-info"></i>
+            <span>Scanning helps INDOR organize your equipment, estimate age, and set up maintenance reminders.</span>
+        </div>
     </div>
 
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
-<script>
-    document.querySelectorAll('.wh-type-btn input[type=radio]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            document.querySelectorAll('.wh-type-btn').forEach(btn => btn.classList.remove('active'));
-            radio.closest('.wh-type-btn')?.classList.add('active');
-            const tankRow = document.getElementById('tankSizeRow');
-            if (tankRow) {
-                tankRow.dataset.hidden = radio.value === 'Tankless' ? 'true' : 'false';
-            }
-        });
-    });
-</script>
 </body>
 </html>

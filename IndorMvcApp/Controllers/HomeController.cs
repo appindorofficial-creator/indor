@@ -669,6 +669,7 @@ public class HomeController : Controller
         var previewInfo = HouseFactPreviewContext.Load(HttpContext.Session);
         HouseFactProfileViewModel? houseFactProfile = null;
         var houseFactPreview = false;
+        HomeDashboardData? primaryDashboardData = null;
 
         if (primaryPropiedad != null)
         {
@@ -676,6 +677,7 @@ public class HomeController : Controller
             {
                 var primaryInfo = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
                 var dashboardData = await HomeDashboardDataService.LoadAsync(_db, primaryPropiedad.Id);
+                primaryDashboardData = dashboardData;
 
                 var notificationCount = dashboardData.Mantenimiento.Count(m =>
                     m.DueDate.HasValue
@@ -723,11 +725,82 @@ public class HomeController : Controller
             houseFactPreview = true;
         }
 
+        if (houseFactProfile != null)
+        {
+            houseFactProfile.PropertyImageUrl = PropertyImageResolver.Resolve(
+                primaryDashboardData?.Documentos,
+                primaryDashboardData?.HvacRecord?.LabelImagePath,
+                primaryDashboardData?.WaterHeaterRecord?.LabelImagePath);
+            houseFactProfile.NeedsReviewCount = HouseFactOverviewBuilder.CountNeedsReview(houseFactProfile);
+            houseFactProfile.ShowSuccessBadge = string.Equals(
+                primaryPropiedad?.AttomSyncStatus,
+                "Success",
+                StringComparison.OrdinalIgnoreCase)
+                || houseFactProfile.HasData;
+        }
+
         ViewBag.HouseFactProfile = houseFactProfile;
         ViewBag.HouseFactPreviewMode = houseFactPreview;
         ViewBag.HouseFactPropiedadId = primaryPropiedad?.Id;
 
         return View(propiedades);
+    }
+
+    /// <summary>Full list of Home Care Guide maintenance tasks (not MyHome maintenance log).</summary>
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> HomeCareGuide(int? id)
+    {
+        var userId = _userManager.GetUserId(User);
+        int? propiedadId = id;
+        if (!propiedadId.HasValue)
+        {
+            propiedadId = await _db.Propiedades
+                .Where(p => p.UserId == userId && p.Activo)
+                .OrderByDescending(p => p.FechaCreacion)
+                .Select(p => (int?)p.Id)
+                .FirstOrDefaultAsync();
+        }
+        else if (!await _db.Propiedades.AnyAsync(p => p.Id == propiedadId && p.UserId == userId && p.Activo))
+        {
+            return NotFound();
+        }
+
+        var config = await _db.HomeCarePrioritiesConfig.AsNoTracking().FirstOrDefaultAsync(c => c.Activo);
+        var items = await _db.HomeCarePriorities.AsNoTracking()
+            .Where(p => p.Activo)
+            .OrderBy(p => p.Orden)
+            .ThenBy(p => p.Id)
+            .ToListAsync();
+
+        var section = HomeCarePrioritiesDisplayService.Build(config, items, propiedadId, Url);
+        if (section == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        section.ViewAllUrl = null;
+        return View(section);
+    }
+
+    /// <summary>Full grid of 24/7 emergency services (not a scroll jump on Home).</summary>
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> EmergencyGuide()
+    {
+        var items = await _db.ServiciosEmergencia.AsNoTracking()
+            .Where(s => s.Activo)
+            .OrderBy(s => s.Orden)
+            .ThenBy(s => s.Id)
+            .ToListAsync();
+
+        var model = EmergencyServicesDisplayService.BuildGuide(items, Url);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        return View(model);
     }
 
     public IActionResult Privacy()

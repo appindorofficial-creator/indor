@@ -258,7 +258,7 @@ public class ExteriorPaintController : Controller
             LandingTitulo = priority.Nombre,
             LandingTagline = "Recommended every 5 years",
             LandingSubtitulo = "Help us understand your exterior so we can schedule the right paint review.",
-            ImagenUrl = priority.ImagenUrl ?? "/servicio6.jpeg",
+            ImagenUrl = priority.ImagenUrl ?? "/priority-exterior-paint.png",
             InfoBoxTexto = "Paint sooner if you see peeling, fading, or damaged caulk.",
             WhyItMattersItems = "Fresh exterior paint protects siding and trim|Annual visual checks help catch peeling and bad caulk early|A full repaint is often needed about every 5 years, depending on material and weather",
             WhyItMattersIconos = "fa-shield-halved|fa-magnifying-glass|fa-calendar",

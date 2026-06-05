@@ -281,7 +281,7 @@ public class HvacMaintenanceController : Controller
                 LandingTitulo = priority.Nombre,
                 LandingTagline = priority.Subtitulo,
                 LandingSubtitulo = "Yearly preventive maintenance to keep your air conditioning system running efficiently and reliably.",
-                ImagenUrl = priority.ImagenUrl ?? "/inspeccion5.jpeg",
+                ImagenUrl = priority.ImagenUrl ?? "/priority-hvac-maintenance.png",
                 PrecioDesde = HvacMaintenancePricingService.StartingPrice,
                 PrecioTexto = HvacMaintenanceDisplayLabels.FormatPrice(HvacMaintenancePricingService.StartingPrice),
                 IncluyeItems = "System inspection|Filter check|Performance test|Basic tune-up",

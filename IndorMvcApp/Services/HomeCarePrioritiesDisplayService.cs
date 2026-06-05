@@ -60,8 +60,8 @@ public static class HomeCarePrioritiesDisplayService
 
         return ResolveUrl(
             urlHelper,
-            config.ViewAllController ?? "MyHome",
-            config.ViewAllAction ?? "Maintenance",
+            config.ViewAllController ?? "Home",
+            config.ViewAllAction ?? "HomeCareGuide",
             propiedadId);
     }
 

@@ -1,0 +1,19 @@
+@model int
+@{
+    var current = Model;
+}
+<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+    <div style="width:44px;"></div>
+    <div class="step-count">@current of 4</div>
+</div>
+<div class="gh-stepper">
+    @for (var i = 1; i <= 4; i++)
+    {
+        var css = i < current ? "gh-step-dot done" : i == current ? "gh-step-dot active" : "gh-step-dot";
+        <div class="@css">@i</div>
+        @if (i < 4)
+        {
+            <div class="line @(i < current ? "done" : "")"></div>
+        }
+    }
+</div>

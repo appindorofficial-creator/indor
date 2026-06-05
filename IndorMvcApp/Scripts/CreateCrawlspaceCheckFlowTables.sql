@@ -94,8 +94,17 @@ BEGIN
     UPDATE dbo.HomeCarePriorities
     SET LinkController = N'CrawlspaceCheck',
         LinkAction = N'CrawlspaceCheckService',
-        LinkUrl = NULL
+        LinkUrl = NULL,
+        ImagenUrl = CASE
+            WHEN ImagenUrl IS NULL OR ImagenUrl = N'/inspeccion3.jpeg' THEN N'/priority-crawlspace-check.png'
+            ELSE ImagenUrl
+        END
     WHERE Id = @CsPriorityId;
+
+    UPDATE dbo.CrawlspaceCheckServicioLanding
+    SET ImagenUrl = N'/priority-crawlspace-check.png'
+    WHERE HomeCarePriorityId = @CsPriorityId
+      AND (ImagenUrl IS NULL OR ImagenUrl = N'/inspeccion3.jpeg');
 
     IF NOT EXISTS (SELECT 1 FROM dbo.CrawlspaceCheckServicioLanding WHERE HomeCarePriorityId = @CsPriorityId)
     BEGIN
@@ -109,7 +118,7 @@ BEGIN
             N'Crawlspace Check',
             N'Recommended yearly',
             N'Inspect moisture, insulation, structure, and air quality before small issues become expensive repairs.',
-            N'/inspeccion3.jpeg',
+            N'/priority-crawlspace-check.png',
             89,
             N'From $89',
             N'Moisture|Encapsulation|Insulation|Air leaks|Pests|Cracks',

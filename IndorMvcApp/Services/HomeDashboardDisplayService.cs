@@ -39,6 +39,10 @@ public static class HomeDashboardDisplayService
                 : null,
             SqftLabel = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : null,
             HouseFactsUrl = $"{url.Action("Index", "Home")}#section-myhome",
+            ImageUrl = PropertyImageResolver.Resolve(
+                documentos,
+                hvacRecord?.LabelImagePath,
+                waterHeaterRecord?.LabelImagePath),
             NotificationCount = notificationCount,
             QuickActions = BuildQuickActions(propiedad.Id, url),
             TodayTasks = BuildTodayTasks(propiedad.Id, hvacRecord, waterHeaterRecord, documentos, mantenimiento, url),

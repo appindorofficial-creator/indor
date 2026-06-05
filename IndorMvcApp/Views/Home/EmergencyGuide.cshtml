@@ -1,0 +1,130 @@
+@model IndorMvcApp.ViewModels.EmergencyServicesGuideViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@Model.Title - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #0A2540; margin: 0; min-height: 100vh; }
+        .eg-page { max-width: 520px; margin: 0 auto; padding: 16px 16px 32px; }
+        .eg-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .eg-back {
+            width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #E5E7EB;
+            background: #FFF; display: inline-flex; align-items: center; justify-content: center;
+            color: #0A2540; text-decoration: none; flex-shrink: 0;
+        }
+        .eg-title-row { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+        .eg-title { font-size: 1.35rem; font-weight: 800; margin: 0; }
+        .eg-badge-247 {
+            font-size: 0.62rem; font-weight: 800; color: #DC2626;
+            background: rgba(220, 38, 38, 0.1); padding: 3px 8px; border-radius: 999px;
+            flex-shrink: 0;
+        }
+        .eg-sub { font-size: 0.85rem; color: #64748B; margin: 0 0 18px 52px; line-height: 1.4; }
+        .eg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .eg-card {
+            border: 1px solid #E5E7EB; background: #FFF; border-radius: 14px;
+            padding: 0; text-decoration: none; color: inherit;
+            display: flex; flex-direction: column;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, .06);
+        }
+        .eg-card-media {
+            height: 96px; border-radius: 12px 12px 0 0; overflow: hidden;
+            background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%);
+            position: relative;
+        }
+        .eg-card-media img { width: 100%; height: 100%; object-fit: cover; }
+        .eg-card-fallback {
+            width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+            color: #DC2626; font-size: 1.6rem;
+        }
+        .eg-card-icon {
+            position: absolute; bottom: 6px; right: 6px;
+            width: 28px; height: 28px; border-radius: 8px;
+            background: rgba(255,255,255,0.9); color: #DC2626;
+            display: flex; align-items: center; justify-content: center; font-size: 0.75rem;
+        }
+        .eg-card-label {
+            font-size: 0.78rem; font-weight: 700; color: #0A2540;
+            line-height: 1.25; padding: 8px 8px 2px; text-align: center;
+        }
+        .eg-card-sub {
+            font-size: 0.68rem; font-weight: 600; color: #DC2626;
+            text-align: center; padding: 0 8px 10px; display: block;
+        }
+        .eg-card-static { cursor: default; opacity: 0.85; }
+    </style>
+</head>
+<body>
+<div class="eg-page">
+    <div class="eg-top">
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="eg-back" aria-label="Back">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div class="eg-title-row">
+            <h1 class="eg-title">@Model.Title</h1>
+            <span class="eg-badge-247">24/7</span>
+        </div>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+    {
+        <p class="eg-sub">@Model.Subtitle</p>
+    }
+
+    <div class="eg-grid">
+        @foreach (var item in Model.Items)
+        {
+            var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
+                : null;
+
+            if (!string.IsNullOrWhiteSpace(item.Url))
+            {
+                <a href="@item.Url" class="eg-card">
+                    <div class="eg-card-media">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="@item.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="eg-card-fallback"><i class="fas @item.IconoClase"></i></div>
+                        }
+                        <span class="eg-card-icon"><i class="fas @item.IconoClase"></i></span>
+                    </div>
+                    <span class="eg-card-label">@item.Title</span>
+                    <span class="eg-card-sub">@item.Subtitle</span>
+                </a>
+            }
+            else
+            {
+                <div class="eg-card eg-card-static">
+                    <div class="eg-card-media">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="@item.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="eg-card-fallback"><i class="fas @item.IconoClase"></i></div>
+                        }
+                        <span class="eg-card-icon"><i class="fas @item.IconoClase"></i></span>
+                    </div>
+                    <span class="eg-card-label">@item.Title</span>
+                    <span class="eg-card-sub">@item.Subtitle</span>
+                </div>
+            }
+        }
+    </div>
+</div>
+</body>
+</html>

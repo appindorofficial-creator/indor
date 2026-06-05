@@ -114,8 +114,17 @@ BEGIN
     UPDATE dbo.HomeCarePriorities
     SET LinkController = N'RoofInspection',
         LinkAction = N'RoofInspectionService',
-        LinkUrl = NULL
+        LinkUrl = NULL,
+        ImagenUrl = CASE
+            WHEN ImagenUrl IS NULL OR ImagenUrl IN (N'/inspeccion8.jpeg', N'/inspeccion7.jpeg') THEN N'/priority-roof-inspection.png'
+            ELSE ImagenUrl
+        END
     WHERE Id = @RoofPriorityId;
+
+    UPDATE dbo.RoofInspectionServicioLanding
+    SET ImagenUrl = N'/priority-roof-inspection.png'
+    WHERE HomeCarePriorityId = @RoofPriorityId
+      AND (ImagenUrl IS NULL OR ImagenUrl IN (N'/inspeccion8.jpeg', N'/inspeccion7.jpeg'));
 
     IF NOT EXISTS (SELECT 1 FROM dbo.RoofInspectionServicioLanding WHERE HomeCarePriorityId = @RoofPriorityId)
     BEGIN
@@ -128,7 +137,7 @@ BEGIN
             N'Roof Inspection',
             N'Roof Inspection',
             N'Regular roof inspections help catch loose shingles, failing sealant, damaged flashing, clogged drainage, and leak risks before they become major repairs.',
-            N'/inspeccion8.jpeg',
+            N'/priority-roof-inspection.png',
             99,
             N'From $99',
             N'Visual roof check: spring & fall|Professional inspection: every 1–2 years|After major storms: inspect again|Older roof or active issues: inspect sooner',

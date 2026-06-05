@@ -67,6 +67,9 @@ public class HouseFactProfileViewModel
     public int FieldCount { get; set; }
     public bool HasData { get; set; }
     public string RawJsonPretty { get; set; } = string.Empty;
+    public string PropertyImageUrl { get; set; } = "/welcome-house.png";
+    public int NeedsReviewCount { get; set; }
+    public bool ShowSuccessBadge { get; set; }
     public List<AttomFieldGroupViewModel> Sections { get; set; } = new();
     public HouseFactOverviewViewModel Overview { get; set; } = new();
 }

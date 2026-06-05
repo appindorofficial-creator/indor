@@ -57,6 +57,9 @@ public class PropiedadHvacSistema
     [MaxLength(120)]
     public string? OpenAiDataSource { get; set; }
 
+    [MaxLength(300)]
+    public string? LabelImagePath { get; set; }
+
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
     public DateTime? FechaActualizacion { get; set; }

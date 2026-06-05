@@ -1,4 +1,4 @@
-@model IndorMvcApp.ViewModels.AddHvacSystemViewModel
+@model IndorMvcApp.ViewModels.HvacSetupStartViewModel
 @{
     ViewData["Title"] = "Add HVAC System";
     Layout = null;
@@ -15,109 +15,54 @@
 </head>
 <body>
 <div class="hvac-page">
-    <div class="hvac-top">
-        <a asp-controller="Home" asp-action="Index" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <div class="hvac-title">Add HVAC System</div>
-        <div style="width:40px;"></div>
-    </div>
+    @await Html.PartialAsync("_HvacSetupHeader", Model)
 
     <div class="hvac-content">
         <div class="hvac-prop-card">
             <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
             <p>@Model.Address</p>
         </div>
-        <p class="hvac-lead">Add the basics so INDOR can personalize maintenance reminders.</p>
-        @if (!string.IsNullOrWhiteSpace(Model.OpenAiHintNote) && Model.OpenAiHintNote.Contains("OpenAI"))
-        {
-            <div class="hvac-openai-note">@Model.OpenAiHintNote</div>
-        }
 
-        <form asp-action="Add" method="post">
-            <input type="hidden" asp-for="PropiedadId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+        <div class="hvac-scan-hero">
+            <div class="hvac-scan-icon-wrap">
+                <span class="hvac-scan-sparkle hvac-scan-sparkle-1"><i class="fas fa-wand-magic-sparkles"></i></span>
+                <span class="hvac-scan-sparkle hvac-scan-sparkle-2"><i class="fas fa-wand-magic-sparkles"></i></span>
+                <span class="hvac-scan-camera"><i class="fas fa-camera"></i></span>
+            </div>
+            <h2 class="hvac-scan-title">Scan your unit label</h2>
+            <p class="hvac-scan-desc">INDOR can read your serial/model label to auto-fill system details, estimate age, and check maintenance history.</p>
+            <a asp-action="ScanLabel" asp-route-propiedadId="@Model.PropiedadId" class="hvac-save-btn hvac-btn-with-icon">
+                <i class="fas fa-camera"></i> Scan label now
+            </a>
+            <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">Enter manually</a>
+        </div>
 
-            <div class="hvac-form-card">
-                <div class="hvac-row hvac-row-stacked">
-                    <div class="hvac-label"><span class="hvac-label-num">1.</span>System type</div>
-                    <div class="hvac-chips">
-                        @foreach (var type in new[] { ("CentralAC", "Central AC", "fa-snowflake"), ("HeatPump", "Heat Pump", "fa-wind"), ("MiniSplit", "Mini Split", "fa-air-conditioner") })
-                        {
-                            <label class="hvac-chip @(Model.SystemType == type.Item1 ? "active" : "")">
-                                <input type="radio" asp-for="SystemType" value="@type.Item1" />
-                                <i class="fas @type.Item3"></i> @type.Item2
-                            </label>
-                        }
-                    </div>
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Brand"><span class="hvac-label-num">2.</span>Brand</label>
-                    <input asp-for="Brand" class="hvac-input" placeholder="Enter brand" />
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Model"><span class="hvac-label-num">3.</span>Model (optional)</label>
-                    <input asp-for="Model" class="hvac-input" placeholder="Enter model" />
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="SerialNumber"><span class="hvac-label-num">4.</span>Serial number (optional)</label>
-                    <input asp-for="SerialNumber" class="hvac-input" placeholder="Enter serial number" />
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="InstallYear"><span class="hvac-label-num">5.</span>Approx. install year (optional)</label>
-                    <select asp-for="InstallYear" class="hvac-select">
-                        <option value="">Select year</option>
-                        @foreach (var year in Model.InstallYearOptions)
-                        {
-                            <option value="@year">@year</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="FilterSize"><span class="hvac-label-num">6.</span>Filter size</label>
-                    <select asp-for="FilterSize" class="hvac-select">
-                        <option value="">e.g. 16x25x1</option>
-                        @foreach (var size in Model.FilterSizeOptions)
-                        {
-                            <option value="@size">@size</option>
-                        }
-                    </select>
-                </div>
-
-                <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="LastServiceDate"><span class="hvac-label-num">7.</span>Last service date (optional)</label>
-                    <input asp-for="LastServiceDate" type="date" class="hvac-input" placeholder="Select date" />
+        <div class="hvac-benefit-list">
+            <div class="hvac-benefit-item">
+                <span class="hvac-benefit-icon"><i class="fas fa-clipboard-list"></i></span>
+                <div>
+                    <strong>Auto-fill system info</strong>
+                    <span>We'll capture serial number, model, and more.</span>
                 </div>
             </div>
-
-            <div class="hvac-toggle-card">
-                <div class="hvac-toggle-icon"><i class="far fa-bell"></i></div>
-                <div class="hvac-toggle-copy">
-                    <strong>Enable filter reminders</strong>
-                    <span>We'll remind you when it's time to replace.</span>
+            <div class="hvac-benefit-item">
+                <span class="hvac-benefit-icon"><i class="fas fa-clock"></i></span>
+                <div>
+                    <strong>Estimate unit age</strong>
+                    <span>Get an estimated install year in seconds.</span>
                 </div>
-                <label class="hvac-switch">
-                    <input asp-for="FilterRemindersEnabled" type="checkbox" />
-                    <span></span>
-                </label>
             </div>
-
-            <button type="submit" class="hvac-save-btn">Save &amp; Continue</button>
-        </form>
+            <div class="hvac-benefit-item">
+                <span class="hvac-benefit-icon"><i class="fas fa-chart-line"></i></span>
+                <div>
+                    <strong>Find maintenance insights</strong>
+                    <span>See past service and recommended care.</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
-<script>
-    document.querySelectorAll('.hvac-chip input[type=radio]').forEach(radio => {
-        radio.addEventListener('change', () => {
-            document.querySelectorAll('.hvac-chip').forEach(c => c.classList.remove('active'));
-            radio.closest('.hvac-chip')?.classList.add('active');
-        });
-    });
-</script>
 </body>
 </html>

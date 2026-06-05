@@ -93,6 +93,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<UtilitiesSetupContacto> UtilitiesSetupContactos { get; set; }
     public DbSet<SolicitudGeneralHelp> SolicitudesGeneralHelp { get; set; }
     public DbSet<ArchivoGeneralHelp> ArchivosGeneralHelp { get; set; }
+    public DbSet<SolicitudRemodelingServicio> SolicitudesRemodelingServicio { get; set; }
+    public DbSet<ArchivoRemodelingServicio> ArchivosRemodelingServicio { get; set; }
     public DbSet<SafeAirServicioLanding> SafeAirServicioLanding { get; set; }
     public DbSet<SolicitudSafeAir> SolicitudesSafeAir { get; set; }
     public DbSet<ArchivoSafeAir> ArchivosSafeAir { get; set; }
@@ -621,6 +623,30 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
             entity.HasOne(a => a.Solicitud)
                   .WithMany(s => s.Archivos)
                   .HasForeignKey(a => a.SolicitudGeneralHelpId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<SolicitudRemodelingServicio>(entity =>
+        {
+            entity.HasOne(s => s.Usuario)
+                  .WithMany()
+                  .HasForeignKey(s => s.UserId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(s => s.Servicio)
+                  .WithMany()
+                  .HasForeignKey(s => s.ServicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+            entity.HasOne(s => s.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(s => s.PropiedadId)
+                  .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<ArchivoRemodelingServicio>(entity =>
+        {
+            entity.HasOne(a => a.Solicitud)
+                  .WithMany(s => s.Archivos)
+                  .HasForeignKey(a => a.SolicitudRemodelingServicioId)
                   .OnDelete(DeleteBehavior.Cascade);
         });
 

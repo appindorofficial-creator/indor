@@ -1,0 +1,131 @@
+@model IndorMvcApp.ViewModels.WaterHeaterScanLabelViewModel
+@{
+    ViewData["Title"] = "Scan Water Heater Label";
+    var hasSavedPreview = !string.IsNullOrWhiteSpace(Model.PreviewImageUrl);
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/water-heater-setup.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    @await Html.PartialAsync("_WaterHeaterSetupHeader", Model)
+
+    <div class="hvac-content">
+        @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
+        <p class="hvac-lead">@Model.ScanHint</p>
+
+        <form asp-action="ScanLabel" method="post" enctype="multipart/form-data" id="scanForm">
+            <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
+            @Html.AntiForgeryToken()
+
+            <div class="hvac-camera-panel">
+                <div class="hvac-camera-view" id="cameraPreview">
+                    <video id="cameraVideo" class="hvac-camera-live @(hasSavedPreview ? "is-hidden" : "")" autoplay playsinline muted></video>
+                    <div id="cameraEmpty" class="hvac-camera-empty @(hasSavedPreview ? "is-hidden" : "")">
+                        <i class="fas fa-camera"></i>
+                        <span>Open your camera or upload a label photo</span>
+                    </div>
+                    <img src="@(hasSavedPreview ? Url.Content($"~{Model.PreviewImageUrl}") : "")"
+                         alt="Your water heater label photo"
+                         class="hvac-camera-sample @(hasSavedPreview ? "is-custom" : "is-hidden")"
+                         id="previewImage" />
+                    <div class="hvac-camera-frame" aria-hidden="true"></div>
+                    <div class="hvac-camera-hint">Center the manufacturer label in the frame</div>
+                </div>
+            </div>
+
+            <input type="file" name="labelFile" id="labelFile" class="hvac-sr-only" accept="image/*" capture="environment" />
+            <input type="file" id="uploadFile" class="hvac-sr-only" accept="image/*,.jpg,.jpeg,.png,.webp" />
+
+            <button type="button" class="hvac-save-btn hvac-btn-with-icon" id="captureBtn">
+                <i class="fas fa-camera"></i> <span id="captureBtnText">@(hasSavedPreview ? "Use this photo" : "Capture label")</span>
+            </button>
+            <button type="button" class="hvac-text-btn" id="uploadBtn">Upload photo instead</button>
+            <button type="submit" class="hvac-text-btn">Continue with estimated details</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    (function () {
+        const form = document.getElementById('scanForm');
+        const labelFile = document.getElementById('labelFile');
+        const uploadFile = document.getElementById('uploadFile');
+        const previewImage = document.getElementById('previewImage');
+        const cameraVideo = document.getElementById('cameraVideo');
+        const cameraEmpty = document.getElementById('cameraEmpty');
+        const captureBtn = document.getElementById('captureBtn');
+        const captureBtnText = document.getElementById('captureBtnText');
+        const uploadBtn = document.getElementById('uploadBtn');
+        let hasSelectedFile = @(hasSavedPreview ? "true" : "false");
+        let cameraStream = null;
+
+        function hideElement(el) { if (el) el.classList.add('is-hidden'); }
+        function showElement(el) { if (el) el.classList.remove('is-hidden'); }
+
+        function showPreview(file) {
+            if (!file) return;
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            labelFile.files = dt.files;
+            previewImage.src = URL.createObjectURL(file);
+            previewImage.classList.add('is-custom');
+            showElement(previewImage);
+            hideElement(cameraVideo);
+            hideElement(cameraEmpty);
+            hasSelectedFile = true;
+            captureBtnText.textContent = 'Use this photo';
+        }
+
+        async function startCamera() {
+            if (!navigator.mediaDevices?.getUserMedia) return;
+            try {
+                cameraStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: { ideal: 'environment' } },
+                    audio: false
+                });
+                cameraVideo.srcObject = cameraStream;
+                showElement(cameraVideo);
+                hideElement(cameraEmpty);
+            } catch {
+                showElement(cameraEmpty);
+                hideElement(cameraVideo);
+            }
+        }
+
+        function captureFromVideo() {
+            if (!cameraStream || cameraVideo.readyState < 2) return false;
+            const canvas = document.createElement('canvas');
+            canvas.width = cameraVideo.videoWidth;
+            canvas.height = cameraVideo.videoHeight;
+            canvas.getContext('2d').drawImage(cameraVideo, 0, 0);
+            canvas.toBlob(blob => {
+                if (!blob) return;
+                showPreview(new File([blob], 'water-heater-label.jpg', { type: 'image/jpeg' }));
+            }, 'image/jpeg', 0.92);
+            return true;
+        }
+
+        captureBtn.addEventListener('click', () => {
+            if (hasSelectedFile) { form.submit(); return; }
+            if (cameraStream && captureFromVideo()) return;
+            labelFile.click();
+        });
+        uploadBtn.addEventListener('click', () => uploadFile.click());
+        labelFile.addEventListener('change', () => { if (labelFile.files?.[0]) showPreview(labelFile.files[0]); });
+        uploadFile.addEventListener('change', () => { if (uploadFile.files?.[0]) showPreview(uploadFile.files[0]); });
+        if (!hasSelectedFile) startCamera();
+    })();
+</script>
+</body>
+</html>

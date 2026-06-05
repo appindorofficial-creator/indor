@@ -1,104 +1,137 @@
-@model IndorMvcApp.ViewModels.HouseFactProfileViewModel
-@{
-    var showJson = ViewData["ShowJson"] as bool? ?? true;
-    var compact = ViewData["Compact"] as bool? ?? false;
-}
-
-<link rel="stylesheet" href="~/css/house-fact.css" asp-append-version="true" />
-<script src="~/js/house-fact.js" asp-append-version="true"></script>
-
-@if (!Model.HasData)
-{
-    <div class="hf-empty-state">
-        <div><i class="fas fa-file-circle-question"></i></div>
-        <div>No House Fact data is available yet for this property.</div>
-    </div>
-}
-else if (compact)
-{
-    <div class="hf-profile hf-compact" data-house-fact-root>
-        <div class="hf-accordion-list">
-            @foreach (var factSection in Model.Sections)
-            {
-                var sectionId = string.IsNullOrWhiteSpace(factSection.SectionId) ? $"section-{factSection.Order}" : factSection.SectionId;
-                <details class="hf-accordion" id="@sectionId">
-                    <summary class="hf-accordion-summary">
-                        <div class="hf-accordion-icon"><i class="fas @factSection.Icon"></i></div>
-                        <div class="hf-accordion-text">
-                            <div class="hf-accordion-title">@factSection.DisplayTitle</div>
-                            @if (!string.IsNullOrWhiteSpace(factSection.Summary))
-                            {
-                                <div class="hf-accordion-preview">@factSection.Summary</div>
-                            }
-                        </div>
-                        <i class="fas fa-chevron-down hf-accordion-chevron"></i>
-                    </summary>
-                    <div class="hf-accordion-body">
-                        @await Html.PartialAsync("_HouseFactSectionContent", factSection)
-                    </div>
-                </details>
-            }
-        </div>
-    </div>
-}
-else
-{
-    <div class="hf-app" data-house-fact-root>
-        <div class="hf-screen hf-screen-overview" data-hf-screen="overview">
-            @await Html.PartialAsync("_HouseFactOverview", Model)
-        </div>
-
-        <div class="hf-screen hf-screen-detail" data-hf-screen="detail" hidden>
-            <div class="hf-detail-top">
-                <button type="button" class="hf-detail-back" data-hf-back-overview aria-label="Back to overview">
-                    <i class="fas fa-arrow-left"></i>
-                </button>
-                <div class="hf-detail-title-wrap">
-                    <div class="hf-detail-kicker">House Facts</div>
-                    <h2 class="hf-detail-title" data-hf-detail-title>Section details</h2>
-                </div>
-            </div>
-
-            <div class="hf-detail-sections" data-hf-detail-sections>
-                @foreach (var factSection in Model.Sections)
-                {
-                    var sectionId = string.IsNullOrWhiteSpace(factSection.SectionId) ? $"section-{factSection.Order}" : factSection.SectionId;
-                    <details class="hf-accordion hf-detail-section"
-                             id="detail-@sectionId"
-                             data-hf-category="@factSection.CategoryKey"
-                             data-hf-section-id="@sectionId"
-                             hidden>
-                        <summary class="hf-accordion-summary">
-                            <div class="hf-accordion-icon"><i class="fas @factSection.Icon"></i></div>
-                            <div class="hf-accordion-text">
-                                <div class="hf-accordion-title">@factSection.DisplayTitle</div>
-                                @if (!string.IsNullOrWhiteSpace(factSection.Summary))
-                                {
-                                    <div class="hf-accordion-preview">@factSection.Summary</div>
-                                }
-                            </div>
-                            <div class="hf-accordion-meta">
-                                @if (factSection.ItemCount > 0)
-                                {
-                                    <span class="hf-accordion-count">@factSection.ItemCount items</span>
-                                }
-                                <i class="fas fa-chevron-down hf-accordion-chevron"></i>
-                            </div>
-                        </summary>
-                        <div class="hf-accordion-body">
-                            @await Html.PartialAsync("_HouseFactSectionContent", factSection)
-                        </div>
-                    </details>
-                }
-            </div>
-        </div>
-
-        @if (showJson && !string.IsNullOrWhiteSpace(Model.RawJsonPretty))
-        {
-            <details class="hf-json-panel hf-json-panel-app">
-                <summary><i class="fas fa-code"></i> View complete JSON response</summary>
-                <pre class="hf-json-block">@Model.RawJsonPretty</pre>
-            </details>
-        }
-    </div>
-}
+@model IndorMvcApp.ViewModels.HouseFactProfileViewModel
+@{
+    var showJson = ViewData["ShowJson"] as bool? ?? true;
+    var compact = ViewData["Compact"] as bool? ?? false;
+}
+
+<link rel="stylesheet" href="~/css/house-fact.css" asp-append-version="true" />
+<script src="~/js/house-fact.js" asp-append-version="true"></script>
+
+@if (!Model.HasData)
+{
+    <div class="hf-empty-state">
+        <div><i class="fas fa-file-circle-question"></i></div>
+        <div>No House Fact data is available yet for this property.</div>
+    </div>
+}
+else if (compact)
+{
+    <div class="hf-profile hf-compact" data-house-fact-root>
+        <div class="hf-accordion-list">
+            @foreach (var factSection in Model.Sections)
+            {
+                var sectionId = string.IsNullOrWhiteSpace(factSection.SectionId) ? $"section-{factSection.Order}" : factSection.SectionId;
+                <details class="hf-accordion" id="@sectionId">
+                    <summary class="hf-accordion-summary">
+                        <div class="hf-accordion-icon"><i class="fas @factSection.Icon"></i></div>
+                        <div class="hf-accordion-text">
+                            <div class="hf-accordion-title">@factSection.DisplayTitle</div>
+                            @if (!string.IsNullOrWhiteSpace(factSection.Summary))
+                            {
+                                <div class="hf-accordion-preview">@factSection.Summary</div>
+                            }
+                        </div>
+                        <i class="fas fa-chevron-down hf-accordion-chevron"></i>
+                    </summary>
+                    <div class="hf-accordion-body">
+                        @await Html.PartialAsync("_HouseFactSectionContent", factSection)
+                    </div>
+                </details>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div class="hf-app" data-house-fact-root>
+        <div class="hf-screen hf-screen-overview" data-hf-screen="overview">
+            @await Html.PartialAsync("_HouseFactOverview", Model)
+        </div>
+
+        <div class="hf-screen hf-screen-detail" data-hf-screen="detail" hidden>
+            <div class="hf-detail-top">
+                <button type="button" class="hf-detail-back" data-hf-back-overview aria-label="Back to overview">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+                <div class="hf-detail-title-wrap">
+                    <div class="hf-detail-kicker">House Facts</div>
+                    <h2 class="hf-detail-title" data-hf-detail-title>Section details</h2>
+                </div>
+            </div>
+
+            <div class="hf-detail-sections" data-hf-detail-sections>
+                @foreach (var factSection in Model.Sections)
+                {
+                    var sectionId = string.IsNullOrWhiteSpace(factSection.SectionId) ? $"section-{factSection.Order}" : factSection.SectionId;
+                    <details class="hf-accordion hf-detail-section"
+                             id="detail-@sectionId"
+                             data-hf-category="@factSection.CategoryKey"
+                             data-hf-section-id="@sectionId"
+                             hidden>
+                        <summary class="hf-accordion-summary">
+                            <div class="hf-accordion-icon"><i class="fas @factSection.Icon"></i></div>
+                            <div class="hf-accordion-text">
+                                <div class="hf-accordion-title">@factSection.DisplayTitle</div>
+                                @if (!string.IsNullOrWhiteSpace(factSection.Summary))
+                                {
+                                    <div class="hf-accordion-preview">@factSection.Summary</div>
+                                }
+                            </div>
+                            <div class="hf-accordion-meta">
+                                @if (factSection.ItemCount > 0)
+                                {
+                                    <span class="hf-accordion-count">@factSection.ItemCount items</span>
+                                }
+                                <i class="fas fa-chevron-down hf-accordion-chevron"></i>
+                            </div>
+                        </summary>
+                        <div class="hf-accordion-body">
+                            @await Html.PartialAsync("_HouseFactSectionContent", factSection)
+                        </div>
+                    </details>
+                }
+            </div>
+        </div>
+
+        @{
+            var propiedadId = ViewData["PropiedadId"] as int?;
+        }
+        @if (propiedadId.HasValue)
+        {
+            <section class="hf-property-management">
+                <h3 class="hf-property-management-title">Property Management</h3>
+                <p class="hf-property-management-sub">Tools to help you manage your property with ease.</p>
+                <div class="hf-mgmt-grid">
+                    <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                        <span class="hf-mgmt-icon"><i class="fas fa-clock-rotate-left"></i></span>
+                        <span class="hf-mgmt-copy"><strong>History</strong><span>View property history &amp; changes</span></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                        <span class="hf-mgmt-icon"><i class="fas fa-file-lines"></i></span>
+                        <span class="hf-mgmt-copy"><strong>Documents</strong><span>Reports &amp; disclosures</span></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                        <span class="hf-mgmt-icon"><i class="fas fa-user-group"></i></span>
+                        <span class="hf-mgmt-copy"><strong>Providers</strong><span>Your saved service providers</span></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                    <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                        <span class="hf-mgmt-icon"><i class="fas fa-clipboard-check"></i></span>
+                        <span class="hf-mgmt-copy"><strong>Maintenance</strong><span>Track tasks &amp; requests</span></span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            </section>
+        }
+
+        @if (showJson && !string.IsNullOrWhiteSpace(Model.RawJsonPretty))
+        {
+            <details class="hf-json-panel hf-json-panel-app">
+                <summary><i class="fas fa-code"></i> View complete JSON response</summary>
+                <pre class="hf-json-block">@Model.RawJsonPretty</pre>
+            </details>
+        }
+    </div>
+}

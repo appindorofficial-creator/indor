@@ -2,21 +2,28 @@
 @{
     var overview = Model.Overview;
     var editUrl = ViewData["EditUrl"] as string;
+    var myPropertyUrl = ViewData["MyPropertyUrl"] as string;
     var propiedadId = ViewData["PropiedadId"] as int?;
     var isPreview = ViewData["HouseFactPreview"] as bool? == true;
     var hasFlowLinks = isPreview || propiedadId.HasValue;
+    var propertyImage = string.IsNullOrWhiteSpace(Model.PropertyImageUrl) ? "/welcome-house.png" : Model.PropertyImageUrl;
 }
 
 <section class="hf-overview">
     <div class="hf-overview-heading">
         <div>
             <h2 class="hf-overview-title">Property Overview</h2>
-            <p class="hf-overview-subtitle">All key facts at a glance</p>
         </div>
-        @if (!string.IsNullOrWhiteSpace(editUrl))
-        {
-            <a href="@editUrl" class="hf-overview-edit"><i class="fas fa-pen"></i> Edit</a>
-        }
+        <div class="hf-overview-actions">
+            @if (!string.IsNullOrWhiteSpace(myPropertyUrl))
+            {
+                <a href="@myPropertyUrl" class="hf-overview-property"><i class="fas fa-house"></i> My Property <i class="fas fa-chevron-down"></i></a>
+            }
+            @if (!string.IsNullOrWhiteSpace(editUrl))
+            {
+                <a href="@editUrl" class="hf-overview-edit"><i class="fas fa-pen"></i> Edit</a>
+            }
+        </div>
     </div>
 
     @if (isPreview)
@@ -29,22 +36,21 @@
 
     <article class="hf-property-card">
         <div class="hf-property-card-top">
-            <div class="hf-property-thumb hf-property-thumb-icon">
-                <i class="fas fa-house"></i>
-            </div>
+            <img src="@Url.Content($"~{propertyImage}")" alt="Your property" class="hf-property-photo" />
             <div class="hf-property-card-main">
                 <div class="hf-property-kicker">INDOR HOUSE FACT</div>
                 <div class="hf-property-address">@(Model.FormattedAddress ?? "Property address")</div>
                 <div class="hf-property-badges">
-                    @if (!string.IsNullOrWhiteSpace(Model.DataSource))
+                    @if (Model.ShowSuccessBadge)
                     {
-                        <span class="hf-property-badge hf-property-badge-ai"><i class="fas fa-robot"></i> @Model.DataSource</span>
+                        <span class="hf-property-badge hf-property-badge-success"><i class="fas fa-check"></i> Success</span>
                     }
                     <span class="hf-property-badge hf-property-badge-data"><i class="fas fa-database"></i> @Model.FieldCount fields saved</span>
+                    @if (Model.NeedsReviewCount > 0)
+                    {
+                        <span class="hf-property-badge hf-property-badge-review"><i class="fas fa-triangle-exclamation"></i> Needs review</span>
+                    }
                 </div>
-            </div>
-            <div class="hf-property-thumb hf-property-thumb-photo" aria-hidden="true">
-                <i class="fas fa-image"></i>
             </div>
         </div>
         <div class="hf-property-stats">
@@ -63,11 +69,11 @@
 
     <div class="hf-jump-row">
         <div class="hf-jump-label">Jump to section</div>
-        <button type="button" class="hf-jump-customize" data-hf-expand-all><i class="fas fa-sliders"></i> Expand all</button>
+        <button type="button" class="hf-jump-view-all" data-hf-expand-all>View all sections <i class="fas fa-chevron-right"></i></button>
     </div>
 
     <div class="hf-jump-scroll">
-        @foreach (var jump in overview.QuickJumps)
+        @foreach (var jump in overview.QuickJumps.Where(j => j.Key != "more"))
         {
             if (jump.Key == "schools" && hasFlowLinks)
             {
@@ -184,7 +190,8 @@
     <div class="hf-category-grid">
         @foreach (var card in overview.CategoryCards)
         {
-            if (card.Key == "schools" && hasFlowLinks)
+            @* Category card rendering - same link logic as before *@
+            @if (card.Key == "schools" && hasFlowLinks)
             {
                 if (isPreview)
                 {
@@ -417,4 +424,13 @@
             }
         }
     </div>
+
+    <button type="button" class="hf-explore-more" data-hf-expand-all>
+        <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
+        <span class="hf-explore-more-copy">
+            <strong>Explore more sections</strong>
+            <span>Dive deeper into every aspect of your home</span>
+        </span>
+        <i class="fas fa-chevron-right"></i>
+    </button>
 </section>

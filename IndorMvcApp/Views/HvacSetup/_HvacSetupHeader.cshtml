@@ -1,0 +1,13 @@
+@model IndorMvcApp.ViewModels.HvacSetupStepViewModel
+<div class="hvac-top">
+    <a href="@Model.BackUrl" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+    <div class="hvac-top-center">
+        <div class="hvac-title">@Model.PageTitle</div>
+        <div class="hvac-step-label">Step @Model.CurrentStep of 5</div>
+    </div>
+    <div style="width:40px;"></div>
+</div>
+@if (Model.CurrentStep >= 4)
+{
+    @await Html.PartialAsync("_HvacSetupStepper", Model.CurrentStep)
+}

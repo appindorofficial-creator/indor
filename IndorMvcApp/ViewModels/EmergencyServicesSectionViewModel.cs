@@ -4,6 +4,7 @@ public class EmergencyServicesSectionViewModel
 {
     public List<EmergencyServiceCardViewModel> Items { get; set; } = new();
     public int SelectedId { get; set; }
+    public string? ViewAllUrl { get; set; }
 }
 
 public class EmergencyServiceCardViewModel

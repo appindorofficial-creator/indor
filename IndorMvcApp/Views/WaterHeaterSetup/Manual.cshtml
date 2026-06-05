@@ -1,0 +1,99 @@
+@model IndorMvcApp.ViewModels.AddWaterHeaterViewModel
+@{
+    ViewData["Title"] = "Enter water heater details";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/water-heater-setup.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    @await Html.PartialAsync("_WaterHeaterSetupHeader", Model)
+
+    <div class="hvac-content">
+        @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
+        <p class="hvac-lead">@Model.OpenAiHintNote</p>
+
+        <form asp-action="Manual" method="post">
+            <input type="hidden" asp-for="PropiedadId" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+
+            <div class="hvac-form-card">
+                <div class="hvac-row hvac-row-stacked">
+                    <div class="hvac-label">Water heater type</div>
+                    <div class="wh-type-toggle">
+                        <label class="wh-type-btn @(Model.HeaterType == "Tank" ? "active" : "")">
+                            <input type="radio" asp-for="HeaterType" value="Tank" />
+                            <i class="fas fa-database"></i> Tank
+                        </label>
+                        <label class="wh-type-btn @(Model.HeaterType == "Tankless" ? "active" : "")">
+                            <input type="radio" asp-for="HeaterType" value="Tankless" />
+                            <i class="fas fa-bolt"></i> Tankless
+                        </label>
+                    </div>
+                </div>
+
+                <div class="hvac-row hvac-row-stacked">
+                    <label class="hvac-label" asp-for="Brand">Brand</label>
+                    <input asp-for="Brand" class="hvac-input" placeholder="e.g., Rheem" />
+                </div>
+
+                <div class="hvac-row hvac-row-stacked">
+                    <label class="hvac-label" asp-for="Model">Model</label>
+                    <input asp-for="Model" class="hvac-input" placeholder="e.g., PROG50-38N RH62" />
+                </div>
+
+                <div class="hvac-row hvac-row-stacked">
+                    <label class="hvac-label" asp-for="SerialNumber">Serial number</label>
+                    <input asp-for="SerialNumber" class="hvac-input" placeholder="e.g., M123456789" />
+                </div>
+
+                <div class="hvac-row hvac-row-stacked">
+                    <label class="hvac-label" asp-for="InstallYear">Approx. install year</label>
+                    <select asp-for="InstallYear" class="hvac-select">
+                        <option value="">Select year</option>
+                        @foreach (var year in Model.InstallYearOptions)
+                        {
+                            <option value="@year">@year</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="hvac-row hvac-row-stacked" id="tankSizeRow" data-hidden="@(Model.HeaterType == "Tankless" ? "true" : "false")">
+                    <label class="hvac-label" asp-for="TankSize">Tank size</label>
+                    <select asp-for="TankSize" class="hvac-select">
+                        <option value="">Select tank size</option>
+                        @foreach (var size in Model.TankSizeOptions)
+                        {
+                            <option value="@size">@size</option>
+                        }
+                    </select>
+                </div>
+            </div>
+
+            <button type="submit" class="hvac-save-btn">Continue to review</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+<script>
+    document.querySelectorAll('.wh-type-btn input[type=radio]').forEach(radio => {
+        radio.addEventListener('change', () => {
+            document.querySelectorAll('.wh-type-btn').forEach(btn => btn.classList.remove('active'));
+            radio.closest('.wh-type-btn')?.classList.add('active');
+            const tankRow = document.getElementById('tankSizeRow');
+            if (tankRow) tankRow.dataset.hidden = radio.value === 'Tankless' ? 'true' : 'false';
+        });
+    });
+</script>
+</body>
+</html>

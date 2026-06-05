@@ -10,7 +10,7 @@
     @if (!string.IsNullOrEmpty(linkUrl))
     {
         <a href="@linkUrl" class="more-profile-top" style="text-decoration:none;color:inherit;">
-            @await Html.PartialAsync("_MoreProfileHeroInner", Model)
+            @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHeroInner.cshtml", Model)
             @if (showChevron)
             {
                 <i class="fas fa-chevron-right" style="position:absolute;right:16px;top:42px;color:#9CA3AF;"></i>
@@ -20,7 +20,7 @@
     else
     {
         <div class="more-profile-top">
-            @await Html.PartialAsync("_MoreProfileHeroInner", Model)
+            @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHeroInner.cshtml", Model)
         </div>
     }
 

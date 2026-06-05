@@ -1,0 +1,130 @@
+@model IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@Model.Title - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <style>
+        body { font-family: 'Inter', sans-serif; color: #0A2540; margin: 0; min-height: 100vh; }
+        .hcg-page { max-width: 520px; margin: 0 auto; padding: 16px 16px 32px; }
+        .hcg-top { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .hcg-back {
+            width: 40px; height: 40px; border-radius: 50%; border: 1.5px solid #E5E7EB;
+            background: #FFF; display: inline-flex; align-items: center; justify-content: center;
+            color: #0A2540; text-decoration: none; flex-shrink: 0;
+        }
+        .hcg-title { font-size: 1.35rem; font-weight: 800; margin: 0; flex: 1; }
+        .hcg-sub { font-size: 0.85rem; color: #64748B; margin: 0 0 18px 52px; line-height: 1.4; }
+        .hcg-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .hcg-card {
+            border: 1px solid #E5E7EB;
+            background: #FFF;
+            border-radius: 14px;
+            padding: 0;
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 2px 8px rgba(10, 37, 64, .06);
+        }
+        .hcg-card-media {
+            height: 96px;
+            border-radius: 12px 12px 0 0;
+            overflow: hidden;
+            background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
+        }
+        .hcg-card-media img { width: 100%; height: 100%; object-fit: cover; }
+        .hcg-card-fallback {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            color: #0066CC; font-size: 1.6rem;
+        }
+        .hcg-card-label {
+            font-size: 0.78rem; font-weight: 700; color: #0A2540;
+            line-height: 1.25; padding: 8px 8px 2px; text-align: center;
+        }
+        .hcg-card-sub {
+            font-size: 0.68rem; font-weight: 600; color: #0066CC;
+            text-align: center; padding: 0 8px 10px; display: block;
+        }
+        .hcg-card-static { cursor: default; opacity: 0.85; }
+    </style>
+</head>
+<body>
+<div class="hcg-page">
+    <div class="hcg-top">
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="hcg-back" aria-label="Back">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <h1 class="hcg-title">@Model.Title</h1>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+    {
+        <p class="hcg-sub">@Model.Subtitle</p>
+    }
+
+    <div class="hcg-grid">
+        @foreach (var item in Model.Items)
+        {
+            var imgSrc = !string.IsNullOrWhiteSpace(item.ImageUrl)
+                ? Url.Content("~" + (item.ImageUrl.StartsWith("/") ? item.ImageUrl : "/" + item.ImageUrl))
+                : null;
+
+            if (!string.IsNullOrWhiteSpace(item.Url))
+            {
+                <a href="@item.Url" class="hcg-card">
+                    <div class="hcg-card-media">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="@item.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="hcg-card-fallback"><i class="fas @item.Icon"></i></div>
+                        }
+                    </div>
+                    <span class="hcg-card-label">@item.Title</span>
+                    @if (!string.IsNullOrWhiteSpace(item.Subtitle))
+                    {
+                        <span class="hcg-card-sub">@item.Subtitle</span>
+                    }
+                </a>
+            }
+            else
+            {
+                <div class="hcg-card hcg-card-static">
+                    <div class="hcg-card-media">
+                        @if (!string.IsNullOrWhiteSpace(imgSrc))
+                        {
+                            <img src="@imgSrc" alt="@item.Title" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="hcg-card-fallback"><i class="fas @item.Icon"></i></div>
+                        }
+                    </div>
+                    <span class="hcg-card-label">@item.Title</span>
+                    @if (!string.IsNullOrWhiteSpace(item.Subtitle))
+                    {
+                        <span class="hcg-card-sub">@item.Subtitle</span>
+                    }
+                </div>
+            }
+        }
+    </div>
+</div>
+</body>
+</html>

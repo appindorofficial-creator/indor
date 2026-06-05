@@ -21,10 +21,10 @@ public class HomeCarePrioritiesConfig
     public string ViewAllTexto { get; set; } = "View all tasks";
 
     [MaxLength(80)]
-    public string? ViewAllController { get; set; } = "MyHome";
+    public string? ViewAllController { get; set; } = "Home";
 
     [MaxLength(80)]
-    public string? ViewAllAction { get; set; } = "Maintenance";
+    public string? ViewAllAction { get; set; } = "HomeCareGuide";
 
     public bool Activo { get; set; } = true;
 

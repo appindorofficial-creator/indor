@@ -150,8 +150,12 @@
                 var route = ServicioFlowRules.TryGetRoute(sv.Nombre, sv.Orden, out var mapped)
                     ? mapped
                     : ServicioFlowRules.SupportRoute;
-                var routeId = ServicioFlowRules.ResolveRouteId(route, homeCarePriorityIds);
-                if (!string.IsNullOrWhiteSpace(route.HomeCarePriorityName) && !routeId.HasValue)
+                int? routeId = route.RouteUsesServicioId
+                    ? sv.Id
+                    : ServicioFlowRules.ResolveRouteId(route, homeCarePriorityIds);
+                if (!route.RouteUsesServicioId
+                    && !string.IsNullOrWhiteSpace(route.HomeCarePriorityName)
+                    && !routeId.HasValue)
                 {
                     route = ServicioFlowRules.SupportRoute;
                     routeId = null;
@@ -215,45 +219,6 @@
                 LinkController = "Inspecciones",
                 LinkAction = GetInspectionFlowAction(ins.Nombre)
             }).ToList()
-        };
-    }
-
-    EmergencyServicesSectionViewModel BuildEmergencySection(IEnumerable<IndorMvcApp.Models.ServicioEmergencia> items)
-    {
-        var cards = items.Select(s =>
-        {
-            var texts = SplitIncludes(s.Caracteristicas);
-            var icons = SplitIncludes(s.IconosCaracteristicas);
-            var features = new List<EmergencyServiceFeatureViewModel>();
-            for (var i = 0; i < texts.Length; i++)
-            {
-                features.Add(new EmergencyServiceFeatureViewModel
-                {
-                    Icon = i < icons.Length && !string.IsNullOrWhiteSpace(icons[i]) ? icons[i] : "fa-clock",
-                    Text = texts[i]
-                });
-            }
-
-            return new EmergencyServiceCardViewModel
-            {
-                Id = s.Id,
-                Nombre = s.Nombre,
-                TituloEmergencia = s.TituloEmergencia,
-                Descripcion = s.Descripcion,
-                TiempoLlegadaMinutos = s.TiempoLlegadaMinutos,
-                IconoClase = s.IconoClase,
-                ImagenUrl = s.ImagenUrl,
-                BadgeTexto = s.BadgeTexto,
-                CtaTexto = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Request help" : s.CtaTexto,
-                Caracteristicas = features
-            };
-        }).ToList();
-
-        var defaultItem = items.FirstOrDefault(s => s.EsPredeterminado) ?? items.FirstOrDefault();
-        return new EmergencyServicesSectionViewModel
-        {
-            Items = cards,
-            SelectedId = defaultItem?.Id ?? cards.FirstOrDefault()?.Id ?? 0
         };
     }
 
@@ -2430,9 +2395,12 @@
                     @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count()} professional inspections for your home"))
                 }
 
-                @if (serviciosEmergencia.Any())
+                @{
+                    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url);
+                }
+                @if (emergencySection != null)
                 {
-                    @await Html.PartialAsync("_EmergencyServicesSection", BuildEmergencySection(serviciosEmergencia))
+                    @await Html.PartialAsync("_EmergencyServicesSection", emergencySection)
                 }
             </div>
         }
@@ -2443,21 +2411,7 @@
             var houseFactPreviewMode = ViewBag.HouseFactPreviewMode as bool? == true;
             var houseFactPropiedadId = ViewBag.HouseFactPropiedadId as int?;
         }
-        <div class="section-title">
-            House Facts
-            @if (hasProperties && primaryProp != null)
-            {
-                <a asp-controller="MyHome" asp-action="Index" asp-route-id="@primaryProp.Id">My Property</a>
-            }
-            else if (houseFactPreviewMode)
-            {
-                <a asp-controller="Propietario" asp-action="PropertyDetails">Continue setup</a>
-            }
-            else
-            {
-                <a asp-controller="Propietario" asp-action="AddProperty">+ Add</a>
-            }
-        </div>
+        <div class="hf-section-kicker"><i class="fas fa-house"></i> House Facts</div>
 
         @if (houseFactProfile != null && houseFactProfile.HasData)
         {
@@ -2469,23 +2423,12 @@
             {
                 ViewData["PropiedadId"] = houseFactPropiedadId.Value;
                 ViewData["EditUrl"] = Url.Action("Edit", "MyHome", new { id = houseFactPropiedadId.Value });
+                ViewData["MyPropertyUrl"] = Url.Action("Index", "MyHome", new { id = houseFactPropiedadId.Value });
             }
 
             @await Html.PartialAsync("_HouseFactProfile", houseFactProfile)
 
-            @if (hasProperties && primaryProp != null)
-            {
-                <div class="results-card" style="margin-top:16px;padding:16px;">
-                    <div class="results-title" style="margin-bottom:10px;">Property management</div>
-                    <div class="hf-quick-grid">
-                        <a asp-controller="MyHome" asp-action="History" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-clock-rotate-left"></i> History</a>
-                        <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-file-lines"></i> Documents</a>
-                        <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-user-group"></i> Providers</a>
-                        <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@primaryProp.Id" class="hf-quick-link"><i class="fas fa-clipboard-check"></i> Maintenance</a>
-                    </div>
-                </div>
-            }
-            else if (houseFactPreviewMode)
+            @if (houseFactPreviewMode)
             {
                 <div class="results-card" style="margin-top:16px;padding:16px;">
                     <div class="results-title" style="margin-bottom:8px;">Ready to save this property?</div>

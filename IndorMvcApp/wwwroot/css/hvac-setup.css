@@ -564,3 +564,548 @@ a.hvac-save-btn {
     color: #DC2626;
     font-size: 0.75rem;
 }
+
+.hvac-top-center {
+    text-align: center;
+}
+
+.hvac-step-label {
+    margin-top: 2px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #1867F2;
+}
+
+.hvac-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    padding: 12px 24px 14px;
+    background: #FFF;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.hvac-stepper-node {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.hvac-stepper-node.done {
+    background: #1867F2;
+    color: #FFF;
+}
+
+.hvac-stepper-node.current {
+    background: #1867F2;
+    color: #FFF;
+    box-shadow: 0 0 0 4px rgba(24, 103, 242, 0.15);
+}
+
+.hvac-stepper-node.upcoming {
+    background: #E2E8F0;
+    color: #64748B;
+}
+
+.hvac-stepper-line {
+    width: 28px;
+    height: 2px;
+    background: #E2E8F0;
+    flex-shrink: 0;
+}
+
+.hvac-stepper-line.done {
+    background: #1867F2;
+}
+
+.hvac-scan-hero {
+    background: #FFF;
+    border: 1px solid rgba(24, 103, 242, 0.2);
+    border-radius: 18px;
+    padding: 22px 18px 18px;
+    text-align: center;
+    margin-bottom: 16px;
+}
+
+.hvac-scan-icon-wrap {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    margin: 0 auto 14px;
+}
+
+.hvac-scan-camera {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #1867F2, #0F52D4);
+    color: #FFF;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.hvac-scan-sparkle {
+    position: absolute;
+    color: #1867F2;
+    font-size: 0.75rem;
+    opacity: 0.8;
+}
+
+.hvac-scan-sparkle-1 { top: 4px; right: 8px; }
+.hvac-scan-sparkle-2 { bottom: 8px; left: 6px; }
+
+.hvac-scan-title {
+    margin: 0 0 8px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    line-height: 1.25;
+}
+
+.hvac-scan-desc {
+    margin: 0 0 18px;
+    font-size: 0.8125rem;
+    color: #64748B;
+    line-height: 1.5;
+}
+
+.hvac-outline-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: 1.5px solid #1867F2;
+    background: #FFF;
+    color: #1867F2;
+    font-family: inherit;
+    font-size: 0.9375rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-sizing: border-box;
+}
+
+.hvac-btn-with-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.hvac-benefit-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hvac-benefit-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.hvac-benefit-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hvac-benefit-item strong {
+    display: block;
+    font-size: 0.875rem;
+}
+
+.hvac-benefit-item span {
+    display: block;
+    margin-top: 2px;
+    font-size: 0.75rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+
+.hvac-camera-panel {
+    border-radius: 16px;
+    overflow: hidden;
+    background: #0F172A;
+    margin-bottom: 14px;
+}
+
+.hvac-camera-toolbar {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+}
+
+.hvac-camera-tool {
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.15);
+    color: #FFF;
+}
+
+.hvac-camera-view {
+    position: relative;
+    min-height: 240px;
+}
+
+.hvac-camera-sample {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+}
+
+.hvac-camera-sample.is-custom {
+    object-fit: contain;
+    background: #111827;
+}
+
+.hvac-camera-sample.is-hidden,
+.hvac-camera-live.is-hidden,
+.hvac-camera-empty.is-hidden {
+    display: none;
+}
+
+.hvac-camera-live {
+    width: 100%;
+    height: 240px;
+    object-fit: cover;
+    display: block;
+    background: #111827;
+}
+
+.hvac-camera-empty {
+    min-height: 240px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    color: rgba(255, 255, 255, 0.75);
+    background: #111827;
+    text-align: center;
+    padding: 24px;
+}
+
+.hvac-camera-empty i {
+    font-size: 2rem;
+    color: rgba(255, 255, 255, 0.45);
+}
+
+.hvac-camera-empty span {
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    max-width: 220px;
+}
+
+.hvac-camera-frame {
+    position: absolute;
+    inset: 28px 36px 48px;
+    border: 2px solid rgba(255, 255, 255, 0.85);
+    border-radius: 4px;
+    pointer-events: none;
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.25);
+}
+
+.hvac-camera-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 14px;
+    transform: translateX(-50%);
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(15, 23, 42, 0.75);
+    color: #FFF;
+    font-size: 0.6875rem;
+    white-space: nowrap;
+}
+
+.hvac-scan-tips {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.hvac-scan-tips div {
+    font-size: 0.6875rem;
+    color: #64748B;
+}
+
+.hvac-scan-tips i {
+    display: block;
+    margin-bottom: 6px;
+    color: #1867F2;
+    font-size: 1rem;
+}
+
+.hvac-text-btn {
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 8px;
+    border: none;
+    background: transparent;
+    color: #1867F2;
+    font-family: inherit;
+    font-size: 0.875rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.hvac-info-banner {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin-top: 16px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.08);
+    font-size: 0.75rem;
+    color: #334155;
+    line-height: 1.45;
+}
+
+.hvac-info-banner i {
+    color: #1867F2;
+    margin-top: 2px;
+}
+
+.hvac-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.hvac-review-card {
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+
+.hvac-review-card-head {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 14px;
+}
+
+.hvac-review-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: rgba(24, 103, 242, 0.1);
+    color: #1867F2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hvac-review-card-head strong {
+    display: block;
+    font-size: 0.9375rem;
+}
+
+.hvac-review-card-head p {
+    margin: 4px 0 0;
+    font-size: 0.75rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.hvac-review-rows {
+    border-top: 1px solid #F1F5F9;
+}
+
+.hvac-review-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.8125rem;
+}
+
+.hvac-review-row:last-child {
+    border-bottom: none;
+}
+
+.hvac-review-row span {
+    color: #64748B;
+}
+
+.hvac-review-row strong {
+    text-align: right;
+    color: #0A2540;
+}
+
+.hvac-consent-row {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+    margin: 12px 0;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    cursor: pointer;
+}
+
+.hvac-consent-row input {
+    margin-top: 3px;
+    flex-shrink: 0;
+    accent-color: #1867F2;
+}
+
+.hvac-terms-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 12px;
+    border-top: 1px solid #F1F5F9;
+    color: #1867F2;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.hvac-terms-link .fa-chevron-right {
+    margin-left: auto;
+    font-size: 0.75rem;
+}
+
+.hvac-celebrate {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.hvac-celebrate-icon {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    color: #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+    box-shadow: 0 0 0 12px rgba(34, 197, 94, 0.12), 0 0 0 24px rgba(24, 103, 242, 0.06);
+}
+
+.hvac-celebrate h2 {
+    margin: 0;
+    font-size: 1.125rem;
+    font-weight: 800;
+    line-height: 1.35;
+}
+
+.hvac-summary-equipment {
+    display: flex;
+    gap: 12px;
+    background: #FFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 16px;
+    padding: 12px;
+    margin-bottom: 16px;
+}
+
+.hvac-summary-equipment img {
+    width: 88px;
+    height: 88px;
+    object-fit: cover;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.hvac-summary-equipment-no-image {
+    display: block;
+}
+
+.hvac-summary-equipment-no-image .hvac-summary-list-inline {
+    width: 100%;
+}
+
+.hvac-review-label-photo {
+    margin-bottom: 14px;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #E5E7EB;
+}
+
+.hvac-review-label-photo img {
+    display: block;
+    width: 100%;
+    max-height: 220px;
+    object-fit: contain;
+    background: #F8FAFC;
+}
+
+.hvac-summary-list-inline {
+    flex: 1;
+    margin-bottom: 0;
+    border: none;
+    border-radius: 0;
+    min-width: 0;
+}
+
+.hvac-summary-list-inline .hvac-summary-item {
+    padding: 8px 0;
+}
+
+.hvac-whats-next-box {
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: rgba(24, 103, 242, 0.08);
+    margin-bottom: 18px;
+}
+
+.hvac-whats-next-box > strong {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 0.875rem;
+}
+
+.hvac-whats-next-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 0;
+    font-size: 0.8125rem;
+    color: #334155;
+}
+
+.hvac-whats-next-item i {
+    color: #1867F2;
+    width: 18px;
+    text-align: center;
+}

@@ -17,26 +17,31 @@ public static class HouseFactOverviewBuilder
 
     private static readonly CategoryDef[] Categories =
     [
-        new("schools", "Schools", "Assigned schools, district & ratings", "fa-graduation-cap", "purple", "schools", false,
-            "school", "education", "assigned school"),
-        new("utilities", "Utilities", "Utility providers", "fa-droplet", "blue", "providers", false,
-            "utilit", "provider", "electric", "water", "gas", "sewer", "internet", "cable"),
-        new("hoa", "HOA & Community", "Fees, rules, amenities & contacts", "fa-people-roof", "purple", "status", false,
-            "hoa", "community", "association"),
-        new("risk", "Risk Score", "Overall risk assessment", "fa-shield-halved", "orange", "level", false,
-            "risk"),
-        new("missing", "Missing Information", "Items needing attention", "fa-circle-exclamation", "red", "items", true,
+        new("missing", "Missing Information", "Items that need your attention", "fa-triangle-exclamation", "red", "items", true,
             "missing", "checklist", "verification", "action flow", "question", "realtor"),
-        new("documents", "Documents", "Reports & disclosures", "fa-folder-open", "blue", "documents", false,
+        new("documents", "Documents", "Reports and disclosures", "fa-folder-open", "blue", "documents", false,
             "source", "summary", "final", "document"),
-        new("systems", "Systems Profile", "HVAC, plumbing, electrical, appliances & key home systems", "fa-screwdriver-wrench", "blue", "systems", false,
+        new("systems", "Systems Profile", "Your home's essential systems", "fa-screwdriver-wrench", "blue", "systems", false,
             "systems", "mechanical", "hvac"),
         new("roof", "Roof & Exterior", "Roof, siding, drainage & structure", "fa-house-chimney", "blue", "items", false,
             "roof", "exterior", "site", "structure", "foundation"),
-        new("permits", "Permits & Improvements", "Permit history, upgrades & verification", "fa-file-lines", "green", "permit types", false,
+        new("permits", "Permits & Improvements", "Permit history and improvements", "fa-file-lines", "green", "permit types", false,
             "permit", "improvement"),
-        new("snapshot", "Property Snapshot", "Address, lot, structure & key details", "fa-table-cells-large", "blue", "facts", false,
-            "snapshot", "identity", "basic", "property identity", "listing", "market", "public record", "tax", "sales", "feature")
+        new("snapshot", "Property Snapshot", "Key details about your property", "fa-table-cells-large", "blue", "facts", false,
+            "snapshot", "identity", "basic", "property identity", "listing", "market", "public record", "tax", "sales", "feature"),
+        new("schools", "Schools", "Assigned schools, districts & ratings", "fa-graduation-cap", "purple", "schools", false,
+            "school", "education", "assigned school"),
+        new("utilities", "Utilities", "Utility providers", "fa-droplet", "blue", "providers", false,
+            "utilit", "provider", "electric", "water", "gas", "sewer", "internet", "cable"),
+        new("hoa", "HOA & Community", "HOA details, fees & contacts", "fa-people-roof", "orange", "community", false,
+            "hoa", "community", "association"),
+        new("risk", "Risk Score", "Overall risk assessment", "fa-shield-halved", "orange", "level", false,
+            "risk")
+    ];
+
+    private static readonly string[] PrimaryCategoryOrder =
+    [
+        "missing", "documents", "systems", "roof", "permits", "snapshot", "parks", "airports"
     ];
 
     private static readonly (string Key, string Label, string Icon)[] QuickJumpDefs =
@@ -220,7 +225,32 @@ public static class HouseFactOverviewBuilder
             }
         }
 
-        return cards;
+        return SortCategoryCards(cards);
+    }
+
+    private static List<HouseFactCategoryCardViewModel> SortCategoryCards(List<HouseFactCategoryCardViewModel> cards)
+    {
+        return cards
+            .OrderBy(c =>
+            {
+                var index = Array.IndexOf(PrimaryCategoryOrder, c.Key);
+                return index >= 0 ? index : PrimaryCategoryOrder.Length + 1;
+            })
+            .ThenBy(c => c.Title, StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    public static int CountNeedsReview(HouseFactProfileViewModel profile)
+    {
+        var missing = profile.Overview.CategoryCards.FirstOrDefault(c => c.Key == "missing");
+        if (missing != null && missing.ItemCount > 0)
+        {
+            return missing.ItemCount;
+        }
+
+        return profile.Sections
+            .Where(s => s.CategoryKey == "missing")
+            .Sum(s => s.ItemCount);
     }
 
     private static void AppendNearbyPlaceCards(List<HouseFactCategoryCardViewModel> cards, HouseFactProfileViewModel profile)
@@ -244,6 +274,10 @@ public static class HouseFactOverviewBuilder
                 SectionIds = []
             });
         }
+
+        var sorted = SortCategoryCards(cards);
+        cards.Clear();
+        cards.AddRange(sorted);
     }
 
     private static string BuildBadge(CategoryDef def, List<AttomFieldGroupViewModel> sections, int itemCount)

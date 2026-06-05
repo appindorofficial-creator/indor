@@ -116,8 +116,17 @@ BEGIN
     UPDATE dbo.HomeCarePriorities
     SET LinkController = N'HvacMaintenance',
         LinkAction = N'HvacMaintenanceService',
-        LinkUrl = NULL
+        LinkUrl = NULL,
+        ImagenUrl = CASE
+            WHEN ImagenUrl IS NULL OR ImagenUrl IN (N'/inspeccion5.jpeg', N'/inspeccion8.jpeg') THEN N'/priority-hvac-maintenance.png'
+            ELSE ImagenUrl
+        END
     WHERE Id = @HvacPriorityId;
+
+    UPDATE dbo.HvacMaintenanceServicioLanding
+    SET ImagenUrl = N'/priority-hvac-maintenance.png'
+    WHERE HomeCarePriorityId = @HvacPriorityId
+      AND (ImagenUrl IS NULL OR ImagenUrl IN (N'/inspeccion5.jpeg', N'/inspeccion8.jpeg'));
 
     IF NOT EXISTS (SELECT 1 FROM dbo.HvacMaintenanceServicioLanding WHERE HomeCarePriorityId = @HvacPriorityId)
     BEGIN
@@ -130,7 +139,7 @@ BEGIN
             N'HVAC Tune-Up',
             N'Recommended yearly',
             N'Yearly preventive maintenance to keep your air conditioning system running efficiently and reliably.',
-            N'/inspeccion5.jpeg',
+            N'/priority-hvac-maintenance.png',
             89,
             N'From $89',
             N'System inspection|Filter check|Performance test|Basic tune-up',

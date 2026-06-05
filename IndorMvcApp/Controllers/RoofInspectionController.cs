@@ -258,7 +258,7 @@ public class RoofInspectionController : Controller
                 PageTitle = "Roof Inspection",
                 LandingTitulo = priority.Nombre,
                 LandingSubtitulo = "Regular roof inspections help catch loose shingles, failing sealant, damaged flashing, clogged drainage, and leak risks before they become major repairs.",
-                ImagenUrl = priority.ImagenUrl ?? "/inspeccion8.jpeg",
+                ImagenUrl = priority.ImagenUrl ?? "/priority-roof-inspection.png",
                 RecomendacionItems = "Visual roof check: spring & fall|Professional inspection: every 1–2 years|After major storms: inspect again|Older roof or active issues: inspect sooner",
                 RecomendacionIconos = "fa-calendar|fa-shield-halved|fa-cloud-bolt|fa-clock",
                 IncluyeItems = "Shingles|Flashing & sealant|Vents / skylights|Gutters & valleys|Attic moisture signs|Debris / branches",

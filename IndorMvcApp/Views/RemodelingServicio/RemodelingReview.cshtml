@@ -1,0 +1,65 @@
+@model IndorMvcApp.ViewModels.RemodelingReviewViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_RemodelingServicioStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="RemodelingDetails" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_RemodelingServicioStepper", 3)
+
+    <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">Review your request</h2>
+    <p class="page-lead" style="margin-top:-8px;text-align:center;">Confirm before we send it to our remodeling team.</p>
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <div class="summary-card">
+        <strong style="font-size:0.92rem;display:block;margin-bottom:10px;">Project summary</strong>
+        <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Address</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-hammer"></i><div><div class="summary-label">Scope</div><div class="summary-value">@Model.AlcanceLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Timeline</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-tags"></i><div><div class="summary-label">Budget</div><div class="summary-value">@Model.PresupuestoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-comment"></i><div><div class="summary-label">Contact</div><div class="summary-value">@Model.ContactoPreferidoLabel</div></div></div>
+        @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
+        {
+            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">Details</div><div class="summary-value">@Model.Descripcion</div></div></div>
+        }
+    </div>
+
+    @if (Model.ArchivosExistentes.Count > 0)
+    {
+        <div class="field-card">
+            <span class="field-label">Photos</span>
+            @foreach (var file in Model.ArchivosExistentes)
+            {
+                <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
+            }
+        </div>
+    }
+
+    <form asp-action="RemodelingReview" method="post">
+        <input type="hidden" name="id" value="@Model.SolicitudId" />
+        <button type="submit" name="action" value="submit" class="btn-primary">Submit for quote</button>
+        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+    </form>
+</div>
+</body>
+</html>

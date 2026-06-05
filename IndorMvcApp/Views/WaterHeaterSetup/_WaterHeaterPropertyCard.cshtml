@@ -1,0 +1,9 @@
+@model IndorMvcApp.ViewModels.WaterHeaterSetupStepViewModel
+<div class="wh-prop-card">
+    <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
+    <div class="wh-prop-copy">
+        <span class="wh-prop-label"><i class="fas fa-house"></i> Property</span>
+        <p>@Model.Address</p>
+    </div>
+    <i class="fas fa-chevron-right wh-prop-chevron"></i>
+</div>

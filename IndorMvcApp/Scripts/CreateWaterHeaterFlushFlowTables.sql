@@ -120,8 +120,17 @@ BEGIN
     UPDATE dbo.HomeCarePriorities
     SET LinkController = N'WaterHeaterFlush',
         LinkAction = N'WaterHeaterFlushService',
-        LinkUrl = NULL
+        LinkUrl = NULL,
+        ImagenUrl = CASE
+            WHEN ImagenUrl IS NULL OR ImagenUrl = N'/inspeccion4.jpeg' THEN N'/priority-water-heater-flush.png'
+            ELSE ImagenUrl
+        END
     WHERE Id = @WhPriorityId;
+
+    UPDATE dbo.WaterHeaterFlushServicioLanding
+    SET ImagenUrl = N'/priority-water-heater-flush.png'
+    WHERE HomeCarePriorityId = @WhPriorityId
+      AND (ImagenUrl IS NULL OR ImagenUrl = N'/inspeccion4.jpeg');
 
     IF NOT EXISTS (SELECT 1 FROM dbo.WaterHeaterFlushServicioLanding WHERE HomeCarePriorityId = @WhPriorityId)
     BEGIN
@@ -135,7 +144,7 @@ BEGIN
             N'Water Heater Flush',
             N'Recommended yearly',
             N'Recommended yearly to keep your system clean and efficient.',
-            N'/inspeccion4.jpeg',
+            N'/priority-water-heater-flush.png',
             79,
             N'From $79',
             N'Remove sediment buildup|Improve efficiency|Extend tank life',

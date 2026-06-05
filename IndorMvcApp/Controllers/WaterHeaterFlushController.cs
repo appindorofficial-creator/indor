@@ -278,7 +278,7 @@ public class WaterHeaterFlushController : Controller
                 LandingTitulo = priority.Nombre,
                 LandingTagline = "Recommended yearly",
                 LandingSubtitulo = "Recommended yearly to keep your system clean and efficient.",
-                ImagenUrl = priority.ImagenUrl ?? "/inspeccion4.jpeg",
+                ImagenUrl = priority.ImagenUrl ?? "/priority-water-heater-flush.png",
                 PrecioDesde = WaterHeaterFlushPricingService.StartingPrice,
                 PrecioTexto = WaterHeaterFlushDisplayLabels.FormatPrice(WaterHeaterFlushPricingService.StartingPrice),
                 IncluyeItems = "Remove sediment buildup|Improve efficiency|Extend tank life",

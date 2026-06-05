@@ -1,0 +1,84 @@
+@model IndorMvcApp.ViewModels.HvacReviewViewModel
+@{
+    ViewData["Title"] = "Review & consent";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"] - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
+</head>
+<body>
+<div class="hvac-page">
+    @await Html.PartialAsync("_HvacSetupHeader", Model)
+
+    <div class="hvac-content">
+        <form asp-action="Review" method="post">
+            <input type="hidden" asp-for="PropiedadId" />
+            <input type="hidden" asp-for="SystemType" />
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+
+            <div class="hvac-review-card">
+                <div class="hvac-review-card-head">
+                    <span class="hvac-review-icon"><i class="fas fa-clipboard-list"></i></span>
+                    <div>
+                        <strong>Review your HVAC details</strong>
+                        <p>Please confirm the information captured from your equipment label.</p>
+                    </div>
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.LabelImageUrl))
+                {
+                    <div class="hvac-review-label-photo">
+                        <img src="@Url.Content($"~{Model.LabelImageUrl}")" alt="Your uploaded HVAC label" />
+                    </div>
+                }
+                <div class="hvac-review-rows">
+                    <div class="hvac-review-row"><span>System type</span><strong>@Model.SystemTypeLabel</strong></div>
+                    <div class="hvac-review-row"><span>Brand</span><strong>@Model.Brand</strong></div>
+                    <div class="hvac-review-row"><span>Model</span><strong>@Model.Model</strong></div>
+                    <div class="hvac-review-row"><span>Serial number</span><strong>@Model.SerialNumber</strong></div>
+                    <div class="hvac-review-row"><span>Approx. install year</span><strong>@Model.InstallYearLabel</strong></div>
+                </div>
+            </div>
+
+            <div class="hvac-review-card">
+                <div class="hvac-review-card-head">
+                    <span class="hvac-review-icon"><i class="fas fa-shield-halved"></i></span>
+                    <div>
+                        <strong>Terms &amp; Conditions</strong>
+                        <p>Your consent helps INDOR deliver personalized maintenance and protection for your home.</p>
+                    </div>
+                </div>
+
+                <label class="hvac-consent-row">
+                    <input asp-for="ConfirmInfo" type="checkbox" />
+                    <span>I confirm this equipment information is correct or I have updated it before saving.</span>
+                </label>
+                <span asp-validation-for="ConfirmInfo" class="text-danger"></span>
+
+                <label class="hvac-consent-row">
+                    <input asp-for="AuthorizeStorage" type="checkbox" />
+                    <span>I authorize INDOR to store this equipment data and use it to personalize reminders, organize home records, and surface maintenance insights.</span>
+                </label>
+                <span asp-validation-for="AuthorizeStorage" class="text-danger"></span>
+
+                <a href="#" class="hvac-terms-link" onclick="return false;">
+                    <i class="fas fa-file-lines"></i>
+                    View full terms &amp; privacy
+                    <i class="fas fa-chevron-right"></i>
+                </a>
+            </div>
+
+            <button type="submit" class="hvac-save-btn">Agree &amp; save</button>
+        </form>
+    </div>
+
+    @await Html.PartialAsync("_AppBottomNav", "home")
+</div>
+</body>
+</html>
