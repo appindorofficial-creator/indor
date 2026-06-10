@@ -28,4 +28,6 @@ public interface IProviderRegistrationService
     Task RegisterDocumentUploadAsync(string documentType, string relativeUrl, CancellationToken cancellationToken = default);
     Task<bool> HasRequiredDocumentsAsync(CancellationToken cancellationToken = default);
     Task<IndorProveedor?> GetProveedorForCurrentUserAsync(CancellationToken cancellationToken = default);
+    Task ActivateIndorProAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default);
+    string ResolveWizardResumeAction(int currentStep);
 }

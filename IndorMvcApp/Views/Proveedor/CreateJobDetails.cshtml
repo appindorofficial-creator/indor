@@ -1,0 +1,123 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateJobDetailsViewModel
+@{
+    ViewData["Title"] = "Job Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-job">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Job Details</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="CreateJobDetails" method="post" class="prv-pro-create-job-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ServiceCategoryId" value="@Model.ServiceCategoryId" />
+
+        <label class="prv-pro-form-label">
+            Job Title <span class="prv-pro-required">*</span>
+            <input type="text" name="Title" value="@Model.Title" placeholder="e.g., HVAC Tune-Up" required />
+        </label>
+
+        <label class="prv-pro-form-label">
+            Customer <span class="prv-pro-required">*</span>
+            @if (Model.Customers.Count > 0)
+            {
+                <div class="prv-pro-form-select-wrap">
+                    <i class="fas fa-user"></i>
+                    <select name="ClienteId" id="createJobCustomer" required>
+                        <option value="">Select customer</option>
+                        @foreach (var customer in Model.Customers)
+                        {
+                            <option value="@customer.Id" data-address="@customer.Address" selected="@(Model.ClienteId == customer.Id)">@customer.Name</option>
+                        }
+                    </select>
+                </div>
+                <input type="hidden" name="CustomerName" id="createJobCustomerName" value="@Model.CustomerName" />
+            }
+            else
+            {
+                <div class="prv-pro-form-input-wrap">
+                    <i class="fas fa-user"></i>
+                    <input type="text" name="CustomerName" id="createJobCustomerName" value="@Model.CustomerName" placeholder="Customer name" required />
+                </div>
+            }
+        </label>
+
+        <label class="prv-pro-form-label">
+            Property Address <span class="prv-pro-required">*</span>
+            <div class="prv-pro-form-input-wrap">
+                <i class="fas fa-location-dot"></i>
+                <input type="text" name="Address" id="createJobAddress" value="@Model.Address" placeholder="123 Maple St, Austin, TX 78704" required />
+            </div>
+        </label>
+
+        <label class="prv-pro-form-label">
+            Description <span class="prv-pro-required">*</span>
+            <textarea name="Description" rows="4" placeholder="Describe the work to be performed..." required>@Model.Description</textarea>
+        </label>
+
+        <fieldset class="prv-pro-priority-fieldset">
+            <legend>Priority <span class="prv-pro-required">*</span></legend>
+            <div class="prv-pro-priority-options">
+                <label class="prv-pro-priority-option @(Model.Priority == "Low" ? "is-selected" : "")">
+                    <input type="radio" name="Priority" value="Low" @(Model.Priority == "Low" ? "checked" : "") />
+                    <i class="fas fa-circle prv-pro-priority-dot prv-pro-priority-dot--low"></i> Low
+                </label>
+                <label class="prv-pro-priority-option @(Model.Priority == "Medium" ? "is-selected" : "")">
+                    <input type="radio" name="Priority" value="Medium" @(Model.Priority == "Medium" ? "checked" : "") />
+                    <i class="fas fa-clock prv-pro-priority-dot prv-pro-priority-dot--medium"></i> Medium
+                </label>
+                <label class="prv-pro-priority-option @(Model.Priority == "High" ? "is-selected" : "")">
+                    <input type="radio" name="Priority" value="High" @(Model.Priority == "High" ? "checked" : "") />
+                    <i class="fas fa-fire prv-pro-priority-dot prv-pro-priority-dot--high"></i> High
+                </label>
+            </div>
+        </fieldset>
+
+        <label class="prv-pro-form-label">
+            Notes
+            <textarea name="Notes" rows="3" placeholder="Access instructions, preferences...">@Model.Notes</textarea>
+        </label>
+
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">Next</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var customerSelect = document.getElementById('createJobCustomer');
+            var customerName = document.getElementById('createJobCustomerName');
+            var addressInput = document.getElementById('createJobAddress');
+            var priorityOptions = document.querySelectorAll('.prv-pro-priority-option');
+
+            function syncCustomer() {
+                if (!customerSelect || !customerName) return;
+                var option = customerSelect.options[customerSelect.selectedIndex];
+                customerName.value = option.text;
+                if (option.dataset.address && addressInput && !addressInput.value) {
+                    addressInput.value = option.dataset.address;
+                }
+            }
+
+            customerSelect?.addEventListener('change', syncCustomer);
+            syncCustomer();
+
+            priorityOptions.forEach(function (label) {
+                label.addEventListener('click', function () {
+                    priorityOptions.forEach(function (l) { l.classList.remove('is-selected'); });
+                    label.classList.add('is-selected');
+                });
+            });
+        })();
+    </script>
+}

@@ -1,0 +1,177 @@
+@model IndorMvcApp.ViewModels.ProviderProJobDetailsViewModel
+@{
+    ViewData["Title"] = "Job Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+    var fromCalendar = ViewBag.FromCalendar == true;
+    var calendarDate = ViewBag.CalendarDate as string;
+}
+
+<div class="prv-pro-shell prv-pro-shell--workflow">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        @if (fromCalendar)
+        {
+            <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@calendarDate" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        }
+        else
+        {
+            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        }
+        <div>
+            <h1>Job Details</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
+            {
+                <small>Estimate @Model.EstimateCode</small>
+            }
+        </div>
+        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+    </header>
+
+    <section class="prv-pro-lead-summary">
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Job" class="prv-pro-lead-summary-img" />
+        <div class="prv-pro-lead-summary-body">
+            <div class="prv-pro-lead-summary-top">
+                <h2>@Model.Title</h2>
+            </div>
+            <small class="prv-pro-job-card-address">@Model.Address</small>
+            <div class="prv-pro-lead-badges">
+                <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                {
+                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @Model.DistanceLabel</span>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="prv-pro-job-meta-row">
+        <div><i class="fas fa-clock"></i><strong>@Model.AppointmentLabel</strong><span>Appointment</span></div>
+        <div><i class="fas fa-circle-dot"></i><strong>@Model.StatusLabel</strong><span>Status</span></div>
+        @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
+        {
+            <div><i class="fas fa-file-invoice"></i><strong>@Model.EstimateCode</strong><span>Estimate</span></div>
+        }
+        <div><i class="fas fa-receipt"></i><strong>@Model.InvoiceStatus</strong><span>Invoice</span></div>
+        @if (!string.IsNullOrWhiteSpace(Model.PaymentLabel))
+        {
+            <div><i class="fas fa-dollar-sign"></i><strong>@Model.PaymentLabel</strong><span>Payment</span></div>
+        }
+    </section>
+
+    <section class="prv-pro-lead-section">
+        <div class="prv-pro-lead-homeowner">
+            <div class="prv-pro-lead-homeowner-main">
+                <div class="prv-pro-lead-homeowner-avatar">@Model.CustomerInitials</div>
+                <div>
+                    <strong>@Model.CustomerName</strong>
+                    @if (Model.IsHomeownerVerified)
+                    {
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+                    {
+                        <small><i class="fas fa-phone"></i> @Model.CustomerPhone</small>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+                    {
+                        <small><i class="fas fa-envelope"></i> @Model.CustomerEmail</small>
+                    }
+                </div>
+            </div>
+            <div class="prv-pro-job-contact-actions">
+                @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+                {
+                    <a href="tel:@Model.CustomerPhone" class="prv-pro-round-btn" aria-label="Call"><i class="fas fa-phone"></i></a>
+                }
+                <button type="button" class="prv-pro-round-btn" aria-label="Message"><i class="fas fa-message"></i></button>
+            </div>
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ScopeOfWork))
+    {
+        <section class="prv-pro-lead-section prv-pro-detail-row">
+            <h3><i class="fas fa-clipboard-list"></i> Scope of Work</h3>
+            <p class="prv-pro-lead-description">@Model.ScopeOfWork</p>
+        </section>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.MaterialsNeeded))
+    {
+        <section class="prv-pro-lead-section prv-pro-detail-row">
+            <h3><i class="fas fa-toolbox"></i> Materials Needed</h3>
+            <p class="prv-pro-lead-description">@Model.MaterialsNeeded</p>
+        </section>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.AccessInstructions))
+    {
+        <section class="prv-pro-lead-section prv-pro-detail-row">
+            <h3><i class="fas fa-door-open"></i> Access Instructions</h3>
+            <p class="prv-pro-lead-description">@Model.AccessInstructions</p>
+        </section>
+    }
+    @if (!string.IsNullOrWhiteSpace(Model.JobNotes))
+    {
+        <section class="prv-pro-lead-section prv-pro-detail-row">
+            <h3><i class="fas fa-note-sticky"></i> Notes</h3>
+            <p class="prv-pro-lead-description">@Model.JobNotes</p>
+        </section>
+    }
+
+    @if (Model.ChecklistTotal > 0)
+    {
+        <section class="prv-pro-lead-section">
+            <div class="prv-pro-checklist-head">
+                <h3>Job Checklist</h3>
+                <span>@Model.ChecklistCompleted of @Model.ChecklistTotal</span>
+            </div>
+            <ul class="prv-pro-checklist">
+                @foreach (var item in Model.Checklist)
+                {
+                    <li class="@(item.IsCompleted ? "is-done" : item.IsInProgress ? "is-active" : "")">
+                        <i class="fas @(item.IsCompleted ? "fa-circle-check" : "fa-circle")"></i>
+                        @item.Label
+                        @if (!string.IsNullOrWhiteSpace(item.CompletedLabel))
+                        {
+                            <small>@item.CompletedLabel</small>
+                        }
+                    </li>
+                }
+            </ul>
+            @if (Model.ChecklistTotal > Model.Checklist.Count)
+            {
+                <small class="prv-pro-checklist-more">+@(Model.ChecklistTotal - Model.Checklist.Count) more</small>
+            }
+        </section>
+    }
+
+    <footer class="prv-pro-job-footer">
+        @if (Model.CanStart)
+        {
+            <form asp-controller="Proveedor" asp-action="StartJob" method="post" class="prv-pro-job-footer-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.JobId" />
+                <button type="submit" class="prv-pro-btn prv-pro-btn--success prv-pro-job-action-btn">
+                    <i class="fas fa-play"></i> Start Job
+                </button>
+            </form>
+        }
+        else if (Model.StatusClass == "progress")
+        {
+            <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--success prv-pro-job-action-btn">
+                <i class="fas fa-play"></i> Continue Job
+            </a>
+        }
+        else if (Model.StatusClass == "completed")
+        {
+            <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--primary prv-pro-job-action-btn">
+                <i class="fas fa-file-lines"></i> View Report
+            </a>
+        }
+        <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-calendar"></i> Reschedule</a>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> Message Customer</button>
+    </footer>
+</div>

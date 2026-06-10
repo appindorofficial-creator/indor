@@ -1,0 +1,71 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@using IndorMvcApp.Models
+@{
+    Layout = "_LayoutStep";
+    var slots = ViewBag.DocumentSlots as IReadOnlyList<ProviderDocumentSlot> ?? Array.Empty<ProviderDocumentSlot>();
+    var hasDocuments = ViewBag.HasDocuments as bool? == true;
+}
+<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<div class="prv-wiz-card">
+    <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-display"></i></span>
+    <span class="prv-wiz-card-body">
+        <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Active</span>
+        <strong>INDOR Pro Access</strong>
+        <ul class="prv-wiz-bullets">
+            <li>Clients &amp; CRM</li>
+            <li>Jobs &amp; photos</li>
+            <li>Estimates &amp; invoices</li>
+            <li>Reports &amp; property history</li>
+        </ul>
+    </span>
+</div>
+
+<div class="prv-wiz-card">
+    <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-list"></i></span>
+    <span class="prv-wiz-card-body">
+        <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Pending</span>
+        <strong>Requirements to Receive INDOR Jobs</strong>
+        <ul class="prv-wiz-checklist">
+            <li><i class="far fa-circle"></i> Business license or registration</li>
+            <li><i class="far fa-circle"></i> Insurance (if applicable)</li>
+            <li><i class="far fa-circle"></i> Government ID</li>
+            <li><i class="far fa-circle"></i> Activation call with INDOR</li>
+        </ul>
+    </span>
+</div>
+
+<form asp-action="Verification" method="post" enctype="multipart/form-data" class="prv-wiz-stack">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    @if (slots.Count > 0)
+    {
+        <div class="prv-doc-form">
+            <div class="prv-doc-upload"><label>Government ID</label><input type="file" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
+            <div class="prv-doc-upload"><label>Business license</label><input type="file" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
+            <div class="prv-doc-upload"><label>Insurance certificate</label><input type="file" name="insuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
+            <div class="prv-doc-upload"><label>Business registration</label><input type="file" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
+            <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline"><i class="fas fa-upload"></i> Upload Documents</button>
+        </div>
+    }
+
+    <button type="submit" class="ob-btn ob-btn-primary">Continue with Verification</button>
+    <button type="submit" name="action" value="pro-only" class="ob-btn ob-btn-outline">Use Only INDOR Pro for Now</button>
+</form>
+
+<div class="prv-wiz-info">
+    <i class="fas fa-circle-info"></i>
+    <div>
+        <p>You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads.</p>
+    </div>
+</div>
+
+@if (hasDocuments)
+{
+    <p class="prv-wiz-note"><i class="fas fa-check text-success"></i> Documents uploaded</p>
+}

@@ -1,0 +1,186 @@
+@model IndorMvcApp.ViewModels.ProviderProCustomersPageViewModel
+@{
+    ViewData["Title"] = "Customers - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "customers";
+    var tabs = new[] {
+        ("all", "All"),
+        ("connected", "Connected"),
+        ("needsinvite", "Needs Invite"),
+        ("activehomes", "Active Homes"),
+        ("approvals", "Approvals")
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--customers">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <section class="prv-pro-jobs-head">
+        <div>
+            <h1>Customers</h1>
+            <p>Manage homeowners, properties, and connected home records.</p>
+        </div>
+        <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
+            <i class="fas fa-plus"></i> Add Customer
+        </a>
+    </section>
+
+    <form method="get" asp-controller="Proveedor" asp-action="Customers" class="prv-pro-jobs-search">
+        <input type="hidden" name="tab" value="@Model.ActiveTab" />
+        <div class="prv-pro-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search customers, properties, phone, address" />
+        </div>
+        <button type="button" class="prv-pro-filter-btn" title="Filters"><i class="fas fa-sliders"></i></button>
+    </form>
+
+    <section class="prv-pro-jobs-stats">
+        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="all" class="prv-pro-jobs-stat">
+            <i class="fas fa-user"></i>
+            <strong>@Model.TotalCustomers</strong>
+            <span>Customers</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="connected" class="prv-pro-jobs-stat">
+            <i class="fas fa-link"></i>
+            <strong>@Model.ConnectedCount</strong>
+            <span>Connected</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="active" class="prv-pro-jobs-stat">
+            <i class="fas fa-briefcase"></i>
+            <strong>@Model.ActiveJobsCount</strong>
+            <span>Active Jobs</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="approvals" class="prv-pro-jobs-stat">
+            <i class="fas fa-clock"></i>
+            <strong>@Model.PendingApprovalCount</strong>
+            <span>Pending Approval</span>
+        </a>
+        <div class="prv-pro-jobs-stat">
+            <i class="fas fa-house"></i>
+            <strong>@Model.PropertiesCount</strong>
+            <span>Properties</span>
+        </div>
+    </section>
+
+    <nav class="prv-pro-jobs-tabs">
+        @foreach (var (id, label) in tabs)
+        {
+            <a asp-controller="Proveedor" asp-action="Customers"
+               asp-route-tab="@id"
+               asp-route-q="@Model.SearchQuery"
+               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
+        }
+    </nav>
+
+    <section class="prv-pro-customers-list">
+        @if (Model.Customers.Count == 0)
+        {
+            <div class="prv-pro-panel">
+                <p class="prv-pro-empty">No customers in this view yet. Homeowners you serve will appear here.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var customer in Model.Customers)
+            {
+                <article class="prv-pro-customer-card">
+                    <button type="button" class="prv-pro-job-card-menu" aria-label="More options"><i class="fas fa-ellipsis-vertical"></i></button>
+
+                    <div class="prv-pro-customer-card-top">
+                        <div class="prv-pro-customer-card-avatar"><i class="fas fa-user"></i></div>
+                        <div class="prv-pro-customer-card-info">
+                            <div class="prv-pro-customer-card-name-row">
+                                <strong>@customer.Name</strong>
+                                <span class="prv-pro-pill prv-pro-pill--@customer.ConnectionClass">@customer.ConnectionLabel</span>
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(customer.Address))
+                            {
+                                <small class="prv-pro-customer-card-address">@customer.Address</small>
+                            }
+                            <div class="prv-pro-customer-indicators">
+                                @if (customer.IsPropertyVerified)
+                                {
+                                    <span><i class="fas fa-circle-check"></i> Property verified</span>
+                                }
+                                @if (customer.IsAppConnected)
+                                {
+                                    <span><i class="fas fa-mobile-screen"></i> App connected</span>
+                                }
+                                <span><i class="fas fa-house"></i> @customer.PropertiesCount propert@(customer.PropertiesCount == 1 ? "y" : "ies")</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @if (customer.ShowJobSection)
+                    {
+                        <div class="prv-pro-customer-job-section">
+                            <div class="prv-pro-customer-job-main">
+                                <span class="prv-pro-pill prv-pro-pill--@customer.JobStatusClass">@customer.JobStatusLabel</span>
+                                <strong>@customer.JobTitle</strong>
+                                @if (customer.JobMetaLines.Count > 0)
+                                {
+                                    <div class="prv-pro-job-card-meta">
+                                        @foreach (var meta in customer.JobMetaLines)
+                                        {
+                                            <span class="prv-pro-meta-line prv-pro-meta-line--@meta.Tone">
+                                                <i class="fas @meta.IconClass"></i> @meta.Text
+                                            </span>
+                                        }
+                                    </div>
+                                }
+                            </div>
+                            <div class="prv-pro-job-quick-links">
+                                <span><i class="fas fa-briefcase"></i> Jobs</span>
+                                <span><i class="fas fa-message"></i> Messages</span>
+                                <span><i class="fas fa-house"></i> Property</span>
+                                @if (customer.ShowPhotosLink)
+                                {
+                                    <span><i class="fas fa-camera"></i> Photos</span>
+                                }
+                                <span><i class="fas fa-clipboard-list"></i> House Facts</span>
+                            </div>
+                        </div>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(customer.ActivityNote))
+                    {
+                        <div class="prv-pro-customer-activity-note">
+                            <i class="fas fa-phone"></i> @customer.ActivityNote
+                        </div>
+                    }
+
+                    <div class="prv-pro-customer-card-actions">
+                        <button type="button" class="prv-pro-btn prv-pro-btn--@customer.PrimaryActionClass">@customer.PrimaryAction</button>
+                        @if (!string.IsNullOrWhiteSpace(customer.SecondaryAction))
+                        {
+                            <button type="button" class="prv-pro-btn prv-pro-btn--ghost">@customer.SecondaryAction</button>
+                        }
+                    </div>
+                </article>
+            }
+        }
+    </section>
+
+    @if (Model.ConnectionInsights.Count > 0)
+    {
+        <section class="prv-pro-smart-suggestions prv-pro-connection-insights">
+            <div class="prv-pro-panel-head">
+                <div>
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> Connection Insights</h2>
+                    <p>Grow customer engagement and home record quality.</p>
+                </div>
+                <a href="#">View all insights</a>
+            </div>
+            <div class="prv-pro-smart-scroll">
+                @foreach (var tip in Model.ConnectionInsights)
+                {
+                    <article class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone">
+                        <i class="fas @tip.IconClass"></i>
+                        <span>@tip.Text</span>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-fab" aria-label="Add customer"><i class="fas fa-plus"></i></a>
+</div>

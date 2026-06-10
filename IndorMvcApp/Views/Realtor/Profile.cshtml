@@ -1,0 +1,110 @@
+@model IndorMvcApp.ViewModels.RealtorProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "profile";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <section class="rl-profile-hero">
+        @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+        {
+            <img src="@Model.ProfilePhotoUrl" alt="" class="rl-profile-photo" />
+        }
+        else
+        {
+            <span class="rl-profile-photo rl-profile-photo--placeholder"><i class="fas fa-user"></i></span>
+        }
+        <div>
+            <h1>@Model.FullName</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.BrokerageName))
+            {
+                <p>@Model.BrokerageName</p>
+            }
+            <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
+                <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
+                @Model.BadgeLabel
+            </span>
+        </div>
+        <a href="#" class="rl-edit-profile"><i class="fas fa-pen"></i> Edit profile</a>
+    </section>
+
+    @if (Model.CanUpgradeToVerified)
+    {
+        <section class="rl-verify-banner">
+            <i class="fas fa-shield-halved"></i>
+            <div>
+                <strong>Become a Verified Realtor</strong>
+                <p>Upload your license and ID to unlock the Verified Realtor badge and build client trust.</p>
+                <a asp-controller="RealtorRegistration" asp-action="Verification" class="ob-btn ob-btn-primary">Verify now</a>
+            </div>
+        </section>
+    }
+
+    <section class="rl-profile-section">
+        <h2>Personal Information</h2>
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Full Name", Value = Model.FullName })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Email", Value = Model.Email })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Phone", Value = string.IsNullOrWhiteSpace(Model.Phone) ? "—" : Model.Phone })
+        @{
+            var photoDoc = Model.Documents.FirstOrDefault(d => d.DocumentType == "profile_photo");
+        }
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel
+        {
+            Label = "Profile Photo",
+            Value = photoDoc?.Uploaded == true ? "Uploaded" : "Not uploaded",
+            StatusClass = photoDoc?.Uploaded == true ? "rl-status--ok" : "rl-status--warn"
+        })
+    </section>
+
+    <section class="rl-profile-section">
+        <h2>Professional Information</h2>
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Brokerage / Broker Name", Value = Model.BrokerageName })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "License Number", Value = Model.LicenseNumber })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "License State", Value = Model.LicenseState })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Service Areas", Value = Model.ServiceAreas })
+    </section>
+
+    <section class="rl-profile-section">
+        <h2>Documents &amp; Verification</h2>
+        @foreach (var doc in Model.Documents.Where(d => d.DocumentType != "profile_photo"))
+        {
+            var status = doc.Uploaded ? "Uploaded" : "Not uploaded";
+            var statusClass = doc.Uploaded ? "rl-status--ok" : "rl-status--warn";
+            var action = doc.Uploaded ? "Change" : "Upload";
+            <div class="rl-profile-doc-row">
+                <div>
+                    <strong>@doc.Label</strong>
+                    @if (doc.Optional) { <small>Optional</small> }
+                </div>
+                <span class="@statusClass">@status</span>
+                @if (doc.DocumentType is "license_photo" or "government_id" or "business_card")
+                {
+                    <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-doc-action">@action</a>
+                }
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        }
+    </section>
+
+    <section class="rl-profile-section">
+        <h2>Account / Settings</h2>
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Terms & Conditions", Url = Url.Action("Terms", "Account") })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Privacy Policy", Url = "#" })
+        @await Html.PartialAsync("_RealtorProfileRow", new IndorMvcApp.ViewModels.RealtorProfileRowViewModel { Label = "Notifications", Url = "#" })
+        <form asp-controller="Account" asp-action="Logout" method="post" class="rl-signout-form">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="rl-profile-row rl-profile-row--danger">
+                <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        </form>
+    </section>
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>Your professional access is based on your license number. Upload documents anytime to complete verification.</p>
+    </div>
+</div>

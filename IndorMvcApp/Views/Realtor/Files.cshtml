@@ -1,0 +1,97 @@
+@model IndorMvcApp.ViewModels.RealtorFilesViewModel
+@{
+    ViewData["Title"] = "Files";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "files";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <h1 class="rl-page-title">Files</h1>
+
+    <form asp-action="Files" method="get" class="rl-search-form">
+        <div class="rl-search-bar">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search file, property, or client" />
+        </div>
+        <div class="rl-filter-chips">
+            @foreach (var chip in Model.Filters)
+            {
+                <a asp-action="Files" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+            }
+        </div>
+    </form>
+
+    <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-action-card">
+        <span class="rl-action-card-icon"><i class="fas fa-folder-plus"></i></span>
+        <div>
+            <strong>+ Create Property File</strong>
+            <span>Start a pre-closing, repair, or transfer file.</span>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Active Files</h2>
+            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
+        </div>
+        @if (Model.ActiveFiles.Count == 0)
+        {
+            <div class="rl-dash-empty">No files match your filters.</div>
+        }
+        else
+        {
+            @foreach (var file in Model.ActiveFiles)
+            {
+                <article class="rl-file-card">
+                    <img src="@file.PhotoUrl" alt="" />
+                    <div class="rl-file-card-body">
+                        <div class="rl-file-card-top">
+                            <strong>@file.Address</strong>
+                            <span class="rl-phase-badge rl-phase-badge--@file.FilePhase.Replace(" ", "-").ToLowerInvariant()">@file.FilePhase</span>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(file.CityRegion))
+                        {
+                            <span>@file.CityRegion</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(file.ClientName))
+                        {
+                            <span><i class="fas fa-user"></i> @file.ClientName</span>
+                        }
+                        <span class="rl-file-meta">
+                            @if (file.RepairItemsCount > 0)
+                            {
+                                <span><i class="fas fa-wrench"></i> @file.RepairItemsCount repair items</span>
+                            }
+                            @if (file.QuotesReceivedCount > 0)
+                            {
+                                <span><i class="fas fa-file-invoice"></i> @file.QuotesReceivedCount quotes received</span>
+                            }
+                        </span>
+                        <span class="rl-file-updated">Updated @file.UpdatedLabel</span>
+                    </div>
+                    <i class="fas fa-chevron-right rl-card-chevron"></i>
+                </article>
+            }
+        }
+    </section>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Recent File Activity</h2>
+            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
+        </div>
+        @foreach (var act in Model.RecentActivity)
+        {
+            @await Html.PartialAsync("_RealtorActivityItem", act)
+        }
+    </section>
+
+    <section class="rl-info-banner">
+        <i class="fas fa-folder-tree"></i>
+        <p>Property files connect clients, quotes, reports, and jobs in one place.</p>
+    </section>
+</div>

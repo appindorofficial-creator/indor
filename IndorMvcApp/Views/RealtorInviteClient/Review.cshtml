@@ -1,0 +1,63 @@
+@model IndorMvcApp.ViewModels.RealtorInviteReviewViewModel
+
+<div class="rl-invite-form">
+    <h2 class="rl-invite-section-title">Invitation Summary</h2>
+
+    <div class="rl-review-card">
+        <div class="rl-review-row">
+            <span class="rl-review-label"><i class="fas fa-user"></i> Client</span>
+            <div>
+                <strong>@Model.FullName</strong>
+                <span class="rl-role-badge rl-role-badge--@Model.ClientRole.ToLowerInvariant()">@Model.ClientRole</span>
+                <span>@Model.Email</span>
+                @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                {
+                    <span>@Model.Phone</span>
+                }
+            </div>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label"><i class="fas fa-house"></i> Property</span>
+            <strong>@Model.PropertyDisplay</strong>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label"><i class="fas fa-lock-open"></i> Access</span>
+            <span>@Model.AccessSummary</span>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label"><i class="fas fa-comments"></i> Collaboration</span>
+            <span>@Model.CollaborationLabel</span>
+        </div>
+        <div class="rl-review-row">
+            <span class="rl-review-label"><i class="fas fa-paper-plane"></i> Delivery</span>
+            <span>@Model.DeliveryLabel</span>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.WelcomeMessage))
+        {
+            <div class="rl-review-row">
+                <span class="rl-review-label"><i class="fas fa-note-sticky"></i> Note</span>
+                <span>@Model.WelcomeMessage</span>
+            </div>
+        }
+    </div>
+
+    <h2 class="rl-invite-section-title">What happens next?</h2>
+    <ol class="rl-next-steps">
+        <li><span>1</span> Client receives invite</li>
+        <li><span>2</span> Client accepts invitation</li>
+        <li><span>3</span> You can track activity in Clients</li>
+    </ol>
+
+    <form asp-action="Send" method="post">
+        @Html.AntiForgeryToken()
+        <label class="rl-check-row">
+            <input type="checkbox" name="sendReminder48h" value="true" @(Model.SendReminder48h ? "checked" : null) />
+            <span>Send a reminder if not accepted in 48 hours</span>
+        </label>
+
+        <div class="rl-invite-actions">
+            <a asp-action="Access" class="rl-invite-cancel">Back</a>
+            <button type="submit" class="ob-btn ob-btn-primary">Send Invitation</button>
+        </div>
+    </form>
+</div>

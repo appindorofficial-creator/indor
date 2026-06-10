@@ -1,0 +1,106 @@
+@model IndorMvcApp.ViewModels.ProviderProRescheduleJobViewModel
+@{
+    ViewData["Title"] = "Reschedule Job - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-pro-shell prv-pro-shell--calendar prv-pro-shell--reschedule">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" asp-route-fromCalendar="true" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Reschedule Job</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <section class="prv-pro-upload-report-job-summary">
+        <div class="prv-pro-upload-report-job-summary-icon"><i class="fas fa-wrench"></i></div>
+        <div>
+            <strong>@Model.Title</strong>
+            <span>@Model.Address</span>
+        </div>
+    </section>
+
+    <form asp-controller="Proveedor" asp-action="RescheduleJob" method="post" class="prv-pro-reschedule-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="JobId" value="@Model.JobId" />
+
+        <label class="prv-pro-form-label">Date
+            <input type="date" name="VisitDate" value="@Model.VisitDate" required />
+        </label>
+        <div class="prv-pro-form-row-2">
+            <label class="prv-pro-form-label">Start Time
+                <select name="StartTimeLabel" required>
+                    @foreach (var time in Model.TimeOptions)
+                    {
+                        <option value="@time" selected="@(Model.StartTimeLabel == time)">@time</option>
+                    }
+                </select>
+            </label>
+            <label class="prv-pro-form-label">End Time
+                <select name="EndTimeLabel" required>
+                    @foreach (var time in Model.TimeOptions)
+                    {
+                        <option value="@time" selected="@(Model.EndTimeLabel == time)">@time</option>
+                    }
+                </select>
+            </label>
+        </div>
+        <label class="prv-pro-form-label">Assign Technician
+            <select name="AssignedTechnician">
+                @foreach (var tech in Model.TechnicianOptions)
+                {
+                    <option value="@tech" selected="@(Model.AssignedTechnician == tech)">@tech</option>
+                }
+            </select>
+        </label>
+        <label class="prv-pro-form-label">Service Duration
+            <select name="DurationLabel">
+                @foreach (var duration in Model.DurationOptions)
+                {
+                    <option value="@duration" selected="@(Model.DurationLabel == duration)">@duration</option>
+                }
+            </select>
+        </label>
+        <label class="prv-pro-create-toggle">
+            <div><i class="fas fa-repeat"></i><div><strong>Repeat Job</strong><small>Set up a recurring schedule</small></div></div>
+            <input type="checkbox" name="IsRecurring" value="true" @(Model.IsRecurring ? "checked" : "") />
+        </label>
+        <label class="prv-pro-form-label">Notes
+            <textarea name="Notes" rows="3" maxlength="250">@Model.Notes</textarea>
+        </label>
+
+        <section class="prv-pro-reschedule-panels">
+            <article class="prv-pro-reschedule-panel">
+                <h3>Availability Preview</h3>
+                <p>Open time slot selected: <strong>@Model.StartTimeLabel – @Model.EndTimeLabel</strong></p>
+                <small>Based on @Model.AssignedTechnician availability</small>
+            </article>
+            <label class="prv-pro-create-toggle">
+                <div><i class="fas fa-comment-sms"></i><div><strong>Send SMS Notification</strong></div></div>
+                <input type="checkbox" name="NotifySms" value="true" @(Model.NotifySms ? "checked" : "") />
+            </label>
+            <label class="prv-pro-create-toggle">
+                <div><i class="fas fa-envelope"></i><div><strong>Send Email Notification</strong></div></div>
+                <input type="checkbox" name="NotifyEmail" value="true" @(Model.NotifyEmail ? "checked" : "") />
+            </label>
+            <article class="prv-pro-reschedule-panel prv-pro-reschedule-panel--ok">
+                <i class="fas fa-shield-halved"></i>
+                <div>
+                    <strong>No conflicts found</strong>
+                    <span>This time works well for both you and the assigned technician.</span>
+                </div>
+            </article>
+        </section>
+
+        <div class="prv-pro-upload-report-actions">
+            <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Save Changes</button>
+        </div>
+    </form>
+</div>

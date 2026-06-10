@@ -1,0 +1,182 @@
+@model IndorMvcApp.ViewModels.ProviderProEstimateSentViewModel
+
+@using System.Globalization
+
+@{
+
+    ViewData["Title"] = "Estimate Sent - INDOR PRO";
+
+    Layout = "_ProviderProLayout";
+
+    ViewBag.NavActive = "home";
+
+    var money = CultureInfo.GetCultureInfo("en-US");
+
+}
+
+
+
+<div class="prv-pro-shell prv-pro-shell--estimate-sent">
+
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+
+
+    <section class="prv-pro-estimate-sent-hero">
+
+        <div class="prv-pro-estimate-sent-icon"><i class="fas fa-circle-check"></i></div>
+
+        <h1>Estimate Sent Successfully</h1>
+
+        <p>Your estimate has been sent to the homeowner.</p>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section prv-pro-estimate-sent-summary">
+
+        <h3>Estimate Summary</h3>
+
+        <div class="prv-pro-estimate-summary">
+
+            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" />
+
+            <div>
+
+                <strong>@Model.Address</strong>
+
+                <small>@Model.ServiceType</small>
+
+                <div class="prv-pro-lead-badges">
+
+                    <span class="prv-pro-pill prv-pro-pill--sent"><i class="fas fa-paper-plane"></i> @Model.StatusLabel</span>
+
+                    <span class="prv-pro-pill prv-pro-pill--scheduled">@Model.EstimateCode</span>
+
+                </div>
+
+                <strong class="prv-pro-estimate-sent-amount">@Model.TotalAmount.ToString("C0", money)</strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section">
+
+        <h3>What's next?</h3>
+
+        <div class="prv-pro-estimate-sent-actions">
+
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-bell"></i> Send Reminder</button>
+
+            <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-btn prv-pro-btn--ghost">
+
+                <i class="fas fa-pen-to-square"></i> Edit &amp; Resend
+
+            </a>
+
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-message"></i> Message Homeowner</button>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section">
+
+        <h3>Estimate Tracking</h3>
+
+        <div class="prv-pro-estimate-tracking">
+
+            @foreach (var step in Model.TrackingSteps)
+
+            {
+
+                <div class="prv-pro-estimate-tracking-step prv-pro-estimate-tracking-step--@step.StateClass">
+
+                    <span class="prv-pro-estimate-tracking-icon"><i class="fas @step.IconClass"></i></span>
+
+                    <div>
+
+                        <strong>@step.Label</strong>
+
+                        @if (!string.IsNullOrWhiteSpace(step.Detail))
+
+                        {
+
+                            <small>@step.Detail</small>
+
+                        }
+
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+
+    </section>
+
+
+
+    @if (Model.CanConvertToJob)
+
+    {
+
+        <section class="prv-pro-estimate-convert">
+
+            <p>When the homeowner approves this estimate, convert it to a job with one tap.</p>
+
+            <form asp-controller="Proveedor" asp-action="ConvertEstimateToJob" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="id" value="@Model.EstimateId" />
+
+                <button type="submit" class="prv-pro-btn prv-pro-btn--teal">
+
+                    <i class="fas fa-briefcase"></i> Convert to Job
+
+                </button>
+
+            </form>
+
+        </section>
+
+    }
+
+    else if (Model.ConvertedJobId.HasValue)
+
+    {
+
+        <section class="prv-pro-estimate-convert">
+
+            <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.ConvertedJobId" class="prv-pro-btn prv-pro-btn--teal">
+
+                <i class="fas fa-briefcase"></i> View Job
+
+            </a>
+
+        </section>
+
+    }
+
+
+
+    <a asp-controller="Proveedor" asp-action="PendingEstimates" class="prv-pro-estimate-sent-back">
+
+        <i class="fas fa-arrow-left"></i> Back to Pending Estimates
+
+    </a>
+
+</div>
+

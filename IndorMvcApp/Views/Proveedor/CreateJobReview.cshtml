@@ -1,0 +1,54 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateJobReviewViewModel
+@{
+    ViewData["Title"] = "Review Job - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-job">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="CreateJobSchedule" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Review Job</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <section class="prv-pro-review-card">
+        <h3><i class="fas fa-clipboard-list"></i> Job Information</h3>
+        <dl class="prv-pro-review-list">
+            <div><dt>Service</dt><dd>@Model.Title</dd></div>
+            <div><dt>Customer</dt><dd>@Model.CustomerName</dd></div>
+            <div><dt>Address</dt><dd>@Model.Address</dd></div>
+            <div><dt>Description</dt><dd>@Model.Description</dd></div>
+            <div>
+                <dt>Priority</dt>
+                <dd><span class="prv-pro-priority-pill prv-pro-priority-pill--@Model.PriorityClass">@Model.Priority</span></dd>
+            </div>
+        </dl>
+    </section>
+
+    <section class="prv-pro-review-card">
+        <h3><i class="fas fa-calendar"></i> Schedule</h3>
+        <dl class="prv-pro-review-list">
+            <div><dt>Date</dt><dd>@Model.ScheduleDateLabel</dd></div>
+            <div><dt>Time</dt><dd>@Model.ScheduleTimeLabel</dd></div>
+            <div><dt>Technician</dt><dd>@Model.AssignedTechnician</dd></div>
+            <div><dt>Reminder</dt><dd>@Model.Reminder</dd></div>
+        </dl>
+    </section>
+
+    <form asp-controller="Proveedor" asp-action="ConfirmCreateJob" method="post" class="prv-pro-create-job-actions">
+        @Html.AntiForgeryToken()
+        <a asp-controller="Proveedor" asp-action="CreateJobSchedule" class="prv-pro-btn prv-pro-btn--outline">
+            <i class="fas fa-arrow-left"></i> Back
+        </a>
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
+            <i class="fas fa-clipboard-check"></i> Create Job
+        </button>
+    </form>
+</div>

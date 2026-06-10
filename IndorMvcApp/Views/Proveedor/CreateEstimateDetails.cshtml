@@ -1,0 +1,88 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateEstimateDetailsViewModel
+@{
+    ViewData["Title"] = "Estimate Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-estimate">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="CreateEstimate" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Estimate Details</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="CreateEstimateDetails" method="post" class="prv-pro-create-estimate-form">
+        @Html.AntiForgeryToken()
+
+        <label class="prv-pro-form-label">
+            Estimate Title <span class="prv-pro-required">*</span>
+            <input type="text" name="Title" value="@Model.Title" required />
+        </label>
+
+        <label class="prv-pro-form-label">
+            Description / Scope of Work <span class="prv-pro-required">*</span>
+            <textarea name="Description" rows="5" required>@Model.Description</textarea>
+        </label>
+
+        <label class="prv-pro-form-label">
+            Customer <span class="prv-pro-required">*</span>
+            <input type="text" value="@Model.CustomerName" readonly />
+        </label>
+
+        <label class="prv-pro-form-label">
+            Property Address <span class="prv-pro-required">*</span>
+            <input type="text" value="@Model.Address" readonly />
+        </label>
+
+        <fieldset class="prv-pro-priority-fieldset">
+            <legend>Priority <span class="prv-pro-required">*</span></legend>
+            <div class="prv-pro-priority-options">
+                @foreach (var level in new[] { "Low", "Medium", "High" })
+                {
+                    <label class="prv-pro-priority-option @(Model.Priority == level ? "is-selected" : "")">
+                        <input type="radio" name="Priority" value="@level" @(Model.Priority == level ? "checked" : "") />
+                        @level
+                    </label>
+                }
+            </div>
+        </fieldset>
+
+        <div class="prv-pro-estimate-date-grid">
+            <label class="prv-pro-form-label">
+                Est. Start <span class="prv-pro-required">*</span>
+                <input type="date" name="EstimatedStartDate" value="@Model.EstimatedStartDate" required />
+            </label>
+            <label class="prv-pro-form-label">
+                Est. End <span class="prv-pro-required">*</span>
+                <input type="date" name="EstimatedEndDate" value="@Model.EstimatedEndDate" required />
+            </label>
+        </div>
+
+        <label class="prv-pro-form-label">
+            Warranty <span class="prv-pro-required">*</span>
+            <select name="Warranty" required>
+                @foreach (var option in Model.WarrantyOptions)
+                {
+                    <option value="@option" selected="@(Model.Warranty == option)">@option</option>
+                }
+            </select>
+        </label>
+
+        <label class="prv-pro-form-label">
+            Notes
+            <textarea name="Notes" rows="3" maxlength="500" placeholder="Additional notes, assumptions, or exclusions...">@Model.Notes</textarea>
+        </label>
+
+        <div class="prv-pro-create-job-actions">
+            <a asp-controller="Proveedor" asp-action="CreateEstimate" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+        </div>
+    </form>
+</div>

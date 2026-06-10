@@ -1,0 +1,91 @@
+@model IndorMvcApp.ViewModels.ProviderProMessagesInboxViewModel
+@{
+    ViewData["Title"] = "Messages - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var tabs = new[] {
+        ("all", "All"),
+        ("jobs", "Jobs"),
+        ("leads", "Leads"),
+        ("unread", "Unread")
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--messages">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1><i class="fas fa-message"></i> Messages</h1>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form method="get" asp-controller="Proveedor" asp-action="Messages" class="prv-pro-messages-search">
+        <input type="hidden" name="tab" value="@Model.ActiveTab" />
+        <div class="prv-pro-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search conversations" />
+        </div>
+    </form>
+
+    <div class="prv-pro-upload-report-filters">
+        @foreach (var (key, label) in tabs)
+        {
+            <a asp-controller="Proveedor" asp-action="Messages" asp-route-tab="@key" asp-route-q="@Model.SearchQuery"
+               class="prv-pro-upload-report-filter @(Model.ActiveTab == key ? "is-active" : "")">@label</a>
+        }
+    </div>
+
+    <section class="prv-pro-messages-list">
+        @if (Model.Threads.Count == 0)
+        {
+            <div class="prv-pro-messages-empty">
+                <i class="fas fa-inbox"></i>
+                <p>No conversations yet.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var thread in Model.Threads)
+            {
+                <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@thread.ConversationId"
+                   class="prv-pro-message-thread @(thread.UnreadCount > 0 ? "is-unread" : "")">
+                    <div class="prv-pro-message-thread-avatar">
+                        @if (!string.IsNullOrEmpty(thread.AvatarUrl))
+                        {
+                            <img src="@thread.AvatarUrl" alt="" />
+                        }
+                        else
+                        {
+                            <span>@(thread.CustomerName.Length >= 2 ? thread.CustomerName[..2].ToUpper() : thread.CustomerName.ToUpper())</span>
+                        }
+                    </div>
+                    <div class="prv-pro-message-thread-body">
+                        <div class="prv-pro-message-thread-head">
+                            <strong>@thread.CustomerName</strong>
+                            <span>@thread.TimeLabel</span>
+                        </div>
+                        <small>@thread.Address</small>
+                        <p>@thread.Preview</p>
+                    </div>
+                    <div class="prv-pro-message-thread-meta">
+                        <span class="prv-pro-pill prv-pro-pill--@thread.StatusClass">@thread.StatusLabel</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                </a>
+            }
+        }
+    </section>
+
+    <div class="prv-pro-messages-footer">
+        <a asp-controller="Proveedor" asp-action="Customers" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
+            <i class="fas fa-message"></i> New message
+        </a>
+        <a asp-controller="Proveedor" asp-action="Messages" asp-route-tab="unread" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
+            <i class="fas fa-envelope"></i> View unread
+        </a>
+    </div>
+</div>

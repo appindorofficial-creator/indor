@@ -1,0 +1,66 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadReportTypeViewModel
+@{
+    ViewData["Title"] = "Report Type - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    var types = new[]
+    {
+        (IndorMvcApp.Models.ProviderReportTypes.Completion, "fa-clipboard-list", "Document the work completed, materials used, and final results."),
+        (IndorMvcApp.Models.ProviderReportTypes.Photo, "fa-camera", "Upload and organize photos related to the completed work."),
+        (IndorMvcApp.Models.ProviderReportTypes.Assessment, "fa-magnifying-glass", "Report on the condition, findings, and recommendations."),
+        (IndorMvcApp.Models.ProviderReportTypes.Warranty, "fa-shield-halved", "Document warranties, registrations, and materials provided."),
+        (IndorMvcApp.Models.ProviderReportTypes.BeforeAfter, "fa-images", "Showcase before and after photos and document the transformation.")
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--upload-report">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Choose Report Type</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    @await Html.PartialAsync("_UploadReportJobCard", Model.Job)
+
+    <form asp-controller="Proveedor" asp-action="UploadReportType" method="post" class="prv-pro-upload-report-type-form">
+        @Html.AntiForgeryToken()
+        <div class="prv-pro-report-type-list">
+            @foreach (var (type, icon, desc) in types)
+            {
+                <label class="prv-pro-report-type-option @(Model.ReportType == type ? "is-selected" : "")">
+                    <input type="radio" name="ReportType" value="@type" @(Model.ReportType == type ? "checked" : "") />
+                    <i class="fas @icon"></i>
+                    <div>
+                        <strong>@type</strong>
+                        <small>@desc</small>
+                    </div>
+                </label>
+            }
+        </div>
+        <div class="prv-pro-upload-report-info">
+            <i class="fas fa-circle-info"></i>
+            Reports can be shared with the homeowner and saved to House Facts.
+        </div>
+        <div class="prv-pro-upload-report-actions">
+            <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.prv-pro-report-type-option').forEach(function (el) {
+            el.addEventListener('click', function () {
+                document.querySelectorAll('.prv-pro-report-type-option').forEach(function (i) { i.classList.remove('is-selected'); });
+                el.classList.add('is-selected');
+            });
+        });
+    </script>
+}

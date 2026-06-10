@@ -1,0 +1,59 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    Layout = "_LayoutStep";
+    var categories = ViewBag.Categories as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? Array.Empty<IndorMvcApp.Models.OnboardingOption>();
+    var selected = ViewBag.SelectedIds as List<string> ?? Model.State.SelectedCategoryIds;
+    var displayCategories = categories
+        .Where(c => c.Id is "hvac" or "plumbing" or "electrical" or "roofing" or "handyman" or "cleaning" or "landscaping"
+            || categories.Count <= 7)
+        .Take(7)
+        .ToList();
+    if (displayCategories.Count == 0)
+    {
+        displayCategories = categories.Take(7).ToList();
+    }
+}
+<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="CategoriesAssessment" method="post" class="prv-wiz-stack">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    <div class="prv-chip-grid prv-chip-grid--assessment">
+        @foreach (var cat in displayCategories)
+        {
+            var isChecked = selected.Contains(cat.Id, StringComparer.OrdinalIgnoreCase);
+            <label class="prv-chip prv-chip--assessment @(isChecked ? "is-selected" : "")">
+                <input type="checkbox" name="categoryIds" value="@cat.Id" @(isChecked ? "checked" : null) />
+                <i class="fas @cat.IconClass"></i>
+                <span>@cat.Label</span>
+            </label>
+        }
+    </div>
+
+    <div class="prv-wiz-assessment-box">
+        <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-clipboard-check"></i></span>
+        <div>
+            <strong>Trade Assessment</strong>
+            <p>Take a short assessment based on your main category to help validate quality and experience.</p>
+            <div class="prv-wiz-assessment-badges">
+                <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Optional for using the software</span>
+                <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-check"></i> Required for INDOR Provider activation</span>
+            </div>
+        </div>
+    </div>
+
+    <button type="submit" name="action" value="take-assessment" class="ob-btn ob-btn-primary">Take Assessment</button>
+    <button type="submit" name="action" value="skip" class="ob-btn ob-btn-outline">Skip for Now</button>
+
+    <div class="prv-wiz-info">
+        <i class="fas fa-circle-info"></i>
+        <div>
+            <p>If you skip this step, you can still use the software, but your profile will not be available for INDOR jobs until you complete the assessment and activation call.</p>
+        </div>
+    </div>
+</form>

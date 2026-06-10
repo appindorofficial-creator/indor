@@ -1,0 +1,482 @@
+@model IndorMvcApp.ViewModels.ProviderProJobsPageViewModel
+
+@using System.Globalization
+
+@{
+
+    ViewData["Title"] = "Jobs Hub - INDOR PRO";
+
+    Layout = "_ProviderProLayout";
+
+    ViewBag.NavActive = "jobs";
+
+    var money = CultureInfo.GetCultureInfo("en-US");
+
+    var tabs = new[] {
+
+        ("today", "Today"),
+
+        ("leads", "Leads"),
+
+        ("active", "Active"),
+
+        ("estimates", "Estimates"),
+
+        ("completed", "Completed")
+
+    };
+
+}
+
+
+
+<div class="prv-pro-shell prv-pro-shell--jobs">
+
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+
+
+    <section class="prv-pro-jobs-head">
+
+        <div>
+
+            <h1>Jobs</h1>
+
+            <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
+
+        </div>
+
+        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
+
+            <i class="fas fa-plus"></i> Create Job
+
+        </a>
+
+    </section>
+
+
+
+    <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-search">
+
+        <input type="hidden" name="tab" value="@Model.ActiveTab" />
+
+        <div class="prv-pro-search-wrap">
+
+            <i class="fas fa-magnifying-glass"></i>
+
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs, customers, properties" />
+
+        </div>
+
+        <button type="button" class="prv-pro-filter-btn" title="Filters"><i class="fas fa-sliders"></i></button>
+
+    </form>
+
+
+
+    <section class="prv-pro-jobs-stats">
+
+        <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-jobs-stat">
+
+            <i class="fas fa-calendar-day"></i>
+
+            <strong>@Model.TodayCount</strong>
+
+            <span>Today</span>
+
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="active" class="prv-pro-jobs-stat">
+
+            <i class="fas fa-wave-square"></i>
+
+            <strong>@Model.ActiveCount</strong>
+
+            <span>Active</span>
+
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-jobs-stat">
+
+            <i class="fas fa-user-group"></i>
+
+            <strong>@Model.NewLeadsCount</strong>
+
+            <span>New Leads</span>
+
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="draft" class="prv-pro-jobs-stat">
+
+            <i class="fas fa-clipboard-list"></i>
+
+            <strong>@Model.NeedsReportCount</strong>
+
+            <span>Needs Report</span>
+
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="pending" class="prv-pro-jobs-stat">
+
+            <i class="fas fa-dollar-sign"></i>
+
+            <strong>@Model.PaymentsDue.ToString("C0", money)</strong>
+
+            <span>Payments Due</span>
+
+        </a>
+
+    </section>
+
+
+
+    <nav class="prv-pro-jobs-tabs">
+
+        @foreach (var (id, label) in tabs)
+
+        {
+
+            <a asp-controller="Proveedor" asp-action="Jobs"
+
+               asp-route-tab="@id"
+
+               asp-route-q="@Model.SearchQuery"
+
+               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
+
+        }
+
+    </nav>
+
+
+
+    <section class="prv-pro-jobs-list">
+
+        @if (Model.Items.Count == 0)
+
+        {
+
+            <div class="prv-pro-panel">
+
+                <p class="prv-pro-empty">No items in this view yet. Jobs, leads, and estimates from your account will appear here.</p>
+
+            </div>
+
+        }
+
+        else
+
+        {
+
+            @foreach (var item in Model.Items)
+
+            {
+
+                <article class="prv-pro-job-card">
+
+                    <button type="button" class="prv-pro-job-card-menu" aria-label="More options"><i class="fas fa-ellipsis-vertical"></i></button>
+
+
+
+                    <div class="prv-pro-job-card-main">
+
+                        <div class="prv-pro-job-card-icon"><i class="fas @item.IconClass"></i></div>
+
+                        <div class="prv-pro-job-card-body">
+
+                            <div class="prv-pro-job-card-title-row">
+
+                                <strong>@item.Title</strong>
+
+                                <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@item.StatusLabel</span>
+
+                                @if (!string.IsNullOrWhiteSpace(item.SecondaryBadge))
+
+                                {
+
+                                    <span class="prv-pro-pill prv-pro-pill--@item.SecondaryBadgeClass">@item.SecondaryBadge</span>
+
+                                }
+
+                            </div>
+
+                            <small class="prv-pro-job-card-address">@item.Address</small>
+
+                            @if (!string.IsNullOrWhiteSpace(item.CustomerName))
+
+                            {
+
+                                <small class="prv-pro-job-card-customer">@item.CustomerName</small>
+
+                            }
+
+                            <small class="prv-pro-job-card-time">@item.TimeLabel</small>
+
+
+
+                            @if (item.MetaLines.Count > 0)
+
+                            {
+
+                                <div class="prv-pro-job-card-meta">
+
+                                    @foreach (var meta in item.MetaLines)
+
+                                    {
+
+                                        <span class="prv-pro-meta-line prv-pro-meta-line--@meta.Tone">
+
+                                            <i class="fas @meta.IconClass"></i> @meta.Text
+
+                                        </span>
+
+                                    }
+
+                                </div>
+
+                            }
+
+                        </div>
+
+                    </div>
+
+
+
+                    <div class="prv-pro-job-card-side">
+
+                        <div class="prv-pro-job-quick-links">
+
+                            @if (item.ShowEstimateLink)
+
+                            {
+
+                                @if (item.ItemKind == "Estimate" && item.ItemId.HasValue)
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@item.ItemId"><i class="fas fa-file-invoice-dollar"></i> Estimate</a>
+
+                                }
+
+                                else if (item.ItemKind == "Lead" && item.ItemId.HasValue)
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@item.ItemId"><i class="fas fa-file-invoice-dollar"></i> Estimate</a>
+
+                                }
+
+                                else if (item.ItemKind == "Job" && item.ClienteId.HasValue)
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="CreateEstimate" asp-route-clienteId="@item.ClienteId"><i class="fas fa-file-invoice-dollar"></i> Estimate</a>
+
+                                }
+
+                            }
+
+                            @if (item.ShowPhotosLink && item.ItemKind == "Job" && item.ItemId.HasValue)
+
+                            {
+
+                                <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="inprogress"><i class="fas fa-camera"></i> Photos</a>
+
+                            }
+
+                            @if (item.ShowChecklistLink && item.ItemKind == "Job" && item.ItemId.HasValue)
+
+                            {
+
+                                <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@item.ItemId"><i class="fas fa-list-check"></i> Checklist</a>
+
+                            }
+
+                            @if (item.ShowHouseFactsLink)
+
+                            {
+
+                                <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts"><i class="fas fa-house"></i> House Facts</a>
+
+                            }
+
+                        </div>
+
+                        <div class="prv-pro-job-card-actions">
+
+                            @if (item.ItemKind == "Lead" && item.ItemId.HasValue)
+
+                            {
+
+                                <form asp-controller="Proveedor" asp-action="AcceptLead" method="post">
+
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="id" value="@item.ItemId" />
+
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</button>
+
+                                </form>
+
+                                <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+
+                            }
+
+                            else if (item.ItemKind == "Estimate" && item.ItemId.HasValue)
+
+                            {
+
+                                <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+
+                                @if (item.CanConvertToJob)
+
+                                {
+
+                                    <form asp-controller="Proveedor" asp-action="ConvertEstimateToJob" method="post">
+
+                                        @Html.AntiForgeryToken()
+
+                                        <input type="hidden" name="id" value="@item.ItemId" />
+
+                                        <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</button>
+
+                                    </form>
+
+                                }
+
+                                else
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="EstimateSent" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+
+                                }
+
+                            }
+
+                            else if (item.ItemKind == "Job" && item.ItemId.HasValue)
+
+                            {
+
+                                @if (item.StatusClass == "progress")
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+
+                                }
+
+                                else if (item.StatusClass == "completed")
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+
+                                }
+
+                                else
+
+                                {
+
+                                    <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--@item.PrimaryActionClass">@item.PrimaryAction</a>
+
+                                }
+
+                                @if (!string.IsNullOrWhiteSpace(item.SecondaryAction))
+
+                                {
+
+                                    @if (item.SecondaryAction == "Upload Photos")
+
+                                    {
+
+                                        <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+
+                                    }
+
+                                    else
+
+                                    {
+
+                                        <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.ItemId" class="prv-pro-btn prv-pro-btn--ghost">@item.SecondaryAction</a>
+
+                                    }
+
+                                }
+
+                            }
+
+                        </div>
+
+                    </div>
+
+                </article>
+
+            }
+
+        }
+
+    </section>
+
+
+
+    @if (Model.SmartSuggestions.Count > 0)
+
+    {
+
+        <section class="prv-pro-smart-suggestions">
+
+            <div class="prv-pro-panel-head">
+
+                <h2><i class="fas fa-wand-magic-sparkles"></i> Smart Suggestions</h2>
+
+            </div>
+
+            <div class="prv-pro-smart-scroll">
+
+                @foreach (var tip in Model.SmartSuggestions)
+
+                {
+
+                    @if (!string.IsNullOrWhiteSpace(tip.Url))
+
+                    {
+
+                        <a href="@tip.Url" class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone prv-pro-smart-card--link">
+
+                            <i class="fas @tip.IconClass"></i>
+
+                            <span>@tip.Text</span>
+
+                        </a>
+
+                    }
+
+                    else
+
+                    {
+
+                        <article class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone">
+
+                            <i class="fas @tip.IconClass"></i>
+
+                            <span>@tip.Text</span>
+
+                        </article>
+
+                    }
+
+                }
+
+            </div>
+
+        </section>
+
+    }
+
+
+
+    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-fab" aria-label="Create"><i class="fas fa-plus"></i></a>
+
+</div>
+

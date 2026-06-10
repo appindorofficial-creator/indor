@@ -1,0 +1,58 @@
+@model IndorMvcApp.ViewModels.RealtorPropertyFileSuccessViewModel
+@{
+    Layout = "_RealtorLayout";
+    ViewData["Title"] = "Property File Created";
+    ViewBag.NavActive = "files";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+
+    <section class="rl-success-hero">
+        <div class="rl-success-icon-wrap">
+            <span class="rl-success-icon"><i class="fas fa-check"></i></span>
+        </div>
+        <h1>Property File Created</h1>
+        <p>Your file is ready and can now be updated or shared.</p>
+    </section>
+
+    <div class="rl-success-card">
+        <p><strong>@Model.FilePhaseLabel</strong> created for <strong class="rl-success-name">@Model.PropertyDisplay</strong></p>
+        <div class="rl-success-detail"><i class="fas fa-house"></i> @Model.PropertyDisplay</div>
+        @if (!string.IsNullOrWhiteSpace(Model.ClientName))
+        {
+            <div class="rl-success-detail"><i class="fas fa-user"></i> @Model.ClientName</div>
+        }
+        <div class="rl-success-detail"><i class="fas fa-file"></i> Added now: @Model.AddedNowLabel</div>
+        <div class="rl-success-detail">
+            <i class="fas fa-circle-check"></i>
+            <span class="rl-card-status rl-card-status--active">@Model.StatusLabel</span>
+        </div>
+    </div>
+
+    <div class="rl-success-links">
+        <a asp-controller="Realtor" asp-action="Files" class="rl-success-link-row">
+            <i class="fas fa-folder-open"></i> Open File <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-success-link-row">
+            <i class="fas fa-plus"></i> Add More Items <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="RealtorInviteClient" asp-action="ClientInfo" class="rl-success-link-row">
+            <i class="fas fa-share-nodes"></i> Share with Client <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+
+    <div class="rl-include-grid rl-include-grid--success">
+        @foreach (var cat in IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.All)
+        {
+            <div class="rl-include-item"><i class="fas @cat.Icon"></i><span>@cat.Label.Split(' ')[0]</span></div>
+        }
+    </div>
+
+    <div class="rl-info-banner rl-info-banner--success">
+        <i class="fas fa-circle-check"></i> Saved under Active Files
+    </div>
+
+    <a asp-controller="Realtor" asp-action="Files" class="ob-btn ob-btn-primary rl-done-btn">Open File</a>
+    <a asp-controller="Realtor" asp-action="Files" class="rl-later-link">Done</a>
+</div>

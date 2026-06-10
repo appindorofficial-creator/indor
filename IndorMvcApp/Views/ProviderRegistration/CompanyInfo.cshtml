@@ -1,0 +1,71 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    Layout = "_LayoutStep";
+    var s = Model.State;
+    var categories = ViewBag.Categories as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? Array.Empty<IndorMvcApp.Models.OnboardingOption>();
+    var primaryCategory = s.SelectedCategoryIds.FirstOrDefault();
+}
+<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="CompanyInfo" method="post" class="ob-form-card">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-building"></i>
+        <input class="ob-control" name="businessName" value="@s.BusinessName" placeholder="Company name" required />
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-user"></i>
+        <input class="ob-control" name="primaryContact" value="@s.PrimaryContact" placeholder="Contact name" required />
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-phone"></i>
+        <input class="ob-control" name="phone" value="@s.Phone" type="tel" placeholder="Phone number" />
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-envelope"></i>
+        <input class="ob-control" name="email" value="@s.Email" type="email" placeholder="Email address" required />
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-briefcase"></i>
+        <select class="ob-control" name="primaryCategoryId">
+            <option value="">Primary service category</option>
+            @foreach (var cat in categories)
+            {
+                <option value="@cat.Id" selected="@(primaryCategory == cat.Id)">@cat.Label</option>
+            }
+        </select>
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-location-dot"></i>
+        <input class="ob-control" name="serviceAreas" value="@s.ServiceZipCodesDisplay" placeholder="Service areas" />
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-globe"></i>
+        <input class="ob-control" name="website" value="@s.Website" placeholder="Website (optional)" />
+    </div>
+    <div class="ob-field prv-field-icon">
+        <i class="fas fa-shield-halved"></i>
+        <input class="ob-control" name="einNumber" value="@s.EinNumber" placeholder="EIN / Company Verification Number" />
+    </div>
+
+    <div class="prv-wiz-info">
+        <i class="fas fa-circle-info"></i>
+        <div>
+            <p>This information helps set up INDOR Pro and starts your provider application.</p>
+        </div>
+    </div>
+
+    <label class="prv-wiz-terms">
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms">Terms &amp; Conditions</a></span>
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Save &amp; Continue</button>
+    <button type="submit" name="action" value="later" class="prv-save-later">I'll do this later</button>
+</form>

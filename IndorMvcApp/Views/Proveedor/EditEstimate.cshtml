@@ -1,0 +1,286 @@
+@model IndorMvcApp.ViewModels.ProviderProQuickEstimateViewModel
+
+@using System.Globalization
+
+@{
+
+    ViewData["Title"] = "Edit Estimate - INDOR PRO";
+
+    Layout = "_ProviderProLayout";
+
+    ViewBag.NavActive = "home";
+
+    var money = CultureInfo.GetCultureInfo("en-US");
+
+    var steps = new[] { ("service", "Service"), ("scope", "Scope"), ("price", "Price"), ("review", "Review") };
+
+}
+
+
+
+<div class="prv-pro-shell prv-pro-shell--estimate">
+
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+
+
+    <header class="prv-pro-workflow-head">
+
+        <a asp-controller="Proveedor" asp-action="PendingEstimates" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+
+        <div>
+
+            <h1>@Model.PageTitle</h1>
+
+            <small>@Model.EstimateCode · @Model.CreatedLabel</small>
+
+        </div>
+
+    </header>
+
+
+
+    @if (TempData["EstimateDraftSaved"] as bool? == true)
+
+    {
+
+        <div class="prv-pro-lead-toast">Estimate draft saved.</div>
+
+    }
+
+
+
+    <section class="prv-pro-estimate-summary">
+
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" />
+
+        <div>
+
+            <strong>@Model.Address</strong>
+
+            @if (!string.IsNullOrWhiteSpace(Model.PropertyMeta))
+
+            {
+
+                <small>@Model.PropertyMeta</small>
+
+            }
+
+            <div class="prv-pro-lead-badges">
+
+                <span class="prv-pro-pill prv-pro-pill--draft">@Model.StatusLabel</span>
+
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section prv-pro-estimate-customer">
+
+        <div class="prv-pro-lead-homeowner-main">
+
+            <div class="prv-pro-lead-homeowner-avatar">@Model.CustomerInitials</div>
+
+            <div>
+
+                <strong>@Model.CustomerName</strong>
+
+                @if (Model.IsHomeownerVerified)
+
+                {
+
+                    <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <nav class="prv-pro-estimate-stepper" aria-label="Estimate steps">
+
+        @foreach (var (id, label) in steps)
+
+        {
+
+            <span class="@(Model.ActiveStep == id ? "is-active" : id is "service" or "scope" ? "is-done" : "")">@label</span>
+
+        }
+
+    </nav>
+
+
+
+    <form asp-controller="Proveedor" asp-action="EditEstimate" method="post" class="prv-pro-estimate-form">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden" name="LeadId" value="@Model.LeadId" />
+
+        <input type="hidden" name="EstimateId" value="@Model.EstimateId" />
+
+        <input type="hidden" name="TaxRate" value="@Model.TaxRate.ToString("0.####", CultureInfo.InvariantCulture)" />
+
+
+
+        <section class="prv-pro-lead-section">
+
+            <h3>Scope of Work</h3>
+
+            <ol class="prv-pro-scope-list">
+
+                @for (var i = 0; i < Model.ScopeItems.Count; i++)
+
+                {
+
+                    var item = Model.ScopeItems[i];
+
+                    <li>
+
+                        <input type="text" name="ScopeLabels" value="@item.Label" />
+
+                        <input type="number" name="ScopeAmounts" value="@item.Amount.ToString("0")" step="1" min="0" />
+
+                    </li>
+
+                }
+
+            </ol>
+
+            <button type="button" class="prv-pro-link-more">+ Add Line Item</button>
+
+        </section>
+
+
+
+        <div class="prv-pro-estimate-meta-grid">
+
+            <div class="prv-pro-lead-section">
+
+                <h3><i class="fas fa-calendar"></i> Timeline</h3>
+
+                <label>Estimated Start <input type="date" name="EstimatedStartDate" value="@Model.EstimatedStartDate" class="prv-pro-estimate-inline-input" /></label>
+
+                <label>Estimated Duration <input type="text" name="EstimatedDuration" value="@Model.EstimatedDuration" class="prv-pro-estimate-inline-input" /></label>
+
+            </div>
+
+            <div class="prv-pro-lead-section">
+
+                <h3><i class="fas fa-shield"></i> Warranty</h3>
+
+                <label>Labor Warranty <input type="text" name="LaborWarranty" value="@Model.LaborWarranty" class="prv-pro-estimate-inline-input" /></label>
+
+                <label>Parts Warranty <input type="text" name="PartsWarranty" value="@Model.PartsWarranty" class="prv-pro-estimate-inline-input" /></label>
+
+            </div>
+
+        </div>
+
+
+
+        <section class="prv-pro-estimate-pricing">
+
+            <h3>Materials &amp; Labor Summary</h3>
+
+            <div class="prv-pro-estimate-pricing-row">
+
+                <span>Materials</span>
+
+                <input type="number" name="MaterialsAmount" value="@Model.MaterialsAmount.ToString("0")" step="1" min="0" />
+
+            </div>
+
+            <div class="prv-pro-estimate-pricing-row">
+
+                <span>Labor</span>
+
+                <input type="number" name="LaborAmount" value="@Model.LaborAmount.ToString("0")" step="1" min="0" />
+
+            </div>
+
+            <div class="prv-pro-estimate-pricing-row">
+
+                <span>Discount</span>
+
+                <input type="number" name="DiscountAmount" value="@Model.DiscountAmount.ToString("0")" step="1" min="0" />
+
+            </div>
+
+            <div class="prv-pro-estimate-pricing-row">
+
+                <span>Subtotal</span>
+
+                <strong>@Model.SubtotalAmount.ToString("C2", money)</strong>
+
+            </div>
+
+            <div class="prv-pro-estimate-pricing-row">
+
+                <span>Tax (@(Model.TaxRate.ToString("P2", money)))</span>
+
+                <strong>@Model.TaxAmount.ToString("C2", money)</strong>
+
+            </div>
+
+            <div class="prv-pro-estimate-total">
+
+                <span>Total Estimate</span>
+
+                <strong>@Model.TotalAmount.ToString("C2", money)</strong>
+
+            </div>
+
+        </section>
+
+
+
+        <label class="prv-pro-create-field prv-pro-create-field--notes">
+
+            <i class="fas fa-note-sticky"></i>
+
+            <span>Notes to Homeowner</span>
+
+            <textarea name="HomeownerNotes" rows="3">@Model.HomeownerNotes</textarea>
+
+        </label>
+
+        <input type="hidden" name="Timeline" value="@Model.Timeline" />
+
+        <input type="hidden" name="Warranty" value="@Model.Warranty" />
+
+        <input type="hidden" name="ServiceType" value="@Model.ServiceType" />
+
+
+
+        <footer class="prv-pro-estimate-footer">
+
+            <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
+
+                <i class="fas fa-floppy-disk"></i> Save Draft
+
+            </button>
+
+            <button type="submit" name="GoToReview" value="true" class="prv-pro-btn prv-pro-btn--primary">
+
+                <i class="fas fa-file-lines"></i> Review Estimate
+
+            </button>
+
+        </footer>
+
+    </form>
+
+</div>
+

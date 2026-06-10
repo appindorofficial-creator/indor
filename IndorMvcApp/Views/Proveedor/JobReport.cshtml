@@ -1,0 +1,112 @@
+@model IndorMvcApp.ViewModels.ProviderProJobCompletionReportViewModel
+@{
+    ViewData["Title"] = "Job Completion Report - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-pro-shell prv-pro-shell--workflow">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="completed" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Job Completion Report</h1>
+            <small>@Model.ReportCode</small>
+        </div>
+        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+    </header>
+
+    <section class="prv-pro-lead-summary">
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Job" class="prv-pro-lead-summary-img" />
+        <div class="prv-pro-lead-summary-body">
+            <h2>@Model.Title</h2>
+            <small>@Model.Address</small>
+            <div class="prv-pro-lead-badges">
+                <span class="prv-pro-pill prv-pro-pill--completed">Completed</span>
+            </div>
+            <p class="prv-pro-lead-timeline">@Model.CompletedLabel</p>
+        </div>
+    </section>
+
+    @if (Model.Photos.Count > 0)
+    {
+        <section class="prv-pro-lead-section">
+            <div class="prv-pro-panel-head">
+                <h3>Before &amp; After Photos</h3>
+                <a href="#">View all (@Model.Photos.Count)</a>
+            </div>
+            <div class="prv-pro-report-photos">
+                @foreach (var photo in Model.Photos)
+                {
+                    <div class="prv-pro-report-photo">
+                        <img src="@Url.Content($"~{photo.Url}")" alt="@photo.Label" />
+                        <span class="prv-pro-report-photo-label prv-pro-report-photo-label--@photo.Label.ToLowerInvariant()">@photo.Label</span>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.WorkPerformed))
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-circle-check"></i> Work Performed</h3>
+            <p class="prv-pro-lead-description">@Model.WorkPerformed</p>
+        </section>
+    }
+
+    <section class="prv-pro-report-grid">
+        <div class="prv-pro-lead-section">
+            <h3>Materials Used</h3>
+            <ul class="prv-pro-materials-list">
+                @foreach (var material in Model.Materials)
+                {
+                    <li>@material.Name <span>x@material.Quantity</span></li>
+                }
+            </ul>
+            <a href="#" class="prv-pro-link-more">View all materials (@Model.Materials.Count)</a>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.LaborWarranty))
+        {
+            <div class="prv-pro-lead-section">
+                <h3>Warranty</h3>
+                <strong>@Model.LaborWarranty</strong>
+                <small>Covers labor and installation</small>
+            </div>
+        }
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.FinalNotes))
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-file-lines"></i> Final Notes</h3>
+            <p class="prv-pro-lead-description">@Model.FinalNotes</p>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.HomeownerSignature))
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-pen"></i> Homeowner Signature</h3>
+            <p class="prv-pro-signature">@Model.HomeownerSignature</p>
+            @if (!string.IsNullOrWhiteSpace(Model.SignedLabel))
+            {
+                <small class="prv-pro-signature-meta">@Model.SignedLabel</small>
+            }
+        </section>
+    }
+
+    <div class="prv-pro-report-banner">
+        <i class="fas fa-circle-check"></i> Record ready for homeowner approval
+    </div>
+
+    <footer class="prv-pro-report-footer">
+        <button type="button" class="prv-pro-btn prv-pro-btn--success"><i class="fas fa-paper-plane"></i> Send for Approval</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-file-invoice-dollar"></i> Create Invoice</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-house"></i> Add to House Facts</button>
+    </footer>
+
+    <p class="prv-pro-report-secure"><i class="fas fa-lock"></i> All report data is securely stored and backed up.</p>
+</div>

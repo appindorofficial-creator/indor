@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 
@@ -15,17 +16,23 @@ public class AccountController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly AppDbContext _db;
+    private readonly IProviderRegistrationService _registration;
+    private readonly IRealtorRegistrationService _realtorRegistration;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
         RoleManager<IdentityRole> roleManager,
-        AppDbContext db)
+        AppDbContext db,
+        IProviderRegistrationService registration,
+        IRealtorRegistrationService realtorRegistration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _roleManager = roleManager;
         _db = db;
+        _registration = registration;
+        _realtorRegistration = realtorRegistration;
     }
 
     [HttpPost]
@@ -246,8 +253,8 @@ public class AccountController : Controller
             return model.SelectedRole switch
             {
                 "Propietario" => RedirectToAction("AddProperty", "Propietario"),
-                "ProveedorServicios" => RedirectToAction("Categories", "ProviderRegistration"),
-                "Realtor" => RedirectToAction("Dashboard", "Realtor"),
+                "ProveedorServicios" => RedirectToAction("Entry", "ProviderRegistration"),
+                "Realtor" => RedirectToAction("Profile", "RealtorRegistration"),
                 "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
                 _ => RedirectToAction("Index", "Home")
             };
@@ -280,6 +287,11 @@ public class AccountController : Controller
                 return await RedirectProveedorAsync(user);
             }
 
+            if (string.Equals(user.RolUsuario, "Realtor", StringComparison.OrdinalIgnoreCase))
+            {
+                return await RedirectRealtorAsync(user);
+            }
+
             if (await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
             {
                 return RedirectToAction("Index", "Home");
@@ -288,7 +300,7 @@ public class AccountController : Controller
             return user.RolUsuario switch
             {
                 "Propietario" => RedirectToAction("AddProperty", "Propietario"),
-                "Realtor" => RedirectToAction("Dashboard", "Realtor"),
+                "Realtor" => RedirectToAction("Profile", "RealtorRegistration"),
                 "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
                 _ => RedirectToAction("Index", "Home")
             };
@@ -308,12 +320,39 @@ public class AccountController : Controller
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.UserId == user.Id);
 
-        if (proveedor == null ||
-            proveedor.RegistrationStatus == ProviderRegistrationStatuses.Draft)
+        if (proveedor == null)
         {
-            return RedirectToAction("Categories", "ProviderRegistration");
+            return RedirectToAction("Entry", "ProviderRegistration");
+        }
+
+        if (proveedor.RegistrationStatus == ProviderRegistrationStatuses.Draft)
+        {
+            var action = _registration.ResolveWizardResumeAction(Math.Max(1, proveedor.CurrentStep));
+            return RedirectToAction(action, "ProviderRegistration");
         }
 
         return RedirectToAction("Dashboard", "Proveedor");
+    }
+
+    private async Task<IActionResult> RedirectRealtorAsync(ApplicationUser user)
+    {
+        var realtor = await _db.IndorRealtors
+            .AsNoTracking()
+            .FirstOrDefaultAsync(r => r.UserId == user.Id);
+
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            var action = _realtorRegistration.ResolveWizardResumeAction(Math.Max(1, realtor.CurrentStep));
+            return action == "Dashboard"
+                ? RedirectToAction("Profile", "RealtorRegistration")
+                : RedirectToAction(action, "RealtorRegistration");
+        }
+
+        return RedirectToAction("Dashboard", "Realtor");
     }
 }

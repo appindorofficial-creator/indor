@@ -1,0 +1,66 @@
+@model IndorMvcApp.ViewModels.ProviderProJobsScheduleViewModel
+@{
+    ViewData["Title"] = "Jobs Schedule - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+    var views = new[] { ("today", "Today"), ("week", "Week"), ("month", "Month") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--workflow">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Jobs Schedule</h1>
+            <small>@Model.DateLabel</small>
+        </div>
+        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary prv-pro-workflow-add">
+            <i class="fas fa-plus"></i> Add Job
+        </a>
+    </header>
+
+    <div class="prv-pro-schedule-toolbar">
+        <button type="button" class="prv-pro-filter-btn" title="Filter"><i class="fas fa-filter"></i> Filter</button>
+        <nav class="prv-pro-schedule-tabs">
+            @foreach (var (id, label) in views)
+            {
+                <a asp-controller="Proveedor" asp-action="JobsSchedule" asp-route-view="@id"
+                   class="@(Model.ActiveView == id ? "is-active" : "")">@label</a>
+            }
+        </nav>
+    </div>
+
+    <div class="prv-pro-schedule-summary">
+        <i class="fas fa-calendar-day"></i> @Model.JobsTodayCount Jobs Today
+    </div>
+
+    <section class="prv-pro-schedule-list">
+        @if (Model.Jobs.Count == 0)
+        {
+            <p class="prv-pro-empty">No jobs scheduled for this view.</p>
+        }
+        else
+        {
+            @foreach (var job in Model.Jobs)
+            {
+                <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@job.Id" class="prv-pro-schedule-row">
+                    <div class="prv-pro-schedule-row-time">@job.TimeLabel</div>
+                    <div class="prv-pro-schedule-row-body">
+                        <strong>@job.Title</strong>
+                        <small>@job.Address</small>
+                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                    </div>
+                    <i class="fas fa-eye prv-pro-schedule-row-view"></i>
+                </a>
+            }
+        }
+    </section>
+
+    <footer class="prv-pro-schedule-footer">
+        <a asp-controller="Proveedor" asp-action="JobsSchedule"><i class="fas fa-calendar"></i> See full calendar</a>
+        <a asp-controller="Proveedor" asp-action="CreateJob"><i class="fas fa-plus"></i> Create new job</a>
+        <span><i class="fas fa-file-lines"></i> Job information</span>
+    </footer>
+</div>

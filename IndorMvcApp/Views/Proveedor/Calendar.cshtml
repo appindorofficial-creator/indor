@@ -1,0 +1,105 @@
+@model IndorMvcApp.ViewModels.ProviderProCalendarOverviewViewModel
+@{
+    ViewData["Title"] = "Calendar Overview - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+    var views = new[] { ("day", "Day"), ("week", "Week"), ("month", "Month") };
+    var filters = new[] { ("all", "All", ""), ("jobs", "Jobs", "fa-briefcase"), ("visits", "Visits", "fa-user"), ("followups", "Follow-ups", "fa-phone"), ("blocked", "Blocked Time", "fa-lock") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--calendar">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1><i class="fas fa-calendar-week"></i> Calendar Overview</h1>
+            <small>@Model.WeekRangeLabel</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <div class="prv-pro-calendar-toolbar">
+        <nav class="prv-pro-calendar-views">
+            @foreach (var (id, label) in views)
+            {
+                <a asp-controller="Proveedor" asp-action="Calendar" asp-route-view="@id" asp-route-filter="@Model.ActiveFilter" asp-route-weekStart="@Model.WeekStartIso"
+                   class="@(Model.ActiveView == id ? "is-active" : "")">@label</a>
+            }
+        </nav>
+    </div>
+
+    <div class="prv-pro-upload-report-filters">
+        @foreach (var (key, label, icon) in filters)
+        {
+            <a asp-controller="Proveedor" asp-action="Calendar" asp-route-filter="@key" asp-route-view="@Model.ActiveView" asp-route-weekStart="@Model.WeekStartIso"
+               class="prv-pro-upload-report-filter @(Model.ActiveFilter == key ? "is-active" : "")">
+                @if (!string.IsNullOrEmpty(icon)) { <i class="fas @icon"></i> }
+                @label
+            </a>
+        }
+    </div>
+
+    <section class="prv-pro-calendar-grid-wrap">
+        <div class="prv-pro-calendar-grid">
+            <div class="prv-pro-calendar-grid-corner"></div>
+            @foreach (var day in Model.DayHeaders)
+            {
+                <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@day.DateIso"
+                   class="prv-pro-calendar-grid-dayhead @(day.IsToday ? "is-today" : "") @(day.IsUnavailable ? "is-unavailable" : "")">
+                    <span>@day.DayName</span>
+                    <strong>@day.DayNumber</strong>
+                </a>
+            }
+            @foreach (var hour in Model.HourSlots)
+            {
+                <div class="prv-pro-calendar-grid-hour">@(hour == 12 ? "12 PM" : hour > 12 ? $"{hour - 12} PM" : $"{hour} AM")</div>
+                @for (var dayIndex = 0; dayIndex < 7; dayIndex++)
+                {
+                    var day = Model.DayHeaders[dayIndex];
+                    <div class="prv-pro-calendar-grid-cell @(day.IsUnavailable ? "is-unavailable" : "")">
+                        @foreach (var evt in Model.GridEvents.Where(e => e.DayIndex == dayIndex && e.StartHour == hour))
+                        {
+                            <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@evt.JobId" asp-route-fromCalendar="true" asp-route-date="@day.DateIso"
+                               class="prv-pro-calendar-event prv-pro-calendar-event--@evt.ToneClass" style="--span:@evt.SpanHours">
+                                <strong>@evt.TimeLabel @evt.Title</strong>
+                                <small>@evt.Address</small>
+                            </a>
+                        }
+                    </div>
+                }
+            }
+        </div>
+    </section>
+
+    <section class="prv-pro-calendar-summary-cards">
+        <article>
+            <i class="fas fa-calendar-check"></i>
+            <div>
+                <strong>This Week Summary</strong>
+                <span>@Model.WeekEventCount Events Scheduled • @Model.EstimatedWorkLabel Estimated Work Time</span>
+            </div>
+        </article>
+        <article>
+            <i class="fas fa-clock"></i>
+            <div>
+                <strong>Available Time This Week</strong>
+                <span>@Model.AvailableTimeLabel</span>
+            </div>
+        </article>
+        <article>
+            <i class="fas fa-chart-pie"></i>
+            <div>
+                <strong>Schedule Utilization</strong>
+                <span>@Model.UtilizationPercent%</span>
+            </div>
+        </article>
+    </section>
+
+    <div class="prv-pro-calendar-footer-actions">
+        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> Add Event</a>
+        <a asp-controller="Proveedor" asp-action="DaySchedule" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-day"></i> View Day</a>
+        <button type="button" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-clock"></i> Edit Availability</button>
+    </div>
+</div>

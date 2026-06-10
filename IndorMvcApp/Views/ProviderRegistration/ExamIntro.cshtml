@@ -225,6 +225,10 @@
     <button type="submit" name="action" value="review" class="ob-btn ob-btn-outline">Review topics</button>
 
     <a href="@Model.BackUrl" class="prv-save-later">Back</a>
+    @if (Model.State.UsesNewWizard)
+    {
+        <a asp-action="ActivationCall" class="prv-save-later">Skip for Now</a>
+    }
 
 </form>
 

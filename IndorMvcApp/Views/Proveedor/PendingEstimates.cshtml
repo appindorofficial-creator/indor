@@ -1,0 +1,224 @@
+@model IndorMvcApp.ViewModels.ProviderProPendingEstimatesPageViewModel
+
+@using System.Globalization
+
+@{
+
+    ViewData["Title"] = "Pending Estimates - INDOR PRO";
+
+    Layout = "_ProviderProLayout";
+
+    ViewBag.NavActive = "home";
+
+    var money = CultureInfo.GetCultureInfo("en-US");
+
+    var tabs = new[] { ("all", "All"), ("draft", "Draft"), ("ready", "Ready"), ("sent", "Sent") };
+
+}
+
+
+
+<div class="prv-pro-shell prv-pro-shell--pending-estimates">
+
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+
+
+    <header class="prv-pro-new-leads-head">
+
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+
+        <div>
+
+            <h1>Pending Estimates</h1>
+
+            <small>@Model.DraftCount draft · @Model.ReadyCount ready · @Model.SentCount sent</small>
+
+        </div>
+
+    </header>
+
+
+
+    <form method="get" asp-controller="Proveedor" asp-action="PendingEstimates" class="prv-pro-jobs-search">
+
+        <input type="hidden" name="tab" value="@Model.ActiveTab" />
+
+        <div class="prv-pro-search-wrap">
+
+            <i class="fas fa-magnifying-glass"></i>
+
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search estimates..." />
+
+        </div>
+
+        <button type="button" class="prv-pro-filter-btn" title="Filters"><i class="fas fa-sliders"></i></button>
+
+    </form>
+
+
+
+    <nav class="prv-pro-leads-filters" aria-label="Estimate filters">
+
+        @foreach (var (id, label) in tabs)
+
+        {
+
+            <a asp-controller="Proveedor" asp-action="PendingEstimates"
+
+               asp-route-tab="@id"
+
+               asp-route-q="@Model.SearchQuery"
+
+               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
+
+        }
+
+    </nav>
+
+
+
+    <section class="prv-pro-pending-estimates-list">
+
+        @if (Model.Estimates.Count == 0)
+
+        {
+
+            <div class="prv-pro-panel">
+
+                <p class="prv-pro-empty">No estimates in this view yet. Create one from a lead or save a draft.</p>
+
+            </div>
+
+        }
+
+        else
+
+        {
+
+            @foreach (var est in Model.Estimates)
+
+            {
+
+                <article class="prv-pro-pending-estimate-card">
+
+                    <div class="prv-pro-pending-estimate-top">
+
+                        <div>
+
+                            <strong>Estimate @est.EstimateCode</strong>
+
+                            <small>@est.Address</small>
+
+                            @if (!string.IsNullOrWhiteSpace(est.ServiceType))
+
+                            {
+
+                                <small class="prv-pro-pending-estimate-service">@est.ServiceType</small>
+
+                            }
+
+                        </div>
+
+                        <div class="prv-pro-pending-estimate-meta">
+
+                            <span class="prv-pro-pill prv-pro-pill--@est.StatusClass">@est.Status</span>
+
+                            <strong>@est.Amount.ToString("C0", money)</strong>
+
+                            <small>@est.DateLabel</small>
+
+                        </div>
+
+                    </div>
+
+                    <div class="prv-pro-pending-estimate-actions">
+
+                        @if (est.CanEdit)
+
+                        {
+
+                            <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@est.Id" class="prv-pro-btn prv-pro-btn--ghost">
+
+                                <i class="fas fa-pen"></i> Edit
+
+                            </a>
+
+                        }
+
+                        @if (est.CanReview)
+
+                        {
+
+                            <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@est.Id" class="prv-pro-btn prv-pro-btn--ghost">
+
+                                <i class="fas fa-file-lines"></i> Review
+
+                            </a>
+
+                        }
+
+                        @if (est.CanSend)
+
+                        {
+
+                            <form asp-controller="Proveedor" asp-action="SendEstimateFromHub" method="post">
+
+                                @Html.AntiForgeryToken()
+
+                                <input type="hidden" name="id" value="@est.Id" />
+
+                                <button type="submit" class="prv-pro-btn prv-pro-btn--teal">
+
+                                    <i class="fas fa-paper-plane"></i> Send
+
+                                </button>
+
+                            </form>
+
+                        }
+
+                        @if (est.CanView)
+
+                        {
+
+                            <a asp-controller="Proveedor" asp-action="EstimateSent" asp-route-id="@est.Id" class="prv-pro-btn prv-pro-btn--ghost">
+
+                                <i class="fas fa-eye"></i> View
+
+                            </a>
+
+                        }
+
+                    </div>
+
+                </article>
+
+            }
+
+        }
+
+    </section>
+
+
+
+    <footer class="prv-pro-pending-estimates-footer">
+
+        <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-btn prv-pro-btn--primary">
+
+            <i class="fas fa-plus"></i> Create Estimate
+
+        </a>
+
+        <a asp-controller="Proveedor" asp-action="PendingEstimates" asp-route-tab="@Model.ActiveTab" class="prv-pro-btn prv-pro-btn--ghost">
+
+            <i class="fas fa-sliders"></i> Filter
+
+        </a>
+
+    </footer>
+
+</div>
+

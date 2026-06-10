@@ -1,0 +1,119 @@
+@model IndorMvcApp.ViewModels.ProviderProSendInvoiceReminderViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Send Reminder - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+    var channels = new[] { "Email", "SMS", "Both" };
+}
+
+<div class="prv-pro-shell prv-pro-shell--send-reminder">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Send Reminder</h1>
+            <small>Invoice @Model.InvoiceCode</small>
+        </div>
+    </header>
+
+    <section class="prv-pro-invoice-reminder-summary">
+        <div>
+            <strong>Invoice @Model.InvoiceCode</strong>
+            <small>@Model.PropertyAddress · @Model.ServiceType</small>
+            <div class="prv-pro-invoice-reminder-grid">
+                <div>
+                    <span>Amount Due</span>
+                    <strong class="is-green">@Model.Amount.ToString("C0", money)</strong>
+                </div>
+                <div>
+                    <span>Due Date</span>
+                    <strong>@Model.DueDateLabel</strong>
+                </div>
+                <div>
+                    <span>Status</span>
+                    <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.Status</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="prv-pro-lead-section prv-pro-reminder-recipient">
+        <h3>To</h3>
+        <p><strong>@Model.CustomerName</strong></p>
+        @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+        {
+            <p><i class="fas fa-envelope"></i> @Model.CustomerEmail</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+        {
+            <p><i class="fas fa-phone"></i> @Model.CustomerPhone</p>
+        }
+        <p><i class="fas fa-location-dot"></i> @Model.PropertyAddress</p>
+    </section>
+
+    <form asp-controller="Proveedor" asp-action="SendInvoiceReminder" method="post" class="prv-pro-reminder-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="InvoiceId" value="@Model.InvoiceId" />
+        <input type="hidden" name="ReturnTab" value="@Model.ReturnTab" />
+
+        <section class="prv-pro-lead-section">
+            <h3>Send via</h3>
+            <div class="prv-pro-reminder-channels">
+                @foreach (var channel in channels)
+                {
+                    <label class="prv-pro-reminder-channel @(Model.SendVia == channel ? "is-active" : "")">
+                        <input type="radio" name="SendVia" value="@channel" @(Model.SendVia == channel ? "checked" : "") />
+                        @channel
+                    </label>
+                }
+            </div>
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <h3>Message</h3>
+            <textarea name="Message" rows="6" maxlength="500" class="prv-pro-textarea prv-pro-reminder-message">@Model.DefaultMessage</textarea>
+            <small class="prv-pro-char-hint"><span id="reminder-char-count">@Model.DefaultMessage.Length</span>/500</small>
+        </section>
+
+        <section class="prv-pro-lead-section prv-pro-reminder-toggles">
+            <label class="prv-pro-toggle-row">
+                <span>Attach invoice PDF</span>
+                <input type="checkbox" name="AttachInvoicePdf" value="true" checked="@Model.AttachInvoicePdf" />
+            </label>
+            <label class="prv-pro-toggle-row">
+                <span>Send copy to my team</span>
+                <input type="checkbox" name="SendCopyToTeam" value="true" checked="@Model.SendCopyToTeam" />
+            </label>
+            <label class="prv-pro-reminder-timing">
+                <span>Reminder timing</span>
+                <select name="ReminderTiming">
+                    <option value="Send now" selected>Send now</option>
+                    <option value="Schedule for tomorrow">Schedule for tomorrow</option>
+                </select>
+            </label>
+        </section>
+
+        <footer class="prv-pro-reminder-footer">
+            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-eye"></i> Preview</button>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-paper-plane"></i> Send Reminder</button>
+        </footer>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var textarea = document.querySelector('.prv-pro-reminder-message');
+            var counter = document.getElementById('reminder-char-count');
+            if (!textarea || !counter) return;
+            textarea.addEventListener('input', function () {
+                counter.textContent = textarea.value.length;
+            });
+        })();
+    </script>
+}

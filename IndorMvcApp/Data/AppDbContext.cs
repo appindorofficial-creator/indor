@@ -138,6 +138,38 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorProveedorExamRespuesta> IndorProveedorExamRespuestas { get; set; }
     public DbSet<IndorProveedorDocumento> IndorProveedorDocumentos { get; set; }
     public DbSet<IndorProveedorAlcanceRegla> IndorProveedorAlcanceReglas { get; set; }
+    public DbSet<IndorProveedorCliente> IndorProveedorClientes { get; set; }
+    public DbSet<IndorProveedorJob> IndorProveedorJobs { get; set; }
+    public DbSet<IndorProveedorLead> IndorProveedorLeads { get; set; }
+    public DbSet<IndorProveedorEstimate> IndorProveedorEstimates { get; set; }
+    public DbSet<IndorProveedorInvoice> IndorProveedorInvoices { get; set; }
+    public DbSet<IndorProveedorApproval> IndorProveedorApprovals { get; set; }
+    public DbSet<IndorProveedorReport> IndorProveedorReports { get; set; }
+    public DbSet<IndorProveedorConversation> IndorProveedorConversations { get; set; }
+    public DbSet<IndorProveedorMessage> IndorProveedorMessages { get; set; }
+
+    public DbSet<IndorRealtor> IndorRealtors { get; set; }
+    public DbSet<IndorRealtorDocumento> IndorRealtorDocumentos { get; set; }
+    public DbSet<IndorRealtorPropertyFile> IndorRealtorPropertyFiles { get; set; }
+    public DbSet<IndorRealtorPropertyFileDraft> IndorRealtorPropertyFileDrafts { get; set; }
+    public DbSet<IndorRealtorPropertyFileDraftCategory> IndorRealtorPropertyFileDraftCategories { get; set; }
+    public DbSet<IndorRealtorPropertyFileDraftItem> IndorRealtorPropertyFileDraftItems { get; set; }
+    public DbSet<IndorRealtorPropertyFileItem> IndorRealtorPropertyFileItems { get; set; }
+    public DbSet<IndorRealtorQuote> IndorRealtorQuotes { get; set; }
+    public DbSet<IndorRealtorQuoteProvider> IndorRealtorQuoteProviders { get; set; }
+    public DbSet<IndorRealtorQuoteRequestDraft> IndorRealtorQuoteRequestDrafts { get; set; }
+    public DbSet<IndorRealtorQuoteRequestDraftProvider> IndorRealtorQuoteRequestDraftProviders { get; set; }
+    public DbSet<IndorRealtorQuoteSentProvider> IndorRealtorQuoteSentProviders { get; set; }
+    public DbSet<IndorRealtorInspectionUploadDraft> IndorRealtorInspectionUploadDrafts { get; set; }
+    public DbSet<IndorRealtorInspectionUploadFinding> IndorRealtorInspectionUploadFindings { get; set; }
+    public DbSet<IndorRealtorInspectionDraftProvider> IndorRealtorInspectionDraftProviders { get; set; }
+    public DbSet<IndorRealtorUrgentQuoteDraft> IndorRealtorUrgentQuoteDrafts { get; set; }
+    public DbSet<IndorRealtorUrgentQuoteDraftPhoto> IndorRealtorUrgentQuoteDraftPhotos { get; set; }
+    public DbSet<IndorRealtorSharedPackage> IndorRealtorSharedPackages { get; set; }
+    public DbSet<IndorRealtorClient> IndorRealtorClients { get; set; }
+    public DbSet<IndorRealtorInvitation> IndorRealtorInvitations { get; set; }
+    public DbSet<IndorRealtorActivity> IndorRealtorActivities { get; set; }
+    public DbSet<IndorRealtorQuoteBid> IndorRealtorQuoteBids { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }

@@ -1,0 +1,175 @@
+@model IndorMvcApp.ViewModels.ProviderProLeadDetailsViewModel
+@{
+    ViewData["Title"] = "Lead Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--lead-details">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-lead-details-head">
+        <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Lead Details</h1>
+            <small>@Model.LeadCode</small>
+        </div>
+        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+    </header>
+
+    @if (TempData["LeadAccepted"] as bool? == true)
+    {
+        <div class="prv-pro-lead-toast">Lead accepted successfully.</div>
+    }
+    @if (TempData["VisitConfirmed"] as bool? == true)
+    {
+        <div class="prv-pro-lead-toast">Visit confirmed and added to your schedule.</div>
+    }
+    @if (TempData["EstimateSent"] as bool? == true)
+    {
+        <div class="prv-pro-lead-toast">Estimate sent to homeowner successfully.</div>
+    }
+
+    <section class="prv-pro-lead-summary">
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" class="prv-pro-lead-summary-img" />
+        <div class="prv-pro-lead-summary-body">
+            <div class="prv-pro-lead-summary-top">
+                <h2>@Model.Address</h2>
+                <button type="button" class="prv-pro-lead-map-btn" aria-label="View on map"><i class="fas fa-location-dot"></i></button>
+            </div>
+            <div class="prv-pro-lead-badges">
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                @if (Model.IsHighUrgency)
+                {
+                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                {
+                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @Model.DistanceLabel</span>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.TimelineNote))
+            {
+                <p class="prv-pro-lead-timeline"><i class="fas fa-calendar-day"></i> @Model.TimelineNote</p>
+            }
+        </div>
+    </section>
+
+    <section class="prv-pro-lead-section">
+        <h3>Homeowner Information</h3>
+        <div class="prv-pro-lead-homeowner">
+            <div class="prv-pro-lead-homeowner-main">
+                <div class="prv-pro-lead-homeowner-avatar">@Model.CustomerInitials</div>
+                <div>
+                    <strong>@Model.CustomerName</strong>
+                    @if (Model.IsHomeownerVerified)
+                    {
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+                    {
+                        <small><i class="fas fa-phone"></i> @Model.CustomerPhone</small>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+                    {
+                        <small><i class="fas fa-envelope"></i> @Model.CustomerEmail</small>
+                    }
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+            {
+                <a href="tel:@Model.CustomerPhone" class="prv-pro-btn prv-pro-btn--ghost">Call</a>
+            }
+        </div>
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ProblemDescription))
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-circle-info"></i> Problem Description</h3>
+            <p class="prv-pro-lead-description">@Model.ProblemDescription</p>
+            @if (Model.PhotoUrls.Count > 0)
+            {
+                <div class="prv-pro-lead-photos">
+                    @foreach (var photo in Model.PhotoUrls.Take(3))
+                    {
+                        <img src="@Url.Content($"~{photo}")" alt="Damage photo" />
+                    }
+                    <div class="prv-pro-lead-photos-count">@Model.PhotoUrls.Count Photo@(Model.PhotoUrls.Count == 1 ? "" : "s")</div>
+                </div>
+            }
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.HomeType) || !string.IsNullOrWhiteSpace(Model.SquareFeetLabel))
+    {
+        <section class="prv-pro-lead-section">
+            <h3>Property Details</h3>
+            <div class="prv-pro-lead-prop-grid">
+                @if (!string.IsNullOrWhiteSpace(Model.HomeType))
+                {
+                    <div><i class="fas fa-house"></i><strong>@Model.HomeType</strong><span>Home Type</span></div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.SquareFeetLabel))
+                {
+                    <div><i class="fas fa-ruler-combined"></i><strong>@Model.SquareFeetLabel</strong><span>Sq Ft</span></div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.YearBuiltLabel))
+                {
+                    <div><i class="fas fa-calendar"></i><strong>@Model.YearBuiltLabel</strong><span>Built</span></div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.StoriesLabel))
+                {
+                    <div><i class="fas fa-building"></i><strong>@Model.StoriesLabel</strong><span>Stories</span></div>
+                }
+            </div>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.AccessNotes))
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-clipboard"></i> Notes &amp; Access Instructions</h3>
+            <p class="prv-pro-lead-description">@Model.AccessNotes</p>
+        </section>
+    }
+
+    <footer class="prv-pro-lead-footer prv-pro-lead-footer--stacked">
+        @if (Model.CanCreateEstimate || Model.CanScheduleVisit)
+        {
+            <p class="prv-pro-lead-decision">
+                If the photos and information are enough, send a quick estimate. If not, schedule a verification visit.
+            </p>
+        }
+
+        @if (Model.CanCreateEstimate)
+        {
+            <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@Model.LeadId"
+               class="prv-pro-btn prv-pro-btn--primary prv-pro-lead-action-btn prv-pro-lead-action-btn--full">
+                <i class="fas fa-file-circle-plus"></i> Create Quick Estimate
+            </a>
+        }
+
+        @if (Model.CanScheduleVisit)
+        {
+            <a asp-controller="Proveedor" asp-action="ScheduleVisit" asp-route-id="@Model.LeadId" asp-route-kind="verification"
+               class="prv-pro-btn prv-pro-btn--teal prv-pro-lead-action-btn prv-pro-lead-action-btn--full">
+                <i class="fas fa-calendar-check"></i> Schedule Verification Visit
+            </a>
+        }
+
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-lead-action-btn prv-pro-lead-action-btn--full prv-pro-lead-message-btn">
+            <i class="fas fa-message"></i> Message Homeowner
+        </button>
+
+        @if (Model.CanDecline)
+        {
+            <form asp-controller="Proveedor" asp-action="DeclineLead" method="post" class="prv-pro-lead-decline-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.LeadId" />
+                <button type="submit" class="prv-pro-lead-decline">Decline Lead</button>
+            </form>
+        }
+    </footer>
+</div>

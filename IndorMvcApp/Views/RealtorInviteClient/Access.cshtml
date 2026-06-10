@@ -1,0 +1,95 @@
+@model IndorMvcApp.ViewModels.RealtorInviteAccessViewModel
+
+<form asp-action="Access" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+
+    <h2 class="rl-invite-section-title">Access &amp; Permissions</h2>
+    <div class="rl-toggle-list">
+        <label class="rl-toggle-row">
+            <span>Property Overview</span>
+            <input type="checkbox" name="AccessPropertyOverview" value="true" @(Model.AccessPropertyOverview ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span>Files &amp; Reports</span>
+            <input type="checkbox" name="AccessFilesReports" value="true" @(Model.AccessFilesReports ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span>Quotes &amp; Estimates</span>
+            <input type="checkbox" name="AccessQuotesEstimates" value="true" @(Model.AccessQuotesEstimates ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span>Messages</span>
+            <input type="checkbox" name="AccessMessages" value="true" @(Model.AccessMessages ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span>Project Updates</span>
+            <input type="checkbox" name="AccessProjectUpdates" value="true" @(Model.AccessProjectUpdates ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+        <label class="rl-toggle-row">
+            <span>Payments <small>(optional)</small></span>
+            <input type="checkbox" name="AccessPayments" value="true" @(Model.AccessPayments ? "checked" : null) />
+            <span class="rl-toggle"></span>
+        </label>
+    </div>
+
+    <h2 class="rl-invite-section-title">Collaboration Level</h2>
+    <div class="rl-collab-grid">
+        @foreach (var opt in Model.CollaborationOptions)
+        {
+            var selected = Model.CollaborationLevel == opt.Value;
+            <label class="rl-collab-card @(selected ? "is-selected" : "")">
+                <input type="radio" name="CollaborationLevel" value="@opt.Value" @(selected ? "checked" : null) />
+                <i class="fas @opt.Icon"></i>
+                <span>@opt.Label</span>
+                @if (selected) { <i class="fas fa-circle-check rl-collab-check"></i> }
+            </label>
+        }
+    </div>
+
+    <h2 class="rl-invite-section-title">Invitation Delivery</h2>
+    <div class="rl-delivery-row">
+        <label class="rl-delivery-btn @(Model.DeliveryEmail ? "is-selected" : "")">
+            <input type="checkbox" name="DeliveryEmail" value="true" @(Model.DeliveryEmail ? "checked" : null) />
+            Email
+        </label>
+        <label class="rl-delivery-btn @(Model.DeliveryText ? "is-selected" : "")">
+            <input type="checkbox" name="DeliveryText" value="true" @(Model.DeliveryText ? "checked" : null) />
+            Text Message
+        </label>
+    </div>
+
+    <h2 class="rl-invite-section-title">Custom Welcome Message <small>(optional)</small></h2>
+    <label class="rl-field rl-field--textarea">
+        <textarea name="WelcomeMessage" maxlength="250" rows="4">@Model.WelcomeMessage</textarea>
+    </label>
+    <span class="rl-char-count">@Model.WelcomeMessage.Length/250</span>
+
+    <div class="rl-info-box rl-info-box--muted">
+        <i class="fas fa-circle-info"></i>
+        <p>You can update permissions later from the client profile.</p>
+    </div>
+
+    <div class="rl-invite-actions">
+        <a asp-action="Property" class="rl-invite-cancel">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.rl-collab-card input').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-collab-card').forEach(c => c.classList.remove('is-selected'));
+            r.closest('.rl-collab-card')?.classList.add('is-selected');
+        });
+    });
+    document.querySelectorAll('.rl-delivery-btn input').forEach(c => {
+        c.addEventListener('change', () => c.closest('.rl-delivery-btn')?.classList.toggle('is-selected', c.checked));
+    });
+</script>
+}

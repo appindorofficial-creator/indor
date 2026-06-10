@@ -1,0 +1,25 @@
+@{
+    var active = ViewBag.NavActive as string ?? "home";
+}
+<nav class="rl-bottom-nav" aria-label="Realtor navigation">
+    <a asp-controller="Realtor" asp-action="Dashboard" class="@(active == "home" ? "is-active" : null)">
+        <i class="fas fa-house"></i>
+        <span>Home</span>
+    </a>
+    <a asp-controller="Realtor" asp-action="Clients" class="@(active == "clients" ? "is-active" : null)">
+        <i class="fas fa-users"></i>
+        <span>Clients</span>
+    </a>
+    <a asp-controller="Realtor" asp-action="Files" class="@(active == "files" ? "is-active" : null)">
+        <i class="fas fa-folder"></i>
+        <span>Files</span>
+    </a>
+    <a asp-controller="Realtor" asp-action="Quotes" class="@(active == "quotes" ? "is-active" : null)">
+        <i class="fas fa-file-invoice-dollar"></i>
+        <span>Quotes</span>
+    </a>
+    <a asp-controller="Realtor" asp-action="Profile" class="@(active == "profile" ? "is-active" : null)">
+        <i class="fas fa-user"></i>
+        <span>Profile</span>
+    </a>
+</nav>

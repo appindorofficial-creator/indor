@@ -1,0 +1,118 @@
+@model IndorMvcApp.ViewModels.RealtorInspectionPrioritiesViewModel
+
+
+
+<div class="rl-info-box rl-info-box--ai">
+
+    <i class="fas fa-wand-magic-sparkles"></i>
+
+    <p>INDOR AI has analyzed and prioritized findings to help you take action faster.</p>
+
+</div>
+
+
+
+<div class="rl-findings-summary">
+
+    <h2 class="rl-invite-section-title">Findings summary</h2>
+
+    <div class="rl-findings-summary-grid">
+
+        <div><i class="fas fa-file-lines"></i><strong>@Model.TotalFindings</strong><span>Total findings</span></div>
+
+        <div class="is-urgent"><i class="fas fa-circle-exclamation"></i><strong>@Model.UrgentCount</strong><span>Urgent</span></div>
+
+        <div class="is-high"><i class="fas fa-arrow-up"></i><strong>@Model.HighCount</strong><span>High</span></div>
+
+        <div class="is-moderate"><i class="fas fa-minus"></i><strong>@Model.ModerateCount</strong><span>Moderate</span></div>
+
+    </div>
+
+</div>
+
+
+
+<form asp-action="Priorities" method="get" class="rl-priorities-toolbar">
+
+    <div class="rl-filter-chips">
+
+        @foreach (var chip in Model.Filters)
+
+        {
+
+            <a asp-action="Priorities" asp-route-filter="@chip" asp-route-sort="@Model.SortBy"
+
+               class="rl-filter-chip rl-filter-chip--@chip.ToLowerInvariant() @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+
+        }
+
+    </div>
+
+    <select name="sort" class="rl-field-select" onchange="this.form.submit()">
+
+        <option value="Trade" selected="@(Model.SortBy == "Trade")">By trade</option>
+
+        <option value="Priority" selected="@(Model.SortBy == "Priority")">By priority</option>
+
+        <option value="Score" selected="@(Model.SortBy == "Score")">By AI score</option>
+
+    </select>
+
+</form>
+
+
+
+<form id="prioritiesForm" asp-action="Priorities" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    @foreach (var finding in Model.Findings)
+
+    {
+
+        <label class="rl-finding-card">
+
+            <input type="checkbox" name="selectedFindingIds" value="@finding.Id" @(finding.IsSelected ? "checked" : null) />
+
+            <img src="@(finding.ImageUrl ?? "/welcome-house.png")" alt="" />
+
+            <span class="rl-finding-body">
+
+                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@finding.Priority</span>
+
+                <strong>@finding.Title</strong>
+
+                <span><i class="fas @finding.TradeIcon"></i> @finding.TradeLabel</span>
+
+            </span>
+
+            <span class="rl-ai-score">@finding.AiScore/100</span>
+
+            <i class="fas fa-chevron-right"></i>
+
+        </label>
+
+    }
+
+
+
+    <div class="rl-info-box">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Tap any finding to see why it was prioritized and which contractor should receive it.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> Back</a>
+
+    <button type="submit" form="prioritiesForm" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+
+</div>
+

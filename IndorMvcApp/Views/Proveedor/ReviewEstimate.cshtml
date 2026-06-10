@@ -1,0 +1,326 @@
+@model IndorMvcApp.ViewModels.ProviderProReviewEstimateViewModel
+
+@using System.Globalization
+
+@{
+
+    ViewData["Title"] = "Review Estimate - INDOR PRO";
+
+    Layout = "_ProviderProLayout";
+
+    ViewBag.NavActive = "home";
+
+    var money = CultureInfo.GetCultureInfo("en-US");
+
+    var editAction = Model.LeadId > 0 ? "QuickEstimate" : "EditEstimate";
+
+    var editRouteId = Model.LeadId > 0 ? Model.LeadId : Model.EstimateId;
+
+}
+
+
+
+<div class="prv-pro-shell prv-pro-shell--estimate">
+
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+
+
+    <header class="prv-pro-workflow-head">
+
+        <a asp-controller="Proveedor" asp-action="@editAction" asp-route-id="@editRouteId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+
+        <div>
+
+            <h1>Review Estimate</h1>
+
+            <small>@Model.EstimateCode · @Model.CreatedLabel · @Model.ValidForLabel</small>
+
+        </div>
+
+    </header>
+
+
+
+    <section class="prv-pro-estimate-summary">
+
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" />
+
+        <div>
+
+            <strong>@Model.Address</strong>
+
+            @if (!string.IsNullOrWhiteSpace(Model.PropertyMeta))
+
+            {
+
+                <small>@Model.PropertyMeta</small>
+
+            }
+
+            <div class="prv-pro-lead-badges">
+
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+
+                @if (Model.IsHighUrgency)
+
+                {
+
+                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>
+
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section">
+
+        <div class="prv-pro-lead-homeowner-main">
+
+            <div class="prv-pro-lead-homeowner-avatar">@Model.CustomerInitials</div>
+
+            <div>
+
+                <strong>@Model.CustomerName</strong>
+
+                @if (Model.IsHomeownerVerified)
+
+                {
+
+                    <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+
+                {
+
+                    <small><i class="fas fa-phone"></i> @Model.CustomerPhone</small>
+
+                }
+
+                @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+
+                {
+
+                    <small><i class="fas fa-envelope"></i> @Model.CustomerEmail</small>
+
+                }
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section">
+
+        <h3>Scope Summary</h3>
+
+        <ul class="prv-pro-review-scope-list">
+
+            @foreach (var item in Model.ScopeItems)
+
+            {
+
+                <li><i class="fas fa-circle-check"></i> @item.Label <span>@item.Amount.ToString("C0", money)</span></li>
+
+            }
+
+        </ul>
+
+    </section>
+
+
+
+    <section class="prv-pro-lead-section">
+
+        <h3>Pricing Summary</h3>
+
+        <div class="prv-pro-review-pricing">
+
+            <div><span>Subtotal</span><strong>@Model.SubtotalAmount.ToString("C2", money)</strong></div>
+
+            <div><span>Tax (@Model.TaxRate.ToString("P2", money))</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
+
+            @if (Model.DiscountAmount > 0)
+
+            {
+
+                <div><span>Discount</span><strong>-@Model.DiscountAmount.ToString("C2", money)</strong></div>
+
+            }
+
+            <div class="prv-pro-review-pricing-total"><span>Total</span><strong>@Model.TotalAmount.ToString("C2", money)</strong></div>
+
+        </div>
+
+    </section>
+
+
+
+    <div class="prv-pro-estimate-meta-grid">
+
+        <section class="prv-pro-lead-section">
+
+            <h3><i class="fas fa-calendar"></i> Timeline</h3>
+
+            @if (!string.IsNullOrWhiteSpace(Model.EstimatedStartLabel))
+
+            {
+
+                <p>Start: <strong>@Model.EstimatedStartLabel</strong></p>
+
+            }
+
+            <p>Est. Duration: <strong>@(Model.EstimatedDuration ?? Model.Timeline)</strong></p>
+
+        </section>
+
+        <section class="prv-pro-lead-section">
+
+            <h3><i class="fas fa-shield"></i> Warranty</h3>
+
+            @if (!string.IsNullOrWhiteSpace(Model.LaborWarranty))
+
+            {
+
+                <p>Workmanship: <strong>@Model.LaborWarranty</strong></p>
+
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.PartsWarranty))
+
+            {
+
+                <p>Materials: <strong>@Model.PartsWarranty</strong></p>
+
+            }
+
+            @if (string.IsNullOrWhiteSpace(Model.LaborWarranty) && string.IsNullOrWhiteSpace(Model.PartsWarranty))
+
+            {
+
+                <p><strong>@Model.Warranty</strong></p>
+
+            }
+
+        </section>
+
+    </div>
+
+
+
+    @if (!string.IsNullOrWhiteSpace(Model.HomeownerNotes))
+
+    {
+
+        <section class="prv-pro-lead-section">
+
+            <h3>Notes to Homeowner</h3>
+
+            <p>@Model.HomeownerNotes</p>
+
+        </section>
+
+    }
+
+
+
+    @if (Model.CanSend)
+
+    {
+
+        <form asp-controller="Proveedor" asp-action="SendEstimate" method="post">
+
+            @Html.AntiForgeryToken()
+
+            <input type="hidden" name="EstimateId" value="@Model.EstimateId" />
+
+
+
+            <div class="prv-pro-toggle-row">
+
+                <label class="prv-pro-toggle">
+
+                    <input type="checkbox" name="NotifyHomeowner" value="true" checked="@Model.NotifyHomeowner" />
+
+                    <span class="prv-pro-toggle-track"></span>
+
+                </label>
+
+                <div><strong>Notify homeowner</strong><small>Send notification when estimate is sent</small></div>
+
+            </div>
+
+            <div class="prv-pro-toggle-row">
+
+                <label class="prv-pro-toggle">
+
+                    <input type="checkbox" name="SaveCopyToLeads" value="true" checked="@Model.SaveCopyToLeads" />
+
+                    <span class="prv-pro-toggle-track"></span>
+
+                </label>
+
+                <div><strong>Save copy to My Leads</strong></div>
+
+            </div>
+
+
+
+            <div class="prv-pro-report-banner">
+
+                <i class="fas fa-circle-check"></i> Ready to send — Your estimate is complete and ready to deliver.
+
+            </div>
+
+
+
+            <footer class="prv-pro-estimate-footer">
+
+                <a asp-controller="Proveedor" asp-action="@editAction" asp-route-id="@editRouteId" class="prv-pro-btn prv-pro-btn--ghost">
+
+                    <i class="fas fa-pen"></i> Edit Estimate
+
+                </a>
+
+                <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
+
+                    <i class="fas fa-paper-plane"></i> Send Estimate
+
+                </button>
+
+            </footer>
+
+        </form>
+
+    }
+
+    else
+
+    {
+
+        <footer class="prv-pro-estimate-footer">
+
+            <a asp-controller="Proveedor" asp-action="EstimateSent" asp-route-id="@Model.EstimateId" class="prv-pro-btn prv-pro-btn--primary">
+
+                <i class="fas fa-eye"></i> View Sent Estimate
+
+            </a>
+
+        </footer>
+
+    }
+
+</div>
+

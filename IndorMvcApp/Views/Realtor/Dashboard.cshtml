@@ -1,0 +1,136 @@
+@model IndorMvcApp.ViewModels.RealtorHomeViewModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <section class="rl-home-hero">
+        <div class="rl-home-hero-user">
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+            {
+                <img src="@Model.ProfilePhotoUrl" alt="" class="rl-home-avatar" />
+            }
+            else
+            {
+                <span class="rl-home-avatar rl-home-avatar--placeholder"><i class="fas fa-user"></i></span>
+            }
+            <div>
+                <h1>Hello @Model.DisplayName</h1>
+                <div class="rl-home-badge-row">
+                    <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
+                        <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
+                        @Model.BadgeLabel
+                    </span>
+                    @if (!Model.IsVerified)
+                    {
+                        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-verify-link">Verify profile <i class="fas fa-chevron-right"></i></a>
+                    }
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="rl-quick-actions">
+        @foreach (var action in Model.QuickActions)
+        {
+            <a href="@action.Url" class="rl-quick-action">
+                <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
+                <span>@action.Label</span>
+            </a>
+        }
+    </section>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Active property files</h2>
+            <a asp-controller="Realtor" asp-action="Files">View all <i class="fas fa-chevron-right"></i></a>
+        </div>
+        @if (Model.PropertyFiles.Count == 0)
+        {
+            <div class="rl-dash-empty">No property files yet.</div>
+        }
+        else
+        {
+            @foreach (var file in Model.PropertyFiles)
+            {
+                <a asp-controller="Realtor" asp-action="Files" class="rl-prop-card rl-prop-card--link">
+                    <img src="@file.PhotoUrl" alt="" />
+                    <div class="rl-prop-card-body">
+                        <strong>@file.Address</strong>
+                        @if (!string.IsNullOrWhiteSpace(file.SpecsLabel))
+                        {
+                            <span class="rl-prop-specs"><i class="fas fa-bed"></i> @file.SpecsLabel</span>
+                        }
+                        <span class="rl-card-status rl-card-status--active">@file.StatusLabel</span>
+                    </div>
+                    <i class="fas fa-chevron-right rl-card-chevron"></i>
+                </a>
+            }
+        }
+    </section>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Pending quotes</h2>
+            <a asp-controller="Realtor" asp-action="Quotes">View all <i class="fas fa-chevron-right"></i></a>
+        </div>
+        @if (Model.PendingQuotes.Count == 0)
+        {
+            <div class="rl-dash-empty">No pending quote requests.</div>
+        }
+        else
+        {
+            @foreach (var quote in Model.PendingQuotes)
+            {
+                <a asp-controller="Realtor" asp-action="Quotes" class="rl-quote-row rl-quote-row--link">
+                    <span class="rl-quote-row-icon"><i class="fas fa-file-invoice"></i></span>
+                    <div>
+                        <strong>@quote.QuoteCode</strong>
+                        <span class="rl-quote-addr">@quote.Address</span>
+                        <span>@quote.ServiceType · @quote.RequestedLabel</span>
+                    </div>
+                    <span class="rl-card-status rl-card-status--pending">@quote.StatusLabel</span>
+                </a>
+            }
+        }
+    </section>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Shared packages</h2>
+            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
+        </div>
+        @if (Model.SharedPackages.Count == 0)
+        {
+            <div class="rl-dash-empty">No shared packages yet.</div>
+        }
+        else
+        {
+            @foreach (var pkg in Model.SharedPackages)
+            {
+                <article class="rl-pkg-row">
+                    <span class="rl-pkg-row-icon"><i class="fas fa-user"></i></span>
+                    <div>
+                        <strong>@pkg.ClientName</strong>
+                        <span>@pkg.Address</span>
+                        <span>Shared on @pkg.SharedLabel</span>
+                    </div>
+                    <span class="rl-card-status rl-card-status--viewed">@pkg.StatusLabel</span>
+                </article>
+            }
+        }
+    </section>
+
+    <section class="rl-network-banner">
+        <div>
+            <strong>Grow your business with INDOR's provider network</strong>
+            <p>Connect with trusted inspectors, contractors and more.</p>
+            <a href="#" class="rl-network-btn">Browse network <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <span class="rl-network-icon"><i class="fas fa-people-group"></i></span>
+    </section>
+</div>

@@ -1,0 +1,62 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateEstimatePricingViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Pricing & Line Items - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-estimate">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Pricing &amp; Line Items</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="CreateEstimatePricing" method="post" class="prv-pro-create-estimate-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="TaxRate" value="@Model.TaxRate" />
+
+        <div class="prv-pro-pricing-lines">
+            @for (var i = 0; i < Model.LineItems.Count; i++)
+            {
+                var line = Model.LineItems[i];
+                <article class="prv-pro-pricing-line">
+                    <input type="hidden" name="LineCategories" value="@line.Category" />
+                    <input type="hidden" name="LineLabels" value="@line.Label" />
+                    <input type="hidden" name="LineDescriptions" value="@line.Description" />
+                    <input type="hidden" name="LineTaxable" value="@(line.IsTaxable ? "true" : "false")" />
+                    <div class="prv-pro-pricing-line-head">
+                        <strong>@line.Label</strong>
+                        <span class="prv-pro-pricing-tax @(line.IsTaxable ? "is-taxable" : "")">@(line.IsTaxable ? "Taxable" : "Non-Taxable")</span>
+                    </div>
+                    <small>@line.Description</small>
+                    <div class="prv-pro-pricing-line-fields">
+                        <label>Qty <input type="number" name="LineQtys" value="@line.Qty" step="0.01" min="0" /></label>
+                        <label>Unit <input type="text" name="LineUnits" value="@line.Unit" /></label>
+                        <label>Unit Price <input type="number" name="LineUnitPrices" value="@line.UnitPrice" step="0.01" min="0" /></label>
+                        <label>Amount <input type="number" name="LineAmounts" value="@line.Amount" step="0.01" min="0" /></label>
+                    </div>
+                </article>
+            }
+        </div>
+
+        <section class="prv-pro-pricing-totals">
+            <div><span>Subtotal</span><strong>@Model.SubtotalAmount.ToString("C2", money)</strong></div>
+            <div><span>Tax (@((Model.TaxRate * 100).ToString("0.##"))%)</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
+            <div class="prv-pro-pricing-total"><span>Total Estimate</span><strong>@Model.TotalAmount.ToString("C2", money)</strong></div>
+        </section>
+
+        <div class="prv-pro-create-job-actions">
+            <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+        </div>
+    </form>
+</div>

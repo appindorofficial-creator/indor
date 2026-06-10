@@ -1,0 +1,32 @@
+@model IndorMvcApp.ViewModels.RealtorUrgentQuoteSummaryViewModel
+
+
+
+<div class="rl-urgent-summary-card">
+
+    <img src="@(Model.PhotoUrl ?? "/welcome-house.png")" alt="" />
+
+    <div class="rl-urgent-summary-body">
+
+        <strong>@Model.DisplayAddress</strong>
+
+        @if (!string.IsNullOrWhiteSpace(Model.SpecsLabel))
+
+        {
+
+            <span>@Model.SpecsLabel</span>
+
+        }
+
+        <div class="rl-urgent-badges">
+
+            <span class="rl-urgent-badge"><i class="fas fa-bolt"></i> @Model.ServiceType</span>
+
+            <span class="rl-urgent-badge"><i class="fas fa-clock"></i> @Model.UrgencyLabel</span>
+
+        </div>
+
+    </div>
+
+</div>
+

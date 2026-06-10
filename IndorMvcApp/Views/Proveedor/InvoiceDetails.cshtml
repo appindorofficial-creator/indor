@@ -1,0 +1,287 @@
+@model IndorMvcApp.ViewModels.ProviderProInvoiceDetailsViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = $"{Model.PageTitle} - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+    var displayAmount = Model.IsPaid ? Model.PaidAmount : Model.Amount;
+}
+
+<div class="prv-pro-shell prv-pro-shell--invoice-details @(Model.IsPaid ? "prv-pro-shell--paid-invoice" : "")">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>@Model.PageTitle</h1>
+            <small>@Model.InvoiceCode · @Model.ServiceType</small>
+        </div>
+        <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.Status</span>
+    </header>
+
+    @if (TempData["InvoiceReminderSent"] as bool? == true)
+    {
+        <div class="prv-pro-alert prv-pro-alert--success">
+            <i class="fas fa-circle-check"></i> Reminder sent successfully.
+        </div>
+    }
+    @if (TempData["InvoiceReceiptSent"] as bool? == true)
+    {
+        <div class="prv-pro-alert prv-pro-alert--success">
+            <i class="fas fa-circle-check"></i> Receipt sent again to the homeowner.
+        </div>
+    }
+
+    <section class="prv-pro-invoice-hero">
+        <div class="prv-pro-invoice-hero-icon prv-pro-invoice-hero-icon--@Model.StatusClass">
+            <i class="fas @(Model.IsPaid ? "fa-circle-check" : "fa-file-invoice-dollar")"></i>
+        </div>
+        <div>
+            <strong>Invoice @Model.InvoiceCode</strong>
+            <small>@Model.Address</small>
+            <small>@Model.ServiceType</small>
+            <div class="prv-pro-invoice-hero-amount">@displayAmount.ToString("C2", money)</div>
+            <span class="prv-pro-invoice-hero-label">@Model.AmountLabel</span>
+        </div>
+    </section>
+
+    @if (Model.IsPaid)
+    {
+        <section class="prv-pro-invoice-meta-grid prv-pro-invoice-meta-grid--paid">
+            <div class="prv-pro-invoice-meta-item">
+                <span>Due Date</span>
+                <strong>@Model.DueDateLabel</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item">
+                <span>Invoice Date</span>
+                <strong>@Model.InvoiceDateLabel</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item prv-pro-invoice-meta-item--paid">
+                <span>Payment Date</span>
+                <strong>@Model.PaymentDateLabel</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item">
+                <span>Payment Method</span>
+                <strong>@Model.PaymentMethod</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item prv-pro-invoice-meta-item--receipt">
+                <span>Receipt</span>
+                <strong>@(Model.ReceiptAvailable ? "Receipt Available" : "—")</strong>
+            </div>
+        </section>
+
+        <section class="prv-pro-paid-invoice-sections">
+            <details class="prv-pro-paid-section" open>
+                <summary>
+                    <span><i class="fas fa-list"></i> Invoice Line Items</span>
+                    <em>@Model.LineItemCount item@(Model.LineItemCount == 1 ? "" : "s") · @Model.PaidAmount.ToString("C2", money)</em>
+                </summary>
+                <div class="prv-pro-invoice-line-cards">
+                    @foreach (var line in Model.LineItems)
+                    {
+                        <div class="prv-pro-invoice-line-card">
+                            <div class="prv-pro-invoice-line-card-icon"><i class="fas @line.IconClass"></i></div>
+                            <div>
+                                <strong>@line.Description</strong>
+                                <small>@line.Category</small>
+                            </div>
+                            <strong>@line.Amount.ToString("C2", money)</strong>
+                        </div>
+                    }
+                </div>
+            </details>
+
+            @if (!string.IsNullOrWhiteSpace(Model.CustomerNotes))
+            {
+                <details class="prv-pro-paid-section">
+                    <summary><span><i class="fas fa-comment"></i> Customer Notes</span></summary>
+                    <p class="prv-pro-invoice-notes">@Model.CustomerNotes</p>
+                </details>
+            }
+
+            <details class="prv-pro-paid-section">
+                <summary><span><i class="fas fa-briefcase"></i> Job Information</span></summary>
+                @if (!string.IsNullOrWhiteSpace(Model.JobCode))
+                {
+                    <p><strong>Job #@Model.JobCode</strong>@(string.IsNullOrWhiteSpace(Model.JobStatus) ? "" : $" — {Model.JobStatus}")</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
+                {
+                    <p>@Model.JobTitle</p>
+                }
+            </details>
+
+            <details class="prv-pro-paid-section">
+                <summary><span><i class="fas fa-house"></i> Property Information</span></summary>
+                <p>@Model.PropertyAddress</p>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyType))
+                {
+                    <p><small>@Model.PropertyType</small></p>
+                }
+            </details>
+
+            <details class="prv-pro-paid-section" open>
+                <summary><span><i class="fas fa-clock-rotate-left"></i> Payment History</span></summary>
+                @if (Model.PaymentRecords.Count == 0)
+                {
+                    <p class="prv-pro-invoice-notes">@Model.PaymentHistoryLabel</p>
+                }
+                else
+                {
+                    @foreach (var payment in Model.PaymentRecords)
+                    {
+                        <div class="prv-pro-payment-history-row">
+                            <div>
+                                <strong>@payment.TimestampLabel</strong>
+                                <small>@payment.MethodLabel</small>
+                            </div>
+                            <strong>@payment.Amount.ToString("C2", money)</strong>
+                        </div>
+                    }
+                }
+            </details>
+        </section>
+
+        <section class="prv-pro-paid-project-summary">
+            <h3>Project Summary</h3>
+            <div class="prv-pro-paid-project-grid">
+                <div>
+                    <span>Technician</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.TechnicianName) ? "—" : Model.TechnicianName)</strong>
+                </div>
+                <div>
+                    <span>Completed</span>
+                    <strong>@(string.IsNullOrWhiteSpace(Model.JobCompletedLabel) ? Model.PaymentDateLabel : Model.JobCompletedLabel)</strong>
+                </div>
+                <div class="prv-pro-paid-project-wide">
+                    <span>Service Performed</span>
+                    <strong>@Model.ServicePerformed</strong>
+                </div>
+            </div>
+        </section>
+
+        <footer class="prv-pro-invoice-details-footer prv-pro-invoice-details-footer--paid">
+            <a asp-controller="Proveedor" asp-action="DownloadInvoice" asp-route-id="@Model.InvoiceId" class="prv-pro-btn prv-pro-btn--outline">
+                <i class="fas fa-download"></i> Download Invoice
+            </a>
+            <form asp-controller="Proveedor" asp-action="SendInvoiceReceipt" method="post" class="prv-pro-inline-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.InvoiceId" />
+                <input type="hidden" name="from" value="@Model.ReturnTab" />
+                <button type="submit" class="prv-pro-btn prv-pro-btn--outline">
+                    <i class="fas fa-paper-plane"></i> Send Receipt Again
+                </button>
+            </form>
+            @if (Model.ShowViewJobReport && Model.JobId.HasValue)
+            {
+                <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--primary">
+                    <i class="fas fa-file-lines"></i> View Job Report
+                </a>
+            }
+        </footer>
+    }
+    else
+    {
+        <section class="prv-pro-invoice-meta-grid">
+            <div class="prv-pro-invoice-meta-item @(Model.StatusClass == "overdue" ? "is-overdue" : "")">
+                <span>Due Date</span>
+                <strong>@Model.DueDateLabel</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item">
+                <span>Invoice Date</span>
+                <strong>@Model.InvoiceDateLabel</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item is-overdue">
+                <span>Payment Method</span>
+                <strong>@Model.PaymentMethod</strong>
+            </div>
+            <div class="prv-pro-invoice-meta-item">
+                <span>Status</span>
+                <strong>@Model.Status</strong>
+            </div>
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <h3>Line Items</h3>
+            <div class="prv-pro-invoice-line-cards">
+                @foreach (var line in Model.LineItems)
+                {
+                    <div class="prv-pro-invoice-line-card">
+                        <div class="prv-pro-invoice-line-card-icon"><i class="fas @line.IconClass"></i></div>
+                        <div>
+                            <strong>@line.Description</strong>
+                            <small>@line.Category</small>
+                        </div>
+                        <strong>@line.Amount.ToString("C2", money)</strong>
+                    </div>
+                }
+                <div class="prv-pro-invoice-line-total">
+                    <span>Total Due</span>
+                    <strong>@Model.Amount.ToString("C2", money)</strong>
+                </div>
+            </div>
+        </section>
+
+        <div class="prv-pro-invoice-info-grid">
+            @if (!string.IsNullOrWhiteSpace(Model.CustomerNotes))
+            {
+                <section class="prv-pro-lead-section">
+                    <h3>Customer Notes</h3>
+                    <p class="prv-pro-invoice-notes">@Model.CustomerNotes</p>
+                </section>
+            }
+            <section class="prv-pro-lead-section">
+                <h3>Notes to Customer</h3>
+                <p class="prv-pro-invoice-notes">@Model.NotesToCustomer</p>
+            </section>
+            <section class="prv-pro-lead-section">
+                <h3>Job Information</h3>
+                @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
+                {
+                    <p><strong>Job:</strong> @Model.JobTitle</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.TechnicianName))
+                {
+                    <p><strong>Technician:</strong> @Model.TechnicianName</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.JobCode))
+                {
+                    <p><strong>Job #:</strong> @Model.JobCode</p>
+                }
+            </section>
+            <section class="prv-pro-lead-section">
+                <h3>Property Information</h3>
+                <p><strong>Homeowner:</strong> @Model.CustomerName</p>
+                <p><strong>Property:</strong> @Model.PropertyAddress</p>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyType))
+                {
+                    <p><strong>Type:</strong> @Model.PropertyType</p>
+                }
+            </section>
+            <section class="prv-pro-lead-section">
+                <h3>Payment History</h3>
+                <p class="prv-pro-invoice-notes">@Model.PaymentHistoryLabel</p>
+            </section>
+        </div>
+
+        <footer class="prv-pro-invoice-details-footer">
+            @if (Model.ShowReminderAction)
+            {
+                <a asp-controller="Proveedor" asp-action="SendInvoiceReminder" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--primary">
+                    <i class="fas fa-bell"></i> Send Reminder
+                </a>
+            }
+            @if (Model.ShowMarkPaidAction)
+            {
+                <a asp-controller="Proveedor" asp-action="RecordPayment" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--outline-success">
+                    <i class="fas fa-circle-check"></i> Mark as Paid
+                </a>
+            }
+            <a asp-controller="Proveedor" asp-action="DownloadInvoice" asp-route-id="@Model.InvoiceId" class="prv-pro-btn prv-pro-btn--outline">
+                <i class="fas fa-download"></i> Download Invoice
+            </a>
+        </footer>
+    }
+</div>

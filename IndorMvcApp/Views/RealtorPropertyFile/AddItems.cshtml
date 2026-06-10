@@ -1,0 +1,48 @@
+@model IndorMvcApp.ViewModels.RealtorPropertyFileAddItemsViewModel
+
+<div class="rl-prop-summary-card">
+    <img src="@(Model.PhotoUrl ?? "/welcome-house.png")" alt="" />
+    <div>
+        <span>Property</span>
+        <strong>@Model.PropertyDisplay</strong>
+        <span>File Type</span>
+        <strong>@Model.FilePhaseLabel</strong>
+    </div>
+</div>
+
+<form id="addItemsForm" asp-action="AddItems" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    <h2 class="rl-invite-section-title">Select what to add</h2>
+    <div class="rl-category-grid">
+        @foreach (var cat in Model.Categories)
+        {
+            <label class="rl-category-card @(cat.Selected ? "is-selected" : "")">
+                <input type="checkbox" name="categoryTypes" value="@cat.CategoryType" @(cat.Selected ? "checked" : null) />
+                <i class="fas @cat.Icon"></i>
+                <strong>@cat.Label</strong>
+                <span>@cat.Description</span>
+                @if (cat.Selected) { <i class="fas fa-circle-check rl-collab-check"></i> }
+            </label>
+        }
+    </div>
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>You can add these now and add more later from inside the file.</p>
+    </div>
+</form>
+
+<div class="rl-invite-actions">
+    <a asp-action="Details" class="rl-invite-cancel">Back</a>
+    <button type="submit" form="addItemsForm" class="ob-btn ob-btn-primary">Next</button>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.rl-category-card input').forEach(c => {
+        c.addEventListener('change', () => c.closest('.rl-category-card')?.classList.toggle('is-selected', c.checked));
+    });
+</script>
+}

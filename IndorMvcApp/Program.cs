@@ -71,7 +71,17 @@ builder.Services.AddScoped<IPropertyEnrichmentService, CompositePropertyEnrichme
 builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProviderRegistrationService, ProviderRegistrationService>();
+builder.Services.AddScoped<IProviderProDataService, ProviderProDataService>();
+builder.Services.AddScoped<IProviderProJobWorkflowService, ProviderProJobWorkflowService>();
+builder.Services.AddScoped<ProviderProDashboardService>();
 builder.Services.AddScoped<RealtorGuidanceService>();
+builder.Services.AddScoped<IRealtorRegistrationService, RealtorRegistrationService>();
+builder.Services.AddScoped<RealtorPortalService>();
+builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();
+builder.Services.AddScoped<IRealtorPropertyFileWizardService, RealtorPropertyFileWizardService>();
+builder.Services.AddScoped<IRealtorQuoteRequestService, RealtorQuoteRequestService>();
+builder.Services.AddScoped<IRealtorInspectionUploadWizardService, RealtorInspectionUploadWizardService>();
+builder.Services.AddScoped<IRealtorUrgentQuoteWizardService, RealtorUrgentQuoteWizardService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {

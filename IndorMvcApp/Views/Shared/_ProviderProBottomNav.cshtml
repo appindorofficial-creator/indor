@@ -1,0 +1,21 @@
+@model string
+@{
+    var active = Model ?? "home";
+}
+<nav class="prv-pro-bottom-nav">
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="@(active == "home" ? "is-active" : "")">
+        <i class="fas fa-house"></i><span>Home</span>
+    </a>
+    <a asp-controller="Proveedor" asp-action="Jobs" class="@(active == "jobs" ? "is-active" : "")">
+        <i class="fas fa-briefcase"></i><span>Jobs</span>
+    </a>
+    <a asp-controller="Proveedor" asp-action="Customers" class="@(active == "customers" ? "is-active" : "")">
+        <i class="fas fa-users"></i><span>Customers</span>
+    </a>
+    <a asp-controller="Proveedor" asp-action="Reports" class="@(active == "reports" ? "is-active" : "")">
+        <i class="fas fa-chart-line"></i><span>Reports</span>
+    </a>
+    <a asp-controller="Proveedor" asp-action="Profile" class="@(active == "profile" ? "is-active" : "")">
+        <i class="fas fa-user"></i><span>Profile</span>
+    </a>
+</nav>

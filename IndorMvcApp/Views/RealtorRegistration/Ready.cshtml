@@ -1,0 +1,50 @@
+@model IndorMvcApp.ViewModels.RealtorReadyViewModel
+@{
+    ViewData["RealtorStep"] = new IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
+    {
+        DisplayStep = Model.Step,
+        TotalSteps = Model.TotalSteps,
+        Title = "Your profile is ready"
+    };
+}
+
+<section class="rl-ready-hero">
+    <h1>Your profile is ready</h1>
+    <p>You can now enter as a Realtor.</p>
+    <span class="rl-badge"><i class="fas fa-star"></i> @Model.BadgeLabel</span>
+</section>
+
+<ul class="rl-ready-checklist">
+    <li class="@(Model.LicenseNumberSaved ? "is-done" : "")">
+        <i class="fas @(Model.LicenseNumberSaved ? "fa-circle-check" : "fa-circle")"></i> License number saved
+    </li>
+    <li class="@(Model.ProfileCreated ? "is-done" : "")">
+        <i class="fas @(Model.ProfileCreated ? "fa-circle-check" : "fa-circle")"></i> Profile created
+    </li>
+    <li class="@(Model.LicensePhotoUploaded ? "is-done" : "")">
+        <i class="fas @(Model.LicensePhotoUploaded ? "fa-circle-check" : "fa-circle")"></i> License photo @(Model.LicensePhotoUploaded ? "" : "pending")
+    </li>
+    <li class="@(Model.GovernmentIdUploaded ? "is-done" : "")">
+        <i class="fas @(Model.GovernmentIdUploaded ? "fa-circle-check" : "fa-circle")"></i> Government ID @(Model.GovernmentIdUploaded ? "" : "pending")
+    </li>
+</ul>
+
+@if (Model.CanUpgradeToVerified)
+{
+    <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-verify-cta">
+        <i class="fas fa-id-card"></i>
+        <div>
+            <strong>Complete verification</strong>
+            <span>Upload your license and ID to earn the Verified Realtor badge.</span>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+}
+
+<div class="rl-ready-actions">
+    <a asp-controller="Realtor" asp-action="Dashboard" class="ob-btn ob-btn-primary">Go to Home</a>
+    @if (Model.CanUpgradeToVerified)
+    {
+        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-later-link">I'll do it later</a>
+    }
+</div>

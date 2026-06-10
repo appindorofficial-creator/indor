@@ -1,0 +1,69 @@
+@model IndorMvcApp.ViewModels.RealtorInviteClientInfoViewModel
+
+<form id="inviteClientForm" asp-action="ClientInfo" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+
+    <h2 class="rl-invite-section-title">Client Information</h2>
+
+    <label class="rl-field">
+        <i class="fas fa-user"></i>
+        <input type="text" name="fullName" value="@Model.FullName" placeholder="Enter full name" required />
+    </label>
+
+    <label class="rl-field">
+        <i class="fas fa-envelope"></i>
+        <input type="email" name="email" value="@Model.Email" placeholder="Enter email address" required />
+    </label>
+
+    <label class="rl-field">
+        <i class="fas fa-phone"></i>
+        <input type="tel" name="phone" value="@Model.Phone" placeholder="Enter phone number" />
+    </label>
+
+    <p class="rl-invite-section-title">Client Role</p>
+    <div class="rl-role-pills">
+        @foreach (var role in Model.ClientRoles)
+        {
+            <label class="rl-role-pill @(Model.ClientRole == role ? "is-selected" : "")">
+                <input type="radio" name="clientRole" value="@role" @(Model.ClientRole == role ? "checked" : null) />
+                <span>@role</span>
+            </label>
+        }
+    </div>
+
+    <p class="rl-invite-section-title">Quick Note <small>(optional)</small></p>
+    <label class="rl-field rl-field--textarea">
+        <i class="fas fa-note-sticky"></i>
+        <textarea name="quickNote" maxlength="250" placeholder="Add a note about this client..." rows="3">@Model.QuickNote</textarea>
+    </label>
+    <span class="rl-char-count"><span id="noteCount">@Model.QuickNote.Length</span>/250</span>
+
+    <div class="rl-info-box">
+        <i class="fas fa-shield-halved"></i>
+        <p>The client will receive an invitation by email or text and can securely access shared property information.</p>
+    </div>
+
+</form>
+
+<div class="rl-invite-actions">
+    <form asp-action="Cancel" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="rl-invite-cancel">Cancel</button>
+    </form>
+    <button type="submit" form="inviteClientForm" class="ob-btn ob-btn-primary">Next</button>
+</div>
+
+@section Scripts {
+<script>
+    const note = document.querySelector('textarea[name="quickNote"]');
+    const count = document.getElementById('noteCount');
+    note?.addEventListener('input', () => { count.textContent = note.value.length; });
+    document.querySelectorAll('.rl-role-pill input').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-role-pill').forEach(p => p.classList.remove('is-selected'));
+            r.closest('.rl-role-pill')?.classList.add('is-selected');
+        });
+    });
+</script>
+}

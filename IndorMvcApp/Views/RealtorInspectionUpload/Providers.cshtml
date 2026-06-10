@@ -1,0 +1,160 @@
+@model IndorMvcApp.ViewModels.RealtorInspectionProvidersViewModel
+
+
+
+<div class="rl-info-box">
+
+    <i class="fas fa-circle-info"></i>
+
+    <p>We've grouped urgent findings by trade and recommended trusted providers. Select 2–3 providers per trade to send your request.</p>
+
+</div>
+
+
+
+<div class="rl-filter-chips rl-filter-chips--scroll">
+
+    @foreach (var chip in Model.TradeFilters)
+
+    {
+
+        <a asp-action="Providers" asp-route-trade="@(chip == "All" ? null : chip)"
+
+           class="rl-filter-chip @(Model.ActiveTradeFilter == chip ? "is-active" : null)">@(chip == "All" ? "All trades" : chip)</a>
+
+    }
+
+</div>
+
+
+
+<form id="providersForm" asp-action="SaveProviders" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    <input type="hidden" name="trade" value="@Model.ActiveTradeFilter" />
+
+
+
+    @foreach (var group in Model.TradeGroups)
+
+    {
+
+        <section class="rl-trade-provider-group">
+
+            <div class="rl-trade-provider-head">
+
+                <h2 class="rl-invite-section-title">@group.TradeLabel</h2>
+
+                <span class="rl-trade-provider-note">@group.PriorityNote</span>
+
+            </div>
+
+
+
+            @foreach (var provider in group.Providers)
+
+            {
+
+                <label class="rl-provider-card @(provider.Selected ? "is-selected" : "")">
+
+                    <input type="checkbox" name="provider_@group.Trade" value="@provider.Id" @(provider.Selected ? "checked" : null) />
+
+                    <span class="rl-provider-logo"><i class="fas fa-building"></i></span>
+
+                    <span class="rl-provider-body">
+
+                        <strong>@provider.CompanyName</strong>
+
+                        @if (!string.IsNullOrWhiteSpace(provider.BadgeLabel))
+
+                        {
+
+                            <span class="rl-provider-badge">@provider.BadgeLabel</span>
+
+                        }
+
+                        <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @provider.Categories</span>
+
+                        <span>@provider.DistanceMiles.ToString("0.0") km away</span>
+
+                    </span>
+
+                </label>
+
+            }
+
+        </section>
+
+    }
+
+
+
+    <h2 class="rl-invite-section-title">What they will receive</h2>
+
+    <div class="rl-receive-grid">
+
+        <div><i class="fas fa-file-lines"></i><span>Relevant findings only</span></div>
+
+        <div><i class="fas fa-list"></i><span>Inspection report pages</span></div>
+
+        <div><i class="fas fa-image"></i><span>Related photos</span></div>
+
+        <div><i class="fas fa-clock"></i><span>Requested response time</span></div>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-provider-selected-count">
+
+    <span><i class="fas fa-users"></i> @Model.TradesReadyCount trades ready</span>
+
+    <span id="providerCountLabel"><i class="fas fa-circle-check"></i> @Model.ProvidersSelectedCount providers selected</span>
+
+</div>
+
+
+
+<div class="rl-invite-actions">
+
+    <a asp-action="Priorities" class="rl-invite-cancel">Back</a>
+
+    <button type="submit" form="providersForm" class="ob-btn ob-btn-primary">Continue</button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    function updateCount() {
+
+        const count = document.querySelectorAll('.rl-provider-card input:checked').length;
+
+        document.getElementById('providerCountLabel').innerHTML =
+
+            '<i class="fas fa-circle-check"></i> ' + count + ' providers selected';
+
+    }
+
+    document.querySelectorAll('.rl-provider-card input').forEach(cb => {
+
+        cb.addEventListener('change', () => {
+
+            cb.closest('.rl-provider-card')?.classList.toggle('is-selected', cb.checked);
+
+            updateCount();
+
+        });
+
+    });
+
+</script>
+
+}
+

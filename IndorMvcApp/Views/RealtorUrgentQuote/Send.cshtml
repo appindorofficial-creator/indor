@@ -1,0 +1,170 @@
+@model IndorMvcApp.ViewModels.RealtorUrgentQuoteSendViewModel
+
+
+
+<div class="rl-info-box">
+
+    <i class="fas fa-circle-info"></i>
+
+    <p>Review the essentials and send the request. INDOR can automatically match providers so you can save time during closing.</p>
+
+</div>
+
+
+
+<div class="rl-urgent-review-card">
+
+    <img src="@(Model.Property.PhotoUrl ?? "/welcome-house.png")" alt="" />
+
+    <div>
+
+        <strong>@Model.Property.DisplayAddress</strong>
+
+        <div class="rl-urgent-review-grid">
+
+            <div><i class="fas fa-wrench"></i><small>Issue</small><strong>@Model.Property.ServiceType</strong></div>
+
+            <div><i class="fas fa-clock"></i><small>Response needed</small><strong>@Model.Property.UrgencyLabel</strong></div>
+
+            <div><i class="fas fa-image"></i><small>Photos</small><strong>@Model.PhotoCount Photo@(Model.PhotoCount == 1 ? "" : "s")</strong></div>
+
+            <div><i class="fas fa-comment"></i><small>Description</small><strong>@(Model.Property.QuickDescription ?? "—")</strong></div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<form id="urgentSendForm" asp-action="SendRequest" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+
+
+    <h2 class="rl-invite-section-title">How should this be sent?</h2>
+
+    <div class="rl-file-type-list">
+
+        <label class="rl-file-type-option @(Model.ProviderSelectionMode == IndorMvcApp.Models.RealtorUrgentQuoteProviderModes.IndorAuto ? "is-selected" : "")">
+
+            <input type="radio" name="providerSelectionMode" value="@IndorMvcApp.Models.RealtorUrgentQuoteProviderModes.IndorAuto"
+
+                   @(Model.ProviderSelectionMode == IndorMvcApp.Models.RealtorUrgentQuoteProviderModes.IndorAuto ? "checked" : null) />
+
+            <span>
+
+                <strong>INDOR chooses providers for me</strong>
+
+                <small>Fastest option — we match 2–3 providers automatically.</small>
+
+            </span>
+
+        </label>
+
+        <label class="rl-file-type-option @(Model.ProviderSelectionMode == IndorMvcApp.Models.RealtorUrgentQuoteProviderModes.Manual ? "is-selected" : "")">
+
+            <input type="radio" name="providerSelectionMode" value="@IndorMvcApp.Models.RealtorUrgentQuoteProviderModes.Manual"
+
+                   @(Model.ProviderSelectionMode == IndorMvcApp.Models.RealtorUrgentQuoteProviderModes.Manual ? "checked" : null) />
+
+            <span>
+
+                <strong>I want to choose providers myself</strong>
+
+                <small>Search and choose providers manually.</small>
+
+            </span>
+
+        </label>
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">Send what?</h2>
+
+    <div class="rl-delivery-row">
+
+        <label class="rl-delivery-btn @(Model.SendPayload == IndorMvcApp.Models.RealtorUrgentQuoteSendPayloads.IssueOnly ? "is-selected" : "")">
+
+            <input type="radio" name="sendPayload" value="@IndorMvcApp.Models.RealtorUrgentQuoteSendPayloads.IssueOnly"
+
+                   @(Model.SendPayload == IndorMvcApp.Models.RealtorUrgentQuoteSendPayloads.IssueOnly ? "checked" : null) /> Issue only
+
+        </label>
+
+        <label class="rl-delivery-btn @(Model.SendPayload == IndorMvcApp.Models.RealtorUrgentQuoteSendPayloads.FullPropertyFile ? "is-selected" : "")">
+
+            <input type="radio" name="sendPayload" value="@IndorMvcApp.Models.RealtorUrgentQuoteSendPayloads.FullPropertyFile"
+
+                   @(Model.SendPayload == IndorMvcApp.Models.RealtorUrgentQuoteSendPayloads.FullPropertyFile ? "checked" : null) /> Full property file
+
+        </label>
+
+    </div>
+
+
+
+    <label class="rl-toggle-row rl-toggle-row--card">
+
+        <span>Notify client</span>
+
+        <input type="checkbox" name="notifyClient" value="true" @(Model.NotifyClient ? "checked" : null) />
+
+        <span class="rl-toggle"></span>
+
+    </label>
+
+
+
+    <div class="rl-info-box rl-info-box--muted">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Fast mode keeps this simple so you can send the request in minutes.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <a asp-action="Photos" class="rl-invite-cancel">Back</a>
+
+    <button type="submit" form="urgentSendForm" class="ob-btn ob-btn-primary">Send Request</button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    document.querySelectorAll('.rl-file-type-option input, .rl-delivery-btn input').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            const card = r.closest('.rl-file-type-option, .rl-delivery-btn');
+
+            const group = card?.classList.contains('rl-file-type-option') ? '.rl-file-type-option' : '.rl-delivery-btn';
+
+            document.querySelectorAll(group).forEach(p => p.classList.remove('is-selected'));
+
+            card?.classList.add('is-selected');
+
+        });
+
+    });
+
+</script>
+
+}
+

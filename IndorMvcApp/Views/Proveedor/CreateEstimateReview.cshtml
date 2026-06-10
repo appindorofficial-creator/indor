@@ -1,0 +1,92 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateEstimateReviewViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Review & Send Estimate - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-estimate">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="CreateEstimatePricing" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Review &amp; Send Estimate</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <section class="prv-pro-review-card">
+        <div class="prv-pro-review-card-head">
+            <h3>Estimate Summary</h3>
+            <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> Edit Estimate</a>
+        </div>
+        <dl class="prv-pro-review-list">
+            <div><dt><i class="fas fa-briefcase"></i> Service</dt><dd>@Model.Title</dd></div>
+            <div><dt><i class="fas fa-user"></i> Customer</dt><dd>@Model.CustomerName</dd></div>
+            <div><dt><i class="fas fa-location-dot"></i> Address</dt><dd>@Model.Address</dd></div>
+            <div><dt><i class="fas fa-list"></i> Scope</dt><dd>@Model.Description</dd></div>
+            <div><dt><i class="fas fa-dollar-sign"></i> Total</dt><dd>@Model.TotalAmount.ToString("C2", money)</dd></div>
+            <div><dt><i class="fas fa-shield"></i> Warranty</dt><dd>@Model.Warranty</dd></div>
+            <div><dt><i class="fas fa-calendar"></i> Timeline</dt><dd>@Model.TimelineLabel</dd></div>
+        </dl>
+    </section>
+
+    <section class="prv-pro-review-card">
+        <h3>Choose Delivery Method</h3>
+        <p class="prv-pro-create-job-intro">Select how you'd like to send this estimate to your customer.</p>
+        <form asp-controller="Proveedor" asp-action="ConfirmSendEstimate" method="post" id="sendEstimateForm">
+            @Html.AntiForgeryToken()
+            @if (Model.EstimateId.HasValue)
+            {
+                <input type="hidden" name="EstimateId" value="@Model.EstimateId" />
+            }
+
+            <div class="prv-pro-delivery-options">
+                <label class="prv-pro-delivery-option @(Model.DeliveryMethod == "Email" ? "is-selected" : "")">
+                    <input type="radio" name="DeliveryMethod" value="Email" checked />
+                    <i class="fas fa-envelope"></i>
+                    <strong>Send by Email</strong>
+                    <small>Send a professional estimate via email</small>
+                </label>
+                <label class="prv-pro-delivery-option">
+                    <input type="radio" name="DeliveryMethod" value="SMS" />
+                    <i class="fas fa-comment-sms"></i>
+                    <strong>Send by SMS</strong>
+                    <small>Text the estimate link to your customer</small>
+                </label>
+                <label class="prv-pro-delivery-option">
+                    <input type="radio" name="DeliveryMethod" value="Link" />
+                    <i class="fas fa-link"></i>
+                    <strong>Share Link</strong>
+                    <small>Get a sharable link to copy or share</small>
+                </label>
+            </div>
+
+            <div class="prv-pro-estimate-secure-note">
+                <i class="fas fa-lock"></i> Your estimate will include your branding and secure pricing.
+            </div>
+
+            <div class="prv-pro-create-estimate-review-actions">
+                <a asp-controller="Proveedor" asp-action="CreateEstimatePricing" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-arrow-left"></i> Back</a>
+                <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-bookmark"></i> Save Draft</button>
+                <button type="submit" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-paper-plane"></i> Send Estimate</button>
+            </div>
+        </form>
+    </section>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.prv-pro-delivery-option').forEach(function (label) {
+            label.addEventListener('click', function () {
+                document.querySelectorAll('.prv-pro-delivery-option').forEach(function (l) { l.classList.remove('is-selected'); });
+                label.classList.add('is-selected');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,53 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    Layout = "_LayoutStep";
+    var s = Model.State;
+}
+<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="Entry" method="post" class="prv-wiz-stack">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    <label class="prv-wiz-card prv-wiz-card--selectable">
+        <input type="radio" name="path" value="pro" checked />
+        <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-chart-line"></i></span>
+        <span class="prv-wiz-card-body">
+            <strong>Use INDOR Pro</strong>
+            <small>Run your business with INDOR Pro. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place.</small>
+            <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Available now</span>
+        </span>
+        <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
+    </label>
+
+    <label class="prv-wiz-card prv-wiz-card--selectable">
+        <input type="radio" name="path" value="apply" />
+        <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-check"></i></span>
+        <span class="prv-wiz-card-body">
+            <strong>Apply to Become an INDOR Provider</strong>
+            <small>Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile.</small>
+            <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Requires verification</span>
+        </span>
+        <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
+    </label>
+
+    <div class="prv-wiz-info">
+        <i class="fas fa-circle-info"></i>
+        <div>
+            <strong>Important</strong>
+            <p>You can start using INDOR Pro without completing provider activation. To receive INDOR jobs, you will need to submit your business information, verification documents, complete a short category assessment, and schedule an activation call with INDOR.</p>
+        </div>
+    </div>
+
+    <label class="prv-wiz-terms">
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms">Terms &amp; Conditions</a></span>
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+    <button type="submit" name="action" value="later" class="prv-save-later">I'll do this later</button>
+</form>

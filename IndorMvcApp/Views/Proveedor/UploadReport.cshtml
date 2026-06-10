@@ -1,0 +1,73 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadReportSelectJobViewModel
+@{
+    ViewData["Title"] = "Select Job - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    var filters = new[] { ("all", "All", ""), ("completed", "Completed", "fa-circle-check"), ("inprogress", "In Progress", "fa-clock"), ("recent", "Recent", "fa-clock-rotate-left") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--upload-report">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Select Job or Property</h1>
+            <small>Choose the completed or active job this report belongs to.</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form method="get" asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-upload-report-search">
+        <div class="prv-pro-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, service, or job ID..." />
+        </div>
+        <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+    </form>
+
+    <div class="prv-pro-upload-report-filters">
+        @foreach (var (key, label, icon) in filters)
+        {
+            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@key" asp-route-q="@Model.SearchQuery"
+               class="prv-pro-upload-report-filter @(Model.ActiveFilter == key ? "is-active" : "")">
+                @if (!string.IsNullOrEmpty(icon)) { <i class="fas @icon"></i> }
+                @label
+            </a>
+        }
+    </div>
+
+    <div class="prv-pro-upload-report-jobs">
+        @foreach (var job in Model.Jobs)
+        {
+            <form asp-controller="Proveedor" asp-action="UploadReport" method="post" class="prv-pro-upload-report-job-card">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="JobId" value="@job.JobId" />
+                <input type="hidden" name="Search" value="@Model.SearchQuery" />
+                <input type="hidden" name="Filter" value="@Model.ActiveFilter" />
+                @if (!string.IsNullOrWhiteSpace(job.ImageUrl))
+                {
+                    <img src="@job.ImageUrl" alt="" class="prv-pro-upload-report-job-thumb" />
+                }
+                else
+                {
+                    <div class="prv-pro-upload-report-job-thumb prv-pro-upload-report-job-thumb--icon">
+                        <i class="fas @job.IconClass"></i>
+                    </div>
+                }
+                <div class="prv-pro-upload-report-job-body">
+                    <strong>@job.Address</strong>
+                    <span><i class="fas @job.IconClass"></i> @job.ServiceType</span>
+                    <span>@job.DateLabel</span>
+                    <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                </div>
+                <button type="submit" class="prv-pro-btn prv-pro-btn--outline">Select</button>
+            </form>
+        }
+    </div>
+
+    <div class="prv-pro-upload-report-actions">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+    </div>
+</div>

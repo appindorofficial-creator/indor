@@ -1,0 +1,52 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadReportSuccessViewModel
+@{
+    ViewData["Title"] = "Report Uploaded - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+}
+
+<div class="prv-pro-shell prv-pro-shell--upload-report prv-pro-shell--report-success">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <section class="prv-pro-job-success-hero">
+        <div class="prv-pro-job-success-icon"><i class="fas fa-circle-check"></i></div>
+        <h1>Report Uploaded Successfully!</h1>
+        <p>Your report is saved and ready to share.</p>
+    </section>
+
+    <section class="prv-pro-job-success-card">
+        <dl class="prv-pro-job-success-list">
+            <div><dt><i class="fas fa-house"></i> Property</dt><dd>@Model.Address</dd></div>
+            <div><dt><i class="fas fa-wrench"></i> Service</dt><dd>@Model.ServiceType</dd></div>
+            <div><dt><i class="fas fa-file-lines"></i> Report Type</dt><dd>@Model.ReportType</dd></div>
+            <div><dt><i class="fas fa-paperclip"></i> Attachments</dt><dd>@Model.FilesCount files</dd></div>
+            <div><dt><i class="fas fa-circle-check"></i> Status</dt><dd class="prv-pro-success-status">@Model.StatusLabel</dd></div>
+        </dl>
+    </section>
+
+    <div class="prv-pro-customer-success-actions">
+        @if (Model.JobId.HasValue)
+        {
+            <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
+                <i class="fas fa-eye"></i> View Report
+            </a>
+        }
+        else
+        {
+            <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
+                <i class="fas fa-eye"></i> View Report
+            </a>
+        }
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="ready" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
+            <i class="fas fa-paper-plane"></i> Send to Homeowner
+        </a>
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
+            <i class="fas fa-house"></i> Add to House Facts
+        </a>
+        <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
+            <i class="fas fa-file-circle-plus"></i> Upload Another Report
+        </a>
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-customer-add-another">&lt; Back to Reports</a>
+    </div>
+</div>

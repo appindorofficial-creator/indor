@@ -1,0 +1,66 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadReportDetailsViewModel
+@{
+    ViewData["Title"] = "Report Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+}
+
+<div class="prv-pro-shell prv-pro-shell--upload-report">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="UploadReportFiles" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Report Details</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    @await Html.PartialAsync("_UploadReportJobCard", Model.Job)
+
+    <form asp-controller="Proveedor" asp-action="UploadReportDetails" method="post" class="prv-pro-upload-report-details-form">
+        @Html.AntiForgeryToken()
+
+        <label class="prv-pro-form-label">Report Title <span class="prv-pro-required">*</span>
+            <input type="text" name="Title" value="@Model.Title" required placeholder="Water Heater Installation Completion Report" />
+        </label>
+        <label class="prv-pro-form-label">Summary <span class="prv-pro-required">*</span>
+            <textarea name="Summary" rows="3" maxlength="500" required placeholder="Brief summary of the report...">@Model.Summary</textarea>
+        </label>
+        <label class="prv-pro-form-label">Work Completed <span class="prv-pro-required">*</span>
+            <textarea name="WorkCompleted" rows="4" maxlength="1000" required>@Model.WorkCompleted</textarea>
+        </label>
+        <label class="prv-pro-form-label">Materials Used
+            <textarea name="MaterialsUsed" rows="3" maxlength="1000" placeholder="List materials and quantities...">@Model.MaterialsUsed</textarea>
+        </label>
+        <label class="prv-pro-form-label">Warranty Info
+            <textarea name="WarrantyInfo" rows="2" maxlength="500">@Model.WarrantyInfo</textarea>
+        </label>
+        <label class="prv-pro-form-label">Recommendations
+            <textarea name="Recommendations" rows="2" maxlength="500">@Model.Recommendations</textarea>
+        </label>
+        <label class="prv-pro-form-label">Internal Notes
+            <textarea name="InternalNotes" rows="2" maxlength="500" placeholder="Not visible to homeowner">@Model.InternalNotes</textarea>
+        </label>
+
+        <label class="prv-pro-create-toggle">
+            <div><i class="fas fa-paper-plane"></i><div><strong>Send to Homeowner</strong><small>Share the report with the homeowner via email.</small></div></div>
+            <input type="checkbox" name="SendToHomeowner" value="true" @(Model.SendToHomeowner ? "checked" : "") />
+        </label>
+        <label class="prv-pro-create-toggle">
+            <div><i class="fas fa-shield-halved"></i><div><strong>Request Approval</strong><small>Require homeowner approval for this report.</small></div></div>
+            <input type="checkbox" name="RequestApproval" value="true" @(Model.RequestApproval ? "checked" : "") />
+        </label>
+        <label class="prv-pro-create-toggle">
+            <div><i class="fas fa-house"></i><div><strong>Create House Facts Record</strong><small>Add this report to the home's House Facts.</small></div></div>
+            <input type="checkbox" name="CreateHouseFactsRecord" value="true" @(Model.CreateHouseFactsRecord ? "checked" : "") />
+        </label>
+
+        <div class="prv-pro-upload-report-actions">
+            <a asp-controller="Proveedor" asp-action="UploadReportFiles" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Submit Report</button>
+        </div>
+    </form>
+</div>

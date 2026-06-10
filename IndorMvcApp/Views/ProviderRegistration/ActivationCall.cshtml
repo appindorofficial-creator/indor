@@ -1,0 +1,81 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    Layout = "_LayoutStep";
+    var s = Model.State;
+    var hasDocuments = ViewBag.HasDocuments as bool? == true;
+    var assessmentComplete = ViewBag.AssessmentComplete as bool? == true;
+    var assessmentSkipped = ViewBag.AssessmentSkipped as bool? == true;
+    var slots = new[]
+    {
+        ("mon-1030", "Monday 10:30 AM"),
+        ("tue-200", "Tuesday 2:00 PM"),
+        ("thu-1130", "Thursday 11:30 AM")
+    };
+}
+<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<div class="prv-wiz-alert">
+    <i class="fas fa-calendar-check"></i>
+    <div>
+        <strong>Activation Pending</strong>
+        <p>Your INDOR Pro access is ready. To receive INDOR jobs and leads, schedule your activation call.</p>
+    </div>
+</div>
+
+<form asp-action="ActivationCall" method="post" class="prv-wiz-stack">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    <p class="prv-field-label">Choose an available time</p>
+    @foreach (var (value, label) in slots)
+    {
+        <label class="prv-wiz-slot">
+            <input type="radio" name="callSlot" value="@value" @(s.ActivationCallSlot == value ? "checked" : null) />
+            <i class="far fa-calendar"></i>
+            <span>@label</span>
+        </label>
+    }
+    <label class="prv-wiz-slot prv-wiz-slot--later">
+        <input type="radio" name="callSlot" value="later" @(s.ActivationCallSlot == "later" ? "checked" : null) />
+        <i class="far fa-clock"></i>
+        <span><strong>Schedule Later</strong><small>Choose this option if you want to book your call later.</small></span>
+        <i class="fas fa-chevron-right"></i>
+    </label>
+
+    <div class="prv-wiz-status-list">
+        <div class="prv-wiz-status-item">
+            <i class="fas @(hasDocuments ? "fa-check-circle text-success" : "fa-clock text-warning")"></i>
+            <span>Documents uploaded</span>
+            <span class="prv-wiz-status-pill @(hasDocuments ? "is-done" : "is-pending")">@(hasDocuments ? "Completed" : "Pending")</span>
+        </div>
+        <div class="prv-wiz-status-item">
+            <i class="fas @(assessmentComplete ? "fa-check-circle text-success" : "fa-clock text-warning")"></i>
+            <span>Assessment completed</span>
+            <span class="prv-wiz-status-pill @(assessmentComplete ? "is-done" : "is-pending")">@(assessmentComplete ? "Completed" : assessmentSkipped ? "Skipped" : "Pending")</span>
+        </div>
+        <div class="prv-wiz-status-item">
+            <i class="fas @(s.ActivationCallScheduled ? "fa-check-circle text-success" : "fa-clock text-warning")"></i>
+            <span>Activation call</span>
+            <span class="prv-wiz-status-pill @(s.ActivationCallScheduled ? "is-done" : "is-pending")">@(s.ActivationCallScheduled ? "Scheduled" : "Pending")</span>
+        </div>
+    </div>
+
+    <label class="prv-wiz-terms">
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms">Terms &amp; Conditions</a></span>
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Schedule Call</button>
+    <button type="submit" name="action" value="enter-pro" class="prv-save-later">Enter INDOR Pro</button>
+</form>
+
+<div class="prv-wiz-info">
+    <i class="fas fa-circle-info"></i>
+    <div>
+        <p>After the call, your profile can become Active and start receiving INDOR opportunities.</p>
+    </div>
+</div>

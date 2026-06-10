@@ -1,0 +1,29 @@
+@{
+    var stepModel = Model as IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
+        ?? ViewData["RealtorStep"] as IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel;
+    var pageTitle = stepModel?.Title ?? ViewData["Title"] as string ?? "Realtor Registration";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@pageTitle - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-portal.css" asp-append-version="true" />
+</head>
+<body class="ob-page rl-page">
+    <div class="ob-shell">
+        <div class="ob-shell-inner">
+            @if (stepModel != null)
+            {
+                @await Html.PartialAsync("_RealtorStepper", stepModel)
+            }
+            @RenderBody()
+        </div>
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,0 +1,148 @@
+@model IndorMvcApp.ViewModels.RealtorUrgentQuoteIssueViewModel
+
+@await Html.PartialAsync("_UrgentQuoteSummary", Model.Property)
+
+
+
+<form id="urgentIssueForm" asp-action="Issue" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+
+
+    <div class="rl-info-box">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Choose the type of problem and the response speed needed. Keep it short so INDOR can send it fast.</p>
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">1. What type of issue is it?</h2>
+
+    <div class="rl-issue-grid">
+
+        @foreach (var svc in Model.ServiceTypes)
+
+        {
+
+            var selected = Model.ServiceType == svc;
+
+            <label class="rl-issue-card @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="serviceType" value="@svc" @(selected ? "checked" : null) />
+
+                <i class="fas @(svc switch { "HVAC" => "fa-fan", "Plumbing" => "fa-faucet-drip", "Electrical" => "fa-bolt", "Roof" => "fa-house-chimney", _ => "fa-wrench" })"></i>
+
+                <span>@svc</span>
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">2. How fast do you need a response?</h2>
+
+    <div class="rl-urgency-row">
+
+        @foreach (var urg in Model.UrgencyOptions)
+
+        {
+
+            var selected = Model.UrgencyLevel == urg.Value;
+
+            <label class="rl-urgency-pill @(selected ? "is-selected" : "") @(urg.Value == "Emergency" ? "is-emergency" : "")">
+
+                <input type="radio" name="urgencyLevel" value="@urg.Value" @(selected ? "checked" : null) />
+
+                <i class="fas @urg.Icon"></i> @urg.Label
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">3. Quick description</h2>
+
+    <input type="text" name="quickDescription" value="@Model.QuickDescription" class="rl-field-select rl-field-select--full"
+
+           placeholder="A/C not cooling upstairs." maxlength="200" />
+
+
+
+    <div class="rl-request-tag-row">
+
+        @foreach (var tag in Model.RequestTagOptions)
+
+        {
+
+            var selected = Model.RequestTypeTag == tag.Value;
+
+            <label class="rl-request-tag @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="requestTypeTag" value="@tag.Value" @(selected ? "checked" : null) />
+
+                <i class="fas @tag.Icon"></i> @tag.Label
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-info-box rl-info-box--muted">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Fast mode is designed for urgent or closing-related quote requests.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <a asp-action="Property" class="rl-invite-cancel">Back</a>
+
+    <button type="submit" form="urgentIssueForm" class="ob-btn ob-btn-primary">Continue</button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    document.querySelectorAll('.rl-issue-card input, .rl-urgency-pill input, .rl-request-tag input').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            const card = r.closest('.rl-issue-card, .rl-urgency-pill, .rl-request-tag');
+
+            const cls = card?.classList[0];
+
+            if (cls) document.querySelectorAll('.' + cls).forEach(p => p.classList.remove('is-selected'));
+
+            card?.classList.add('is-selected');
+
+        });
+
+    });
+
+</script>
+
+}
+

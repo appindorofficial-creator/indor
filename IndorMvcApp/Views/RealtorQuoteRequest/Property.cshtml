@@ -1,0 +1,122 @@
+@model IndorMvcApp.ViewModels.RealtorQuoteRequestPropertyViewModel
+
+
+
+<form asp-action="Property" method="get" class="rl-search-form">
+
+    <div class="rl-search-bar">
+
+        <i class="fas fa-magnifying-glass"></i>
+
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search properties by address or client name" />
+
+    </div>
+
+</form>
+
+
+
+<form id="quotePropertyForm" asp-action="Property" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+
+
+    @if (Model.Properties.Count == 0)
+
+    {
+
+        <div class="rl-dash-empty">No properties found. Create a property file first.</div>
+
+    }
+
+    else
+
+    {
+
+        @foreach (var prop in Model.Properties)
+
+        {
+
+            var selected = Model.SelectedPropertyFileId == prop.Id;
+
+            <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
+
+                <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
+
+                <span class="rl-property-pick-body">
+
+                    <strong>@prop.Address</strong>
+
+                    @if (!string.IsNullOrWhiteSpace(prop.ClientName))
+
+                    {
+
+                        <span><i class="fas fa-user"></i> @prop.ClientName</span>
+
+                    }
+
+                </span>
+
+                <span class="rl-phase-badge rl-phase-badge--@prop.FilePhaseCss">@prop.FilePhase</span>
+
+            </label>
+
+        }
+
+    }
+
+
+
+    <div class="rl-info-box">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Choose an existing property file so photos, reports, and quotes stay connected.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <form asp-action="Cancel" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit" class="rl-invite-cancel">Cancel</button>
+
+    </form>
+
+    <button type="submit" form="quotePropertyForm" class="ob-btn ob-btn-primary">Next</button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    document.querySelectorAll('.rl-property-pick input').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+
+            r.closest('.rl-property-pick')?.classList.add('is-selected');
+
+        });
+
+    });
+
+</script>
+
+}
+

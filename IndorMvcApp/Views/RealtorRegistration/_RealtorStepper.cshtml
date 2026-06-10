@@ -1,0 +1,27 @@
+@model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
+<header class="rl-reg-header">
+    <a asp-controller="Account" asp-action="Welcome" class="rl-reg-logo">
+        <i class="fas fa-house"></i> INDOR
+    </a>
+    <small>Step @Model.DisplayStep of @Model.TotalSteps</small>
+</header>
+<nav class="rl-reg-stepper" aria-label="Realtor registration progress">
+    @for (var i = 1; i <= Model.TotalSteps; i++)
+    {
+        var cls = i < Model.DisplayStep ? "is-done" : i == Model.DisplayStep ? "is-active" : "";
+        <div class="rl-reg-step @cls">
+            @if (i < Model.DisplayStep)
+            {
+                <i class="fas fa-check"></i>
+            }
+            else
+            {
+                <span>@i</span>
+            }
+        </div>
+        @if (i < Model.TotalSteps)
+        {
+            <div class="rl-reg-step-line @(i < Model.DisplayStep ? "is-done" : "")"></div>
+        }
+    }
+</nav>

@@ -1,0 +1,71 @@
+@model IndorMvcApp.ViewModels.RealtorInvitePropertyViewModel
+
+<h2 class="rl-invite-section-title">Select Property</h2>
+
+<form asp-action="Property" method="get" class="rl-search-form">
+    <div class="rl-search-bar">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search address or property name" />
+    </div>
+</form>
+
+<form asp-action="Property" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    @if (Model.Properties.Count == 0)
+    {
+        <div class="rl-dash-empty">No properties found. Add a property file first.</div>
+    }
+    else
+    {
+        @foreach (var prop in Model.Properties)
+        {
+            var selected = Model.SelectedPropertyFileId == prop.Id;
+            <label class="rl-property-pick @(selected ? "is-selected" : "")">
+                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
+                <span class="rl-property-pick-icon"><i class="fas @prop.Icon"></i></span>
+                <span class="rl-property-pick-body">
+                    <strong>@prop.Address</strong>
+                    <span>@prop.Label</span>
+                    @if (!string.IsNullOrWhiteSpace(prop.CityRegion))
+                    {
+                        <span>@prop.CityRegion</span>
+                    }
+                </span>
+                <span class="rl-phase-badge rl-phase-badge--@prop.StatusLabel.Replace(" ", "-").ToLowerInvariant()">@prop.StatusLabel</span>
+            </label>
+        }
+    }
+
+    <h2 class="rl-invite-section-title">Or Add New Property</h2>
+    <a asp-controller="Realtor" asp-action="Files" class="rl-action-card">
+        <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
+        <div>
+            <strong>Create New Property</strong>
+            <span>Add a new property for this client</span>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+
+    <div class="rl-info-box">
+        <i class="fas fa-shield-halved"></i>
+        <p>You can invite the client to an existing property or create a new shared property record.</p>
+    </div>
+
+    <div class="rl-invite-actions">
+        <a asp-action="ClientInfo" class="rl-invite-cancel">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
+    </div>
+</form>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.rl-property-pick input').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+            r.closest('.rl-property-pick')?.classList.add('is-selected');
+        });
+    });
+</script>
+}

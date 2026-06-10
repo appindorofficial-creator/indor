@@ -1,0 +1,64 @@
+@model IndorMvcApp.ViewModels.RealtorUrgentQuoteSuccessViewModel
+
+@{
+
+    Layout = "_RealtorLayout";
+
+    ViewData["Title"] = "Urgente Quote Sent";
+
+    ViewBag.NavActive = "quotes";
+
+}
+
+
+
+<div class="rl-dash-shell">
+
+    @await Html.PartialAsync("_RealtorTopbar", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+
+
+
+    <section class="rl-success-hero">
+
+        <div class="rl-success-icon-wrap">
+
+            <span class="rl-success-icon"><i class="fas fa-check"></i></span>
+
+        </div>
+
+        <h1>Urgente Quote Sent</h1>
+
+        <p>Your urgent request was sent to @Model.ProviderCount provider@(Model.ProviderCount == 1 ? "" : "s").</p>
+
+    </section>
+
+
+
+    <div class="rl-success-card rl-success-card--quote">
+
+        <div class="rl-success-quote-head">
+
+            <i class="fas fa-bolt"></i>
+
+            <strong>@Model.QuoteCode</strong>
+
+        </div>
+
+        <div class="rl-success-detail"><strong>Property:</strong> @Model.PropertyAddress</div>
+
+        <div class="rl-success-detail"><strong>Issue:</strong> @Model.ServiceType</div>
+
+        <div class="rl-success-detail"><strong>Response needed:</strong> @Model.UrgencyLabel</div>
+
+        <div class="rl-success-detail"><strong>Sent:</strong> @Model.SentWhenLabel</div>
+
+    </div>
+
+
+
+    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">Track Quotes</a>
+
+    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">Done</a>
+
+</div>
+

@@ -1,0 +1,42 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateJobCategoriesViewModel
+@{
+    ViewData["Title"] = "Create New Job - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-job">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--plain">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Create New Job</h1>
+            <small>What type of job is this?</small>
+        </div>
+    </header>
+
+    <p class="prv-pro-create-job-intro">Select a service category to get started.</p>
+
+    <div class="prv-pro-job-type-list">
+        @foreach (var cat in Model.Categories)
+        {
+            <a asp-controller="Proveedor" asp-action="CreateJobDetails" asp-route-categoryId="@cat.Id" class="prv-pro-job-type-card">
+                <div class="prv-pro-job-type-icon"><i class="fas @cat.IconClass"></i></div>
+                <div>
+                    <strong>@cat.Label</strong>
+                    @if (!string.IsNullOrWhiteSpace(cat.Description))
+                    {
+                        <small>@cat.Description</small>
+                    }
+                </div>
+                <i class="fas fa-chevron-right prv-pro-job-type-arrow"></i>
+            </a>
+        }
+    </div>
+
+    <footer class="prv-pro-create-job-cancel">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">Cancel</a>
+    </footer>
+</div>

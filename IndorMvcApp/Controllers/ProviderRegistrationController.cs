@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 namespace IndorMvcApp.Controllers;
 
 [Authorize]
-public class ProviderRegistrationController(
+public partial class ProviderRegistrationController(
     IProviderRegistrationService registration,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
@@ -44,7 +44,19 @@ public class ProviderRegistrationController(
     }
 
     [HttpGet]
-    public IActionResult Index() => RedirectToAction(nameof(Categories));
+    public IActionResult Index() => RedirectToAction(nameof(Entry));
+
+    private async Task<bool> ShouldBlockForExamAsync(ProviderRegistrationState state) =>
+        state.UsesNewWizard
+            ? state.ExamIsMandatory && state.ExamPassed != true
+            : await registration.RequiresTradeExamAsync(state) && state.ExamPassed != true;
+
+    private IActionResult RedirectAfterExamPass(ProviderRegistrationState state) =>
+        state.UsesNewWizard
+            ? RedirectToAction(nameof(ActivationCall))
+            : state.IsElectricianOnly
+                ? RedirectToAction(nameof(Scope))
+                : RedirectToAction(nameof(Documents));
 
     [HttpGet]
     public async Task<IActionResult> Categories()
@@ -240,14 +252,16 @@ public class ProviderRegistrationController(
             return RedirectToAction(nameof(Business));
         }
 
-        if (await registration.RequiresTradeExamAsync(state) && state.ExamPassed != true)
+        if (await ShouldBlockForExamAsync(state))
         {
             return state.UsesExamIntroFlow
                 ? RedirectToAction(nameof(ExamIntro))
                 : RedirectToAction(nameof(Exam));
         }
 
-        return RedirectToAction(nameof(Documents));
+        return state.UsesNewWizard
+            ? RedirectToAction(nameof(ActivationCall))
+            : RedirectToAction(nameof(Documents));
     }
 
     [HttpGet]
@@ -561,7 +575,9 @@ public class ProviderRegistrationController(
 
         if (state.ExamPassed == true)
         {
-            return RedirectToAction(nameof(Documents));
+            return state.UsesNewWizard
+                ? RedirectToAction(nameof(ActivationCall))
+                : RedirectToAction(nameof(Documents));
         }
 
         var (introTitle, introSubtitle) = GetExamIntroCopy(state);
@@ -776,9 +792,7 @@ public class ProviderRegistrationController(
             return RedirectToAction(nameof(Exam), new { page = 1 });
         }
 
-        return state.IsElectricianOnly
-            ? RedirectToAction(nameof(Scope))
-            : RedirectToAction(nameof(Documents));
+        return RedirectAfterExamPass(state);
     }
 
     [HttpGet]
@@ -837,7 +851,7 @@ public class ProviderRegistrationController(
             return RedirectToAction(nameof(Exam));
         }
 
-        if (await registration.RequiresTradeExamAsync(state) && state.ExamPassed != true)
+        if (await ShouldBlockForExamAsync(state))
         {
             return RedirectToAction(nameof(Exam));
         }
@@ -874,7 +888,7 @@ public class ProviderRegistrationController(
             return RedirectToAction(nameof(Exam));
         }
 
-        if (await registration.RequiresTradeExamAsync(state) && state.ExamPassed != true)
+        if (await ShouldBlockForExamAsync(state))
         {
             return RedirectToAction(nameof(Exam));
         }
@@ -1033,8 +1047,12 @@ public class ProviderRegistrationController(
             return RedirectToAction(nameof(Scope));
         }
 
-        if (await registration.RequiresTradeExamAsync(state) &&
-            state.ExamPassed != true &&
+        if (state.UsesNewWizard)
+        {
+            return RedirectToAction(nameof(ActivationCall));
+        }
+
+        if (await ShouldBlockForExamAsync(state) &&
             !state.IsBathroomOnly &&
             !state.IsKitchenOnly &&
             !state.IsRoofingOnly &&
@@ -1165,7 +1183,7 @@ public class ProviderRegistrationController(
             return View(StepVm(6, errTitle, "", state, Url.Action(nameof(Documents))));
         }
 
-        if (await registration.RequiresTradeExamAsync(state) && state.ExamPassed != true)
+        if (await ShouldBlockForExamAsync(state))
         {
             return RedirectToAction(nameof(Exam));
         }
@@ -1296,6 +1314,11 @@ public class ProviderRegistrationController(
 
     private string GetExamIntroBackUrl(ProviderRegistrationState state)
     {
+        if (state.UsesNewWizard)
+        {
+            return Url.Action(nameof(CategoriesAssessment))!;
+        }
+
         if (state.UsesServicesFirstFlow)
         {
             return Url.Action(nameof(Business))!;

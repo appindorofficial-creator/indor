@@ -2,7 +2,7 @@ namespace IndorMvcApp.Models;
 
 public class ProviderRegistrationState
 {
-    public const int TotalSteps = 6;
+    public const int TotalSteps = 5;
     public const string ElectricalCategoryId = "electrical";
     public const string PlumbingCategoryId = "plumbing";
     public const string HvacCategoryId = "hvac";
@@ -57,6 +57,28 @@ public class ProviderRegistrationState
     public string TeamSize { get; set; } = "";
 
     public string ServiceZipCodes { get; set; } = "";
+
+    public string OnboardingPath { get; set; } = "";
+
+    public bool AssessmentSkipped { get; set; }
+
+    public bool AssessmentStarted { get; set; }
+
+    public bool TermsAccepted { get; set; }
+
+    public string? Website { get; set; }
+
+    public string? EinNumber { get; set; }
+
+    public string? ActivationCallSlot { get; set; }
+
+    public bool ActivationCallScheduled { get; set; }
+
+    public bool IndorProActive { get; set; }
+
+    public bool UsesNewWizard { get; set; } = true;
+
+    public bool ExamIsMandatory => AssessmentStarted && !AssessmentSkipped;
 
     public string ServiceZipCodesDisplay =>
         !string.IsNullOrWhiteSpace(ServiceZipCodes)

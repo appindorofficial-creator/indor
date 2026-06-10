@@ -970,7 +970,36 @@ public class ProviderRegistrationService(
         entity.ScopeStandardsAgreed = state.ScopeStandardsAgreed;
         entity.ExamScorePercent = state.ExamScorePercent;
         entity.ExamPassed = state.ExamPassed;
+        entity.OnboardingMetaJson = SerializeMeta(state);
     }
+
+    public async Task ActivateIndorProAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default)
+    {
+        state.IndorProActive = true;
+        state.UsesNewWizard = true;
+        var proveedorId = await EnsureDraftAsync(cancellationToken);
+        var entity = await db.IndorProveedores
+            .Include(p => p.Categorias)
+            .Include(p => p.Ofertas)
+            .FirstAsync(p => p.Id == proveedorId, cancellationToken);
+
+        ApplyToEntity(entity, state, ProviderRegistrationState.TotalSteps);
+        SyncCategoriesOnEntity(entity, state.SelectedCategoryIds);
+        SyncOfertasOnEntity(entity, state.SelectedServiceIds);
+        entity.RegistrationStatus = ProviderRegistrationStatuses.IndorProActive;
+        entity.ProfileSubmittedUtc ??= DateTime.UtcNow;
+        entity.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public string ResolveWizardResumeAction(int currentStep) => currentStep switch
+    {
+        <= 1 => "Entry",
+        2 => "CompanyInfo",
+        3 => "Verification",
+        4 => "CategoriesAssessment",
+        _ => "ActivationCall"
+    };
 
     private static ProviderRegistrationState MapFromEntity(IndorProveedor entity)
     {
@@ -1017,7 +1046,59 @@ public class ProviderRegistrationService(
             state.ExamAnswers[answer.QuestionNumber] = answer.SelectedIndex.ToString();
         }
 
+        ApplyMetaFromJson(state, entity.OnboardingMetaJson);
         return state;
+    }
+
+    private static string SerializeMeta(ProviderRegistrationState state)
+    {
+        var meta = new ProviderOnboardingMeta
+        {
+            OnboardingPath = state.OnboardingPath,
+            AssessmentSkipped = state.AssessmentSkipped,
+            AssessmentStarted = state.AssessmentStarted,
+            TermsAccepted = state.TermsAccepted,
+            Website = state.Website,
+            EinNumber = state.EinNumber,
+            ActivationCallSlot = state.ActivationCallSlot,
+            ActivationCallScheduled = state.ActivationCallScheduled,
+            IndorProActive = state.IndorProActive,
+            UsesNewWizard = state.UsesNewWizard
+        };
+
+        return JsonSerializer.Serialize(meta, JsonOptions);
+    }
+
+    private static void ApplyMetaFromJson(ProviderRegistrationState state, string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return;
+        }
+
+        try
+        {
+            var meta = JsonSerializer.Deserialize<ProviderOnboardingMeta>(json, JsonOptions);
+            if (meta == null)
+            {
+                return;
+            }
+
+            state.OnboardingPath = meta.OnboardingPath;
+            state.AssessmentSkipped = meta.AssessmentSkipped;
+            state.AssessmentStarted = meta.AssessmentStarted;
+            state.TermsAccepted = meta.TermsAccepted;
+            state.Website = meta.Website;
+            state.EinNumber = meta.EinNumber;
+            state.ActivationCallSlot = meta.ActivationCallSlot;
+            state.ActivationCallScheduled = meta.ActivationCallScheduled;
+            state.IndorProActive = meta.IndorProActive;
+            state.UsesNewWizard = meta.UsesNewWizard;
+        }
+        catch (JsonException)
+        {
+            // Ignore invalid legacy payloads.
+        }
     }
 
     private static List<string> DeserializeList(string? json, List<string> fallback)

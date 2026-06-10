@@ -1,0 +1,79 @@
+@model IndorMvcApp.ViewModels.RealtorPropertyFileDetailsViewModel
+
+<h2 class="rl-invite-section-title">Property</h2>
+
+<form asp-action="Details" method="get" class="rl-search-form">
+    <div class="rl-search-bar">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search for a property" />
+    </div>
+</form>
+
+<form id="propFileForm" asp-action="Details" method="post" class="rl-invite-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    @foreach (var prop in Model.Properties)
+    {
+        var selected = Model.SelectedPropertyId == prop.Id;
+        <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+            <input type="radio" name="sourcePropertyId" value="@prop.Id" @(selected ? "checked" : null) />
+            <img src="@prop.PhotoUrl" alt="" class="rl-property-pick-thumb" />
+            <span class="rl-property-pick-body">
+                <strong>@prop.DisplayAddress</strong>
+                @if (!string.IsNullOrWhiteSpace(prop.ClientName))
+                {
+                    <span><i class="fas fa-user"></i> @prop.ClientName</span>
+                }
+            </span>
+            <i class="fas fa-chevron-right rl-card-chevron"></i>
+        </label>
+    }
+
+    <h2 class="rl-invite-section-title">File Type</h2>
+    <div class="rl-file-type-list">
+        @foreach (var opt in Model.FilePhaseOptions)
+        {
+            var selected = Model.FilePhase == opt.Value;
+            <label class="rl-file-type-option @(selected ? "is-selected" : "")">
+                <input type="radio" name="filePhase" value="@opt.Value" @(selected ? "checked" : null) />
+                <i class="fas @opt.Icon"></i>
+                <span>@opt.Label</span>
+            </label>
+        }
+    </div>
+
+    <h2 class="rl-invite-section-title">What this file can include</h2>
+    <div class="rl-include-grid">
+        @foreach (var cat in IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.All)
+        {
+            <div class="rl-include-item"><i class="fas @cat.Icon"></i><span>@cat.Label</span></div>
+        }
+    </div>
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>Create one organized property file so clients, reports, quotes, and documents stay connected in one place.</p>
+    </div>
+</form>
+
+<div class="rl-invite-actions">
+    <form asp-action="Cancel" method="post">
+        @Html.AntiForgeryToken()
+        <button type="submit" class="rl-invite-cancel">Cancel</button>
+    </form>
+    <button type="submit" form="propFileForm" class="ob-btn ob-btn-primary">Next</button>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.rl-property-pick input, .rl-file-type-option input').forEach(r => {
+        r.addEventListener('change', () => {
+            const card = r.closest('.rl-property-pick, .rl-file-type-option');
+            const group = card?.classList.contains('rl-property-pick') ? '.rl-property-pick' : '.rl-file-type-option';
+            document.querySelectorAll(group).forEach(p => p.classList.remove('is-selected'));
+            card?.classList.add('is-selected');
+        });
+    });
+</script>
+}

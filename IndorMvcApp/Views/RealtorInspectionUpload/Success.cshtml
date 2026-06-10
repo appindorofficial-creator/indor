@@ -1,0 +1,98 @@
+@model IndorMvcApp.ViewModels.RealtorInspectionSuccessViewModel
+
+@{
+
+    Layout = "_RealtorLayout";
+
+    ViewData["Title"] = "Inspection Analyzed";
+
+    ViewBag.NavActive = "home";
+
+}
+
+
+
+<div class="rl-dash-shell">
+
+    @await Html.PartialAsync("_RealtorTopbar", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+
+
+
+    <section class="rl-success-hero">
+
+        <div class="rl-success-icon-wrap">
+
+            <span class="rl-success-icon"><i class="fas fa-check"></i></span>
+
+        </div>
+
+        <h1>Quote Requests Created</h1>
+
+        <p>Your inspection report was analyzed and quote requests were sent.</p>
+
+    </section>
+
+
+
+    <div class="rl-success-card rl-success-card--quote">
+
+        <div class="rl-success-quote-head">
+
+            <i class="fas fa-circle-check"></i>
+
+            <strong>@Model.QuotesCreated quote request@(Model.QuotesCreated == 1 ? "" : "s") created</strong>
+
+        </div>
+
+        <div class="rl-success-detail"><strong>Property:</strong> @Model.PropertyAddress</div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ClientName))
+
+        {
+
+            <div class="rl-success-detail"><strong>Client:</strong> @Model.ClientName</div>
+
+        }
+
+        <div class="rl-success-detail"><strong>Findings added:</strong> @Model.FindingsAdded repair items</div>
+
+        <div class="rl-success-detail"><strong>Trades:</strong> @Model.TradesSummary</div>
+
+        @foreach (var code in Model.QuoteCodes)
+
+        {
+
+            <div class="rl-success-detail"><i class="fas fa-file-invoice"></i> @code</div>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-review-card">
+
+        <h2 class="rl-invite-section-title">What happens next?</h2>
+
+        <ol class="rl-next-steps">
+
+            <li><span>1</span> Providers receive trade-specific requests in INDOR Pro.</li>
+
+            <li><span>2</span> They review relevant findings and inspection pages.</li>
+
+            <li><span>3</span> They send itemized quotes back.</li>
+
+            <li><span>4</span> You compare quotes and choose the best options.</li>
+
+        </ol>
+
+    </div>
+
+
+
+    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">Track Quotes</a>
+
+    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">Done</a>
+
+</div>
+

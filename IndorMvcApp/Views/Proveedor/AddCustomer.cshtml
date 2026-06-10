@@ -1,0 +1,93 @@
+@model IndorMvcApp.ViewModels.ProviderProAddCustomerInfoViewModel
+@{
+    ViewData["Title"] = "Customer Information - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "customers";
+    var types = new[] { ("Homeowner", "fa-house-user"), ("Buyer", "fa-key"), ("Realtor", "fa-building"), ("Property Manager", "fa-building-user") };
+    var contacts = new[] { ("SMS", "fa-comment-sms"), ("Call", "fa-phone"), ("Email", "fa-envelope") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--add-customer">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Customer Information</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="AddCustomer" method="post" class="prv-pro-add-customer-form">
+        @Html.AntiForgeryToken()
+
+        <section class="prv-pro-add-customer-section">
+            <h3>Customer Type</h3>
+            <div class="prv-pro-customer-type-grid">
+                @foreach (var (type, icon) in types)
+                {
+                    <label class="prv-pro-customer-type-card @(Model.CustomerType == type ? "is-selected" : "")">
+                        <input type="radio" name="CustomerType" value="@type" @(Model.CustomerType == type ? "checked" : "") />
+                        <i class="fas @icon"></i>
+                        <span>@type</span>
+                    </label>
+                }
+            </div>
+        </section>
+
+        <div class="prv-pro-form-row-2">
+            <label class="prv-pro-form-label">First Name <span class="prv-pro-required">*</span>
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-user"></i><input type="text" name="FirstName" value="@Model.FirstName" required /></div>
+            </label>
+            <label class="prv-pro-form-label">Last Name <span class="prv-pro-required">*</span>
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-user"></i><input type="text" name="LastName" value="@Model.LastName" required /></div>
+            </label>
+        </div>
+
+        <div class="prv-pro-form-row-2">
+            <label class="prv-pro-form-label">Phone Number
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-phone"></i><input type="tel" name="Phone" value="@Model.Phone" placeholder="(512) 555-1234" /></div>
+            </label>
+            <label class="prv-pro-form-label">Email Address
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-envelope"></i><input type="email" name="Email" value="@Model.Email" placeholder="name@example.com" /></div>
+            </label>
+        </div>
+
+        <section class="prv-pro-add-customer-section">
+            <h3>Preferred Contact Method</h3>
+            <div class="prv-pro-contact-method-grid">
+                @foreach (var (method, icon) in contacts)
+                {
+                    <label class="prv-pro-contact-method @(Model.PreferredContactMethod == method ? "is-selected" : "")">
+                        <input type="radio" name="PreferredContactMethod" value="@method" @(Model.PreferredContactMethod == method ? "checked" : "") />
+                        <i class="fas @icon"></i> @method
+                    </label>
+                }
+            </div>
+        </section>
+
+        <label class="prv-pro-form-label">Company Name (optional)
+            <div class="prv-pro-form-input-wrap"><i class="fas fa-building"></i><input type="text" name="CompanyName" value="@Model.CustomerCompanyName" /></div>
+        </label>
+
+        <div class="prv-pro-add-customer-actions">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.prv-pro-customer-type-card, .prv-pro-contact-method').forEach(function (el) {
+            el.addEventListener('click', function () {
+                var group = el.classList.contains('prv-pro-customer-type-card')
+                    ? '.prv-pro-customer-type-card' : '.prv-pro-contact-method';
+                document.querySelectorAll(group).forEach(function (i) { i.classList.remove('is-selected'); });
+                el.classList.add('is-selected');
+            });
+        });
+    </script>
+}

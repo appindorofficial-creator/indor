@@ -1,0 +1,41 @@
+@model List<IndorMvcApp.ViewModels.ProviderProFlowStepViewModel>
+<nav class="prv-pro-flow-path" aria-label="Flow path">
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        var step = Model[i];
+        if (i > 0)
+        {
+            <span class="prv-pro-flow-sep"><i class="fas fa-chevron-right"></i></span>
+        }
+        if (step.IsLink && !string.IsNullOrWhiteSpace(step.Url))
+        {
+            <a href="@step.Url">
+                @if (!string.IsNullOrWhiteSpace(step.IconClass))
+                {
+                    <i class="fas @step.IconClass"></i>
+                }
+                @step.Label
+            </a>
+        }
+        else if (step.IsCurrent)
+        {
+            <strong>
+                @if (!string.IsNullOrWhiteSpace(step.IconClass))
+                {
+                    <i class="fas @step.IconClass"></i>
+                }
+                @step.Label
+            </strong>
+        }
+        else
+        {
+            <span>
+                @if (!string.IsNullOrWhiteSpace(step.IconClass))
+                {
+                    <i class="fas @step.IconClass"></i>
+                }
+                @step.Label
+            </span>
+        }
+    }
+</nav>

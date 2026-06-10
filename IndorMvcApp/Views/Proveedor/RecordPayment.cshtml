@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.ProviderProRecordPaymentViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Record Payment - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+    var methods = new[] { "Cash", "Check", "Card", "Bank Transfer" };
+}
+
+<div class="prv-pro-shell prv-pro-shell--record-payment">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Record Payment</h1>
+            <small>Invoice @Model.InvoiceCode</small>
+        </div>
+    </header>
+
+    <section class="prv-pro-record-payment-summary">
+        <strong>Invoice @Model.InvoiceCode</strong>
+        <small>@Model.Address · @Model.ServiceType</small>
+        <div class="prv-pro-record-payment-total">
+            <span>Total Amount Due</span>
+            <strong>@Model.AmountDue.ToString("C2", money)</strong>
+        </div>
+    </section>
+
+    <form asp-controller="Proveedor" asp-action="RecordPayment" method="post" class="prv-pro-record-payment-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="InvoiceId" value="@Model.InvoiceId" />
+        <input type="hidden" name="ReturnTab" value="@Model.ReturnTab" />
+
+        <section class="prv-pro-lead-section">
+            <label class="prv-pro-field-label">Payment Amount <em>*</em></label>
+            <input type="number" name="PaymentAmount" step="0.01" min="0" value="@Model.PaymentAmount.ToString("0.00", CultureInfo.InvariantCulture)" class="prv-pro-input" required />
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <label class="prv-pro-field-label">Payment Date <em>*</em></label>
+            <input type="date" name="PaymentDate" value="@Model.PaymentDate" class="prv-pro-input" required />
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <label class="prv-pro-field-label">Payment Method <em>*</em></label>
+            <div class="prv-pro-payment-methods">
+                @foreach (var method in methods)
+                {
+                    <label class="prv-pro-payment-method @(Model.PaymentMethod == method ? "is-active" : "")">
+                        <input type="radio" name="PaymentMethod" value="@method" @(Model.PaymentMethod == method ? "checked" : "") />
+                        @method
+                    </label>
+                }
+            </div>
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <label class="prv-pro-field-label">Reference / Check #</label>
+            <input type="text" name="PaymentReference" value="@Model.PaymentReference" class="prv-pro-input" placeholder="Optional" />
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <label class="prv-pro-field-label">Internal Notes</label>
+            <textarea name="InternalNotes" rows="3" maxlength="250" class="prv-pro-textarea" placeholder="Notes for your team only">@Model.InternalNotes</textarea>
+            <small class="prv-pro-char-hint">@(Model.InternalNotes?.Length ?? 0)/250</small>
+        </section>
+
+        <section class="prv-pro-lead-section prv-pro-reminder-toggles">
+            <label class="prv-pro-toggle-row">
+                <span>Notify Homeowner<small>Send notification to the homeowner</small></span>
+                <input type="checkbox" name="NotifyHomeowner" value="true" checked="@Model.NotifyHomeowner" />
+            </label>
+            <label class="prv-pro-toggle-row">
+                <span>Send Receipt<small>Email payment receipt to the homeowner</small></span>
+                <input type="checkbox" name="SendReceipt" value="true" checked="@Model.SendReceipt" />
+            </label>
+        </section>
+
+        <footer class="prv-pro-record-payment-footer">
+            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--success-solid">
+                <i class="fas fa-circle-check"></i> Confirm Payment
+            </button>
+        </footer>
+    </form>
+</div>

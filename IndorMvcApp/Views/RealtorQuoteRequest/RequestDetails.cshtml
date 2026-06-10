@@ -1,0 +1,170 @@
+@model IndorMvcApp.ViewModels.RealtorQuoteRequestDetailsViewModel
+
+
+
+<form id="quoteDetailsForm" asp-action="RequestDetails" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+
+
+    <h2 class="rl-invite-section-title">How do you want to request quotes?</h2>
+
+    <div class="rl-file-type-list">
+
+        @foreach (var opt in Model.RequestTypeOptions)
+
+        {
+
+            var selected = Model.RequestType == opt.Value;
+
+            <label class="rl-file-type-option @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="requestType" value="@opt.Value" @(selected ? "checked" : null) />
+
+                <i class="fas @opt.Icon"></i>
+
+                <span>
+
+                    <strong>@opt.Label</strong>
+
+                    <small>@opt.Description</small>
+
+                </span>
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">What should providers receive?</h2>
+
+    <div class="rl-toggle-list">
+
+        <label class="rl-toggle-row">
+
+            <span><i class="fas fa-camera"></i> Photos &amp; Videos</span>
+
+            <input type="checkbox" name="sharePhotosVideos" value="true" @(Model.SharePhotosVideos ? "checked" : null) />
+
+            <span class="rl-toggle"></span>
+
+        </label>
+
+        <label class="rl-toggle-row">
+
+            <span><i class="fas fa-file-lines"></i> Inspection Report</span>
+
+            <input type="checkbox" name="shareInspectionReport" value="true" @(Model.ShareInspectionReport ? "checked" : null) />
+
+            <span class="rl-toggle"></span>
+
+        </label>
+
+        <label class="rl-toggle-row">
+
+            <span><i class="fas fa-wrench"></i> Repair Items</span>
+
+            <input type="checkbox" name="shareRepairItems" value="true" @(Model.ShareRepairItems ? "checked" : null) />
+
+            <span class="rl-toggle"></span>
+
+        </label>
+
+        <label class="rl-toggle-row">
+
+            <span><i class="fas fa-note-sticky"></i> Notes &amp; Documents</span>
+
+            <input type="checkbox" name="shareNotes" value="true" @(Model.ShareNotes ? "checked" : null) />
+
+            <span class="rl-toggle"></span>
+
+        </label>
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">Response deadline</h2>
+
+    <div class="rl-deadline-row">
+
+        @foreach (var hours in Model.DeadlineOptions)
+
+        {
+
+            var selected = Model.ResponseDeadlineHours == hours;
+
+            <label class="rl-deadline-btn @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="responseDeadlineHours" value="@hours" @(selected ? "checked" : null) />
+
+                @hours hours
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-info-box">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Keep it simple: most realtors only need to choose full file or by item, what documents to share, and when they want responses.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <a asp-action="Property" class="rl-invite-cancel">Back</a>
+
+    <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">Next</button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    document.querySelectorAll('.rl-file-type-option input').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            document.querySelectorAll('.rl-file-type-option').forEach(p => p.classList.remove('is-selected'));
+
+            r.closest('.rl-file-type-option')?.classList.add('is-selected');
+
+        });
+
+    });
+
+    document.querySelectorAll('.rl-deadline-btn input').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            document.querySelectorAll('.rl-deadline-btn').forEach(p => p.classList.remove('is-selected'));
+
+            r.closest('.rl-deadline-btn')?.classList.add('is-selected');
+
+        });
+
+    });
+
+</script>
+
+}
+

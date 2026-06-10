@@ -1,0 +1,119 @@
+@model IndorMvcApp.ViewModels.ProviderProNewLeadsPageViewModel
+@{
+    ViewData["Title"] = "New Leads - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var filters = new (string Id, string Label, bool ShowFire)[]
+    {
+        ("all", "All", false),
+        ("new", "New", false),
+        ("accepted", "Accepted", false),
+        ("urgent", "High Urgency", true)
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--new-leads">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-new-leads-head">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>New Leads</h1>
+            <small>@Model.NewCount new · @Model.HighUrgencyCount high urgency</small>
+        </div>
+        <button type="button" class="prv-pro-lead-share" aria-label="Notifications"><i class="fas fa-bell"></i></button>
+    </header>
+
+    @if (TempData["LeadAccepted"] as bool? == true)
+    {
+        <div class="prv-pro-lead-toast">Lead accepted successfully.</div>
+    }
+
+    <form method="get" asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-jobs-search">
+        <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+        <div class="prv-pro-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, service or customer" />
+        </div>
+    </form>
+
+    <nav class="prv-pro-leads-filters" aria-label="Lead filters">
+        @foreach (var (id, label, showFire) in filters)
+        {
+            <a asp-controller="Proveedor" asp-action="NewLeads"
+               asp-route-filter="@id"
+               asp-route-q="@Model.SearchQuery"
+               class="@(Model.ActiveFilter == id ? "is-active" : "")">
+                @if (showFire)
+                {
+                    <i class="fas fa-fire"></i>
+                }
+                @label
+            </a>
+        }
+    </nav>
+
+    <section class="prv-pro-new-leads-list">
+        @if (Model.Leads.Count == 0)
+        {
+            <div class="prv-pro-panel">
+                <p class="prv-pro-empty">No leads in this view yet. New opportunities from INDOR will appear here.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var lead in Model.Leads)
+            {
+                <article class="prv-pro-new-lead-card">
+                    <img src="@Url.Content($"~{lead.ImageUrl}")" alt="Property" class="prv-pro-new-lead-img" />
+                    <div class="prv-pro-new-lead-body">
+                        <div class="prv-pro-new-lead-top">
+                            <span class="prv-pro-pill prv-pro-pill--@lead.StatusClass">@lead.StatusLabel</span>
+                            @if (!string.IsNullOrWhiteSpace(lead.DistanceLabel))
+                            {
+                                <small class="prv-pro-new-lead-distance"><i class="fas fa-location-crosshairs"></i> @lead.DistanceLabel</small>
+                            }
+                        </div>
+                        <strong>@lead.Address</strong>
+                        <div class="prv-pro-new-lead-tags">
+                            <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @lead.ServiceType</span>
+                            <span class="prv-pro-pill prv-pro-pill--urgency-@lead.UrgencyClass">
+                                <i class="fas @lead.UrgencyIcon"></i> @lead.Urgency
+                            </span>
+                        </div>
+                        <div class="prv-pro-new-lead-actions">
+                            @if (lead.CanAccept)
+                            {
+                                <form asp-controller="Proveedor" asp-action="AcceptLead" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@lead.Id" />
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Accept</button>
+                                </form>
+                            }
+                            <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@lead.Id" class="prv-pro-btn prv-pro-btn--ghost">View</a>
+                            <button type="button" class="prv-pro-round-btn" aria-label="Message"><i class="fas fa-message"></i></button>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    </section>
+
+    <footer class="prv-pro-new-leads-footer">
+        <button type="button"><i class="fas fa-map"></i> Map View</button>
+        <a asp-controller="Proveedor" asp-action="NewLeads" asp-route-filter="urgent" asp-route-q="@Model.SearchQuery">
+            <i class="fas fa-fire"></i> High Urgency
+        </a>
+        @if (Model.Leads.Count > 0)
+        {
+            <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.Leads[0].Id">
+                <i class="fas fa-circle-info"></i> View Details
+            </a>
+        }
+        else
+        {
+            <span><i class="fas fa-circle-info"></i> View Details</span>
+        }
+    </footer>
+</div>

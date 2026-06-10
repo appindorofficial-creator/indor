@@ -1,0 +1,56 @@
+@model IndorMvcApp.ViewModels.ProviderProMessageQuickActionsViewModel
+@{
+    ViewData["Title"] = "Quick Actions - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--message-actions">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1><i class="fas fa-bolt"></i> Quick Actions</h1>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <section class="prv-pro-message-action-customer">
+        <div class="prv-pro-message-action-customer-avatar"><i class="fas fa-user"></i></div>
+        <div>
+            <strong>@Model.CustomerName</strong>
+            <span>@Model.JobTitle</span>
+            <small><i class="fas fa-location-dot"></i> @Model.Address</small>
+        </div>
+    </section>
+
+    <form method="post" asp-controller="Proveedor" asp-action="MessageQuickActions" class="prv-pro-message-action-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="ConversationId" value="@Model.ConversationId" />
+
+        <div class="prv-pro-message-action-list">
+            @foreach (var action in Model.Actions)
+            {
+                <label class="prv-pro-message-action-item @(Model.SelectedAction == action.ActionType ? "is-selected" : "")">
+                    <input type="radio" name="ActionType" value="@action.ActionType"
+                           @(Model.SelectedAction == action.ActionType ? "checked" : "") />
+                    <span class="prv-pro-message-action-icon prv-pro-message-action-icon--@action.ToneClass">
+                        <i class="fas @action.IconClass"></i>
+                    </span>
+                    <span class="prv-pro-message-action-copy">
+                        <strong>@action.Label</strong>
+                        <small>@action.Description</small>
+                    </span>
+                    <i class="fas fa-chevron-right"></i>
+                </label>
+            }
+        </div>
+
+        <div class="prv-pro-upload-report-actions">
+            <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
+        </div>
+    </form>
+</div>

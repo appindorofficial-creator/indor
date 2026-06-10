@@ -1,0 +1,186 @@
+@model IndorMvcApp.ViewModels.RealtorInspectionUploadViewModel
+
+
+
+<div class="rl-info-box">
+
+    <i class="fas fa-circle-info"></i>
+
+    <p>First, search or select the property you want to analyze. Then upload the inspection report as a PDF, scanned pages, or photos.</p>
+
+</div>
+
+
+
+<h2 class="rl-invite-section-title">Select Property</h2>
+
+
+
+<form asp-action="Upload" method="get" class="rl-search-form">
+
+    <div class="rl-search-bar">
+
+        <i class="fas fa-magnifying-glass"></i>
+
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address or first property numbers" />
+
+    </div>
+
+    <p class="rl-search-hint">Type 123 to find 123 Maple Street fast.</p>
+
+</form>
+
+
+
+<form id="inspUploadForm" asp-action="Upload" method="post" enctype="multipart/form-data" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+
+
+    @foreach (var prop in Model.Properties)
+
+    {
+
+        var selected = Model.SelectedPropertyFileId == prop.Id;
+
+        <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+
+            <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) required />
+
+            <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
+
+            <span class="rl-property-pick-body">
+
+                <strong>@prop.DisplayAddress</strong>
+
+                @if (!string.IsNullOrWhiteSpace(prop.SpecsLabel))
+
+                {
+
+                    <span>@prop.SpecsLabel</span>
+
+                }
+
+            </span>
+
+            <span class="rl-card-status rl-card-status--active">Active</span>
+
+        </label>
+
+    }
+
+
+
+    <h2 class="rl-invite-section-title">Add Report</h2>
+
+    <div class="rl-upload-method-grid">
+
+        <label class="rl-upload-method @(Model.UploadMethod == "Pdf" ? "is-selected" : "")">
+
+            <input type="radio" name="uploadMethod" value="Pdf" @(Model.UploadMethod == "Pdf" ? "checked" : null) />
+
+            <i class="fas fa-file-pdf rl-upload-method-icon rl-upload-method-icon--pdf"></i>
+
+            <strong>Upload PDF</strong>
+
+            <span>Select a PDF file</span>
+
+            <input type="file" name="reportFile" accept=".pdf,.jpg,.jpeg,.png,.webp" class="rl-upload-method-file" />
+
+        </label>
+
+        <label class="rl-upload-method @(Model.UploadMethod == "Scan" ? "is-selected" : "")">
+
+            <input type="radio" name="uploadMethod" value="Scan" />
+
+            <i class="fas fa-expand rl-upload-method-icon"></i>
+
+            <strong>Scan Pages</strong>
+
+            <span>Scan report pages</span>
+
+            <input type="file" name="reportFile" accept="image/*" class="rl-upload-method-file" />
+
+        </label>
+
+        <label class="rl-upload-method @(Model.UploadMethod == "Photos" ? "is-selected" : "")">
+
+            <input type="radio" name="uploadMethod" value="Photos" />
+
+            <i class="fas fa-camera rl-upload-method-icon"></i>
+
+            <strong>Add Photos</strong>
+
+            <span>Take or choose photos</span>
+
+            <input type="file" name="reportFile" accept="image/*" multiple class="rl-upload-method-file" />
+
+        </label>
+
+    </div>
+
+
+
+    <div class="rl-info-box rl-info-box--ai">
+
+        <i class="fas fa-wand-magic-sparkles"></i>
+
+        <p>INDOR AI reads your inspection report, detects findings, sorts them by urgency, and classifies them by trade.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <form asp-action="Cancel" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit" class="rl-invite-cancel">Cancel</button>
+
+    </form>
+
+    <button type="submit" form="inspUploadForm" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    document.querySelectorAll('.rl-property-pick input[type=radio]').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+
+            r.closest('.rl-property-pick')?.classList.add('is-selected');
+
+        });
+
+    });
+
+    document.querySelectorAll('.rl-upload-method input[type=radio]').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            document.querySelectorAll('.rl-upload-method').forEach(p => p.classList.remove('is-selected'));
+
+            r.closest('.rl-upload-method')?.classList.add('is-selected');
+
+        });
+
+    });
+
+</script>
+
+}
+

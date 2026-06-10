@@ -15,6 +15,9 @@ public class IndorProveedorCategoriaCatalogo
     [Required, MaxLength(60)]
     public string IconClass { get; set; } = string.Empty;
 
+    [MaxLength(200)]
+    public string? DescriptionEn { get; set; }
+
     public int SortOrder { get; set; }
 
     public bool RequiresTradeExam { get; set; }
@@ -137,6 +140,9 @@ public class IndorProveedor
 
     public DateTime? ProfileSubmittedUtc { get; set; }
 
+    [MaxLength(2000)]
+    public string? OnboardingMetaJson { get; set; }
+
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
     public DateTime? FechaActualizacion { get; set; }
@@ -153,6 +159,7 @@ public class IndorProveedor
 public static class ProviderRegistrationStatuses
 {
     public const string Draft = "Draft";
+    public const string IndorProActive = "IndorProActive";
     public const string Submitted = "Submitted";
     public const string PendingReview = "PendingReview";
     public const string Approved = "Approved";

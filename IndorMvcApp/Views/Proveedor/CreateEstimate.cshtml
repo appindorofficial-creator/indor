@@ -1,0 +1,145 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateEstimateSetupViewModel
+@{
+    ViewData["Title"] = "Create New Estimate - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-estimate">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--plain">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Create New Estimate</h1>
+        </div>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="CreateEstimate" method="post" class="prv-pro-create-estimate-form">
+        @Html.AntiForgeryToken()
+
+        <section class="prv-pro-estimate-step-card">
+            <h3>1. Estimate Type</h3>
+            <p>Choose how you want to create this estimate.</p>
+            <div class="prv-pro-estimate-type-grid">
+                <label class="prv-pro-estimate-type-option @(Model.EstimateType == "new" ? "is-selected" : "")">
+                    <input type="radio" name="EstimateType" value="new" @(Model.EstimateType == "new" ? "checked" : "") />
+                    <i class="fas fa-file-circle-plus"></i>
+                    <strong>New Estimate</strong>
+                    <small>Create a new estimate from scratch</small>
+                </label>
+                <label class="prv-pro-estimate-type-option @(Model.EstimateType == "lead" ? "is-selected" : "")">
+                    <input type="radio" name="EstimateType" value="lead" @(Model.EstimateType == "lead" ? "checked" : "") />
+                    <i class="fas fa-users"></i>
+                    <strong>From Lead</strong>
+                    <small>Create an estimate from a lead</small>
+                </label>
+                <label class="prv-pro-estimate-type-option @(Model.EstimateType == "job" ? "is-selected" : "")">
+                    <input type="radio" name="EstimateType" value="job" @(Model.EstimateType == "job" ? "checked" : "") />
+                    <i class="fas fa-briefcase"></i>
+                    <strong>From Existing Job</strong>
+                    <small>Create an estimate from an existing job</small>
+                </label>
+            </div>
+        </section>
+
+        <section class="prv-pro-estimate-step-card" id="leadPicker" style="@(Model.EstimateType == "lead" ? "" : "display:none")">
+            <h3>From Lead</h3>
+            <select name="LeadId" class="prv-pro-estimate-select">
+                <option value="">Select a lead</option>
+                @foreach (var lead in Model.Leads)
+                {
+                    <option value="@lead.Id" selected="@(Model.LeadId == lead.Id)">@lead.Label</option>
+                }
+            </select>
+        </section>
+
+        <section class="prv-pro-estimate-step-card" id="jobPicker" style="@(Model.EstimateType == "job" ? "" : "display:none")">
+            <h3>From Job</h3>
+            <select name="JobId" class="prv-pro-estimate-select">
+                <option value="">Select a job</option>
+                @foreach (var job in Model.Jobs)
+                {
+                    <option value="@job.Id" selected="@(Model.JobId == job.Id)">@job.Label</option>
+                }
+            </select>
+        </section>
+
+        <section class="prv-pro-estimate-step-card">
+            <h3>2. Customer</h3>
+            <p>Select the customer for this estimate.</p>
+            <div class="prv-pro-form-select-wrap">
+                <i class="fas fa-user"></i>
+                <select name="ClienteId" id="estimateCustomer" required>
+                    <option value="">Search or select a customer</option>
+                    @foreach (var customer in Model.Customers)
+                    {
+                        <option value="@customer.Id" data-name="@customer.Label" data-address="@customer.SubLabel" selected="@(Model.ClienteId == customer.Id)">@customer.Label</option>
+                    }
+                </select>
+            </div>
+            <input type="hidden" name="CustomerName" id="estimateCustomerName" value="@Model.CustomerName" />
+        </section>
+
+        <section class="prv-pro-estimate-step-card">
+            <h3>3. Property Address</h3>
+            <div class="prv-pro-form-input-wrap">
+                <i class="fas fa-location-dot"></i>
+                <input type="text" name="Address" id="estimateAddress" value="@Model.Address" placeholder="Search or select an address" required />
+            </div>
+        </section>
+
+        <section class="prv-pro-estimate-step-card">
+            <h3>4. Service Category</h3>
+            <div class="prv-pro-form-select-wrap">
+                <i class="fas fa-tag"></i>
+                <select name="ServiceCategoryId" required>
+                    <option value="">Select a service category</option>
+                    @foreach (var cat in Model.Categories)
+                    {
+                        <option value="@cat.Id" selected="@(Model.ServiceCategoryId == cat.Id)">@cat.Label</option>
+                    }
+                </select>
+            </div>
+        </section>
+
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">Next</button>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var typeOptions = document.querySelectorAll('.prv-pro-estimate-type-option');
+            var leadPicker = document.getElementById('leadPicker');
+            var jobPicker = document.getElementById('jobPicker');
+            var customerSelect = document.getElementById('estimateCustomer');
+            var customerName = document.getElementById('estimateCustomerName');
+            var addressInput = document.getElementById('estimateAddress');
+
+            function syncTypePanels() {
+                var selected = document.querySelector('input[name="EstimateType"]:checked');
+                var value = selected ? selected.value : 'new';
+                leadPicker.style.display = value === 'lead' ? '' : 'none';
+                jobPicker.style.display = value === 'job' ? '' : 'none';
+                typeOptions.forEach(function (o) { o.classList.remove('is-selected'); });
+                if (selected) selected.closest('.prv-pro-estimate-type-option').classList.add('is-selected');
+            }
+
+            typeOptions.forEach(function (label) {
+                label.addEventListener('click', syncTypePanels);
+            });
+
+            customerSelect?.addEventListener('change', function () {
+                var option = customerSelect.options[customerSelect.selectedIndex];
+                customerName.value = option.dataset.name || option.text;
+                if (option.dataset.address && addressInput && !addressInput.value) {
+                    addressInput.value = option.dataset.address;
+                }
+            });
+
+            syncTypePanels();
+        })();
+    </script>
+}

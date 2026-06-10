@@ -1,0 +1,120 @@
+@model IndorMvcApp.ViewModels.RealtorInspectionAnalyzeViewModel
+
+
+
+<div class="rl-info-box rl-info-box--ai">
+
+    <i class="fas fa-wand-magic-sparkles"></i>
+
+    <p>INDOR AI is scanning page by page, extracting findings, grouping by trade, and calculating urgency.</p>
+
+</div>
+
+
+
+<div class="rl-analyze-card">
+
+    <div class="rl-analyze-progress-ring" style="--progress: @Model.AnalysisProgress">
+
+        <span>@Model.AnalysisProgress%</span>
+
+        <small>Analyzing</small>
+
+    </div>
+
+    <div class="rl-analyze-meta">
+
+        <strong>@Model.ReportFileName</strong>
+
+        <span>@Model.PropertyDisplay</span>
+
+        <span>@Model.ReportPageCount pages · @Model.UploadedLabel</span>
+
+    </div>
+
+</div>
+
+
+
+<ul class="rl-analyze-tasks">
+
+    @foreach (var task in Model.Tasks)
+
+    {
+
+        var icon = task.Status switch
+
+        {
+
+            "Done" => "fa-circle-check",
+
+            "InProgress" => "fa-circle-notch fa-spin",
+
+            _ => "fa-circle"
+
+        };
+
+        <li class="rl-analyze-task rl-analyze-task--@task.Status.ToLowerInvariant()">
+
+            <i class="fas @icon"></i>
+
+            <span>
+
+                <strong>@task.Label</strong>
+
+                <small>@task.Detail</small>
+
+            </span>
+
+        </li>
+
+    }
+
+</ul>
+
+
+
+@if (Model.DetectedCategories.Count > 0)
+
+{
+
+    <h2 class="rl-invite-section-title">Detected categories (so far)</h2>
+
+    <div class="rl-trade-chips">
+
+        @foreach (var cat in Model.DetectedCategories)
+
+        {
+
+            <span class="rl-trade-chip rl-trade-chip--@cat.Css"><i class="fas @cat.Icon"></i> @cat.Label</span>
+
+        }
+
+    </div>
+
+}
+
+
+
+<form asp-action="Analyze" method="post" class="rl-analyze-actions">
+
+    @Html.AntiForgeryToken()
+
+    <button type="submit" name="action" value="background" class="ob-btn ob-btn-outline rl-analyze-btn">
+
+        <strong>Run in background</strong>
+
+        <span>We'll notify you when it's ready.</span>
+
+    </button>
+
+    <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary rl-analyze-btn">
+
+        <strong>View Partial Results</strong>
+
+        <span>See what's been found so far.</span>
+
+    </button>
+
+</form>
+

@@ -1,0 +1,29 @@
+@model IndorMvcApp.ViewModels.RealtorActivityItemViewModel
+@{
+    var icon = Model.ActivityType switch
+    {
+        "view" => "fa-eye",
+        "quote" => "fa-file-invoice-dollar",
+        "link" => "fa-link",
+        "upload" => "fa-cloud-arrow-up",
+        "job" => "fa-circle-check",
+        "share" => "fa-share-nodes",
+        _ => "fa-circle-info"
+    };
+    var tagClass = Model.CategoryTag.ToLowerInvariant() switch
+    {
+        "files" => "rl-tag--files",
+        "quotes" => "rl-tag--quotes",
+        "clients" => "rl-tag--clients",
+        "providers" => "rl-tag--providers",
+        _ => ""
+    };
+}
+<article class="rl-activity-item">
+    <span class="rl-activity-icon"><i class="fas @icon"></i></span>
+    <div>
+        <p>@Model.Description</p>
+        <span>@Model.OccurredLabel</span>
+    </div>
+    <span class="rl-activity-tag @tagClass">@Model.CategoryTag</span>
+</article>

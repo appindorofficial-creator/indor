@@ -1,0 +1,169 @@
+@model IndorMvcApp.ViewModels.ProviderProScheduleVisitViewModel
+@{
+    ViewData["Title"] = "Schedule Visit - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--schedule-visit">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>@Model.PageTitle</h1>
+            <small>@Model.LeadCode</small>
+        </div>
+        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+    </header>
+
+    <section class="prv-pro-lead-summary">
+        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" class="prv-pro-lead-summary-img" />
+        <div class="prv-pro-lead-summary-body">
+            <div class="prv-pro-lead-summary-top">
+                <h2>@Model.Address</h2>
+                <button type="button" class="prv-pro-lead-map-btn" aria-label="View on map"><i class="fas fa-location-dot"></i></button>
+            </div>
+            <div class="prv-pro-lead-badges">
+                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
+                @if (Model.IsHighUrgency)
+                {
+                    <span class="prv-pro-pill prv-pro-pill--urgency"><i class="fas fa-fire"></i> @Model.Urgency</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                {
+                    <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-location-crosshairs"></i> @Model.DistanceLabel</span>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.TimelineNote))
+            {
+                <p class="prv-pro-lead-timeline"><i class="fas fa-calendar-day"></i> @Model.TimelineNote</p>
+            }
+        </div>
+    </section>
+
+    <section class="prv-pro-lead-section">
+        <div class="prv-pro-lead-homeowner">
+            <div class="prv-pro-lead-homeowner-main">
+                <div class="prv-pro-lead-homeowner-avatar">@Model.CustomerInitials</div>
+                <div>
+                    <strong>@Model.CustomerName</strong>
+                    @if (Model.IsHomeownerVerified)
+                    {
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+                    {
+                        <small><i class="fas fa-phone"></i> @Model.CustomerPhone</small>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
+                    {
+                        <small><i class="fas fa-envelope"></i> @Model.CustomerEmail</small>
+                    }
+                </div>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
+            {
+                <a href="tel:@Model.CustomerPhone" class="prv-pro-btn prv-pro-btn--ghost">Call</a>
+            }
+        </div>
+    </section>
+
+    <form asp-controller="Proveedor" asp-action="ScheduleVisit" method="post" class="prv-pro-create-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="LeadId" value="@Model.LeadId" />
+
+        <label class="prv-pro-create-field">
+            <i class="fas fa-clipboard-list"></i>
+            <span>Visit Type</span>
+            <select name="VisitType">
+                <option value="Verification Visit" selected="@(Model.VisitType == "Verification Visit")">Verification Visit</option>
+                <option value="Estimate Visit" selected="@(Model.VisitType == "Estimate Visit")">Estimate Visit</option>
+                <option value="Inspection Visit" selected="@(Model.VisitType == "Inspection Visit")">Inspection Visit</option>
+            </select>
+            <i class="fas fa-chevron-right"></i>
+        </label>
+        <label class="prv-pro-create-field">
+            <i class="fas fa-calendar"></i>
+            <span>Schedule Date</span>
+            <input type="date" name="VisitDate" value="@Model.VisitDate" />
+            <i class="fas fa-chevron-right"></i>
+        </label>
+        <label class="prv-pro-create-field">
+            <i class="fas fa-clock"></i>
+            <span>Time</span>
+            <input type="text" name="TimeLabel" value="@Model.TimeLabel" placeholder="10:30 AM" />
+            <i class="fas fa-chevron-right"></i>
+        </label>
+        <label class="prv-pro-create-field">
+            <i class="fas fa-user-gear"></i>
+            <span>Assigned Technician</span>
+            <input type="text" name="AssignedTechnician" value="@Model.AssignedTechnician" placeholder="Mike Johnson" />
+            <i class="fas fa-chevron-right"></i>
+        </label>
+        <label class="prv-pro-create-field">
+            <i class="fas fa-flag"></i>
+            <span>Priority</span>
+            <select name="Priority">
+                <option value="Low" selected="@(Model.Priority == "Low")">Low</option>
+                <option value="Medium" selected="@(Model.Priority == "Medium")">Medium</option>
+                <option value="High" selected="@(Model.Priority == "High")">High</option>
+            </select>
+            <i class="fas fa-chevron-right"></i>
+        </label>
+        <label class="prv-pro-create-field">
+            <i class="fas fa-bell"></i>
+            <span>Reminder</span>
+            <select name="Reminder">
+                <option value="Send 1 hour before" selected="@(Model.Reminder == "Send 1 hour before")">Send 1 hour before</option>
+                <option value="Send 2 hours before" selected="@(Model.Reminder == "Send 2 hours before")">Send 2 hours before</option>
+                <option value="Send 1 day before" selected="@(Model.Reminder == "Send 1 day before")">Send 1 day before</option>
+            </select>
+            <i class="fas fa-chevron-right"></i>
+        </label>
+        <label class="prv-pro-create-field prv-pro-create-field--notes">
+            <i class="fas fa-file-lines"></i>
+            <span>Notes</span>
+            <textarea name="Notes" rows="3">@Model.Notes</textarea>
+        </label>
+
+        <div class="prv-pro-toggle-row">
+            <label class="prv-pro-toggle">
+                <input type="checkbox" name="NotifyHomeowner" value="true" checked="@Model.NotifyHomeowner" />
+                <span class="prv-pro-toggle-track"></span>
+            </label>
+            <div>
+                <strong>Notify homeowner</strong>
+                <small>Send visit confirmation to @Model.CustomerName</small>
+            </div>
+        </div>
+        <div class="prv-pro-toggle-row">
+            <label class="prv-pro-toggle">
+                <input type="checkbox" name="AddToCalendar" value="true" checked="@Model.AddToCalendar" />
+                <span class="prv-pro-toggle-track"></span>
+            </label>
+            <div>
+                <strong>Add to Calendar</strong>
+                <small>Add this visit to your calendar</small>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.InfoBanner))
+        {
+            <div class="prv-pro-schedule-info">
+                <i class="fas fa-circle-info"></i> @Model.InfoBanner
+            </div>
+        }
+
+        <footer class="prv-pro-schedule-footer">
+            <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
+                <i class="fas fa-floppy-disk"></i> Save Draft
+            </button>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--teal">
+                <i class="fas fa-calendar-check"></i> Confirm Visit
+            </button>
+        </footer>
+        <a href="#" class="prv-pro-schedule-message"><i class="fas fa-message"></i> Message Homeowner</a>
+    </form>
+</div>

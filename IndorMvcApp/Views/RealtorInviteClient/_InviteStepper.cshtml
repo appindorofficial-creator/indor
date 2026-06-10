@@ -1,0 +1,36 @@
+@model IndorMvcApp.ViewModels.RealtorInviteStepViewModel
+@{
+    var steps = new[] { "Client Info", "Property", "Access", "Review" };
+}
+@await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+
+<div class="rl-invite-head">
+    <h1>@Model.Title</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+    {
+        <p>@Model.Subtitle</p>
+    }
+</div>
+
+<nav class="rl-invite-stepper" aria-label="Invite client progress">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var stepNum = i + 1;
+        var cls = stepNum < Model.DisplayStep ? "is-done" : stepNum == Model.DisplayStep ? "is-active" : "";
+        <div class="rl-invite-step @cls">
+            @if (stepNum < Model.DisplayStep)
+            {
+                <i class="fas fa-check"></i>
+            }
+            else
+            {
+                <span>@stepNum</span>
+            }
+            <small>@steps[i]</small>
+        </div>
+        @if (i < steps.Length - 1)
+        {
+            <div class="rl-invite-step-line @(stepNum < Model.DisplayStep ? "is-done" : "")"></div>
+        }
+    }
+</nav>

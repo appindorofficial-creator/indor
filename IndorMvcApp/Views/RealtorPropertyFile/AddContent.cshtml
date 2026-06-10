@@ -1,0 +1,111 @@
+@model IndorMvcApp.ViewModels.RealtorPropertyFileContentViewModel
+
+<div class="rl-prop-summary-card rl-prop-summary-card--compact">
+    <div>
+        <span>Property</span>
+        <strong>@Model.PropertyDisplay</strong>
+        <span>File Type</span>
+        <strong>@Model.FilePhaseLabel</strong>
+    </div>
+</div>
+
+@foreach (var sec in Model.Sections)
+{
+    <section class="rl-content-section">
+        <h2 class="rl-invite-section-title">@sec.Label</h2>
+
+        @if (sec.CategoryType == IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.PhotosVideos)
+        {
+            <form asp-action="UploadContent" method="post" enctype="multipart/form-data" class="rl-upload-row">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryType" value="@sec.CategoryType" />
+                <label class="ob-btn ob-btn-outline"><i class="fas fa-camera"></i> Choose Photos
+                    <input type="file" name="uploadFile" accept="image/*" hidden onchange="this.form.submit()" />
+                </label>
+            </form>
+            @if (sec.Items.Any(i => i.IsImage))
+            {
+                <div class="rl-photo-thumbs">
+                    @foreach (var item in sec.Items.Where(i => i.IsImage))
+                    {
+                        <img src="@item.FileUrl" alt="@item.ItemLabel" />
+                    }
+                </div>
+            }
+            <span class="rl-items-count">@sec.Items.Count item@(sec.Items.Count == 1 ? "" : "s") added</span>
+        }
+        else if (sec.CategoryType == IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.InspectionReports)
+        {
+            <form asp-action="UploadContent" method="post" enctype="multipart/form-data" class="rl-upload-row">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryType" value="@sec.CategoryType" />
+                <label class="ob-btn ob-btn-outline"><i class="fas fa-file-pdf"></i> Upload PDF
+                    <input type="file" name="uploadFile" accept=".pdf" hidden onchange="this.form.submit()" />
+                </label>
+            </form>
+            @foreach (var item in sec.Items)
+            {
+                <div class="rl-uploaded-file"><i class="fas fa-file-pdf"></i> @item.ItemLabel @item.SizeLabel</div>
+            }
+        }
+        else if (sec.CategoryType == IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.Warranties)
+        {
+            <form asp-action="UploadContent" method="post" class="rl-warranty-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryType" value="@sec.CategoryType" />
+                <input type="text" name="warrantyLabel" placeholder="Warranty name (e.g. HVAC Warranty)" class="rl-field-inline" />
+                <input type="date" name="expirationDate" class="rl-field-inline" />
+                <button type="submit" class="ob-btn ob-btn-outline">Add Warranty</button>
+            </form>
+            @foreach (var item in sec.Items)
+            {
+                <div class="rl-uploaded-file">
+                    <i class="fas fa-shield-halved"></i> @item.ItemLabel
+                    @if (!string.IsNullOrWhiteSpace(item.ExpirationLabel))
+                    {
+                        <span class="rl-card-status rl-card-status--active">Expires @item.ExpirationLabel</span>
+                    }
+                </div>
+            }
+        }
+        else if (sec.CategoryType == IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.NotesDocuments)
+        {
+            <form asp-action="UploadContent" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryType" value="@sec.CategoryType" />
+                <textarea name="noteText" rows="3" class="rl-note-area" placeholder="Add a note...">@sec.NoteText</textarea>
+                <label class="rl-attach-link"><i class="fas fa-paperclip"></i> Attach Document
+                    <input type="file" name="uploadFile" accept=".pdf,.jpg,.jpeg,.png" hidden onchange="this.form.submit()" />
+                </label>
+                <button type="submit" class="ob-btn ob-btn-outline">Save Note</button>
+            </form>
+        }
+        else
+        {
+            <form asp-action="UploadContent" method="post" enctype="multipart/form-data" class="rl-upload-row">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="categoryType" value="@sec.CategoryType" />
+                <label class="ob-btn ob-btn-outline"><i class="fas fa-upload"></i> Upload File
+                    <input type="file" name="uploadFile" hidden onchange="this.form.submit()" />
+                </label>
+            </form>
+            @foreach (var item in sec.Items)
+            {
+                <div class="rl-uploaded-file"><i class="fas fa-file"></i> @item.ItemLabel</div>
+            }
+        }
+    </section>
+}
+
+<div class="rl-info-box">
+    <i class="fas fa-circle-info"></i>
+    <p>All uploaded items will stay organized inside this property file and can be shared later.</p>
+</div>
+
+<form asp-action="CompleteContent" method="post">
+    @Html.AntiForgeryToken()
+    <div class="rl-invite-actions">
+        <a asp-action="AddItems" class="rl-invite-cancel">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
+    </div>
+</form>

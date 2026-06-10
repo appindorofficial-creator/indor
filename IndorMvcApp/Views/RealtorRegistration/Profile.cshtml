@@ -1,0 +1,55 @@
+@model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="Profile" method="post" class="rl-reg-form">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+
+    <label class="rl-field">
+        <i class="fas fa-building"></i>
+        <input type="text" name="brokerageName" value="@s.BrokerageName" placeholder="Brokerage / broker name" />
+    </label>
+
+    <label class="rl-field @(ViewData.ModelState["licenseNumber"]?.Errors.Count > 0 ? "is-error" : "")">
+        <i class="fas fa-id-card"></i>
+        <input type="text" name="licenseNumber" value="@s.LicenseNumber" placeholder="License number" required />
+    </label>
+    @if (ViewData.ModelState["licenseNumber"]?.Errors.Count > 0)
+    {
+        <span class="rl-field-error">Required</span>
+    }
+
+    <label class="rl-field">
+        <i class="fas fa-shield-halved"></i>
+        <select name="licenseState" required>
+            <option value="">License state</option>
+            @foreach (var st in Model.LicenseStates)
+            {
+                <option value="@st" selected="@(s.LicenseState == st)">@st</option>
+            }
+        </select>
+    </label>
+
+    <label class="rl-field">
+        <i class="fas fa-map"></i>
+        <input type="text" name="serviceAreas" value="@s.ServiceAreas" placeholder="Ex. Miami, Fort Lauderdale, West Palm Beach" />
+    </label>
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>With this number, we validate that you are a realtor. Full verification can be completed now or later.</p>
+    </div>
+
+    <label class="rl-terms">
+        <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) required />
+        <span>I accept the Professional Terms and authorize validation of my license. <a asp-controller="Account" asp-action="Terms">View terms</a></span>
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+</form>

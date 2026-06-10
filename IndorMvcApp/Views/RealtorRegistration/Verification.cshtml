@@ -1,0 +1,54 @@
+@model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
+@{
+    var slots = ViewBag.DocumentSlots as IReadOnlyList<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel> ?? [];
+    var licenseNumber = ViewBag.LicenseNumber as string ?? Model.State.LicenseNumber;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(licenseNumber))
+{
+    <div class="rl-success-banner">
+        <i class="fas fa-circle-check"></i>
+        <span>Required completed: License number</span>
+    </div>
+}
+
+@foreach (var slot in slots)
+{
+    <div class="rl-doc-card">
+        <div class="rl-doc-card-icon"><i class="fas fa-id-card"></i></div>
+        <div>
+            <strong>@slot.Label</strong>
+            @if (!slot.Required) { <small>Optional</small> }
+            @if (slot.Uploaded) { <span class="rl-doc-uploaded"><i class="fas fa-check"></i> Uploaded</span> }
+        </div>
+    </div>
+}
+
+<form asp-action="Verification" method="post" enctype="multipart/form-data" class="rl-reg-form">
+    @Html.AntiForgeryToken()
+    <div class="rl-doc-upload">
+        <label for="licensePhotoFile">License photo</label>
+        <input type="file" id="licensePhotoFile" name="licensePhotoFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" />
+    </div>
+    <div class="rl-doc-upload">
+        <label for="governmentIdFile">Government ID</label>
+        <input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" />
+    </div>
+    <div class="rl-doc-upload">
+        <label for="businessCardFile">Business card (optional)</label>
+        <input type="file" id="businessCardFile" name="businessCardFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" />
+    </div>
+
+    <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">Upload files</button>
+    <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">Save and continue</button>
+    <button type="submit" name="action" value="skip" class="ob-btn ob-btn-outline">Skip for now</button>
+
+    <div class="rl-info-box">
+        <i class="fas fa-circle-info"></i>
+        <p>Without these documents, you can continue with a Basic profile and complete your verification later.</p>
+    </div>
+</form>

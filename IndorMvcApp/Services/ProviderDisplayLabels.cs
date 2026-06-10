@@ -5,6 +5,7 @@ public static class ProviderDisplayLabels
     public static string FormatRegistrationStatus(string? status) => status switch
     {
         "Draft" => "In progress",
+        "IndorProActive" => "INDOR Pro Active",
         "Submitted" => "Submitted",
         "PendingReview" => "Pending INDOR review",
         "Approved" => "Approved",
@@ -14,7 +15,7 @@ public static class ProviderDisplayLabels
 
     public static string StatusBadgeClass(string? status) => status switch
     {
-        "Approved" => "prv-status--approved",
+        "Approved" or "IndorProActive" => "prv-status--approved",
         "Rejected" => "prv-status--rejected",
         "PendingReview" or "Submitted" => "prv-status--pending",
         _ => "prv-status--draft",

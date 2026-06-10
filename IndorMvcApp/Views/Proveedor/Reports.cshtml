@@ -1,0 +1,181 @@
+@model IndorMvcApp.ViewModels.ProviderProReportsPageViewModel
+@{
+    ViewData["Title"] = "Reports - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    var tabs = new[] {
+        ("all", "All Reports"),
+        ("draft", "Draft"),
+        ("ready", "Ready"),
+        ("approval", "Approval"),
+        ("approved", "Approved"),
+        ("housefacts", "House Facts")
+    };
+    var quickActions = new (string icon, string label, string? action)[] {
+        ("fa-plus", "Create Report", "UploadReport"),
+        ("fa-cloud-arrow-up", "Upload Photos", "UploadReport"),
+        ("fa-paper-plane", "Send Reports", null),
+        ("fa-copy", "Templates", null),
+        ("fa-download", "Export", null)
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--reports">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <section class="prv-pro-jobs-head">
+        <div>
+            <h1>Reports</h1>
+            <p>Manage completion reports and home records.</p>
+        </div>
+        <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
+            <i class="fas fa-plus"></i> Create Report
+        </a>
+    </section>
+
+    <form method="get" asp-controller="Proveedor" asp-action="Reports" class="prv-pro-jobs-search">
+        <input type="hidden" name="tab" value="@Model.ActiveTab" />
+        <div class="prv-pro-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search reports, jobs, or properties" />
+        </div>
+        <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" title="Filters">
+            <i class="fas fa-sliders"></i> Filters
+        </button>
+    </form>
+
+    <section class="prv-pro-jobs-stats">
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="draft" class="prv-pro-jobs-stat">
+            <i class="fas fa-file-lines"></i>
+            <strong>@Model.DraftCount</strong>
+            <span>Draft Reports</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="ready" class="prv-pro-jobs-stat">
+            <i class="fas fa-paper-plane"></i>
+            <strong>@Model.ReadyCount</strong>
+            <span>Ready to Send</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="approval" class="prv-pro-jobs-stat">
+            <i class="fas fa-clock"></i>
+            <strong>@Model.ApprovalCount</strong>
+            <span>Awaiting Approval</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="approved" class="prv-pro-jobs-stat">
+            <i class="fas fa-circle-check"></i>
+            <strong>@Model.ApprovedCount</strong>
+            <span>Approved</span>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts" class="prv-pro-jobs-stat">
+            <i class="fas fa-house"></i>
+            <strong>@Model.HouseFactsCount</strong>
+            <span>Added to House Facts</span>
+        </a>
+    </section>
+
+    <nav class="prv-pro-jobs-tabs">
+        @foreach (var (id, label) in tabs)
+        {
+            <a asp-controller="Proveedor" asp-action="Reports"
+               asp-route-tab="@id"
+               asp-route-q="@Model.SearchQuery"
+               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
+        }
+    </nav>
+
+    <section class="prv-pro-reports-list">
+        @if (Model.Reports.Count == 0)
+        {
+            <div class="prv-pro-panel">
+                <p class="prv-pro-empty">No reports in this view yet. Completion reports for your jobs will appear here.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var report in Model.Reports)
+            {
+                <article class="prv-pro-report-card">
+                    <button type="button" class="prv-pro-job-card-menu" aria-label="More options"><i class="fas fa-ellipsis-vertical"></i></button>
+
+                    <div class="prv-pro-report-card-main">
+                        <div class="prv-pro-job-card-icon"><i class="fas @report.IconClass"></i></div>
+                        <div class="prv-pro-report-card-body">
+                            <div class="prv-pro-report-title-row">
+                                <strong>@report.Title</strong>
+                                <span class="prv-pro-pill prv-pro-pill--@report.StatusClass">@report.StatusLabel</span>
+                            </div>
+                            <small class="prv-pro-report-address">@report.Address</small>
+                            <small class="prv-pro-report-meta">@report.CustomerJobLabel</small>
+                            <small class="prv-pro-report-meta">@report.CompletedLabel</small>
+
+                            <div class="prv-pro-report-attachments">
+                                @if (report.PhotosCount > 0)
+                                {
+                                    <span><i class="fas fa-image"></i> @report.PhotosCount</span>
+                                }
+                                @if (report.HasChecklist)
+                                {
+                                    <span><i class="fas fa-list-check"></i></span>
+                                }
+                                @if (report.HasWarranty)
+                                {
+                                    <span><i class="fas fa-shield-halved"></i></span>
+                                }
+                                @if (report.HasDocuments)
+                                {
+                                    <span><i class="fas fa-file-lines"></i></span>
+                                }
+                            </div>
+                        </div>
+                        <div class="prv-pro-report-action">
+                            <button type="button" class="prv-pro-btn prv-pro-btn--@report.ActionClass">@report.ActionLabel</button>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    </section>
+
+    <section class="prv-pro-quick prv-pro-quick--reports">
+        <h2>Quick Actions</h2>
+        <div class="prv-pro-quick-grid prv-pro-quick-grid--reports">
+            @foreach (var (icon, label, action) in quickActions)
+            {
+                if (!string.IsNullOrEmpty(action))
+                {
+                    <a asp-controller="Proveedor" asp-action="@action" class="prv-pro-quick-item">
+                        <i class="fas @icon"></i><span>@label</span>
+                    </a>
+                }
+                else
+                {
+                    <button type="button" class="prv-pro-quick-item">
+                        <i class="fas @icon"></i><span>@label</span>
+                    </button>
+                }
+            }
+        </div>
+    </section>
+
+    @if (Model.ReportInsights.Count > 0)
+    {
+        <section class="prv-pro-smart-suggestions prv-pro-connection-insights">
+            <div class="prv-pro-panel-head">
+                <div>
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> Report Insights</h2>
+                </div>
+                <a href="#">View all insights</a>
+            </div>
+            <div class="prv-pro-smart-scroll">
+                @foreach (var tip in Model.ReportInsights)
+                {
+                    <article class="prv-pro-smart-card prv-pro-smart-card--@tip.Tone">
+                        <i class="fas @tip.IconClass"></i>
+                        <span>@tip.Text</span>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-fab" aria-label="Create report"><i class="fas fa-plus"></i></a>
+</div>

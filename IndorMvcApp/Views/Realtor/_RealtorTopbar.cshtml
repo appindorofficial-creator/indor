@@ -1,0 +1,12 @@
+@model IndorMvcApp.ViewModels.RealtorPortalShellViewModel
+<header class="rl-portal-topbar">
+    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-portal-logo">
+        <i class="fas fa-house"></i> INDOR
+    </a>
+    <div class="rl-portal-topbar-actions">
+        <button type="button" class="rl-portal-icon-btn" aria-label="Search"><i class="fas fa-magnifying-glass"></i></button>
+        <button type="button" class="rl-portal-icon-btn @(Model.HasNotifications ? "has-dot" : "")" aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+        </button>
+    </div>
+</header>

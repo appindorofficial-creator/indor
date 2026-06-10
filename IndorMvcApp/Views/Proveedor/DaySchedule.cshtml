@@ -1,0 +1,83 @@
+@model IndorMvcApp.ViewModels.ProviderProDayScheduleViewModel
+@{
+    ViewData["Title"] = "Day Schedule - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-pro-shell prv-pro-shell--calendar">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Day Schedule</h1>
+            <small>@Model.DateLabel</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <section class="prv-pro-day-summary-cards">
+        <article>
+            <i class="fas fa-calendar-day"></i>
+            <strong>@Model.EventsTodayCount</strong>
+            <span>Events Today</span>
+            <small>@Model.EventsDeltaLabel</small>
+        </article>
+        <article>
+            <i class="fas fa-heart-pulse"></i>
+            <strong>@Model.InProgressCount</strong>
+            <span>In Progress</span>
+            <small>@(Model.InProgressCount == 1 ? "1 job active" : $"{Model.InProgressCount} jobs active")</small>
+        </article>
+        <article>
+            <i class="fas fa-clock"></i>
+            <strong>@(Model.NextJobTime ?? "—")</strong>
+            <span>Next Job</span>
+            <small>@(Model.NextJobTitle ?? "No upcoming jobs")</small>
+        </article>
+    </section>
+
+    <section class="prv-pro-day-timeline">
+        @if (Model.Items.Count == 0)
+        {
+            <p class="prv-pro-empty">No events scheduled for this day.</p>
+        }
+        else
+        {
+            @foreach (var item in Model.Items)
+            {
+                <article class="prv-pro-day-timeline-item">
+                    <div class="prv-pro-day-timeline-time">@item.TimeLabel</div>
+                    <div class="prv-pro-day-timeline-body">
+                        <div class="prv-pro-day-timeline-head">
+                            <strong><i class="fas @item.IconClass"></i> @item.Title</strong>
+                            <span class="prv-pro-pill prv-pro-pill--@item.StatusClass">@item.StatusLabel</span>
+                        </div>
+                        <span>@item.Address</span>
+                        <span>Customer: @item.CustomerName</span>
+                        <div class="prv-pro-day-timeline-actions">
+                            <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.Id" asp-route-fromCalendar="true" asp-route-date="@Model.DateIso" class="prv-pro-btn prv-pro-btn--ghost">View</a>
+                            @if (item.CanStart)
+                            {
+                                <form asp-controller="Proveedor" asp-action="StartJob" method="post" class="prv-pro-day-inline-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@item.Id" />
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--success"><i class="fas fa-play"></i> Start</button>
+                                </form>
+                            }
+                            <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@item.Id" class="prv-pro-btn prv-pro-btn--outline">Edit</a>
+                        </div>
+                    </div>
+                </article>
+            }
+        }
+    </section>
+
+    <div class="prv-pro-calendar-footer-actions">
+        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-plus"></i> Add Job</a>
+        <button type="button" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-clock"></i> Block Time</button>
+        <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-calendar-week"></i> Back to Week</a>
+    </div>
+</div>

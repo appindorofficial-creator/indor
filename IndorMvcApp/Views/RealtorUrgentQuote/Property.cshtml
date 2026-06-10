@@ -1,0 +1,200 @@
+@model IndorMvcApp.ViewModels.RealtorUrgentQuotePropertyViewModel
+
+
+
+<div class="rl-info-box">
+
+    <i class="fas fa-circle-info"></i>
+
+    <p>For urgent closing needs, fill only the essentials: property, issue, urgency, and photos. INDOR can send this request in minutes.</p>
+
+</div>
+
+
+
+<form asp-action="Property" method="get" class="rl-search-form">
+
+    <div class="rl-search-bar">
+
+        <i class="fas fa-magnifying-glass"></i>
+
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search address or first property numbers" />
+
+    </div>
+
+</form>
+
+
+
+<form id="urgentPropertyForm" asp-action="Property" method="post" class="rl-invite-form">
+
+    @Html.AntiForgeryToken()
+
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+
+
+    <h2 class="rl-invite-section-title">Select Property</h2>
+
+    @foreach (var prop in Model.Properties)
+
+    {
+
+        var selected = Model.SelectedPropertyFileId == prop.Id;
+
+        <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+
+            <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) required />
+
+            <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
+
+            <span class="rl-property-pick-body">
+
+                <strong>@prop.DisplayAddress</strong>
+
+                @if (!string.IsNullOrWhiteSpace(prop.SpecsLabel))
+
+                {
+
+                    <span>@prop.SpecsLabel</span>
+
+                }
+
+            </span>
+
+            @if (selected) { <i class="fas fa-circle-check rl-pick-check"></i> }
+
+        </label>
+
+    }
+
+
+
+    <h2 class="rl-invite-section-title">What do you need?</h2>
+
+    <div class="rl-urgent-category-grid">
+
+        @foreach (var cat in Model.CategoryOptions)
+
+        {
+
+            var selected = Model.RequestCategory == cat.Value;
+
+            <label class="rl-urgent-category @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="requestCategory" value="@cat.Value" @(selected ? "checked" : null) />
+
+                <i class="fas @cat.Icon"></i>
+
+                <span>@cat.Label</span>
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">Service type</h2>
+
+    <div class="rl-pill-row">
+
+        @foreach (var svc in Model.ServiceTypes)
+
+        {
+
+            var selected = Model.ServiceType == svc;
+
+            <label class="rl-pill @(selected ? "is-selected" : "")">
+
+                <input type="radio" name="serviceType" value="@svc" @(selected ? "checked" : null) />
+
+                @svc
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <h2 class="rl-invite-section-title">Urgency level</h2>
+
+    <div class="rl-urgency-row">
+
+        @foreach (var urg in Model.UrgencyOptions)
+
+        {
+
+            var selected = Model.UrgencyLevel == urg.Value;
+
+            <label class="rl-urgency-pill @(selected ? "is-selected" : "") @(urg.Value == "Emergency" ? "is-emergency" : "")">
+
+                <input type="radio" name="urgencyLevel" value="@urg.Value" @(selected ? "checked" : null) />
+
+                <i class="fas @urg.Icon"></i> @urg.Label
+
+            </label>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-info-box rl-info-box--muted">
+
+        <i class="fas fa-circle-info"></i>
+
+        <p>Required for fast request: property + issue + urgency. Photos can be added next.</p>
+
+    </div>
+
+</form>
+
+
+
+<div class="rl-invite-actions">
+
+    <form asp-action="Cancel" method="post">
+
+        @Html.AntiForgeryToken()
+
+        <button type="submit" class="rl-invite-cancel">Cancel</button>
+
+    </form>
+
+    <button type="submit" form="urgentPropertyForm" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    document.querySelectorAll('.rl-property-pick input, .rl-urgent-category input, .rl-pill input, .rl-urgency-pill input').forEach(r => {
+
+        r.addEventListener('change', () => {
+
+            const card = r.closest('.rl-property-pick, .rl-urgent-category, .rl-pill, .rl-urgency-pill');
+
+            const group = card?.className.split(' ').find(c => c.startsWith('rl-'))?.replace('--card', '') || '';
+
+            const selector = group ? `.${group.split(' ')[0]}` : null;
+
+            if (selector) document.querySelectorAll(selector).forEach(p => p.classList.remove('is-selected'));
+
+            card?.classList.add('is-selected');
+
+        });
+
+    });
+
+</script>
+
+}
+

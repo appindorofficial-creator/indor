@@ -1,0 +1,109 @@
+@model IndorMvcApp.ViewModels.ProviderProAddCustomerPropertyViewModel
+@{
+    ViewData["Title"] = "Property Info - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "customers";
+    var propertyTypes = new[] { ("Single Family", "fa-house"), ("Condo", "fa-building"), ("Townhome", "fa-house-chimney"), ("Multi-Family", "fa-city") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--add-customer">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+        <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Property Info</h1>
+            <small>Step @Model.StepNumber of @Model.TotalSteps</small>
+        </div>
+        <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="AddCustomerProperty" method="post" class="prv-pro-add-customer-form">
+        @Html.AntiForgeryToken()
+
+        <label class="prv-pro-form-label">Property Address <span class="prv-pro-required">*</span>
+            <div class="prv-pro-form-input-wrap"><i class="fas fa-location-dot"></i><input type="text" name="StreetAddress" value="@Model.StreetAddress" placeholder="Street address" required /></div>
+        </label>
+        <label class="prv-pro-form-label">Apt / Unit (optional)
+            <input type="text" name="AptUnit" value="@Model.AptUnit" placeholder="Apt, Unit, Suite, etc." />
+        </label>
+        <div class="prv-pro-form-row-3">
+            <label class="prv-pro-form-label">City <span class="prv-pro-required">*</span>
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-city"></i><input type="text" name="City" value="@Model.City" required /></div>
+            </label>
+            <label class="prv-pro-form-label">State <span class="prv-pro-required">*</span>
+                <select name="State" required>
+                    <option value="">Select state</option>
+                    @foreach (var st in Model.StateOptions)
+                    {
+                        <option value="@st" selected="@(Model.State == st)">@st</option>
+                    }
+                </select>
+            </label>
+            <label class="prv-pro-form-label">ZIP Code <span class="prv-pro-required">*</span>
+                <div class="prv-pro-form-input-wrap"><i class="fas fa-location-dot"></i><input type="text" name="ZipCode" value="@Model.ZipCode" required /></div>
+            </label>
+        </div>
+
+        <section class="prv-pro-add-customer-section">
+            <h3>Property Type</h3>
+            <div class="prv-pro-customer-type-grid prv-pro-customer-type-grid--4">
+                @foreach (var (type, icon) in propertyTypes)
+                {
+                    <label class="prv-pro-customer-type-card @(Model.PropertyType == type ? "is-selected" : "")">
+                        <input type="radio" name="PropertyType" value="@type" @(Model.PropertyType == type ? "checked" : "") />
+                        <i class="fas @icon"></i>
+                        <span>@type</span>
+                    </label>
+                }
+            </div>
+        </section>
+
+        <div class="prv-pro-form-row-2">
+            <label class="prv-pro-form-label">Beds (optional)
+                <select name="Bedrooms">
+                    <option value="">Select beds</option>
+                    @foreach (var beds in Model.BedroomOptions)
+                    {
+                        <option value="@beds" selected="@(Model.Bedrooms == beds)">@beds</option>
+                    }
+                </select>
+            </label>
+            <label class="prv-pro-form-label">Baths (optional)
+                <select name="Bathrooms">
+                    <option value="">Select baths</option>
+                    @foreach (var baths in Model.BathroomOptions)
+                    {
+                        <option value="@baths" selected="@(Model.Bathrooms == baths)">@baths.ToString("0.#")</option>
+                    }
+                </select>
+            </label>
+        </div>
+
+        <label class="prv-pro-create-toggle">
+            <div><i class="fas fa-file-invoice"></i><div><strong>Is this the billing address?</strong></div></div>
+            <input type="checkbox" name="IsBillingAddressSame" value="true" @(Model.IsBillingAddressSame ? "checked" : "") />
+        </label>
+
+        <label class="prv-pro-form-label">Access Notes (optional)
+            <textarea name="AccessNotes" rows="3" maxlength="250" placeholder="e.g., gate code, call when arriving...">@Model.AccessNotes</textarea>
+        </label>
+
+        <div class="prv-pro-add-customer-actions">
+            <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.prv-pro-customer-type-card').forEach(function (el) {
+            el.addEventListener('click', function () {
+                document.querySelectorAll('.prv-pro-customer-type-card').forEach(function (i) { i.classList.remove('is-selected'); });
+                el.classList.add('is-selected');
+            });
+        });
+    </script>
+}
