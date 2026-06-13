@@ -1,0 +1,64 @@
+@model IndorMvcApp.ViewModels.ProviderProQuickEstimateViewModel
+
+<details class="prv-pro-lead-job-context">
+    <summary class="prv-pro-lead-job-context-head">
+        <h3><i class="fas fa-clipboard-list"></i> Job details for your estimate</h3>
+        @if (!string.IsNullOrWhiteSpace(Model.LeadCode))
+        {
+            <small>@Model.LeadCode</small>
+        }
+    </summary>
+
+    @if (!string.IsNullOrWhiteSpace(Model.SourceBadge))
+    {
+        <div class="prv-pro-lead-source-banner">
+            <i class="fas fa-file-pdf"></i>
+            <span>@Model.SourceBadge</span>
+            @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
+            {
+                <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener">View inspection PDF</a>
+            }
+        </div>
+    }
+
+    @if (Model.InspectionFindings.Count > 0)
+    {
+        <div class="prv-pro-inspection-findings prv-pro-inspection-findings--compact">
+            @foreach (var item in Model.InspectionFindings)
+            {
+                <article class="prv-pro-inspection-finding">
+                    <div class="prv-pro-inspection-finding-head">
+                        <strong>@item.Title</strong>
+                        <span class="prv-pro-inspection-priority">@item.Priority</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(item.ReportReference))
+                    {
+                        <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @item.ReportReference</p>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(item.Description))
+                    {
+                        <p>@item.Description</p>
+                    }
+                </article>
+            }
+        </div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.ProblemDescription))
+    {
+        <div class="prv-pro-lead-section prv-pro-lead-section--compact">
+            <h4>Problem description</h4>
+            <p class="prv-pro-lead-description">@Model.ProblemDescription</p>
+        </div>
+    }
+
+    @if (Model.PhotoUrls.Count > 0)
+    {
+        <div class="prv-pro-lead-photos prv-pro-lead-photos--compact">
+            @foreach (var photo in Model.PhotoUrls.Take(3))
+            {
+                <img src="@Url.Content($"~{photo}")" alt="Property photo" />
+            }
+        </div>
+    }
+</details>

@@ -44,9 +44,11 @@
         }
     </section>
 
+    @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
+
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Active property files</h2>
+            <h2>Active Property Files</h2>
             <a asp-controller="Realtor" asp-action="Files">View all <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.PropertyFiles.Count == 0)
@@ -55,27 +57,36 @@
         }
         else
         {
-            @foreach (var file in Model.PropertyFiles)
-            {
-                <a asp-controller="Realtor" asp-action="Files" class="rl-prop-card rl-prop-card--link">
-                    <img src="@file.PhotoUrl" alt="" />
-                    <div class="rl-prop-card-body">
-                        <strong>@file.Address</strong>
-                        @if (!string.IsNullOrWhiteSpace(file.SpecsLabel))
-                        {
-                            <span class="rl-prop-specs"><i class="fas fa-bed"></i> @file.SpecsLabel</span>
-                        }
-                        <span class="rl-card-status rl-card-status--active">@file.StatusLabel</span>
-                    </div>
-                    <i class="fas fa-chevron-right rl-card-chevron"></i>
-                </a>
-            }
+            <div class="rl-hscroll">
+                @foreach (var file in Model.PropertyFiles)
+                {
+                    <article class="rl-premium-card rl-premium-card--file">
+                        <button type="button" class="rl-card-menu" aria-label="Options"><i class="fas fa-ellipsis-vertical"></i></button>
+                        <div class="rl-premium-card-media">
+                            <img src="@file.PhotoUrl" alt="" class="rl-premium-card-img" />
+                            <span class="rl-card-image-badge rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusLabel</span>
+                        </div>
+                        <div class="rl-premium-card-body">
+                            <strong>@file.StreetAddress</strong>
+                            @if (!string.IsNullOrWhiteSpace(file.CityRegion))
+                            {
+                                <span class="rl-premium-muted">@file.CityRegion</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(file.ClientName))
+                            {
+                                <span class="rl-premium-client"><i class="fas fa-user"></i> @file.ClientName</span>
+                            }
+                            <a href="@file.ActionUrl" class="rl-premium-link">@file.ActionLabel <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </article>
+                }
+            </div>
         }
     </section>
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Pending quotes</h2>
+            <h2>Pending Quotes</h2>
             <a asp-controller="Realtor" asp-action="Quotes">View all <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.PendingQuotes.Count == 0)
@@ -84,24 +95,46 @@
         }
         else
         {
-            @foreach (var quote in Model.PendingQuotes)
-            {
-                <a asp-controller="Realtor" asp-action="Quotes" class="rl-quote-row rl-quote-row--link">
-                    <span class="rl-quote-row-icon"><i class="fas fa-file-invoice"></i></span>
-                    <div>
-                        <strong>@quote.QuoteCode</strong>
-                        <span class="rl-quote-addr">@quote.Address</span>
-                        <span>@quote.ServiceType · @quote.RequestedLabel</span>
-                    </div>
-                    <span class="rl-card-status rl-card-status--pending">@quote.StatusLabel</span>
-                </a>
-            }
+            <div class="rl-hscroll">
+                @foreach (var quote in Model.PendingQuotes)
+                {
+                    <article class="rl-premium-card rl-premium-card--quote">
+                        <div class="rl-premium-card-media">
+                            <img src="@quote.PhotoUrl" alt="" class="rl-premium-card-img" />
+                            @if (quote.ProviderQuotesReceived > 0)
+                            {
+                                <span class="rl-card-image-badge rl-quote-count-badge">@quote.ProviderQuotesReceived Quotes</span>
+                            }
+                            else
+                            {
+                                <span class="rl-card-image-badge rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
+                            }
+                        </div>
+                        <div class="rl-premium-card-body">
+                            <strong>@quote.StreetAddress</strong>
+                            @if (!string.IsNullOrWhiteSpace(quote.CityRegion))
+                            {
+                                <span class="rl-premium-muted">@quote.CityRegion</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(quote.RequestedLabel))
+                            {
+                                <span class="rl-premium-muted">@quote.RequestedLabel</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(quote.DueLabel))
+                            {
+                                <span class="rl-premium-muted">@quote.DueLabel</span>
+                            }
+                            <a asp-controller="Realtor" asp-action="Quotes" class="rl-premium-link">@quote.ActionLabel <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </article>
+                }
+            </div>
         }
     </section>
 
-    <section class="rl-dash-section">
+    <section class="rl-dash-section" id="shared-packages">
         <div class="rl-dash-section-head">
-            <h2>Shared packages</h2>
+            <h2>Shared Packages</h2>
             <a href="#">View all <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.SharedPackages.Count == 0)
@@ -110,27 +143,51 @@
         }
         else
         {
-            @foreach (var pkg in Model.SharedPackages)
-            {
-                <article class="rl-pkg-row">
-                    <span class="rl-pkg-row-icon"><i class="fas fa-user"></i></span>
-                    <div>
-                        <strong>@pkg.ClientName</strong>
-                        <span>@pkg.Address</span>
-                        <span>Shared on @pkg.SharedLabel</span>
-                    </div>
-                    <span class="rl-card-status rl-card-status--viewed">@pkg.StatusLabel</span>
-                </article>
-            }
+            <div class="rl-hscroll">
+                @foreach (var pkg in Model.SharedPackages)
+                {
+                    <article class="rl-premium-card rl-premium-card--package">
+                        <span class="rl-pkg-folder rl-pkg-folder--@pkg.IconColor"><i class="fas fa-folder"></i></span>
+                        <div class="rl-premium-card-body">
+                            <strong>@pkg.PackageTitle</strong>
+                            <span class="rl-premium-muted">Shared with @pkg.ClientName</span>
+                            <span class="rl-status-pill rl-status-pill--@pkg.StatusCss">
+                                @if (pkg.StatusCss == "viewed") { <i class="fas fa-circle-check"></i> }
+                                else { <i class="fas fa-clock"></i> }
+                                @pkg.StatusLabel
+                            </span>
+                            <span class="rl-premium-muted rl-premium-date">@pkg.SharedLabel</span>
+                            <a href="#" class="rl-premium-link">@pkg.ActionLabel <i class="fas fa-chevron-right"></i></a>
+                        </div>
+                    </article>
+                }
+            </div>
         }
     </section>
 
-    <section class="rl-network-banner">
-        <div>
-            <strong>Grow your business with INDOR's provider network</strong>
-            <p>Connect with trusted inspectors, contractors and more.</p>
-            <a href="#" class="rl-network-btn">Browse network <i class="fas fa-chevron-right"></i></a>
+    <section class="rl-bottom-grid">
+        <div class="rl-insights-card">
+            <div class="rl-insights-head">
+                <span><i class="fas fa-lightbulb"></i> Smart Insights</span>
+            </div>
+            <ul class="rl-insights-list">
+                @foreach (var insight in Model.Insights)
+                {
+                    <li>
+                        <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
+                        <span>@insight.Text</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </li>
+                }
+            </ul>
         </div>
-        <span class="rl-network-icon"><i class="fas fa-people-group"></i></span>
+        <div class="rl-network-banner rl-network-banner--compact">
+            <div>
+                <strong>Grow with INDOR's Provider Network</strong>
+                <p>Connect with trusted inspectors, contractors and more.</p>
+                <a href="#" class="rl-network-btn">Browse Network <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <span class="rl-network-icon"><i class="fas fa-people-group"></i></span>
+        </div>
     </section>
 </div>

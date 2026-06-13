@@ -1,0 +1,214 @@
+@model IndorMvcApp.ViewModels.PropertyMaintenanceSectionViewModel
+
+@{
+
+    var compact = ViewData["Compact"] as bool? ?? false;
+
+    var showHeader = ViewData["ShowHeader"] as bool? ?? true;
+
+    var retryUrl = ViewData["RetryUrl"] as string;
+
+}
+
+
+
+<link rel="stylesheet" href="~/css/property-maintenance.css" asp-append-version="true" />
+
+
+
+<section class="pm-section @(compact ? "pm-section--compact" : "") @(Model.IsAiGenerated ? "pm-section--ai" : "pm-section--pending")" aria-label="@Model.Title">
+
+    @if (showHeader)
+
+    {
+
+        <div class="pm-hero">
+
+            <div class="pm-hero-glow" aria-hidden="true"></div>
+
+            <div class="pm-hero-pattern" aria-hidden="true"></div>
+
+            <div class="pm-hero-inner">
+
+                @if (Model.IsAiGenerated)
+
+                {
+
+                    <div class="pm-hero-badge"><i class="fas fa-wand-magic-sparkles"></i> Powered by OpenAI</div>
+
+                }
+
+                else
+
+                {
+
+                    <div class="pm-hero-badge pm-hero-badge--muted"><i class="fas fa-robot"></i> AI Maintenance</div>
+
+                }
+
+                <h2 class="pm-hero-title">@Model.Title</h2>
+
+                <p class="pm-hero-sub">@Model.Subtitle</p>
+
+                @if (Model.IsAiGenerated && !string.IsNullOrWhiteSpace(Model.Summary))
+
+                {
+
+                    <p class="pm-hero-summary">@Model.Summary</p>
+
+                }
+
+                @if (Model.IsAiGenerated && Model.Items.Count > 0)
+
+                {
+
+                    <div class="pm-stats">
+
+                        @if (Model.UrgentCount > 0)
+
+                        {
+
+                            <span class="pm-stat pm-stat--urgent">
+
+                                <i class="fas fa-circle-exclamation"></i>
+
+                                @Model.UrgentCount urgent
+
+                            </span>
+
+                        }
+
+                        @if (Model.HighCount > 0)
+
+                        {
+
+                            <span class="pm-stat pm-stat--high">
+
+                                <i class="fas fa-arrow-trend-up"></i>
+
+                                @Model.HighCount high priority
+
+                            </span>
+
+                        }
+
+                        <span class="pm-stat pm-stat--total">
+
+                            <i class="fas fa-list-check"></i>
+
+                            @Model.Items.Count recommendations
+
+                        </span>
+
+                    </div>
+
+                }
+
+            </div>
+
+        </div>
+
+    }
+
+
+
+    @if (!Model.IsAiGenerated)
+
+    {
+
+        <div class="pm-unavailable">
+
+            <div class="pm-unavailable-icon"><i class="fas fa-cloud-bolt"></i></div>
+
+            <strong>AI suggestions not ready</strong>
+
+            <p>@(Model.Subtitle ?? "OpenAI will personalize maintenance tasks once your address is analyzed.")</p>
+
+            @if (!string.IsNullOrWhiteSpace(retryUrl))
+
+            {
+
+                <a href="@retryUrl" class="pm-unavailable-btn"><i class="fas fa-rotate-right"></i> Try again</a>
+
+            }
+
+        </div>
+
+    }
+
+    else
+
+    {
+
+        <div class="pm-grid" role="list">
+
+            @{ var index = 0; }
+
+            @foreach (var item in Model.Items)
+
+            {
+
+                index++;
+
+                var priorityClass = item.Priority switch
+
+                {
+
+                    "Urgent" => "pm-card--urgent",
+
+                    "High" => "pm-card--high",
+
+                    _ => "pm-card--routine"
+
+                };
+
+                var icon = item.Icon.StartsWith("fa-") ? item.Icon : $"fa-{item.Icon}";
+
+                <article class="pm-card @priorityClass" role="listitem">
+
+                    <div class="pm-card-top">
+
+                        <span class="pm-card-icon"><i class="fas @icon"></i></span>
+
+                        <div class="pm-card-top-meta">
+
+                            <span class="pm-card-index">@index</span>
+
+                            <span class="pm-priority">@item.Priority</span>
+
+                        </div>
+
+                    </div>
+
+                    <h3 class="pm-card-title">@item.Title</h3>
+
+                    <p class="pm-card-desc">@item.Description</p>
+
+                    @if (!string.IsNullOrWhiteSpace(item.Reason))
+
+                    {
+
+                        <p class="pm-card-reason"><i class="fas fa-lightbulb"></i> @item.Reason</p>
+
+                    }
+
+                    <div class="pm-card-meta">
+
+                        <span class="pm-chip pm-chip--category"><i class="fas fa-tag"></i> @item.Category</span>
+
+                        <span class="pm-chip"><i class="fas fa-clock"></i> @item.Frequency</span>
+
+                    </div>
+
+                </article>
+
+            }
+
+        </div>
+
+        <p class="pm-footnote"><i class="fas fa-shield-halved"></i> Recommendations generated by OpenAI from your property profile — not generic templates.</p>
+
+    }
+
+</section>
+

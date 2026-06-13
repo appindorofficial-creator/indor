@@ -13,7 +13,7 @@
     @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head">
-        <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="SelectRepairItems" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
         <div><h1>Quick Estimate</h1></div>
     </header>
 
@@ -53,6 +53,8 @@
         </div>
     </section>
 
+    @await Html.PartialAsync("_ProviderProLeadJobContext", Model)
+
     <nav class="prv-pro-estimate-stepper" aria-label="Estimate steps">
         @foreach (var (id, label) in steps)
         {
@@ -74,34 +76,57 @@
             <input type="text" name="ServiceType" value="@Model.ServiceType" />
         </label>
 
-        <section class="prv-pro-lead-section">
+        <section class="prv-pro-lead-section prv-pro-scope-section">
             <h3>Scope of Work</h3>
-            <ol class="prv-pro-scope-list">
+            @if (Model.ScopeItems.Count == 0)
+            {
+                <p class="prv-pro-lead-hint">No line items yet. Add repair items from the job details above or create your own.</p>
+            }
+            <ol class="prv-pro-scope-list prv-pro-scope-list--cards" id="scopeItemsList">
                 @for (var i = 0; i < Model.ScopeItems.Count; i++)
                 {
                     var item = Model.ScopeItems[i];
-                    <li>
-                        <input type="text" name="ScopeLabels" value="@item.Label" />
-                        <input type="number" name="ScopeAmounts" value="@item.Amount.ToString("0")" step="1" min="0" />
+                    var rowTotal = item.LaborAmount + item.MaterialAmount > 0
+                        ? item.LaborAmount + item.MaterialAmount
+                        : item.Amount;
+                    <li class="prv-pro-scope-card">
+                        <label class="prv-pro-scope-field prv-pro-scope-field--item">
+                            <span>Repair item</span>
+                            <input type="text" name="ScopeLabels" value="@item.Label" />
+                        </label>
+                        <div class="prv-pro-scope-amounts">
+                            <label class="prv-pro-scope-field">
+                                <span>Labor</span>
+                                <input type="number" name="ScopeLaborAmounts" value="@item.LaborAmount.ToString("0")" step="1" min="0" inputmode="numeric" class="scope-labor" />
+                            </label>
+                            <label class="prv-pro-scope-field">
+                                <span>Material</span>
+                                <input type="number" name="ScopeMaterialAmounts" value="@item.MaterialAmount.ToString("0")" step="1" min="0" inputmode="numeric" class="scope-material" />
+                            </label>
+                            <label class="prv-pro-scope-field prv-pro-scope-field--total">
+                                <span>Total</span>
+                                <input type="number" name="ScopeAmounts" value="@rowTotal.ToString("0")" step="1" min="0" class="scope-total" readonly tabindex="-1" />
+                            </label>
+                        </div>
                     </li>
                 }
             </ol>
-            <button type="button" class="prv-pro-link-more">+ Add Item</button>
+            <button type="button" class="prv-pro-link-more" id="addScopeItem">+ Add Item</button>
         </section>
 
-        <section class="prv-pro-estimate-pricing">
-            <h3>Pricing Summary</h3>
-            <div class="prv-pro-estimate-pricing-row">
-                <span>Labor</span>
-                <input type="number" name="LaborAmount" value="@Model.LaborAmount.ToString("0")" step="1" min="0" />
-            </div>
-            <div class="prv-pro-estimate-pricing-row">
-                <span>Materials</span>
-                <input type="number" name="MaterialsAmount" value="@Model.MaterialsAmount.ToString("0")" step="1" min="0" />
-            </div>
+        <section class="prv-pro-estimate-pricing prv-pro-estimate-pricing--cards">
+            <h3>Additional Costs</h3>
+            <label class="prv-pro-estimate-cost-row">
+                <span>Service Call / Assessment</span>
+                <input type="number" name="LaborAmount" value="@Model.LaborAmount.ToString("0")" step="1" min="0" inputmode="numeric" />
+            </label>
+            <label class="prv-pro-estimate-cost-row">
+                <span>Materials &amp; Tools</span>
+                <input type="number" name="MaterialsAmount" value="@Model.MaterialsAmount.ToString("0")" step="1" min="0" inputmode="numeric" />
+            </label>
             <div class="prv-pro-estimate-total">
                 <span>Total Estimate</span>
-                <strong>@Model.TotalAmount.ToString("C0", money)</strong>
+                <strong id="estimateGrandTotal">@Model.TotalAmount.ToString("C0", money)</strong>
             </div>
         </section>
 
@@ -142,3 +167,69 @@
         </footer>
     </form>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    const addBtn = document.getElementById('addScopeItem');
+    const list = document.getElementById('scopeItemsList');
+    const grandTotal = document.getElementById('estimateGrandTotal');
+    const form = document.querySelector('.prv-pro-estimate-form');
+
+    function recalcRow(row) {
+        const labor = parseFloat(row.querySelector('.scope-labor')?.value || '0');
+        const material = parseFloat(row.querySelector('.scope-material')?.value || '0');
+        const totalInput = row.querySelector('.scope-total');
+        if (totalInput) totalInput.value = String(Math.round(labor + material));
+    }
+
+    function recalcGrand() {
+        let sum = 0;
+        list?.querySelectorAll('li').forEach(row => {
+            recalcRow(row);
+            sum += parseFloat(row.querySelector('.scope-total')?.value || '0');
+        });
+        const extraLabor = parseFloat(form?.querySelector('[name="LaborAmount"]')?.value || '0');
+        const extraMat = parseFloat(form?.querySelector('[name="MaterialsAmount"]')?.value || '0');
+        sum += extraLabor + extraMat;
+        if (grandTotal) grandTotal.textContent = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(sum);
+    }
+
+    list?.addEventListener('input', recalcGrand);
+    form?.querySelector('[name="LaborAmount"]')?.addEventListener('input', recalcGrand);
+    form?.querySelector('[name="MaterialsAmount"]')?.addEventListener('input', recalcGrand);
+
+    addBtn?.addEventListener('click', () => {
+        const row = document.createElement('li');
+        row.className = 'prv-pro-scope-card';
+        row.innerHTML = `
+            <label class="prv-pro-scope-field prv-pro-scope-field--item">
+                <span>Repair item</span>
+                <input type="text" name="ScopeLabels" placeholder="Describe the repair" />
+            </label>
+            <div class="prv-pro-scope-amounts">
+                <label class="prv-pro-scope-field">
+                    <span>Labor</span>
+                    <input type="number" name="ScopeLaborAmounts" value="0" step="1" min="0" inputmode="numeric" class="scope-labor" />
+                </label>
+                <label class="prv-pro-scope-field">
+                    <span>Material</span>
+                    <input type="number" name="ScopeMaterialAmounts" value="0" step="1" min="0" inputmode="numeric" class="scope-material" />
+                </label>
+                <label class="prv-pro-scope-field prv-pro-scope-field--total">
+                    <span>Total</span>
+                    <input type="number" name="ScopeAmounts" value="0" step="1" min="0" class="scope-total" readonly tabindex="-1" />
+                </label>
+            </div>`;
+        list?.appendChild(row);
+        recalcGrand();
+    });
+
+    form?.querySelectorAll('input, textarea').forEach(el => {
+        el.addEventListener('focus', () => {
+            window.setTimeout(() => el.scrollIntoView({ block: 'center', behavior: 'smooth' }), 300);
+        });
+    });
+})();
+</script>
+}

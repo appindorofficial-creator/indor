@@ -58,9 +58,13 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
 
             CompanyName = companyName,
 
+            CompanyInitial = companyName.Trim().Length > 0 ? companyName.Trim()[0].ToString().ToUpperInvariant() : "P",
+
             Greeting = ResolveGreeting(),
 
             IsVerified = isApproved || (proveedor.ExamPassed == true && proveedor.Documentos.Count > 0),
+
+            IsProActive = isProActive,
 
             ActivationPending = !isApproved,
 
@@ -112,7 +116,15 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
 
         };
 
-
+        model.ShowEstimateTutorial = workspace.PendingEstimatesCount > 0;
+        model.EstimateWizardSteps =
+        [
+            new() { Number = 1, Label = "Home", IsCurrent = true },
+            new() { Number = 2, Label = "Pending Estimates" },
+            new() { Number = 3, Label = "Estimate Review" },
+            new() { Number = 4, Label = "Edit Estimate" },
+            new() { Number = 5, Label = "Send Estimate" }
+        ];
 
         return model;
 

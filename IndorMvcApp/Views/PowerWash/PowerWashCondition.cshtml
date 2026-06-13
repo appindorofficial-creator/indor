@@ -72,18 +72,26 @@
 
         <div class="field-card">
             <div class="field-head"><i class="fas fa-camera"></i><span>Upload photos (optional)</span></div>
-            <label class="upload-drop" for="photoInput">
-                <i class="fas fa-camera"></i>
-                <strong>Tap to upload photos</strong>
-                <span>JPG or PNG, up to 10 MB each</span>
-            </label>
-            <input type="file" name="files" id="photoInput" accept=".jpg,.jpeg,.png" multiple style="display:none;" />
+            <p class="field-hint" style="margin-top:0;margin-bottom:10px;">Add up to 5 photos to help our pros prepare.</p>
+            <div class="upload-drop-wrap">
+                <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
+                       accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
+                <label class="upload-drop" id="photoDropzone" for="photoInput">
+                    <i class="fas fa-camera"></i>
+                    <strong>Tap to upload photos</strong>
+                    <span>JPG or PNG, up to 10 MB each</span>
+                </label>
+            </div>
+            <div class="upload-selected-list" id="photoSelectedList" hidden></div>
             @if (Model.ArchivosExistentes.Count > 0)
             {
-                <div class="upload-preview">
+                <div class="upload-selected-list" id="photoSavedList">
                     @foreach (var file in Model.ArchivosExistentes)
                     {
-                        <img src="@Url.Content("~" + file.RutaArchivo)" alt="@file.NombreArchivo" />
+                        <div class="upload-selected-item">
+                            <img class="upload-preview-thumb" src="@Url.Content($"~{file.RutaArchivo}")" alt="" loading="lazy" />
+                            <span>@file.NombreArchivo</span>
+                        </div>
                     }
                 </div>
             }
@@ -196,6 +204,92 @@
                 windowInput.value = btn.getAttribute('data-window');
             });
             if (btn.getAttribute('data-window') === windowInput.value) btn.classList.add('active');
+        });
+
+        var photoInput = document.getElementById('photoInput');
+        var photoDropzone = document.getElementById('photoDropzone');
+        var photoSelectedList = document.getElementById('photoSelectedList');
+        var maxPhotos = 5;
+        var existingCount = @Model.ArchivosExistentes.Count;
+        var pendingPhotos = [];
+
+        function syncPhotoInputFiles() {
+            if (!photoInput) return;
+            var dt = new DataTransfer();
+            pendingPhotos.slice(0, Math.max(0, maxPhotos - existingCount)).forEach(function (file) {
+                dt.items.add(file);
+            });
+            photoInput.files = dt.files;
+        }
+
+        function mergePhotoFiles(newFiles) {
+            Array.from(newFiles || []).forEach(function (file) {
+                if (file && file.size > 0) {
+                    pendingPhotos.push(file);
+                }
+            });
+            var allowed = Math.max(0, maxPhotos - existingCount);
+            if (pendingPhotos.length > allowed) {
+                pendingPhotos = pendingPhotos.slice(0, allowed);
+            }
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function removePendingPhoto(index) {
+            pendingPhotos.splice(index, 1);
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function renderPhotoSelection(files) {
+            if (!photoSelectedList || !photoDropzone) return;
+            var list = Array.from(files || []).filter(function (f) { return f && f.size > 0; });
+            photoSelectedList.innerHTML = '';
+            if (list.length === 0) {
+                photoSelectedList.hidden = true;
+                photoDropzone.classList.remove('has-files');
+                return;
+            }
+            photoDropzone.classList.add('has-files');
+            photoSelectedList.hidden = false;
+            list.forEach(function (file, index) {
+                var row = document.createElement('div');
+                row.className = 'upload-selected-item';
+                if (!file.type || file.type.indexOf('image/') === 0) {
+                    var img = document.createElement('img');
+                    img.className = 'upload-preview-thumb';
+                    img.alt = 'Selected photo ' + (index + 1);
+                    row.appendChild(img);
+                    var reader = new FileReader();
+                    reader.onload = function (ev) { img.src = ev.target.result; };
+                    reader.readAsDataURL(file);
+                } else {
+                    var icon = document.createElement('i');
+                    icon.className = 'fas fa-image';
+                    row.appendChild(icon);
+                }
+                var name = document.createElement('span');
+                name.textContent = file.name || ('Photo ' + (index + 1));
+                row.appendChild(name);
+                var removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'upload-remove-btn';
+                removeBtn.setAttribute('aria-label', 'Remove ' + (file.name || 'photo'));
+                removeBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+                removeBtn.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    removePendingPhoto(index);
+                });
+                row.appendChild(removeBtn);
+                photoSelectedList.appendChild(row);
+            });
+        }
+
+        photoInput?.addEventListener('change', function () {
+            mergePhotoFiles(this.files);
+            this.value = '';
         });
     })();
 </script>

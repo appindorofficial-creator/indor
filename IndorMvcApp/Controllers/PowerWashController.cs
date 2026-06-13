@@ -83,14 +83,16 @@ public class PowerWashController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var detailsComplete = HasCompletedDetails(solicitud);
+
         return View(new PowerWashDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Power Wash Exterior",
-            AreasSeleccionadas = solicitud.AreasSeleccionadas ?? "FullExterior",
-            MaterialExterior = solicitud.MaterialExterior ?? "VinylSiding",
-            NumeroPisos = solicitud.NumeroPisos ?? "Two"
+            AreasSeleccionadas = detailsComplete ? solicitud.AreasSeleccionadas ?? string.Empty : string.Empty,
+            MaterialExterior = detailsComplete ? solicitud.MaterialExterior ?? string.Empty : string.Empty,
+            NumeroPisos = detailsComplete ? solicitud.NumeroPisos ?? string.Empty : string.Empty
         });
     }
 
@@ -109,6 +111,14 @@ public class PowerWashController : Controller
         if (string.IsNullOrWhiteSpace(model.AreasSeleccionadas))
         {
             ModelState.AddModelError(nameof(model.AreasSeleccionadas), "Select at least one area to wash.");
+        }
+        else
+        {
+            model.AreasSeleccionadas = SanitizeAreasSeleccionadas(model.AreasSeleccionadas);
+            if (string.IsNullOrWhiteSpace(model.AreasSeleccionadas))
+            {
+                ModelState.AddModelError(nameof(model.AreasSeleccionadas), "Select at least one area to wash.");
+            }
         }
 
         if (!ModelState.IsValid)
@@ -458,9 +468,6 @@ public class PowerWashController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                AreasSeleccionadas = "FullExterior",
-                MaterialExterior = "VinylSiding",
-                NumeroPisos = "Two",
                 AccesoGrifo = "Yes",
                 TimingPreferido = "NextWeek",
                 VentanaHorario = "Morning",
@@ -526,5 +533,26 @@ public class PowerWashController : Controller
                 FechaCreacion = DateTime.UtcNow
             });
         }
+    }
+
+    private static bool HasCompletedDetails(SolicitudPowerWash solicitud) =>
+        string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
+    private static string SanitizeAreasSeleccionadas(string areas)
+    {
+        var selected = areas
+            .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        if (selected.Any(a => string.Equals(a, "FullExterior", StringComparison.OrdinalIgnoreCase)))
+        {
+            selected.RemoveAll(a =>
+                string.Equals(a, "FrontOnly", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(a, "BackOnly", StringComparison.OrdinalIgnoreCase));
+        }
+
+        return string.Join("|", selected);
     }
 }

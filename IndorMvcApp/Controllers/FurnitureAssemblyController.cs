@@ -96,16 +96,18 @@ public class FurnitureAssemblyController : Controller
                 .FirstOrDefaultAsync();
         }
 
+        var itemsComplete = HasCompletedItems(solicitud);
+
         return View(new FurnitureAssemblyItemsViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = defaultAddress ?? string.Empty,
-            TiposMueble = solicitud.TiposMueble ?? "BedFrame|Dresser",
-            CantidadItems = solicitud.CantidadItems ?? "Two",
-            CondicionItems = solicitud.CondicionItems ?? "NewInBox",
-            AnclajePared = solicitud.AnclajePared ?? "NotSure"
+            TiposMueble = itemsComplete ? solicitud.TiposMueble ?? string.Empty : string.Empty,
+            CantidadItems = itemsComplete ? solicitud.CantidadItems ?? string.Empty : string.Empty,
+            CondicionItems = itemsComplete ? solicitud.CondicionItems ?? string.Empty : string.Empty,
+            AnclajePared = itemsComplete ? solicitud.AnclajePared ?? string.Empty : string.Empty
         });
     }
 
@@ -123,6 +125,17 @@ public class FurnitureAssemblyController : Controller
 
         if (string.Equals(action, "upload", StringComparison.OrdinalIgnoreCase))
         {
+            if (string.IsNullOrWhiteSpace(model.TiposMueble))
+            {
+                ModelState.AddModelError(nameof(model.TiposMueble), "Select at least one item to assemble.");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
+                return View(model);
+            }
+
             solicitud.DireccionPropiedad = model.DireccionPropiedad?.Trim();
             solicitud.TiposMueble = model.TiposMueble?.Trim();
             solicitud.CantidadItems = model.CantidadItems;
@@ -133,6 +146,11 @@ public class FurnitureAssemblyController : Controller
             await ApplyEstimateAsync(solicitud);
             await _db.SaveChangesAsync();
             return RedirectToAction(nameof(FurnitureAssemblyReview), new { id = solicitud.Id });
+        }
+
+        if (string.IsNullOrWhiteSpace(model.TiposMueble))
+        {
+            ModelState.AddModelError(nameof(model.TiposMueble), "Select at least one item to assemble.");
         }
 
         if (!ModelState.IsValid)
@@ -205,6 +223,7 @@ public class FurnitureAssemblyController : Controller
 
         try
         {
+            solicitud.DireccionPropiedad = model.DireccionPropiedad.Trim();
             solicitud.Habitacion = model.Habitacion;
             solicitud.DetallesAcceso = model.DetallesAcceso;
             solicitud.AyudaMover = model.AyudaMover;
@@ -254,25 +273,37 @@ public class FurnitureAssemblyController : Controller
         var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
-        if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
-        {
-            return RedirectToAction(nameof(FurnitureAssemblyPreferences), new { id = solicitud.Id });
-        }
+        var userId = RequireUserId();
+        if (userId == null) return Challenge();
 
-        if (string.Equals(action, "edit", StringComparison.OrdinalIgnoreCase))
-        {
-            return RedirectToAction(nameof(FurnitureAssemblyItems), new { id = solicitud.Id });
-        }
+        var isBack = string.Equals(action, "back", StringComparison.OrdinalIgnoreCase);
+        var isEdit = string.Equals(action, "edit", StringComparison.OrdinalIgnoreCase);
 
         solicitud.NotaCorta = model.NotaCorta?.Trim();
 
         if (files != null && files.Count > 0)
         {
-            await SaveFilesAsync(solicitud, RequireUserId()!, files);
-            if (!ModelState.IsValid)
-            {
-                return View(BuildReviewViewModel(solicitud, model.DisclaimerTexto));
-            }
+            await SaveFilesAsync(solicitud, userId, files);
+            await _db.Entry(solicitud).Collection(s => s.Archivos).LoadAsync();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(BuildReviewViewModel(solicitud, model.DisclaimerTexto));
+        }
+
+        if (isBack)
+        {
+            solicitud.FechaActualizacion = DateTime.Now;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(FurnitureAssemblyPreferences), new { id = solicitud.Id });
+        }
+
+        if (isEdit)
+        {
+            solicitud.FechaActualizacion = DateTime.Now;
+            await _db.SaveChangesAsync();
+            return RedirectToAction(nameof(FurnitureAssemblyItems), new { id = solicitud.Id });
         }
 
         try
@@ -551,4 +582,9 @@ public class FurnitureAssemblyController : Controller
         string.IsNullOrWhiteSpace(value)
             ? Array.Empty<string>()
             : value.Split('|', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+
+    private static bool HasCompletedItems(SolicitudFurnitureAssembly solicitud) =>
+        string.Equals(solicitud.Estado, "ItemsCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "PreferencesCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
 }

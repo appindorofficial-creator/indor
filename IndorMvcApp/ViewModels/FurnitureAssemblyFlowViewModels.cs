@@ -48,14 +48,14 @@ public class FurnitureAssemblyItemsViewModel
 
     public string TiposMueble { get; set; } = string.Empty;
 
-    [Required]
-    public string CantidadItems { get; set; } = "Two";
+    [Required(ErrorMessage = "Select how many items need assembly.")]
+    public string CantidadItems { get; set; } = string.Empty;
 
-    [Required]
-    public string CondicionItems { get; set; } = "NewInBox";
+    [Required(ErrorMessage = "Select the condition of your items.")]
+    public string CondicionItems { get; set; } = string.Empty;
 
-    [Required]
-    public string AnclajePared { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Select whether any item needs wall anchoring.")]
+    public string AnclajePared { get; set; } = string.Empty;
 }
 
 public class FurnitureAssemblyPreferencesViewModel
@@ -64,6 +64,8 @@ public class FurnitureAssemblyPreferencesViewModel
     public int MovingSetupServicioId { get; set; }
     public string NombreServicio { get; set; } = string.Empty;
     public string PageTitle { get; set; } = "Furniture & Assembly Details";
+
+    [Required, MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
     [Required]

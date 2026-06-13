@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -12,7 +13,7 @@ public class WaterHeaterSetupDraft
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -63,10 +64,12 @@ public class AddWaterHeaterViewModel : WaterHeaterSetupStepViewModel
     [MaxLength(80)]
     public string? Brand { get; set; }
 
+    [Display(Name = "Model")]
     [MaxLength(80)]
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
-    [MaxLength(80)]
+    [MaxLength(EquipmentSerialNumberAttribute.MaxLength)]
+    [EquipmentSerialNumber]
     public string? SerialNumber { get; set; }
 
     public int? InstallYear { get; set; }
@@ -90,7 +93,7 @@ public class WaterHeaterDetailsFoundViewModel : WaterHeaterSetupStepViewModel
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -111,7 +114,7 @@ public class WaterHeaterReviewViewModel : WaterHeaterSetupStepViewModel
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -135,7 +138,7 @@ public class WaterHeaterSavedViewModel : WaterHeaterSetupStepViewModel
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -170,7 +173,7 @@ public class WaterHeaterOpenAiHints
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -185,7 +188,7 @@ public class WaterHeaterOpenAiHints
     public bool HasAny =>
         !string.IsNullOrWhiteSpace(HeaterType)
         || !string.IsNullOrWhiteSpace(Brand)
-        || !string.IsNullOrWhiteSpace(Model)
+        || !string.IsNullOrWhiteSpace(EquipmentModel)
         || !string.IsNullOrWhiteSpace(SerialNumber)
         || InstallYear.HasValue
         || !string.IsNullOrWhiteSpace(TankSize);

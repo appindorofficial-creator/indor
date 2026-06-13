@@ -10,14 +10,32 @@
     .info-box-blue { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 18px; font-size: 0.86rem; line-height: 1.45; }
     .info-box-blue i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
     .address-card { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; background: rgba(0,102,204,0.06); margin-bottom: 16px; }
-    .address-card .left { display: flex; align-items: center; gap: 10px; flex: 1; }
-    .address-card input { border: none; background: transparent; font-weight: 600; width: 100%; font-family: inherit; font-size: 0.92rem; }
+    .address-card .left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+    .address-card input,
+    .address-card .address-input {
+        border: none; background: transparent; font-weight: 600; width: 100%; font-family: inherit; font-size: 0.92rem;
+        min-width: 0; color: #0A2540;
+    }
+    .address-card.editing input,
+    .address-card input:focus {
+        border: 1.5px solid #0066CC; background: #FFF; border-radius: 8px; padding: 8px 10px; outline: none;
+    }
+    .address-edit-btn {
+        border: none; background: transparent; color: #0066CC; font-weight: 600; font-size: 0.85rem;
+        cursor: pointer; padding: 4px 0; flex-shrink: 0; font-family: inherit;
+    }
     .type-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 10px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; position: relative; }
-    .type-card i { display: block; font-size: 1.1rem; margin-bottom: 8px; color: #94A3B8; }
+    .type-card > i { display: block; font-size: 1.1rem; margin-bottom: 8px; color: #94A3B8; }
     .type-card.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-    .type-card.active i { color: #0066CC; }
-    .type-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
-    .type-card.active .check { display: flex; }
+    .type-card.active > i { color: #0066CC; }
+    .type-card .check {
+        position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #CBD5E1; background: #FFF; display: flex; align-items: center; justify-content: center;
+        pointer-events: none;
+    }
+    .type-card .check i { display: block; margin: 0; font-size: 0.7rem; line-height: 1; color: transparent; font-weight: 900; }
+    .type-card.active .check { border-color: #0066CC; background: #0066CC; box-shadow: 0 0 0 2px #FFF; }
+    .type-card.active .check i { color: #FFF; }
     .segment-row { display: flex; gap: 8px; flex-wrap: wrap; }
     .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 999px; padding: 10px 14px; font-weight: 600; font-size: 0.82rem; color: #64748B; cursor: pointer; }
     .segment-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }

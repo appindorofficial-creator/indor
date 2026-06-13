@@ -12,7 +12,7 @@ public class HvacSetupDraft
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -63,8 +63,9 @@ public class AddHvacSystemViewModel : HvacSetupStepViewModel
     [MaxLength(80)]
     public string? Brand { get; set; }
 
+    [Display(Name = "Model")]
     [MaxLength(80)]
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     [MaxLength(80)]
     public string? SerialNumber { get; set; }
@@ -92,7 +93,7 @@ public class HvacReviewViewModel : HvacSetupStepViewModel
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 
@@ -115,7 +116,7 @@ public class HvacSavedViewModel : HvacSetupStepViewModel
 
     public string? Brand { get; set; }
 
-    public string? Model { get; set; }
+    public string? EquipmentModel { get; set; }
 
     public string? SerialNumber { get; set; }
 

@@ -29,7 +29,7 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="MovingDetails" method="post">
+    <form asp-action="MovingDetails" method="post" novalidate id="movingDetailsForm">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -72,15 +72,17 @@
                 <label>From</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionOrigen" placeholder="Pick up address" required />
+                    <input asp-for="DireccionOrigen" placeholder="Pick up address" />
                 </div>
+                <span asp-validation-for="DireccionOrigen" class="field-error"></span>
             </div>
             <div class="input-field">
                 <label>To</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionDestino" placeholder="Drop off address" required />
+                    <input asp-for="DireccionDestino" placeholder="Drop off address" />
                 </div>
+                <span asp-validation-for="DireccionDestino" class="field-error"></span>
             </div>
         </div>
 
@@ -89,8 +91,9 @@
                 <label>Move date</label>
                 <div class="input-wrap">
                     <i class="fas fa-calendar"></i>
-                    <input asp-for="FechaMovimiento" type="date" required />
+                    <input asp-for="FechaMovimiento" type="date" />
                 </div>
+                <span asp-validation-for="FechaMovimiento" class="field-error"></span>
             </div>
             <div class="input-field">
                 <label>Preferred arrival time</label>
@@ -155,6 +158,64 @@
         const timeSelect = document.getElementById('VentanaHorarioSelect');
         timeSelect.value = timeHidden.value || 'Morning';
         timeSelect.addEventListener('change', () => timeHidden.value = timeSelect.value);
+
+        const form = document.getElementById('movingDetailsForm');
+        const addressMessage = 'Please enter a valid street address (e.g. 123 Main St, Charlotte, NC).';
+        const requiredFields = [
+            { id: 'DireccionOrigen', message: 'Please enter the pick-up address.', validateAddress: true },
+            { id: 'DireccionDestino', message: 'Please enter the drop-off address.', validateAddress: true },
+            { name: 'FechaMovimiento', message: 'Please select a move date.' }
+        ];
+
+        function isValidStreetAddress(value) {
+            const address = String(value || '').trim();
+            if (address.length < 5) return false;
+            if (!/\p{L}/u.test(address)) return false;
+            if (/^[\d\s.,#-]+$/.test(address)) return false;
+            const hasDigit = /\d/.test(address);
+            const wordParts = address.split(/\s+/).filter(part => /\p{L}/u.test(part)).length;
+            return hasDigit || wordParts >= 2;
+        }
+
+        function fieldValidity(field, input) {
+            const empty = !input.value || !String(input.value).trim();
+            if (empty) return field.message;
+            if (field.validateAddress && !isValidStreetAddress(input.value)) return addressMessage;
+            return '';
+        }
+
+        requiredFields.forEach(field => {
+            const input = field.id
+                ? document.getElementById(field.id)
+                : document.querySelector(`[name="${field.name}"]`);
+            if (!input) return;
+            input.addEventListener('input', () => input.setCustomValidity(fieldValidity(field, input)));
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') {
+                return;
+            }
+
+            let firstInvalid = null;
+            requiredFields.forEach(field => {
+                const input = field.id
+                    ? document.getElementById(field.id)
+                    : document.querySelector(`[name="${field.name}"]`);
+                if (!input) return;
+
+                const message = fieldValidity(field, input);
+                input.setCustomValidity(message);
+                if (message && !firstInvalid) {
+                    firstInvalid = input;
+                }
+            });
+
+            if (firstInvalid) {
+                e.preventDefault();
+                firstInvalid.reportValidity();
+            }
+        });
     })();
 </script>
 </body>

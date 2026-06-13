@@ -81,18 +81,38 @@
 
         <div class="field-card">
             <span class="field-label">Add photos or notes (optional)</span>
-            <div class="upload-zone">
-                <i class="fas fa-camera"></i>
-                <p><strong>Upload photos</strong><br/>JPG, PNG up to 10MB</p>
-                <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:10px;width:100%;" />
+            <p class="photo-hint">Add up to 5 photos. Tap to add more — each photo stays until you remove it.</p>
+            <div class="photo-upload-slot">
+                <input type="file" name="files" id="movingPhotos" class="photo-input-hidden" multiple
+                       accept="image/*,.jpg,.jpeg,.png" />
+                <label class="photo-upload" id="movingPhotoDropzone" for="movingPhotos">
+                    <i class="fas fa-camera"></i>
+                    <p><strong>Upload photos</strong></p>
+                    <p>JPG or PNG, up to 10 MB each</p>
+                </label>
+                <div class="photo-selected-list" id="movingPhotoList" hidden></div>
             </div>
             @if (Model.ArchivosExistentes.Count > 0)
             {
-                <p style="font-size:0.78rem;color:#64748B;margin-bottom:8px;">Uploaded files:</p>
-                @foreach (var file in Model.ArchivosExistentes)
-                {
-                    <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
-                }
+                <div class="photo-attached-list" id="movingSavedPhotos">
+                    @foreach (var file in Model.ArchivosExistentes)
+                    {
+                        <div class="photo-selected-item">
+                            @if (!string.IsNullOrWhiteSpace(file.RutaArchivo))
+                            {
+                                <img class="photo-preview-thumb" src="@Url.Content($"~{file.RutaArchivo}")" alt="" loading="lazy" />
+                            }
+                            else
+                            {
+                                <i class="fas fa-image"></i>
+                            }
+                            <span>@file.NombreArchivo</span>
+                            <button type="submit" form="removeMovingPhoto@(file.Id)" class="photo-remove-btn" aria-label="Remove @file.NombreArchivo">
+                                <i class="fas fa-xmark"></i>
+                            </button>
+                        </div>
+                    }
+                </div>
             }
             <div class="input-wrap" style="margin-top:10px;">
                 <i class="fas fa-note-sticky"></i>
@@ -103,6 +123,15 @@
         <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
         <button type="submit" name="action" value="back" class="btn-outline">Back</button>
     </form>
+
+    @foreach (var file in Model.ArchivosExistentes)
+    {
+        <form id="removeMovingPhoto@(file.Id)" asp-action="RemovePhoto" method="post" style="display:none">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="photoId" value="@file.Id" />
+            <input type="hidden" name="solicitudId" value="@Model.SolicitudId" />
+        </form>
+    }
 </div>
 <script>
     (function () {
@@ -144,6 +173,93 @@
                 else { accessSelected.add(value); btn.classList.add('active'); }
                 accessHidden.value = Array.from(accessSelected).join('|');
             });
+        });
+
+        const photoInput = document.getElementById('movingPhotos');
+        const photoDropzone = document.getElementById('movingPhotoDropzone');
+        const photoList = document.getElementById('movingPhotoList');
+        const maxPhotos = 5;
+        const existingCount = @Model.ArchivosExistentes.Count;
+        let pendingPhotos = [];
+
+        function syncPhotoInputFiles() {
+            if (!photoInput) return;
+            const dt = new DataTransfer();
+            const allowed = Math.max(0, maxPhotos - existingCount);
+            pendingPhotos.slice(0, allowed).forEach(function (file) {
+                dt.items.add(file);
+            });
+            photoInput.files = dt.files;
+        }
+
+        function mergePhotoFiles(newFiles) {
+            Array.from(newFiles || []).forEach(function (file) {
+                if (file && file.size > 0) {
+                    pendingPhotos.push(file);
+                }
+            });
+            const allowed = Math.max(0, maxPhotos - existingCount);
+            if (pendingPhotos.length > allowed) {
+                pendingPhotos = pendingPhotos.slice(0, allowed);
+            }
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function removePendingPhoto(index) {
+            pendingPhotos.splice(index, 1);
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function renderPhotoSelection(files) {
+            if (!photoList || !photoDropzone) return;
+            const list = Array.from(files || []).filter(function (f) { return f && f.size > 0; });
+            photoList.innerHTML = '';
+            if (list.length === 0) {
+                photoList.hidden = true;
+                photoDropzone.classList.remove('has-files');
+                return;
+            }
+            photoDropzone.classList.add('has-files');
+            photoList.hidden = false;
+            list.forEach(function (file, index) {
+                const row = document.createElement('div');
+                row.className = 'photo-selected-item';
+                if (!file.type || file.type.indexOf('image/') === 0) {
+                    const img = document.createElement('img');
+                    img.className = 'photo-preview-thumb';
+                    img.alt = 'Selected photo ' + (index + 1);
+                    row.appendChild(img);
+                    const reader = new FileReader();
+                    reader.onload = function (e) { img.src = e.target.result; };
+                    reader.readAsDataURL(file);
+                } else {
+                    const icon = document.createElement('i');
+                    icon.className = 'fas fa-image';
+                    row.appendChild(icon);
+                }
+                const name = document.createElement('span');
+                name.textContent = file.name || ('Photo ' + (index + 1));
+                row.appendChild(name);
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'photo-remove-btn';
+                removeBtn.setAttribute('aria-label', 'Remove ' + (file.name || 'photo'));
+                removeBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+                removeBtn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    removePendingPhoto(index);
+                });
+                row.appendChild(removeBtn);
+                photoList.appendChild(row);
+            });
+        }
+
+        photoInput?.addEventListener('change', function () {
+            mergePhotoFiles(this.files);
+            this.value = '';
         });
     })();
 </script>

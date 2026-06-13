@@ -1,118 +1,245 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionPrioritiesViewModel
+@using IndorMvcApp.Models
 
-
-
-<div class="rl-info-box rl-info-box--ai">
-
-    <i class="fas fa-wand-magic-sparkles"></i>
-
-    <p>INDOR AI has analyzed and prioritized findings to help you take action faster.</p>
-
-</div>
-
-
-
-<div class="rl-findings-summary">
-
-    <h2 class="rl-invite-section-title">Findings summary</h2>
-
-    <div class="rl-findings-summary-grid">
-
-        <div><i class="fas fa-file-lines"></i><strong>@Model.TotalFindings</strong><span>Total findings</span></div>
-
-        <div class="is-urgent"><i class="fas fa-circle-exclamation"></i><strong>@Model.UrgentCount</strong><span>Urgent</span></div>
-
-        <div class="is-high"><i class="fas fa-arrow-up"></i><strong>@Model.HighCount</strong><span>High</span></div>
-
-        <div class="is-moderate"><i class="fas fa-minus"></i><strong>@Model.ModerateCount</strong><span>Moderate</span></div>
-
+<div class="rl-insp-findings-hero">
+    <div class="rl-insp-findings-hero-glow" aria-hidden="true"></div>
+    <div class="rl-insp-findings-hero-inner">
+        <span class="rl-insp-findings-badge"><i class="fas fa-wand-magic-sparkles"></i> AI Analysis Complete</span>
+        <h2 class="rl-insp-findings-property">@Model.PropertyDisplay</h2>
+        <p class="rl-insp-findings-report">
+            <i class="fas fa-file-pdf"></i>
+            @if (!string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
+            {
+                <a href="@Url.Content($"~{Model.ReportPdfUrl}")" target="_blank" rel="noopener">@Model.ReportFileName</a>
+            }
+            else
+            {
+                @Model.ReportFileName
+            }
+        </p>
+        @if (!string.IsNullOrWhiteSpace(Model.AnalysisSummary))
+        {
+            <p class="rl-insp-findings-summary">@Model.AnalysisSummary</p>
+        }
     </div>
-
 </div>
 
-
+<div class="rl-insp-stats">
+    <div class="rl-insp-stat">
+        <span class="rl-insp-stat-num">@Model.TotalFindings</span>
+        <span class="rl-insp-stat-label">Total issues</span>
+    </div>
+    <div class="rl-insp-stat rl-insp-stat--urgent">
+        <span class="rl-insp-stat-num">@Model.UrgentCount</span>
+        <span class="rl-insp-stat-label">Urgent</span>
+    </div>
+    <div class="rl-insp-stat rl-insp-stat--high">
+        <span class="rl-insp-stat-num">@Model.HighCount</span>
+        <span class="rl-insp-stat-label">High</span>
+    </div>
+    <div class="rl-insp-stat rl-insp-stat--moderate">
+        <span class="rl-insp-stat-num">@Model.ModerateCount</span>
+        <span class="rl-insp-stat-label">Moderate</span>
+    </div>
+</div>
 
 <form asp-action="Priorities" method="get" class="rl-priorities-toolbar">
-
-    <div class="rl-filter-chips">
-
+    <div class="rl-filter-chips rl-filter-chips--scroll">
         @foreach (var chip in Model.Filters)
-
         {
-
             <a asp-action="Priorities" asp-route-filter="@chip" asp-route-sort="@Model.SortBy"
+               class="rl-filter-chip rl-filter-chip--@chip.ToLowerInvariant() @(Model.ActiveFilter == chip ? "is-active" : null)">
+                @chip
+                @if (chip == "Urgent" && Model.UrgentCount > 0) { <text> (@Model.UrgentCount)</text> }
+                @if (chip == "High" && Model.HighCount > 0) { <text> (@Model.HighCount)</text> }
+                @if (chip == "Moderate" && Model.ModerateCount > 0) { <text> (@Model.ModerateCount)</text> }
+            </a>
+        }
+    </div>
+    <select name="sort" class="rl-field-select" onchange="this.form.submit()">
+        <option value="Priority" selected="@(Model.SortBy == "Priority")">By urgency</option>
+        <option value="Trade" selected="@(Model.SortBy == "Trade")">By trade</option>
+        <option value="Score" selected="@(Model.SortBy == "Score")">By AI score</option>
+    </select>
+</form>
 
-               class="rl-filter-chip rl-filter-chip--@chip.ToLowerInvariant() @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+@if (Model.Findings.Count == 0)
+{
+    <div class="rl-info-box rl-info-box--warn">
+        <i class="fas fa-circle-exclamation"></i>
+        <p>No findings match this filter. Try "All" or upload a more detailed inspection report.</p>
+    </div>
+}
+else
+{
+    <form id="prioritiesForm" asp-action="Priorities" method="post" class="rl-invite-form">
+        @Html.AntiForgeryToken()
 
+        <div class="rl-insp-select-bar">
+            <span id="inspSelectedCount">@Model.Findings.Count(f => f.IsSelected) selected</span>
+            <div class="rl-insp-select-actions">
+                <button type="button" class="rl-insp-link-btn" id="inspSelectAll">Select all</button>
+                <button type="button" class="rl-insp-link-btn" id="inspClearAll">Clear</button>
+            </div>
+        </div>
+
+        <div class="rl-insp-findings-list">
+            @{
+                var priorityGroups = Model.Findings
+                    .GroupBy(f => f.Priority)
+                    .OrderByDescending(g => g.Key switch
+                    {
+                        RealtorInspectionFindingPriorities.Urgent => 3,
+                        RealtorInspectionFindingPriorities.High => 2,
+                        _ => 1
+                    });
+            }
+            @foreach (var group in priorityGroups)
+            {
+                <section class="rl-insp-priority-group rl-insp-priority-group--@group.Key.ToLowerInvariant()">
+                    <header class="rl-insp-priority-head">
+                        <span class="rl-insp-priority-icon">
+                            <i class="fas @(group.Key == RealtorInspectionFindingPriorities.Urgent ? "fa-circle-exclamation"
+                                : group.Key == RealtorInspectionFindingPriorities.High ? "fa-arrow-trend-up" : "fa-circle-info")"></i>
+                        </span>
+                        <div>
+                            <h3>@group.Key priority</h3>
+                            <p>@group.Count() issue@(group.Count() == 1 ? "" : "s") — @(group.Key switch
+                            {
+                                RealtorInspectionFindingPriorities.Urgent => "Address immediately",
+                                RealtorInspectionFindingPriorities.High => "Repair soon",
+                                _ => "Plan maintenance"
+                            })</p>
+                        </div>
+                    </header>
+
+                    @foreach (var finding in group)
+                    {
+                        <label class="rl-insp-finding-card @(finding.IsSelected ? "is-selected" : "")">
+                            <input type="checkbox" name="selectedFindingIds" value="@finding.Id" @(finding.IsSelected ? "checked" : null) />
+                            <span class="rl-insp-finding-priority rl-insp-finding-priority--@finding.PriorityCss">@finding.Priority</span>
+                            <div class="rl-insp-finding-main">
+                                <div class="rl-insp-finding-top">
+                                    <strong>@finding.Title</strong>
+                                    <span class="rl-insp-ai-score" title="AI urgency score">
+                                        <i class="fas fa-gauge-high"></i> @finding.AiScore
+                                    </span>
+                                </div>
+                                @if (!string.IsNullOrWhiteSpace(finding.Description))
+                                {
+                                    <p class="rl-insp-finding-desc">@finding.Description</p>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(finding.ReportReference) || !string.IsNullOrWhiteSpace(finding.SourceExcerpt))
+                                {
+                                    <div class="rl-insp-finding-excerpt">
+                                        <div class="rl-insp-finding-excerpt-head">
+                                            <span><i class="fas fa-bookmark"></i> Report location</span>
+                                            @if (!string.IsNullOrWhiteSpace(finding.ReportReference))
+                                            {
+                                                <span class="rl-insp-finding-page">@finding.ReportReference</span>
+                                            }
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(finding.SourceSection) || finding.SourcePage is > 0)
+                                        {
+                                            <p class="rl-insp-finding-ref-hint">
+                                                Open the inspection PDF
+                                                @if (!string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
+                                                {
+                                                    <a href="@Url.Content($"~{Model.ReportPdfUrl}")" target="_blank" rel="noopener">here</a>
+                                                }
+                                                at this section and page to view the inspector's photos and notes.
+                                            </p>
+                                        }
+                                        @if (!string.IsNullOrWhiteSpace(finding.SourceExcerpt))
+                                        {
+                                            <div class="rl-insp-finding-quote-label"><i class="fas fa-file-lines"></i> Inspector wording</div>
+                                            <blockquote class="rl-insp-finding-quote">@finding.SourceExcerpt</blockquote>
+                                        }
+                                    </div>
+                                }
+                                <div class="rl-insp-finding-meta">
+                                    <span class="rl-trade-chip rl-trade-chip--@finding.TradeCss">
+                                        <i class="fas @finding.TradeIcon"></i> @finding.TradeLabel
+                                    </span>
+                                </div>
+                            </div>
+                            <span class="rl-insp-finding-check"><i class="fas fa-check"></i></span>
+                        </label>
+                    }
+                </section>
+            }
+        </div>
+
+        <div class="rl-info-box">
+            <i class="fas fa-circle-info"></i>
+            <p>Uncheck any issue you don't want to include. Selected findings will be grouped by trade and sent to matching INDOR providers.</p>
+        </div>
+
+        <div class="rl-insp-sticky-actions">
+            <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> Back</a>
+            <button type="submit" id="inspSendProvidersBtn" class="ob-btn ob-btn-primary rl-insp-send-btn">
+                <i class="fas fa-paper-plane"></i> Send to providers
+            </button>
+        </div>
+    </form>
+}
+
+@if (Model.Findings.Count == 0)
+{
+    <div class="rl-invite-actions">
+        <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> Back</a>
+    </div>
+}
+
+@section Scripts {
+<script>
+    (function () {
+        const form = document.getElementById('prioritiesForm');
+        if (!form) return;
+
+        const checkboxes = form.querySelectorAll('input[name="selectedFindingIds"]');
+        const countEl = document.getElementById('inspSelectedCount');
+        const sendBtn = document.getElementById('inspSendProvidersBtn');
+
+        function updateUi() {
+            const selected = Array.from(checkboxes).filter(c => c.checked).length;
+            if (countEl) countEl.textContent = selected + ' selected';
+            checkboxes.forEach(cb => {
+                cb.closest('.rl-insp-finding-card')?.classList.toggle('is-selected', cb.checked);
+            });
+            if (sendBtn) {
+                sendBtn.disabled = selected === 0;
+                sendBtn.innerHTML = selected === 0
+                    ? '<i class="fas fa-paper-plane"></i> Select at least one issue'
+                    : '<i class="fas fa-paper-plane"></i> Send to providers (' + selected + ')';
+            }
         }
 
-    </div>
+        checkboxes.forEach(cb => cb.addEventListener('change', updateUi));
 
-    <select name="sort" class="rl-field-select" onchange="this.form.submit()">
+        document.getElementById('inspSelectAll')?.addEventListener('click', () => {
+            checkboxes.forEach(c => { c.checked = true; });
+            updateUi();
+        });
 
-        <option value="Trade" selected="@(Model.SortBy == "Trade")">By trade</option>
+        document.getElementById('inspClearAll')?.addEventListener('click', () => {
+            checkboxes.forEach(c => { c.checked = false; });
+            updateUi();
+        });
 
-        <option value="Priority" selected="@(Model.SortBy == "Priority")">By priority</option>
+        form.addEventListener('submit', (e) => {
+            const selected = Array.from(checkboxes).filter(c => c.checked).length;
+            if (selected === 0) {
+                e.preventDefault();
+                return;
+            }
+            if (sendBtn) {
+                sendBtn.disabled = true;
+                sendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Preparing providers...';
+            }
+        });
 
-        <option value="Score" selected="@(Model.SortBy == "Score")">By AI score</option>
-
-    </select>
-
-</form>
-
-
-
-<form id="prioritiesForm" asp-action="Priorities" method="post" class="rl-invite-form">
-
-    @Html.AntiForgeryToken()
-
-    @foreach (var finding in Model.Findings)
-
-    {
-
-        <label class="rl-finding-card">
-
-            <input type="checkbox" name="selectedFindingIds" value="@finding.Id" @(finding.IsSelected ? "checked" : null) />
-
-            <img src="@(finding.ImageUrl ?? "/welcome-house.png")" alt="" />
-
-            <span class="rl-finding-body">
-
-                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@finding.Priority</span>
-
-                <strong>@finding.Title</strong>
-
-                <span><i class="fas @finding.TradeIcon"></i> @finding.TradeLabel</span>
-
-            </span>
-
-            <span class="rl-ai-score">@finding.AiScore/100</span>
-
-            <i class="fas fa-chevron-right"></i>
-
-        </label>
-
-    }
-
-
-
-    <div class="rl-info-box">
-
-        <i class="fas fa-circle-info"></i>
-
-        <p>Tap any finding to see why it was prioritized and which contractor should receive it.</p>
-
-    </div>
-
-</form>
-
-
-
-<div class="rl-invite-actions">
-
-    <a asp-action="Analyze" class="rl-invite-cancel"><i class="fas fa-chevron-left"></i> Back</a>
-
-    <button type="submit" form="prioritiesForm" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-
-</div>
-
+        updateUi();
+    })();
+</script>
+}

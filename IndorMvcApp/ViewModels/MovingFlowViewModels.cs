@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -55,13 +56,15 @@ public class MovingDetailsViewModel
     [Required]
     public string TamanoHogar { get; set; } = "OneTwoBedrooms";
 
-    [Required, MaxLength(300)]
+    [Required(ErrorMessage = "Please enter the pick-up address."), MaxLength(300)]
+    [ValidStreetAddress]
     public string DireccionOrigen { get; set; } = string.Empty;
 
-    [Required, MaxLength(300)]
+    [Required(ErrorMessage = "Please enter the drop-off address."), MaxLength(300)]
+    [ValidStreetAddress]
     public string DireccionDestino { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Please select a move date.")]
     public DateTime? FechaMovimiento { get; set; }
 
     [Required]

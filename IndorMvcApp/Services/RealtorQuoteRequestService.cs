@@ -8,7 +8,8 @@ namespace IndorMvcApp.Services;
 public class RealtorQuoteRequestService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
-    IRealtorRegistrationService registration) : IRealtorQuoteRequestService
+    IRealtorRegistrationService registration,
+    IRealtorProviderBridgeService providerBridge) : IRealtorQuoteRequestService
 {
     private const string DraftIdSessionKey = "RealtorQuoteRequestDraftId";
 
@@ -440,8 +441,51 @@ public class RealtorQuoteRequestService(
         db.IndorRealtorQuotes.Add(quote);
         await db.SaveChangesAsync(cancellationToken);
 
+        var proveedores = await providerBridge.MatchProveedoresForTradeAsync(
+            draft.ServiceType ?? quote.ServiceType,
+            cancellationToken);
+
+        if (proveedores.Count == 0)
+        {
+            proveedores = await db.IndorProveedores.AsNoTracking()
+                .OrderByDescending(p => p.FechaCreacion)
+                .Take(draft.SelectedProviders.Count > 0 ? draft.SelectedProviders.Count : 3)
+                .ToListAsync(cancellationToken);
+        }
+        else
+        {
+            proveedores = proveedores
+                .Take(Math.Max(draft.SelectedProviders.Count, draft.ProviderCountTarget))
+                .ToList();
+        }
+
+        foreach (var proveedor in proveedores)
+        {
+            var lead = await providerBridge.CreateLeadFromRealtorQuoteAsync(
+                quote,
+                proveedor,
+                [],
+                null,
+                cancellationToken);
+
+            db.IndorRealtorQuoteSentProviders.Add(new IndorRealtorQuoteSentProvider
+            {
+                QuoteId = quote.Id,
+                ProviderId = proveedor.Id,
+                ProveedorId = proveedor.Id,
+                LeadId = lead.Id,
+                ProviderName = ResolveProveedorName(proveedor)
+            });
+        }
+
         foreach (var sel in draft.SelectedProviders)
         {
+            var alreadySent = proveedores.Any(p => p.Id == sel.ProviderId);
+            if (alreadySent)
+            {
+                continue;
+            }
+
             db.IndorRealtorQuoteSentProviders.Add(new IndorRealtorQuoteSentProvider
             {
                 QuoteId = quote.Id,
@@ -592,4 +636,9 @@ public class RealtorQuoteRequestService(
 
     private static string ToPhaseCss(string? phase) =>
         (phase ?? "").Replace(" ", "-").ToLowerInvariant();
+
+    private static string ResolveProveedorName(IndorProveedor proveedor) =>
+        !string.IsNullOrWhiteSpace(proveedor.DbaName) ? proveedor.DbaName
+        : !string.IsNullOrWhiteSpace(proveedor.BusinessName) ? proveedor.BusinessName
+        : "INDOR Provider";
 }

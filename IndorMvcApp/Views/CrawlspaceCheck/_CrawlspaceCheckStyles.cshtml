@@ -1,9 +1,26 @@
 @await Html.PartialAsync("../HvacMaintenance/_HvacMaintenanceStyles")
 <style>
-    .csc-check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 14px; }
-    .csc-check-item { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 10px; text-align: center; min-height: 88px; }
-    .csc-check-item i { color: #0066CC; font-size: 1rem; margin-bottom: 8px; display: block; }
-    .csc-check-item span { font-size: 0.72rem; font-weight: 700; line-height: 1.25; display: block; }
+    .csc-check-hint { font-size: 0.74rem; color: #64748B; margin-bottom: 10px; line-height: 1.4; }
+    .csc-check-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 8px; }
+    .csc-check-item {
+        border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 10px;
+        font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center;
+        position: relative; min-height: 88px; font-family: inherit;
+        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .csc-check-item > i.main { color: #94A3B8; font-size: 1.1rem; margin-bottom: 8px; display: block; }
+    .csc-check-item .label { font-size: 0.72rem; font-weight: 700; line-height: 1.25; display: block; }
+    .csc-check-item .check {
+        position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #CBD5E1; background: #FFF; display: flex; align-items: center; justify-content: center;
+        pointer-events: none;
+    }
+    .csc-check-item .check i { display: block; margin: 0; font-size: 0.7rem; line-height: 1; color: transparent; font-weight: 900; }
+    .csc-check-item.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
+    .csc-check-item.active > i.main { color: #0066CC; }
+    .csc-check-item.active .check { border-color: #0066CC; background: #0066CC; box-shadow: 0 0 0 2px #FFF; }
+    .csc-check-item.active .check i { color: #FFF; }
+    .field-error { display: block; margin-top: 6px; font-size: 0.75rem; font-weight: 600; color: #DC2626; }
     .best-practice-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start; margin-bottom: 14px; }
     .best-practice-box i { color: #0066CC; font-size: 1rem; margin-top: 2px; }
     .best-practice-box strong { display: block; font-size: 0.82rem; margin-bottom: 4px; }
@@ -12,19 +29,31 @@
     .choice-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 8px; cursor: pointer; text-align: center; position: relative; min-height: 84px; }
     .choice-card i.main { display: block; font-size: 1rem; color: #94A3B8; margin-bottom: 8px; }
     .choice-card .label { font-size: 0.72rem; font-weight: 700; line-height: 1.25; }
-    .choice-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+    .choice-card .check {
+        position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #CBD5E1; background: #FFF; display: flex; align-items: center; justify-content: center;
+        pointer-events: none;
+    }
+    .choice-card .check i { display: block; margin: 0; font-size: 0.7rem; line-height: 1; color: transparent; font-weight: 900; }
     .choice-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
     .choice-card.active i.main { color: #0066CC; }
-    .choice-card.active .check { display: flex; }
+    .choice-card.active .check { border-color: #0066CC; background: #0066CC; box-shadow: 0 0 0 2px #FFF; }
+    .choice-card.active .check i { color: #FFF; }
     .access-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .concern-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
     .concern-card { border: 1.5px solid #E5E7EB; background: #FFF; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; position: relative; min-height: 76px; }
     .concern-card i.main { display: block; font-size: 0.95rem; color: #94A3B8; margin-bottom: 6px; }
     .concern-card .label { font-size: 0.68rem; font-weight: 700; line-height: 1.25; }
-    .concern-card .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
+    .concern-card .check {
+        position: absolute; top: 8px; right: 8px; width: 22px; height: 22px; border-radius: 50%;
+        border: 2px solid #CBD5E1; background: #FFF; display: flex; align-items: center; justify-content: center;
+        pointer-events: none;
+    }
+    .concern-card .check i { display: block; margin: 0; font-size: 0.7rem; line-height: 1; color: transparent; font-weight: 900; }
     .concern-card.active { border-color: #0066CC; background: rgba(0,102,204,0.08); color: #0066CC; }
     .concern-card.active i.main { color: #0066CC; }
-    .concern-card.active .check { display: flex; }
+    .concern-card.active .check { border-color: #0066CC; background: #0066CC; box-shadow: 0 0 0 2px #FFF; }
+    .concern-card.active .check i { color: #FFF; }
     .timing-row { display: grid; grid-template-columns: 1fr; gap: 8px; }
     .timing-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px; cursor: pointer; text-align: left; position: relative; width: 100%; }
     .timing-card i.main { color: #94A3B8; margin-right: 8px; }

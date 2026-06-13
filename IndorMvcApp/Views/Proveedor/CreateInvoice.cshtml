@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateInvoiceViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Create Invoice - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "invoices";
+    var money = CultureInfo.GetCultureInfo("en-US");
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-invoice">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="EstimateAccepted" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Create Invoice</h1>
+            <small>@Model.Address</small>
+        </div>
+    </header>
+
+    <div class="prv-pro-invoice-copied-banner">
+        <i class="fas fa-circle-check"></i>
+        <span>INDOR copied the approved estimate items into this invoice.</span>
+    </div>
+
+    <form asp-controller="Proveedor" asp-action="CreateInvoice" method="post" class="prv-pro-create-invoice-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="EstimateId" value="@Model.EstimateId" />
+        <input type="hidden" name="GoToReview" value="true" />
+
+        <section class="prv-pro-lead-section">
+            <h3>Invoice Items</h3>
+            @foreach (var item in Model.LineItems)
+            {
+                <div class="prv-pro-invoice-line">
+                    <span>@item.Label</span>
+                    <strong>@item.Amount.ToString("C2", money)</strong>
+                </div>
+            }
+        </section>
+
+        <section class="prv-pro-lead-section">
+            <h3>Additional Charges</h3>
+            <label class="prv-pro-repair-check-item">
+                <input type="checkbox" name="IncludeServiceCall" value="true" @(Model.IncludeServiceCall ? "checked" : "") />
+                <span class="prv-pro-repair-check-ui"></span>
+                <div>
+                    <strong>Service call / assessment</strong>
+                    <input type="number" name="ServiceCallAmount" value="@Model.ServiceCallAmount.ToString("0")" step="1" min="0" class="prv-pro-invoice-addon-input" />
+                </div>
+            </label>
+        </section>
+
+        <label class="prv-pro-create-field">
+            <i class="fas fa-calendar"></i>
+            <span>Payment Terms</span>
+            <select name="PaymentTerms">
+                <option value="Due at completion" selected="@(Model.PaymentTerms == "Due at completion")">Due at completion</option>
+                <option value="Net 15" selected="@(Model.PaymentTerms == "Net 15")">Net 15</option>
+                <option value="Net 30" selected="@(Model.PaymentTerms == "Net 30")">Net 30</option>
+            </select>
+        </label>
+
+        <section class="prv-pro-estimate-pricing">
+            <div class="prv-pro-estimate-pricing-row">
+                <span>Subtotal</span>
+                <strong>@Model.SubtotalAmount.ToString("C2", money)</strong>
+            </div>
+            @if (Model.TaxAmount > 0)
+            {
+                <div class="prv-pro-estimate-pricing-row">
+                    <span>Tax</span>
+                    <strong>@Model.TaxAmount.ToString("C2", money)</strong>
+                </div>
+            }
+            <div class="prv-pro-estimate-total">
+                <span>Total</span>
+                <strong>@Model.TotalAmount.ToString("C0", money)</strong>
+            </div>
+        </section>
+
+        <footer class="prv-pro-workflow-footer">
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
+                Review Invoice
+            </button>
+        </footer>
+    </form>
+</div>

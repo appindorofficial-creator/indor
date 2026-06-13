@@ -14,6 +14,7 @@ namespace IndorMvcApp.Controllers;
 public class WaterHeaterSetupController : Controller
 {
     private const string DraftSessionKey = "WaterHeaterSetupDraft";
+    private const string DraftTempDataKey = "WaterHeaterSetupDraftJson";
     private static readonly string[] AllowedLabelExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxLabelBytes = 8 * 1024 * 1024;
 
@@ -104,6 +105,7 @@ public class WaterHeaterSetupController : Controller
 
         ApplyHintsToDraft(draft, hints);
         SaveDraft(draft);
+        await HttpContext.Session.CommitAsync();
 
         return RedirectToAction(nameof(DetailsFound), new { propiedadId = propiedad.Id });
     }
@@ -141,7 +143,15 @@ public class WaterHeaterSetupController : Controller
             return RedirectToAction(nameof(ScanLabel), new { propiedadId = propiedad.Id });
         }
 
-        return RedirectToAction(nameof(Review), new { propiedadId = propiedad.Id });
+        var draft = GetDraft();
+        if (draft == null || draft.PropiedadId != propiedad.Id || draft.EntryMode != "scan")
+        {
+            return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
+        }
+
+        PersistDraftForRedirect(draft);
+        await HttpContext.Session.CommitAsync();
+        return RedirectToAction(nameof(Review), new { id = propiedad.Id });
     }
 
     [HttpGet]
@@ -166,15 +176,26 @@ public class WaterHeaterSetupController : Controller
         }
 
         SaveDraft(draft);
+        await HttpContext.Session.CommitAsync();
         return View(BuildManualModel(propiedad, info, draft));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Manual(AddWaterHeaterViewModel model)
+    public async Task<IActionResult> Manual(AddWaterHeaterViewModel viewModel)
     {
-        var propiedad = await LoadPropertyAsync(model.PropiedadId);
-        if (propiedad == null) return NotFound();
+        if (viewModel.PropiedadId <= 0)
+        {
+            ModelState.AddModelError(nameof(viewModel.PropiedadId), "Your property could not be identified. Please start again from Home.");
+            return RedirectToAction(nameof(Add));
+        }
+
+        var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
+        if (propiedad == null)
+        {
+            TempData["WaterHeaterSetupError"] = "We could not find your property. Please try again from Home.";
+            return RedirectToAction("Index", "Home");
+        }
 
         if (await HasSavedSystemAsync(propiedad.Id))
         {
@@ -184,42 +205,55 @@ public class WaterHeaterSetupController : Controller
         if (!ModelState.IsValid)
         {
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
-            return View(BuildManualModel(propiedad, info, model));
+            return View(BuildManualModel(propiedad, info, viewModel));
         }
 
         var draft = GetDraft() ?? new WaterHeaterSetupDraft { PropiedadId = propiedad.Id };
         draft.PropiedadId = propiedad.Id;
         draft.EntryMode = "manual";
-        draft.HeaterType = model.HeaterType;
-        draft.Brand = NullIfEmpty(model.Brand);
-        draft.Model = NullIfEmpty(model.Model);
-        draft.SerialNumber = NullIfEmpty(model.SerialNumber);
-        draft.InstallYear = model.InstallYear;
-        draft.TankSize = string.Equals(model.HeaterType, "Tankless", StringComparison.OrdinalIgnoreCase)
+        draft.HeaterType = NormalizeHeaterType(viewModel.HeaterType);
+        draft.Brand = NullIfEmpty(viewModel.Brand);
+        draft.EquipmentModel = NullIfEmpty(viewModel.EquipmentModel);
+        draft.SerialNumber = NullIfEmpty(viewModel.SerialNumber);
+        draft.InstallYear = viewModel.InstallYear;
+        draft.TankSize = string.Equals(draft.HeaterType, "Tankless", StringComparison.OrdinalIgnoreCase)
             ? null
-            : NullIfEmpty(model.TankSize);
-        draft.LastServiceDate = model.LastServiceDate?.Date;
-        draft.FlushRemindersEnabled = model.FlushRemindersEnabled;
-        SaveDraft(draft);
+            : NullIfEmpty(viewModel.TankSize);
+        draft.LastServiceDate = viewModel.LastServiceDate?.Date;
+        draft.FlushRemindersEnabled = viewModel.FlushRemindersEnabled;
+        PersistDraftForRedirect(draft);
+        await HttpContext.Session.CommitAsync();
 
-        return RedirectToAction(nameof(Review), new { propiedadId = propiedad.Id });
+        return RedirectToAction(nameof(Review), new { id = propiedad.Id });
     }
 
     [HttpGet]
-    public async Task<IActionResult> Review(int propiedadId)
+    public async Task<IActionResult> Review(int? id, int? propiedadId)
     {
-        var propiedad = await LoadPropertyAsync(propiedadId);
-        if (propiedad == null) return NotFound();
+        var resolvedPropiedadId = id ?? propiedadId ?? 0;
+        if (resolvedPropiedadId <= 0)
+        {
+            TempData["WaterHeaterSetupError"] = "Your property could not be identified. Please start again from Home.";
+            return RedirectToAction(nameof(Add));
+        }
+
+        var propiedad = await LoadPropertyAsync(resolvedPropiedadId);
+        if (propiedad == null)
+        {
+            TempData["WaterHeaterSetupError"] = "We could not find your property. Please try again from Home.";
+            return RedirectToAction(nameof(Add));
+        }
 
         if (await HasSavedSystemAsync(propiedad.Id))
         {
             return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
         }
 
-        var draft = GetDraft();
-        if (draft == null || draft.PropiedadId != propiedad.Id)
+        var draft = ResolveDraft(propiedad.Id);
+        if (draft == null)
         {
-            return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
+            TempData["WaterHeaterSetupError"] = "Your water heater draft expired. Please enter your details again.";
+            return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
@@ -228,34 +262,44 @@ public class WaterHeaterSetupController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Review(WaterHeaterReviewViewModel model)
+    public async Task<IActionResult> Review(WaterHeaterReviewViewModel viewModel)
     {
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId)) return Challenge();
 
-        var propiedad = await LoadPropertyAsync(model.PropiedadId);
-        if (propiedad == null) return NotFound();
+        if (viewModel.PropiedadId <= 0)
+        {
+            return RedirectToAction(nameof(Add));
+        }
+
+        var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
+        if (propiedad == null)
+        {
+            TempData["WaterHeaterSetupError"] = "We could not find your property. Please try again from Home.";
+            return RedirectToAction("Index", "Home");
+        }
 
         if (await HasSavedSystemAsync(propiedad.Id))
         {
             return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
         }
 
-        var draft = GetDraft();
-        if (draft == null || draft.PropiedadId != propiedad.Id)
+        var draft = ResolveDraft(propiedad.Id);
+        if (draft == null)
         {
-            return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
+            TempData["WaterHeaterSetupError"] = "Your water heater draft expired. Please enter your details again.";
+            return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
-        if (!model.ConfirmSave)
+        if (!viewModel.ConfirmSave)
         {
-            ModelState.AddModelError(nameof(model.ConfirmSave), "Please confirm before saving.");
+            ModelState.AddModelError(nameof(viewModel.ConfirmSave), "Please confirm before saving.");
         }
 
         if (!ModelState.IsValid)
         {
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
-            return View(BuildReviewModel(propiedad, info, draft, model));
+            return View(BuildReviewModel(propiedad, info, draft, viewModel));
         }
 
         PropiedadWaterHeaterSistema record;
@@ -267,7 +311,7 @@ public class WaterHeaterSetupController : Controller
                 UserId = userId,
                 HeaterType = draft.HeaterType,
                 Brand = draft.Brand,
-                Model = draft.Model,
+                Model = draft.EquipmentModel,
                 SerialNumber = draft.SerialNumber,
                 InstallYear = draft.InstallYear,
                 TankSize = string.Equals(draft.HeaterType, "Tankless", StringComparison.OrdinalIgnoreCase)
@@ -287,13 +331,22 @@ public class WaterHeaterSetupController : Controller
         }
         catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
         {
-            ModelState.AddModelError(string.Empty, "Water heater storage is not available yet. Run CreatePropiedadWaterHeaterTables.sql on the database.");
+            ModelState.AddModelError(string.Empty, "Water heater storage is not available yet. Run Scripts/CreatePropiedadWaterHeaterTables.sql on the database.");
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
-            return View(BuildReviewModel(propiedad, info, draft, model));
+            return View(BuildReviewModel(propiedad, info, draft, viewModel));
         }
 
-        await AddHistoryEntryAsync(propiedad, record);
+        try
+        {
+            await AddHistoryEntryAsync(propiedad, record);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            // Water heater record is saved; history is optional.
+        }
+
         ClearDraft();
+        await HttpContext.Session.CommitAsync();
 
         return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
     }
@@ -322,7 +375,7 @@ public class WaterHeaterSetupController : Controller
             BackUrl = Url.Action("Index", "Home") ?? "/",
             HeaterTypeLabel = WaterHeaterOpenAiHintsService.HeaterTypeLabel(record.HeaterType),
             Brand = record.Brand ?? "—",
-            Model = record.Model ?? "—",
+            EquipmentModel = record.Model ?? "—",
             SerialNumber = record.SerialNumber ?? "—",
             InstallYearLabel = record.InstallYear?.ToString() ?? "—",
             TankSizeLabel = string.Equals(record.HeaterType, "Tankless", StringComparison.OrdinalIgnoreCase)
@@ -355,9 +408,9 @@ public class WaterHeaterSetupController : Controller
         BuildManualModel(propiedad, info, new AddWaterHeaterViewModel
         {
             PropiedadId = draft.PropiedadId,
-            HeaterType = draft.HeaterType,
+            HeaterType = NormalizeHeaterType(draft.HeaterType),
             Brand = draft.Brand,
-            Model = draft.Model,
+            EquipmentModel = draft.EquipmentModel,
             SerialNumber = draft.SerialNumber,
             InstallYear = draft.InstallYear,
             TankSize = draft.TankSize,
@@ -400,10 +453,10 @@ public class WaterHeaterSetupController : Controller
             BackUrl = Url.Action(nameof(ScanLabel), new { propiedadId = propiedad.Id }) ?? "/",
             HeaterTypeLabel = WaterHeaterOpenAiHintsService.HeaterTypeLabel(draft.HeaterType),
             Brand = string.IsNullOrWhiteSpace(draft.Brand) ? "—" : draft.Brand,
-            Model = string.IsNullOrWhiteSpace(draft.Model) ? "—" : draft.Model,
+            EquipmentModel = string.IsNullOrWhiteSpace(draft.EquipmentModel) ? "—" : draft.EquipmentModel,
             SerialNumber = string.IsNullOrWhiteSpace(draft.SerialNumber) ? "—" : draft.SerialNumber,
             InstallYearLabel = draft.InstallYear?.ToString() ?? "—",
-            TankSizeLabel = string.Equals(draft.HeaterType, "Tankless", StringComparison.OrdinalIgnoreCase)
+            TankSizeLabel = string.Equals(NormalizeHeaterType(draft.HeaterType), "Tankless", StringComparison.OrdinalIgnoreCase)
                 ? "—"
                 : (string.IsNullOrWhiteSpace(draft.TankSize) ? "—" : draft.TankSize),
             EstimatedAgeLabel = estimatedAge,
@@ -426,15 +479,15 @@ public class WaterHeaterSetupController : Controller
             BackUrl = draft.EntryMode == "scan"
                 ? Url.Action(nameof(DetailsFound), new { propiedadId = propiedad.Id }) ?? "/"
                 : Url.Action(nameof(Manual), new { propiedadId = propiedad.Id }) ?? "/",
-            HeaterType = draft.HeaterType,
-            HeaterTypeLabel = WaterHeaterOpenAiHintsService.HeaterTypeLabel(draft.HeaterType),
+            HeaterType = NormalizeHeaterType(draft.HeaterType),
+            HeaterTypeLabel = WaterHeaterOpenAiHintsService.HeaterTypeLabel(NormalizeHeaterType(draft.HeaterType)),
             Brand = string.IsNullOrWhiteSpace(draft.Brand) ? "—" : draft.Brand,
-            Model = string.IsNullOrWhiteSpace(draft.Model) ? "—" : draft.Model,
+            EquipmentModel = string.IsNullOrWhiteSpace(draft.EquipmentModel) ? "—" : draft.EquipmentModel,
             SerialNumber = string.IsNullOrWhiteSpace(draft.SerialNumber) ? "—" : draft.SerialNumber,
             InstallYear = draft.InstallYear,
             InstallYearLabel = draft.InstallYear?.ToString() ?? "—",
             TankSize = draft.TankSize,
-            TankSizeLabel = string.Equals(draft.HeaterType, "Tankless", StringComparison.OrdinalIgnoreCase)
+            TankSizeLabel = string.Equals(NormalizeHeaterType(draft.HeaterType), "Tankless", StringComparison.OrdinalIgnoreCase)
                 ? "—"
                 : (string.IsNullOrWhiteSpace(draft.TankSize) ? "—" : draft.TankSize),
             LabelImageUrl = draft.LabelImagePath,
@@ -445,7 +498,7 @@ public class WaterHeaterSetupController : Controller
     {
         draft.HeaterType = hints.HeaterType ?? draft.HeaterType ?? "Tank";
         draft.Brand ??= hints.Brand;
-        draft.Model ??= hints.Model;
+        draft.EquipmentModel ??= hints.EquipmentModel;
         draft.SerialNumber ??= hints.SerialNumber;
         draft.InstallYear ??= hints.InstallYear;
         draft.TankSize ??= hints.TankSize;
@@ -454,7 +507,7 @@ public class WaterHeaterSetupController : Controller
 
     private static bool HasDraftValues(WaterHeaterSetupDraft draft) =>
         !string.IsNullOrWhiteSpace(draft.Brand)
-        || !string.IsNullOrWhiteSpace(draft.Model)
+        || !string.IsNullOrWhiteSpace(draft.EquipmentModel)
         || !string.IsNullOrWhiteSpace(draft.SerialNumber)
         || draft.InstallYear.HasValue;
 
@@ -476,7 +529,49 @@ public class WaterHeaterSetupController : Controller
     private void SaveDraft(WaterHeaterSetupDraft draft) =>
         HttpContext.Session.SetString(DraftSessionKey, JsonSerializer.Serialize(draft));
 
-    private void ClearDraft() => HttpContext.Session.Remove(DraftSessionKey);
+    private void PersistDraftForRedirect(WaterHeaterSetupDraft draft)
+    {
+        draft.HeaterType = NormalizeHeaterType(draft.HeaterType);
+        SaveDraft(draft);
+        TempData[DraftTempDataKey] = JsonSerializer.Serialize(draft);
+    }
+
+    private WaterHeaterSetupDraft? ResolveDraft(int propiedadId)
+    {
+        var draft = GetDraft();
+        if (draft != null && draft.PropiedadId == propiedadId)
+        {
+            return draft;
+        }
+
+        if (TempData.Peek(DraftTempDataKey) is string tempJson)
+        {
+            try
+            {
+                var tempDraft = JsonSerializer.Deserialize<WaterHeaterSetupDraft>(tempJson);
+                if (tempDraft != null && tempDraft.PropiedadId == propiedadId)
+                {
+                    SaveDraft(tempDraft);
+                    return tempDraft;
+                }
+            }
+            catch
+            {
+                // fall through
+            }
+        }
+
+        return null;
+    }
+
+    private void ClearDraft()
+    {
+        HttpContext.Session.Remove(DraftSessionKey);
+        TempData.Remove(DraftTempDataKey);
+    }
+
+    private static string NormalizeHeaterType(string? heaterType) =>
+        string.Equals(heaterType, "Tankless", StringComparison.OrdinalIgnoreCase) ? "Tankless" : "Tank";
 
     private async Task<bool> HasSavedSystemAsync(int propiedadId)
     {

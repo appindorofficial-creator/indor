@@ -23,6 +23,15 @@
     .field-card .field-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 0.82rem; font-weight: 700; }
     .field-card .field-head i { color: #0066CC; width: 16px; }
     .field-card input, .field-card textarea { width: 100%; border: 1.5px solid #E5E7EB; border-radius: 12px; padding: 12px 14px; font-family: inherit; font-size: 0.88rem; background: #F9FAFB; }
+    .field-card input[type="date"] {
+        min-height: 48px; color: #0A2540; cursor: pointer;
+        -webkit-appearance: none; appearance: none;
+    }
+    .field-card input[type="date"]:disabled { opacity: 0.55; cursor: not-allowed; }
+    .field-card input[type="date"]::-webkit-calendar-picker-indicator {
+        cursor: pointer; opacity: 0.75; padding: 4px;
+    }
+    .field-hint { display: block; margin-top: 8px; font-size: 0.72rem; color: #64748B; font-weight: 500; }
     .field-card textarea { min-height: 90px; resize: vertical; }
     .toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
     .toggle-row span { font-size: 0.8rem; font-weight: 600; color: #64748B; }
@@ -33,12 +42,30 @@
     .toggle-switch input:checked + .toggle-slider { background: #0066CC; }
     .toggle-switch input:checked + .toggle-slider:before { transform: translateX(18px); }
     .link-inline { color: #0066CC; font-size: 0.78rem; font-weight: 700; background: none; border: none; padding: 0; cursor: pointer; }
-    .upload-drop { border: 1.5px dashed #CBD5E1; border-radius: 14px; padding: 18px; text-align: center; color: #64748B; background: #F9FAFB; cursor: pointer; }
-    .upload-drop i { color: #0066CC; font-size: 1.1rem; margin-bottom: 6px; display: block; }
-    .upload-drop strong { display: block; font-size: 0.82rem; margin-bottom: 4px; color: #334155; }
-    .upload-drop span { font-size: 0.72rem; }
-    .upload-preview { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
-    .upload-preview img { width: 64px; height: 64px; object-fit: cover; border-radius: 10px; border: 1px solid #E5E7EB; }
+    .upload-drop-wrap { position: relative; overflow: hidden; border-radius: 14px; }
+    .upload-drop {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        border: 1.5px dashed #CBD5E1; border-radius: 14px; padding: 18px; text-align: center;
+        color: #64748B; background: #FFF; cursor: pointer; min-height: 96px;
+        position: relative; z-index: 1; touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .upload-drop i { color: #0066CC; font-size: 1.1rem; margin-bottom: 6px; pointer-events: none; }
+    .upload-drop strong { display: block; font-size: 0.82rem; margin-bottom: 4px; color: #334155; pointer-events: none; }
+    .upload-drop span { font-size: 0.72rem; pointer-events: none; }
+    .upload-input-hidden { display: none; }
+    .upload-drop.has-files { border-color: #0066CC; background: rgba(0,102,204,0.06); }
+    .upload-selected-list { margin-top: 10px; display: flex; flex-direction: column; gap: 6px; }
+    .upload-selected-item {
+        display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #0A2540;
+        background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 10px; padding: 8px 10px;
+    }
+    .upload-selected-item i { color: #0066CC; flex-shrink: 0; }
+    .upload-selected-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-preview-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .upload-remove-btn {
+        border: none; background: transparent; color: #94A3B8; padding: 4px; cursor: pointer;
+        flex-shrink: 0; line-height: 1;
+    }
     .time-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
     .time-card { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 12px 8px; cursor: pointer; text-align: center; position: relative; min-height: 92px; }
     .time-card i.main { display: block; font-size: 1rem; color: #94A3B8; margin-bottom: 8px; }

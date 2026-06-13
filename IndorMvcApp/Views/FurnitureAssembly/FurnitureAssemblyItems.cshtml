@@ -30,7 +30,7 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="FurnitureAssemblyItems" method="post">
+    <form id="fa-items-form" asp-action="FurnitureAssemblyItems" method="post">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -39,9 +39,13 @@
         <input type="hidden" asp-for="CondicionItems" id="CondicionItems" />
         <input type="hidden" asp-for="AnclajePared" id="AnclajePared" />
 
-        <div class="address-card">
-            <div class="left"><i class="fas fa-location-dot" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required /></div>
-            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit ></span>
+        <div class="address-card" id="addressCard">
+            <div class="left">
+                <i class="fas fa-location-dot" style="color:#0066CC;"></i>
+                <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
+                       placeholder="123 Riverside Dr, Mount Holly, NC 28120" required readonly />
+            </div>
+            <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
         </div>
 
         <div class="field-card">
@@ -71,7 +75,7 @@
 
         <div class="field-card">
             <span class="field-label">What condition are the items in?</span>
-            <div class="tile-grid" data-target="CondicionItems">
+            <div class="fa-condition-grid" data-target="CondicionItems">
                 <button type="button" class="type-card" data-value="NewInBox"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>New in box</button>
                 <button type="button" class="type-card" data-value="PartiallyAssembled"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-screwdriver-wrench"></i>Partially assembled</button>
                 <button type="button" class="type-card" data-value="NeedsReassembly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-arrows-rotate"></i>Needs re-assembly</button>
@@ -96,7 +100,8 @@
     (function () {
         function initMulti(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
-            const selected = new Set((initial || hidden.value || '').split('|').filter(Boolean));
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
+            const selected = new Set(seed.split('|').filter(Boolean));
             document.querySelectorAll('#' + groupId + ' .tile-btn').forEach(btn => {
                 if (selected.has(btn.dataset.value)) btn.classList.add('active');
                 btn.addEventListener('click', () => {
@@ -115,11 +120,13 @@
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.segment-btn');
             function setActive(value) {
-                hidden.value = value;
-                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+                const normalized = value && String(value).trim() ? value : '';
+                hidden.value = normalized;
+                buttons.forEach(b => b.classList.toggle('active', normalized && b.dataset.value === normalized));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
+            setActive(seed);
         }
 
         function initCards(containerSelector, hiddenId, initial) {
@@ -128,17 +135,64 @@
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.type-card');
             function setActive(value) {
-                hidden.value = value;
-                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+                const normalized = value && String(value).trim() ? value : '';
+                hidden.value = normalized;
+                buttons.forEach(b => b.classList.toggle('active', normalized && b.dataset.value === normalized));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
+            setActive(seed);
         }
 
         initMulti('typesGroup', 'TiposMueble', '@Model.TiposMueble');
         initSegments('[data-target="CantidadItems"]', 'CantidadItems', '@Model.CantidadItems');
         initCards('[data-target="CondicionItems"]', 'CondicionItems', '@Model.CondicionItems');
         initSegments('[data-target="AnclajePared"]', 'AnclajePared', '@Model.AnclajePared');
+
+        const form = document.getElementById('fa-items-form');
+        const requiredFields = [
+            { id: 'TiposMueble', message: 'Select at least one item to assemble.' },
+            { id: 'CantidadItems', message: 'Select how many items need assembly.' },
+            { id: 'CondicionItems', message: 'Select the condition of your items.' },
+            { id: 'AnclajePared', message: 'Select whether any item needs wall anchoring.' }
+        ];
+
+        form?.addEventListener('submit', function (e) {
+            let firstMissing = null;
+            requiredFields.forEach(function (field) {
+                const input = document.getElementById(field.id);
+                if (!input) return;
+                const empty = !input.value || !String(input.value).trim();
+                if (empty && !firstMissing) {
+                    firstMissing = field;
+                }
+            });
+
+            if (firstMissing) {
+                e.preventDefault();
+                alert(firstMissing.message);
+            }
+        });
+
+        const addressInput = document.getElementById('DireccionPropiedad');
+        const addressCard = document.getElementById('addressCard');
+        const editAddressBtn = document.getElementById('editAddressBtn');
+
+        function enableAddressEdit() {
+            if (!addressInput) return;
+            addressInput.removeAttribute('readonly');
+            addressCard?.classList.add('editing');
+            addressInput.focus();
+            try {
+                addressInput.setSelectionRange(0, addressInput.value.length);
+            } catch (_) { /* iOS may not support selection on focus */ }
+        }
+
+        editAddressBtn?.addEventListener('click', enableAddressEdit);
+        addressInput?.addEventListener('focus', function () {
+            addressInput.removeAttribute('readonly');
+            addressCard?.classList.add('editing');
+        });
     })();
 </script>
 </body>

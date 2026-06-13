@@ -9,6 +9,14 @@ public class ProviderProFlowStepViewModel
     public string? Url { get; set; }
 }
 
+public class ProviderProWizardStepViewModel
+{
+    public int Number { get; set; }
+    public string Label { get; set; } = "";
+    public bool IsComplete { get; set; }
+    public bool IsCurrent { get; set; }
+}
+
 public class ProviderProJobsScheduleViewModel : ProviderProPageBaseViewModel
 {
     public string ActiveView { get; set; } = "today";
@@ -34,27 +42,41 @@ public class ProviderProCreateJobCategoryOptionViewModel
     public string Label { get; set; } = "";
     public string Description { get; set; } = "";
     public string IconClass { get; set; } = "fa-wrench";
+    public string ToneClass { get; set; } = "blue";
+    public string SuggestedJobName { get; set; } = "";
 }
 
 public class ProviderProCreateJobCategoriesViewModel : ProviderProPageBaseViewModel
 {
+    public string? SelectedCategoryId { get; set; }
+    public string JobTitle { get; set; } = "";
+    public int StepNumber { get; set; } = 1;
+    public int TotalSteps { get; set; } = 5;
+    public string StepSubtitle { get; set; } = "Choose the type of work";
     public List<ProviderProCreateJobCategoryOptionViewModel> Categories { get; set; } = [];
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
 }
 
 public class ProviderProCreateJobCustomerOptionViewModel
 {
     public int Id { get; set; }
     public string Name { get; set; } = "";
+    public string Initials { get; set; } = "";
+    public string ToneClass { get; set; } = "blue";
     public string? Address { get; set; }
+    public string PropertyLabel { get; set; } = "Primary Home";
+    public bool IsConnected { get; set; }
+    public int PropertiesCount { get; set; } = 1;
 }
 
 public class ProviderProCreateJobDetailsViewModel : ProviderProPageBaseViewModel
 {
     public string ServiceCategoryId { get; set; } = "";
     public string ServiceCategoryLabel { get; set; } = "";
-    public int StepNumber { get; set; } = 1;
-    public int TotalSteps { get; set; } = 3;
+    public int StepNumber { get; set; } = 2;
+    public int TotalSteps { get; set; } = 5;
+    public string StepSubtitle { get; set; } = "Select the customer";
     public string Title { get; set; } = "";
     public int? ClienteId { get; set; }
     public string CustomerName { get; set; } = "";
@@ -64,41 +86,83 @@ public class ProviderProCreateJobDetailsViewModel : ProviderProPageBaseViewModel
     public string Notes { get; set; } = "";
     public List<ProviderProCreateJobCustomerOptionViewModel> Customers { get; set; } = [];
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
 }
 
-public class ProviderProCreateJobScheduleViewModel : ProviderProPageBaseViewModel
+public class ProviderProCreateJobEstimateLineViewModel
 {
-    public string ServiceCategoryLabel { get; set; } = "";
-    public int StepNumber { get; set; } = 2;
-    public int TotalSteps { get; set; } = 3;
-    public string VisitDate { get; set; } = "";
-    public string StartTimeLabel { get; set; } = "9:00 AM";
-    public string EndTimeLabel { get; set; } = "11:00 AM";
-    public bool AddToCalendar { get; set; } = true;
-    public string Reminder { get; set; } = "30 minutes before";
-    public string AssignedTechnician { get; set; } = "";
-    public List<string> TimeOptions { get; set; } = [];
-    public List<string> ReminderOptions { get; set; } = [];
-    public List<string> TechnicianOptions { get; set; } = [];
-    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+    public string Label { get; set; } = "";
+    public decimal Amount { get; set; }
+    public string AmountLabel { get; set; } = "";
 }
 
-public class ProviderProCreateJobReviewViewModel : ProviderProPageBaseViewModel
+public class ProviderProCreateJobAttachmentViewModel
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string SizeLabel { get; set; } = "";
+    public string Kind { get; set; } = "image";
+    public string? ThumbnailUrl { get; set; }
+}
+
+public class ProviderProCreateJobQuoteViewModel : ProviderProPageBaseViewModel
 {
     public int StepNumber { get; set; } = 3;
-    public int TotalSteps { get; set; } = 3;
-    public string Title { get; set; } = "";
+    public int TotalSteps { get; set; } = 5;
+    public string StepSubtitle { get; set; } = "Create quote request";
+    public string JobTitle { get; set; } = "";
+    public string ServiceCategoryLabel { get; set; } = "";
+    public string ServiceCategoryIcon { get; set; } = "fa-droplet";
+    public string ServiceCategoryTone { get; set; } = "blue";
+    public string CustomerName { get; set; } = "";
+    public string CustomerInitials { get; set; } = "";
+    public string CustomerTone { get; set; } = "green";
+    public bool SendQuote { get; set; } = true;
+    public string QuoteRequestNotes { get; set; } = "";
+    public int MaxCharacters { get; set; } = 1000;
+    public List<ProviderProCreateJobAttachmentViewModel> Attachments { get; set; } = [];
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
+}
+
+public class ProviderProCreateJobAiDraftViewModel : ProviderProPageBaseViewModel
+{
+    public int StepNumber { get; set; } = 4;
+    public int TotalSteps { get; set; } = 5;
+    public string StepSubtitle { get; set; } = "AI estimate assistant";
+    public string JobTitle { get; set; } = "";
+    public string ServiceCategoryLabel { get; set; } = "";
+    public string ServiceCategoryIcon { get; set; } = "fa-droplet";
+    public string ServiceCategoryTone { get; set; } = "blue";
+    public string CustomerName { get; set; } = "";
+    public string CustomerInitials { get; set; } = "";
+    public string CustomerTone { get; set; } = "green";
+    public string AiCustomerNeeds { get; set; } = "";
+    public List<string> AiRecommendedScope { get; set; } = [];
+    public List<ProviderProCreateJobEstimateLineViewModel> EstimateLines { get; set; } = [];
+    public string EstimateTotalLabel { get; set; } = "";
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
+}
+
+public class ProviderProCreateJobSendViewModel : ProviderProPageBaseViewModel
+{
+    public int StepNumber { get; set; } = 5;
+    public int TotalSteps { get; set; } = 5;
+    public string StepSubtitle { get; set; } = "Finalize the job and quote";
+    public string JobTitle { get; set; } = "";
+    public string ServiceCategoryLabel { get; set; } = "";
+    public string ServiceCategoryIcon { get; set; } = "fa-droplet";
+    public string ServiceCategoryTone { get; set; } = "blue";
     public string CustomerName { get; set; } = "";
     public string Address { get; set; } = "";
-    public string Description { get; set; } = "";
-    public string Priority { get; set; } = "";
-    public string PriorityClass { get; set; } = "medium";
-    public string ServiceCategoryLabel { get; set; } = "";
-    public string ScheduleDateLabel { get; set; } = "";
-    public string ScheduleTimeLabel { get; set; } = "";
-    public string AssignedTechnician { get; set; } = "";
-    public string Reminder { get; set; } = "";
-    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+    public List<ProviderProCreateJobEstimateLineViewModel> EstimateLines { get; set; } = [];
+    public string EstimateTotalLabel { get; set; } = "";
+    public string ScopeSummary { get; set; } = "";
+    public string DeliveryMethod { get; set; } = "indor";
+    public string CustomerMessage { get; set; } = "";
+    public bool IncludeAiSummary { get; set; } = true;
+    public bool IncludeVoiceTranscript { get; set; }
+    public bool SendQuote { get; set; } = true;
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
 }
 
 public class ProviderProCreateJobSuccessViewModel : ProviderProPageBaseViewModel
@@ -130,6 +194,20 @@ public class ProviderProCreateJobDraft
     public bool AddToCalendar { get; set; } = true;
     public string Reminder { get; set; } = "30 minutes before";
     public string AssignedTechnician { get; set; } = "";
+    public bool SendQuote { get; set; } = true;
+    public string QuoteRequestNotes { get; set; } = "";
+    public bool HasVoiceRecording { get; set; }
+    public bool AiDraftGenerated { get; set; }
+    public string AiCustomerNeeds { get; set; } = "";
+    public List<string> AiRecommendedScope { get; set; } = [];
+    public List<ProviderProCreateJobEstimateLineViewModel> EstimateLines { get; set; } = [];
+    public decimal EstimateTotal { get; set; }
+    public string ScopeSummary { get; set; } = "";
+    public string DeliveryMethod { get; set; } = "indor";
+    public string CustomerMessage { get; set; } = "";
+    public bool IncludeAiSummary { get; set; } = true;
+    public bool IncludeVoiceTranscript { get; set; }
+    public List<ProviderProCreateJobAttachmentViewModel> Attachments { get; set; } = [];
 }
 
 public class ProviderProCreateJobViewModel : ProviderProPageBaseViewModel
@@ -238,6 +316,12 @@ public class ProviderProJobPhotoLabelViewModel
     public string Label { get; set; } = "";
 }
 
+public class ProviderProCreateJobStep1Input
+{
+    public string ServiceCategoryId { get; set; } = "";
+    public string Title { get; set; } = "";
+}
+
 public class ProviderProCreateJobDetailsInput
 {
     public string ServiceCategoryId { get; set; } = "";
@@ -250,14 +334,25 @@ public class ProviderProCreateJobDetailsInput
     public string Notes { get; set; } = "";
 }
 
-public class ProviderProCreateJobScheduleInput
+public class ProviderProCreateJobQuoteInput
 {
-    public string VisitDate { get; set; } = "";
-    public string StartTimeLabel { get; set; } = "";
-    public string EndTimeLabel { get; set; } = "";
-    public bool AddToCalendar { get; set; } = true;
-    public string Reminder { get; set; } = "";
-    public string AssignedTechnician { get; set; } = "";
+    public bool SendQuote { get; set; } = true;
+    public string QuoteRequestNotes { get; set; } = "";
+    public string SubmitAction { get; set; } = "ai";
+}
+
+public class ProviderProCreateJobAiDraftInput
+{
+    public string SubmitAction { get; set; } = "continue";
+}
+
+public class ProviderProCreateJobSendInput
+{
+    public string DeliveryMethod { get; set; } = "indor";
+    public string CustomerMessage { get; set; } = "";
+    public bool IncludeAiSummary { get; set; } = true;
+    public bool IncludeVoiceTranscript { get; set; }
+    public string SubmitAction { get; set; } = "job_and_quote";
 }
 
 public class ProviderProCreateJobInput
@@ -279,4 +374,9 @@ public class ProviderProCreateJobInput
     public string Reminder { get; set; } = "";
     public bool AddToCalendar { get; set; } = true;
     public bool SaveAsDraft { get; set; }
+    public bool SendQuoteWithJob { get; set; }
+    public decimal? EstimateAmount { get; set; }
+    public string? EstimateScopeSummary { get; set; }
+    public string DeliveryMethod { get; set; } = "indor";
+    public string CustomerMessage { get; set; } = "";
 }

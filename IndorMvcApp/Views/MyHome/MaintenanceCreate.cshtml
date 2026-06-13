@@ -7,12 +7,13 @@
     ViewBag.MyHomeNav = "maintenance";
 }
 <div class="hf-title-row">
-    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-back"><i class="fas fa-arrow-left"></i></a>
     <h1 class="hf-title">@(isEdit ? "Edit maintenance" : "Add maintenance")</h1>
 </div>
 <form asp-action="@(isEdit ? "MaintenanceEdit" : "MaintenanceCreate")" method="post">
     @if (isEdit) { <input type="hidden" asp-for="Id" /> }
     <input type="hidden" asp-for="PropiedadId" />
+    <input type="hidden" asp-for="NavigationFrom" />
     <label asp-for="Title" class="hf-label">Task title</label>
     <input asp-for="Title" class="hf-input" placeholder="Check AC system" />
     <label asp-for="DueDate" class="hf-label">Due date</label>

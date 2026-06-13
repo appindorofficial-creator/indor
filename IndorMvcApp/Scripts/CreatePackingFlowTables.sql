@@ -156,7 +156,7 @@ BEGIN
             N'Packing Help',
             N'Pack smarter, move easier.',
             N'Our pros help you organize, box, label, and protect your belongings so everything arrives safely and stress-free.',
-            N'/inspeccion2.jpeg',
+            N'/servicio3.jpeg',
             89,
             N'Boxes & supplies guidance|Room-by-room packing|Fragile item protection|Labeling support',
             N'fa-check|fa-check|fa-check|fa-check',
@@ -172,6 +172,10 @@ BEGIN
             1);
         PRINT 'PackingServicioLanding seeded for Packing Help service.';
     END
+
+    UPDATE dbo.PackingServicioLanding
+    SET ImagenUrl = N'/servicio3.jpeg'
+    WHERE MovingSetupServicioId = @PackingServicioId;
 END
 GO
 

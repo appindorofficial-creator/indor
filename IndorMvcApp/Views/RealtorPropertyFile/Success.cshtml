@@ -6,7 +6,7 @@
 }
 
 <div class="rl-dash-shell">
-    @await Html.PartialAsync("_RealtorTopbar", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+    @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
 
     <section class="rl-success-hero">
         <div class="rl-success-icon-wrap">
@@ -31,7 +31,7 @@
     </div>
 
     <div class="rl-success-links">
-        <a asp-controller="Realtor" asp-action="Files" class="rl-success-link-row">
+        <a asp-controller="RealtorPropertyFile" asp-action="View" asp-route-id="@Model.PropertyFileId" class="rl-success-link-row">
             <i class="fas fa-folder-open"></i> Open File <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-success-link-row">
@@ -53,6 +53,6 @@
         <i class="fas fa-circle-check"></i> Saved under Active Files
     </div>
 
-    <a asp-controller="Realtor" asp-action="Files" class="ob-btn ob-btn-primary rl-done-btn">Open File</a>
+    <a asp-controller="RealtorPropertyFile" asp-action="View" asp-route-id="@Model.PropertyFileId" class="ob-btn ob-btn-primary rl-done-btn">Open File</a>
     <a asp-controller="Realtor" asp-action="Files" class="rl-later-link">Done</a>
 </div>

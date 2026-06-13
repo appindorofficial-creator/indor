@@ -83,12 +83,10 @@ public static class EmergencyServicesDisplayService
             };
         }).ToList();
 
-        var defaultItem = list.FirstOrDefault(s => s.EsPredeterminado) ?? list[0];
-
         return new EmergencyServicesSectionViewModel
         {
             Items = cards,
-            SelectedId = defaultItem.Id,
+            SelectedId = null,
             ViewAllUrl = urlHelper.Action("EmergencyGuide", "Home")
         };
     }

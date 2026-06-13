@@ -97,7 +97,7 @@
             <a asp-action="AddProperty" class="icon-btn" aria-label="Back">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <div class="app-header-title"><i class="fas fa-house"></i> House Facts</div>
+            <div class="app-header-title"><i class="fas fa-house"></i> Your Home</div>
             <span class="icon-btn" style="visibility:hidden;" aria-hidden="true"></span>
         </header>
 
@@ -106,6 +106,12 @@
             ViewData["HouseFactPreview"] = true;
         }
         @await Html.PartialAsync("_HouseFactProfile", houseFact)
+
+        @{
+            var maintenanceSection = ViewBag.MaintenanceSection as PropertyMaintenanceSectionViewModel
+                ?? new PropertyMaintenanceSectionViewModel();
+        }
+        @await Html.PartialAsync("_PropertyMaintenanceRecommendations", maintenanceSection, new ViewDataDictionary(ViewData) { { "RetryUrl", Url.Action("AddProperty") } })
 
         <div class="actions">
             <a asp-action="EditAddress" class="btn btn-primary">

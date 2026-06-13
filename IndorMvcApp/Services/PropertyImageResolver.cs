@@ -39,29 +39,15 @@ public static class PropertyImageResolver
         }
 
         return documents
-            .Where(IsPhotoDocument)
+            .Where(IsPropertyPhotoDocument)
             .OrderByDescending(d => d.FechaCreacion)
             .Select(d => NormalizePath(d.StoragePath))
             .FirstOrDefault(path => !string.IsNullOrWhiteSpace(path));
     }
 
-    private static bool IsPhotoDocument(PropiedadDocumento doc)
-    {
-        if (string.Equals(doc.Category, "Photo", StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        if (!string.IsNullOrWhiteSpace(doc.ContentType)
-            && doc.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
-        {
-            return true;
-        }
-
-        var name = doc.FileName ?? doc.StoragePath ?? string.Empty;
-        var extension = Path.GetExtension(name).ToLowerInvariant();
-        return ImageExtensions.Contains(extension);
-    }
+    private static bool IsPropertyPhotoDocument(PropiedadDocumento doc) =>
+        string.Equals(doc.Category, "Photo", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(doc.Category, "Photos", StringComparison.OrdinalIgnoreCase);
 
     private static string? NormalizePath(string? path)
     {

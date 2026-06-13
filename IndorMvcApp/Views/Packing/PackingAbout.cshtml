@@ -28,9 +28,9 @@
     <h2 class="page-heading" style="font-size:1.15rem;">Tell us about your packing job</h2>
     <p class="page-lead" style="margin-top:-8px;">Help us match the right crew and packing materials.</p>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <div asp-validation-summary="All" class="validation-summary"></div>
 
-    <form asp-action="PackingAbout" method="post">
+    <form id="packing-about-form" asp-action="PackingAbout" method="post">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
@@ -46,7 +46,7 @@
 
         <div class="field-card">
             <span class="field-label">What kind of packing help do you need?</span>
-            <div class="tile-grid tile-grid-4" data-target="TipoEmpaque">
+            <div class="packing-type-grid" data-target="TipoEmpaque">
                 <button type="button" class="type-card" data-value="FullPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>Full packing</button>
                 <button type="button" class="type-card" data-value="PartialPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>Partial packing</button>
                 <button type="button" class="type-card" data-value="FragileOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wine-glass"></i>Fragile items only</button>
@@ -101,11 +101,13 @@
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.type-card');
             function setActive(value) {
-                hidden.value = value;
-                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
+                const normalized = value && String(value).trim() ? value : '';
+                hidden.value = normalized;
+                buttons.forEach(b => b.classList.toggle('active', normalized && b.dataset.value === normalized));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
+            setActive(seed);
         }
 
         function initSegments(containerSelector, hiddenId, initial, onChange) {
@@ -114,12 +116,14 @@
             if (!container || !hidden) return;
             const buttons = container.querySelectorAll('.segment-btn');
             function setActive(value) {
-                hidden.value = value;
-                buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
-                if (onChange) onChange(value);
+                const normalized = value && String(value).trim() ? value : '';
+                hidden.value = normalized;
+                buttons.forEach(b => b.classList.toggle('active', normalized && b.dataset.value === normalized));
+                if (onChange) onChange(normalized);
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            const seed = (initial && String(initial).trim()) || (hidden.value && String(hidden.value).trim()) || '';
+            setActive(seed);
         }
 
         initCards('[data-target="TipoEmpaque"]', 'TipoEmpaque', '@Model.TipoEmpaque');
@@ -127,6 +131,35 @@
         initSegments('[data-target="TamanoHogar"]', 'TamanoHogar', '@Model.TamanoHogar');
         initSegments('[data-target="CuandoMudanza"]', 'CuandoMudanza', '@Model.CuandoMudanza', value => {
             document.getElementById('laterDateWrap').style.display = value === 'LaterDate' ? 'block' : 'none';
+        });
+
+        const form = document.getElementById('packing-about-form');
+        const requiredFields = [
+            { id: 'TipoEmpaque', message: 'Please select what kind of packing help you need.' },
+            { id: 'CuandoMudanza', message: 'Please select when you are moving.' },
+            { id: 'TipoPropiedad', message: 'Please select your property type.' },
+            { id: 'TamanoHogar', message: 'Please select your home size.' }
+        ];
+
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'skip') {
+                return;
+            }
+
+            var firstMissing = null;
+            requiredFields.forEach(function (field) {
+                var input = document.getElementById(field.id);
+                if (!input) return;
+                var empty = !input.value || !String(input.value).trim();
+                if (empty && !firstMissing) {
+                    firstMissing = field;
+                }
+            });
+
+            if (firstMissing) {
+                e.preventDefault();
+                alert(firstMissing.message);
+            }
         });
     })();
 </script>

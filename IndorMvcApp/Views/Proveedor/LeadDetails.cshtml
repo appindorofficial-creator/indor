@@ -84,6 +84,40 @@
         </div>
     </section>
 
+    @if (!string.IsNullOrWhiteSpace(Model.SourceBadge))
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-file-lines"></i> Inspection Report</h3>
+            <p class="prv-pro-lead-hint">@Model.SourceBadge</p>
+            @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
+            {
+                <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener"
+                   class="prv-pro-btn prv-pro-btn--ghost prv-pro-inspection-pdf-btn">
+                    <i class="fas fa-file-pdf"></i> View Full Inspection Report PDF
+                </a>
+            }
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.AnalysisSummary))
+    {
+        <section class="prv-pro-ai-summary">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <div>
+                <strong>AI Summary</strong>
+                <p>@Model.AnalysisSummary</p>
+            </div>
+        </section>
+    }
+
+    @if (Model.FindingCount > 0)
+    {
+        <section class="prv-pro-lead-section">
+            <h3><i class="fas fa-list-check"></i> Inspection findings</h3>
+            <p class="prv-pro-lead-hint">@Model.FindingCount inspection finding@(Model.FindingCount == 1 ? "" : "s") extracted from the report.</p>
+        </section>
+    }
+
     @if (!string.IsNullOrWhiteSpace(Model.ProblemDescription))
     {
         <section class="prv-pro-lead-section">
@@ -143,7 +177,14 @@
             </p>
         }
 
-        @if (Model.CanCreateEstimate)
+        @if (Model.CanCreateEstimate && Model.HasInspectionFindings)
+        {
+            <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId"
+               class="prv-pro-btn prv-pro-btn--primary prv-pro-lead-action-btn prv-pro-lead-action-btn--full">
+                <i class="fas fa-list-check"></i> Review Inspection Findings
+            </a>
+        }
+        else if (Model.CanCreateEstimate)
         {
             <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@Model.LeadId"
                class="prv-pro-btn prv-pro-btn--primary prv-pro-lead-action-btn prv-pro-lead-action-btn--full">

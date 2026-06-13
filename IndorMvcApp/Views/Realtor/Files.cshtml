@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorFilesViewModel
 @{
-    ViewData["Title"] = "Files";
+    ViewData["Title"] = "Property Files";
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "files";
 }
@@ -8,12 +8,23 @@
 <div class="rl-dash-shell">
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <h1 class="rl-page-title">Files</h1>
+    <div class="rl-page-header">
+        <div>
+            <h1 class="rl-page-title">Property Files</h1>
+            <p class="rl-page-subtitle">Track each property file from inspection to package sharing.</p>
+        </div>
+        <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-btn-primary rl-btn-primary--sm">
+            <i class="fas fa-plus"></i> New File
+        </a>
+    </div>
 
     <form asp-action="Files" method="get" class="rl-search-form">
-        <div class="rl-search-bar">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search file, property, or client" />
+        <div class="rl-search-row">
+            <div class="rl-search-bar">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, client, or file ID..." />
+            </div>
+            <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
         </div>
         <div class="rl-filter-chips">
             @foreach (var chip in Model.Filters)
@@ -24,20 +35,9 @@
         </div>
     </form>
 
-    <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-action-card">
-        <span class="rl-action-card-icon"><i class="fas fa-folder-plus"></i></span>
-        <div>
-            <strong>+ Create Property File</strong>
-            <span>Start a pre-closing, repair, or transfer file.</span>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-    </a>
+    @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Active Files</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
         @if (Model.ActiveFiles.Count == 0)
         {
             <div class="rl-dash-empty">No files match your filters.</div>
@@ -46,52 +46,54 @@
         {
             @foreach (var file in Model.ActiveFiles)
             {
-                <article class="rl-file-card">
+                <article class="rl-file-card-v2">
                     <img src="@file.PhotoUrl" alt="" />
                     <div class="rl-file-card-body">
                         <div class="rl-file-card-top">
-                            <strong>@file.Address</strong>
-                            <span class="rl-phase-badge rl-phase-badge--@file.FilePhase.Replace(" ", "-").ToLowerInvariant()">@file.FilePhase</span>
+                            <div>
+                                <strong>@file.Address</strong>
+                                @if (!string.IsNullOrWhiteSpace(file.CityRegion))
+                                {
+                                    <span class="rl-premium-muted">@file.CityRegion</span>
+                                }
+                            </div>
+                            <button type="button" class="rl-card-menu" aria-label="Options"><i class="fas fa-ellipsis-vertical"></i></button>
+                            <span class="rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusBadge</span>
                         </div>
-                        @if (!string.IsNullOrWhiteSpace(file.CityRegion))
-                        {
-                            <span>@file.CityRegion</span>
-                        }
                         @if (!string.IsNullOrWhiteSpace(file.ClientName))
                         {
-                            <span><i class="fas fa-user"></i> @file.ClientName</span>
+                            <span class="rl-premium-client"><i class="fas fa-user"></i> @file.ClientName</span>
                         }
-                        <span class="rl-file-meta">
-                            @if (file.RepairItemsCount > 0)
-                            {
-                                <span><i class="fas fa-wrench"></i> @file.RepairItemsCount repair items</span>
-                            }
-                            @if (file.QuotesReceivedCount > 0)
-                            {
-                                <span><i class="fas fa-file-invoice"></i> @file.QuotesReceivedCount quotes received</span>
-                            }
-                        </span>
-                        <span class="rl-file-updated">Updated @file.UpdatedLabel</span>
+                        <span class="rl-file-code">File ID: @file.FileCode</span>
+                        @if (!string.IsNullOrWhiteSpace(file.DetailNote))
+                        {
+                            <span class="rl-premium-muted">@file.DetailNote</span>
+                        }
+                        <span class="rl-file-updated">@file.UpdatedLabel</span>
                     </div>
-                    <i class="fas fa-chevron-right rl-card-chevron"></i>
+                    <a href="@file.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@file.ActionLabel</a>
                 </article>
             }
         }
     </section>
 
-    <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Recent File Activity</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
-        @foreach (var act in Model.RecentActivity)
-        {
-            @await Html.PartialAsync("_RealtorActivityItem", act)
-        }
-    </section>
-
-    <section class="rl-info-banner">
-        <i class="fas fa-folder-tree"></i>
-        <p>Property files connect clients, quotes, reports, and jobs in one place.</p>
-    </section>
+    @if (Model.Insights.Count > 0)
+    {
+        <section class="rl-dash-section">
+            <div class="rl-dash-section-head">
+                <h2><i class="fas fa-lightbulb"></i> Smart Insights</h2>
+                <a href="#">View all insights <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="rl-hscroll rl-insight-chips">
+                @foreach (var insight in Model.Insights)
+                {
+                    <div class="rl-insight-chip rl-insight-chip--@insight.ColorClass">
+                        <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
+                        <span>@insight.Text</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </div>
+                }
+            </div>
+        </section>
+    }
 </div>

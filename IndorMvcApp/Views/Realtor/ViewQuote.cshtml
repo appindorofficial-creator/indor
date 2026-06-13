@@ -1,0 +1,240 @@
+@model IndorMvcApp.ViewModels.RealtorViewQuoteViewModel
+
+@{
+
+    ViewData["Title"] = "Quote Details";
+
+    Layout = "_RealtorLayout";
+
+    ViewBag.NavActive = "quotes";
+
+}
+
+
+
+<div class="rl-dash-shell">
+
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+
+
+    <div class="rl-page-header rl-page-header--stack">
+
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link">
+
+            <i class="fas fa-chevron-left"></i> Quotes
+
+        </a>
+
+        <h1 class="rl-page-title">Quote Details</h1>
+
+    </div>
+
+
+
+    <div class="rl-qview-hero">
+
+        <img src="@Model.PhotoUrl" alt="" />
+
+        <div>
+
+            <strong>@Model.Address</strong>
+
+            <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="rl-qview-provider">
+
+        <span class="rl-provider-avatar">@Model.ProviderInitials</span>
+
+        <div>
+
+            <strong>@Model.ProviderName</strong>
+
+            <span class="rl-premium-muted">Verified provider</span>
+
+        </div>
+
+        <button type="button" class="rl-btn-outline rl-btn-outline--sm">View Provider</button>
+
+    </div>
+
+
+
+    <div class="rl-qview-metrics">
+
+        <div>
+
+            <i class="fas fa-dollar-sign rl-metric-icon rl-metric-icon--blue"></i>
+
+            <span>Total Quote</span>
+
+            <strong>@Model.TotalLabel</strong>
+
+        </div>
+
+        <div>
+
+            <i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i>
+
+            <span>Timeline</span>
+
+            <strong>@Model.TimelineLabel</strong>
+
+        </div>
+
+        <div>
+
+            <i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i>
+
+            <span>Warranty</span>
+
+            <strong>@Model.WarrantyLabel</strong>
+
+        </div>
+
+        <div>
+
+            <i class="fas fa-circle-check rl-metric-icon rl-metric-icon--green"></i>
+
+            <span>Status</span>
+
+            <strong>@Model.ReviewStatusLabel</strong>
+
+        </div>
+
+    </div>
+
+
+
+    <section class="rl-dash-section">
+
+        <div class="rl-dash-section-head"><h2><i class="fas fa-clipboard-list"></i> Scope of Work</h2></div>
+
+        <p class="rl-qview-scope">@Model.ScopeOfWork</p>
+
+    </section>
+
+
+
+    @if (Model.IncludedRepairs.Count > 0)
+
+    {
+
+        <section class="rl-dash-section">
+
+            <div class="rl-dash-section-head"><h2><i class="fas fa-wrench"></i> Included Repairs</h2></div>
+
+            <ul class="rl-qview-repairs">
+
+                @foreach (var repair in Model.IncludedRepairs)
+
+                {
+
+                    <li><i class="fas fa-circle-check"></i> @repair</li>
+
+                }
+
+            </ul>
+
+        </section>
+
+    }
+
+
+
+    <section class="rl-dash-section">
+
+        <div class="rl-dash-section-head"><h2><i class="fas fa-receipt"></i> Price Breakdown</h2></div>
+
+        <div class="rl-qview-pricing">
+
+            @foreach (var line in Model.PriceLines)
+
+            {
+
+                <div class="rl-qview-price-row">
+
+                    <span>@line.Label</span>
+
+                    <span>@line.AmountLabel</span>
+
+                </div>
+
+            }
+
+            <div class="rl-qview-price-row rl-qview-price-row--total">
+
+                <span>Total</span>
+
+                <strong>@Model.TotalAmountLabel</strong>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+
+    <section class="rl-qshare-panel">
+
+        <div class="rl-qshare-panel-head">
+
+            <i class="fas fa-paper-plane"></i>
+
+            <div>
+
+                <strong>Share with Homeowner</strong>
+
+                <p>Share this quote directly with the homeowner from INDOR.</p>
+
+            </div>
+
+        </div>
+
+        <div class="rl-qview-actions rl-qview-actions--share">
+
+            <a href="@Model.EditSharedQuoteUrl" class="ob-btn ob-btn-primary rl-qview-btn">
+
+                <i class="fas fa-paper-plane"></i> Share with Homeowner
+
+            </a>
+
+            <a href="@Model.EditSharedQuoteUrl" class="rl-btn-outline rl-qview-btn">
+
+                <i class="fas fa-pen"></i> Edit Before Sharing
+
+            </a>
+
+            <div class="rl-qshare-or"><span>OR</span></div>
+
+            <form asp-controller="Realtor" asp-action="AcceptQuote" method="post">
+
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="quoteId" value="@Model.QuoteId" />
+
+                <input type="hidden" name="bidId" value="@Model.BidId" />
+
+                <button type="submit" class="rl-btn-outline rl-qview-btn">
+
+                    <i class="fas fa-circle-check"></i> Accept Quote
+
+                </button>
+
+            </form>
+
+            <a href="@Model.RequestAnotherUrl" class="rl-qview-message">Request Another Quote</a>
+
+        </div>
+
+    </section>
+
+</div>
+

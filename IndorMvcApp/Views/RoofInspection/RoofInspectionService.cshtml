@@ -40,10 +40,16 @@
             <div class="preview-label">Recommendations</div>
             @foreach (var item in Model.RecommendationItems)
             {
-                <div class="roof-rec-row">
-                    <div class="left"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
-                    <div class="right"><i class="fas fa-chevron-right"></i></div>
-                </div>
+                <details class="roof-rec-item">
+                    <summary class="roof-rec-row">
+                        <div class="left"><i class="fas @item.Icon"></i><span>@item.Text</span></div>
+                        <div class="right" aria-hidden="true"><i class="fas fa-chevron-right"></i></div>
+                    </summary>
+                    @if (!string.IsNullOrWhiteSpace(item.Subtext))
+                    {
+                        <p class="roof-rec-detail">@item.Subtext</p>
+                    }
+                </details>
             }
         </div>
     }

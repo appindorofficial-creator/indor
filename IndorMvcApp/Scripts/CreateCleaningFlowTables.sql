@@ -154,7 +154,7 @@ BEGIN
             N'Move-In / Move-Out Cleaning',
             N'A fresh start before or after your move.',
             N'Professional cleaning for homes, apartments, and condos before move-in or after move-out.',
-            N'/inspeccion2.jpeg',
+            N'/limpieza.jpeg',
             149,
             N'Kitchens|Bathrooms|Floors|Dusting|Trash removal',
             N'fa-check|fa-check|fa-check|fa-check|fa-check',
@@ -170,6 +170,10 @@ BEGIN
             1);
         PRINT 'CleaningServicioLanding seeded for Cleaning service.';
     END
+
+    UPDATE dbo.CleaningServicioLanding
+    SET ImagenUrl = N'/limpieza.jpeg'
+    WHERE MovingSetupServicioId = @CleaningServicioId;
 END
 GO
 

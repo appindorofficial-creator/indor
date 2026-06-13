@@ -178,6 +178,10 @@ BEGIN
             1);
         PRINT 'MovingServicioLanding seeded for Moving service.';
     END
+
+    UPDATE dbo.MovingServicioLanding
+    SET ImagenUrl = N'/inspeccion2.jpeg'
+    WHERE MovingSetupServicioId = @MovingServicioId;
 END
 GO
 

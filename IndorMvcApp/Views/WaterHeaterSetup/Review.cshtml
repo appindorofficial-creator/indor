@@ -31,16 +31,17 @@
             </div>
         }
 
-        <form asp-action="Review" method="post">
+        <form asp-controller="WaterHeaterSetup" asp-action="Review" method="post">
             <input type="hidden" asp-for="PropiedadId" />
             <input type="hidden" asp-for="HeaterType" />
+            @Html.AntiForgeryToken()
             <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="hvac-review-card">
                 <div class="hvac-review-rows">
                     <div class="hvac-review-row"><span>Water heater type</span><strong>@Model.HeaterTypeLabel</strong></div>
                     <div class="hvac-review-row"><span>Brand</span><strong>@Model.Brand</strong></div>
-                    <div class="hvac-review-row"><span>Model</span><strong>@Model.Model</strong></div>
+                    <div class="hvac-review-row"><span>Model</span><strong>@Model.EquipmentModel</strong></div>
                     <div class="hvac-review-row"><span>Serial number</span><strong>@Model.SerialNumber</strong></div>
                     <div class="hvac-review-row"><span>Approx. install year</span><strong>@Model.InstallYearLabel</strong></div>
                     @if (Model.HeaterTypeLabel == "Tank")

@@ -14,10 +14,12 @@ public class CrawlspaceCheckServiceViewModel
     public List<CrawlspaceCheckFeatureItemViewModel> CheckItems { get; set; } = new();
     public string? BestPracticeTexto { get; set; }
     public string CtaTexto { get; set; } = "Start crawlspace check";
+    public string CheckAreasSeleccionadas { get; set; } = string.Empty;
 }
 
 public class CrawlspaceCheckFeatureItemViewModel
 {
+    public string Value { get; set; } = string.Empty;
     public string Icon { get; set; } = "fa-check";
     public string Text { get; set; } = string.Empty;
 }
@@ -28,20 +30,20 @@ public class CrawlspaceCheckSetupViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Crawlspace Check";
 
-    [Required]
-    public string Encapsulacion { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Please indicate whether you have encapsulation.")]
+    public string Encapsulacion { get; set; } = string.Empty;
 
-    [Required]
-    public string Aislamiento { get; set; } = "Yes";
+    [Required(ErrorMessage = "Please indicate whether there is insulation.")]
+    public string Aislamiento { get; set; } = string.Empty;
 
-    [Required]
-    public string BarreraVapor { get; set; } = "Yes";
+    [Required(ErrorMessage = "Please indicate whether you have a ground vapor barrier.")]
+    public string BarreraVapor { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoAcceso { get; set; } = "InteriorHatch";
+    [Required(ErrorMessage = "Please select an access type.")]
+    public string TipoAcceso { get; set; } = string.Empty;
 
-    [Required]
-    public string UltimaRevision { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Please indicate when your crawlspace was last checked.")]
+    public string UltimaRevision { get; set; } = string.Empty;
 }
 
 public class CrawlspaceCheckScheduleViewModel

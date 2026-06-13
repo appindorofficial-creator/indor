@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using IndorMvcApp.Data;
@@ -17,11 +18,23 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
 builder.Services.AddDistributedMemoryCache();
+
+var dataProtectionKeysPath = ResolveDataProtectionKeysPath(builder.Environment);
+Directory.CreateDirectory(dataProtectionKeysPath);
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath))
+    .SetApplicationName("IndorMvcApp");
+
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.IdleTimeout = TimeSpan.FromHours(8);
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
+    options.Cookie.Name = "Indor.Session";
 });
 
 // Configurar Entity Framework con SQL Server LocalDB
@@ -47,9 +60,14 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/Account/LoginForm";
     options.LogoutPath = "/Account/Logout";
     options.AccessDeniedPath = "/Account/AccessDenied";
+    options.Cookie.Name = "Indor.Auth";
+    options.Cookie.HttpOnly = true;
     options.Cookie.SameSite = SameSiteMode.Lax;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
     options.SlidingExpiration = true;
+    options.ExpireTimeSpan = TimeSpan.FromDays(30);
 });
 
 // Register HttpClient and property services
@@ -77,17 +95,36 @@ builder.Services.AddScoped<ProviderProDashboardService>();
 builder.Services.AddScoped<RealtorGuidanceService>();
 builder.Services.AddScoped<IRealtorRegistrationService, RealtorRegistrationService>();
 builder.Services.AddScoped<RealtorPortalService>();
+builder.Services.AddScoped<RealtorSharedQuoteService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();
 builder.Services.AddScoped<IRealtorPropertyFileWizardService, RealtorPropertyFileWizardService>();
 builder.Services.AddScoped<IRealtorQuoteRequestService, RealtorQuoteRequestService>();
+builder.Services.AddHttpClient<IOpenAiInspectionAnalysisService, OpenAiInspectionAnalysisService>((sp, client) =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<OpenAiPropertyOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromMinutes(10);
+});
+builder.Services.AddHttpClient<IOpenAiMaintenanceRecommendationService, OpenAiMaintenanceRecommendationService>((sp, client) =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<OpenAiPropertyOptions>>().Value;
+    client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
+    client.Timeout = TimeSpan.FromSeconds(120);
+});
+builder.Services.AddScoped<IRealtorProviderBridgeService, RealtorProviderBridgeService>();
 builder.Services.AddScoped<IRealtorInspectionUploadWizardService, RealtorInspectionUploadWizardService>();
 builder.Services.AddScoped<IRealtorUrgentQuoteWizardService, RealtorUrgentQuoteWizardService>();
 
 builder.Services.Configure<FormOptions>(options =>
 {
-    options.MultipartBodyLengthLimit = 40_000_000;
+    options.MultipartBodyLengthLimit = RealtorInspectionUploadLimits.MaxFileBytes;
     options.ValueLengthLimit = int.MaxValue;
     options.MultipartHeadersLengthLimit = int.MaxValue;
+});
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.Limits.MaxRequestBodySize = RealtorInspectionUploadLimits.MaxFileBytes;
 });
 
 var app = builder.Build();
@@ -123,3 +160,14 @@ app.MapControllerRoute(
 
 
 app.Run();
+
+static string ResolveDataProtectionKeysPath(IWebHostEnvironment environment)
+{
+    var home = Environment.GetEnvironmentVariable("HOME");
+    if (!string.IsNullOrWhiteSpace(home))
+    {
+        return Path.Combine(home, "site", "data", "ProtectionKeys");
+    }
+
+    return Path.Combine(environment.ContentRootPath, "DataProtection-Keys");
+}

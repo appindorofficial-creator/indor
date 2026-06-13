@@ -153,7 +153,7 @@ BEGIN
             N'Furniture & Assembly',
             N'Furniture & Assembly',
             N'Assembly help for move-in and home setup.',
-            N'/inspeccion2.jpeg',
+            N'/servicio1.jpeg',
             89,
             N'Bed frames|Desks|Dining tables|Bookshelves|TV stands|Dressers|Chairs|And more',
             N'fa-check|fa-check|fa-check|fa-check|fa-check|fa-check|fa-check|fa-check',
@@ -167,6 +167,10 @@ BEGIN
             1);
         PRINT 'FurnitureAssemblyServicioLanding seeded.';
     END
+
+    UPDATE dbo.FurnitureAssemblyServicioLanding
+    SET ImagenUrl = N'/servicio1.jpeg'
+    WHERE MovingSetupServicioId = @FurnitureServicioId;
 END
 GO
 

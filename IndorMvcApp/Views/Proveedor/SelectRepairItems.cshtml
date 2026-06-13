@@ -1,0 +1,51 @@
+@model IndorMvcApp.ViewModels.ProviderProSelectRepairItemsViewModel
+@{
+    ViewData["Title"] = "Select Repair Items - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--select-repairs">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Select Repair Items</h1>
+            <small>@Model.Address · @Model.ServiceType</small>
+        </div>
+    </header>
+
+    <form asp-controller="Proveedor" asp-action="SelectRepairItems" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.LeadId" />
+
+        <section class="prv-pro-repair-checklist">
+            @foreach (var item in Model.SelectedItems)
+            {
+                <label class="prv-pro-repair-check-item">
+                    <input type="checkbox" checked disabled />
+                    <span class="prv-pro-repair-check-ui"></span>
+                    <div>
+                        <strong>@item.Title</strong>
+                        @if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <small>@item.Description</small>
+                        }
+                    </div>
+                </label>
+            }
+        </section>
+
+        <p class="prv-pro-lead-hint">
+            <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId">+ Add another repair item</a>
+        </p>
+
+        <footer class="prv-pro-workflow-footer">
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
+                Create Quick Estimate (@Model.SelectedItems.Count item@(Model.SelectedItems.Count == 1 ? "" : "s"))
+            </button>
+        </footer>
+    </form>
+</div>

@@ -50,17 +50,17 @@ public class PackingAboutViewModel
     [Required, MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoEmpaque { get; set; } = "PartialPacking";
+    [Required(ErrorMessage = "Please select what kind of packing help you need.")]
+    public string TipoEmpaque { get; set; } = string.Empty;
 
-    [Required]
-    public string CuandoMudanza { get; set; } = "ThisWeek";
+    [Required(ErrorMessage = "Please select when you are moving.")]
+    public string CuandoMudanza { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoPropiedad { get; set; } = "Apartment";
+    [Required(ErrorMessage = "Please select your property type.")]
+    public string TipoPropiedad { get; set; } = string.Empty;
 
-    [Required]
-    public string TamanoHogar { get; set; } = "ThreeFourRooms";
+    [Required(ErrorMessage = "Please select your home size.")]
+    public string TamanoHogar { get; set; } = string.Empty;
 
     public DateTime? FechaServicio { get; set; }
 }

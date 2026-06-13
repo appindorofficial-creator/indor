@@ -34,15 +34,18 @@
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
-        <input type="hidden" asp-for="DireccionPropiedad" />
         <input type="hidden" asp-for="Habitacion" id="Habitacion" />
         <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
         <input type="hidden" asp-for="AyudaMover" id="AyudaMover" />
         <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
 
-        <div class="address-card">
-            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><span style="font-weight:600;">@Model.DireccionPropiedad</span></div>
-            <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit ></a>
+        <div class="address-card" id="addressCard">
+            <div class="left">
+                <i class="fas fa-house" style="color:#0066CC;"></i>
+                <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
+                       placeholder="123 Riverside Dr, Mount Holly, NC 28120" required readonly />
+            </div>
+            <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
         </div>
 
         <div class="field-card">
@@ -141,6 +144,26 @@
         initSingleChip('accessGroup', 'DetallesAcceso', '@Model.DetallesAcceso');
         initSegments('[data-target="AyudaMover"]', 'AyudaMover', '@Model.AyudaMover');
         initTimeSlots('[data-target="VentanaHorario"]', 'VentanaHorario', '@Model.VentanaHorario');
+
+        const addressInput = document.getElementById('DireccionPropiedad');
+        const addressCard = document.getElementById('addressCard');
+        const editAddressBtn = document.getElementById('editAddressBtn');
+
+        function enableAddressEdit() {
+            if (!addressInput) return;
+            addressInput.removeAttribute('readonly');
+            addressCard?.classList.add('editing');
+            addressInput.focus();
+            try {
+                addressInput.setSelectionRange(0, addressInput.value.length);
+            } catch (_) { /* iOS may not support selection on focus */ }
+        }
+
+        editAddressBtn?.addEventListener('click', enableAddressEdit);
+        addressInput?.addEventListener('focus', function () {
+            addressInput.removeAttribute('readonly');
+            addressCard?.classList.add('editing');
+        });
     })();
 </script>
 </body>

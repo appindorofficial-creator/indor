@@ -49,11 +49,25 @@ public class CrawlspaceCheckController : Controller
             return RedirectToAction("Index", "Home");
         }
 
+        if (model.CheckItems.Count > 0 && string.IsNullOrWhiteSpace(model.CheckAreasSeleccionadas))
+        {
+            ModelState.AddModelError(nameof(model.CheckAreasSeleccionadas), "Select at least one area to check.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var bundleForView = await LoadLandingBundleAsync(model.HomeCarePriorityId);
+            if (bundleForView == null) return NotFound();
+            var existingForView = await GetActiveSolicitudAsync(userId, model.HomeCarePriorityId);
+            return View(BuildServiceViewModel(bundleForView.Value.Priority, bundleForView.Value.Landing, existingForView, model));
+        }
+
         try
         {
             var propiedadId = await GetLatestPropertyIdAsync(userId);
             var solicitud = await GetOrCreateSolicitudAsync(userId, model.HomeCarePriorityId, model.SolicitudId);
             solicitud.PropiedadId = propiedadId;
+            solicitud.PreocupacionesSeleccionadas = model.CheckAreasSeleccionadas.Trim();
             solicitud.Estado = "InProgress";
             solicitud.FechaActualizacion = DateTime.Now;
 
@@ -79,11 +93,11 @@ public class CrawlspaceCheckController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Crawlspace Check",
-            Encapsulacion = solicitud.Encapsulacion ?? "NotSure",
-            Aislamiento = solicitud.Aislamiento ?? "Yes",
-            BarreraVapor = solicitud.BarreraVapor ?? "Yes",
-            TipoAcceso = solicitud.TipoAcceso ?? "InteriorHatch",
-            UltimaRevision = solicitud.UltimaRevision ?? "NotSure"
+            Encapsulacion = HasCompletedSetup(solicitud) ? solicitud.Encapsulacion ?? string.Empty : string.Empty,
+            Aislamiento = HasCompletedSetup(solicitud) ? solicitud.Aislamiento ?? string.Empty : string.Empty,
+            BarreraVapor = HasCompletedSetup(solicitud) ? solicitud.BarreraVapor ?? string.Empty : string.Empty,
+            TipoAcceso = HasCompletedSetup(solicitud) ? solicitud.TipoAcceso ?? string.Empty : string.Empty,
+            UltimaRevision = HasCompletedSetup(solicitud) ? solicitud.UltimaRevision ?? string.Empty : string.Empty
         });
     }
 
@@ -275,7 +289,10 @@ public class CrawlspaceCheckController : Controller
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
             CheckItems = SplitPipePairs(landing.IncluyeItems, landing.IncluyeIconos),
             BestPracticeTexto = landing.InfoBoxTexto,
-            CtaTexto = landing.CtaTexto
+            CtaTexto = landing.CtaTexto,
+            CheckAreasSeleccionadas = posted?.CheckAreasSeleccionadas
+                ?? existing?.PreocupacionesSeleccionadas
+                ?? string.Join("|", SplitPipePairs(landing.IncluyeItems, landing.IncluyeIconos).Select(i => i.Value))
         };
 
     private async Task<CrawlspaceCheckScheduleViewModel> BuildScheduleViewModelAsync(SolicitudCrawlspaceCheck solicitud)
@@ -349,9 +366,21 @@ public class CrawlspaceCheckController : Controller
         return textItems.Select((text, index) => new CrawlspaceCheckFeatureItemViewModel
         {
             Text = text,
+            Value = ToCheckItemCode(text),
             Icon = index < iconItems.Length ? iconItems[index] : "fa-check"
         }).ToList();
     }
+
+    private static string ToCheckItemCode(string text) => text.Trim() switch
+    {
+        "Moisture" => "Moisture",
+        "Encapsulation" => "Encapsulation",
+        "Insulation" => "Insulation",
+        "Air leaks" => "AirLeaks",
+        "Pests" => "Pests",
+        "Cracks" => "Cracks",
+        _ => text.Replace(" ", string.Empty).Replace("/", string.Empty)
+    };
 
     private static string? ResolveImageUrl(string? url) =>
         string.IsNullOrWhiteSpace(url) ? null : url.StartsWith('/') ? url : $"/{url}";
@@ -395,13 +424,7 @@ public class CrawlspaceCheckController : Controller
                 HomeCarePriorityId = priorityId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                Encapsulacion = "NotSure",
-                Aislamiento = "Yes",
-                BarreraVapor = "Yes",
-                TipoAcceso = "InteriorHatch",
-                UltimaRevision = "NotSure",
-                TimingPreferido = "AsSoonAsPossible"
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesCrawlspaceCheck.Add(solicitud);
             await _db.SaveChangesAsync();
@@ -409,6 +432,10 @@ public class CrawlspaceCheckController : Controller
 
         return solicitud;
     }
+
+    private static bool HasCompletedSetup(SolicitudCrawlspaceCheck solicitud) =>
+        string.Equals(solicitud.Estado, "SetupCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
 
     private async Task<SolicitudCrawlspaceCheck?> LoadSolicitudForUserAsync(int id)
     {

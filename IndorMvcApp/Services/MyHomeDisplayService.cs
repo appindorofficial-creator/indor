@@ -9,19 +9,31 @@ public static class MyHomeDisplayService
 {
     public static PropertyInfoViewModel? DeserializeProperty(Propiedad propiedad)
     {
-        if (string.IsNullOrWhiteSpace(propiedad.DatosJson))
+        PropertyInfoViewModel? info = null;
+
+        if (!string.IsNullOrWhiteSpace(propiedad.DatosJson))
         {
-            return null;
+            try
+            {
+                info = JsonSerializer.Deserialize<PropertyInfoViewModel>(propiedad.DatosJson);
+            }
+            catch
+            {
+                // fall through — maintenance may still exist in dedicated column
+            }
         }
 
-        try
+        var maintenance = PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
+        if (maintenance != null)
         {
-            return JsonSerializer.Deserialize<PropertyInfoViewModel>(propiedad.DatosJson);
+            info ??= new PropertyInfoViewModel
+            {
+                FormattedAddress = propiedad.Direccion ?? string.Empty
+            };
+            info.MaintenanceRecommendations ??= maintenance;
         }
-        catch
-        {
-            return null;
-        }
+
+        return info;
     }
 
     public static MyHomeSummaryViewModel BuildSummary(Propiedad propiedad, PropertyInfoViewModel? info)

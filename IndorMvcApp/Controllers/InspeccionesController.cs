@@ -56,11 +56,11 @@ public partial class InspeccionesController : Controller
             DireccionPropiedad = existing?.DireccionPropiedad
                                  ?? propiedad?.Direccion
                                  ?? string.Empty,
-            BajoContrato = existing?.BajoContrato ?? true,
+            BajoContrato = existing?.BajoContrato,
             FechaCierreEstimada = existing?.FechaCierreEstimada ?? DateTime.Today.AddDays(21),
-            TieneReporteExistente = existing?.TieneReporteExistente ?? false,
-            RolComprador = existing?.RolComprador ?? "Buyer",
-            ObjetivoPrincipal = existing?.ObjetivoPrincipal ?? "UnderstandRepairRisks"
+            TieneReporteExistente = existing?.TieneReporteExistente,
+            RolComprador = existing?.RolComprador,
+            ObjetivoPrincipal = existing?.ObjetivoPrincipal
         };
 
         return View(model);
@@ -102,12 +102,12 @@ public partial class InspeccionesController : Controller
 
             solicitud.PropiedadId = propiedadId;
             solicitud.DireccionPropiedad = model.DireccionPropiedad.Trim();
-            solicitud.BajoContrato = model.BajoContrato;
+            solicitud.BajoContrato = model.BajoContrato!.Value;
             solicitud.FechaCierreEstimada = model.FechaCierreEstimada?.Date;
-            solicitud.TieneReporteExistente = model.TieneReporteExistente;
-            solicitud.RolComprador = model.RolComprador;
-            solicitud.ObjetivoPrincipal = model.ObjetivoPrincipal;
-            solicitud.Estado = model.TieneReporteExistente ? "ReportPending" : "DetailsCompleted";
+            solicitud.TieneReporteExistente = model.TieneReporteExistente!.Value;
+            solicitud.RolComprador = model.RolComprador!;
+            solicitud.ObjetivoPrincipal = model.ObjetivoPrincipal!;
+            solicitud.Estado = model.TieneReporteExistente == true ? "ReportPending" : "DetailsCompleted";
             solicitud.FechaActualizacion = DateTime.Now;
 
             await _db.SaveChangesAsync();

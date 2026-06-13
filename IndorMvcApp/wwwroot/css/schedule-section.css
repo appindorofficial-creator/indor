@@ -106,18 +106,39 @@
 }
 
 .sch-quick-card {
-    flex: 0 0 72px;
+    flex: 0 0 76px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
+}
+
+.sch-quick-tap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-decoration: none;
     color: inherit;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.sch-quick-tap:focus-visible {
+    outline: 2px solid #0066CC;
+    outline-offset: 3px;
+    border-radius: 18px;
+}
+
+.sch-quick-visual {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+    overflow: visible;
 }
 
 .sch-quick-icon {
-    width: 56px;
-    height: 56px;
+    width: 100%;
+    height: 100%;
     border-radius: 16px;
     display: flex;
     align-items: center;
@@ -132,9 +153,15 @@
     font-weight: 600;
     color: #334155;
     text-align: center;
+    line-height: 1.2;
+    max-width: 76px;
+    padding-top: 2px;
 }
 
 .sch-quick-plus {
+    position: absolute;
+    top: -6px;
+    right: -6px;
     width: 22px;
     height: 22px;
     border-radius: 50%;
@@ -144,8 +171,10 @@
     align-items: center;
     justify-content: center;
     font-size: 0.62rem;
-    margin-top: -14px;
-    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.25);
+    border: 2px solid #FFF;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    pointer-events: none;
+    z-index: 1;
 }
 
 .sch-tone-trash { color: #0066CC; background: rgba(0, 102, 204, 0.1); }

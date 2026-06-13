@@ -6,6 +6,7 @@ public class OfferingCarouselViewModel
     public string? Subtitle { get; set; }
     public string Icon { get; set; } = "fa-layer-group";
     public string? BlockClass { get; set; }
+    public string? BlockId { get; set; }
     public string? IconClass { get; set; }
     public string? BadgeClass { get; set; }
     public List<OfferingCardViewModel> Items { get; set; } = new();

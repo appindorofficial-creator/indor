@@ -1,186 +1,259 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionUploadViewModel
-
-
+@using IndorMvcApp.Services
+@{
+    var maxFileBytes = RealtorInspectionUploadLimits.MaxFileBytes;
+    var maxFileLabel = RealtorInspectionUploadLimits.MaxFileSizeLabel;
+}
 
 <div class="rl-info-box">
-
     <i class="fas fa-circle-info"></i>
-
     <p>First, search or select the property you want to analyze. Then upload the inspection report as a PDF, scanned pages, or photos.</p>
-
 </div>
-
-
 
 <h2 class="rl-invite-section-title">Select Property</h2>
 
-
-
 <form asp-action="Upload" method="get" class="rl-search-form">
-
     <div class="rl-search-bar">
-
         <i class="fas fa-magnifying-glass"></i>
-
         <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address or first property numbers" />
-
     </div>
-
     <p class="rl-search-hint">Type 123 to find 123 Maple Street fast.</p>
-
 </form>
 
-
-
-<form id="inspUploadForm" asp-action="Upload" method="post" enctype="multipart/form-data" class="rl-invite-form">
-
+<form id="inspUploadForm" asp-action="Upload" method="post" enctype="multipart/form-data" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-
     <div asp-validation-summary="All" class="ob-summary"></div>
+    <div id="inspClientError" class="ob-summary" role="alert" hidden></div>
 
-
-
-    @foreach (var prop in Model.Properties)
-
+    @if (Model.Properties.Count == 0)
     {
-
-        var selected = Model.SelectedPropertyFileId == prop.Id;
-
-        <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
-
-            <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) required />
-
-            <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
-
-            <span class="rl-property-pick-body">
-
-                <strong>@prop.DisplayAddress</strong>
-
-                @if (!string.IsNullOrWhiteSpace(prop.SpecsLabel))
-
-                {
-
-                    <span>@prop.SpecsLabel</span>
-
-                }
-
-            </span>
-
-            <span class="rl-card-status rl-card-status--active">Active</span>
-
-        </label>
-
+        <div class="rl-info-box rl-info-box--warn">
+            <i class="fas fa-house-circle-exclamation"></i>
+            <p>No saved properties yet. Enter the property address below to continue with your inspection upload.</p>
+        </div>
+    }
+    else
+    {
+        var firstProp = true;
+        @foreach (var prop in Model.Properties)
+        {
+            var selected = Model.SelectedPropertyFileId == prop.Id || (Model.SelectedPropertyFileId is null or 0 && firstProp);
+            firstProp = false;
+            <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
+                <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
+                <span class="rl-property-pick-body">
+                    <strong>@prop.DisplayAddress</strong>
+                    @if (!string.IsNullOrWhiteSpace(prop.SpecsLabel))
+                    {
+                        <span>@prop.SpecsLabel</span>
+                    }
+                </span>
+                <span class="rl-card-status rl-card-status--active">Active</span>
+            </label>
+        }
     }
 
-
+    <div class="rl-new-property-block">
+        <h3 class="rl-new-property-title">
+            @(Model.Properties.Count == 0 ? "Property address" : "Or add a new property")
+        </h3>
+        <div class="rl-new-property-fields">
+            <input type="text"
+                   name="newPropertyAddress"
+                   value="@Model.NewPropertyAddress"
+                   placeholder="Street address (e.g. 123 Maple Street)"
+                   class="rl-text-input"
+                   autocomplete="street-address" />
+            <input type="text"
+                   name="newPropertyCityRegion"
+                   value="@Model.NewPropertyCityRegion"
+                   placeholder="City, State (optional)"
+                   class="rl-text-input"
+                   autocomplete="address-level2" />
+            <input type="text"
+                   name="newPropertyClientName"
+                   value="@Model.NewPropertyClientName"
+                   placeholder="Client name (optional)"
+                   class="rl-text-input"
+                   autocomplete="name" />
+        </div>
+    </div>
 
     <h2 class="rl-invite-section-title">Add Report</h2>
 
     <div class="rl-upload-method-grid">
-
-        <label class="rl-upload-method @(Model.UploadMethod == "Pdf" ? "is-selected" : "")">
-
+        <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Pdf" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Pdf" @(Model.UploadMethod == "Pdf" ? "checked" : null) />
-
             <i class="fas fa-file-pdf rl-upload-method-icon rl-upload-method-icon--pdf"></i>
-
             <strong>Upload PDF</strong>
-
             <span>Select a PDF file</span>
-
-            <input type="file" name="reportFile" accept=".pdf,.jpg,.jpeg,.png,.webp" class="rl-upload-method-file" />
-
         </label>
-
-        <label class="rl-upload-method @(Model.UploadMethod == "Scan" ? "is-selected" : "")">
-
-            <input type="radio" name="uploadMethod" value="Scan" />
-
+        <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Scan" ? "is-selected" : "")">
+            <input type="radio" name="uploadMethod" value="Scan" @(Model.UploadMethod == "Scan" ? "checked" : null) />
             <i class="fas fa-expand rl-upload-method-icon"></i>
-
             <strong>Scan Pages</strong>
-
             <span>Scan report pages</span>
-
-            <input type="file" name="reportFile" accept="image/*" class="rl-upload-method-file" />
-
         </label>
-
-        <label class="rl-upload-method @(Model.UploadMethod == "Photos" ? "is-selected" : "")">
-
-            <input type="radio" name="uploadMethod" value="Photos" />
-
+        <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Photos" ? "is-selected" : "")">
+            <input type="radio" name="uploadMethod" value="Photos" @(Model.UploadMethod == "Photos" ? "checked" : null) />
             <i class="fas fa-camera rl-upload-method-icon"></i>
-
             <strong>Add Photos</strong>
-
             <span>Take or choose photos</span>
-
-            <input type="file" name="reportFile" accept="image/*" multiple class="rl-upload-method-file" />
-
         </label>
-
     </div>
 
-
+    <label class="rl-file-drop" id="rlFileDrop" for="reportFileInput">
+        <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
+        <div class="rl-file-drop-body">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
+            <span id="rlFileDropHint">PDF recommended · Large reports OK · Max @maxFileLabel</span>
+            <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
+        </div>
+    </label>
 
     <div class="rl-info-box rl-info-box--ai">
-
         <i class="fas fa-wand-magic-sparkles"></i>
-
         <p>INDOR AI reads your inspection report, detects findings, sorts them by urgency, and classifies them by trade.</p>
-
     </div>
 
+    <div class="rl-invite-actions">
+        <button type="button" class="rl-invite-cancel" id="inspCancelBtn">Cancel</button>
+        <button type="submit" id="inspContinueBtn" class="ob-btn ob-btn-primary">
+            Continue <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
 </form>
 
-
-
-<div class="rl-invite-actions">
-
-    <form asp-action="Cancel" method="post">
-
-        @Html.AntiForgeryToken()
-
-        <button type="submit" class="rl-invite-cancel">Cancel</button>
-
-    </form>
-
-    <button type="submit" form="inspUploadForm" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-
-</div>
-
-
+<form id="inspCancelForm" asp-action="Cancel" method="post" hidden>
+    @Html.AntiForgeryToken()
+</form>
 
 @section Scripts {
-
 <script>
+    (function () {
+        const form = document.getElementById('inspUploadForm');
+        const fileInput = document.getElementById('reportFileInput');
+        const fileNameEl = document.getElementById('rlFileDropName');
+        const fileHintEl = document.getElementById('rlFileDropHint');
+        const clientError = document.getElementById('inspClientError');
+        const continueBtn = document.getElementById('inspContinueBtn');
+        const cancelBtn = document.getElementById('inspCancelBtn');
+        const cancelForm = document.getElementById('inspCancelForm');
+        const propertyRadios = form.querySelectorAll('input[name="propertyFileId"]');
+        const newAddressInput = form.querySelector('input[name="newPropertyAddress"]');
+        const methodRadios = form.querySelectorAll('.rl-upload-method--picker input[type=radio]');
+        const maxFileBytes = @maxFileBytes;
+        const maxFileLabel = '@maxFileLabel';
 
-    document.querySelectorAll('.rl-property-pick input[type=radio]').forEach(r => {
+        function showClientError(message) {
+            clientError.textContent = message;
+            clientError.hidden = false;
+            clientError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
 
-        r.addEventListener('change', () => {
+        function clearClientError() {
+            clientError.hidden = true;
+            clientError.textContent = '';
+        }
 
-            document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+        function updateFileAccept() {
+            const method = form.querySelector('input[name="uploadMethod"]:checked')?.value || 'Pdf';
+            if (method === 'Pdf') {
+                fileInput.accept = '.pdf,application/pdf';
+                fileInput.removeAttribute('multiple');
+            } else {
+                fileInput.accept = 'image/*';
+                if (method === 'Photos') {
+                    fileInput.setAttribute('multiple', 'multiple');
+                } else {
+                    fileInput.removeAttribute('multiple');
+                }
+            }
+        }
 
-            r.closest('.rl-property-pick')?.classList.add('is-selected');
+        function updateFileLabel() {
+            const file = fileInput.files?.[0];
+            if (file) {
+                fileNameEl.textContent = file.name;
+                fileNameEl.hidden = false;
+                fileHintEl.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB selected`;
+                document.getElementById('rlFileDrop')?.classList.add('has-file');
+            } else {
+                fileNameEl.hidden = true;
+                fileHintEl.textContent = `PDF recommended · Large reports OK · Max ${maxFileLabel}`;
+                document.getElementById('rlFileDrop')?.classList.remove('has-file');
+            }
+        }
 
+        propertyRadios.forEach(r => {
+            r.addEventListener('change', () => {
+                document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+                r.closest('.rl-property-pick')?.classList.add('is-selected');
+                if (newAddressInput) newAddressInput.value = '';
+                clearClientError();
+            });
         });
 
-    });
+        if (newAddressInput) {
+            newAddressInput.addEventListener('input', () => {
+                if (newAddressInput.value.trim()) {
+                    propertyRadios.forEach(r => { r.checked = false; });
+                    document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
+                }
+                clearClientError();
+            });
+        }
 
-    document.querySelectorAll('.rl-upload-method input[type=radio]').forEach(r => {
-
-        r.addEventListener('change', () => {
-
-            document.querySelectorAll('.rl-upload-method').forEach(p => p.classList.remove('is-selected'));
-
-            r.closest('.rl-upload-method')?.classList.add('is-selected');
-
+        methodRadios.forEach(r => {
+            r.addEventListener('change', () => {
+                document.querySelectorAll('.rl-upload-method').forEach(p => p.classList.remove('is-selected'));
+                r.closest('.rl-upload-method')?.classList.add('is-selected');
+                updateFileAccept();
+                clearClientError();
+            });
         });
 
-    });
+        fileInput.addEventListener('change', () => {
+            updateFileLabel();
+            clearClientError();
+        });
 
+        cancelBtn?.addEventListener('click', () => cancelForm?.submit());
+
+        form.addEventListener('submit', (e) => {
+            clearClientError();
+
+            const hasProperty = Array.from(propertyRadios).some(r => r.checked);
+            const hasNewAddress = (newAddressInput?.value?.trim().length ?? 0) > 0;
+            const hasFile = (fileInput.files?.length ?? 0) > 0;
+
+            if (!hasProperty && !hasNewAddress) {
+                e.preventDefault();
+                showClientError('Select a property or enter the property address to continue.');
+                return;
+            }
+
+            if (!hasFile) {
+                e.preventDefault();
+                showClientError('Add an inspection report PDF or image to continue.');
+                return;
+            }
+
+            const oversized = Array.from(fileInput.files).some(f => f.size > maxFileBytes);
+            if (oversized) {
+                e.preventDefault();
+                showClientError(`The file is too large. Maximum size is ${maxFileLabel}.`);
+                return;
+            }
+
+            continueBtn.disabled = true;
+            continueBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Uploading...';
+        });
+
+        updateFileAccept();
+        updateFileLabel();
+    })();
 </script>
-
 }
-

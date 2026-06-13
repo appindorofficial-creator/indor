@@ -85,6 +85,23 @@ public static class ScheduleDisplayService
             .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
             .ToListAsync();
 
+        var hvacSolicitudes = await db.SolicitudesHvacMaintenance
+            .AsNoTracking()
+            .Where(s => s.UserId == userId && s.Estado == "Submitted")
+            .OrderByDescending(s => s.FechaConfirmacion ?? s.FechaActualizacion ?? s.FechaCreacion)
+            .ToListAsync();
+
+        var hvacMaintenancePriorityId = await db.HomeCarePriorities
+            .AsNoTracking()
+            .Where(p => p.Activo && p.Nombre == "HVAC maintenance")
+            .Select(p => (int?)p.Id)
+            .FirstOrDefaultAsync()
+            ?? await db.HomeCarePriorities
+                .AsNoTracking()
+                .Where(p => p.Activo && p.Orden == 7)
+                .Select(p => (int?)p.Id)
+                .FirstOrDefaultAsync();
+
         var comingUp = new List<ScheduleReminderItemViewModel>();
 
         foreach (var item in programaciones)
@@ -102,6 +119,11 @@ public static class ScheduleDisplayService
                 url));
         }
 
+        foreach (var item in hvacSolicitudes)
+        {
+            comingUp.Add(MapHvacSolicitud(item, url));
+        }
+
         foreach (var item in mantenimiento)
         {
             if (programaciones.Any(p =>
@@ -111,7 +133,13 @@ public static class ScheduleDisplayService
                 continue;
             }
 
-            comingUp.Add(MapMantenimiento(item, hvacRecords, waterHeaterRecords, url));
+            if (string.Equals(item.Title, "HVAC Tune-Up", StringComparison.OrdinalIgnoreCase)
+                && hvacSolicitudes.Any(s => s.PropiedadId == item.PropiedadId))
+            {
+                continue;
+            }
+
+            comingUp.Add(MapMantenimiento(item, hvacRecords, waterHeaterRecords, hvacSolicitudes, url));
         }
 
         comingUp = comingUp
@@ -126,6 +154,8 @@ public static class ScheduleDisplayService
                 propiedadId,
                 trashMicro,
                 lawnMicro,
+                hvacRecords,
+                hvacMaintenancePriorityId,
                 url),
             ComingUpItems = comingUp,
             CreateReminderUrl = propiedadId.HasValue
@@ -139,6 +169,8 @@ public static class ScheduleDisplayService
         int? propiedadId,
         Microservicio? trashMicro,
         Microservicio? lawnMicro,
+        List<PropiedadHvacSistema> hvacRecords,
+        int? hvacMaintenancePriorityId,
         IUrlHelper url)
     {
         var items = new List<ScheduleQuickAddItemViewModel>();
@@ -161,7 +193,7 @@ public static class ScheduleDisplayService
                 Label = "Filter",
                 IconClass = "fa-table-cells",
                 ToneClass = "sch-tone-filter",
-                Url = url.Action("Pets", "HvacFilterReplacement", new { id = propiedadId.Value }) ?? "#"
+                Url = ResolveFilterQuickAddUrl(propiedadId.Value, hvacRecords, url)
             });
         }
 
@@ -183,7 +215,7 @@ public static class ScheduleDisplayService
                 Label = "HVAC",
                 IconClass = "fa-snowflake",
                 ToneClass = "sch-tone-hvac",
-                Url = url.Action("Pets", "HvacFilterReplacement", new { id = propiedadId.Value }) ?? "#"
+                Url = ResolveHvacQuickAddUrl(hvacMaintenancePriorityId, propiedadId.Value, url)
             });
 
             items.Add(new ScheduleQuickAddItemViewModel
@@ -196,6 +228,30 @@ public static class ScheduleDisplayService
         }
 
         return items;
+    }
+
+    private static string ResolveFilterQuickAddUrl(
+        int propiedadId,
+        List<PropiedadHvacSistema> hvacRecords,
+        IUrlHelper url)
+    {
+        var hvac = hvacRecords.FirstOrDefault(h => h.PropiedadId == propiedadId);
+        if (hvac == null)
+        {
+            return url.Action("Add", "HvacSetup", new { propiedadId }) ?? "#";
+        }
+
+        return url.Action("Pets", "HvacFilterReplacement", new { id = propiedadId }) ?? "#";
+    }
+
+    private static string ResolveHvacQuickAddUrl(int? hvacMaintenancePriorityId, int propiedadId, IUrlHelper url)
+    {
+        if (hvacMaintenancePriorityId.HasValue)
+        {
+            return url.Action("HvacMaintenanceService", "HvacMaintenance", new { id = hvacMaintenancePriorityId.Value }) ?? "#";
+        }
+
+        return url.Action("Add", "HvacSetup", new { propiedadId }) ?? "#";
     }
 
     private static ScheduleReminderItemViewModel MapProgramacion(
@@ -239,10 +295,31 @@ public static class ScheduleDisplayService
         };
     }
 
+    private static ScheduleReminderItemViewModel MapHvacSolicitud(
+        SolicitudHvacMaintenance item,
+        IUrlHelper url)
+    {
+        var dueDate = item.FechaVisita?.Date ?? DateTime.Today.AddDays(7);
+
+        return new ScheduleReminderItemViewModel
+        {
+            SourceKey = $"hvac-sol-{item.Id}",
+            Title = "HVAC Tune-Up",
+            Subtitle = $"{HvacMaintenanceDisplayLabels.FormatTimeWindow(item.VentanaHorario)} · Tune-up visit",
+            DateLabel = FormatDateLabel(dueDate),
+            SortDate = dueDate,
+            IconClass = "fa-fan",
+            ToneClass = "sch-tone-hvac",
+            EditUrl = url.Action("HvacMaintenanceConfirmed", "HvacMaintenance", new { id = item.Id }) ?? "#",
+            EditLabel = "View"
+        };
+    }
+
     private static ScheduleReminderItemViewModel MapMantenimiento(
         PropiedadMantenimiento item,
         List<PropiedadHvacSistema> hvacRecords,
         List<PropiedadWaterHeaterSistema> waterHeaterRecords,
+        List<SolicitudHvacMaintenance> hvacSolicitudes,
         IUrlHelper url)
     {
         var tone = ResolveMaintenanceTone(item.Title);
@@ -257,7 +334,7 @@ public static class ScheduleDisplayService
             SortDate = dueDate,
             IconClass = tone.icon,
             ToneClass = tone.tone,
-            EditUrl = ResolveMaintenanceEditUrl(item, hvacRecords, waterHeaterRecords, url),
+            EditUrl = ResolveMaintenanceEditUrl(item, hvacRecords, waterHeaterRecords, hvacSolicitudes, url),
             EditLabel = "Edit"
         };
     }
@@ -429,8 +506,21 @@ public static class ScheduleDisplayService
         PropiedadMantenimiento item,
         List<PropiedadHvacSistema> hvacRecords,
         List<PropiedadWaterHeaterSistema> waterHeaterRecords,
+        List<SolicitudHvacMaintenance> hvacSolicitudes,
         IUrlHelper url)
     {
+        if (string.Equals(item.Title, "HVAC Tune-Up", StringComparison.OrdinalIgnoreCase))
+        {
+            var solicitud = hvacSolicitudes
+                .Where(s => s.PropiedadId == item.PropiedadId)
+                .OrderByDescending(s => s.FechaConfirmacion ?? s.FechaActualizacion ?? s.FechaCreacion)
+                .FirstOrDefault();
+            if (solicitud != null)
+            {
+                return url.Action("HvacMaintenanceConfirmed", "HvacMaintenance", new { id = solicitud.Id }) ?? "#";
+            }
+        }
+
         if (item.Title.Contains("HVAC filter", StringComparison.OrdinalIgnoreCase))
         {
             var hvac = hvacRecords.FirstOrDefault(h => h.PropiedadId == item.PropiedadId);

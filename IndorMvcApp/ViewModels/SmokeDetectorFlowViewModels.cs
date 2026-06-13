@@ -29,17 +29,17 @@ public class SmokeDetectorSetupViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Smoke / CO Check";
 
-    [Required]
-    public string CantidadAlarmas { get; set; } = "Two";
+    [Required(ErrorMessage = "Please select how many smoke alarms are in your home.")]
+    public string CantidadAlarmas { get; set; } = string.Empty;
 
     public string UbicacionesSeleccionadas { get; set; } = string.Empty;
     public string TiposAlarmas { get; set; } = string.Empty;
 
-    [Required]
-    public string UltimaPrueba { get; set; } = "DontKnow";
+    [Required(ErrorMessage = "Please indicate when the alarms were last tested.")]
+    public string UltimaPrueba { get; set; } = string.Empty;
 
-    [Required]
-    public string UltimoCambioBateria { get; set; } = "DontKnow";
+    [Required(ErrorMessage = "Please indicate when the battery was last changed.")]
+    public string UltimoCambioBateria { get; set; } = string.Empty;
 
     public int? AnioInstalacion { get; set; }
 

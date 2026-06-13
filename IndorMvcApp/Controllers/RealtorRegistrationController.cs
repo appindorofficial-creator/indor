@@ -37,7 +37,7 @@ public class RealtorRegistrationController(
         if (!await userManager.IsInRoleAsync(user, "Realtor"))
         {
             await userManager.AddToRoleAsync(user, "Realtor");
-            await signInManager.RefreshSignInAsync(user);
+            await signInManager.SignInAsync(user, isPersistent: true);
         }
 
         await next();

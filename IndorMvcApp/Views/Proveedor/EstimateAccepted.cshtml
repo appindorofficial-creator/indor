@@ -1,0 +1,59 @@
+@model IndorMvcApp.ViewModels.ProviderProEstimateAcceptedViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Estimate Approved - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    var money = CultureInfo.GetCultureInfo("en-US");
+}
+
+<div class="prv-pro-shell prv-pro-shell--estimate-accepted">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <section class="prv-pro-estimate-sent-hero">
+        <div class="prv-pro-estimate-sent-icon"><i class="fas fa-circle-check"></i></div>
+        <h1>Estimate Approved!</h1>
+        <p>The customer accepted your estimate. You can schedule work or create an invoice.</p>
+    </section>
+
+    <section class="prv-pro-lead-section prv-pro-status-card">
+        <div class="prv-pro-status-card-row">
+            <span>Property</span>
+            <strong>@Model.Address</strong>
+        </div>
+        <div class="prv-pro-status-card-row">
+            <span>Approved Total</span>
+            <strong class="prv-pro-estimate-sent-amount">@Model.TotalAmount.ToString("C0", money)</strong>
+        </div>
+        <div class="prv-pro-status-card-row">
+            <span>Approved Items</span>
+            <strong>@Model.ApprovedItemCount</strong>
+        </div>
+        <div class="prv-pro-status-card-row">
+            <span>Approved by</span>
+            <strong>@Model.ApprovedByLabel</strong>
+        </div>
+        <div class="prv-pro-status-card-row">
+            <span>Date</span>
+            <strong>@Model.ApprovedLabel</strong>
+        </div>
+    </section>
+
+    <footer class="prv-pro-workflow-footer prv-pro-workflow-footer--actions">
+        <form asp-controller="Proveedor" asp-action="ConvertEstimateToJob" method="post">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.EstimateId" />
+            <button type="submit" class="prv-pro-btn prv-pro-btn--teal prv-pro-btn--full">
+                <i class="fas fa-calendar-check"></i> Schedule Work
+            </button>
+        </form>
+        <a asp-controller="Proveedor" asp-action="CreateInvoice" asp-route-estimateId="@Model.EstimateId"
+           class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
+            <i class="fas fa-file-invoice-dollar"></i> Create Invoice
+        </a>
+        <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full">
+            Back to Leads
+        </a>
+    </footer>
+</div>

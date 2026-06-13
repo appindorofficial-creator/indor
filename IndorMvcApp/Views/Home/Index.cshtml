@@ -110,6 +110,7 @@
             Title = "Home Care Essentials",
             Subtitle = subtitle,
             Icon = "fa-layer-group",
+            BlockId = "home-care-essentials",
             Items = items.Select(s => new OfferingCardViewModel
             {
                 Name = s.Nombre,
@@ -142,24 +143,13 @@
             Title = "Services",
             Subtitle = subtitle,
             Icon = "fa-screwdriver-wrench",
+            BlockId = "services",
             BlockClass = "category-block-services",
             IconClass = "category-icon-alt",
             BadgeClass = "category-badge-alt",
             Items = items.Select(sv =>
             {
-                var route = ServicioFlowRules.TryGetRoute(sv.Nombre, sv.Orden, out var mapped)
-                    ? mapped
-                    : ServicioFlowRules.SupportRoute;
-                int? routeId = route.RouteUsesServicioId
-                    ? sv.Id
-                    : ServicioFlowRules.ResolveRouteId(route, homeCarePriorityIds);
-                if (!route.RouteUsesServicioId
-                    && !string.IsNullOrWhiteSpace(route.HomeCarePriorityName)
-                    && !routeId.HasValue)
-                {
-                    route = ServicioFlowRules.SupportRoute;
-                    routeId = null;
-                }
+                var link = ServicioFlowRules.BuildOfferingLink(sv, homeCarePriorityIds);
 
                 return new OfferingCardViewModel
                 {
@@ -176,10 +166,10 @@
                     ImageUrl = sv.ImagenUrl,
                     FreqIcon = "fa-clock",
                     CtaIcon = ServicioFlowRules.HasFlow(sv.Nombre, sv.Orden) ? "fa-arrow-right" : "fa-paper-plane",
-                    SourceId = routeId,
+                    SourceId = link.RouteId,
                     EnableLink = true,
-                    LinkController = route.Controller,
-                    LinkAction = route.Action
+                    LinkController = link.Controller,
+                    LinkAction = link.Action
                 };
             }).ToList()
         };
@@ -192,6 +182,7 @@
             Title = "Inspections",
             Subtitle = subtitle,
             Icon = "fa-magnifying-glass-chart",
+            BlockId = "inspections",
             BlockClass = "category-block-inspections",
             IconClass = "category-icon-insp",
             BadgeClass = "category-badge-insp",
@@ -1113,6 +1104,33 @@
         .category-badge-insp {
             background: #EFF6FF; color: #004FA3; border-color: #BFDBFE;
         }
+        .category-badge-priorities {
+            background: #EEF2FF; color: #4338CA; border-color: #C7D2FE;
+        }
+        .category-badge-moving {
+            background: #FFF7ED; color: #C2410C; border-color: #FED7AA;
+        }
+        .category-icon-moving {
+            background: linear-gradient(135deg, #0066CC, #004FA3) !important;
+            box-shadow: 0 6px 14px rgba(0, 102, 204, .25) !important;
+        }
+        .offering-card-order {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: rgba(10, 37, 64, 0.82);
+            color: #FFF;
+            font-size: 0.62rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
+        }
 
         /* === Home Care Guide === */
         .category-block-priorities { margin-top: 18px; }
@@ -1499,10 +1517,15 @@
         }
         .moving-setup-header {
             display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
+            align-items: center;
             gap: 12px;
             margin-bottom: 14px;
+            padding-bottom: 14px;
+            border-bottom: 1px dashed #E5E7EB;
+        }
+        .moving-setup-header .moving-setup-title,
+        .moving-setup-header .moving-setup-subtitle {
+            margin: 0;
         }
         .moving-setup-title-row {
             display: flex;
@@ -1543,6 +1566,7 @@
             margin-bottom: 14px;
         }
         .moving-setup-grid-item {
+            position: relative;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -1555,6 +1579,22 @@
             background: #FFF;
             min-height: 88px;
             justify-content: center;
+        }
+        .moving-setup-grid-order {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(10, 37, 64, 0.82);
+            color: #FFF;
+            font-size: 0.58rem;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1.5px solid rgba(255, 255, 255, 0.9);
         }
         .moving-setup-grid-icon {
             width: 40px;
@@ -1812,6 +1852,19 @@
             border: 1px solid #E5E7EB;
             border-radius: 16px;
             padding: 14px;
+        }
+        .emergency-detail-prompt {
+            margin: 0;
+            text-align: center;
+            color: #64748B;
+            font-size: 0.84rem;
+            line-height: 1.45;
+            font-weight: 600;
+            padding: 8px 4px;
+        }
+        .emergency-detail-content.hidden,
+        .emergency-detail-prompt.hidden {
+            display: none;
         }
         .emergency-detail-main {
             display: grid;
@@ -2328,11 +2381,6 @@
 
     <!-- ====== SERVICES ====== -->
     <section class="section" id="section-services">
-        <div class="section-title">
-            Available services
-            <span class="services-count">@((((IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios)?.Count() ?? 0) + (((IEnumerable<IndorMvcApp.Models.Servicio>?)ViewBag.Servicios)?.Count() ?? 0) + (((IEnumerable<IndorMvcApp.Models.Inspeccion>?)ViewBag.Inspecciones)?.Count() ?? 0))</span>
-        </div>
-
         @{
             var microservicios = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
                                  ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
@@ -2346,8 +2394,20 @@
             var homeCarePrioritiesSection = ViewBag.HomeCarePrioritiesSection as IndorMvcApp.ViewModels.HomeCarePrioritiesSectionViewModel;
             var homeCarePriorityIds = ViewBag.HomeCarePriorityIds as IReadOnlyDictionary<string, int>
                                       ?? new Dictionary<string, int>(StringComparer.OrdinalIgnoreCase);
-            var totalOfferings = microservicios.Count() + servicios.Count() + inspecciones.Count();
+            var homeCareGuideCount = homeCarePrioritiesSection?.Items.Count ?? 0;
+            var movingSetupCount = movingSetupSection?.Servicios.Count ?? 0;
+            var emergencyCount = serviciosEmergencia.Count(s => s.Activo);
+            var totalOfferings = microservicios.Count()
+                + servicios.Count()
+                + inspecciones.Count()
+                + homeCareGuideCount
+                + movingSetupCount
+                + emergencyCount;
         }
+        <div class="section-title">
+            Available services
+            <span class="services-count">@totalOfferings</span>
+        </div>
 
         @if (totalOfferings == 0)
         {
@@ -2627,12 +2687,18 @@
             });
         });
 
-        const initialHash = window.location.hash.replace('#', '');
-        if (initialHash === 'emergency-services') {
-            activateSection('section-services', 'emergency-services');
-        } else if (initialHash) {
-            activateSection(initialHash);
+        function applyRouteFromHash() {
+            const hash = window.location.hash.replace('#', '');
+            const servicesScrollTargets = ['emergency-services', 'home-care-essentials', 'home-care-priorities', 'inspections', 'services'];
+            if (servicesScrollTargets.includes(hash) && document.getElementById(hash)) {
+                activateSection('section-services', hash);
+            } else if (hash) {
+                activateSection(hash);
+            }
         }
+
+        applyRouteFromHash();
+        window.addEventListener('hashchange', applyRouteFromHash);
 
         // === Slider por propiedad ===
         function initSlider(idx) {
@@ -2673,6 +2739,9 @@
         // === Emergency Services cards ===
         document.querySelectorAll('[data-emergency-section]').forEach(section => {
             const cards = section.querySelectorAll('.emergency-card');
+            const detailEl = section.querySelector('.emergency-detail');
+            const promptEl = section.querySelector('[data-emergency-detail-prompt]');
+            const contentEl = section.querySelector('[data-emergency-detail-content]');
             const iconEl = section.querySelector('[data-emergency-detail-icon]');
             const badgeEl = section.querySelector('[data-emergency-detail-badge]');
             const titleEl = section.querySelector('[data-emergency-detail-title]');
@@ -2703,6 +2772,10 @@
                     });
                     card.classList.add('active');
                     card.setAttribute('aria-selected', 'true');
+
+                    if (detailEl) detailEl.classList.remove('emergency-detail-empty');
+                    if (promptEl) promptEl.classList.add('hidden');
+                    if (contentEl) contentEl.classList.remove('hidden');
 
                     if (iconEl) iconEl.className = `fas ${card.dataset.icon}`;
                     if (titleEl) titleEl.textContent = card.dataset.title || '';
@@ -2795,7 +2868,7 @@
                 if (propiedadId) {
                     items.push(
                         { title: 'Documents', subtitle: 'Inspection reports and files', icon: 'fa-file-lines', url: '@(primaryProp != null ? Url.Action("Documents", "MyHome", new { id = primaryProp.Id }) : "#")' },
-                        { title: 'Home Maintenance', subtitle: 'Tasks and reminders', icon: 'fa-clipboard-check', url: '@(primaryProp != null ? Url.Action("Maintenance", "MyHome", new { id = primaryProp.Id }) : "#")' },
+                        { title: 'Home Maintenance', subtitle: 'Tasks and reminders', icon: 'fa-clipboard-check', url: '@(primaryProp != null ? Url.Action("Maintenance", "MyHome", new { id = primaryProp.Id, from = "home" }) : "#")' },
                         { title: 'Property History', subtitle: 'Past work on your home', icon: 'fa-clock-rotate-left', url: '@(primaryProp != null ? Url.Action("History", "MyHome", new { id = primaryProp.Id }) : "#")' }
                     );
                 }

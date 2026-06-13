@@ -55,8 +55,8 @@ public static class CleaningProDisplayLabels
         var day = fecha.Value.ToString("ddd, MMM d, yyyy");
         var range = ventana switch
         {
-            "Morning9_12" => "9:00 AM – 12:00 PM",
-            "Morning10" => "10:00 AM",
+            "Morning9_12" => "09:00 – 12:00",
+            "Morning10" => "10:00",
             _ => FormatTimeWindow(ventana)
         };
 
@@ -65,9 +65,9 @@ public static class CleaningProDisplayLabels
 
     public static string FormatTimeWindow(string? value) => value switch
     {
-        "Morning10" => "10:00 AM",
-        "Morning9_12" => "9:00 AM – 12:00 PM",
-        "Afternoon1_5" => "1:00 PM – 5:00 PM",
+        "Morning10" => "10:00",
+        "Morning9_12" => "09:00 – 12:00",
+        "Afternoon1_5" => "13:00 – 17:00",
         _ => value ?? "—"
     };
 

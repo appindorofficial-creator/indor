@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.OfferingCarouselViewModel
 @if (Model.Items.Count > 0)
 {
-<div class="category-block @(Model.BlockClass)">
+<div class="category-block @(Model.BlockClass)"@if (!string.IsNullOrWhiteSpace(Model.BlockId)) { <text> id="@Model.BlockId"</text> }>
     <div class="category-header">
         <div class="category-icon @(Model.IconClass)"><i class="fas @Model.Icon"></i></div>
         <div class="category-info">

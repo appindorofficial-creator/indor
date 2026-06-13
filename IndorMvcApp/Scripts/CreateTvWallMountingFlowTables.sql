@@ -159,7 +159,7 @@ BEGIN
             N'TV Wall Mounting',
             N'Secure, clean installation for your new space.',
             N'Professional TV mounting with clean setup and basic safety check.',
-            N'/inspeccion2.jpeg',
+            N'/servicio13.jpeg',
             129,
             N'TV mounting|Bracket alignment|Cable organization|Basic safety check',
             N'fa-tv|fa-grip-lines-vertical|fa-plug|fa-shield-check',
@@ -175,6 +175,10 @@ BEGIN
             1);
         PRINT 'TvWallMountingServicioLanding seeded.';
     END
+
+    UPDATE dbo.TvWallMountingServicioLanding
+    SET ImagenUrl = N'/servicio13.jpeg'
+    WHERE MovingSetupServicioId = @TvServicioId;
 END
 GO
 

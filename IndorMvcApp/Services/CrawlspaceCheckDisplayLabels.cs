@@ -33,6 +33,10 @@ public static class CrawlspaceCheckDisplayLabels
 
     public static string FormatConcern(string code) => code switch
     {
+        "Moisture" => "Moisture",
+        "Encapsulation" => "Encapsulation",
+        "Insulation" => "Insulation",
+        "Pests" => "Pests",
         "StandingWater" => "Standing water",
         "MustyOdor" => "Musty odor",
         "MoldMildew" => "Mold / mildew",

@@ -1,0 +1,18 @@
+@model IReadOnlyList<IndorMvcApp.ViewModels.RealtorStatItemViewModel>
+@if (Model.Count > 0)
+{
+    <div class="rl-stats-row @(Model.Count > 4 ? "rl-stats-row--wide" : "")">
+        @foreach (var stat in Model)
+        {
+            <div class="rl-stat-card">
+                <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
+                <strong>@stat.Count</strong>
+                <span class="rl-stat-label">@stat.Label</span>
+                @if (!string.IsNullOrWhiteSpace(stat.DetailUrl))
+                {
+                    <a href="@stat.DetailUrl" class="rl-stat-detail-link">View details <i class="fas fa-chevron-right"></i></a>
+                }
+            </div>
+        }
+    </div>
+}

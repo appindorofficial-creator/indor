@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
@@ -16,7 +17,7 @@ public class HvacMaintenanceController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
 
-    private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
+    private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"];
     private const long MaxFileSize = 10_000_000;
     private const int MaxFiles = 2;
 
@@ -90,8 +91,8 @@ public class HvacMaintenanceController : Controller
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "HVAC Tune-Up",
             NumeroSerieAc = solicitud.NumeroSerieAc,
             SerialDesconocido = solicitud.SerialDesconocido,
-            UltimoMantenimiento = solicitud.UltimoMantenimiento,
             UltimoMantenimientoDesconocido = solicitud.UltimoMantenimientoDesconocido,
+            FechaUltimoMantenimiento = ParseMaintenanceDate(solicitud.UltimoMantenimiento),
             TamanioFiltro = solicitud.TamanioFiltro,
             NotasTecnico = solicitud.NotasTecnico,
             ArchivosExistentes = MapExistingFiles(solicitud)
@@ -126,8 +127,14 @@ public class HvacMaintenanceController : Controller
 
         if (model.UltimoMantenimientoDesconocido)
         {
-            model.UltimoMantenimiento = null;
-            ModelState.Remove(nameof(model.UltimoMantenimiento));
+            model.FechaUltimoMantenimiento = null;
+            ModelState.Remove(nameof(model.FechaUltimoMantenimiento));
+        }
+        else if (model.FechaUltimoMantenimiento.HasValue
+                 && model.FechaUltimoMantenimiento.Value.Date > DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(model.FechaUltimoMantenimiento),
+                "Last maintenance date cannot be in the future.");
         }
 
         if (!ModelState.IsValid)
@@ -141,7 +148,9 @@ public class HvacMaintenanceController : Controller
             var userId = RequireUserId()!;
             solicitud.NumeroSerieAc = model.NumeroSerieAc?.Trim();
             solicitud.SerialDesconocido = model.SerialDesconocido;
-            solicitud.UltimoMantenimiento = model.UltimoMantenimiento?.Trim();
+            solicitud.UltimoMantenimiento = model.UltimoMantenimientoDesconocido
+                ? null
+                : FormatMaintenanceDate(model.FechaUltimoMantenimiento);
             solicitud.UltimoMantenimientoDesconocido = model.UltimoMantenimientoDesconocido;
             solicitud.TamanioFiltro = model.TamanioFiltro?.Trim();
             solicitud.NotasTecnico = model.NotasTecnico?.Trim();
@@ -526,10 +535,25 @@ public class HvacMaintenanceController : Controller
         foreach (var file in incoming)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+            if (string.IsNullOrEmpty(ext)
+                && !string.IsNullOrWhiteSpace(file.ContentType)
+                && file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+            {
+                ext = ".jpg";
+            }
+
+            var allowedType = AllowedExtensions.Contains(ext)
+                || (!string.IsNullOrWhiteSpace(file.ContentType)
+                    && file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase));
+            if (!allowedType)
+            {
+                ModelState.AddModelError("", $"File type not allowed: {file.FileName}. Use JPG, PNG, or HEIC.");
+                continue;
+            }
+
             if (!AllowedExtensions.Contains(ext))
             {
-                ModelState.AddModelError("", $"File type not allowed: {file.FileName}. Use JPG or PNG.");
-                continue;
+                ext = ".jpg";
             }
 
             if (file.Length > MaxFileSize)
@@ -597,4 +621,25 @@ public class HvacMaintenanceController : Controller
             });
         }
     }
+
+    private static DateTime? ParseMaintenanceDate(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        if (DateTime.TryParseExact(value.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var isoDate))
+        {
+            return isoDate.Date;
+        }
+
+        return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+            ? date.Date
+            : null;
+    }
+
+    private static string? FormatMaintenanceDate(DateTime? value) =>
+        value?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 }

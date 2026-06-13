@@ -19,6 +19,7 @@ public class HomeDashboardViewModel
     public List<HomeDocumentItemViewModel> RecentDocuments { get; set; } = new();
     public List<HomeActivityItemViewModel> RecentActivity { get; set; } = new();
     public int NotificationCount { get; set; }
+    public PropertyMaintenanceSectionViewModel? MaintenanceSection { get; set; }
 }
 
 public class HomeQuickActionViewModel

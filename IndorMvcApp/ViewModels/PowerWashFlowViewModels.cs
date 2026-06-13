@@ -28,13 +28,13 @@ public class PowerWashDetailsViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Power Wash Exterior";
 
-    public string AreasSeleccionadas { get; set; } = "FullExterior";
+    public string AreasSeleccionadas { get; set; } = string.Empty;
 
-    [Required]
-    public string MaterialExterior { get; set; } = "VinylSiding";
+    [Required(ErrorMessage = "Select the main exterior material.")]
+    public string MaterialExterior { get; set; } = string.Empty;
 
-    [Required]
-    public string NumeroPisos { get; set; } = "Two";
+    [Required(ErrorMessage = "Select your home size.")]
+    public string NumeroPisos { get; set; } = string.Empty;
 }
 
 public class ExistingPowerWashFileViewModel

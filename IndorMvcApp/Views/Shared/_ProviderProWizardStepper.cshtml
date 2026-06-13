@@ -1,0 +1,24 @@
+@model List<IndorMvcApp.ViewModels.ProviderProWizardStepViewModel>
+
+<nav class="prv-pro-wizard-stepper" aria-label="Create job progress">
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        var step = Model[i];
+        var cls = step.IsCurrent ? "is-active" : step.IsComplete ? "is-done" : "";
+        <div class="prv-pro-wizard-step @cls">
+            @if (step.IsComplete)
+            {
+                <i class="fas fa-check"></i>
+            }
+            else
+            {
+                <span>@step.Number</span>
+            }
+            <small>@step.Label</small>
+        </div>
+        @if (i < Model.Count - 1)
+        {
+            <div class="prv-pro-wizard-step-line @(step.IsComplete ? "is-done" : "")"></div>
+        }
+    }
+</nav>

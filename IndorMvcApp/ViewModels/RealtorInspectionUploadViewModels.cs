@@ -26,6 +26,9 @@ public class RealtorInspectionUploadViewModel : RealtorInspectionUploadStepViewM
     public int? SelectedPropertyFileId { get; set; }
     public string UploadMethod { get; set; } = "Pdf";
     public List<RealtorInspectionPropertyOptionViewModel> Properties { get; set; } = [];
+    public string? NewPropertyAddress { get; set; }
+    public string? NewPropertyClientName { get; set; }
+    public string? NewPropertyCityRegion { get; set; }
 }
 
 public class RealtorInspectionAnalyzeViewModel : RealtorInspectionUploadStepViewModel
@@ -36,6 +39,7 @@ public class RealtorInspectionAnalyzeViewModel : RealtorInspectionUploadStepView
     public string UploadedLabel { get; set; } = "";
     public int AnalysisProgress { get; set; }
     public string AnalysisStatus { get; set; } = "";
+    public string? AnalysisSummary { get; set; }
     public List<RealtorInspectionAnalyzeTaskViewModel> Tasks { get; set; } = [];
     public List<RealtorInspectionCategoryChipViewModel> DetectedCategories { get; set; } = [];
 }
@@ -56,6 +60,10 @@ public class RealtorInspectionCategoryChipViewModel
 
 public class RealtorInspectionPrioritiesViewModel : RealtorInspectionUploadStepViewModel
 {
+    public string PropertyDisplay { get; set; } = "";
+    public string ReportFileName { get; set; } = "";
+    public string? ReportPdfUrl { get; set; }
+    public string? AnalysisSummary { get; set; }
     public int TotalFindings { get; set; }
     public int UrgentCount { get; set; }
     public int HighCount { get; set; }
@@ -70,10 +78,17 @@ public class RealtorInspectionFindingCardViewModel
 {
     public int Id { get; set; }
     public string Title { get; set; } = "";
+    public string? Description { get; set; }
+    public string? SourceExcerpt { get; set; }
+    public string? SourceSection { get; set; }
+    public int? SourcePage { get; set; }
+    public string? ReportReference { get; set; }
     public string Priority { get; set; } = "";
     public string PriorityCss { get; set; } = "";
+    public string Trade { get; set; } = "";
     public string TradeLabel { get; set; } = "";
     public string TradeIcon { get; set; } = "";
+    public string TradeCss { get; set; } = "";
     public int AiScore { get; set; }
     public string? ImageUrl { get; set; }
     public bool IsSelected { get; set; }

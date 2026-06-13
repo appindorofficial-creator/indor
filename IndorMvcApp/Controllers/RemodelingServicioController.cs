@@ -39,8 +39,17 @@ public class RemodelingServicioController : Controller
         var userId = RequireUserId();
         if (userId == null) return Challenge();
 
-        var solicitud = await GetOrCreateSolicitudAsync(userId, id, null);
-        return View(BuildServiceViewModel(servicio, solicitud));
+        SolicitudRemodelingServicio? existing = null;
+        try
+        {
+            existing = await GetActiveSolicitudAsync(userId, id);
+        }
+        catch (Exception)
+        {
+            // Flow tables may not exist yet — still show the service landing page.
+        }
+
+        return View(BuildServiceViewModel(servicio, existing));
     }
 
     [HttpPost]
@@ -55,7 +64,7 @@ public class RemodelingServicioController : Controller
 
         if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
         {
-            return RedirectToAction("Index", "Home", null, "section-services");
+            return RedirectToAction("Index", "Home", null, "services");
         }
 
         try
@@ -78,9 +87,8 @@ public class RemodelingServicioController : Controller
         catch (Exception)
         {
             ModelState.AddModelError("",
-                "Could not start your project request. Please ensure the remodeling flow tables exist in the database and try again.");
-            var fallback = await GetOrCreateSolicitudAsync(userId, model.ServicioId, model.SolicitudId);
-            return View(BuildServiceViewModel(servicio, fallback));
+                "Could not start your project request. Run Scripts/CreateRemodelingServicioFlowTables.sql on the database and try again.");
+            return View(BuildServiceViewModel(servicio, null));
         }
     }
 
@@ -321,7 +329,9 @@ public class RemodelingServicioController : Controller
         return await query.FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
     }
 
-    private static RemodelingServiceViewModel BuildServiceViewModel(Servicio servicio, SolicitudRemodelingServicio solicitud)
+    private static RemodelingServiceViewModel BuildServiceViewModel(
+        Servicio servicio,
+        SolicitudRemodelingServicio? solicitud)
     {
         var includes = string.IsNullOrWhiteSpace(servicio.Incluye)
             ? Array.Empty<string>()
@@ -329,7 +339,7 @@ public class RemodelingServicioController : Controller
 
         return new RemodelingServiceViewModel
         {
-            SolicitudId = solicitud.Id,
+            SolicitudId = solicitud?.Id ?? 0,
             ServicioId = servicio.Id,
             PageTitle = servicio.Nombre,
             LandingTitulo = servicio.Nombre,

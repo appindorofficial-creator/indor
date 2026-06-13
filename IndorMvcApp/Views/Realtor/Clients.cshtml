@@ -8,12 +8,23 @@
 <div class="rl-dash-shell">
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <h1 class="rl-page-title">Clients</h1>
+    <div class="rl-page-header">
+        <div>
+            <h1 class="rl-page-title">Clients</h1>
+            <p class="rl-page-subtitle">Manage buyers, sellers, homeowners, and invitations.</p>
+        </div>
+        <a asp-controller="RealtorInviteClient" asp-action="ClientInfo" class="rl-btn-primary rl-btn-primary--sm">
+            <i class="fas fa-plus"></i> Add Client
+        </a>
+    </div>
 
     <form asp-action="Clients" method="get" class="rl-search-form">
-        <div class="rl-search-bar">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search client, email, or property" />
+        <div class="rl-search-row">
+            <div class="rl-search-bar">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search clients by name, email or phone" />
+            </div>
+            <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
         </div>
         <div class="rl-filter-chips">
             @foreach (var chip in Model.Filters)
@@ -24,21 +35,39 @@
         </div>
     </form>
 
-    <a asp-controller="RealtorInviteClient" asp-action="ClientInfo" class="rl-action-card">
-        <span class="rl-action-card-icon"><i class="fas fa-user-plus"></i></span>
-        <div>
-            <strong>+ Invite Client</strong>
-            <span>Invite a client to collaborate on properties and projects</span>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-    </a>
+    @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Active Clients</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
-        @if (Model.ActiveClients.Count == 0)
+        @if (Model.ActiveFilter == "Invited")
+        {
+            @if (Model.PendingInvitations.Count == 0)
+            {
+                <div class="rl-dash-empty">No pending invitations.</div>
+            }
+            else
+            {
+                @foreach (var inv in Model.PendingInvitations)
+                {
+                    <article class="rl-client-card-v2">
+                        <span class="rl-client-avatar rl-client-avatar--placeholder">@inv.Initials</span>
+                        <div class="rl-client-card-body">
+                            <div class="rl-client-card-top">
+                                <div>
+                                    <strong>@inv.FullName</strong>
+                                    <span class="rl-premium-muted">@inv.Email</span>
+                                </div>
+                                <span class="rl-status-pill rl-status-pill--invited">Invited</span>
+                            </div>
+                            <span class="rl-premium-muted">Sent @inv.SentLabel</span>
+                            <div class="rl-client-card-foot">
+                                <a href="#" class="rl-btn-outline rl-btn-outline--sm">Resend</a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            }
+        }
+        else if (Model.ActiveClients.Count == 0)
         {
             <div class="rl-dash-empty">No active clients match your search.</div>
         }
@@ -46,71 +75,60 @@
         {
             @foreach (var client in Model.ActiveClients)
             {
-                <article class="rl-client-card">
+                <article class="rl-client-card-v2">
                     @if (!string.IsNullOrWhiteSpace(client.ProfileImageUrl))
                     {
                         <img src="@client.ProfileImageUrl" alt="" class="rl-client-avatar" />
                     }
                     else
                     {
-                        <span class="rl-client-avatar rl-client-avatar--placeholder">@client.FullName.Split(' ').FirstOrDefault()?.FirstOrDefault()</span>
+                        <span class="rl-client-avatar rl-client-avatar--placeholder">@client.Initials</span>
                     }
                     <div class="rl-client-card-body">
-                        <div class="rl-client-name-row">
-                            <strong>@client.FullName</strong>
-                            <span class="rl-role-badge rl-role-badge--@client.ClientRole.ToLowerInvariant()">@client.ClientRole</span>
+                        <div class="rl-client-card-top">
+                            <div>
+                                <strong>@client.FullName</strong>
+                                <span class="rl-role-label">@client.ClientRole</span>
+                            </div>
+                            <button type="button" class="rl-card-menu" aria-label="Options"><i class="fas fa-ellipsis-vertical"></i></button>
+                            <span class="rl-status-pill rl-status-pill--@client.StatusCss">@client.StatusBadge</span>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(client.PropertyAddress))
                         {
-                            <a href="#" class="rl-client-property"><i class="fas fa-house"></i> @client.PropertyAddress</a>
+                            <span class="rl-client-location"><i class="fas fa-location-dot"></i> @client.PropertyAddress</span>
                         }
-                        @if (!string.IsNullOrWhiteSpace(client.StatusSummary))
-                        {
-                            <span class="rl-client-status"><i class="fas fa-circle-info"></i> @client.StatusSummary</span>
-                        }
-                        <span class="rl-client-time"><i class="fas fa-clock"></i> @client.LastActiveLabel</span>
+                        <div class="rl-client-metrics">
+                            @if (client.FilesCount > 0)
+                            {
+                                <span><i class="fas fa-folder"></i> @client.FilesCount File@(client.FilesCount == 1 ? "" : "s")</span>
+                            }
+                            @if (client.QuotesCount > 0)
+                            {
+                                <span><i class="fas fa-file-invoice-dollar"></i> @client.QuotesCount Quote@(client.QuotesCount == 1 ? "" : "s")</span>
+                            }
+                        </div>
+                        <div class="rl-client-card-foot">
+                            <a href="@client.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@client.ActionLabel</a>
+                        </div>
                     </div>
-                    <a href="#" class="rl-client-open">Open <i class="fas fa-chevron-right"></i></a>
                 </article>
             }
         }
     </section>
 
-    <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Pending Invitations</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
-        @if (Model.PendingInvitations.Count == 0)
-        {
-            <div class="rl-dash-empty">No pending invitations.</div>
-        }
-        else
-        {
-            @foreach (var inv in Model.PendingInvitations)
-            {
-                <article class="rl-invite-card">
-                    <span class="rl-invite-initials">@inv.Initials</span>
-                    <div>
-                        <strong>@inv.FullName</strong>
-                        <span>@inv.Email</span>
-                        <span class="rl-card-status rl-card-status--pending">Invitation sent</span>
-                        <span>Sent @inv.SentLabel</span>
-                    </div>
-                    <a href="#" class="rl-resend-link">Resend</a>
-                </article>
-            }
-        }
-    </section>
-
-    <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Recent Activity</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
-        @foreach (var act in Model.RecentActivity)
-        {
-            @await Html.PartialAsync("_RealtorActivityItem", act)
-        }
-    </section>
+    @if (Model.NextSteps.Count > 0)
+    {
+        <section class="rl-dash-section">
+            <div class="rl-hscroll rl-next-steps">
+                @foreach (var step in Model.NextSteps)
+                {
+                    <a href="@(step.Url ?? "#")" class="rl-next-step rl-next-step--@step.ColorClass">
+                        <span class="rl-next-step-icon"><i class="fas @step.Icon"></i></span>
+                        <span>@step.Text</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
+            </div>
+        </section>
+    }
 </div>

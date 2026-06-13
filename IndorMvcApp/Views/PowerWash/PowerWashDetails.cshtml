@@ -62,6 +62,7 @@
                 <button type="button" class="material-card" data-material="PaintedWood"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Painted wood</span></button>
                 <button type="button" class="material-card" data-material="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
             </div>
+            <span asp-validation-for="MaterialExterior" class="text-danger"></span>
         </div>
 
         <div class="field-card">
@@ -71,6 +72,7 @@
                 <button type="button" class="story-pill" data-stories="Two"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-building main"></i><span class="label">2 stories</span></button>
                 <button type="button" class="story-pill" data-stories="ThreePlus"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-city main"></i><span class="label">3+ stories</span></button>
             </div>
+            <span asp-validation-for="NumeroPisos" class="text-danger"></span>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
@@ -81,24 +83,60 @@
 <script>
     (function () {
         var areasInput = document.getElementById('AreasSeleccionadas');
+        var fullExteriorCode = 'FullExterior';
+        var partialAreaCodes = ['FrontOnly', 'BackOnly'];
 
         function getAreas() { return areasInput.value ? areasInput.value.split('|').filter(Boolean) : []; }
         function setAreas(values) { areasInput.value = values.join('|'); }
+
+        function applyAreaExclusivity(values, toggledCode, selecting) {
+            if (!selecting) return values;
+
+            if (toggledCode === fullExteriorCode) {
+                return values.filter(function (v) { return partialAreaCodes.indexOf(v) < 0; });
+            }
+
+            if (partialAreaCodes.indexOf(toggledCode) >= 0) {
+                return values.filter(function (v) { return v !== fullExteriorCode; });
+            }
+
+            return values;
+        }
+
+        function sanitizeAreas(values) {
+            if (values.indexOf(fullExteriorCode) >= 0) {
+                return values.filter(function (v) { return partialAreaCodes.indexOf(v) < 0; });
+            }
+            return values;
+        }
+
+        function syncAreaButtons(values) {
+            document.querySelectorAll('[data-area]').forEach(function (btn) {
+                var code = btn.getAttribute('data-area');
+                btn.classList.toggle('active', values.indexOf(code) >= 0);
+            });
+        }
+
+        var initialAreas = sanitizeAreas(getAreas());
+        setAreas(initialAreas);
+        syncAreaButtons(initialAreas);
 
         document.querySelectorAll('[data-area]').forEach(function (btn) {
             btn.addEventListener('click', function () {
                 var code = btn.getAttribute('data-area');
                 var current = getAreas();
-                if (current.indexOf(code) >= 0) {
+                var isSelected = current.indexOf(code) >= 0;
+
+                if (isSelected) {
                     current = current.filter(function (v) { return v !== code; });
-                    btn.classList.remove('active');
                 } else {
                     current.push(code);
-                    btn.classList.add('active');
+                    current = applyAreaExclusivity(current, code, true);
                 }
+
                 setAreas(current);
+                syncAreaButtons(current);
             });
-            if (getAreas().indexOf(btn.getAttribute('data-area')) >= 0) btn.classList.add('active');
         });
 
         function bindSingle(groupSelector, attr, input) {
@@ -114,6 +152,34 @@
 
         bindSingle('[data-material]', 'data-material', document.getElementById('MaterialExterior'));
         bindSingle('[data-stories]', 'data-stories', document.getElementById('NumeroPisos'));
+
+        var form = document.getElementById('pw-details-form');
+        var requiredFields = [
+            { id: 'AreasSeleccionadas', message: 'Select at least one area to wash.' },
+            { id: 'MaterialExterior', message: 'Select the main exterior material.' },
+            { id: 'NumeroPisos', message: 'Select your home size.' }
+        ];
+
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') {
+                return;
+            }
+
+            var firstMissing = null;
+            requiredFields.forEach(function (field) {
+                var input = document.getElementById(field.id);
+                if (!input) return;
+                var empty = !input.value || !String(input.value).trim();
+                if (empty && !firstMissing) {
+                    firstMissing = field;
+                }
+            });
+
+            if (firstMissing) {
+                e.preventDefault();
+                alert(firstMissing.message);
+            }
+        });
     })();
 </script>
 </body>

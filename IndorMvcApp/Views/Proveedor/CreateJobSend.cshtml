@@ -1,0 +1,163 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateJobSendViewModel
+@{
+    ViewData["Title"] = "Review & Send - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+    var deliveryOptions = new[] {
+        ("indor", "Send in INDOR", "fa-comment-dots"),
+        ("sms", "Text message", "fa-comment-sms"),
+        ("email", "Email", "fa-envelope")
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-wizard-head">
+        <h1>Review &amp; Send</h1>
+        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
+    </header>
+
+    <section class="prv-pro-send-job-card">
+        <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@Model.ServiceCategoryTone">
+            <i class="fas @Model.ServiceCategoryIcon"></i>
+        </span>
+        <div>
+            <strong>@Model.JobTitle</strong>
+            <span class="prv-pro-customer-pill">@Model.ServiceCategoryLabel</span>
+            <div class="prv-pro-send-meta">
+                <span><i class="fas fa-user"></i> @Model.CustomerName</span>
+                <span><i class="fas fa-location-dot"></i> @Model.Address</span>
+            </div>
+        </div>
+    </section>
+
+    @if (Model.SendQuote && Model.EstimateLines.Count > 0)
+    {
+        <section class="prv-pro-wizard-card prv-pro-send-quote-card">
+            <div class="prv-pro-send-quote-head">
+                <h2>Quote preview</h2>
+                <div>
+                    <small>Total estimate</small>
+                    <strong>@Model.EstimateTotalLabel</strong>
+                </div>
+            </div>
+            <div class="prv-pro-ai-estimate">
+                @foreach (var line in Model.EstimateLines)
+                {
+                    <div class="prv-pro-ai-estimate-row">
+                        <span>@line.Label</span>
+                        <span>@line.AmountLabel</span>
+                    </div>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.ScopeSummary))
+            {
+                <div class="prv-pro-send-scope">
+                    <i class="fas fa-file-lines"></i>
+                    <p>@Model.ScopeSummary</p>
+                </div>
+            }
+        </section>
+    }
+
+    <form asp-controller="Proveedor" asp-action="CreateJobSend" method="post" class="prv-pro-wizard-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="SubmitAction" id="createJobSendAction" value="job_and_quote" />
+
+        @if (Model.SendQuote)
+        {
+            <section class="prv-pro-wizard-card">
+                <h2>Delivery method</h2>
+                <div class="prv-pro-delivery-grid" role="radiogroup" aria-label="Delivery method">
+                    @foreach (var (id, label, icon) in deliveryOptions)
+                    {
+                        var selected = Model.DeliveryMethod == id;
+                        <label class="prv-pro-delivery-option @(selected ? "is-selected" : "")">
+                            <input type="radio" name="DeliveryMethod" value="@id" @(selected ? "checked" : "") />
+                            <i class="fas @icon"></i>
+                            <span>@label</span>
+                            @if (selected) { <i class="fas fa-check prv-pro-delivery-check"></i> }
+                        </label>
+                    }
+                </div>
+            </section>
+
+            <section class="prv-pro-wizard-card">
+                <h2>Message to customer</h2>
+                <label class="prv-pro-send-message">
+                    <textarea name="CustomerMessage" rows="4">@Model.CustomerMessage</textarea>
+                    <i class="fas fa-pen"></i>
+                </label>
+            </section>
+
+            <section class="prv-pro-wizard-card">
+                <h2>Attachments</h2>
+                <div class="prv-pro-send-attachment-chips">
+                    <label class="prv-pro-send-chip">
+                        <input type="checkbox" name="IncludeAiSummary" value="true" @(Model.IncludeAiSummary ? "checked" : "") />
+                        <i class="fas fa-wand-magic-sparkles"></i> AI summary attached
+                    </label>
+                    @if (Model.IncludeVoiceTranscript)
+                    {
+                        <label class="prv-pro-send-chip">
+                            <input type="checkbox" name="IncludeVoiceTranscript" value="true" checked />
+                            <i class="fas fa-wave-square"></i> Voice transcript attached
+                        </label>
+                    }
+                </div>
+            </section>
+        }
+
+        <div class="prv-pro-send-final-actions">
+            <button type="submit" class="prv-pro-send-link" name="SubmitAction" value="save_draft">Save draft</button>
+            <div class="prv-pro-send-buttons">
+                <button type="submit" class="prv-pro-btn prv-pro-btn--outline" name="SubmitAction" value="job_only">Create job only</button>
+                @if (Model.SendQuote)
+                {
+                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary" name="SubmitAction" value="job_and_quote">Create job &amp; send quote</button>
+                }
+                else
+                {
+                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary" name="SubmitAction" value="job_only">Create job</button>
+                }
+            </div>
+        </div>
+
+        @if (Model.SendQuote)
+        {
+            <div class="prv-pro-wizard-actions prv-pro-wizard-actions--single">
+                <a asp-controller="Proveedor" asp-action="CreateJobAiDraft" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            </div>
+        }
+        else
+        {
+            <div class="prv-pro-wizard-actions prv-pro-wizard-actions--single">
+                <a asp-controller="Proveedor" asp-action="CreateJobQuote" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            </div>
+        }
+    </form>
+
+    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            document.querySelectorAll('.prv-pro-delivery-option').forEach(function (option) {
+                option.addEventListener('click', function () {
+                    document.querySelectorAll('.prv-pro-delivery-option').forEach(function (o) {
+                        o.classList.remove('is-selected');
+                        o.querySelector('.prv-pro-delivery-check')?.remove();
+                    });
+                    option.classList.add('is-selected');
+                    var check = document.createElement('i');
+                    check.className = 'fas fa-check prv-pro-delivery-check';
+                    option.appendChild(check);
+                    var radio = option.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = true;
+                });
+            });
+        })();
+    </script>
+}

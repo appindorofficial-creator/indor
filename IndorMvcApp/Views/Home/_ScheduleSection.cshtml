@@ -27,13 +27,17 @@
         <div class="sch-quick-row">
             @foreach (var quick in Model.QuickAddItems)
             {
-                <a href="@quick.Url" class="sch-quick-card">
-                    <span class="sch-quick-icon @quick.ToneClass">
-                        <i class="fas @quick.IconClass"></i>
-                    </span>
+                <div class="sch-quick-card">
+                    <a href="@quick.Url" class="sch-quick-tap" aria-label="Add @quick.Label reminder">
+                        <span class="sch-quick-visual">
+                            <span class="sch-quick-icon @quick.ToneClass">
+                                <i class="fas @quick.IconClass"></i>
+                            </span>
+                            <span class="sch-quick-plus" aria-hidden="true"><i class="fas fa-plus"></i></span>
+                        </span>
+                    </a>
                     <span class="sch-quick-name">@quick.Label</span>
-                    <span class="sch-quick-plus"><i class="fas fa-plus"></i></span>
-                </a>
+                </div>
             }
         </div>
     }

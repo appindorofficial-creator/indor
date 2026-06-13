@@ -1,3 +1,4 @@
+using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
@@ -29,23 +30,28 @@ public class RealtorPortalService(AppDbContext db)
             .Take(5)
             .ToListAsync(ct);
 
+        var stats = await BuildHomeStatsAsync(realtor.Id, ct);
+
         return new RealtorHomeViewModel
         {
             DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            Stats = stats,
             QuickActions =
             [
                 new() { Label = "Invite client", Icon = "fa-user-plus", Url = "/RealtorInviteClient/ClientInfo" },
-                new() { Label = "New property file", Icon = "fa-folder-plus", Url = "/Realtor/Files" },
+                new() { Label = "New property file", Icon = "fa-folder-plus", Url = "/RealtorPropertyFile/Details" },
                 new() { Label = "Upload inspection report", Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
-                new() { Label = "Urgente quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
+                new() { Label = "Urgent quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
             ],
             PropertyFiles = properties.Select(MapPropertyCard).ToList(),
             PendingQuotes = quotes.Select(MapQuoteCard).ToList(),
-            SharedPackages = packages.Select(MapPackageCard).ToList()
+            SharedPackages = packages.Select(MapPackageCard).ToList(),
+            Insights = await BuildHomeInsightsAsync(realtor.Id, ct)
         };
     }
 
@@ -72,7 +78,7 @@ public class RealtorPortalService(AppDbContext db)
             "Buyers" => clientsQuery.Where(c => c.ClientRole == RealtorClientRoles.Buyer),
             "Sellers" => clientsQuery.Where(c => c.ClientRole == RealtorClientRoles.Seller),
             "Homeowners" => clientsQuery.Where(c => c.ClientRole == RealtorClientRoles.Homeowner),
-            "Pending" => clientsQuery.Where(c => false),
+            "Invited" => clientsQuery.Where(c => false),
             _ => clientsQuery
         };
 
@@ -80,6 +86,18 @@ public class RealtorPortalService(AppDbContext db)
             .OrderByDescending(c => c.LastActiveUtc)
             .Take(20)
             .ToListAsync(ct);
+
+        var fileCounts = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .Where(p => p.RealtorId == realtor.Id && p.ClientName != null)
+            .GroupBy(p => p.ClientName!)
+            .Select(g => new { ClientName = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.ClientName, x => x.Count, ct);
+
+        var quoteCounts = await db.IndorRealtorQuotes.AsNoTracking()
+            .Where(q => q.RealtorId == realtor.Id && q.ClientName != null)
+            .GroupBy(q => q.ClientName!)
+            .Select(g => new { ClientName = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.ClientName, x => x.Count, ct);
 
         var invitationsQuery = db.IndorRealtorInvitations.AsNoTracking()
             .Where(i => i.RealtorId == realtor.Id && i.Status == RealtorInvitationStatuses.Sent);
@@ -91,7 +109,7 @@ public class RealtorPortalService(AppDbContext db)
                 i.FullName.Contains(term) || i.Email.Contains(term));
         }
 
-        var invitations = activeFilter is "All" or "Pending"
+        var invitations = activeFilter is "All" or "Invited"
             ? await invitationsQuery.OrderByDescending(i => i.SentUtc).Take(10).ToListAsync(ct)
             : [];
 
@@ -101,18 +119,25 @@ public class RealtorPortalService(AppDbContext db)
             .Take(5)
             .ToListAsync(ct);
 
+        var clientStats = await BuildClientStatsAsync(realtor.Id, ct);
+        var pendingInviteCount = await db.IndorRealtorInvitations.AsNoTracking()
+            .CountAsync(i => i.RealtorId == realtor.Id && i.Status == RealtorInvitationStatuses.Sent, ct);
+
         return new RealtorClientsViewModel
         {
             DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
-            ActiveClients = clients.Select(MapClient).ToList(),
+            Stats = clientStats,
+            ActiveClients = clients.Select(c => MapClient(c, fileCounts, quoteCounts)).ToList(),
             PendingInvitations = invitations.Select(MapInvitation).ToList(),
-            RecentActivity = activities.Select(MapActivity).ToList()
+            RecentActivity = activities.Select(MapActivity).ToList(),
+            NextSteps = BuildClientNextSteps(pendingInviteCount, clients, quoteCounts)
         };
     }
 
@@ -138,8 +163,10 @@ public class RealtorPortalService(AppDbContext db)
         query = activeFilter switch
         {
             "Active" => query.Where(p => p.Status == "Active"),
-            "Archived" => query.Where(p => p.Status == "Archived"),
-            _ when activeFilter != "All" => query.Where(p => p.FilePhase == activeFilter),
+            "Inspection" => query.Where(p => p.FilePhase == "Repair Review" || p.RepairItemsCount > 0),
+            "Quotes" => query.Where(p => p.QuotesReceivedCount > 0),
+            "Shared" => query.Where(p => p.FilePhase == "Transfer"),
+            "Closed" => query.Where(p => p.Status == "Archived"),
             _ => query
         };
 
@@ -158,14 +185,97 @@ public class RealtorPortalService(AppDbContext db)
         return new RealtorFilesViewModel
         {
             DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
+            Stats = await BuildFileStatsAsync(realtor.Id, ct),
             ActiveFiles = files.Select(MapFile).ToList(),
-            RecentActivity = activities.Select(MapActivity).ToList()
+            RecentActivity = activities.Select(MapActivity).ToList(),
+            Insights = await BuildFileInsightsAsync(realtor.Id, ct)
+        };
+    }
+
+    public async Task<RealtorQuoteDetailViewModel?> BuildQuoteDetailAsync(
+        IndorRealtor realtor, int quoteId, CancellationToken ct = default)
+    {
+        var quote = await db.IndorRealtorQuotes.AsNoTracking()
+            .Include(q => q.SentProviders)
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtor.Id, ct);
+
+        if (quote == null)
+        {
+            return null;
+        }
+
+        ApplyBidCountsToQuote(quote, await LoadBidCountsByQuoteAsync([quote.Id], ct));
+
+        var shell = await BuildShellAsync(realtor, ct);
+        var bids = await db.IndorRealtorQuoteBids.AsNoTracking()
+            .Where(b => b.QuoteId == quote.Id)
+            .OrderBy(b => b.Amount)
+            .ToListAsync(ct);
+
+        var bidProviderNames = bids.Select(b => b.ProviderName).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var (statusLabel, statusCss) = DeriveQuoteStatus(quote);
+        var requestedServices = await LoadRequestedServicesAsync(quote.PropertyFileId, quote.ServiceType, ct);
+        var providersSent = quote.SentProviders.Count;
+        var responsesSoFar = quote.ProviderQuotesReceived;
+
+        return new RealtorQuoteDetailViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            QuoteId = quote.Id,
+            QuoteStatus = quote.Status,
+            QuoteCode = FormatQuoteCode(quote.QuoteCode),
+            Address = quote.Address,
+            ServiceType = quote.ServiceType,
+            ClientName = quote.ClientName ?? "",
+            PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
+            StatusLabel = statusLabel,
+            StatusCss = statusCss,
+            RequestedLabel = $"Requested {quote.RequestedUtc.ToLocalTime():MMM d, yyyy}",
+            DueLabel = quote.ResponseDeadlineHours is > 0
+                ? $"Due {quote.RequestedUtc.AddHours(quote.ResponseDeadlineHours.Value).ToLocalTime():MMM d, yyyy}"
+                : null,
+            FooterNote = quote.FooterNote ?? DefaultQuoteFooter(quote),
+            OptionalMessage = quote.OptionalMessage,
+            ProviderQuotesReceived = quote.ProviderQuotesReceived,
+            ProvidersSentCount = providersSent,
+            PropertyFileId = quote.PropertyFileId,
+            RequestedByLabel = "Realtor (Buyer)",
+            ProvidersResponseLabel = responsesSoFar == 0
+                ? "0 responses so far"
+                : $"{responsesSoFar} response{(responsesSoFar == 1 ? "" : "s")} so far",
+            RequestedServices = requestedServices,
+            InviteProvidersUrl = BuildInviteProvidersUrl(quote),
+            Bids = bids.Select(b => new RealtorQuoteDetailBidViewModel
+            {
+                Id = b.Id,
+                ProviderName = b.ProviderName,
+                AmountLabel = b.Amount.ToString("C0"),
+                Rating = b.Rating,
+                SubmittedLabel = b.SubmittedUtc.HasValue
+                    ? $"Submitted {b.SubmittedUtc.Value.ToLocalTime():MMM d, yyyy}"
+                    : "Submitted recently"
+            }).ToList(),
+            SentProviders = quote.SentProviders
+                .OrderBy(sp => sp.ProviderName)
+                .Select(sp => new RealtorQuoteDetailProviderViewModel
+                {
+                    ProviderName = sp.ProviderName,
+                    StatusLabel = bidProviderNames.Contains(sp.ProviderName) ? "Quote received" : "Waiting",
+                    StatusCss = bidProviderNames.Contains(sp.ProviderName) ? "received" : "pending"
+                })
+                .ToList()
         };
     }
 
@@ -188,9 +298,15 @@ public class RealtorPortalService(AppDbContext db)
                 (q.ClientName != null && q.ClientName.Contains(term)));
         }
 
-        if (activeFilter != "All")
+        if (activeFilter == "Urgent")
         {
-            query = query.Where(q => q.Status == activeFilter);
+            var urgentCutoff = DateTime.UtcNow.AddDays(-4);
+            query = query.Where(q => q.Status == "Pending" && q.RequestedUtc <= urgentCutoff);
+        }
+        else if (activeFilter != "All")
+        {
+            var dbStatus = MapQuoteFilterToStatus(activeFilter);
+            query = query.Where(q => q.Status == dbStatus);
         }
 
         var quotes = await query
@@ -198,18 +314,30 @@ public class RealtorPortalService(AppDbContext db)
             .Take(20)
             .ToListAsync(ct);
 
-        var compareQuote = await db.IndorRealtorQuotes.AsNoTracking()
-            .Where(q => q.RealtorId == realtor.Id && q.Status == "Compare")
-            .OrderByDescending(q => q.UpdatedUtc ?? q.RequestedUtc)
-            .FirstOrDefaultAsync(ct);
+        var bidCounts = await LoadBidCountsByQuoteAsync(quotes.Select(q => q.Id).ToList(), ct);
+        foreach (var quote in quotes)
+        {
+            ApplyBidCountsToQuote(quote, bidCounts);
+        }
+
+        var compareQuote = quotes.FirstOrDefault(q => q.ProviderQuotesReceived > 0)
+            ?? await db.IndorRealtorQuotes.AsNoTracking()
+                .Where(q => q.RealtorId == realtor.Id && q.ProviderQuotesReceived > 0)
+                .OrderByDescending(q => q.UpdatedUtc ?? q.RequestedUtc)
+                .FirstOrDefaultAsync(ct);
+
+        if (compareQuote != null && compareQuote.ProviderQuotesReceived == 0)
+        {
+            ApplyBidCountsToQuote(compareQuote, await LoadBidCountsByQuoteAsync([compareQuote.Id], ct));
+        }
 
         RealtorCompareQuotesViewModel? compare = null;
         if (compareQuote != null)
         {
             var bids = await db.IndorRealtorQuoteBids.AsNoTracking()
                 .Where(b => b.QuoteId == compareQuote.Id)
-                .OrderBy(b => b.SortOrder)
-                .Take(3)
+                .OrderBy(b => b.Amount)
+                .Take(5)
                 .ToListAsync(ct);
 
             compare = new RealtorCompareQuotesViewModel
@@ -233,19 +361,288 @@ public class RealtorPortalService(AppDbContext db)
             .Take(5)
             .ToListAsync(ct);
 
+        var quoteStats = await BuildQuoteStatsAsync(realtor.Id, ct);
+        var openQuotes = quotes.Select(MapOpenQuote).ToList();
+        if (openQuotes.Count > 0)
+        {
+            var quoteIds = openQuotes.Select(q => q.Id).ToList();
+            var topBids = await db.IndorRealtorQuoteBids.AsNoTracking()
+                .Where(b => quoteIds.Contains(b.QuoteId))
+                .OrderBy(b => b.Amount)
+                .ToListAsync(ct);
+
+            foreach (var card in openQuotes)
+            {
+                var topBid = topBids.FirstOrDefault(b => b.QuoteId == card.Id);
+                if (topBid != null)
+                {
+                    card.ProviderInitials = DeriveInitialsFromName(topBid.ProviderName);
+                    if (card.ProviderQuotesReceived == 1)
+                    {
+                        card.ProviderSummary = $"{card.ProviderInitials} 1 provider quote received";
+                    }
+                }
+            }
+        }
+
         return new RealtorQuotesViewModel
         {
             DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
-            OpenQuotes = quotes.Select(MapOpenQuote).ToList(),
+            Stats = quoteStats,
+            OpenQuotes = openQuotes,
             CompareQuotes = compare,
-            RecentActivity = activities.Select(MapActivity).ToList()
+            RecentActivity = activities.Select(MapActivity).ToList(),
+            Alerts = BuildQuoteAlerts(quoteStats)
         };
+    }
+
+    public string? ResolveQuoteFlowUrl(IndorRealtorQuote quote)
+    {
+        if (quote.Status == "Accepted")
+        {
+            return $"/Realtor/QuoteSelected/{quote.Id}";
+        }
+
+        if (quote.ProviderQuotesReceived >= 2 || quote.Status == "Compare")
+        {
+            return $"/Realtor/CompareQuotes/{quote.Id}";
+        }
+
+        if (quote.ProviderQuotesReceived == 1)
+        {
+            return $"/Realtor/ViewQuote/{quote.Id}";
+        }
+
+        return $"/Realtor/QuoteDetail/{quote.Id}";
+    }
+
+    public async Task<RealtorViewQuoteViewModel?> BuildViewQuoteAsync(
+        IndorRealtor realtor, int quoteId, int? bidId, CancellationToken ct = default)
+    {
+        var quote = await LoadOwnedQuoteAsync(realtor.Id, quoteId, ct);
+        if (quote == null)
+        {
+            return null;
+        }
+
+        ApplyBidCountsToQuote(quote, await LoadBidCountsByQuoteAsync([quote.Id], ct));
+
+        var bids = await db.IndorRealtorQuoteBids.AsNoTracking()
+            .Where(b => b.QuoteId == quote.Id)
+            .OrderBy(b => b.Amount)
+            .ToListAsync(ct);
+
+        if (bids.Count == 0)
+        {
+            return null;
+        }
+
+        if (bids.Count > 1 && bidId is null)
+        {
+            return null;
+        }
+
+        var bid = bidId is > 0
+            ? bids.FirstOrDefault(b => b.Id == bidId) ?? bids[0]
+            : bids[0];
+
+        var shell = await BuildShellAsync(realtor, ct);
+        var details = await LoadBidEstimateDetailsAsync(bid, ct);
+        var (statusLabel, _) = DeriveQuoteStatus(quote);
+
+        return new RealtorViewQuoteViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            QuoteId = quote.Id,
+            BidId = bid.Id,
+            Address = quote.Address,
+            PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
+            StatusLabel = statusLabel,
+            ProviderName = bid.ProviderName,
+            ProviderInitials = DeriveInitialsFromName(bid.ProviderName),
+            TotalLabel = bid.Amount.ToString("C0"),
+            TimelineLabel = details.Timeline,
+            WarrantyLabel = details.Warranty,
+            ScopeOfWork = details.ScopeOfWork,
+            IncludedRepairs = details.IncludedRepairs,
+            PriceLines = details.PriceLines,
+            TotalAmountLabel = bid.Amount.ToString("C2"),
+            CompareQuotesUrl = bids.Count > 1 ? $"/Realtor/CompareQuotes/{quote.Id}" : "#",
+            RequestAnotherUrl = BuildInviteProvidersUrl(quote),
+            EditSharedQuoteUrl = $"/Realtor/EditSharedQuote?quoteId={quote.Id}&bidId={bid.Id}"
+        };
+    }
+
+    public async Task<RealtorCompareQuotesPageViewModel?> BuildCompareQuotesPageAsync(
+        IndorRealtor realtor, int quoteId, CancellationToken ct = default)
+    {
+        var quote = await LoadOwnedQuoteAsync(realtor.Id, quoteId, ct);
+        if (quote == null)
+        {
+            return null;
+        }
+
+        ApplyBidCountsToQuote(quote, await LoadBidCountsByQuoteAsync([quote.Id], ct));
+
+        var bids = await db.IndorRealtorQuoteBids.AsNoTracking()
+            .Where(b => b.QuoteId == quote.Id)
+            .OrderBy(b => b.Amount)
+            .ToListAsync(ct);
+
+        if (bids.Count < 2)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(realtor, ct);
+        var cards = new List<RealtorCompareQuoteCardViewModel>();
+        var timelines = new List<string>();
+        var bestBidId = bids[0].Id;
+
+        foreach (var bid in bids)
+        {
+            var details = await LoadBidEstimateDetailsAsync(bid, ct);
+            timelines.Add(details.Timeline);
+            cards.Add(new RealtorCompareQuoteCardViewModel
+            {
+                BidId = bid.Id,
+                ProviderName = bid.ProviderName,
+                ProviderInitials = DeriveInitialsFromName(bid.ProviderName),
+                AmountLabel = bid.Amount.ToString("C0"),
+                Rating = bid.Rating,
+                ReviewCount = DeriveReviewCount(bid.Rating),
+                TimelineLabel = details.Timeline,
+                WarrantyLabel = details.Warranty,
+                IsBestValue = bid.Id == bestBidId,
+                ViewDetailsUrl = $"/Realtor/ViewQuote/{quote.Id}?bidId={bid.Id}"
+            });
+        }
+
+        var min = bids.Min(b => b.Amount);
+        var max = bids.Max(b => b.Amount);
+
+        return new RealtorCompareQuotesPageViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            QuoteId = quote.Id,
+            Address = quote.Address,
+            PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
+            StatusLabel = $"{quote.ProviderQuotesReceived} Quotes Received",
+            RequestedLabel = $"Requested {quote.RequestedUtc.ToLocalTime():MMM d, yyyy}",
+            PriceRangeLabel = $"{min:C0} – {max:C0}",
+            TimelineRangeLabel = BuildTimelineRange(timelines),
+            InviteProvidersUrl = BuildInviteProvidersUrl(quote),
+            Quotes = cards
+        };
+    }
+
+    public async Task<RealtorQuoteSelectedViewModel?> BuildQuoteSelectedAsync(
+        IndorRealtor realtor, int quoteId, CancellationToken ct = default)
+    {
+        var quote = await LoadOwnedQuoteAsync(realtor.Id, quoteId, ct);
+        if (quote == null || quote.Status != "Accepted")
+        {
+            return null;
+        }
+
+        var bid = quote.SelectedBidId is > 0
+            ? await db.IndorRealtorQuoteBids.AsNoTracking()
+                .FirstOrDefaultAsync(b => b.Id == quote.SelectedBidId && b.QuoteId == quote.Id, ct)
+            : await db.IndorRealtorQuoteBids.AsNoTracking()
+                .Where(b => b.QuoteId == quote.Id)
+                .OrderBy(b => b.Amount)
+                .FirstOrDefaultAsync(ct);
+
+        if (bid == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(realtor, ct);
+        var details = await LoadBidEstimateDetailsAsync(bid, ct);
+        var approvedUtc = quote.AcceptedUtc ?? DateTime.UtcNow;
+
+        return new RealtorQuoteSelectedViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            QuoteId = quote.Id,
+            BidId = bid.Id,
+            Address = quote.Address,
+            PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
+            ProviderName = bid.ProviderName,
+            TotalAmountLabel = bid.Amount.ToString("C0"),
+            ApprovedLabel = approvedUtc.ToLocalTime().ToString("MMM d, yyyy"),
+            TimelineLabel = details.Timeline,
+            WarrantyLabel = details.Warranty,
+            ViewQuoteUrl = $"/Realtor/ViewQuote/{quote.Id}?bidId={bid.Id}",
+            NextSteps =
+            [
+                new() { Label = "Schedule work", Icon = "fa-calendar-days" },
+                new() { Label = "Send repair approval to client", Icon = "fa-paper-plane" },
+                new() { Label = "Track job progress", Icon = "fa-chart-column" },
+                new() { Label = "Convert to invoice after completion", Icon = "fa-file-invoice-dollar" }
+            ]
+        };
+    }
+
+    public async Task<bool> AcceptQuoteAsync(IndorRealtor realtor, int quoteId, int bidId, CancellationToken ct = default)
+    {
+        var quote = await db.IndorRealtorQuotes
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtor.Id, ct);
+
+        if (quote == null)
+        {
+            return false;
+        }
+
+        var bid = await db.IndorRealtorQuoteBids.AsNoTracking()
+            .FirstOrDefaultAsync(b => b.Id == bidId && b.QuoteId == quote.Id, ct);
+
+        if (bid == null)
+        {
+            return false;
+        }
+
+        quote.Status = "Accepted";
+        quote.SelectedBidId = bid.Id;
+        quote.AcceptedUtc = DateTime.UtcNow;
+        quote.Amount = bid.Amount;
+        quote.FooterNote = $"Selected: {bid.ProviderName}";
+        quote.UpdatedUtc = DateTime.UtcNow;
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "quote",
+            Description = $"Quote selected for {quote.Address} — {bid.ProviderName} ({bid.Amount:C0})",
+            CategoryTag = "Quotes",
+            OccurredUtc = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync(ct);
+        return true;
     }
 
     public async Task<RealtorProfileViewModel> BuildProfileAsync(IndorRealtor realtor, CancellationToken ct = default)
@@ -278,10 +675,28 @@ public class RealtorPortalService(AppDbContext db)
             Optional = false
         });
 
+        var homeStats = await BuildHomeStatsAsync(realtor.Id, ct);
+        var clientCount = await db.IndorRealtorClients.AsNoTracking()
+            .CountAsync(c => c.RealtorId == realtor.Id, ct);
+        var quoteRequestCount = await db.IndorRealtorQuotes.AsNoTracking()
+            .CountAsync(q => q.RealtorId == realtor.Id, ct);
+        var filesThisMonth = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtor.Id &&
+                             (p.UpdatedUtc ?? p.FechaCreacion) >= DateTime.UtcNow.AddDays(-30), ct);
+        var prevMonthFiles = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtor.Id &&
+                             (p.UpdatedUtc ?? p.FechaCreacion) >= DateTime.UtcNow.AddDays(-60) &&
+                             (p.UpdatedUtc ?? p.FechaCreacion) < DateTime.UtcNow.AddDays(-30), ct);
+
+        var filesTrend = prevMonthFiles > 0
+            ? $"+{Math.Round((filesThisMonth - prevMonthFiles) * 100.0 / prevMonthFiles)}% vs last month"
+            : filesThisMonth > 0 ? "+100% vs last month" : "";
+
         return new RealtorProfileViewModel
         {
             DisplayName = shell.DisplayName,
-            FullName = realtor.DisplayName ?? shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            FullName = realtor.DisplayName ?? shell.FullDisplayName,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
@@ -293,9 +708,23 @@ public class RealtorPortalService(AppDbContext db)
             LicenseState = realtor.LicenseState ?? "",
             ServiceAreas = realtor.ServiceAreas ?? "",
             CanUpgradeToVerified = realtor.RegistrationStatus != RealtorRegistrationStatuses.Verified,
-            Documents = docSlots
+            Documents = docSlots,
+            Stats =
+            [
+                homeStats[0],
+                new RealtorStatItemViewModel { Label = "Clients", Count = clientCount, Icon = "fa-users", ColorClass = "blue" },
+                homeStats[2],
+                new RealtorStatItemViewModel { Label = "Quote Requests", Count = quoteRequestCount, Icon = "fa-comment-dollar", ColorClass = "teal" }
+            ],
+            FilesThisMonth = filesThisMonth,
+            FilesTrendLabel = filesTrend,
+            ClientConnections = clientCount,
+            ClientsTrendLabel = clientCount > 0 ? $"+{Math.Min(clientCount, 5)} this month" : ""
         };
     }
+
+    public Task<RealtorPortalShellViewModel> BuildShellForRealtorAsync(IndorRealtor realtor, CancellationToken ct = default) =>
+        BuildShellAsync(realtor, ct);
 
     private async Task<RealtorPortalShellViewModel> BuildShellAsync(IndorRealtor realtor, CancellationToken ct)
     {
@@ -309,6 +738,7 @@ public class RealtorPortalService(AppDbContext db)
         return new RealtorPortalShellViewModel
         {
             DisplayName = firstName,
+            FullDisplayName = realtor.DisplayName ?? firstName,
             ProfilePhotoUrl = string.IsNullOrWhiteSpace(realtor.ProfilePhotoUrl)
                 ? null
                 : realtor.ProfilePhotoUrl,
@@ -320,79 +750,413 @@ public class RealtorPortalService(AppDbContext db)
         };
     }
 
+    private async Task<List<RealtorStatItemViewModel>> BuildHomeStatsAsync(int realtorId, CancellationToken ct)
+    {
+        var activeFiles = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.Status == "Active", ct);
+        var pendingQuotes = await db.IndorRealtorQuotes.AsNoTracking()
+            .CountAsync(q => q.RealtorId == realtorId && q.Status == "Pending", ct);
+        var sharedPackages = await db.IndorRealtorSharedPackages.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId, ct);
+        var connectedClients = await db.IndorRealtorClients.AsNoTracking()
+            .CountAsync(c => c.RealtorId == realtorId, ct);
+
+        return
+        [
+            new() { Label = "Active Files", Count = activeFiles, Icon = "fa-folder-open", ColorClass = "blue", DetailUrl = "/Realtor/Files" },
+            new() { Label = "Pending Quotes", Count = pendingQuotes, Icon = "fa-dollar-sign", ColorClass = "teal", DetailUrl = "/Realtor/Quotes" },
+            new() { Label = "Shared Packages", Count = sharedPackages, Icon = "fa-box-archive", ColorClass = "purple", DetailUrl = "/Realtor/Dashboard#shared-packages" },
+            new() { Label = "Connected Clients", Count = connectedClients, Icon = "fa-user-group", ColorClass = "cyan", DetailUrl = "/Realtor/Clients" }
+        ];
+    }
+
+    private async Task<List<RealtorStatItemViewModel>> BuildClientStatsAsync(int realtorId, CancellationToken ct)
+    {
+        var clients = await db.IndorRealtorClients.AsNoTracking().CountAsync(c => c.RealtorId == realtorId, ct);
+        var activeFiles = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.Status == "Active", ct);
+        var pendingInvites = await db.IndorRealtorInvitations.AsNoTracking()
+            .CountAsync(i => i.RealtorId == realtorId && i.Status == RealtorInvitationStatuses.Sent, ct);
+        var connected = clients;
+        var followUp = await db.IndorRealtorClients.AsNoTracking()
+            .CountAsync(c => c.RealtorId == realtorId &&
+                             c.StatusSummary != null &&
+                             (c.StatusSummary.Contains("pending") || c.StatusSummary.Contains("follow")), ct);
+
+        return
+        [
+            new() { Label = "Clients", Count = clients, Icon = "fa-users", ColorClass = "blue" },
+            new() { Label = "Active Files", Count = activeFiles, Icon = "fa-folder-open", ColorClass = "teal" },
+            new() { Label = "Pending Invites", Count = pendingInvites, Icon = "fa-envelope", ColorClass = "purple" },
+            new() { Label = "Connected", Count = connected, Icon = "fa-circle-check", ColorClass = "teal" },
+            new() { Label = "Follow-Up", Count = Math.Max(followUp, pendingInvites), Icon = "fa-clock", ColorClass = "orange" }
+        ];
+    }
+
+    private async Task<List<RealtorStatItemViewModel>> BuildFileStatsAsync(int realtorId, CancellationToken ct)
+    {
+        var active = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.Status == "Active", ct);
+        var inspection = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && (p.FilePhase == "Repair Review" || p.RepairItemsCount > 0), ct);
+        var quotes = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.QuotesReceivedCount > 0, ct);
+
+        return
+        [
+            new() { Label = "Active Files", Count = active, Icon = "fa-folder-open", ColorClass = "blue" },
+            new() { Label = "Inspection Uploaded", Count = inspection, Icon = "fa-cloud-arrow-up", ColorClass = "teal" },
+            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange" }
+        ];
+    }
+
+    private async Task<Dictionary<int, int>> LoadBidCountsByQuoteAsync(
+        IReadOnlyList<int> quoteIds,
+        CancellationToken ct)
+    {
+        if (quoteIds.Count == 0)
+        {
+            return [];
+        }
+
+        return await db.IndorRealtorQuoteBids.AsNoTracking()
+            .Where(b => quoteIds.Contains(b.QuoteId))
+            .GroupBy(b => b.QuoteId)
+            .Select(g => new { g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.Key, x => x.Count, ct);
+    }
+
+    private static void ApplyBidCountsToQuote(
+        IndorRealtorQuote quote,
+        IReadOnlyDictionary<int, int> bidCounts)
+    {
+        if (!bidCounts.TryGetValue(quote.Id, out var count) || count <= 0)
+        {
+            return;
+        }
+
+        quote.ProviderQuotesReceived = Math.Max(quote.ProviderQuotesReceived, count);
+        if (quote.Status is "Pending" or "Received" or "Compare")
+        {
+            quote.Status = count >= 2 ? "Compare" : "Received";
+        }
+
+        quote.FooterNote = $"{count} provider quote{(count == 1 ? "" : "s")} received";
+    }
+
+    private async Task<List<RealtorStatItemViewModel>> BuildQuoteStatsAsync(int realtorId, CancellationToken ct)
+    {
+        var all = await db.IndorRealtorQuotes.AsNoTracking().Where(q => q.RealtorId == realtorId).ToListAsync(ct);
+        var bidCounts = await LoadBidCountsByQuoteAsync(all.Select(q => q.Id).ToList(), ct);
+        foreach (var quote in all)
+        {
+            ApplyBidCountsToQuote(quote, bidCounts);
+        }
+
+        var requested = all.Count(q => q.ProviderQuotesReceived == 0 && q.Status == "Pending");
+        var received = all.Count(q => q.ProviderQuotesReceived > 0 && q.Status != "Accepted");
+        var compare = all.Count(q => q.Status == "Compare");
+        var selected = all.Count(q => q.Status == "Accepted");
+        var urgent = all.Count(q => q.Status == "Pending" &&
+                                    q.RequestedUtc <= DateTime.UtcNow.AddDays(-4));
+
+        return
+        [
+            new() { Label = "Requested", Count = requested, Icon = "fa-file-lines", ColorClass = "blue" },
+            new() { Label = "Received", Count = received, Icon = "fa-dollar-sign", ColorClass = "teal" },
+            new() { Label = "Compare", Count = compare, Icon = "fa-people-arrows", ColorClass = "purple" },
+            new() { Label = "Selected", Count = selected, Icon = "fa-circle-check", ColorClass = "blue" },
+            new() { Label = "Urgent", Count = urgent, Icon = "fa-triangle-exclamation", ColorClass = "red" }
+        ];
+    }
+
+    private async Task<List<RealtorInsightViewModel>> BuildHomeInsightsAsync(int realtorId, CancellationToken ct)
+    {
+        var inspectionReady = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.RepairItemsCount > 0, ct);
+        var followUp = await db.IndorRealtorClients.AsNoTracking()
+            .CountAsync(c => c.RealtorId == realtorId && c.StatusSummary != null && c.StatusSummary.Contains("pending"), ct);
+        var needsSelection = await db.IndorRealtorQuotes.AsNoTracking()
+            .CountAsync(q => q.RealtorId == realtorId && q.Status == "Compare", ct);
+
+        var insights = new List<RealtorInsightViewModel>();
+        if (inspectionReady > 0)
+        {
+            insights.Add(new()
+            {
+                Text = $"{inspectionReady} inspection report{(inspectionReady == 1 ? "" : "s")} ready for review",
+                Icon = "fa-file-circle-check",
+                ColorClass = "teal"
+            });
+        }
+
+        if (followUp > 0)
+        {
+            insights.Add(new()
+            {
+                Text = $"{followUp} file{(followUp == 1 ? "" : "s")} need client follow-up",
+                Icon = "fa-user-clock",
+                ColorClass = "blue"
+            });
+        }
+
+        if (needsSelection > 0)
+        {
+            insights.Add(new()
+            {
+                Text = $"{needsSelection} quote request{(needsSelection == 1 ? "" : "s")} need provider selection",
+                Icon = "fa-hand-pointer",
+                ColorClass = "orange"
+            });
+        }
+
+        if (insights.Count == 0)
+        {
+            insights.Add(new()
+            {
+                Text = "You're all caught up — no urgent tasks right now",
+                Icon = "fa-circle-check",
+                ColorClass = "teal"
+            });
+        }
+
+        return insights;
+    }
+
+    private async Task<List<RealtorInsightViewModel>> BuildFileInsightsAsync(int realtorId, CancellationToken ct)
+    {
+        var readyParse = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.FilePhase == "Repair Review", ct);
+        var needQuotes = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.RepairItemsCount > 0 && p.QuotesReceivedCount == 0, ct);
+
+        var insights = new List<RealtorInsightViewModel>();
+        if (readyParse > 0)
+        {
+            insights.Add(new()
+            {
+                Text = $"{readyParse} report{(readyParse == 1 ? "" : "s")} ready for parsing",
+                Icon = "fa-wand-magic-sparkles",
+                ColorClass = "teal"
+            });
+        }
+
+        if (needQuotes > 0)
+        {
+            insights.Add(new()
+            {
+                Text = $"{needQuotes} file{(needQuotes == 1 ? "" : "s")} need contractor selection",
+                Icon = "fa-hard-hat",
+                ColorClass = "orange"
+            });
+        }
+
+        return insights;
+    }
+
+    private static List<RealtorNextStepViewModel> BuildClientNextSteps(
+        int pendingInvites, List<IndorRealtorClient> clients, Dictionary<string, int> quoteCounts)
+    {
+        var steps = new List<RealtorNextStepViewModel>();
+        if (pendingInvites > 0)
+        {
+            steps.Add(new()
+            {
+                Text = $"{pendingInvites} client{(pendingInvites == 1 ? "" : "s")} need invitations",
+                Icon = "fa-user-plus",
+                ColorClass = "blue",
+                Url = "/RealtorInviteClient/ClientInfo"
+            });
+        }
+
+        var pendingQuotes = clients.Count(c =>
+            c.StatusSummary != null && c.StatusSummary.Contains("quote", StringComparison.OrdinalIgnoreCase));
+        if (pendingQuotes > 0)
+        {
+            steps.Add(new()
+            {
+                Text = $"{pendingQuotes} client{(pendingQuotes == 1 ? "" : "s")} have pending quotes",
+                Icon = "fa-file-invoice-dollar",
+                ColorClass = "purple",
+                Url = "/Realtor/Quotes"
+            });
+        }
+
+        return steps;
+    }
+
+    private static List<RealtorNextStepViewModel> BuildQuoteAlerts(List<RealtorStatItemViewModel> stats)
+    {
+        var alerts = new List<RealtorNextStepViewModel>();
+        var compare = stats.FirstOrDefault(s => s.Label == "Compare");
+        var urgent = stats.FirstOrDefault(s => s.Label == "Urgent");
+        var selected = stats.FirstOrDefault(s => s.Label == "Selected");
+
+        if (compare?.Count > 0)
+        {
+            alerts.Add(new()
+            {
+                Text = $"{compare.Count} quote{(compare.Count == 1 ? "" : "s")} need review today",
+                Icon = "fa-clock",
+                ColorClass = "orange"
+            });
+        }
+
+        if (urgent?.Count > 0)
+        {
+            alerts.Add(new()
+            {
+                Text = $"{urgent.Count} urgent request{(urgent.Count == 1 ? "" : "s")} need provider",
+                Icon = "fa-triangle-exclamation",
+                ColorClass = "red"
+            });
+        }
+
+        if (selected?.Count > 0)
+        {
+            alerts.Add(new()
+            {
+                Text = $"{selected.Count} selected quote{(selected.Count == 1 ? "" : "s")} ready to share",
+                Icon = "fa-circle-check",
+                ColorClass = "teal"
+            });
+        }
+
+        return alerts;
+    }
+
     private static string NormalizeClientFilter(string? filter) =>
         filter switch
         {
-            "Buyers" or "Sellers" or "Homeowners" or "Pending" => filter,
+            "Buyers" or "Sellers" or "Homeowners" or "Invited" => filter,
             _ => "All"
         };
 
     private static string NormalizeFileFilter(string? filter) =>
         filter switch
         {
-            "All" or "Active" or "Pre-Closing" or "Repair Review" or "Transfer" or "Archived" => filter,
-            _ => "Active"
+            "All" or "Active" or "Inspection" or "Quotes" or "Shared" or "Closed" => filter,
+            _ => "All"
         };
 
     private static string NormalizeQuoteFilter(string? filter) =>
         filter switch
         {
-            "All" or "Pending" or "Received" or "Compare" or "Accepted" or "Expired" => filter,
-            _ => "Pending"
+            "All" or "Requested" or "Received" or "Compare" or "Selected" or "Urgent" => filter,
+            _ => "All"
+        };
+
+    private static string MapQuoteFilterToStatus(string filter) =>
+        filter switch
+        {
+            "Requested" => "Pending",
+            "Received" => "Received",
+            "Compare" => "Compare",
+            "Selected" => "Accepted",
+            _ => filter
         };
 
     private static RealtorPropertyFileCardViewModel MapPropertyCard(IndorRealtorPropertyFile file)
     {
-        var specs = new List<string>();
-        if (file.Beds.HasValue) specs.Add($"{file.Beds} bed");
-        if (file.Baths.HasValue) specs.Add($"{file.Baths:0.#} bath");
-        if (file.SqFt.HasValue) specs.Add($"{file.SqFt:N0} sq ft");
+        var (badge, css) = DeriveFileStatus(file);
+        var (actionLabel, _) = DeriveFileAction(file);
 
         return new RealtorPropertyFileCardViewModel
         {
             Id = file.Id,
             Title = file.Title,
+            StreetAddress = file.Address,
+            CityRegion = file.CityRegion ?? "",
             Address = string.IsNullOrWhiteSpace(file.CityRegion)
                 ? file.Address
                 : $"{file.Address}, {file.CityRegion}",
-            SpecsLabel = string.Join(" · ", specs),
+            ClientName = file.ClientName ?? "",
+            SpecsLabel = BuildSpecsLabel(file),
             PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
-            StatusLabel = file.Status
+            StatusLabel = badge,
+            StatusCss = css,
+            ActionLabel = actionLabel,
+            ActionUrl = DeriveFileActionUrl(file, actionLabel)
         };
     }
 
-    private static RealtorQuoteCardViewModel MapQuoteCard(IndorRealtorQuote quote) =>
-        new()
+    private static RealtorQuoteCardViewModel MapQuoteCard(IndorRealtorQuote quote)
+    {
+        var (label, css) = DeriveQuoteStatus(quote);
+
+        return new RealtorQuoteCardViewModel
         {
             Id = quote.Id,
             QuoteCode = FormatQuoteCode(quote.QuoteCode),
+            StreetAddress = quote.Address,
+            CityRegion = "",
             Address = quote.Address,
+            ClientName = quote.ClientName ?? "",
             ServiceType = quote.ServiceType,
-            RequestedLabel = quote.RequestedUtc.ToLocalTime().ToString("MMM d, yyyy"),
-            StatusLabel = quote.Status
+            RequestedLabel = $"Requested: {quote.RequestedUtc.ToLocalTime():MMM d, yyyy}",
+            DueLabel = quote.ResponseDeadlineHours is > 0
+                ? $"Due: {quote.RequestedUtc.AddHours(quote.ResponseDeadlineHours.Value).ToLocalTime():MMM d, yyyy}"
+                : "",
+            StatusLabel = label,
+            StatusCss = css,
+            PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
+            ProviderQuotesReceived = quote.ProviderQuotesReceived,
+            ActionLabel = quote.Status == "Compare" ? "Compare Quotes" : "View Request",
+            ProviderInitials = DeriveProviderInitials(quote.ProviderQuotesReceived)
         };
+    }
 
-    private static RealtorSharedPackageCardViewModel MapPackageCard(IndorRealtorSharedPackage package) =>
-        new()
+    private static RealtorSharedPackageCardViewModel MapPackageCard(IndorRealtorSharedPackage package)
+    {
+        var isViewed = package.StatusLabel.Contains("view", StringComparison.OrdinalIgnoreCase);
+
+        return new RealtorSharedPackageCardViewModel
         {
             Id = package.Id,
             ClientName = package.ClientName,
             Address = package.Address,
-            SharedLabel = package.SharedUtc.ToLocalTime().ToString("MMM d, yyyy"),
-            StatusLabel = package.StatusLabel
+            PackageTitle = $"{package.Address} - Inspection Package",
+            SharedLabel = $"Shared {package.SharedUtc.ToLocalTime():MMM d, yyyy}",
+            StatusLabel = isViewed ? "Viewed" : "Pending",
+            StatusCss = isViewed ? "viewed" : "pending",
+            IconColor = isViewed ? "teal" : "purple",
+            ActionLabel = "Open Package"
         };
+    }
 
-    private static RealtorClientCardViewModel MapClient(IndorRealtorClient client) =>
-        new()
+    private static RealtorClientCardViewModel MapClient(
+        IndorRealtorClient client,
+        Dictionary<string, int> fileCounts,
+        Dictionary<string, int> quoteCounts)
+    {
+        var parts = client.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var initials = parts.Length >= 2
+            ? $"{parts[0][0]}{parts[^1][0]}"
+            : client.FullName.Length > 0 ? client.FullName[..1] : "?";
+
+        fileCounts.TryGetValue(client.FullName, out var files);
+        quoteCounts.TryGetValue(client.FullName, out var quotes);
+
+        var (badge, css, action) = DeriveClientStatus(client, files);
+
+        return new RealtorClientCardViewModel
         {
             Id = client.Id,
             FullName = client.FullName,
+            Initials = initials.ToUpperInvariant(),
             ClientRole = client.ClientRole,
             ProfileImageUrl = client.ProfileImageUrl,
             PropertyAddress = client.PropertyAddress,
             StatusSummary = client.StatusSummary ?? "",
-            LastActiveLabel = FormatRelativeTime(client.LastActiveUtc)
+            StatusBadge = badge,
+            StatusCss = css,
+            LastActiveLabel = FormatRelativeTime(client.LastActiveUtc),
+            FilesCount = files,
+            QuotesCount = quotes,
+            ActionLabel = action,
+            ActionUrl = files > 0 ? "/Realtor/Files" : "#"
         };
+    }
 
     private static RealtorInvitationCardViewModel MapInvitation(IndorRealtorInvitation inv)
     {
@@ -411,33 +1175,360 @@ public class RealtorPortalService(AppDbContext db)
         };
     }
 
-    private static RealtorFileCardViewModel MapFile(IndorRealtorPropertyFile file) =>
-        new()
+    private static RealtorFileCardViewModel MapFile(IndorRealtorPropertyFile file)
+    {
+        var (badge, css) = DeriveFileStatus(file);
+        var (actionLabel, detailNote) = DeriveFileAction(file);
+
+        return new RealtorFileCardViewModel
         {
             Id = file.Id,
+            FileCode = $"PF-{file.Id}",
             Address = file.Address,
             CityRegion = file.CityRegion ?? "",
             PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
             FilePhase = file.FilePhase ?? file.Status,
+            StatusBadge = badge,
+            StatusCss = css,
             ClientName = file.ClientName ?? "",
             RepairItemsCount = file.RepairItemsCount,
             QuotesReceivedCount = file.QuotesReceivedCount,
-            UpdatedLabel = FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)
+            UpdatedLabel = $"Last updated {FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)}",
+            ActionLabel = actionLabel,
+            ActionUrl = DeriveFileActionUrl(file, actionLabel),
+            DetailNote = detailNote
+        };
+    }
+
+    private RealtorOpenQuoteCardViewModel MapOpenQuote(IndorRealtorQuote quote)
+    {
+        var (label, css) = DeriveQuoteStatus(quote);
+        var isUrgent = quote.Status == "Pending" && quote.RequestedUtc <= DateTime.UtcNow.AddDays(-4);
+        var providerSummary = quote.ProviderQuotesReceived switch
+        {
+            0 => "0 quotes yet",
+            1 => "1 provider quote received",
+            _ => $"{quote.ProviderQuotesReceived} provider quotes received"
         };
 
-    private static RealtorOpenQuoteCardViewModel MapOpenQuote(IndorRealtorQuote quote) =>
-        new()
+        string actionLabel;
+        string? secondaryLabel = null;
+        string? secondaryUrl = null;
+
+        if (quote.Status == "Accepted")
+        {
+            actionLabel = "View Selected Quote";
+        }
+        else if (quote.ProviderQuotesReceived >= 2 || quote.Status == "Compare")
+        {
+            actionLabel = "Compare Quotes";
+        }
+        else if (quote.ProviderQuotesReceived == 1)
+        {
+            actionLabel = "View Quote";
+            secondaryLabel = "Request Another Quote";
+            secondaryUrl = BuildInviteProvidersUrl(quote);
+        }
+        else if (isUrgent)
+        {
+            actionLabel = "Invite Providers";
+        }
+        else
+        {
+            actionLabel = "View Request";
+        }
+
+        string priceLabel = "";
+        if (quote.Status == "Accepted" && quote.Amount.HasValue && quote.Amount > 0)
+        {
+            priceLabel = $"Total {quote.Amount.Value:C0}";
+        }
+        else if (quote.ProviderQuotesReceived > 1 && quote.Amount.HasValue && quote.Amount > 0)
+        {
+            priceLabel = $"Starting at {quote.Amount.Value:C0}";
+        }
+        else if (quote.ProviderQuotesReceived == 1 && quote.Amount.HasValue && quote.Amount > 0)
+        {
+            priceLabel = quote.Amount.Value.ToString("C0");
+        }
+
+        return new RealtorOpenQuoteCardViewModel
         {
             Id = quote.Id,
             QuoteCode = FormatQuoteCode(quote.QuoteCode),
+            StreetAddress = quote.Address,
+            CityRegion = "",
             Address = quote.Address,
             ClientName = quote.ClientName ?? "",
             ServiceType = quote.ServiceType,
-            StatusLabel = quote.Status,
+            StatusLabel = quote.Status == "Accepted"
+                ? "Quote Selected"
+                : isUrgent && quote.ProviderQuotesReceived == 0 ? "Urgent" : label,
+            StatusCss = quote.Status == "Accepted" ? "selected" : isUrgent && quote.ProviderQuotesReceived == 0 ? "urgent" : css,
             PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
             FooterNote = quote.FooterNote ?? DefaultQuoteFooter(quote),
-            UpdatedLabel = FormatRelativeTime(quote.UpdatedUtc ?? quote.RequestedUtc)
+            UpdatedLabel = FormatRelativeTime(quote.UpdatedUtc ?? quote.RequestedUtc),
+            RequestedLabel = $"Requested {quote.RequestedUtc.ToLocalTime():MMM d, yyyy}",
+            ProviderQuotesReceived = quote.ProviderQuotesReceived,
+            ProviderSummary = providerSummary,
+            ProviderInitials = "",
+            ActionLabel = actionLabel,
+            SecondaryActionLabel = secondaryLabel,
+            SecondaryActionUrl = secondaryUrl,
+            IsUrgent = isUrgent,
+            PriceRangeLabel = priceLabel,
+            ActionUrl = ResolveQuoteFlowUrl(quote) ?? $"/Realtor/QuoteDetail/{quote.Id}"
         };
+    }
+
+    private static string BuildSpecsLabel(IndorRealtorPropertyFile file)
+    {
+        var specs = new List<string>();
+        if (file.Beds.HasValue) specs.Add($"{file.Beds} bed");
+        if (file.Baths.HasValue) specs.Add($"{file.Baths:0.#} bath");
+        if (file.SqFt.HasValue) specs.Add($"{file.SqFt:N0} sq ft");
+        return string.Join(" · ", specs);
+    }
+
+    private static (string Badge, string Css) DeriveFileStatus(IndorRealtorPropertyFile file)
+    {
+        if (file.FilePhase == "Transfer")
+            return ("Shared Package", "shared");
+        if (file.QuotesReceivedCount > 0)
+            return ("Quotes Pending", "quotes");
+        if (file.RepairItemsCount > 0 || file.FilePhase == "Repair Review")
+            return ("Inspection Uploaded", "inspection");
+        if (file.Status == "Archived")
+            return ("Closed", "closed");
+        return ("Active", "active");
+    }
+
+    private static (string Action, string Detail) DeriveFileAction(IndorRealtorPropertyFile file)
+    {
+        if (file.FilePhase == "Transfer")
+            return ("View Package", "Shared with client");
+        if (file.RepairItemsCount > 0 && file.QuotesReceivedCount == 0)
+            return ("Request Quotes", $"Repair items: {file.RepairItemsCount}");
+        if (file.RepairItemsCount == 0 && file.FilePhase == "Pre-Closing")
+            return ("Upload Report", "Awaiting inspection report");
+        if (file.QuotesReceivedCount > 0)
+            return ("Open File", $"Quotes received: {file.QuotesReceivedCount}");
+        return ("Open File", file.RepairItemsCount > 0 ? $"Repair items: {file.RepairItemsCount}" : "");
+    }
+
+    private static string DeriveFileActionUrl(IndorRealtorPropertyFile file, string actionLabel)
+    {
+        var id = file.Id;
+        return actionLabel switch
+        {
+            "Request Quotes" => $"/RealtorQuoteRequest/Start?propertyFileId={id}",
+            "Upload Report" => $"/RealtorInspectionUpload/Upload?propertyFileId={id}",
+            "View Package" => $"/RealtorPropertyFile/View?id={id}",
+            _ => $"/RealtorPropertyFile/View?id={id}"
+        };
+    }
+
+    private static (string Label, string Css) DeriveQuoteStatus(IndorRealtorQuote quote) =>
+        quote.Status switch
+        {
+            "Compare" => ($"{quote.ProviderQuotesReceived} Quotes Received", "compare"),
+            "Accepted" => ("Quote Selected", "selected"),
+            "Received" => ($"{quote.ProviderQuotesReceived} Quote{(quote.ProviderQuotesReceived == 1 ? "" : "s")} Received", "received"),
+            _ when quote.ProviderQuotesReceived >= 2 => ($"{quote.ProviderQuotesReceived} Quotes Received", "received"),
+            _ when quote.ProviderQuotesReceived == 1 => ("1 Quote Received", "received"),
+            _ => ("Waiting for Providers", "pending")
+        };
+
+    private async Task<IndorRealtorQuote?> LoadOwnedQuoteAsync(int realtorId, int quoteId, CancellationToken ct) =>
+        await db.IndorRealtorQuotes.AsNoTracking()
+            .FirstOrDefaultAsync(q => q.Id == quoteId && q.RealtorId == realtorId, ct);
+
+    private async Task<List<RealtorQuoteRequestedServiceViewModel>> LoadRequestedServicesAsync(
+        int? propertyFileId, string serviceType, CancellationToken ct)
+    {
+        if (propertyFileId is not > 0)
+        {
+            return [];
+        }
+
+        var items = await db.IndorRealtorPropertyFileItems.AsNoTracking()
+            .Where(i => i.PropertyFileId == propertyFileId
+                        && i.CategoryType == RealtorPropertyFileCategoryTypes.RepairItems)
+            .OrderBy(i => i.UploadedUtc)
+            .Take(8)
+            .ToListAsync(ct);
+
+        return items.Select((item, index) => new RealtorQuoteRequestedServiceViewModel
+        {
+            SortOrder = index + 1,
+            Title = item.ItemLabel,
+            Icon = DeriveServiceIcon(serviceType, item.ItemLabel)
+        }).ToList();
+    }
+
+    private async Task<(string ScopeOfWork, string Timeline, string Warranty, List<string> IncludedRepairs, List<RealtorQuotePriceLineViewModel> PriceLines)>
+        LoadBidEstimateDetailsAsync(IndorRealtorQuoteBid bid, CancellationToken ct)
+    {
+        if (bid.EstimateId is > 0)
+        {
+            var estimate = await db.IndorProveedorEstimates.AsNoTracking()
+                .FirstOrDefaultAsync(e => e.Id == bid.EstimateId, ct);
+
+            if (estimate != null)
+            {
+                var repairs = ParseScopeLabels(estimate.ScopeItemsJson);
+                var serviceCall = Math.Max(0m, estimate.Amount - estimate.LaborAmount - estimate.MaterialsAmount);
+                var priceLines = new List<RealtorQuotePriceLineViewModel>
+                {
+                    new() { Label = "Labor", AmountLabel = estimate.LaborAmount.ToString("C2") },
+                    new() { Label = "Materials", AmountLabel = estimate.MaterialsAmount.ToString("C2") }
+                };
+
+                if (serviceCall > 0)
+                {
+                    priceLines.Add(new() { Label = "Service Call", AmountLabel = serviceCall.ToString("C2") });
+                }
+
+                var scope = !string.IsNullOrWhiteSpace(estimate.HomeownerNotes)
+                    ? estimate.HomeownerNotes
+                    : repairs.Count > 0
+                        ? string.Join(" ", repairs)
+                        : $"Professional {estimate.ServiceType ?? "repair"} services for the requested property.";
+
+                return (
+                    scope,
+                    estimate.Timeline ?? estimate.EstimatedDuration ?? "1–2 days",
+                    estimate.LaborWarranty ?? estimate.Warranty ?? "90 days labor",
+                    repairs,
+                    priceLines);
+            }
+        }
+
+        return (
+            $"Complete {bid.ProviderName} scope for the requested repairs at this property.",
+            "1–2 days",
+            "90 days labor",
+            [],
+            [
+                new() { Label = "Total Quote", AmountLabel = bid.Amount.ToString("C2") }
+            ]);
+    }
+
+    private static List<string> ParseScopeLabels(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.ValueKind != JsonValueKind.Array)
+            {
+                return [];
+            }
+
+            var labels = new List<string>();
+            foreach (var node in doc.RootElement.EnumerateArray())
+            {
+                var label = node.TryGetProperty("label", out var l) ? l.GetString()
+                    : node.TryGetProperty("Label", out var l2) ? l2.GetString()
+                    : null;
+                if (!string.IsNullOrWhiteSpace(label))
+                {
+                    labels.Add(label);
+                }
+            }
+
+            return labels;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static string BuildInviteProvidersUrl(IndorRealtorQuote quote) =>
+        quote.PropertyFileId is > 0
+            ? $"/RealtorQuoteRequest/Start?propertyFileId={quote.PropertyFileId}"
+            : "/RealtorQuoteRequest/Property";
+
+    private static string DeriveInitialsFromName(string name)
+    {
+        var parts = name.Split([' ', '-'], StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length >= 2)
+        {
+            return $"{parts[0][0]}{parts[1][0]}".ToUpperInvariant();
+        }
+
+        return name.Length >= 2 ? name[..2].ToUpperInvariant() : name.ToUpperInvariant();
+    }
+
+    private static int DeriveReviewCount(decimal rating) =>
+        (int)Math.Round(rating * 26.5m, MidpointRounding.AwayFromZero);
+
+    private static string DeriveServiceIcon(string serviceType, string itemLabel)
+    {
+        var text = $"{serviceType} {itemLabel}".ToLowerInvariant();
+        if (text.Contains("smoke") || text.Contains("alarm"))
+        {
+            return "fa-bell";
+        }
+
+        if (text.Contains("wiring") || text.Contains("electrical") || text.Contains("gfci") || text.Contains("receptacle"))
+        {
+            return "fa-plug";
+        }
+
+        if (text.Contains("plumb") || text.Contains("disposal") || text.Contains("faucet"))
+        {
+            return "fa-faucet-drip";
+        }
+
+        if (text.Contains("roof"))
+        {
+            return "fa-house-chimney";
+        }
+
+        return "fa-wrench";
+    }
+
+    private static string BuildTimelineRange(IReadOnlyList<string> timelines)
+    {
+        if (timelines.Count == 0)
+        {
+            return "—";
+        }
+
+        var days = timelines
+            .SelectMany(t => System.Text.RegularExpressions.Regex.Matches(t, @"\d+").Select(m => int.Parse(m.Value)))
+            .ToList();
+
+        if (days.Count >= 2)
+        {
+            return $"{days.Min()} – {days.Max()} days";
+        }
+
+        return timelines[0];
+    }
+
+    private static (string Badge, string Css, string Action) DeriveClientStatus(IndorRealtorClient client, int files)
+    {
+        if (client.StatusSummary != null && client.StatusSummary.Contains("quote", StringComparison.OrdinalIgnoreCase))
+            return ("Active File", "active-file", "Open File");
+        if (client.StatusSummary != null && client.StatusSummary.Contains("progress", StringComparison.OrdinalIgnoreCase))
+            return ("Connected", "connected", "Open Client");
+        if (files == 0)
+            return ("Needs File", "needs-file", "Open Client");
+        return ("Connected", "connected", "Open Client");
+    }
+
+    private static List<string> DeriveProviderInitials(int count)
+    {
+        var names = new[] { "SH", "PM", "CA", "HV", "EC" };
+        return names.Take(Math.Min(count, 4)).ToList();
+    }
 
     private static RealtorActivityItemViewModel MapActivity(IndorRealtorActivity activity) =>
         new()

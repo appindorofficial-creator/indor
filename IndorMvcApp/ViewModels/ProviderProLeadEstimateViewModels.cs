@@ -10,6 +10,8 @@ public class ProviderProEstimateLineItemViewModel
     public decimal Qty { get; set; } = 1;
     public string Unit { get; set; } = "ls";
     public decimal UnitPrice { get; set; }
+    public decimal LaborAmount { get; set; }
+    public decimal MaterialAmount { get; set; }
     public decimal Amount { get; set; }
     public bool IsTaxable { get; set; } = true;
 }
@@ -185,6 +187,38 @@ public class ProviderProQuickEstimateViewModel : ProviderProPageBaseViewModel
 
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
 
+    public int StepNumber { get; set; } = 4;
+
+    public int TotalSteps { get; set; } = 5;
+
+    public string StatusClass { get; set; } = "needs-review";
+
+    public string ServiceIcon { get; set; } = "fa-wrench";
+
+    public string ServiceTone { get; set; } = "blue";
+
+    public string Title { get; set; } = "";
+
+    public string DateLabel { get; set; } = "";
+
+    public int PhotoCount { get; set; }
+
+    public int VoiceTranscriptCount { get; set; }
+
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
+
+    public string LeadCode { get; set; } = "";
+
+    public string? ProblemDescription { get; set; }
+
+    public string? InspectionReportUrl { get; set; }
+
+    public string? SourceBadge { get; set; }
+
+    public List<ProviderInspectionFindingItemViewModel> InspectionFindings { get; set; } = [];
+
+    public List<string> PhotoUrls { get; set; } = [];
+
 }
 
 
@@ -265,6 +299,28 @@ public class ProviderProReviewEstimateViewModel : ProviderProPageBaseViewModel
 
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
 
+    public int StepNumber { get; set; } = 3;
+
+    public int TotalSteps { get; set; } = 5;
+
+    public string Title { get; set; } = "";
+
+    public string StatusLabel { get; set; } = "";
+
+    public string StatusClass { get; set; } = "needs-review";
+
+    public string DateLabel { get; set; } = "";
+
+    public string ServiceIcon { get; set; } = "fa-wrench";
+
+    public string ServiceTone { get; set; } = "blue";
+
+    public List<string> ScopeSummaryLines { get; set; } = [];
+
+    public List<string> AiRecommendations { get; set; } = [];
+
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
+
 }
 
 
@@ -283,9 +339,21 @@ public class ProviderProPendingEstimatesPageViewModel : ProviderProPageBaseViewM
 
     public int SentCount { get; set; }
 
+    public int PendingCount { get; set; }
+
+    public int AiDraftCount { get; set; }
+
+    public int NeedsReviewCount { get; set; }
+
+    public int StepNumber { get; set; } = 2;
+
+    public int TotalSteps { get; set; } = 5;
+
     public List<ProviderProPendingEstimateCardViewModel> Estimates { get; set; } = [];
 
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
 
 }
 
@@ -299,6 +367,10 @@ public class ProviderProPendingEstimateCardViewModel
 
     public string EstimateCode { get; set; } = "";
 
+    public string Title { get; set; } = "";
+
+    public string CustomerName { get; set; } = "";
+
     public string Address { get; set; } = "";
 
     public string? ServiceType { get; set; }
@@ -306,6 +378,12 @@ public class ProviderProPendingEstimateCardViewModel
     public string Status { get; set; } = "";
 
     public string StatusClass { get; set; } = "draft";
+
+    public string FilterKey { get; set; } = "";
+
+    public string ServiceIcon { get; set; } = "fa-wrench";
+
+    public string ServiceTone { get; set; } = "blue";
 
     public string DateLabel { get; set; } = "";
 
@@ -373,6 +451,15 @@ public class ProviderProEstimateTrackingStepViewModel
 
 
 
+public class ProviderProCreateInvoiceInput
+{
+    public int EstimateId { get; set; }
+    public string PaymentTerms { get; set; } = "Due at completion";
+    public bool IncludeServiceCall { get; set; }
+    public decimal ServiceCallAmount { get; set; }
+    public bool GoToReview { get; set; }
+}
+
 public class ProviderProQuickEstimateInput
 
 {
@@ -409,9 +496,23 @@ public class ProviderProQuickEstimateInput
 
     public List<decimal> ScopeAmounts { get; set; } = [];
 
+    public List<decimal> ScopeQtys { get; set; } = [];
+
+    public List<decimal> ScopeUnitPrices { get; set; } = [];
+
+    public List<decimal> ScopeLaborAmounts { get; set; } = [];
+
+    public List<decimal> ScopeMaterialAmounts { get; set; } = [];
+
+    public decimal ServiceCallAmount { get; set; }
+
+    public bool IncludeServiceCall { get; set; }
+
     public bool SaveAsDraft { get; set; }
 
     public bool GoToReview { get; set; }
+
+    public bool GoToSend { get; set; }
 
 }
 
@@ -455,10 +556,36 @@ public class ProviderProCreateEstimatePricingInput
 public class ProviderProSendEstimateInput
 {
     public int EstimateId { get; set; }
-    public string DeliveryMethod { get; set; } = "Email";
+    public string DeliveryMethod { get; set; } = "indor";
+    public string CustomerMessage { get; set; } = "";
+    public string PostSendAction { get; set; } = "wait_approval";
     public bool NotifyHomeowner { get; set; } = true;
     public bool SaveCopyToLeads { get; set; } = true;
     public bool SaveAsDraft { get; set; }
+}
+
+public class ProviderProSendEstimatePageViewModel : ProviderProPageBaseViewModel
+{
+    public int StepNumber { get; set; } = 5;
+    public int TotalSteps { get; set; } = 5;
+    public int EstimateId { get; set; }
+    public string Title { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string DateLabel { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public string ServiceIcon { get; set; } = "fa-wrench";
+    public string ServiceTone { get; set; } = "blue";
+    public string StatusLabel { get; set; } = "";
+    public string StatusClass { get; set; } = "needs-review";
+    public decimal TotalAmount { get; set; }
+    public string CustomerMessage { get; set; } = "";
+    public string DeliveryMethod { get; set; } = "indor";
+    public string PostSendAction { get; set; } = "wait_approval";
+    public bool HasEstimatePdf { get; set; } = true;
+    public bool HasAiSummary { get; set; } = true;
+    public bool HasVoiceTranscript { get; set; }
+    public List<ProviderProWizardStepViewModel> WizardSteps { get; set; } = [];
 }
 
 

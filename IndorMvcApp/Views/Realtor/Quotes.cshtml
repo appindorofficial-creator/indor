@@ -1,107 +1,200 @@
 @model IndorMvcApp.ViewModels.RealtorQuotesViewModel
+
 @{
+
     ViewData["Title"] = "Quotes";
+
     Layout = "_RealtorLayout";
+
     ViewBag.NavActive = "quotes";
+
 }
 
+
+
 <div class="rl-dash-shell">
+
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <h1 class="rl-page-title">Quotes</h1>
+
+
+    <div class="rl-page-header">
+
+        <div>
+
+            <h1 class="rl-page-title">Quotes</h1>
+
+            <p class="rl-page-subtitle">Request, compare, and select service quotes.</p>
+
+        </div>
+
+        <a asp-controller="RealtorQuoteRequest" asp-action="Property" class="rl-btn-primary rl-btn-primary--sm">
+
+            <i class="fas fa-plus"></i> Request Quote
+
+        </a>
+
+    </div>
+
+
 
     <form asp-action="Quotes" method="get" class="rl-search-form">
-        <div class="rl-search-bar">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search quote, property, client, or provider" />
+
+        <div class="rl-search-row">
+
+            <div class="rl-search-bar">
+
+                <i class="fas fa-magnifying-glass"></i>
+
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search quotes by address, client or provider..." />
+
+            </div>
+
+            <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
+
         </div>
+
         <div class="rl-filter-chips">
+
             @foreach (var chip in Model.Filters)
+
             {
+
                 <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+
                    class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+
             }
+
         </div>
+
     </form>
 
-    <a asp-controller="RealtorQuoteRequest" asp-action="Property" class="rl-action-card">
-        <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
-        <div>
-            <strong>+ Request Quote</strong>
-            <span>Send a quote request to service providers.</span>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-    </a>
+
+
+    @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
+
+
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Open Quotes</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
+
         @if (Model.OpenQuotes.Count == 0)
+
         {
+
             <div class="rl-dash-empty">No quotes match your filters.</div>
+
         }
+
         else
+
         {
+
             @foreach (var quote in Model.OpenQuotes)
+
             {
-                <article class="rl-open-quote-card">
+
+                <article class="rl-quote-card-v2">
+
                     <img src="@quote.PhotoUrl" alt="" />
-                    <div>
-                        <div class="rl-open-quote-top">
-                            <strong>@quote.QuoteCode</strong>
-                            <span class="rl-status-badge rl-status-badge--@quote.StatusLabel.ToLowerInvariant()">@quote.StatusLabel</span>
+
+                    <div class="rl-quote-card-body">
+
+                        <div class="rl-quote-card-top">
+
+                            <div class="rl-quote-card-title">
+
+                                <strong>@quote.StreetAddress</strong>
+
+                                <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
+
+                            </div>
+
+                            <button type="button" class="rl-card-menu" aria-label="Options"><i class="fas fa-ellipsis-vertical"></i></button>
+
                         </div>
-                        <a href="#" class="rl-quote-addr">@quote.Address</a>
-                        @if (!string.IsNullOrWhiteSpace(quote.ClientName))
+
+                        <span class="rl-premium-muted"><i class="fas fa-calendar"></i> @quote.RequestedLabel</span>
+
+                        @if (!string.IsNullOrWhiteSpace(quote.ProviderSummary))
+
                         {
-                            <span>Client: @quote.ClientName</span>
+
+                            <div class="rl-quote-provider-row">
+
+                                @if (!string.IsNullOrWhiteSpace(quote.ProviderInitials))
+
+                                {
+
+                                    <span class="rl-provider-avatar rl-provider-avatar--sm">@quote.ProviderInitials</span>
+
+                                }
+
+                                <span class="rl-premium-muted">@quote.ProviderSummary</span>
+
+                            </div>
+
                         }
-                        <span>Service: @quote.ServiceType</span>
-                        <span class="rl-open-quote-footer">
-                            <span><i class="fas fa-file-invoice"></i> @quote.FooterNote</span>
-                            <span>Updated @quote.UpdatedLabel</span>
-                        </span>
+
+                        @if (!string.IsNullOrWhiteSpace(quote.PriceRangeLabel))
+
+                        {
+
+                            <span class="rl-quote-price">@quote.PriceRangeLabel</span>
+
+                        }
+
+                        <div class="rl-quote-card-foot">
+
+                            <a href="@quote.ActionUrl" class="ob-btn ob-btn-primary rl-quote-primary-btn">@quote.ActionLabel</a>
+
+                            @if (!string.IsNullOrWhiteSpace(quote.SecondaryActionLabel))
+
+                            {
+
+                                <a href="@quote.SecondaryActionUrl" class="rl-quote-secondary-link">@quote.SecondaryActionLabel</a>
+
+                            }
+
+                        </div>
+
                     </div>
+
                 </article>
+
             }
+
         }
+
     </section>
 
-    @if (Model.CompareQuotes != null)
+
+
+    @if (Model.Alerts.Count > 0)
+
     {
-        <section class="rl-dash-section">
-            <div class="rl-dash-section-head">
-                <h2>Compare Quotes</h2>
-                <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-            </div>
-            <div class="rl-compare-card">
-                <strong>@Model.CompareQuotes.Address</strong>
-                <span>@Model.CompareQuotes.ServiceType</span>
-                <div class="rl-compare-bids">
-                    @foreach (var bid in Model.CompareQuotes.Bids)
-                    {
-                        <div class="rl-compare-bid">
-                            <span>@bid.ProviderName</span>
-                            <strong>@bid.AmountLabel</strong>
-                            <span><i class="fas fa-star"></i> @bid.Rating.ToString("0.0")</span>
-                        </div>
-                    }
-                </div>
-                <a href="#" class="ob-btn ob-btn-primary rl-compare-btn">Compare Now</a>
-            </div>
+
+        <section class="rl-alert-stack">
+
+            @foreach (var alert in Model.Alerts)
+
+            {
+
+                <a href="@(alert.Url ?? "#")" class="rl-alert-banner rl-alert-banner--@alert.ColorClass">
+
+                    <span class="rl-alert-icon"><i class="fas @alert.Icon"></i></span>
+
+                    <span>@alert.Text</span>
+
+                    <i class="fas fa-chevron-right"></i>
+
+                </a>
+
+            }
+
         </section>
+
     }
 
-    <section class="rl-dash-section">
-        <div class="rl-dash-section-head">
-            <h2>Recent Quote Activity</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
-        </div>
-        @foreach (var act in Model.RecentActivity)
-        {
-            @await Html.PartialAsync("_RealtorActivityItem", act)
-        }
-    </section>
 </div>
+

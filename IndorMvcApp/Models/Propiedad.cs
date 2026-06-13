@@ -32,6 +32,10 @@ public class Propiedad
     [MaxLength(500)]
     public string? AttomSyncError { get; set; }
 
+    public string? MantenimientoRecomendadoJson { get; set; }
+
+    public DateTime? MantenimientoRecomendadoUtc { get; set; }
+
     // Owner relationship
     [Required]
     public string UserId { get; set; } = string.Empty;

@@ -116,6 +116,34 @@
         bindSingle('[data-service]', 'data-service', document.getElementById('TipoServicio'));
         bindSingle('[data-freq]', 'data-freq', document.getElementById('Frecuencia'));
         bindSingle('[data-timing]', 'data-timing', document.getElementById('TimingPreferido'));
+
+        var form = document.getElementById('roof-schedule-form');
+        var requiredFields = [
+            { id: 'TipoServicio', message: 'Please choose a service.' },
+            { id: 'Frecuencia', message: 'Please select how often you\'d like a roof check.' },
+            { id: 'TimingPreferido', message: 'Please select your preferred timing.' }
+        ];
+
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') {
+                return;
+            }
+
+            var firstMissing = null;
+            requiredFields.forEach(function (field) {
+                var input = document.getElementById(field.id);
+                if (!input) return;
+                var empty = !input.value || !String(input.value).trim();
+                if (empty && !firstMissing) {
+                    firstMissing = field;
+                }
+            });
+
+            if (firstMissing) {
+                e.preventDefault();
+                alert(firstMissing.message);
+            }
+        });
     })();
 </script>
 </body>

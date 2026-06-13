@@ -175,6 +175,7 @@ public class MyHomeMaintenanceDetailViewModel
 {
     public int Id { get; set; }
     public int PropiedadId { get; set; }
+    public string? NavigationFrom { get; set; }
     public string Title { get; set; } = string.Empty;
     public DateTime? DueDate { get; set; }
     public DateTime? CompletedDate { get; set; }
@@ -225,6 +226,8 @@ public class MyHomeMaintenanceViewModel
     public int PropiedadId { get; set; }
     public string Address { get; set; } = string.Empty;
     public string Filter { get; set; } = "Upcoming";
+    public string BackUrl { get; set; } = "/";
+    public string? NavigationFrom { get; set; }
     public List<MyHomeMaintenanceItemViewModel> Items { get; set; } = new();
 }
 
@@ -241,6 +244,7 @@ public class MyHomeMaintenanceFormViewModel
 {
     public int? Id { get; set; }
     public int PropiedadId { get; set; }
+    public string? NavigationFrom { get; set; }
 
     [Required, MaxLength(150)]
     public string Title { get; set; } = string.Empty;

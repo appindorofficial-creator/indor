@@ -23,6 +23,10 @@
             <p>@Model.Address</p>
         </div>
         <p class="hvac-lead">@Model.OpenAiHintNote</p>
+        @if (TempData["HvacSetupError"] is string setupError)
+        {
+            <div class="hvac-alert" role="alert">@setupError</div>
+        }
 
         <form asp-action="Manual" method="post">
             <input type="hidden" asp-for="PropiedadId" />
@@ -48,8 +52,8 @@
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Model">Model</label>
-                    <input asp-for="Model" class="hvac-input" placeholder="Enter model" />
+                    <label class="hvac-label" asp-for="EquipmentModel">Model</label>
+                    <input asp-for="EquipmentModel" class="hvac-input" placeholder="Enter model" />
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">

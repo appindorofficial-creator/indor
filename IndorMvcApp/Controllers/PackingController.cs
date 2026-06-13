@@ -49,6 +49,11 @@ public class PackingController : Controller
         var userId = RequireUserId();
         if (userId == null) return Challenge();
 
+        if (string.IsNullOrWhiteSpace(model.BestForSelection))
+        {
+            model.BestForSelection = "MoveOut";
+        }
+
         try
         {
             var propiedadId = await GetLatestPropertyIdAsync(userId);
@@ -97,17 +102,19 @@ public class PackingController : Controller
                 .FirstOrDefaultAsync();
         }
 
+        var aboutComplete = HasCompletedAbout(solicitud);
+
         return View(new PackingAboutViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = defaultAddress ?? string.Empty,
-            TipoEmpaque = solicitud.TipoEmpaque ?? "PartialPacking",
-            CuandoMudanza = solicitud.CuandoMudanza ?? "ThisWeek",
-            TipoPropiedad = solicitud.TipoPropiedad ?? "Apartment",
-            TamanoHogar = solicitud.TamanoHogar ?? "ThreeFourRooms",
-            FechaServicio = solicitud.FechaServicio ?? DateTime.Today.AddDays(7)
+            TipoEmpaque = aboutComplete ? solicitud.TipoEmpaque ?? string.Empty : string.Empty,
+            CuandoMudanza = aboutComplete ? solicitud.CuandoMudanza ?? string.Empty : string.Empty,
+            TipoPropiedad = aboutComplete ? solicitud.TipoPropiedad ?? string.Empty : string.Empty,
+            TamanoHogar = aboutComplete ? solicitud.TamanoHogar ?? string.Empty : string.Empty,
+            FechaServicio = aboutComplete ? solicitud.FechaServicio : null
         });
     }
 
@@ -466,6 +473,11 @@ public class PackingController : Controller
 
         return solicitud;
     }
+
+    private static bool HasCompletedAbout(SolicitudPacking solicitud) =>
+        string.Equals(solicitud.Estado, "AboutCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
 
     private async Task<SolicitudPacking?> LoadSolicitudForUserAsync(int id, bool includeArchivos = false)
     {

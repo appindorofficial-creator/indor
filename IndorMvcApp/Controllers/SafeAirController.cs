@@ -245,6 +245,39 @@ public class SafeAirController : Controller
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemovePhoto(int photoId, int solicitudId)
+    {
+        var solicitud = await LoadSolicitudForUserAsync(solicitudId, includeArchivos: true);
+        if (solicitud == null) return NotFound();
+
+        var archivo = solicitud.Archivos.FirstOrDefault(a => a.Id == photoId);
+        if (archivo == null) return NotFound();
+
+        if (!string.IsNullOrWhiteSpace(archivo.RutaArchivo))
+        {
+            var relativePath = archivo.RutaArchivo.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+            var physicalPath = Path.Combine(_env.WebRootPath, relativePath);
+            if (System.IO.File.Exists(physicalPath))
+            {
+                try
+                {
+                    System.IO.File.Delete(physicalPath);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Could not delete Safe Air photo file {Path}", physicalPath);
+                }
+            }
+        }
+
+        _db.ArchivosSafeAir.Remove(archivo);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(SafeAirSchedule), new { id = solicitudId });
+    }
+
     [HttpGet]
     public async Task<IActionResult> SafeAirConfirmed(int id)
     {

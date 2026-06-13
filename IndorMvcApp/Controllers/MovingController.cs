@@ -18,6 +18,7 @@ public class MovingController : Controller
 
     private static readonly string[] AllowedExtensions = [".jpg", ".jpeg", ".png"];
     private const long MaxFileSize = 10_000_000;
+    private const int MaxFiles = 5;
 
     public MovingController(AppDbContext db, UserManager<ApplicationUser> userManager, IWebHostEnvironment env)
     {
@@ -248,6 +249,39 @@ public class MovingController : Controller
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
             return View(model);
         }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemovePhoto(int photoId, int solicitudId)
+    {
+        var solicitud = await LoadSolicitudForUserAsync(solicitudId, includeArchivos: true);
+        if (solicitud == null) return NotFound();
+
+        var archivo = solicitud.Archivos.FirstOrDefault(a => a.Id == photoId);
+        if (archivo == null) return NotFound();
+
+        if (!string.IsNullOrWhiteSpace(archivo.RutaArchivo))
+        {
+            var relativePath = archivo.RutaArchivo.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+            var physicalPath = Path.Combine(_env.WebRootPath, relativePath);
+            if (System.IO.File.Exists(physicalPath))
+            {
+                try
+                {
+                    System.IO.File.Delete(physicalPath);
+                }
+                catch
+                {
+                    // Best-effort delete; DB row is still removed.
+                }
+            }
+        }
+
+        _db.ArchivosMoving.Remove(archivo);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(MovingItems), new { id = solicitudId });
     }
 
     [HttpGet]
@@ -529,10 +563,23 @@ public class MovingController : Controller
             return;
         }
 
+        var incoming = files.Where(f => f.Length > 0).ToList();
+        if (incoming.Count == 0)
+        {
+            return;
+        }
+
+        var existingCount = solicitud.Archivos.Count;
+        if (existingCount + incoming.Count > MaxFiles)
+        {
+            ModelState.AddModelError("", $"You can upload up to {MaxFiles} photos.");
+            return;
+        }
+
         var uploadDir = Path.Combine(_env.WebRootPath, "uploads", "moving", solicitud.Id.ToString());
         Directory.CreateDirectory(uploadDir);
 
-        foreach (var file in files.Where(f => f.Length > 0))
+        foreach (var file in incoming)
         {
             var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
             if (!AllowedExtensions.Contains(ext))

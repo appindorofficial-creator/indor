@@ -41,12 +41,13 @@
         <input type="hidden" asp-for="CondicionActual" id="CondicionActual" />
         <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
 
-        <div class="address-card">
+        <div class="address-card" id="addressCard">
             <div class="left">
                 <i class="fas fa-location-dot" style="color:#0066CC;"></i>
-                <input asp-for="DireccionPropiedad" placeholder="123 Main St, Charlotte, NC 28202" required />
+                <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
+                       placeholder="123 Main St, Charlotte, NC 28202" required readonly />
             </div>
-            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit ></span>
+            <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
         </div>
 
         <div class="field-card">
@@ -153,6 +154,26 @@
         const timeSelect = document.getElementById('VentanaHorarioSelect');
         timeSelect.value = timeHidden.value || 'Morning';
         timeSelect.addEventListener('change', () => timeHidden.value = timeSelect.value);
+
+        const addressInput = document.getElementById('DireccionPropiedad');
+        const addressCard = document.getElementById('addressCard');
+        const editAddressBtn = document.getElementById('editAddressBtn');
+
+        function enableAddressEdit() {
+            if (!addressInput) return;
+            addressInput.removeAttribute('readonly');
+            addressCard?.classList.add('editing');
+            addressInput.focus();
+            try {
+                addressInput.setSelectionRange(0, addressInput.value.length);
+            } catch (_) { /* iOS may not support selection on focus */ }
+        }
+
+        editAddressBtn?.addEventListener('click', enableAddressEdit);
+        addressInput?.addEventListener('focus', function () {
+            addressInput.removeAttribute('readonly');
+            addressCard?.classList.add('editing');
+        });
     })();
 </script>
 </body>

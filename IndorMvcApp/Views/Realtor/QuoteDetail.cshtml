@@ -1,0 +1,73 @@
+@model IndorMvcApp.ViewModels.RealtorQuoteDetailViewModel
+@{
+    ViewData["Title"] = "Quote Request Details";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "quotes";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <div class="rl-page-header rl-page-header--stack">
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> Quotes</a>
+        <h1 class="rl-page-title">Quote Request Details</h1>
+    </div>
+
+    <div class="rl-qreq-hero">
+        <img src="@Model.PhotoUrl" alt="" />
+        <div>
+            <div class="rl-qreq-hero-top">
+                <strong>@Model.Address</strong>
+                <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusLabel</span>
+            </div>
+            <div class="rl-qreq-meta-grid">
+                <div><span>Requested</span><strong>@Model.RequestedLabel.Replace("Requested ", "")</strong></div>
+                <div><span>Category</span><strong>@Model.ServiceType</strong></div>
+                <div><span>Requested by</span><strong>@Model.RequestedByLabel</strong></div>
+                <div><span>Requested providers</span><strong>@Model.ProvidersResponseLabel</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Requested Services</h2>
+            <p class="rl-section-caption">These items were identified in the inspection report.</p>
+        </div>
+        @if (Model.RequestedServices.Count == 0)
+        {
+            <div class="rl-dash-empty">No repair items linked to this request yet.</div>
+        }
+        else
+        {
+            <ul class="rl-qreq-services">
+                @foreach (var service in Model.RequestedServices)
+                {
+                    <li>
+                        <span class="rl-qreq-service-icon"><i class="fas @service.Icon"></i></span>
+                        <span>@service.Title</span>
+                        <em>@service.SortOrder</em>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <div class="rl-qreq-info">
+        <i class="fas fa-circle-info"></i>
+        <div>
+            <strong>What happens next?</strong>
+            <p>Providers need to be invited to this request before they can review the details and submit quotes.</p>
+        </div>
+    </div>
+
+    <div class="rl-qreq-actions">
+        <a href="@Model.InviteProvidersUrl" class="ob-btn ob-btn-primary rl-qreq-btn">
+            <i class="fas fa-user-plus"></i> Invite Providers
+        </a>
+        <a href="@Model.InviteProvidersUrl" class="rl-btn-outline rl-qreq-btn">
+            <i class="fas fa-pen"></i> Edit Request
+        </a>
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-qreq-cancel">Cancel Request</a>
+    </div>
+</div>

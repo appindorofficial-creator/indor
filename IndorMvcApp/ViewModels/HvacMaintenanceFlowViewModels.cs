@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -31,13 +32,16 @@ public class HvacMaintenanceDetailsViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "HVAC Tune-Up";
 
-    [MaxLength(80)]
+    [MaxLength(EquipmentSerialNumberAttribute.MaxLength)]
+    [EquipmentSerialNumber]
     public string? NumeroSerieAc { get; set; }
 
     public bool SerialDesconocido { get; set; }
 
-    [MaxLength(80)]
-    public string? UltimoMantenimiento { get; set; }
+    [DataType(DataType.Date)]
+    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    [Display(Name = "Last maintenance")]
+    public DateTime? FechaUltimoMantenimiento { get; set; }
 
     public bool UltimoMantenimientoDesconocido { get; set; }
 

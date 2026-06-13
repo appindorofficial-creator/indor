@@ -170,6 +170,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorRealtorInvitation> IndorRealtorInvitations { get; set; }
     public DbSet<IndorRealtorActivity> IndorRealtorActivities { get; set; }
     public DbSet<IndorRealtorQuoteBid> IndorRealtorQuoteBids { get; set; }
+    public DbSet<IndorRealtorSharedQuote> IndorRealtorSharedQuotes { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }

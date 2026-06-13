@@ -1,0 +1,95 @@
+@model IndorMvcApp.ViewModels.ProviderProCreateJobAiDraftViewModel
+@{
+    ViewData["Title"] = "AI Quote Draft - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-wizard-head">
+        <h1>AI Quote Draft</h1>
+        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
+    </header>
+
+    <div class="prv-pro-ai-ready">
+        <i class="fas fa-wand-magic-sparkles"></i>
+        <div>
+            <strong>AI draft ready</strong>
+            <p>INDOR analyzed your notes, audio, and attachments to generate an accurate estimate draft.</p>
+        </div>
+    </div>
+
+    <section class="prv-pro-wizard-summary prv-pro-wizard-summary--link">
+        <div>
+            <small>Job type</small>
+            <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@Model.ServiceCategoryTone">
+                <i class="fas @Model.ServiceCategoryIcon"></i>
+            </span>
+            <strong>@Model.ServiceCategoryLabel</strong>
+        </div>
+        <div>
+            <small>Customer</small>
+            <span class="prv-pro-customer-avatar prv-pro-customer-avatar--@Model.CustomerTone">@Model.CustomerInitials</span>
+            <strong>@Model.CustomerName</strong>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </section>
+
+    <section class="prv-pro-wizard-card">
+        <h2><i class="fas fa-comment-dots"></i> What the customer needs</h2>
+        <p class="prv-pro-ai-copy">@Model.AiCustomerNeeds</p>
+    </section>
+
+    <section class="prv-pro-wizard-card">
+        <h2><i class="fas fa-list-check"></i> AI recommended scope</h2>
+        <ol class="prv-pro-ai-scope">
+            @foreach (var item in Model.AiRecommendedScope)
+            {
+                <li>@item</li>
+            }
+        </ol>
+    </section>
+
+    <section class="prv-pro-wizard-card">
+        <h2><i class="fas fa-calculator"></i> Suggested estimate</h2>
+        <div class="prv-pro-ai-estimate">
+            @foreach (var line in Model.EstimateLines)
+            {
+                <div class="prv-pro-ai-estimate-row">
+                    <span>@line.Label</span>
+                    <span>@line.AmountLabel</span>
+                </div>
+            }
+            <div class="prv-pro-ai-estimate-total">
+                <span>Total estimate</span>
+                <strong>@Model.EstimateTotalLabel</strong>
+            </div>
+        </div>
+    </section>
+
+    <div class="prv-pro-wizard-info">
+        <i class="fas fa-circle-info"></i>
+        <span>You can edit labor, materials, and pricing before sending.</span>
+    </div>
+
+    <form asp-controller="Proveedor" asp-action="CreateJobAiDraft" method="post" class="prv-pro-ai-draft-actions">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="SubmitAction" value="continue" id="createJobAiDraftAction" />
+        <div class="prv-pro-ai-secondary-actions">
+            <button type="submit" class="prv-pro-btn prv-pro-btn--outline" formaction="@Url.Action("CreateJobAiDraft")" name="SubmitAction" value="regenerate">
+                <i class="fas fa-wand-magic-sparkles"></i> Ask AI again
+            </button>
+            <a asp-controller="Proveedor" asp-action="CreateJobSend" class="prv-pro-btn prv-pro-btn--outline">
+                <i class="fas fa-pen"></i> Edit manually
+            </a>
+        </div>
+        <div class="prv-pro-wizard-actions">
+            <a asp-controller="Proveedor" asp-action="CreateJobQuote" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
+        </div>
+    </form>
+
+    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
+</div>

@@ -20,7 +20,7 @@
             <h1>Customers</h1>
             <p>Manage homeowners, properties, and connected home records.</p>
         </div>
-        <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
+        <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
             <i class="fas fa-plus"></i> Add Customer
         </a>
     </section>
@@ -182,5 +182,5 @@
         </section>
     }
 
-    <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-fab" aria-label="Add customer"><i class="fas fa-plus"></i></a>
+    <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-fab" aria-label="Add customer"><i class="fas fa-plus"></i></a>
 </div>

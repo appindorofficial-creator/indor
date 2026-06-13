@@ -17,17 +17,21 @@ public static class HomeCarePrioritiesDisplayService
             return null;
         }
 
-        var cards = items
+        var ordered = items
             .Where(i => i.Activo)
             .OrderBy(i => i.Orden)
             .ThenBy(i => i.Id)
-            .Select(i => new HomeCarePriorityCardViewModel
+            .ToList();
+
+        var cards = ordered
+            .Select((item, index) => new HomeCarePriorityCardViewModel
             {
-                Title = i.Nombre,
-                Subtitle = i.Subtitulo,
-                ImageUrl = i.ImagenUrl ?? string.Empty,
-                Icon = i.IconoClase,
-                Url = ResolveItemUrl(urlHelper, i, propiedadId)
+                Orden = index + 1,
+                Title = item.Nombre,
+                Subtitle = item.Subtitulo,
+                ImageUrl = item.ImagenUrl ?? string.Empty,
+                Icon = item.IconoClase,
+                Url = ResolveItemUrl(urlHelper, item, propiedadId)
             })
             .ToList();
 
@@ -40,7 +44,7 @@ public static class HomeCarePrioritiesDisplayService
         {
             PropiedadId = propiedadId,
             Title = config.Titulo,
-            Subtitle = config.Subtitulo,
+            Subtitle = $"{cards.Count} maintenance task{(cards.Count == 1 ? "" : "s")} for your home",
             IconClass = config.IconoClase,
             ViewAllText = config.ViewAllTexto,
             ViewAllUrl = ResolveViewAllUrl(urlHelper, config, propiedadId),

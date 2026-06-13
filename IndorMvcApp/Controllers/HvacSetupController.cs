@@ -105,6 +105,7 @@ public class HvacSetupController : Controller
 
         ApplyHintsToDraft(draft, hints);
         SaveDraft(draft);
+        await HttpContext.Session.CommitAsync();
 
         return RedirectToAction(nameof(Review), new { propiedadId = propiedad.Id });
     }
@@ -131,15 +132,26 @@ public class HvacSetupController : Controller
         }
 
         SaveDraft(draft);
+        await HttpContext.Session.CommitAsync();
         return View(BuildManualModel(propiedad, info, draft));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Manual(AddHvacSystemViewModel model)
+    public async Task<IActionResult> Manual(AddHvacSystemViewModel viewModel)
     {
-        var propiedad = await LoadPropertyAsync(model.PropiedadId);
-        if (propiedad == null) return NotFound();
+        if (viewModel.PropiedadId <= 0)
+        {
+            ModelState.AddModelError(nameof(viewModel.PropiedadId), "Your property could not be identified. Please start again from Home.");
+            return RedirectToAction(nameof(Add));
+        }
+
+        var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
+        if (propiedad == null)
+        {
+            TempData["HvacSetupError"] = "We could not find your property. Please try again from Home.";
+            return RedirectToAction("Index", "Home");
+        }
 
         if (await HasSavedSystemAsync(propiedad.Id))
         {
@@ -149,21 +161,22 @@ public class HvacSetupController : Controller
         if (!ModelState.IsValid)
         {
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
-            return View(BuildManualModel(propiedad, info, model));
+            return View(BuildManualModel(propiedad, info, viewModel));
         }
 
         var draft = GetDraft() ?? new HvacSetupDraft { PropiedadId = propiedad.Id };
         draft.PropiedadId = propiedad.Id;
         draft.EntryMode = "manual";
-        draft.SystemType = model.SystemType;
-        draft.Brand = NullIfEmpty(model.Brand);
-        draft.Model = NullIfEmpty(model.Model);
-        draft.SerialNumber = NullIfEmpty(model.SerialNumber);
-        draft.InstallYear = model.InstallYear;
-        draft.FilterSize = NullIfEmpty(model.FilterSize);
-        draft.LastServiceDate = model.LastServiceDate?.Date;
-        draft.FilterRemindersEnabled = model.FilterRemindersEnabled;
+        draft.SystemType = viewModel.SystemType;
+        draft.Brand = NullIfEmpty(viewModel.Brand);
+        draft.EquipmentModel = NullIfEmpty(viewModel.EquipmentModel);
+        draft.SerialNumber = NullIfEmpty(viewModel.SerialNumber);
+        draft.InstallYear = viewModel.InstallYear;
+        draft.FilterSize = NullIfEmpty(viewModel.FilterSize);
+        draft.LastServiceDate = viewModel.LastServiceDate?.Date;
+        draft.FilterRemindersEnabled = viewModel.FilterRemindersEnabled;
         SaveDraft(draft);
+        await HttpContext.Session.CommitAsync();
 
         return RedirectToAction(nameof(Review), new { propiedadId = propiedad.Id });
     }
@@ -182,7 +195,8 @@ public class HvacSetupController : Controller
         var draft = GetDraft();
         if (draft == null || draft.PropiedadId != propiedad.Id)
         {
-            return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
+            TempData["HvacSetupError"] = "Your HVAC draft expired. Please enter your system details again.";
+            return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
@@ -191,13 +205,22 @@ public class HvacSetupController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Review(HvacReviewViewModel model)
+    public async Task<IActionResult> Review(HvacReviewViewModel viewModel)
     {
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId)) return Challenge();
 
-        var propiedad = await LoadPropertyAsync(model.PropiedadId);
-        if (propiedad == null) return NotFound();
+        if (viewModel.PropiedadId <= 0)
+        {
+            return RedirectToAction(nameof(Add));
+        }
+
+        var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
+        if (propiedad == null)
+        {
+            TempData["HvacSetupError"] = "We could not find your property. Please try again from Home.";
+            return RedirectToAction("Index", "Home");
+        }
 
         if (await HasSavedSystemAsync(propiedad.Id))
         {
@@ -207,51 +230,73 @@ public class HvacSetupController : Controller
         var draft = GetDraft();
         if (draft == null || draft.PropiedadId != propiedad.Id)
         {
-            return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
+            TempData["HvacSetupError"] = "Your HVAC draft expired. Please enter your system details again.";
+            return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
-        if (!model.ConfirmInfo || !model.AuthorizeStorage)
+        if (!viewModel.ConfirmInfo || !viewModel.AuthorizeStorage)
         {
-            if (!model.ConfirmInfo)
+            if (!viewModel.ConfirmInfo)
             {
-                ModelState.AddModelError(nameof(model.ConfirmInfo), "Please confirm your equipment information.");
+                ModelState.AddModelError(nameof(viewModel.ConfirmInfo), "Please confirm your equipment information.");
             }
 
-            if (!model.AuthorizeStorage)
+            if (!viewModel.AuthorizeStorage)
             {
-                ModelState.AddModelError(nameof(model.AuthorizeStorage), "Please authorize INDOR to store this equipment data.");
+                ModelState.AddModelError(nameof(viewModel.AuthorizeStorage), "Please authorize INDOR to store this equipment data.");
             }
         }
 
         if (!ModelState.IsValid)
         {
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
-            return View(BuildReviewModel(propiedad, info, draft, model));
+            return View(BuildReviewModel(propiedad, info, draft, viewModel));
         }
 
-        var record = new PropiedadHvacSistema
+        PropiedadHvacSistema record;
+        try
         {
-            PropiedadId = propiedad.Id,
-            UserId = userId,
-            SystemType = draft.SystemType,
-            Brand = draft.Brand,
-            Model = draft.Model,
-            SerialNumber = draft.SerialNumber,
-            InstallYear = draft.InstallYear,
-            FilterSize = draft.FilterSize,
-            LastServiceDate = draft.LastServiceDate,
-            FilterRemindersEnabled = draft.FilterRemindersEnabled,
-            FilterReminderDays = 90,
-            OpenAiDataSource = propiedad.AttomSyncStatus ?? "OpenAI House Fact",
-            LabelImagePath = draft.LabelImagePath,
-            FechaCreacion = DateTime.UtcNow,
-            FechaActualizacion = DateTime.UtcNow
-        };
+            record = new PropiedadHvacSistema
+            {
+                PropiedadId = propiedad.Id,
+                UserId = userId,
+                SystemType = draft.SystemType,
+                Brand = draft.Brand,
+                Model = draft.EquipmentModel,
+                SerialNumber = draft.SerialNumber,
+                InstallYear = draft.InstallYear,
+                FilterSize = draft.FilterSize,
+                LastServiceDate = draft.LastServiceDate,
+                FilterRemindersEnabled = draft.FilterRemindersEnabled,
+                FilterReminderDays = 90,
+                OpenAiDataSource = propiedad.AttomSyncStatus ?? "OpenAI House Fact",
+                LabelImagePath = draft.LabelImagePath,
+                FechaCreacion = DateTime.UtcNow,
+                FechaActualizacion = DateTime.UtcNow
+            };
 
-        _db.PropiedadHvacSistemas.Add(record);
-        await _db.SaveChangesAsync();
-        await AddHistoryEntryAsync(propiedad, record);
+            _db.PropiedadHvacSistemas.Add(record);
+            await _db.SaveChangesAsync();
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            ModelState.AddModelError(string.Empty,
+                "HVAC storage is not available yet. Run Scripts/CreatePropiedadHvacTables.sql on the database.");
+            var info = MyHomeDisplayService.DeserializeProperty(propiedad);
+            return View(BuildReviewModel(propiedad, info, draft, viewModel));
+        }
+
+        try
+        {
+            await AddHistoryEntryAsync(propiedad, record);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            // HVAC record is saved; history is optional.
+        }
+
         ClearDraft();
+        await HttpContext.Session.CommitAsync();
 
         return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
     }
@@ -262,7 +307,7 @@ public class HvacSetupController : Controller
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
 
-        var record = await _db.PropiedadHvacSistemas.FirstOrDefaultAsync(h => h.PropiedadId == propiedad.Id);
+        var record = await PropiedadHvacQueryHelper.TryGetByPropiedadIdAsync(_db, propiedad.Id);
         if (record == null) return RedirectToAction(nameof(Add), new { propiedadId = propiedad.Id });
 
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
@@ -280,7 +325,7 @@ public class HvacSetupController : Controller
             BackUrl = Url.Action("Index", "Home") ?? "/",
             SystemTypeLabel = HvacOpenAiHintsService.SystemTypeLabel(record.SystemType),
             Brand = record.Brand ?? "—",
-            Model = record.Model ?? "—",
+            EquipmentModel = record.Model ?? "—",
             SerialNumber = record.SerialNumber ?? "—",
             InstallYearLabel = record.InstallYear?.ToString() ?? "—",
             EstimatedAgeLabel = estimatedAge,
@@ -316,7 +361,7 @@ public class HvacSetupController : Controller
             PropiedadId = draft.PropiedadId,
             SystemType = draft.SystemType,
             Brand = draft.Brand,
-            Model = draft.Model,
+            EquipmentModel = draft.EquipmentModel,
             SerialNumber = draft.SerialNumber,
             InstallYear = draft.InstallYear,
             FilterSize = draft.FilterSize,
@@ -358,7 +403,7 @@ public class HvacSetupController : Controller
             SystemType = draft.SystemType,
             SystemTypeLabel = HvacOpenAiHintsService.SystemTypeLabel(draft.SystemType),
             Brand = string.IsNullOrWhiteSpace(draft.Brand) ? "—" : draft.Brand,
-            Model = string.IsNullOrWhiteSpace(draft.Model) ? "—" : draft.Model,
+            EquipmentModel = string.IsNullOrWhiteSpace(draft.EquipmentModel) ? "—" : draft.EquipmentModel,
             SerialNumber = string.IsNullOrWhiteSpace(draft.SerialNumber) ? "—" : draft.SerialNumber,
             InstallYear = draft.InstallYear,
             InstallYearLabel = draft.InstallYear?.ToString() ?? "—",
@@ -371,7 +416,7 @@ public class HvacSetupController : Controller
     {
         draft.SystemType = hints.SystemType ?? draft.SystemType ?? "CentralAC";
         draft.Brand ??= hints.Brand;
-        draft.Model ??= hints.Model;
+        draft.EquipmentModel ??= hints.Model;
         draft.SerialNumber ??= hints.SerialNumber;
         draft.InstallYear ??= hints.InstallYear;
         draft.FilterSize ??= hints.FilterSize;
@@ -380,7 +425,7 @@ public class HvacSetupController : Controller
 
     private static bool HasDraftValues(HvacSetupDraft draft) =>
         !string.IsNullOrWhiteSpace(draft.Brand)
-        || !string.IsNullOrWhiteSpace(draft.Model)
+        || !string.IsNullOrWhiteSpace(draft.EquipmentModel)
         || !string.IsNullOrWhiteSpace(draft.SerialNumber)
         || draft.InstallYear.HasValue;
 

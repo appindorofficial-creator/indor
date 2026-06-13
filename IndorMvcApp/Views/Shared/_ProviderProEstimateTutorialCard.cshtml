@@ -1,0 +1,10 @@
+@model (int StepNumber, int TotalSteps, string Title, string Description, string NextLabel, string NextUrl, List<IndorMvcApp.ViewModels.ProviderProWizardStepViewModel> WizardSteps)
+
+<section class="prv-pro-est-tutorial">
+    <div class="prv-pro-est-tutorial-copy">
+        <small>Step @Model.StepNumber of @Model.TotalSteps · @Model.Title</small>
+        <p>@Model.Description</p>
+        <a href="@Model.NextUrl" class="prv-pro-est-tutorial-next">@Model.NextLabel <i class="fas fa-chevron-right"></i></a>
+    </div>
+    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
+</section>

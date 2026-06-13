@@ -1,17 +1,16 @@
 @model IndorMvcApp.ViewModels.MovingSetupSectionViewModel
-<section class="moving-setup-section">
-    <div class="moving-setup-header">
-        <div class="moving-setup-header-left">
-            <div class="moving-setup-title-row">
-                <span class="moving-setup-icon"><i class="fas @Model.IconoClase"></i></span>
-                <h3 class="moving-setup-title">@Model.Titulo</h3>
-            </div>
-            <p class="moving-setup-subtitle">@Model.Subtitulo</p>
+<section class="moving-setup-section" id="moving-setup">
+    <div class="moving-setup-header category-header">
+        <div class="category-icon category-icon-moving"><i class="fas @Model.IconoClase"></i></div>
+        <div class="category-info">
+            <h3 class="category-title moving-setup-title">@Model.Titulo</h3>
+            <p class="category-sub moving-setup-subtitle">@Model.Subtitulo</p>
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.ViewAllUrl))
         {
             <a href="@Model.ViewAllUrl" class="moving-setup-view-all">@Model.ViewAllTexto <i class="fas fa-chevron-right"></i></a>
         }
+        <span class="category-badge category-badge-moving">@Model.Servicios.Count</span>
     </div>
 
     <div class="moving-setup-grid">
@@ -19,6 +18,7 @@
         {
             var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
             <a href="@href" class="moving-setup-grid-item">
+                <span class="moving-setup-grid-order">@item.Orden</span>
                 <span class="moving-setup-grid-icon"><i class="fas @item.IconoClase"></i></span>
                 <span class="moving-setup-grid-label">@item.Nombre</span>
             </a>

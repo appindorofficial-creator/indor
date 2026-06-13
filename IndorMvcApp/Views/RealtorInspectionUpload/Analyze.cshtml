@@ -2,11 +2,19 @@
 
 
 
+@if (TempData["AnalysisError"] is string analysisError && !string.IsNullOrWhiteSpace(analysisError))
+{
+    <div class="rl-info-box rl-info-box--warn">
+        <i class="fas fa-triangle-exclamation"></i>
+        <p>@analysisError</p>
+    </div>
+}
+
 <div class="rl-info-box rl-info-box--ai">
 
     <i class="fas fa-wand-magic-sparkles"></i>
 
-    <p>INDOR AI is scanning page by page, extracting findings, grouping by trade, and calculating urgency.</p>
+    <p>OpenAI is analyzing your real inspection report. Large PDFs (like 74 pages) are processed in sections and may take several minutes — keep this screen open.</p>
 
 </div>
 
@@ -96,25 +104,96 @@
 
 
 
-<form asp-action="Analyze" method="post" class="rl-analyze-actions">
+<div class="rl-analyze-actions" id="analyzeActions">
+    @if (Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Complete)
+    {
+        <form asp-action="Analyze" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
+                <strong><i class="fas fa-list-check"></i> View AI findings</strong>
+                <span>Review issues, urgency, and priority before sending to providers.</span>
+            </button>
+        </form>
+    }
+    else if (Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Failed)
+    {
+        <div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox">
+            <i class="fas fa-triangle-exclamation"></i>
+            <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? "Analysis could not be completed." : Model.AnalysisSummary)</p>
+        </div>
+        <button type="button" id="analyzeRetryBtn" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
+            <strong><i class="fas fa-rotate-right"></i> Retry analysis</strong>
+            <span>Run AI extraction again on your inspection report.</span>
+        </button>
+    }
+    else
+    {
+        <div class="rl-analyze-running">
+            <i class="fas fa-wand-magic-sparkles fa-spin"></i>
+            <p>OpenAI is reading your PDF and extracting repair issues by trade and urgency…</p>
+        </div>
+        <form asp-action="Analyze" method="post" class="rl-analyze-secondary">
+            @Html.AntiForgeryToken()
+            <button type="submit" name="action" value="background" class="ob-btn ob-btn-outline rl-analyze-btn">
+                <strong>Run in background</strong>
+                <span>Return to dashboard — we'll keep analyzing.</span>
+            </button>
+        </form>
+    }
+</div>
 
-    @Html.AntiForgeryToken()
+@section Scripts {
+    <script>
+        (function () {
+            var isComplete = @(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Complete ? "true" : "false");
+            var isFailed = @(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Failed ? "true" : "false");
+            if (isComplete) return;
 
-    <button type="submit" name="action" value="background" class="ob-btn ob-btn-outline rl-analyze-btn">
+            var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            var pollMs = 4000;
 
-        <strong>Run in background</strong>
+            function runAnalysis() {
+                return fetch('@Url.Action("RunAnalysis", "RealtorInspectionUpload")', {
+                    method: 'POST',
+                    headers: {
+                        'RequestVerificationToken': token,
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: '__RequestVerificationToken=' + encodeURIComponent(token || '')
+                }).then(function (r) { return r.json(); });
+            }
 
-        <span>We'll notify you when it's ready.</span>
+            function poll() {
+                runAnalysis()
+                .then(function (data) {
+                    var ring = document.querySelector('.rl-analyze-progress-ring span');
+                    if (ring && data.progress) ring.textContent = data.progress + '%';
+                    if (data.complete) {
+                        window.location.reload();
+                        return;
+                    }
+                    if (data.failed) {
+                        window.location.reload();
+                        return;
+                    }
+                    setTimeout(poll, pollMs);
+                })
+                .catch(function () { setTimeout(poll, pollMs * 2); });
+            }
 
-    </button>
+            var retryBtn = document.getElementById('analyzeRetryBtn');
+            if (retryBtn) {
+                retryBtn.addEventListener('click', function () {
+                    retryBtn.disabled = true;
+                    runAnalysis().then(function () { window.location.reload(); });
+                });
+                return;
+            }
 
-    <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary rl-analyze-btn">
-
-        <strong>View Partial Results</strong>
-
-        <span>See what's been found so far.</span>
-
-    </button>
-
-</form>
+            if (!isFailed) {
+                setTimeout(poll, 800);
+            }
+        })();
+    </script>
+}
 

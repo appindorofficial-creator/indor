@@ -58,6 +58,7 @@
 }
 
 .moving-setup-grid-item {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -70,6 +71,23 @@
     background: #FFF;
     min-height: 88px;
     justify-content: center;
+}
+
+.moving-setup-grid-order {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(10, 37, 64, 0.82);
+    color: #FFF;
+    font-size: 0.58rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
 }
 
 .moving-setup-grid-icon {

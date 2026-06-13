@@ -183,8 +183,8 @@ public class CleaningController : Controller
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            AreasPrioridad = solicitud.AreasPrioridad ?? "Kitchen|Bathrooms|Floors",
-            TareasExtra = solicitud.TareasExtra ?? string.Empty,
+            AreasPrioridad = HasCompletedTasks(solicitud) ? solicitud.AreasPrioridad ?? string.Empty : string.Empty,
+            TareasExtra = HasCompletedTasks(solicitud) ? solicitud.TareasExtra ?? string.Empty : string.Empty,
             SuministrosNecesarios = solicitud.SuministrosNecesarios ?? "Yes",
             NotaCorta = solicitud.NotaCorta,
             ArchivosExistentes = solicitud.Archivos
@@ -470,6 +470,10 @@ public class CleaningController : Controller
 
         return solicitud;
     }
+
+    private static bool HasCompletedTasks(SolicitudCleaning solicitud) =>
+        string.Equals(solicitud.Estado, "TasksCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
 
     private async Task<SolicitudCleaning?> LoadSolicitudForUserAsync(int id, bool includeArchivos = false)
     {

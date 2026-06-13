@@ -34,6 +34,7 @@
             {
                 var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
                 <a href="@href" class="moving-setup-grid-item">
+                    <span class="moving-setup-grid-order">@item.Orden</span>
                     <span class="moving-setup-grid-icon"><i class="fas @item.IconoClase"></i></span>
                     <span class="moving-setup-grid-label">@item.Nombre</span>
                 </a>

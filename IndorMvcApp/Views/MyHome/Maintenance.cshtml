@@ -7,14 +7,14 @@
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
 }
 <div class="hf-title-row">
-    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <a href="@Model.BackUrl" class="hf-back"><i class="fas fa-arrow-left"></i></a>
     <h1 class="hf-title">Maintenance</h1>
-    <a asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">+ Add</a>
+    <a asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-btn">+ Add</a>
 </div>
 <div class="hf-chip-row">
     @foreach (var f in new[] { "Upcoming", "Completed", "All" })
     {
-        <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@f</a>
+        <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@Model.NavigationFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@f</a>
     }
 </div>
 @if (groups.Count == 0)
@@ -28,7 +28,7 @@ else
         <div style="font-weight:800;margin:12px 0 8px;">@group.Key</div>
         @foreach (var item in group)
         {
-            <a asp-action="MaintenanceDetail" asp-route-id="@item.Id" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
+            <a asp-action="MaintenanceDetail" asp-route-id="@item.Id" asp-route-from="@Model.NavigationFrom" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
                 <i class="fas fa-clipboard-list icon"></i>
                 <div class="meta">
                     <div class="value">@item.Title</div>

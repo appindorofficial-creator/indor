@@ -369,42 +369,36 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
 
 
 
-    public async Task<ProviderProCreateJobCategoriesViewModel> GetCreateJobCategoriesAsync(
+    private static readonly (string Id, string Label, string Icon, string Tone, string SuggestedName)[] CreateJobWizardTypes =
+    [
+        ("inspection", "Inspection", "fa-droplet", "blue", "Water Damage Inspection"),
+        ("repair", "Repair", "fa-wrench", "green", "Repair Service"),
+        ("maintenance", "Maintenance", "fa-gear", "purple", "Maintenance Visit"),
+        ("estimate", "Estimate", "fa-calculator", "teal", "Estimate Request"),
+        ("installation", "Installation", "fa-screwdriver-wrench", "orange", "Installation Job"),
+        ("emergency", "Emergency", "fa-bell", "red", "Emergency Service"),
+        ("cleaning", "Cleaning", "fa-broom", "blue", "Cleaning Service"),
+        ("custom", "Custom Type", "fa-ellipsis", "gray", "Custom Job"),
+    ];
+
+    public Task<ProviderProCreateJobCategoriesViewModel> GetCreateJobCategoriesAsync(
         IndorProveedor proveedor,
         CancellationToken cancellationToken = default)
     {
-        var rows = await db.IndorProveedorCategoriasCatalogo
-            .AsNoTracking()
-            .Where(c => c.Activo)
-            .OrderBy(c => c.SortOrder)
-            .ToListAsync(cancellationToken);
-
-        if (rows.Count == 0)
-        {
-            rows = OnboardingCatalog.ProviderCategories
-                .Select((c, i) => new IndorProveedorCategoriaCatalogo
-                {
-                    Id = c.Id,
-                    LabelEn = c.Label,
-                    IconClass = c.IconClass,
-                    SortOrder = i + 1,
-                    Activo = true
-                })
-                .ToList();
-        }
-
-        return new ProviderProCreateJobCategoriesViewModel
+        return Task.FromResult(new ProviderProCreateJobCategoriesViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
-            Categories = rows.Select(c => new ProviderProCreateJobCategoryOptionViewModel
+            Categories = CreateJobWizardTypes.Select(c => new ProviderProCreateJobCategoryOptionViewModel
             {
                 Id = c.Id,
-                Label = c.LabelEn,
-                Description = c.DescriptionEn ?? "",
-                IconClass = c.IconClass.StartsWith("fa-") ? c.IconClass : $"fa-{c.IconClass}"
+                Label = c.Label,
+                Description = "",
+                IconClass = c.Icon,
+                ToneClass = c.Tone,
+                SuggestedJobName = c.SuggestedName
             }).ToList(),
-            FlowSteps = CreateJobCategoryFlowSteps()
-        };
+            WizardSteps = BuildCreateJobWizardSteps(1)
+        });
     }
 
     public async Task<ProviderProCreateJobDetailsViewModel?> GetCreateJobDetailsAsync(
@@ -419,17 +413,23 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
             return null;
         }
 
-        var customers = await db.IndorProveedorClientes
+        var customerRows = await db.IndorProveedorClientes
             .AsNoTracking()
             .Where(c => c.ProveedorId == proveedor.Id && c.Activo)
             .OrderBy(c => c.Name)
-            .Select(c => new ProviderProCreateJobCustomerOptionViewModel
-            {
-                Id = c.Id,
-                Name = c.Name,
-                Address = c.Address
-            })
             .ToListAsync(cancellationToken);
+
+        var customers = customerRows.Select(c => new ProviderProCreateJobCustomerOptionViewModel
+        {
+            Id = c.Id,
+            Name = c.Name,
+            Initials = DeriveCustomerInitials(c.Name),
+            ToneClass = DeriveAvatarTone(c.Id),
+            Address = string.IsNullOrWhiteSpace(c.Address) ? c.StreetAddress : c.Address,
+            PropertyLabel = DerivePropertyLabel(c.PropertyType),
+            IsConnected = c.IsAppConnected || c.ConnectionStatus == ProviderCustomerConnectionStatuses.Connected,
+            PropertiesCount = Math.Max(1, c.PropertiesCount)
+        }).ToList();
 
         var selectedCustomer = draft?.ClienteId.HasValue == true
             ? customers.FirstOrDefault(c => c.Id == draft.ClienteId)
@@ -448,75 +448,147 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
             Priority = draft?.Priority ?? "Medium",
             Notes = draft?.Notes ?? "",
             Customers = customers,
-            FlowSteps = CreateJobDetailsFlowSteps(category.LabelEn)
+            WizardSteps = BuildCreateJobWizardSteps(2)
         };
     }
 
-    public async Task<ProviderProCreateJobScheduleViewModel?> GetCreateJobScheduleAsync(
+    public Task<ProviderProCreateJobQuoteViewModel?> GetCreateJobQuoteAsync(
         IndorProveedor proveedor,
         ProviderProCreateJobDraft draft,
         CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(draft.ServiceCategoryId) || string.IsNullOrWhiteSpace(draft.Title))
+        if (string.IsNullOrWhiteSpace(draft.ServiceCategoryId) || string.IsNullOrWhiteSpace(draft.Title)
+            || string.IsNullOrWhiteSpace(draft.CustomerName))
         {
-            return null;
+            return Task.FromResult<ProviderProCreateJobQuoteViewModel?>(null);
         }
 
-        var technicians = await GetTechnicianOptionsAsync(proveedor.Id, cancellationToken);
+        var (icon, tone) = ResolveWizardTypeVisuals(draft.ServiceCategoryId);
+        var notes = string.IsNullOrWhiteSpace(draft.QuoteRequestNotes)
+            ? BuildDefaultQuoteRequestNotes(draft)
+            : draft.QuoteRequestNotes;
 
-        return new ProviderProCreateJobScheduleViewModel
+        if (draft.Attachments.Count == 0)
+        {
+            draft.Attachments = BuildDefaultQuoteAttachments();
+        }
+
+        return Task.FromResult<ProviderProCreateJobQuoteViewModel?>(new ProviderProCreateJobQuoteViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
+            JobTitle = draft.Title,
             ServiceCategoryLabel = draft.ServiceCategoryLabel,
-            VisitDate = string.IsNullOrWhiteSpace(draft.VisitDate)
-                ? DateTime.Today.AddDays(1).ToString("yyyy-MM-dd")
-                : draft.VisitDate,
-            StartTimeLabel = string.IsNullOrWhiteSpace(draft.StartTimeLabel) ? "9:00 AM" : draft.StartTimeLabel,
-            EndTimeLabel = string.IsNullOrWhiteSpace(draft.EndTimeLabel) ? "11:00 AM" : draft.EndTimeLabel,
-            AddToCalendar = draft.AddToCalendar,
-            Reminder = string.IsNullOrWhiteSpace(draft.Reminder) ? "30 minutes before" : draft.Reminder,
-            AssignedTechnician = string.IsNullOrWhiteSpace(draft.AssignedTechnician)
-                ? technicians.FirstOrDefault() ?? proveedor.PrimaryContact ?? ""
-                : draft.AssignedTechnician,
-            TimeOptions = BuildTimeOptions(),
-            ReminderOptions = BuildReminderOptions(),
-            TechnicianOptions = technicians,
-            FlowSteps = CreateJobScheduleFlowSteps()
-        };
+            ServiceCategoryIcon = icon,
+            ServiceCategoryTone = tone,
+            CustomerName = draft.CustomerName,
+            CustomerInitials = DeriveCustomerInitials(draft.CustomerName),
+            CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
+            SendQuote = draft.SendQuote,
+            QuoteRequestNotes = notes,
+            Attachments = draft.Attachments,
+            StepSubtitle = "Create quote request",
+            WizardSteps = BuildCreateJobWizardSteps(3)
+        });
     }
 
-    public Task<ProviderProCreateJobReviewViewModel?> GetCreateJobReviewAsync(
+    public Task<ProviderProCreateJobAiDraftViewModel?> GetCreateJobAiDraftAsync(
+        IndorProveedor proveedor,
+        ProviderProCreateJobDraft draft)
+    {
+        if (!draft.SendQuote || string.IsNullOrWhiteSpace(draft.Title) || string.IsNullOrWhiteSpace(draft.Address))
+        {
+            return Task.FromResult<ProviderProCreateJobAiDraftViewModel?>(null);
+        }
+
+        if (!draft.AiDraftGenerated)
+        {
+            GenerateCreateJobAiDraft(draft);
+        }
+
+        var (icon, tone) = ResolveWizardTypeVisuals(draft.ServiceCategoryId);
+
+        return Task.FromResult<ProviderProCreateJobAiDraftViewModel?>(new ProviderProCreateJobAiDraftViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            JobTitle = draft.Title,
+            ServiceCategoryLabel = draft.ServiceCategoryLabel,
+            ServiceCategoryIcon = icon,
+            ServiceCategoryTone = tone,
+            CustomerName = draft.CustomerName,
+            CustomerInitials = DeriveCustomerInitials(draft.CustomerName),
+            CustomerTone = DeriveAvatarTone(draft.ClienteId ?? draft.CustomerName.GetHashCode()),
+            AiCustomerNeeds = draft.AiCustomerNeeds,
+            AiRecommendedScope = draft.AiRecommendedScope,
+            EstimateLines = draft.EstimateLines,
+            EstimateTotalLabel = FormatCurrency(draft.EstimateTotal),
+            StepSubtitle = "AI estimate assistant",
+            WizardSteps = BuildCreateJobWizardSteps(4)
+        });
+    }
+
+    public Task<ProviderProCreateJobSendViewModel?> GetCreateJobSendAsync(
         IndorProveedor proveedor,
         ProviderProCreateJobDraft draft)
     {
         if (string.IsNullOrWhiteSpace(draft.Title) || string.IsNullOrWhiteSpace(draft.Address))
         {
-            return Task.FromResult<ProviderProCreateJobReviewViewModel?>(null);
+            return Task.FromResult<ProviderProCreateJobSendViewModel?>(null);
         }
 
-        var scheduleDate = DateTime.TryParse(draft.VisitDate, out var date)
-            ? date.ToString("MMM d, yyyy")
-            : "—";
-        var timeRange = string.IsNullOrWhiteSpace(draft.StartTimeLabel)
-            ? "—"
-            : $"{draft.StartTimeLabel} – {draft.EndTimeLabel}";
+        if (draft.SendQuote)
+        {
+            if (!draft.AiDraftGenerated)
+            {
+                GenerateCreateJobAiDraft(draft);
+            }
 
-        return Task.FromResult<ProviderProCreateJobReviewViewModel?>(new ProviderProCreateJobReviewViewModel
+            RefineEstimateForSend(draft);
+        }
+
+        var (icon, tone) = ResolveWizardTypeVisuals(draft.ServiceCategoryId);
+        var message = string.IsNullOrWhiteSpace(draft.CustomerMessage)
+            ? BuildDefaultCustomerMessage(draft)
+            : draft.CustomerMessage;
+
+        return Task.FromResult<ProviderProCreateJobSendViewModel?>(new ProviderProCreateJobSendViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
-            Title = draft.Title,
+            JobTitle = draft.Title,
+            ServiceCategoryLabel = draft.ServiceCategoryLabel,
+            ServiceCategoryIcon = icon,
+            ServiceCategoryTone = tone,
             CustomerName = draft.CustomerName,
             Address = draft.Address,
-            Description = draft.Description,
-            Priority = draft.Priority,
-            PriorityClass = MapPriorityClass(draft.Priority),
-            ServiceCategoryLabel = draft.ServiceCategoryLabel,
-            ScheduleDateLabel = scheduleDate,
-            ScheduleTimeLabel = timeRange,
-            AssignedTechnician = draft.AssignedTechnician,
-            Reminder = draft.Reminder,
-            FlowSteps = CreateJobReviewFlowSteps()
+            EstimateLines = draft.EstimateLines,
+            EstimateTotalLabel = draft.SendQuote ? FormatCurrency(draft.EstimateTotal) : "",
+            ScopeSummary = draft.ScopeSummary,
+            DeliveryMethod = draft.DeliveryMethod,
+            CustomerMessage = message,
+            IncludeAiSummary = draft.IncludeAiSummary,
+            IncludeVoiceTranscript = draft.HasVoiceRecording && draft.IncludeVoiceTranscript,
+            SendQuote = draft.SendQuote,
+            StepSubtitle = "Finalize the job and quote",
+            WizardSteps = BuildCreateJobWizardSteps(5)
         });
+    }
+
+    public void GenerateCreateJobAiDraft(ProviderProCreateJobDraft draft, bool regenerate = false)
+    {
+        if (draft.AiDraftGenerated && !regenerate)
+        {
+            return;
+        }
+
+        var notes = string.IsNullOrWhiteSpace(draft.QuoteRequestNotes)
+            ? draft.Description
+            : draft.QuoteRequestNotes;
+
+        draft.AiCustomerNeeds = BuildAiCustomerNeeds(draft, notes);
+        draft.AiRecommendedScope = BuildAiRecommendedScope(draft);
+        draft.EstimateLines = BuildAiEstimateLines(draft);
+        draft.EstimateTotal = draft.EstimateLines.Sum(l => l.Amount);
+        draft.ScopeSummary = BuildScopeSummary(draft);
+        draft.AiDraftGenerated = true;
     }
 
     public async Task<ProviderProCreateJobSuccessViewModel?> GetCreateJobSuccessAsync(
@@ -582,6 +654,24 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
         };
 
         job.ClienteId = await ResolveClienteIdAsync(proveedorId, input.ClienteId, input.CustomerName, input.Address, cancellationToken);
+
+        if (input.EstimateAmount.HasValue && input.EstimateAmount.Value > 0)
+        {
+            job.EstimateAmount = input.EstimateAmount;
+            job.EstimateCode = $"EST-{DateTime.UtcNow:yyyyMMddHHmm}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(input.EstimateScopeSummary))
+        {
+            job.ScopeOfWork = input.EstimateScopeSummary;
+        }
+
+        if (!string.IsNullOrWhiteSpace(input.CustomerMessage))
+        {
+            job.JobNotes = string.IsNullOrWhiteSpace(job.JobNotes)
+                ? input.CustomerMessage
+                : $"{job.JobNotes}\n\n{input.CustomerMessage}";
+        }
 
         db.IndorProveedorJobs.Add(job);
         await db.SaveChangesAsync(cancellationToken);
@@ -1061,6 +1151,19 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
             return category;
         }
 
+        var wizardType = CreateJobWizardTypes
+            .FirstOrDefault(c => c.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
+        if (wizardType != default)
+        {
+            return new IndorProveedorCategoriaCatalogo
+            {
+                Id = wizardType.Id,
+                LabelEn = wizardType.Label,
+                IconClass = wizardType.Icon,
+                Activo = true
+            };
+        }
+
         var fallback = OnboardingCatalog.ProviderCategories
             .FirstOrDefault(c => c.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
 
@@ -1074,6 +1177,168 @@ public class ProviderProJobWorkflowService(AppDbContext db) : IProviderProJobWor
                 Activo = true
             };
     }
+
+    private static List<ProviderProWizardStepViewModel> BuildCreateJobWizardSteps(int currentStep)
+    {
+        var labels = new[] { "Type", "Customer", "Quote", "AI Draft", "Send" };
+        var allComplete = currentStep >= 5;
+        return labels.Select((label, index) =>
+        {
+            var stepNumber = index + 1;
+            return new ProviderProWizardStepViewModel
+            {
+                Number = stepNumber,
+                Label = label,
+                IsComplete = allComplete || stepNumber < currentStep,
+                IsCurrent = !allComplete && stepNumber == currentStep
+            };
+        }).ToList();
+    }
+
+    private static string DeriveCustomerInitials(string name)
+    {
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length == 0)
+        {
+            return "?";
+        }
+
+        if (parts.Length == 1)
+        {
+            return parts[0].Length <= 2
+                ? parts[0].ToUpperInvariant()
+                : parts[0][..2].ToUpperInvariant();
+        }
+
+        return $"{char.ToUpperInvariant(parts[0][0])}{char.ToUpperInvariant(parts[^1][0])}";
+    }
+
+    private static string DeriveAvatarTone(int id) => (id % 5) switch
+    {
+        0 => "blue",
+        1 => "green",
+        2 => "purple",
+        3 => "orange",
+        _ => "teal"
+    };
+
+    private static string DerivePropertyLabel(string? propertyType) =>
+        string.IsNullOrWhiteSpace(propertyType) ? "Primary Home" : propertyType;
+
+    private static (string Icon, string Tone) ResolveWizardTypeVisuals(string categoryId)
+    {
+        var match = CreateJobWizardTypes.FirstOrDefault(c => c.Id.Equals(categoryId, StringComparison.OrdinalIgnoreCase));
+        return match == default ? ("fa-wrench", "blue") : (match.Icon, match.Tone);
+    }
+
+    private static string BuildDefaultQuoteRequestNotes(ProviderProCreateJobDraft draft)
+    {
+        if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Please inspect the water damage in the kitchen ceiling and adjacent living room. Identify the source, document affected areas, and provide a repair estimate. Include minor drywall repair and repaint as needed.";
+        }
+
+        return $"Please review the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work at {draft.Address}. Document findings and provide a repair estimate with recommended next steps.";
+    }
+
+    private static List<ProviderProCreateJobAttachmentViewModel> BuildDefaultQuoteAttachments() =>
+    [
+        new() { Id = "ceiling", Name = "Ceiling Damage.jpg", SizeLabel = "2.4 MB", Kind = "image", ThumbnailUrl = "/welcome-house.png" },
+        new() { Id = "kitchen", Name = "Kitchen Area.jpg", SizeLabel = "1.8 MB", Kind = "image", ThumbnailUrl = "/welcome-house.png" },
+        new() { Id = "notes", Name = "Notes.docx", SizeLabel = "412 KB", Kind = "document" }
+    ];
+
+    private static string BuildAiCustomerNeeds(ProviderProCreateJobDraft draft, string notes)
+    {
+        if (!string.IsNullOrWhiteSpace(notes) && notes.Length > 40)
+        {
+            return notes;
+        }
+
+        return "Customer reports water coming through the ceiling after heavy rain. They'd like an inspection to find the cause and get a repair recommendation and estimate.";
+    }
+
+    private static List<string> BuildAiRecommendedScope(ProviderProCreateJobDraft draft)
+    {
+        if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+        {
+            return
+            [
+                "Inspect water-damaged area",
+                "Document moisture readings and affected materials",
+                "Identify likely source of water intrusion",
+                "Recommend minor drywall repair (if needed)",
+                "Provide homeowner summary and next steps"
+            ];
+        }
+
+        return
+        [
+            $"Assess the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work",
+            "Document findings and affected areas",
+            "Identify materials and labor needed",
+            "Provide homeowner summary and next steps"
+        ];
+    }
+
+    private static List<ProviderProCreateJobEstimateLineViewModel> BuildAiEstimateLines(ProviderProCreateJobDraft draft)
+    {
+        if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+        {
+            return
+            [
+                Line("Service call", 95m),
+                Line("Inspection & moisture assessment", 275m),
+                Line("Minor drywall repair allowance", 350m),
+                Line("Materials allowance", 125m)
+            ];
+        }
+
+        return
+        [
+            Line("Service call", 95m),
+            Line("On-site assessment", 175m),
+            Line("Labor allowance", 250m),
+            Line("Materials allowance", 100m)
+        ];
+    }
+
+    private static void RefineEstimateForSend(ProviderProCreateJobDraft draft)
+    {
+        if (draft.ServiceCategoryId.Equals("inspection", StringComparison.OrdinalIgnoreCase)
+            || draft.Title.Contains("inspection", StringComparison.OrdinalIgnoreCase))
+        {
+            draft.EstimateLines =
+            [
+                Line("On-site inspection & assessment", 225m),
+                Line("Moisture mapping & documentation", 150m),
+                Line("Photos & AI analysis", 125m),
+                Line("Report & recommendations", 125m)
+            ];
+            draft.EstimateTotal = draft.EstimateLines.Sum(l => l.Amount);
+            draft.ScopeSummary = "Inspect affected areas, identify moisture sources, document damage, and provide a detailed report with recommendations.";
+        }
+    }
+
+    private static string BuildScopeSummary(ProviderProCreateJobDraft draft) =>
+        draft.AiRecommendedScope.Count > 0
+            ? string.Join(" ", draft.AiRecommendedScope.Take(3)) + "."
+            : $"Complete the requested {draft.ServiceCategoryLabel.ToLowerInvariant()} work and provide a detailed summary.";
+
+    private static string BuildDefaultCustomerMessage(ProviderProCreateJobDraft draft)
+    {
+        var firstName = draft.CustomerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? draft.CustomerName;
+        return $"Hi {firstName}, here's your quote for the {draft.Title.ToLowerInvariant()}. Let us know if you have any questions!";
+    }
+
+    private static ProviderProCreateJobEstimateLineViewModel Line(string label, decimal amount) =>
+        new() { Label = label, Amount = amount, AmountLabel = FormatCurrency(amount) };
+
+    private static string FormatCurrency(decimal amount) =>
+        amount.ToString("C", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
 
     private async Task<int?> ResolveClienteIdAsync(
         int proveedorId,

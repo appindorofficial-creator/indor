@@ -5,7 +5,8 @@
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     var money = CultureInfo.GetCultureInfo("en-US");
-    var initial = !string.IsNullOrWhiteSpace(Model.CompanyName) ? Model.CompanyName.Trim()[0].ToString().ToUpperInvariant() : "P";
+    var initial = Model.CompanyInitial;
+    ViewBag.CompanyInitial = initial;
     var allServices = Model.Categories.Concat(Model.Services).Distinct().ToList();
 }
 
@@ -19,12 +20,32 @@
         </div>
     </section>
 
+    @if (TempData["ProfileSaved"] is true)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+            <i class="fas fa-circle-check"></i> Profile updated successfully.
+        </div>
+    }
+    @if (TempData["ProfilePhotoError"] is string photoError)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
+            <i class="fas fa-circle-exclamation"></i> @photoError
+        </div>
+    }
+
     <section class="prv-pro-profile-hero">
         <button type="button" class="prv-pro-profile-public-link">
             View Public Profile <i class="fas fa-arrow-up-right-from-square"></i>
         </button>
         <div class="prv-pro-profile-hero-main">
-            <div class="prv-pro-profile-logo">@initial</div>
+            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+            {
+                <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@Model.CompanyName" class="prv-pro-profile-logo prv-pro-profile-logo--img" />
+            }
+            else
+            {
+                <div class="prv-pro-profile-logo">@initial</div>
+            }
             <div>
                 <div class="prv-pro-profile-name-row">
                     <h2>@Model.CompanyName</h2>
@@ -65,7 +86,7 @@
     </section>
 
     <section class="prv-pro-profile-quick">
-        <button type="button" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</button>
+        <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</a>
         <button type="button" class="prv-pro-profile-quick-btn"><i class="fas fa-globe"></i> Public Profile</button>
         <button type="button" class="prv-pro-profile-quick-btn"><i class="fas fa-share-nodes"></i> Share</button>
         <button type="button" class="prv-pro-profile-quick-btn"><i class="fas fa-gear"></i> Settings</button>

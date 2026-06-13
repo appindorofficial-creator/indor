@@ -28,7 +28,7 @@
     @await Html.PartialAsync("_CrawlspaceCheckStepper", 2)
 
     <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your crawlspace</h1>
-    <p class="page-lead" style="margin-bottom:16px;">A few details help us prepare the right inspection.</p>
+    <p class="page-lead" style="margin-bottom:16px;">A few details help us prepare the right inspection. Select an answer for each question below.</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -115,6 +115,36 @@
         bindSingle('[data-vap]', 'data-vap', document.getElementById('BarreraVapor'));
         bindSingle('[data-access]', 'data-access', document.getElementById('TipoAcceso'));
         bindSingle('[data-last]', 'data-last', document.getElementById('UltimaRevision'));
+
+        var form = document.getElementById('csc-setup-form');
+        var requiredFields = [
+            { id: 'Encapsulacion', message: 'Please indicate whether you have encapsulation.' },
+            { id: 'Aislamiento', message: 'Please indicate whether there is insulation.' },
+            { id: 'BarreraVapor', message: 'Please indicate whether you have a ground vapor barrier.' },
+            { id: 'TipoAcceso', message: 'Please select an access type.' },
+            { id: 'UltimaRevision', message: 'Please indicate when your crawlspace was last checked.' }
+        ];
+
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') {
+                return;
+            }
+
+            var firstMissing = null;
+            requiredFields.forEach(function (field) {
+                var input = document.getElementById(field.id);
+                if (!input) return;
+                var empty = !input.value || !String(input.value).trim();
+                if (empty && !firstMissing) {
+                    firstMissing = field;
+                }
+            });
+
+            if (firstMissing) {
+                e.preventDefault();
+                alert(firstMissing.message);
+            }
+        });
     })();
 </script>
 </body>

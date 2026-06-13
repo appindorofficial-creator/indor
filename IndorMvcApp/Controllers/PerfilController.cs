@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
@@ -16,6 +17,8 @@ namespace IndorMvcApp.Controllers;
 public class PerfilController : Controller
 {
     private const string MembershipSessionKey = "MembershipSignup";
+    private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    private const long MaxProfilePhotoBytes = 10_000_000;
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -99,6 +102,48 @@ public class PerfilController : Controller
         ViewData["Title"] = "Profile Options";
         ViewData["Subtitulo"] = "Manage your account details and preferences.";
         return View();
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditarPerfil()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login", "Account");
+
+        ViewData["Title"] = "Edit Profile";
+        ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+        return View(MapEditProfileViewModel(user));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> EditarPerfil(
+        string nombre, string apellidos, string telefono, IFormFile? foto)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login", "Account");
+
+        if (!string.IsNullOrWhiteSpace(nombre)) user.Nombre = nombre.Trim();
+        if (!string.IsNullOrWhiteSpace(apellidos)) user.Apellidos = apellidos.Trim();
+        if (!string.IsNullOrWhiteSpace(telefono))
+        {
+            user.Telefono = telefono.Trim();
+            user.PhoneNumber = telefono.Trim();
+        }
+
+        var photoError = await TrySaveHomeownerPhotoAsync(user, foto);
+        if (!string.IsNullOrWhiteSpace(photoError))
+        {
+            TempData["PerfilError"] = photoError;
+            ViewData["Title"] = "Edit Profile";
+            ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+            return View(MapEditProfileViewModel(user));
+        }
+
+        await _userManager.UpdateAsync(user);
+        TempData["PerfilOk"] = "Profile updated successfully.";
+        return RedirectToAction("Index", "Home", new { section = "more" });
     }
 
     [HttpGet]
@@ -527,6 +572,68 @@ public class PerfilController : Controller
         return View();
     }
 
+    private static HomeownerEditProfileViewModel MapEditProfileViewModel(ApplicationUser user)
+    {
+        var fullName = UserDisplayName.Format(user);
+        var initial = "?";
+        if (!string.IsNullOrWhiteSpace(fullName))
+        {
+            initial = fullName.Trim()[..1].ToUpperInvariant();
+        }
+        else if (!string.IsNullOrWhiteSpace(user.Email))
+        {
+            initial = user.Email.Trim()[..1].ToUpperInvariant();
+        }
+
+        return new HomeownerEditProfileViewModel
+        {
+            Nombre = user.Nombre,
+            Apellidos = user.Apellidos,
+            Telefono = user.Telefono,
+            Email = user.Email ?? string.Empty,
+            PhotoUrl = user.FotoUrl,
+            DisplayInitial = initial
+        };
+    }
+
+    private async Task<string?> TrySaveHomeownerPhotoAsync(ApplicationUser user, IFormFile? foto)
+    {
+        if (foto == null || foto.Length == 0)
+        {
+            return null;
+        }
+
+        var ext = Path.GetExtension(foto.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) && foto.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        {
+            ext = foto.ContentType.Contains("png", StringComparison.OrdinalIgnoreCase) ? ".png"
+                : foto.ContentType.Contains("webp", StringComparison.OrdinalIgnoreCase) ? ".webp"
+                : ".jpg";
+        }
+
+        if (!ProfilePhotoExtensions.Contains(ext))
+        {
+            return "Photo must be JPG, PNG, or WEBP.";
+        }
+
+        if (foto.Length > MaxProfilePhotoBytes)
+        {
+            return "Photo must be 10 MB or less.";
+        }
+
+        var carpeta = Path.Combine(_env.WebRootPath, "uploads", "avatars");
+        Directory.CreateDirectory(carpeta);
+        var nombreArchivo = $"{user.Id}_{Guid.NewGuid():N}{ext}";
+        var ruta = Path.Combine(carpeta, nombreArchivo);
+        await using (var fs = System.IO.File.Create(ruta))
+        {
+            await foto.CopyToAsync(fs);
+        }
+
+        user.FotoUrl = $"/uploads/avatars/{nombreArchivo}";
+        return null;
+    }
+
     [HttpGet]
     public async Task<IActionResult> Historial()
     {
@@ -585,7 +692,7 @@ public class PerfilController : Controller
 
         await _userManager.UpdateAsync(user);
         TempData["PerfilOk"] = "Profile updated successfully.";
-        return RedirectToAction(nameof(Opciones));
+        return RedirectToAction("Index", "Home", new { section = "more" });
     }
 
     [HttpPost]
@@ -596,30 +703,22 @@ public class PerfilController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
-        if (foto != null && foto.Length > 0)
+        if (foto == null || foto.Length == 0)
         {
-            var ext = Path.GetExtension(foto.FileName).ToLowerInvariant();
-            var permitidos = new[] { ".jpg", ".jpeg", ".png", ".webp" };
-            if (Array.IndexOf(permitidos, ext) >= 0)
-            {
-                var carpeta = Path.Combine(_env.WebRootPath, "uploads", "avatars");
-                Directory.CreateDirectory(carpeta);
-                var nombreArchivo = $"{user.Id}_{DateTime.Now.Ticks}{ext}";
-                var ruta = Path.Combine(carpeta, nombreArchivo);
-                await using (var fs = new FileStream(ruta, FileMode.Create))
-                {
-                    await foto.CopyToAsync(fs);
-                }
-                user.FotoUrl = $"/uploads/avatars/{nombreArchivo}";
-                await _userManager.UpdateAsync(user);
-                TempData["PerfilOk"] = "Photo updated.";
-            }
-            else
-            {
-                TempData["PerfilError"] = "Image format not allowed.";
-            }
+            TempData["PerfilError"] = "Please choose a photo to upload.";
+            return RedirectToAction(nameof(EditarPerfil));
         }
-        return RedirectToAction(nameof(Opciones));
+
+        var photoError = await TrySaveHomeownerPhotoAsync(user, foto);
+        if (!string.IsNullOrWhiteSpace(photoError))
+        {
+            TempData["PerfilError"] = photoError;
+            return RedirectToAction(nameof(EditarPerfil));
+        }
+
+        await _userManager.UpdateAsync(user);
+        TempData["PerfilOk"] = "Photo updated.";
+        return RedirectToAction("Index", "Home", new { section = "more" });
     }
 
     [HttpPost]
@@ -638,7 +737,7 @@ public class PerfilController : Controller
         var result = await _userManager.ChangePasswordAsync(user, actual ?? string.Empty, nueva);
         if (result.Succeeded)
         {
-            await _signInManager.RefreshSignInAsync(user);
+            await _signInManager.SignInAsync(user, isPersistent: true);
             TempData["PerfilOk"] = "Password updated.";
         }
         else

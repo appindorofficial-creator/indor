@@ -29,15 +29,20 @@ public static class MovingSetupDisplayService
             return null;
         }
 
-        var serviceItems = servicios
+        var ordered = servicios
             .Where(s => s.Activo)
             .OrderBy(s => s.Orden)
-            .Select(s => new MovingSetupServiceItemViewModel
+            .ThenBy(s => s.Id)
+            .ToList();
+
+        var serviceItems = ordered
+            .Select((servicio, index) => new MovingSetupServiceItemViewModel
             {
-                Id = s.Id,
-                Nombre = s.Nombre,
-                IconoClase = s.IconoClase,
-                Url = ResolveServicioUrl(urlHelper, s)
+                Orden = index + 1,
+                Id = servicio.Id,
+                Nombre = servicio.Nombre,
+                IconoClase = servicio.IconoClase,
+                Url = ResolveServicioUrl(urlHelper, servicio)
             })
             .ToList();
 
@@ -63,7 +68,7 @@ public static class MovingSetupDisplayService
         return new MovingSetupSectionViewModel
         {
             Titulo = config.Titulo,
-            Subtitulo = config.Subtitulo,
+            Subtitulo = $"{serviceItems.Count} moving service{(serviceItems.Count == 1 ? "" : "s")} for your home",
             IconoClase = config.IconoClase,
             ViewAllTexto = config.ViewAllTexto,
             ViewAllUrl = string.IsNullOrWhiteSpace(config.ViewAllUrl)

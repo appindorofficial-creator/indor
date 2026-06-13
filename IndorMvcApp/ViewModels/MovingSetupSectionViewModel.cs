@@ -20,6 +20,7 @@ public class MovingSetupSectionViewModel
 
 public class MovingSetupServiceItemViewModel
 {
+    public int Orden { get; set; }
     public int Id { get; set; }
     public string Nombre { get; set; } = string.Empty;
     public string IconoClase { get; set; } = "fa-house";

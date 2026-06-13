@@ -10,7 +10,7 @@
 @{
     ViewData["ShowActions"] = false;
     ViewData["ShowChevron"] = true;
-    ViewData["HeroLink"] = "#personal";
+    ViewData["HeroLink"] = null;
 }
 @await Html.PartialAsync("_MoreProfileHero", moreProfile)
 
@@ -19,17 +19,17 @@
     <div>
         <h4>Complete your profile</h4>
         <p>Add a few more details to personalize your experience and get better recommendations.</p>
-        <a href="#personal" class="pf-btn" style="display:inline-flex;">Continue</a>
+        <a asp-controller="Perfil" asp-action="EditarPerfil" class="pf-btn" style="display:inline-flex;">Edit profile</a>
     </div>
 </div>
 
 <nav class="pf-settings-list">
-    <a class="pf-settings-item" href="#personal">
+    <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="personal">
         <span class="si-icon"><i class="fas fa-user"></i></span>
         <span class="si-text"><strong>Personal Information</strong><small>Update your name, address, and personal details.</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
-    <a class="pf-settings-item" href="#photo">
+    <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="photo">
         <span class="si-icon"><i class="fas fa-camera"></i></span>
         <span class="si-text"><strong>Profile Photo</strong><small>Change your profile picture.</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
@@ -60,33 +60,6 @@
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
 </nav>
-
-<div class="pf-card" id="personal">
-    <h3><i class="fas fa-id-card"></i> Personal details</h3>
-    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="ActualizarDatos">
-        @Html.AntiForgeryToken()
-        <div class="pf-row">
-            <input type="text" name="nombre" placeholder="First name" value="@usr?.Nombre" />
-            <input type="text" name="apellidos" placeholder="Last name" value="@usr?.Apellidos" />
-        </div>
-        <button type="submit" class="pf-btn"><i class="fas fa-save"></i> Save changes</button>
-    </form>
-</div>
-
-<div class="pf-card" id="photo">
-    <h3><i class="fas fa-camera"></i> Profile photo</h3>
-    @if (!string.IsNullOrWhiteSpace(usr?.FotoUrl))
-    {
-        <div style="text-align:center;margin-bottom:10px;">
-            <img src="@Url.Content("~" + usr!.FotoUrl)" alt="Photo" style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:1px solid #E5E7EB;" />
-        </div>
-    }
-    <form class="pf-form" method="post" enctype="multipart/form-data" asp-controller="Perfil" asp-action="SubirFoto">
-        @Html.AntiForgeryToken()
-        <input type="file" name="foto" accept="image/*" required />
-        <button type="submit" class="pf-btn"><i class="fas fa-upload"></i> Upload photo</button>
-    </form>
-</div>
 
 <div class="pf-card" id="contact">
     <h3><i class="fas fa-phone"></i> Phone</h3>

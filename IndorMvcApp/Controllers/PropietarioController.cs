@@ -17,17 +17,20 @@ public class PropietarioController : Controller
     private const string OnboardingPropertySessionKey = "OnboardingPropertyInfo";
 
     private readonly IAddressLookupService _addressLookupService;
+    private readonly IOpenAiMaintenanceRecommendationService _maintenanceRecommendationService;
     private readonly ILogger<PropietarioController> _logger;
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public PropietarioController(
         IAddressLookupService addressLookupService,
+        IOpenAiMaintenanceRecommendationService maintenanceRecommendationService,
         ILogger<PropietarioController> logger,
         AppDbContext db,
         UserManager<ApplicationUser> userManager)
     {
         _addressLookupService = addressLookupService;
+        _maintenanceRecommendationService = maintenanceRecommendationService;
         _logger = logger;
         _db = db;
         _userManager = userManager;
@@ -75,8 +78,26 @@ public class PropietarioController : Controller
                 return View(model);
             }
 
+            propertyInfo.MaintenanceRecommendations =
+                await _maintenanceRecommendationService.GenerateAsync(propertyInfo);
+
+            if (PropertyMaintenanceDisplayService.IsRealAiPlan(propertyInfo.MaintenanceRecommendations))
+            {
+                _logger.LogInformation(
+                    "OpenAI maintenance plan generated for {Address} ({Count} items)",
+                    propertyInfo.FormattedAddress,
+                    propertyInfo.MaintenanceRecommendations!.Items.Count);
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "OpenAI maintenance unavailable for {Address}: {Reason}",
+                    propertyInfo.FormattedAddress,
+                    propertyInfo.MaintenanceRecommendations?.Summary ?? "unknown");
+            }
+
             SaveOnboardingProperty(propertyInfo);
-            return RedirectToAction(nameof(ConfirmProperty));
+            return RedirectToAction(nameof(PropertyDetails));
         }
         catch (Exception ex)
         {
@@ -143,6 +164,9 @@ public class PropietarioController : Controller
         ViewBag.OnboardingShowBack = true;
 
         var fullName = UserDisplayName.Format(user);
+        ViewBag.MaintenanceSection = PropertyMaintenanceDisplayService.BuildSection(
+            propertyInfo.MaintenanceRecommendations, compact: true);
+
         return View(new OnboardingReviewViewModel
         {
             FullName = string.IsNullOrWhiteSpace(fullName) ? user.Email ?? string.Empty : fullName,
@@ -205,6 +229,8 @@ public class PropietarioController : Controller
             propertyInfo.AttomRawJson,
             propertyInfo.DataSource,
             propertyInfo.FormattedAddress);
+        ViewBag.MaintenanceSection = PropertyMaintenanceDisplayService.BuildSection(
+            propertyInfo.MaintenanceRecommendations);
 
         return View(propertyInfo);
     }
@@ -318,6 +344,14 @@ public class PropietarioController : Controller
                 ? null
                 : "Property enrichment not available"
         };
+
+        if (PropertyMaintenanceDisplayService.IsRealAiPlan(fullModel.MaintenanceRecommendations))
+        {
+            var maintenancePlan = fullModel.MaintenanceRecommendations!;
+            maintenancePlan.GeneratedUtc ??= DateTime.UtcNow;
+            propiedad.MantenimientoRecomendadoJson = JsonSerializer.Serialize(maintenancePlan, jsonOptions);
+            propiedad.MantenimientoRecomendadoUtc = maintenancePlan.GeneratedUtc;
+        }
 
         _db.Propiedades.Add(propiedad);
         await _db.SaveChangesAsync();

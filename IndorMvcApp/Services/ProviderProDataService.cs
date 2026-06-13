@@ -6,7 +6,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Services;
 
-public class ProviderProDataService(AppDbContext db) : IProviderProDataService
+public class ProviderProDataService(
+    AppDbContext db,
+    IRealtorProviderBridgeService realtorBridge,
+    IHttpContextAccessor httpContextAccessor) : IProviderProDataService
 {
     public async Task<ProviderProWorkspaceData> GetWorkspaceDataAsync(int proveedorId, bool includeLeads, CancellationToken cancellationToken = default)
     {
@@ -17,22 +20,30 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
         var todaysJobRows = await db.IndorProveedorJobs
             .AsNoTracking()
+            .Include(j => j.Cliente)
             .Where(j => j.ProveedorId == proveedorId && j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
             .OrderBy(j => j.ScheduledAt)
             .ToListAsync(cancellationToken);
 
-        var todaysJobs = todaysJobRows.Select(j => new ProviderProJobItemViewModel
+        var todaysJobs = todaysJobRows.Select(j =>
         {
-            Id = j.Id,
-            TimeLabel = j.ScheduledAt.HasValue
-                ? (j.ScheduledAt.Value.Kind == DateTimeKind.Utc
-                    ? j.ScheduledAt.Value.ToLocalTime()
-                    : j.ScheduledAt.Value).ToString("h:mm tt")
-                : "TBD",
-            Title = j.Title,
-            Address = j.Address,
-            Status = MapJobStatusLabel(j.Status),
-            StatusClass = MapJobStatusClass(j.Status)
+            var (icon, tone) = DeriveHomeJobPresentation(j.Title, j.ServiceType, j.Status);
+            return new ProviderProJobItemViewModel
+            {
+                Id = j.Id,
+                TimeLabel = j.ScheduledAt.HasValue
+                    ? (j.ScheduledAt.Value.Kind == DateTimeKind.Utc
+                        ? j.ScheduledAt.Value.ToLocalTime()
+                        : j.ScheduledAt.Value).ToString("h:mm tt")
+                    : "TBD",
+                Title = j.Title,
+                Address = j.Address,
+                CustomerName = j.Cliente?.Name ?? "",
+                IconClass = icon,
+                IconTone = tone,
+                Status = MapJobStatusLabel(j.Status),
+                StatusClass = MapJobStatusClass(j.Status)
+            };
         }).ToList();
 
         var newLeadsCount = includeLeads
@@ -61,7 +72,9 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
         var pendingEstimatesQuery = db.IndorProveedorEstimates
             .AsNoTracking()
-            .Where(e => e.ProveedorId == proveedorId && e.Status != "Accepted" && e.Status != "Declined");
+            .Where(e => e.ProveedorId == proveedorId
+                && e.Status != ProviderEstimateStatuses.Approved
+                && e.Status != ProviderEstimateStatuses.Declined);
 
         var pendingEstimatesCount = await pendingEstimatesQuery.CountAsync(cancellationToken);
 
@@ -210,6 +223,11 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             or ProviderJobStatuses.Confirmed
             or ProviderJobStatuses.WaitingOnMaterials);
         var newLeadsCount = leadRows.Count(l => l.Status == ProviderLeadStatuses.New);
+        var estimatesCount = estimateRows.Count(e => e.Status is ProviderEstimateStatuses.Sent
+            or ProviderEstimateStatuses.Viewed
+            or ProviderEstimateStatuses.Approved
+            or ProviderEstimateStatuses.Draft);
+        var completedCount = jobRows.Count(j => j.Status == ProviderJobStatuses.Completed);
         var needsReportCount = reportRows.Count(r =>
             r.Status is ProviderReportStatuses.Draft or ProviderReportStatuses.Approval);
         var paymentsDue = invoices
@@ -220,6 +238,7 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         {
             "today" => jobRows
                 .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
+                .OrderBy(j => j.ScheduledAt)
                 .Select(MapJobWorkItem)
                 .ToList(),
             "leads" => leadRows
@@ -261,6 +280,8 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             TodayCount = todayCount,
             ActiveCount = activeCount,
             NewLeadsCount = newLeadsCount,
+            EstimatesCount = estimatesCount,
+            CompletedCount = completedCount,
             NeedsReportCount = needsReportCount,
             PaymentsDue = paymentsDue,
             Items = items,
@@ -414,6 +435,8 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             });
         }
 
+        var (homeIcon, homeTone) = DeriveHomeJobPresentation(job.Title, job.ServiceType, job.Status);
+
         return new ProviderProJobsWorkItemViewModel
         {
             ItemId = job.Id,
@@ -423,9 +446,11 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             Address = job.Address,
             CustomerName = job.Cliente?.Name ?? "",
             TimeLabel = FormatTimeLabel(job.ScheduledAt),
+            ScheduleTimeShort = FormatScheduleTimeShort(job.ScheduledAt),
             StatusLabel = statusLabel,
             StatusClass = statusClass,
-            IconClass = MapServiceIcon(job.ServiceType ?? job.Title),
+            IconClass = homeIcon,
+            IconTone = homeTone,
             EstimateAmount = job.EstimateAmount,
             MetaLines = meta,
             ShowEstimateLink = true,
@@ -442,6 +467,7 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
     {
         var (urgencyClass, urgencyIcon) = MapLeadUrgency(lead.Urgency);
         var isHigh = lead.Urgency.Contains("High", StringComparison.OrdinalIgnoreCase);
+        var findingCount = ParseInspectionFindings(lead.FindingsJson).Count;
 
         return new ProviderProNewLeadCardViewModel
         {
@@ -456,7 +482,13 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             StatusLabel = lead.Status == ProviderLeadStatuses.Accepted ? "Accepted" : "New",
             StatusClass = lead.Status == ProviderLeadStatuses.Accepted ? "accepted" : "new",
             ImageUrl = string.IsNullOrWhiteSpace(lead.ImageUrl) ? "/welcome-house.png" : lead.ImageUrl,
-            CanAccept = lead.Status == ProviderLeadStatuses.New
+            CanAccept = lead.Status == ProviderLeadStatuses.New,
+            CanDecline = lead.Status is ProviderLeadStatuses.New or ProviderLeadStatuses.Accepted,
+            ReceivedLabel = FormatRelativeLeadTime(lead.FechaCreacion),
+            FindingCount = findingCount,
+            FindingSummary = findingCount > 0 ? $"{findingCount} inspection finding{(findingCount == 1 ? "" : "s")} found" : null,
+            SourceBadge = string.Equals(lead.LeadSource, "RealtorInspection", StringComparison.OrdinalIgnoreCase)
+                ? "Realtor inspection" : null
         };
     }
 
@@ -480,11 +512,15 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         return ("standard", "fa-clock");
     }
 
-    private static string NormalizeLeadsFilter(string? filter) => (filter ?? "all").Trim().ToLowerInvariant() switch
+    private static string NormalizeLeadsFilter(string? filter)
     {
-        "new" or "accepted" or "urgent" => filter!.Trim().ToLowerInvariant(),
-        _ => "all"
-    };
+        var normalized = (filter ?? "new").Trim().ToLowerInvariant();
+        return normalized switch
+        {
+            "new" or "accepted" or "urgent" or "in_progress" or "responded" or "all" => normalized,
+            _ => "new"
+        };
+    }
 
     private static ProviderProJobsWorkItemViewModel MapLeadWorkItem(IndorProveedorLead lead)
     {
@@ -528,14 +564,30 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             .OrderByDescending(l => l.FechaCreacion)
             .ToListAsync(cancellationToken);
 
+        var respondedLeadIds = await db.IndorProveedorEstimates.AsNoTracking()
+            .Where(e => e.ProveedorId == proveedor.Id
+                && e.LeadId != null
+                && (e.Status == ProviderEstimateStatuses.Sent
+                    || e.Status == ProviderEstimateStatuses.Viewed
+                    || e.Status == ProviderEstimateStatuses.Approved))
+            .Select(e => e.LeadId!.Value)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
         var newCount = leadRows.Count(l => l.Status == ProviderLeadStatuses.New);
         var acceptedCount = leadRows.Count(l => l.Status == ProviderLeadStatuses.Accepted);
+        var inProgressCount = leadRows.Count(l =>
+            l.Status == ProviderLeadStatuses.Accepted && !respondedLeadIds.Contains(l.Id));
+        var respondedCount = leadRows.Count(l => respondedLeadIds.Contains(l.Id));
         var highUrgencyCount = leadRows.Count(l => l.Urgency.Contains("High", StringComparison.OrdinalIgnoreCase));
 
         var filtered = activeFilter switch
         {
             "new" => leadRows.Where(l => l.Status == ProviderLeadStatuses.New),
             "accepted" => leadRows.Where(l => l.Status == ProviderLeadStatuses.Accepted),
+            "in_progress" => leadRows.Where(l =>
+                l.Status == ProviderLeadStatuses.Accepted && !respondedLeadIds.Contains(l.Id)),
+            "responded" => leadRows.Where(l => respondedLeadIds.Contains(l.Id)),
             "urgent" => leadRows.Where(l => l.Urgency.Contains("High", StringComparison.OrdinalIgnoreCase)),
             _ => leadRows.AsEnumerable()
         };
@@ -557,6 +609,8 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             ActiveFilter = activeFilter,
             SearchQuery = search,
             NewCount = newCount,
+            InProgressCount = inProgressCount,
+            RespondedCount = respondedCount,
             AcceptedCount = acceptedCount,
             HighUrgencyCount = highUrgencyCount,
             Leads = leads,
@@ -631,8 +685,195 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             CanScheduleVisit = lead.Status is ProviderLeadStatuses.New or ProviderLeadStatuses.Accepted,
             CanCreateEstimate = lead.Status is ProviderLeadStatuses.New or ProviderLeadStatuses.Accepted,
             CanDecline = lead.Status is ProviderLeadStatuses.New or ProviderLeadStatuses.Accepted,
+            InspectionReportUrl = lead.InspectionReportUrl,
+            SourceBadge = string.Equals(lead.LeadSource, "RealtorInspection", StringComparison.OrdinalIgnoreCase)
+                ? "From realtor inspection report" : null,
+            AnalysisSummary = lead.AnalysisSummary,
+            FindingCount = ParseInspectionFindings(lead.FindingsJson).Count,
+            HasInspectionFindings = !string.IsNullOrWhiteSpace(lead.FindingsJson),
+            InspectionFindings = ParseInspectionFindings(lead.FindingsJson),
             FlowSteps = LeadDetailsFlowSteps(lead.Id)
         };
+    }
+
+    public async Task<ProviderProInspectionFindingsViewModel?> GetInspectionFindingsAsync(
+        IndorProveedor proveedor,
+        int leadId,
+        CancellationToken cancellationToken = default)
+    {
+        var lead = await LoadLeadForWorkflowAsync(proveedor.Id, leadId, cancellationToken);
+        if (lead == null)
+        {
+            return null;
+        }
+
+        var session = httpContextAccessor.HttpContext?.Session;
+        var selected = session != null ? ProviderLeadSelectionSession.Get(session, leadId) : [];
+        var findings = ParseInspectionFindings(lead.FindingsJson);
+        if (selected.Count == 0 && findings.Count > 0)
+        {
+            selected = findings.Select(f => f.Index).ToList();
+        }
+
+        foreach (var f in findings)
+        {
+            f.IsSelected = selected.Contains(f.Index);
+        }
+
+        return new ProviderProInspectionFindingsViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            LeadId = lead.Id,
+            LeadCode = FormatLeadCode(lead),
+            Address = lead.Address,
+            ServiceType = lead.ServiceType,
+            InspectionReportUrl = lead.InspectionReportUrl,
+            AnalysisSummary = lead.AnalysisSummary ?? BuildDefaultAnalysisSummary(findings.Count, lead.ServiceType),
+            Findings = findings,
+            SelectedCount = findings.Count(f => f.IsSelected),
+            FlowSteps = InspectionFindingsFlowSteps(lead.Id)
+        };
+    }
+
+    public Task SaveLeadFindingSelectionAsync(int leadId, IReadOnlyList<int> selectedIndices)
+    {
+        var session = httpContextAccessor.HttpContext?.Session
+            ?? throw new InvalidOperationException("Session is not available.");
+        ProviderLeadSelectionSession.Set(session, leadId, selectedIndices);
+        return Task.CompletedTask;
+    }
+
+    public async Task<ProviderProSelectRepairItemsViewModel?> GetSelectRepairItemsAsync(
+        IndorProveedor proveedor,
+        int leadId,
+        CancellationToken cancellationToken = default)
+    {
+        var lead = await LoadLeadForWorkflowAsync(proveedor.Id, leadId, cancellationToken);
+        if (lead == null)
+        {
+            return null;
+        }
+
+        var session = httpContextAccessor.HttpContext?.Session;
+        var selected = session != null ? ProviderLeadSelectionSession.Get(session, leadId) : [];
+        var findings = ParseInspectionFindings(lead.FindingsJson)
+            .Where(f => selected.Count == 0 || selected.Contains(f.Index))
+            .Select(f =>
+            {
+                f.IsSelected = true;
+                return f;
+            })
+            .ToList();
+
+        if (findings.Count == 0)
+        {
+            findings = ParseInspectionFindings(lead.FindingsJson);
+        }
+
+        return new ProviderProSelectRepairItemsViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            LeadId = lead.Id,
+            Address = lead.Address,
+            ServiceType = lead.ServiceType,
+            SelectedItems = findings,
+            FlowSteps = SelectRepairItemsFlowSteps(lead.Id)
+        };
+    }
+
+    private static List<ProviderInspectionFindingItemViewModel> ParseInspectionFindings(string? findingsJson)
+    {
+        if (string.IsNullOrWhiteSpace(findingsJson))
+        {
+            return [];
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(findingsJson);
+            if (doc.RootElement.ValueKind != JsonValueKind.Array)
+            {
+                return [];
+            }
+
+            var items = new List<ProviderInspectionFindingItemViewModel>();
+            var index = 0;
+            foreach (var node in doc.RootElement.EnumerateArray())
+            {
+                var title = node.TryGetProperty("title", out var titleNode)
+                    ? titleNode.GetString()?.Trim()
+                    : node.TryGetProperty("Title", out var titleNodeAlt)
+                        ? titleNodeAlt.GetString()?.Trim()
+                        : null;
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    continue;
+                }
+
+                var section = ReadJsonString(node, "sourceSection", "SourceSection");
+                int? page = null;
+                if (node.TryGetProperty("sourcePage", out var pageNode) && pageNode.TryGetInt32(out var pageValue) && pageValue > 0)
+                {
+                    page = pageValue;
+                }
+                else if (node.TryGetProperty("SourcePage", out var pageNodeAlt) && pageNodeAlt.TryGetInt32(out var pageValueAlt) && pageValueAlt > 0)
+                {
+                    page = pageValueAlt;
+                }
+
+                var reportReference = ReadJsonString(node, "reportReference", "ReportReference")
+                    ?? BuildReportReference(section, page);
+
+                items.Add(new ProviderInspectionFindingItemViewModel
+                {
+                    Index = index++,
+                    Title = title,
+                    Description = ReadJsonString(node, "description", "Description"),
+                    Priority = ReadJsonString(node, "priority", "Priority") ?? "Moderate",
+                    SourceSection = section,
+                    SourcePage = page,
+                    SourceExcerpt = ReadJsonString(node, "sourceExcerpt", "SourceExcerpt"),
+                    ReportReference = reportReference
+                });
+            }
+
+            return items;
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static string? ReadJsonString(JsonElement node, string camelName, string pascalName)
+    {
+        if (node.TryGetProperty(camelName, out var camel) && camel.ValueKind == JsonValueKind.String)
+        {
+            return camel.GetString()?.Trim();
+        }
+
+        if (node.TryGetProperty(pascalName, out var pascal) && pascal.ValueKind == JsonValueKind.String)
+        {
+            return pascal.GetString()?.Trim();
+        }
+
+        return null;
+    }
+
+    private static string? BuildReportReference(string? section, int? page)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(section))
+        {
+            parts.Add(section.Trim());
+        }
+
+        if (page is > 0)
+        {
+            parts.Add($"Page {page}");
+        }
+
+        return parts.Count == 0 ? null : string.Join(" · ", parts);
     }
 
     public async Task<ProviderProScheduleVisitViewModel?> GetScheduleVisitAsync(
@@ -847,6 +1088,11 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             ? ParseScopeItems(draft.ScopeItemsJson)
             : ParseScopeItems(lead.SuggestedScopeItemsJson);
 
+        if (scopeItems.Count == 0)
+        {
+            scopeItems = BuildScopeItemsFromSelectedFindings(lead);
+        }
+
         var labor = draft?.LaborAmount ?? lead.SuggestedLaborAmount ?? 0m;
         var materials = draft?.MaterialsAmount ?? lead.SuggestedMaterialsAmount ?? 0m;
         var total = scopeItems.Sum(i => i.Amount);
@@ -947,7 +1193,7 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
         ApplyEstimatePricing(estimate, scopeItems, input);
         estimate.FechaActualizacion = DateTime.UtcNow;
-        estimate.Status = input.GoToReview
+        estimate.Status = input.GoToReview || input.GoToSend
             ? ProviderEstimateStatuses.Ready
             : ProviderEstimateStatuses.Draft;
 
@@ -1010,7 +1256,12 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         estimate.SaveCopyToLeads = input.SaveCopyToLeads;
         if (!string.IsNullOrWhiteSpace(input.DeliveryMethod))
         {
-            estimate.DeliveryMethod = input.DeliveryMethod;
+            estimate.DeliveryMethod = NormalizeDeliveryMethod(input.DeliveryMethod);
+        }
+
+        if (!string.IsNullOrWhiteSpace(input.CustomerMessage))
+        {
+            estimate.HomeownerNotes = input.CustomerMessage.Trim();
         }
 
         if (input.SaveAsDraft)
@@ -1020,6 +1271,12 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         }
 
         await db.SaveChangesAsync(cancellationToken);
+
+        if (!input.SaveAsDraft)
+        {
+            await realtorBridge.SyncBidFromEstimateAsync(estimate, cancellationToken);
+        }
+
         return true;
     }
 
@@ -1350,12 +1607,17 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         var draftCount = rows.Count(e => e.Status == ProviderEstimateStatuses.Draft);
         var readyCount = rows.Count(e => e.Status == ProviderEstimateStatuses.Ready);
         var sentCount = rows.Count(e => e.Status is ProviderEstimateStatuses.Sent or ProviderEstimateStatuses.Viewed);
+        var aiDraftCount = rows.Count(e => MapEstimateHubStatus(e).FilterKey == "aidraft");
+        var needsReviewCount = rows.Count(e => MapEstimateHubStatus(e).FilterKey == "needsreview");
+        var pendingCount = draftCount + readyCount;
 
         var filtered = activeTab switch
         {
-            "draft" => rows.Where(e => e.Status == ProviderEstimateStatuses.Draft),
+            "needsreview" => rows.Where(e => MapEstimateHubStatus(e).FilterKey == "needsreview"),
+            "aidraft" => rows.Where(e => MapEstimateHubStatus(e).FilterKey == "aidraft"),
             "ready" => rows.Where(e => e.Status == ProviderEstimateStatuses.Ready),
             "sent" => rows.Where(e => e.Status is ProviderEstimateStatuses.Sent or ProviderEstimateStatuses.Viewed),
+            "draft" => rows.Where(e => e.Status == ProviderEstimateStatuses.Draft),
             _ => rows.Where(e => e.Status is ProviderEstimateStatuses.Draft
                 or ProviderEstimateStatuses.Ready
                 or ProviderEstimateStatuses.Sent
@@ -1382,8 +1644,66 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             DraftCount = draftCount,
             ReadyCount = readyCount,
             SentCount = sentCount,
+            PendingCount = pendingCount,
+            AiDraftCount = aiDraftCount,
+            NeedsReviewCount = needsReviewCount,
             Estimates = cards,
-            FlowSteps = PendingEstimatesFlowSteps()
+            FlowSteps = PendingEstimatesFlowSteps(),
+            WizardSteps = BuildEstimateWizardSteps(2)
+        };
+    }
+
+    public async Task<ProviderProSendEstimatePageViewModel?> GetSendEstimatePageAsync(
+        IndorProveedor proveedor,
+        int estimateId,
+        CancellationToken cancellationToken = default)
+    {
+        var estimate = await db.IndorProveedorEstimates
+            .AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == estimateId && e.ProveedorId == proveedor.Id, cancellationToken);
+
+        if (estimate == null || estimate.Status is ProviderEstimateStatuses.Declined or ProviderEstimateStatuses.Approved)
+        {
+            return null;
+        }
+
+        IndorProveedorLead? lead = null;
+        if (estimate.LeadId.HasValue)
+        {
+            lead = await LoadLeadForWorkflowAsync(proveedor.Id, estimate.LeadId.Value, cancellationToken);
+        }
+
+        var customerName = lead?.CustomerName ?? estimate.CustomerName ?? "Homeowner";
+        var serviceType = estimate.ServiceType ?? lead?.ServiceType ?? "Service";
+        var (icon, tone) = ResolveEstimateServiceVisuals(serviceType, estimate.ServiceCategoryId);
+        var (statusLabel, statusClass, _) = MapEstimateHubStatus(estimate);
+        var photos = ParsePhotoUrls(lead?.PhotosJson, estimate.ImageUrl ?? lead?.ImageUrl);
+        var delivery = NormalizeDeliveryMethodKey(estimate.DeliveryMethod);
+        var firstName = customerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? customerName;
+        var defaultMessage = string.IsNullOrWhiteSpace(estimate.HomeownerNotes)
+            ? $"Hi {firstName}, thanks again for having us out! Attached is your estimate for the {serviceType.ToLowerInvariant()}. Let me know if you have any questions—I'm here to help!"
+            : estimate.HomeownerNotes;
+
+        return new ProviderProSendEstimatePageViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            EstimateId = estimate.Id,
+            Title = ResolveEstimateTitle(estimate),
+            CustomerName = customerName,
+            Address = lead?.Address ?? estimate.Address,
+            DateLabel = estimate.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            ServiceType = serviceType,
+            ServiceIcon = icon,
+            ServiceTone = tone,
+            StatusLabel = statusLabel,
+            StatusClass = statusClass,
+            TotalAmount = estimate.Amount,
+            CustomerMessage = defaultMessage,
+            DeliveryMethod = delivery,
+            HasEstimatePdf = true,
+            HasAiSummary = !string.IsNullOrWhiteSpace(estimate.Description) || !string.IsNullOrWhiteSpace(estimate.ScopeItemsJson),
+            HasVoiceTranscript = !string.IsNullOrWhiteSpace(lead?.ProblemDescription),
+            WizardSteps = BuildEstimateWizardSteps(5)
         };
     }
 
@@ -1408,7 +1728,15 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         }
 
         var scopeItems = ParseScopeItems(estimate.ScopeItemsJson);
+        if (scopeItems.Count == 0 && lead != null)
+        {
+            scopeItems = BuildScopeItemsFromFindings(lead.FindingsJson);
+        }
+
         var code = FormatEstimateCode(estimate.EstimateCode);
+        var (statusLabel, statusClass, _) = MapEstimateHubStatus(estimate);
+        var (icon, tone) = ResolveEstimateServiceVisuals(estimate.ServiceType ?? lead?.ServiceType, estimate.ServiceCategoryId);
+        var photos = ParsePhotoUrls(lead?.PhotosJson, estimate.ImageUrl ?? lead?.ImageUrl);
 
         return new ProviderProQuickEstimateViewModel
         {
@@ -1417,7 +1745,14 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             EstimateId = estimate.Id,
             PageTitle = "Edit Estimate",
             EstimateCode = code,
-            StatusLabel = estimate.Status,
+            StatusLabel = statusLabel,
+            StatusClass = statusClass,
+            Title = ResolveEstimateTitle(estimate),
+            DateLabel = estimate.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            ServiceIcon = icon,
+            ServiceTone = tone,
+            PhotoCount = photos.Count,
+            VoiceTranscriptCount = string.IsNullOrWhiteSpace(lead?.ProblemDescription) ? 0 : 1,
             CreatedLabel = $"Created: {estimate.FechaCreacion.ToLocalTime():MMM d, yyyy}",
             PropertyMeta = BuildPropertyMeta(lead),
             Address = lead?.Address ?? estimate.Address,
@@ -1446,8 +1781,20 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             LaborWarranty = estimate.LaborWarranty ?? estimate.Warranty ?? "",
             PartsWarranty = estimate.PartsWarranty ?? "",
             HomeownerNotes = estimate.HomeownerNotes ?? "",
-            BackUrl = "/Proveedor/PendingEstimates",
-            FlowSteps = EditEstimateFlowSteps(estimate.Id)
+            BackUrl = lead != null ? $"/Proveedor/LeadDetails/{lead.Id}" : "/Proveedor/PendingEstimates",
+            FlowSteps = EditEstimateFlowSteps(estimate.Id),
+            WizardSteps = BuildEstimateWizardSteps(4),
+            LeadCode = lead != null
+                ? (!string.IsNullOrWhiteSpace(lead.LeadCode)
+                    ? lead.LeadCode.StartsWith('#') ? lead.LeadCode : $"#{lead.LeadCode}"
+                    : $"#L-{lead.Id}")
+                : "",
+            ProblemDescription = lead?.ProblemDescription,
+            InspectionReportUrl = lead?.InspectionReportUrl,
+            SourceBadge = lead != null && string.Equals(lead.LeadSource, "RealtorInspection", StringComparison.OrdinalIgnoreCase)
+                ? "From realtor inspection report" : null,
+            InspectionFindings = lead != null ? ParseInspectionFindings(lead.FindingsJson) : [],
+            PhotoUrls = photos
         };
     }
 
@@ -1489,7 +1836,9 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             ServiceType = estimate.ServiceType ?? "",
             TotalAmount = estimate.Amount,
             ImageUrl = ResolveEstimateImage(estimate, lead),
-            StatusLabel = estimate.Status,
+            StatusLabel = estimate.Status == ProviderEstimateStatuses.Approved
+                ? "Approved"
+                : "Waiting for approval",
             IsApproved = estimate.Status == ProviderEstimateStatuses.Approved,
             CanConvertToJob = estimate.Status == ProviderEstimateStatuses.Approved && linkedJob == null,
             ConvertedJobId = linkedJob,
@@ -1616,7 +1965,16 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             LaborWarranty = warranty,
             HomeownerNotes = homeownerNotes,
             BackUrl = $"/Proveedor/LeadDetails/{lead.Id}",
-            FlowSteps = QuickEstimateFlowSteps(lead.Id)
+            FlowSteps = QuickEstimateFlowSteps(lead.Id),
+            LeadCode = !string.IsNullOrWhiteSpace(lead.LeadCode)
+                ? lead.LeadCode.StartsWith('#') ? lead.LeadCode : $"#{lead.LeadCode}"
+                : $"#L-{lead.Id}",
+            ProblemDescription = lead.ProblemDescription,
+            InspectionReportUrl = lead.InspectionReportUrl,
+            SourceBadge = string.Equals(lead.LeadSource, "RealtorInspection", StringComparison.OrdinalIgnoreCase)
+                ? "From realtor inspection report" : null,
+            InspectionFindings = ParseInspectionFindings(lead.FindingsJson),
+            PhotoUrls = ParsePhotoUrls(lead.PhotosJson, lead.ImageUrl)
         };
 
     private static void ApplyEstimatePricing(
@@ -1656,11 +2014,23 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             subtotal = estimate.LaborAmount + estimate.MaterialsAmount;
         }
 
+        var serviceType = estimate.ServiceType ?? lead?.ServiceType ?? "";
+        var (statusLabel, statusClass, _) = MapEstimateHubStatus(estimate);
+        var (icon, tone) = ResolveEstimateServiceVisuals(serviceType, estimate.ServiceCategoryId);
+
         return new ProviderProReviewEstimateViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
             LeadId = lead?.Id ?? estimate.LeadId ?? 0,
             EstimateId = estimate.Id,
+            Title = ResolveEstimateTitle(estimate),
+            StatusLabel = statusLabel,
+            StatusClass = statusClass,
+            DateLabel = estimate.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            ServiceIcon = icon,
+            ServiceTone = tone,
+            ScopeSummaryLines = BuildScopeSummaryLines(estimate, scopeItems),
+            AiRecommendations = BuildAiRecommendations(estimate, serviceType),
             EstimateCode = FormatEstimateCode(estimate.EstimateCode),
             CreatedLabel = $"Created: {estimate.FechaCreacion.ToLocalTime():MMM d, yyyy}",
             ValidForLabel = $"Valid for {estimate.ValidDays} days",
@@ -1694,32 +2064,38 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             NotifyHomeowner = estimate.NotifyHomeowner,
             SaveCopyToLeads = estimate.SaveCopyToLeads,
             CanSend = estimate.Status is ProviderEstimateStatuses.Draft or ProviderEstimateStatuses.Ready,
-            FlowSteps = ReviewEstimateFlowSteps(estimate.Id)
+            FlowSteps = ReviewEstimateFlowSteps(estimate.Id),
+            WizardSteps = BuildEstimateWizardSteps(3)
         };
     }
 
     private static ProviderProPendingEstimateCardViewModel MapPendingEstimateCard(IndorProveedorEstimate estimate)
     {
         var updated = estimate.FechaActualizacion ?? estimate.FechaCreacion;
-        var isDraft = estimate.Status == ProviderEstimateStatuses.Draft;
-        var isReady = estimate.Status == ProviderEstimateStatuses.Ready;
         var isSent = estimate.Status is ProviderEstimateStatuses.Sent or ProviderEstimateStatuses.Viewed;
+        var (statusLabel, statusClass, filterKey) = MapEstimateHubStatus(estimate);
+        var (icon, tone) = ResolveEstimateServiceVisuals(estimate.ServiceType, estimate.ServiceCategoryId);
 
         return new ProviderProPendingEstimateCardViewModel
         {
             Id = estimate.Id,
             EstimateCode = FormatEstimateCode(estimate.EstimateCode),
+            Title = ResolveEstimateTitle(estimate),
+            CustomerName = estimate.CustomerName ?? "Homeowner",
             Address = estimate.Address,
             ServiceType = estimate.ServiceType,
-            Status = isDraft ? "Draft" : isReady ? "Ready to Send" : "Sent",
-            StatusClass = isDraft ? "draft" : isReady ? "ready" : "sent",
+            Status = statusLabel,
+            StatusClass = statusClass,
+            FilterKey = filterKey,
+            ServiceIcon = icon,
+            ServiceTone = tone,
             DateLabel = isSent && estimate.SentUtc.HasValue
-                ? $"Sent: {estimate.SentUtc.Value.ToLocalTime():MMM d, h:mm tt}"
-                : $"Updated: {updated.ToLocalTime():MMM d, yyyy}",
+                ? estimate.SentUtc.Value.ToLocalTime().ToString("MMM d, yyyy")
+                : updated.ToLocalTime().ToString("MMM d, yyyy"),
             Amount = estimate.Amount,
-            CanEdit = isDraft,
-            CanReview = isReady,
-            CanSend = isReady,
+            CanEdit = !isSent,
+            CanReview = !isSent,
+            CanSend = estimate.Status == ProviderEstimateStatuses.Ready,
             CanView = isSent
         };
     }
@@ -1805,8 +2181,163 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
     private static string NormalizeEstimateTab(string? tab) => (tab ?? "all").Trim().ToLowerInvariant() switch
     {
+        "needsreview" or "needs_review" => "needsreview",
+        "aidraft" or "ai_draft" => "aidraft",
         "draft" or "ready" or "sent" => tab!.Trim().ToLowerInvariant(),
         _ => "all"
+    };
+
+    private static List<ProviderProWizardStepViewModel> BuildEstimateWizardSteps(int currentStep) =>
+    [
+        new() { Number = 1, Label = "Home", IsComplete = currentStep > 1, IsCurrent = currentStep == 1 },
+        new() { Number = 2, Label = "Pending Estimates", IsComplete = currentStep > 2, IsCurrent = currentStep == 2 },
+        new() { Number = 3, Label = "Estimate Review", IsComplete = currentStep > 3, IsCurrent = currentStep == 3 },
+        new() { Number = 4, Label = "Edit Estimate", IsComplete = currentStep > 4, IsCurrent = currentStep == 4 },
+        new() { Number = 5, Label = "Send Estimate", IsComplete = currentStep > 5, IsCurrent = currentStep == 5 }
+    ];
+
+    private static (string Label, string Class, string FilterKey) MapEstimateHubStatus(IndorProveedorEstimate estimate)
+    {
+        var scopeItems = ParseScopeItems(estimate.ScopeItemsJson);
+        if (estimate.Status == ProviderEstimateStatuses.Ready)
+        {
+            return ("Ready to Send", "ready", "ready");
+        }
+
+        if (estimate.Status is ProviderEstimateStatuses.Sent or ProviderEstimateStatuses.Viewed)
+        {
+            return ("Sent", "sent", "sent");
+        }
+
+        if (estimate.Status == ProviderEstimateStatuses.Draft)
+        {
+            var isAiDraft = scopeItems.Count == 0 && estimate.Amount <= 0
+                || (estimate.Description?.Contains("AI", StringComparison.OrdinalIgnoreCase) ?? false);
+            return isAiDraft
+                ? ("AI Draft", "ai-draft", "aidraft")
+                : ("Needs Review", "needs-review", "needsreview");
+        }
+
+        return (estimate.Status, "draft", "draft");
+    }
+
+    private static string ResolveEstimateTitle(IndorProveedorEstimate estimate) =>
+        !string.IsNullOrWhiteSpace(estimate.Title)
+            ? estimate.Title!
+            : !string.IsNullOrWhiteSpace(estimate.ServiceType)
+                ? estimate.ServiceType!
+                : "Estimate";
+
+    private static (string Icon, string Tone) ResolveEstimateServiceVisuals(string? serviceType, string? serviceCategoryId)
+    {
+        var st = (serviceType ?? serviceCategoryId ?? "").ToLowerInvariant();
+        if (st.Contains("water") || st.Contains("damage") || st.Contains("inspection"))
+        {
+            return ("fa-droplet", "blue");
+        }
+
+        if (st.Contains("mold"))
+        {
+            return ("fa-seedling", "green");
+        }
+
+        if (st.Contains("hvac") || st.Contains("maintenance"))
+        {
+            return ("fa-fan", "purple");
+        }
+
+        if (st.Contains("smoke") || st.Contains("fire") || st.Contains("restoration"))
+        {
+            return ("fa-fire", "orange");
+        }
+
+        return ("fa-wrench", "blue");
+    }
+
+    private static List<string> BuildScopeSummaryLines(
+        IndorProveedorEstimate estimate,
+        List<ProviderProEstimateLineItemViewModel> scopeItems)
+    {
+        if (!string.IsNullOrWhiteSpace(estimate.Description))
+        {
+            return estimate.Description
+                .Split(['\n', '\r', '•', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(line => line.Length > 2)
+                .Take(5)
+                .ToList();
+        }
+
+        return scopeItems
+            .Select(i => i.Label)
+            .Where(label => !string.IsNullOrWhiteSpace(label))
+            .Take(5)
+            .ToList();
+    }
+
+    private static List<string> BuildAiRecommendations(IndorProveedorEstimate estimate, string? serviceType)
+    {
+        var st = (serviceType ?? "").ToLowerInvariant();
+        if (st.Contains("water") || st.Contains("damage"))
+        {
+            return
+            [
+                "Consider thermal imaging for hidden moisture detection.",
+                "Include containment and drying if widespread moisture is found.",
+                "Recommend air quality testing if mold is suspected."
+            ];
+        }
+
+        if (st.Contains("mold"))
+        {
+            return
+            [
+                "Recommend professional remediation protocol if spore counts are elevated.",
+                "Include containment barriers in scope if needed.",
+                "Suggest follow-up clearance testing."
+            ];
+        }
+
+        if (st.Contains("hvac"))
+        {
+            return
+            [
+                "Confirm filter sizes and system age before finalizing parts.",
+                "Include coil cleaning if dust buildup is visible.",
+                "Recommend seasonal maintenance plan."
+            ];
+        }
+
+        if (!string.IsNullOrWhiteSpace(estimate.Warranty))
+        {
+            return
+            [
+                $"Highlight warranty coverage: {estimate.Warranty}.",
+                "Confirm timeline with customer before sending.",
+                "Include photos with the final estimate."
+            ];
+        }
+
+        return
+        [
+            "Review scope with customer before sending.",
+            "Confirm timeline and warranty terms.",
+            "Include photos with the final estimate."
+        ];
+    }
+
+    private static string NormalizeDeliveryMethod(string method) => method.Trim().ToLowerInvariant() switch
+    {
+        "indor" => "INDOR",
+        "sms" or "text" => "SMS",
+        "email" => "Email",
+        _ => method
+    };
+
+    private static string NormalizeDeliveryMethodKey(string? method) => (method ?? "").Trim().ToLowerInvariant() switch
+    {
+        "indor" => "indor",
+        "sms" or "text" => "sms",
+        _ => "email"
     };
 
     private static List<ProviderProEstimateLineItemViewModel> BuildScopeItemsFromInput(ProviderProQuickEstimateInput input)
@@ -1819,10 +2350,33 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
                 continue;
             }
 
-            var amount = i < input.ScopeAmounts.Count ? input.ScopeAmounts[i] : 0;
+            var qty = i < input.ScopeQtys.Count && input.ScopeQtys[i] > 0 ? input.ScopeQtys[i] : 1m;
+            var unitPrice = i < input.ScopeUnitPrices.Count ? input.ScopeUnitPrices[i] : 0m;
+            var amount = i < input.ScopeAmounts.Count ? input.ScopeAmounts[i] : 0m;
+            if (amount <= 0 && unitPrice > 0)
+            {
+                amount = Math.Round(qty * unitPrice, 2, MidpointRounding.AwayFromZero);
+            }
+
+            if (amount <= 0 && unitPrice <= 0)
+            {
+                continue;
+            }
+
+            var labor = i < input.ScopeLaborAmounts.Count ? input.ScopeLaborAmounts[i] : 0m;
+            var material = i < input.ScopeMaterialAmounts.Count ? input.ScopeMaterialAmounts[i] : 0m;
+            if (amount <= 0 && (labor > 0 || material > 0))
+            {
+                amount = labor + material;
+            }
+
             items.Add(new ProviderProEstimateLineItemViewModel
             {
                 Label = input.ScopeLabels[i],
+                Qty = qty,
+                UnitPrice = unitPrice > 0 ? unitPrice : qty > 0 ? amount / qty : amount,
+                LaborAmount = labor,
+                MaterialAmount = material,
                 Amount = amount
             });
         }
@@ -1833,6 +2387,11 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
     private static string SerializeScopeItems(List<ProviderProEstimateLineItemViewModel> items) =>
         JsonSerializer.Serialize(items);
 
+    private static readonly JsonSerializerOptions ScopeJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private static List<ProviderProEstimateLineItemViewModel> ParseScopeItems(string? json)
     {
         if (string.IsNullOrWhiteSpace(json))
@@ -1842,12 +2401,72 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
         try
         {
-            return JsonSerializer.Deserialize<List<ProviderProEstimateLineItemViewModel>>(json) ?? [];
+            var items = JsonSerializer.Deserialize<List<ProviderProEstimateLineItemViewModel>>(json, ScopeJsonOptions) ?? [];
+            if (items.Count > 0)
+            {
+                return items;
+            }
+        }
+        catch
+        {
+            // fall through to legacy shape
+        }
+
+        try
+        {
+            using var doc = JsonDocument.Parse(json);
+            if (doc.RootElement.ValueKind != JsonValueKind.Array)
+            {
+                return [];
+            }
+
+            var legacy = new List<ProviderProEstimateLineItemViewModel>();
+            foreach (var node in doc.RootElement.EnumerateArray())
+            {
+                var label = ReadJsonString(node, "label", "Label");
+                if (string.IsNullOrWhiteSpace(label))
+                {
+                    continue;
+                }
+
+                decimal amount = 0m;
+                if (node.TryGetProperty("amount", out var amountNode) && amountNode.TryGetDecimal(out var amountValue))
+                {
+                    amount = amountValue;
+                }
+                else if (node.TryGetProperty("Amount", out var amountNodeAlt) && amountNodeAlt.TryGetDecimal(out var amountValueAlt))
+                {
+                    amount = amountValueAlt;
+                }
+
+                legacy.Add(new ProviderProEstimateLineItemViewModel
+                {
+                    Label = label,
+                    Amount = amount,
+                    Description = ReadJsonString(node, "description", "Description") ?? "",
+                    Qty = 1
+                });
+            }
+
+            return legacy;
         }
         catch
         {
             return [];
         }
+    }
+
+    private static List<ProviderProEstimateLineItemViewModel> BuildScopeItemsFromFindings(string? findingsJson)
+    {
+        return ParseInspectionFindings(findingsJson)
+            .Select(f => new ProviderProEstimateLineItemViewModel
+            {
+                Label = f.Title,
+                Description = f.Description ?? "",
+                Amount = 0,
+                Qty = 1
+            })
+            .ToList();
     }
 
     private static List<string> ParsePhotoUrls(string? photosJson, string? fallback)
@@ -2258,14 +2877,40 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         return $"{day} • {local:h:mm tt}";
     }
 
+    private static string FormatScheduleTimeShort(DateTime? when)
+    {
+        if (!when.HasValue)
+        {
+            return "TBD";
+        }
+
+        var local = when.Value.Kind == DateTimeKind.Utc ? when.Value.ToLocalTime() : when.Value;
+        return local.ToString("h:mm tt");
+    }
+
     private static string MapJobStatusLabel(string status) => status switch
     {
-        ProviderJobStatuses.InProgress => "In Progress",
+        ProviderJobStatuses.InProgress => "On Site",
         ProviderJobStatuses.Completed => "Completed",
         ProviderJobStatuses.Confirmed => "Confirmed",
         ProviderJobStatuses.WaitingOnMaterials => "Waiting",
         _ => "Scheduled"
     };
+
+    private static (string Icon, string Tone) DeriveHomeJobPresentation(string title, string? serviceType, string status)
+    {
+        if (status == ProviderJobStatuses.InProgress)
+            return ("fa-wrench", "blue");
+        if (status is ProviderJobStatuses.Scheduled or ProviderJobStatuses.Confirmed)
+            return ("fa-calendar-days", "orange");
+
+        var combined = $"{title} {serviceType}".ToLowerInvariant();
+        if (combined.Contains("mold"))
+            return ("fa-virus", "purple");
+        if (combined.Contains("water") || combined.Contains("damage"))
+            return ("fa-droplet", "blue");
+        return (MapServiceIcon(serviceType ?? title), "blue");
+    }
 
     private static (string Primary, string PrimaryClass, string? Secondary) MapJobActions(string status) => status switch
     {
@@ -2477,26 +3122,36 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
         var jobRows = await db.IndorProveedorJobs
             .AsNoTracking()
-            .Where(j => j.ProveedorId == proveedor.Id)
+            .Include(j => j.Cliente)
+            .Where(j => j.ProveedorId == proveedor.Id && !j.IsDraft)
             .OrderByDescending(j => j.ScheduledAt ?? j.FechaCreacion)
             .ToListAsync(cancellationToken);
 
         var filtered = activeFilter switch
         {
             "completed" => jobRows.Where(j => j.Status == ProviderJobStatuses.Completed),
-            "inprogress" => jobRows.Where(j => j.Status == ProviderJobStatuses.InProgress),
+            "inprogress" => jobRows.Where(j => j.Status is ProviderJobStatuses.InProgress
+                or ProviderJobStatuses.Scheduled
+                or ProviderJobStatuses.Confirmed
+                or ProviderJobStatuses.WaitingOnMaterials),
             "recent" => jobRows.Where(j => (j.ScheduledAt ?? j.FechaCreacion) >= recentCutoff),
             _ => jobRows.AsEnumerable()
         };
 
+        var filteredList = filtered.ToList();
+        var totalAvailable = filteredList.Count;
+
         if (!string.IsNullOrWhiteSpace(search))
         {
             var q = search.Trim();
-            filtered = filtered.Where(j =>
+            filteredList = filteredList.Where(j =>
                 j.Address.Contains(q, StringComparison.OrdinalIgnoreCase)
                 || j.Title.Contains(q, StringComparison.OrdinalIgnoreCase)
                 || j.JobCode.Contains(q, StringComparison.OrdinalIgnoreCase)
-                || (j.ServiceType ?? "").Contains(q, StringComparison.OrdinalIgnoreCase));
+                || (j.ServiceType ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+                || (j.Cliente?.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+                || (j.Cliente?.StreetAddress ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+                || (j.Cliente?.Address ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
         }
 
         return new ProviderProUploadReportSelectJobViewModel
@@ -2504,7 +3159,9 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             CompanyName = ResolveCompanyName(proveedor),
             SearchQuery = search,
             ActiveFilter = activeFilter,
-            Jobs = filtered.Select(MapUploadReportJobOption).ToList(),
+            TotalJobsAvailable = totalAvailable,
+            HasSearchWithNoResults = !string.IsNullOrWhiteSpace(search) && filteredList.Count == 0,
+            Jobs = filteredList.Select(MapUploadReportJobOption).ToList(),
             FlowSteps = UploadReportSelectJobFlowSteps()
         };
     }
@@ -3762,9 +4419,14 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
 
         var teamMembers = BuildTeamMembers(proveedor);
 
+        var companyName = ResolveCompanyName(proveedor);
+        var logoUrl = ResolveProviderLogoUrl(proveedor);
+
         return new ProviderProProfilePageViewModel
         {
-            CompanyName = ResolveCompanyName(proveedor),
+            CompanyName = companyName,
+            LogoUrl = logoUrl,
+            CompanyInitial = BuildCompanyInitial(companyName),
             BusinessName = proveedor.BusinessName ?? "",
             DbaName = proveedor.DbaName ?? "",
             PrimaryContact = proveedor.PrimaryContact ?? "",
@@ -3818,6 +4480,75 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
             DocumentsRequired = proveedor.Documentos.Count
         };
     }
+
+    public Task<ProviderProEditProfileViewModel> GetEditProfileAsync(
+        IndorProveedor proveedor,
+        CancellationToken cancellationToken = default)
+    {
+        var companyName = ResolveCompanyName(proveedor);
+        return Task.FromResult(new ProviderProEditProfileViewModel
+        {
+            CompanyName = companyName,
+            LogoUrl = ResolveProviderLogoUrl(proveedor),
+            CompanyInitial = BuildCompanyInitial(companyName),
+            BusinessName = proveedor.BusinessName ?? "",
+            DbaName = proveedor.DbaName ?? "",
+            PrimaryContact = proveedor.PrimaryContact ?? "",
+            Phone = proveedor.Phone ?? "",
+            Email = proveedor.Email ?? "",
+            BusinessAddress = proveedor.BusinessAddress ?? "",
+            PrimaryCity = proveedor.PrimaryCity ?? "",
+            PreferredHours = proveedor.PreferredHours ?? "",
+            ServiceDescription = proveedor.ServiceDescription ?? "",
+            TravelRadiusMiles = proveedor.TravelRadiusMiles > 0 ? proveedor.TravelRadiusMiles : 25,
+            EmergencyService = proveedor.EmergencyService,
+            SameDayJobs = proveedor.SameDayJobs
+        });
+    }
+
+    public async Task<bool> SaveEditProfileAsync(
+        int proveedorId,
+        ProviderProEditProfileInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await db.IndorProveedores
+            .FirstOrDefaultAsync(p => p.Id == proveedorId, cancellationToken);
+
+        if (entity == null)
+        {
+            return false;
+        }
+
+        entity.BusinessName = TrimOrEmpty(input.BusinessName);
+        entity.DbaName = TrimOrEmpty(input.DbaName);
+        entity.PrimaryContact = TrimOrEmpty(input.PrimaryContact);
+        entity.Phone = TrimOrEmpty(input.Phone);
+        entity.Email = TrimOrEmpty(input.Email);
+        entity.BusinessAddress = TrimOrEmpty(input.BusinessAddress);
+        entity.PrimaryCity = TrimOrEmpty(input.PrimaryCity);
+        entity.PreferredHours = TrimOrEmpty(input.PreferredHours);
+        entity.ServiceDescription = TrimOrEmpty(input.ServiceDescription);
+        entity.TravelRadiusMiles = input.TravelRadiusMiles > 0 ? input.TravelRadiusMiles : entity.TravelRadiusMiles;
+        entity.EmergencyService = input.EmergencyService;
+        entity.SameDayJobs = input.SameDayJobs;
+        entity.FechaActualizacion = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    private static string? ResolveProviderLogoUrl(IndorProveedor proveedor) =>
+        proveedor.Documentos
+            .FirstOrDefault(d => string.Equals(d.DocumentType, ProviderDocumentTypes.Logo, StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(d.FileUrl))
+            ?.FileUrl;
+
+    private static string BuildCompanyInitial(string companyName) =>
+        !string.IsNullOrWhiteSpace(companyName)
+            ? companyName.Trim()[0].ToString().ToUpperInvariant()
+            : "P";
+
+    private static string TrimOrEmpty(string? value) => value?.Trim() ?? "";
 
     private static List<string> BuildServiceAreas(IndorProveedor proveedor)
     {
@@ -4504,6 +5235,327 @@ public class ProviderProDataService(AppDbContext db) : IProviderProDataService
         new() { Label = "From: Quick Actions", IconClass = "fa-bolt" },
         new() { Label = "Pressed: Send", IconClass = "fa-paper-plane" },
         new() { Label = "Now: Message Sent", IconClass = "fa-circle-check", IsCurrent = true }
+    ];
+
+    public async Task<ProviderProEstimateAcceptedViewModel?> GetEstimateAcceptedAsync(
+        IndorProveedor proveedor,
+        int estimateId,
+        CancellationToken cancellationToken = default)
+    {
+        var estimate = await db.IndorProveedorEstimates.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == estimateId && e.ProveedorId == proveedor.Id, cancellationToken);
+        if (estimate == null || estimate.Status != ProviderEstimateStatuses.Approved)
+        {
+            return null;
+        }
+
+        IndorProveedorLead? lead = null;
+        if (estimate.LeadId is > 0)
+        {
+            lead = await LoadLeadForWorkflowAsync(proveedor.Id, estimate.LeadId.Value, cancellationToken);
+        }
+
+        var scopeItems = ParseScopeItems(estimate.ScopeItemsJson);
+        return new ProviderProEstimateAcceptedViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            EstimateId = estimate.Id,
+            LeadId = lead?.Id ?? estimate.LeadId ?? 0,
+            Address = lead?.Address ?? estimate.Address,
+            CustomerName = lead?.CustomerName ?? estimate.CustomerName ?? "Customer",
+            TotalAmount = estimate.Amount,
+            ApprovedItemCount = scopeItems.Count > 0 ? scopeItems.Count : 1,
+            ApprovedLabel = estimate.ApprovedUtc?.ToLocalTime().ToString("MMM d, yyyy") ?? "Recently",
+            ApprovedByLabel = lead?.CustomerName ?? "Customer",
+            FlowSteps = EstimateAcceptedFlowSteps(estimate.Id, lead?.Id)
+        };
+    }
+
+    public async Task<bool> ApproveEstimateAsync(int proveedorId, int estimateId, CancellationToken cancellationToken = default)
+    {
+        var estimate = await db.IndorProveedorEstimates
+            .FirstOrDefaultAsync(e => e.Id == estimateId && e.ProveedorId == proveedorId, cancellationToken);
+        if (estimate == null || estimate.Status is ProviderEstimateStatuses.Approved or ProviderEstimateStatuses.Declined)
+        {
+            return false;
+        }
+
+        estimate.Status = ProviderEstimateStatuses.Approved;
+        estimate.ApprovedUtc = DateTime.UtcNow;
+        estimate.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+        await realtorBridge.SyncBidFromEstimateAsync(estimate, cancellationToken);
+        return true;
+    }
+
+    public async Task<ProviderProCreateInvoiceViewModel?> GetCreateInvoiceAsync(
+        IndorProveedor proveedor,
+        int estimateId,
+        CancellationToken cancellationToken = default)
+    {
+        var estimate = await db.IndorProveedorEstimates.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == estimateId && e.ProveedorId == proveedor.Id, cancellationToken);
+        if (estimate == null || estimate.Status != ProviderEstimateStatuses.Approved)
+        {
+            return null;
+        }
+
+        IndorProveedorLead? lead = null;
+        if (estimate.LeadId is > 0)
+        {
+            lead = await LoadLeadForWorkflowAsync(proveedor.Id, estimate.LeadId.Value, cancellationToken);
+        }
+
+        var lineItems = ParseScopeItems(estimate.ScopeItemsJson);
+        if (lineItems.Count == 0)
+        {
+            lineItems =
+            [
+                new ProviderProEstimateLineItemViewModel
+                {
+                    Label = estimate.ServiceType ?? "Approved work",
+                    LaborAmount = estimate.LaborAmount,
+                    MaterialAmount = estimate.MaterialsAmount,
+                    Amount = estimate.Amount
+                }
+            ];
+        }
+
+        var subtotal = lineItems.Sum(i => i.Amount);
+        var tax = estimate.TaxAmount ?? 0m;
+        return new ProviderProCreateInvoiceViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            EstimateId = estimate.Id,
+            LeadId = lead?.Id ?? estimate.LeadId ?? 0,
+            Address = lead?.Address ?? estimate.Address,
+            CustomerName = lead?.CustomerName ?? estimate.CustomerName ?? "Customer",
+            ServiceType = estimate.ServiceType ?? lead?.ServiceType ?? "",
+            LineItems = lineItems,
+            SubtotalAmount = subtotal,
+            TaxAmount = tax,
+            TotalAmount = subtotal + tax,
+            FlowSteps = CreateInvoiceFlowSteps(estimate.Id)
+        };
+    }
+
+    public async Task<int?> SaveCreateInvoiceAsync(
+        int proveedorId,
+        ProviderProCreateInvoiceInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var estimate = await db.IndorProveedorEstimates.AsNoTracking()
+            .FirstOrDefaultAsync(e => e.Id == input.EstimateId && e.ProveedorId == proveedorId, cancellationToken);
+        if (estimate == null || estimate.Status != ProviderEstimateStatuses.Approved)
+        {
+            return null;
+        }
+
+        var existing = await db.IndorProveedorInvoices
+            .FirstOrDefaultAsync(i => i.EstimateId == estimate.Id && i.ProveedorId == proveedorId, cancellationToken);
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var lineItems = ParseScopeItems(estimate.ScopeItemsJson);
+        if (input.IncludeServiceCall && input.ServiceCallAmount > 0)
+        {
+            lineItems.Add(new ProviderProEstimateLineItemViewModel
+            {
+                Label = "Service call / assessment",
+                Amount = input.ServiceCallAmount,
+                LaborAmount = input.ServiceCallAmount
+            });
+        }
+
+        var amount = lineItems.Sum(i => i.Amount);
+        if (amount <= 0)
+        {
+            amount = estimate.Amount;
+        }
+
+        var invoice = new IndorProveedorInvoice
+        {
+            ProveedorId = proveedorId,
+            EstimateId = estimate.Id,
+            LeadId = estimate.LeadId,
+            JobId = estimate.JobId,
+            InvoiceCode = $"INV-{DateTime.UtcNow:yyMMddHHmm}",
+            Address = estimate.Address,
+            ServiceType = estimate.ServiceType,
+            CustomerName = estimate.CustomerName,
+            Amount = amount,
+            Status = "Draft",
+            InvoiceDate = DateOnly.FromDateTime(DateTime.Today),
+            DueDate = DateTime.Today.AddDays(14),
+            LineItemsJson = SerializeScopeItems(lineItems),
+            NotesToCustomer = input.PaymentTerms,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        db.IndorProveedorInvoices.Add(invoice);
+        await db.SaveChangesAsync(cancellationToken);
+        return invoice.Id;
+    }
+
+    public async Task<ProviderProReviewInvoiceViewModel?> GetReviewInvoiceAsync(
+        IndorProveedor proveedor,
+        int invoiceId,
+        CancellationToken cancellationToken = default)
+    {
+        var invoice = await db.IndorProveedorInvoices.AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ProveedorId == proveedor.Id, cancellationToken);
+        if (invoice == null)
+        {
+            return null;
+        }
+
+        var lineItems = ParseScopeItems(invoice.LineItemsJson);
+        return new ProviderProReviewInvoiceViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            InvoiceId = invoice.Id,
+            EstimateId = invoice.EstimateId ?? 0,
+            InvoiceCode = invoice.InvoiceCode ?? $"INV-{invoice.Id}",
+            Address = invoice.Address ?? "",
+            CustomerName = invoice.CustomerName ?? "Customer",
+            ServiceType = invoice.ServiceType ?? "",
+            InvoiceDateLabel = invoice.InvoiceDate?.ToString("MMM d, yyyy") ?? DateTime.Today.ToString("MMM d, yyyy"),
+            DueDateLabel = invoice.DueDate?.ToString("MMM d, yyyy") ?? "",
+            LineItems = lineItems,
+            TotalAmount = invoice.Amount,
+            PaymentTerms = invoice.NotesToCustomer ?? "Due at completion",
+            FlowSteps = ReviewInvoiceFlowSteps(invoice.Id)
+        };
+    }
+
+    public async Task<bool> SendInvoiceAsync(int proveedorId, int invoiceId, CancellationToken cancellationToken = default)
+    {
+        var invoice = await db.IndorProveedorInvoices
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ProveedorId == proveedorId, cancellationToken);
+        if (invoice == null)
+        {
+            return false;
+        }
+
+        invoice.Status = "Sent";
+        invoice.SentUtc = DateTime.UtcNow;
+        invoice.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<ProviderProInvoiceSentViewModel?> GetInvoiceSentAsync(
+        IndorProveedor proveedor,
+        int invoiceId,
+        CancellationToken cancellationToken = default)
+    {
+        var invoice = await db.IndorProveedorInvoices.AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == invoiceId && i.ProveedorId == proveedor.Id, cancellationToken);
+        if (invoice == null)
+        {
+            return null;
+        }
+
+        return new ProviderProInvoiceSentViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            InvoiceId = invoice.Id,
+            InvoiceCode = invoice.InvoiceCode ?? $"INV-{invoice.Id}",
+            Address = invoice.Address ?? "",
+            TotalAmount = invoice.Amount,
+            StatusLabel = invoice.Status,
+            FlowSteps = InvoiceSentFlowSteps(invoice.Id)
+        };
+    }
+
+    private List<ProviderProEstimateLineItemViewModel> BuildScopeItemsFromSelectedFindings(IndorProveedorLead lead)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        var selected = session != null ? ProviderLeadSelectionSession.Get(session, lead.Id) : [];
+        var findings = ParseInspectionFindings(lead.FindingsJson);
+        var filtered = selected.Count > 0
+            ? findings.Where(f => selected.Contains(f.Index)).ToList()
+            : findings;
+
+        return filtered.Select(f => new ProviderProEstimateLineItemViewModel
+        {
+            Label = f.Title,
+            Description = f.Description ?? "",
+            Amount = 0,
+            LaborAmount = 0,
+            MaterialAmount = 0,
+            Qty = 1
+        }).ToList();
+    }
+
+    private static string FormatLeadCode(IndorProveedorLead lead) =>
+        !string.IsNullOrWhiteSpace(lead.LeadCode)
+            ? lead.LeadCode.StartsWith('#') ? lead.LeadCode : $"#{lead.LeadCode}"
+            : $"#L-{lead.Id}";
+
+    private static string BuildDefaultAnalysisSummary(int findingCount, string serviceType) =>
+        findingCount > 0
+            ? $"INDOR found {findingCount} {serviceType.ToLowerInvariant()} repair item{(findingCount == 1 ? "" : "s")} from the uploaded inspection report."
+            : "";
+
+    private static string FormatRelativeLeadTime(DateTime utc)
+    {
+        var age = DateTime.UtcNow - utc;
+        if (age.TotalMinutes < 60)
+        {
+            return "Now";
+        }
+
+        if (age.TotalHours < 24)
+        {
+            return $"{(int)age.TotalHours}h ago";
+        }
+
+        return utc.ToLocalTime().ToString("MMM d");
+    }
+
+    private static List<ProviderProFlowStepViewModel> InspectionFindingsFlowSteps(int leadId) =>
+    [
+        new() { Label = "From: Lead Details", IconClass = "fa-clipboard-list", IsLink = true, Url = $"/Proveedor/LeadDetails/{leadId}" },
+        new() { Label = "Pressed: Review Findings", IconClass = "fa-list-check" },
+        new() { Label = "Now: Inspection Findings", IconClass = "fa-magnifying-glass", IsCurrent = true }
+    ];
+
+    private static List<ProviderProFlowStepViewModel> SelectRepairItemsFlowSteps(int leadId) =>
+    [
+        new() { Label = "From: Findings", IconClass = "fa-list-check", IsLink = true, Url = $"/Proveedor/InspectionFindings/{leadId}" },
+        new() { Label = "Pressed: Continue", IconClass = "fa-check-double" },
+        new() { Label = "Now: Select Repair Items", IconClass = "fa-wrench", IsCurrent = true }
+    ];
+
+    private static List<ProviderProFlowStepViewModel> EstimateAcceptedFlowSteps(int estimateId, int? leadId) =>
+    [
+        new() { Label = "From: Estimate Sent", IconClass = "fa-paper-plane", IsLink = true, Url = $"/Proveedor/EstimateSent/{estimateId}" },
+        new() { Label = "Approved", IconClass = "fa-circle-check" },
+        new() { Label = "Now: Estimate Accepted", IconClass = "fa-thumbs-up", IsCurrent = true }
+    ];
+
+    private static List<ProviderProFlowStepViewModel> CreateInvoiceFlowSteps(int estimateId) =>
+    [
+        new() { Label = "From: Estimate Accepted", IconClass = "fa-circle-check", IsLink = true, Url = $"/Proveedor/EstimateAccepted/{estimateId}" },
+        new() { Label = "Pressed: Create Invoice", IconClass = "fa-file-invoice" },
+        new() { Label = "Now: Create Invoice", IconClass = "fa-file-invoice-dollar", IsCurrent = true }
+    ];
+
+    private static List<ProviderProFlowStepViewModel> ReviewInvoiceFlowSteps(int invoiceId) =>
+    [
+        new() { Label = "From: Create Invoice", IconClass = "fa-file-invoice-dollar" },
+        new() { Label = "Pressed: Review", IconClass = "fa-eye" },
+        new() { Label = "Now: Review Invoice", IconClass = "fa-file-lines", IsCurrent = true }
+    ];
+
+    private static List<ProviderProFlowStepViewModel> InvoiceSentFlowSteps(int invoiceId) =>
+    [
+        new() { Label = "From: Review Invoice", IconClass = "fa-file-lines", IsLink = true, Url = $"/Proveedor/ReviewInvoice/{invoiceId}" },
+        new() { Label = "Pressed: Send", IconClass = "fa-paper-plane" },
+        new() { Label = "Now: Invoice Sent", IconClass = "fa-circle-check", IsCurrent = true }
     ];
 
     private static string ResolveCompanyName(IndorProveedor proveedor) =>

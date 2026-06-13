@@ -83,15 +83,17 @@ public class RoofInspectionController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
+        var setupComplete = HasCompletedDetails(solicitud);
+
         return View(new RoofInspectionDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Roof Inspection",
-            MotivoRevision = solicitud.MotivoRevision ?? "RoutineInspection",
-            TipoTecho = solicitud.TipoTecho ?? "AsphaltShingle",
-            EdadTecho = solicitud.EdadTecho ?? "NotSure",
-            UltimaInspeccion = solicitud.UltimaInspeccion ?? "DontKnow",
+            MotivoRevision = setupComplete ? solicitud.MotivoRevision ?? string.Empty : string.Empty,
+            TipoTecho = setupComplete ? solicitud.TipoTecho ?? string.Empty : string.Empty,
+            EdadTecho = setupComplete ? solicitud.EdadTecho ?? string.Empty : string.Empty,
+            UltimaInspeccion = setupComplete ? solicitud.UltimaInspeccion ?? string.Empty : string.Empty,
             ArchivosExistentes = MapExistingFiles(solicitud)
         });
     }
@@ -284,7 +286,7 @@ public class RoofInspectionController : Controller
             LandingTitulo = landing.LandingTitulo,
             LandingSubtitulo = landing.LandingSubtitulo,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
-            RecommendationItems = SplitPipePairs(landing.RecomendacionItems, landing.RecomendacionIconos),
+            RecommendationItems = SplitRecommendationItems(landing.RecomendacionItems, landing.RecomendacionIconos),
             CheckItems = SplitPipePairs(landing.IncluyeItems, landing.IncluyeIconos),
             TrustTexto = landing.InfoBoxTexto,
             CtaTexto = landing.CtaTexto
@@ -295,17 +297,19 @@ public class RoofInspectionController : Controller
         var landing = await _db.RoofInspectionServicioLanding.AsNoTracking()
             .FirstOrDefaultAsync(l => l.HomeCarePriorityId == solicitud.HomeCarePriorityId && l.Activo);
 
+        var scheduleComplete = HasCompletedSchedule(solicitud);
+
         return new RoofInspectionScheduleViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "Roof Inspection",
             ScheduleIntro = "Roofers typically recommend a visual roof check in spring and fall, and a professional inspection every 1–2 years or after major storms.",
-            TipoServicio = solicitud.TipoServicio ?? "ReminderOnly",
-            Frecuencia = solicitud.Frecuencia ?? "Yearly",
-            TimingPreferido = solicitud.TimingPreferido ?? "Spring",
-            FechaPreferida = solicitud.FechaPreferida,
-            Notas = solicitud.Notas,
+            TipoServicio = scheduleComplete ? solicitud.TipoServicio ?? string.Empty : string.Empty,
+            Frecuencia = scheduleComplete ? solicitud.Frecuencia ?? string.Empty : string.Empty,
+            TimingPreferido = scheduleComplete ? solicitud.TimingPreferido ?? string.Empty : string.Empty,
+            FechaPreferida = scheduleComplete ? solicitud.FechaPreferida : null,
+            Notas = scheduleComplete ? solicitud.Notas : null,
             CoverageItems = SplitPipePairs(landing?.IncluyeItems, landing?.IncluyeIconos),
             TrustTexto = landing?.InfoBoxTexto
         };
@@ -338,6 +342,24 @@ public class RoofInspectionController : Controller
                 .FirstOrDefaultAsync();
         }
     }
+
+    private static readonly string[] DefaultRecommendationDetails =
+    [
+        "Do a quick visual check from the ground each spring and fall. Note lifted shingles, damaged flashing, or debris buildup.",
+        "Schedule a licensed roofer every 1–2 years to inspect shingles, flashing, ventilation, and leak risks before they become costly repairs.",
+        "After hail, high winds, or heavy storms, check for missing shingles, dents, granule loss, or water stains inside the home.",
+        "If your roof is older, leaking, sagging, or has repeat repair issues, book a professional inspection as soon as possible."
+    ];
+
+    private static List<RoofInspectionFeatureItemViewModel> SplitRecommendationItems(string? texts, string? icons) =>
+        SplitPipePairs(texts, icons).Select((item, index) => new RoofInspectionFeatureItemViewModel
+        {
+            Text = item.Text,
+            Icon = item.Icon,
+            Subtext = index < DefaultRecommendationDetails.Length
+                ? DefaultRecommendationDetails[index]
+                : null
+        }).ToList();
 
     private static List<RoofInspectionFeatureItemViewModel> SplitPipePairs(string? texts, string? icons)
     {
@@ -397,14 +419,7 @@ public class RoofInspectionController : Controller
                 HomeCarePriorityId = priorityId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                MotivoRevision = "RoutineInspection",
-                TipoTecho = "AsphaltShingle",
-                EdadTecho = "NotSure",
-                UltimaInspeccion = "DontKnow",
-                TipoServicio = "ReminderOnly",
-                Frecuencia = "Yearly",
-                TimingPreferido = "Spring"
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesRoofInspection.Add(solicitud);
             await _db.SaveChangesAsync();
@@ -412,6 +427,13 @@ public class RoofInspectionController : Controller
 
         return solicitud;
     }
+
+    private static bool HasCompletedDetails(SolicitudRoofInspection solicitud) =>
+        string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
+    private static bool HasCompletedSchedule(SolicitudRoofInspection solicitud) =>
+        string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
 
     private async Task<SolicitudRoofInspection?> LoadSolicitudForUserAsync(int id, bool includeArchivos = false)
     {

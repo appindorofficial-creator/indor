@@ -55,6 +55,21 @@ public class RealtorQuoteRequestController(
         return View(await quoteRequest.BuildPropertyAsync(q));
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Start(int propertyFileId)
+    {
+        try
+        {
+            await quoteRequest.CancelDraftAsync();
+            await quoteRequest.SavePropertyAsync(propertyFileId);
+            return RedirectToAction(nameof(RequestDetails));
+        }
+        catch
+        {
+            return RedirectToAction(nameof(Property));
+        }
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Property(int propertyFileId)

@@ -2,12 +2,14 @@
 @using IndorMvcApp.Services
 @if (Model.Items.Count > 0)
 {
-    var selected = Model.Items.FirstOrDefault(i => i.Id == Model.SelectedId) ?? Model.Items[0];
-    var selectedAction = EmergencyFlowRules.GetDetailsActionName(selected.Nombre);
-    var selectedStartUrl = selectedAction != null
+    var selected = Model.SelectedId.HasValue
+        ? Model.Items.FirstOrDefault(i => i.Id == Model.SelectedId.Value)
+        : null;
+    var selectedAction = selected != null ? EmergencyFlowRules.GetDetailsActionName(selected.Nombre) : null;
+    var selectedStartUrl = selected != null && selectedAction != null
         ? Url.Action(selectedAction, "Inspecciones", new { id = selected.Id })
         : string.Empty;
-    var sectionId = $"emergencySection_{Model.SelectedId}_{Guid.NewGuid():N}";
+    var sectionId = $"emergencySection_{Model.SelectedId?.ToString() ?? "none"}_{Guid.NewGuid():N}";
 
     <div class="emergency-section" id="emergency-services" data-emergency-section>
         <div class="emergency-header">
@@ -32,7 +34,7 @@
                 var imgSrc = !string.IsNullOrWhiteSpace(item.ImagenUrl)
                     ? Url.Content("~" + (item.ImagenUrl.StartsWith("/") ? item.ImagenUrl : "/" + item.ImagenUrl))
                     : "";
-                var isActive = item.Id == selected.Id;
+                var isActive = selected != null && item.Id == selected.Id;
                 var itemAction = EmergencyFlowRules.GetDetailsActionName(item.Nombre);
                 var startUrl = itemAction != null
                     ? Url.Action(itemAction, "Inspecciones", new { id = item.Id })
@@ -69,44 +71,55 @@
             }
         </div>
 
-        <div class="emergency-detail">
-            <div class="emergency-detail-main">
-                <div class="emergency-detail-icon"><i class="fas @selected.IconoClase" data-emergency-detail-icon></i></div>
-                <div class="emergency-detail-copy">
-                    @if (!string.IsNullOrWhiteSpace(selected.BadgeTexto))
-                    {
-                        <span class="emergency-detail-badge" data-emergency-detail-badge>@selected.BadgeTexto</span>
-                    }
-                    else
-                    {
-                        <span class="emergency-detail-badge hidden" data-emergency-detail-badge></span>
-                    }
-                    <div class="emergency-detail-title" data-emergency-detail-title>@selected.TituloEmergencia</div>
-                    <div class="emergency-detail-desc" data-emergency-detail-desc>@selected.Descripcion</div>
-                </div>
-                <div class="emergency-detail-arrival">
-                    <span class="arrival-label">Avg. arrival</span>
-                    <span class="arrival-time" data-emergency-detail-arrival>@selected.TiempoLlegadaMinutos min</span>
-                </div>
-            </div>
-
-            <div class="emergency-features" data-emergency-detail-features>
-                @foreach (var feature in selected.Caracteristicas)
-                {
-                    <div class="emergency-feature">
-                        <i class="fas @feature.Icon"></i>
-                        <span>@feature.Text</span>
+        <div class="emergency-detail @(selected == null ? "emergency-detail-empty" : "")">
+            @if (selected == null)
+            {
+                <p class="emergency-detail-prompt" data-emergency-detail-prompt>
+                    Select an emergency service above to view details and request help.
+                </p>
+            }
+            <div class="emergency-detail-content" data-emergency-detail-content @(selected == null ? "hidden" : "")>
+                <div class="emergency-detail-main">
+                    <div class="emergency-detail-icon"><i class="fas @(selected?.IconoClase ?? "fa-truck-medical")" data-emergency-detail-icon></i></div>
+                    <div class="emergency-detail-copy">
+                        @if (!string.IsNullOrWhiteSpace(selected?.BadgeTexto))
+                        {
+                            <span class="emergency-detail-badge" data-emergency-detail-badge>@selected.BadgeTexto</span>
+                        }
+                        else
+                        {
+                            <span class="emergency-detail-badge hidden" data-emergency-detail-badge></span>
+                        }
+                        <div class="emergency-detail-title" data-emergency-detail-title>@(selected?.TituloEmergencia ?? "")</div>
+                        <div class="emergency-detail-desc" data-emergency-detail-desc>@(selected?.Descripcion ?? "")</div>
                     </div>
-                }
-            </div>
+                    <div class="emergency-detail-arrival">
+                        <span class="arrival-label">Avg. arrival</span>
+                        <span class="arrival-time" data-emergency-detail-arrival>@(selected != null ? $"{selected.TiempoLlegadaMinutos} min" : "")</span>
+                    </div>
+                </div>
 
-            <button type="button"
-                    class="emergency-cta @(string.IsNullOrWhiteSpace(selectedStartUrl) ? "nav-jump" : "")"
-                    data-emergency-detail-cta
-                    data-start-url="@selectedStartUrl"
-                    data-target="section-more">
-                <i class="fas fa-paper-plane"></i> @selected.CtaTexto
-            </button>
+                <div class="emergency-features" data-emergency-detail-features>
+                    @if (selected != null)
+                    {
+                        @foreach (var feature in selected.Caracteristicas)
+                        {
+                            <div class="emergency-feature">
+                                <i class="fas @feature.Icon"></i>
+                                <span>@feature.Text</span>
+                            </div>
+                        }
+                    }
+                </div>
+
+                <button type="button"
+                        class="emergency-cta @(string.IsNullOrWhiteSpace(selectedStartUrl) ? "nav-jump" : "")"
+                        data-emergency-detail-cta
+                        data-start-url="@selectedStartUrl"
+                        data-target="section-more">
+                    <i class="fas fa-paper-plane"></i> @(selected?.CtaTexto ?? "Request help")
+                </button>
+            </div>
         </div>
     </div>
 }

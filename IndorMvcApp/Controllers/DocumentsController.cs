@@ -177,7 +177,7 @@ public class DocumentsController : Controller
         "Disclosure" => "Contracts",
         "Warranty" => "Warranties",
         "Invoice" => "Invoices",
-        "Photo" => "Other",
+        "Photo" => "Photo",
         _ => "Other"
     };
 }

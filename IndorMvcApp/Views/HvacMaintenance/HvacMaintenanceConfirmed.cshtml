@@ -2,6 +2,8 @@
 @{
     ViewData["Title"] = "Tune-up request sent - INDOR";
     Layout = null;
+    var scheduleUrl = $"{Url.Action("Index", "Home")}#section-schedule";
+    var homeCareGuideUrl = Url.Action("HomeCareGuide", "Home");
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -46,10 +48,10 @@
         <div class="next-step-item"><i class="fas fa-calendar-check"></i><span>We'll remind you before next year's service</span></div>
     </div>
 
-    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
+    <a href="@scheduleUrl" class="btn-primary">
         <i class="fas fa-calendar"></i> Go to My Schedule <i class="fas fa-chevron-right"></i>
     </a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline" style="margin-top:10px;">
+    <a href="@homeCareGuideUrl" class="btn-outline" style="margin-top:10px;">
         <i class="fas fa-house"></i> Back to Home Care Guide
     </a>
 </div>

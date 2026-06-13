@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
@@ -9,11 +10,14 @@ public class RealtorInspectionUploadWizardService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
     IRealtorRegistrationService registration,
-    IWebHostEnvironment env) : IRealtorInspectionUploadWizardService
+    IWebHostEnvironment env,
+    IRealtorProviderBridgeService providerBridge,
+    IServiceScopeFactory scopeFactory) : IRealtorInspectionUploadWizardService
 {
     private const string DraftIdSessionKey = "RealtorInspectionUploadDraftId";
+    private static readonly ConcurrentDictionary<int, byte> ActiveAnalyses = new();
     private static readonly string[] AllowedExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
-    private const long MaxFileBytes = 15_000_000;
+    private const long MaxFileBytes = RealtorInspectionUploadLimits.MaxFileBytes;
 
     public async Task<IndorRealtorInspectionUploadDraft> EnsureDraftAsync(CancellationToken cancellationToken = default)
     {
@@ -103,6 +107,8 @@ public class RealtorInspectionUploadWizardService(
             ?? throw new InvalidOperationException("Realtor profile not found.");
         var draft = await EnsureDraftAsync(cancellationToken);
 
+        await EnsurePropertyFilesFromPortfolioAsync(realtor.Id, cancellationToken);
+
         var query = db.IndorRealtorPropertyFiles.AsNoTracking()
             .Where(p => p.RealtorId == realtor.Id && p.Status == "Active");
 
@@ -141,15 +147,32 @@ public class RealtorInspectionUploadWizardService(
     }
 
     public async Task SaveUploadAsync(
-        int propertyFileId, string uploadMethod, IFormFile? reportFile, CancellationToken cancellationToken = default)
+        int propertyFileId,
+        string uploadMethod,
+        IFormFile? reportFile,
+        string? newPropertyAddress = null,
+        string? newPropertyClientName = null,
+        string? newPropertyCityRegion = null,
+        CancellationToken cancellationToken = default)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
             ?? throw new InvalidOperationException("Realtor profile not found.");
         var draft = await EnsureDraftAsync(cancellationToken);
 
+        var resolvedPropertyId = propertyFileId;
+        if (resolvedPropertyId <= 0)
+        {
+            resolvedPropertyId = await ResolveOrCreatePropertyFileAsync(
+                realtor.Id,
+                newPropertyAddress,
+                newPropertyClientName,
+                newPropertyCityRegion,
+                cancellationToken);
+        }
+
         var property = await db.IndorRealtorPropertyFiles.AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == propertyFileId && p.RealtorId == realtor.Id, cancellationToken)
-            ?? throw new InvalidOperationException("Property not found.");
+            .FirstOrDefaultAsync(p => p.Id == resolvedPropertyId && p.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Select a property or enter the property address to continue.");
 
         draft.PropertyFileId = property.Id;
         draft.Address = property.Address;
@@ -161,9 +184,14 @@ public class RealtorInspectionUploadWizardService(
         if (reportFile != null && reportFile.Length > 0)
         {
             var ext = Path.GetExtension(reportFile.FileName).ToLowerInvariant();
-            if (!AllowedExtensions.Contains(ext) || reportFile.Length > MaxFileBytes)
+            if (!AllowedExtensions.Contains(ext))
             {
-                throw new InvalidOperationException("Invalid file.");
+                throw new InvalidOperationException("Upload a PDF or image file (JPG, PNG, WEBP).");
+            }
+
+            if (reportFile.Length > MaxFileBytes)
+            {
+                throw new InvalidOperationException($"The file is too large. Maximum size is {RealtorInspectionUploadLimits.MaxFileSizeLabel}.");
             }
 
             var folder = Path.Combine(env.WebRootPath, "uploads", "realtor-inspection-reports", draft.Id.ToString());
@@ -177,21 +205,35 @@ public class RealtorInspectionUploadWizardService(
 
             draft.ReportFileUrl = $"/uploads/realtor-inspection-reports/{draft.Id}/{fileName}";
             draft.ReportFileName = reportFile.FileName;
-            draft.ReportPageCount = ext == ".pdf" ? 42 : 1;
+            if (ext == ".pdf")
+            {
+                var (_, pages) = InspectionReportTextExtractor.ExtractFromFile(fullPath);
+                draft.ReportPageCount = pages > 0 ? pages : 1;
+            }
+            else
+            {
+                draft.ReportPageCount = 1;
+            }
         }
         else if (string.IsNullOrWhiteSpace(draft.ReportFileUrl))
         {
-            draft.ReportFileName = "Home Inspection Report";
-            draft.ReportFileUrl = "/welcome-house.png";
-            draft.ReportPageCount = 42;
+            throw new InvalidOperationException("Add an inspection report PDF or image to continue.");
         }
 
+        var staleFindings = await db.IndorRealtorInspectionUploadFindings
+            .Where(f => f.DraftId == draft.Id)
+            .ToListAsync(cancellationToken);
+        if (staleFindings.Count > 0)
+        {
+            db.IndorRealtorInspectionUploadFindings.RemoveRange(staleFindings);
+        }
+
+        draft.AnalysisSummary = null;
         draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.InProgress;
-        draft.AnalysisProgress = 72;
+        draft.AnalysisProgress = 8;
         draft.CurrentStep = 2;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
-        await SeedDemoFindingsIfNeededAsync(draft.Id, cancellationToken);
     }
 
     public async Task<RealtorInspectionAnalyzeViewModel> BuildAnalyzeAsync(CancellationToken cancellationToken = default)
@@ -202,6 +244,9 @@ public class RealtorInspectionUploadWizardService(
         var progress = draft.AnalysisProgress;
         var status = draft.AnalysisStatus;
 
+        var findingCount = await db.IndorRealtorInspectionUploadFindings
+            .CountAsync(f => f.DraftId == draft.Id, cancellationToken);
+
         return new RealtorInspectionAnalyzeViewModel
         {
             DisplayStep = 2,
@@ -209,29 +254,160 @@ public class RealtorInspectionUploadWizardService(
             Subtitle = "INDOR AI scans the inspection report to find, organize, and prioritize findings automatically.",
             PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
             ReportFileName = draft.ReportFileName ?? "Home Inspection Report",
-            ReportPageCount = draft.ReportPageCount > 0 ? draft.ReportPageCount : 42,
+            ReportPageCount = draft.ReportPageCount > 0 ? draft.ReportPageCount : 1,
             UploadedLabel = $"Uploaded {draft.FechaCreacion.ToLocalTime():MMM d, yyyy}",
             AnalysisProgress = progress,
             AnalysisStatus = status,
-            Tasks = BuildAnalysisTasks(progress, status),
-            DetectedCategories = BuildDetectedCategories(progress)
+            AnalysisSummary = draft.AnalysisSummary,
+            Tasks = BuildAnalysisTasks(progress, status, draft.ReportPageCount, findingCount),
+            DetectedCategories = await BuildDetectedCategoriesAsync(progress, draft.Id, cancellationToken)
         };
     }
 
-    public async Task AdvanceAnalysisAsync(CancellationToken cancellationToken = default)
+    public async Task RunAnalysisAsync(CancellationToken cancellationToken = default)
     {
         var draft = await GetDraftAsync(cancellationToken)
             ?? throw new InvalidOperationException("Draft not found.");
 
-        draft.AnalysisProgress = Math.Min(100, draft.AnalysisProgress + 28);
-        if (draft.AnalysisProgress >= 100)
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete)
         {
-            draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.Complete;
+            return;
         }
 
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed)
+        {
+            var staleFindings = await db.IndorRealtorInspectionUploadFindings
+                .Where(f => f.DraftId == draft.Id)
+                .ToListAsync(cancellationToken);
+            if (staleFindings.Count > 0)
+            {
+                db.IndorRealtorInspectionUploadFindings.RemoveRange(staleFindings);
+            }
+
+            draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.InProgress;
+            draft.AnalysisProgress = 10;
+            draft.AnalysisSummary = null;
+            draft.FechaActualizacion = DateTime.UtcNow;
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.InProgress
+            && draft.AnalysisProgress >= 30
+            && draft.AnalysisProgress < 100)
+        {
+            return;
+        }
+
+        if (!ActiveAnalyses.TryAdd(draft.Id, 0))
+        {
+            return;
+        }
+
+        draft.AnalysisProgress = 20;
+        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.InProgress;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
-        await SeedDemoFindingsIfNeededAsync(draft.Id, cancellationToken);
+
+        var draftId = draft.Id;
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await using var scope = scopeFactory.CreateAsyncScope();
+                var scopedDb = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+                var scopedAnalysis = scope.ServiceProvider.GetRequiredService<IOpenAiInspectionAnalysisService>();
+                var scopedBridge = scope.ServiceProvider.GetRequiredService<IRealtorProviderBridgeService>();
+                var scopedEnv = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+                await ExecuteAnalysisInBackgroundAsync(
+                    draftId, scopedDb, scopedAnalysis, scopedBridge, scopedEnv);
+            }
+            finally
+            {
+                ActiveAnalyses.TryRemove(draftId, out _);
+            }
+        });
+    }
+
+    private static async Task ExecuteAnalysisInBackgroundAsync(
+        int draftId,
+        AppDbContext scopedDb,
+        IOpenAiInspectionAnalysisService scopedAnalysis,
+        IRealtorProviderBridgeService scopedBridge,
+        IWebHostEnvironment scopedEnv)
+    {
+        var draft = await scopedDb.IndorRealtorInspectionUploadDrafts
+            .FirstOrDefaultAsync(d => d.Id == draftId);
+        if (draft == null)
+        {
+            return;
+        }
+
+        draft.AnalysisProgress = 30;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await scopedDb.SaveChangesAsync();
+
+        var reportPath = ResolveReportFullPath(scopedEnv, draft.ReportFileUrl);
+        var address = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion);
+        var result = await scopedAnalysis.AnalyzeReportAsync(address, reportPath, CancellationToken.None);
+
+        draft = await scopedDb.IndorRealtorInspectionUploadDrafts.FirstAsync(d => d.Id == draftId);
+        draft.AnalysisProgress = 75;
+        await scopedDb.SaveChangesAsync();
+
+        if (result.PageCount > 0)
+        {
+            draft.ReportPageCount = result.PageCount;
+        }
+
+        if (!result.Success)
+        {
+            draft.AnalysisSummary = result.ErrorMessage;
+            draft.AnalysisProgress = 0;
+            draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.Failed;
+            draft.FechaActualizacion = DateTime.UtcNow;
+            await scopedDb.SaveChangesAsync();
+            return;
+        }
+
+        draft.AnalysisSummary = result.Summary;
+
+        var existing = await scopedDb.IndorRealtorInspectionUploadFindings
+            .Where(f => f.DraftId == draftId)
+            .ToListAsync();
+        scopedDb.IndorRealtorInspectionUploadFindings.RemoveRange(existing);
+
+        var sort = 0;
+        foreach (var finding in result.Findings)
+        {
+            var tradeMeta = RealtorInspectionTrades.All.FirstOrDefault(t => t.Value == finding.Trade);
+            scopedDb.IndorRealtorInspectionUploadFindings.Add(new IndorRealtorInspectionUploadFinding
+            {
+                DraftId = draftId,
+                Title = finding.Title,
+                Description = finding.Description,
+                SourceExcerpt = finding.SourceExcerpt,
+                SourceSection = finding.SourceSection,
+                SourcePage = finding.SourcePage,
+                Priority = finding.Priority,
+                Trade = finding.Trade,
+                TradeLabel = tradeMeta.Label,
+                AiScore = finding.AiScore,
+                ImageUrl = null,
+                SortOrder = ++sort,
+                IsSelected = true
+            });
+        }
+
+        draft.AnalysisProgress = 100;
+        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.Complete;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await scopedDb.SaveChangesAsync();
+        await EnsureDefaultProvidersAsync(draftId, scopedDb, scopedBridge);
+    }
+
+    public async Task AdvanceAnalysisAsync(CancellationToken cancellationToken = default)
+    {
+        await RunAnalysisAsync(cancellationToken);
     }
 
     public async Task CompleteAnalysisAsync(CancellationToken cancellationToken = default)
@@ -239,13 +415,30 @@ public class RealtorInspectionUploadWizardService(
         var draft = await GetDraftAsync(cancellationToken)
             ?? throw new InvalidOperationException("Draft not found.");
 
-        draft.AnalysisProgress = 100;
-        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.Complete;
+        if (draft.AnalysisStatus != RealtorInspectionAnalysisStatuses.Complete)
+        {
+            await RunAnalysisAsync(cancellationToken);
+        }
+
+        draft = await GetDraftAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Draft not found.");
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed)
+        {
+            throw new InvalidOperationException(
+                draft.AnalysisSummary ?? "AI analysis failed. Retry before viewing findings.");
+        }
+
+        await db.Entry(draft).Collection(d => d.Findings).LoadAsync(cancellationToken);
+        if (draft.Findings.Count == 0)
+        {
+            throw new InvalidOperationException(
+                "No AI findings are available yet. Wait for analysis to finish or retry.");
+        }
+
         draft.CurrentStep = 3;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
-        await SeedDemoFindingsIfNeededAsync(draft.Id, cancellationToken);
-        await EnsureDefaultProvidersAsync(draft.Id, cancellationToken);
     }
 
     public async Task<RealtorInspectionPrioritiesViewModel> BuildPrioritiesAsync(
@@ -274,8 +467,12 @@ public class RealtorInspectionUploadWizardService(
         return new RealtorInspectionPrioritiesViewModel
         {
             DisplayStep = 3,
-            Title = "Prioritized Findings",
-            Subtitle = "INDOR AI has ordered the findings by urgency and assigned the recommended trade for each issue.",
+            Title = "AI Inspection Findings",
+            Subtitle = "Review what INDOR AI discovered before sending requests to providers.",
+            PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
+            ReportFileName = draft.ReportFileName ?? "Inspection Report",
+            ReportPdfUrl = draft.ReportFileUrl,
+            AnalysisSummary = draft.AnalysisSummary,
             TotalFindings = all.Count,
             UrgentCount = all.Count(f => f.Priority == RealtorInspectionFindingPriorities.Urgent),
             HighCount = all.Count(f => f.Priority == RealtorInspectionFindingPriorities.High),
@@ -315,9 +512,6 @@ public class RealtorInspectionUploadWizardService(
 
         var selectedFindings = draft.Findings.Where(f => f.IsSelected).ToList();
         var trades = selectedFindings.Select(f => f.Trade).Distinct().OrderBy(t => t).ToList();
-        var allProviders = await db.IndorRealtorQuoteProviders.AsNoTracking()
-            .Where(p => p.IsActive)
-            .ToListAsync(cancellationToken);
 
         var selectedProviderIds = draft.TradeProviders
             .GroupBy(p => p.Trade)
@@ -336,7 +530,7 @@ public class RealtorInspectionUploadWizardService(
             var tradeMeta = RealtorInspectionTrades.All.FirstOrDefault(t => t.Value == trade);
             var tradeFindings = selectedFindings.Where(f => f.Trade == trade).ToList();
             var topPriority = tradeFindings.OrderByDescending(f => PriorityWeight(f.Priority)).First().Priority;
-            var providers = MatchProvidersForTrade(trade, allProviders);
+            var providers = await providerBridge.MatchProveedoresForTradeAsync(trade, cancellationToken);
             var selectedForTrade = selectedProviderIds.GetValueOrDefault(trade) ?? [];
 
             if (selectedForTrade.Count == 0 && providers.Count > 0)
@@ -353,17 +547,7 @@ public class RealtorInspectionUploadWizardService(
                 Trade = trade,
                 TradeLabel = $"{tradeMeta.Label} needed",
                 PriorityNote = FormatTradePriorityNote(topPriority, tradeFindings.Count),
-                Providers = providers.Select(p => new RealtorQuoteProviderCardViewModel
-                {
-                    Id = p.Id,
-                    CompanyName = p.CompanyName,
-                    Categories = p.Categories,
-                    Rating = p.Rating,
-                    DistanceMiles = p.DistanceMiles,
-                    BadgeLabel = p.BadgeLabel,
-                    IsVerified = p.IsVerified,
-                    Selected = selectedForTrade.Contains(p.Id)
-                }).ToList()
+                Providers = providers.Select(p => MapProveedorCard(p, selectedForTrade)).ToList()
             });
         }
 
@@ -424,9 +608,6 @@ public class RealtorInspectionUploadWizardService(
         var providersByTrade = draft.TradeProviders.GroupBy(p => p.Trade)
             .ToDictionary(g => g.Key, g => g.Count());
 
-        var providerLookup = await db.IndorRealtorQuoteProviders.AsNoTracking()
-            .ToDictionaryAsync(p => p.Id, cancellationToken);
-
         var requests = new List<RealtorInspectionReviewRequestViewModel>();
         foreach (var trade in trades)
         {
@@ -436,7 +617,7 @@ public class RealtorInspectionUploadWizardService(
             var providerCount = providersByTrade.GetValueOrDefault(trade);
             if (providerCount == 0)
             {
-                providerCount = MatchProvidersForTrade(trade, providerLookup.Values).Take(2).Count();
+                providerCount = (await providerBridge.MatchProveedoresForTradeAsync(trade, cancellationToken)).Take(2).Count();
             }
 
             requests.Add(new RealtorInspectionReviewRequestViewModel
@@ -483,8 +664,6 @@ public class RealtorInspectionUploadWizardService(
 
         var selectedFindings = draft.Findings.Where(f => f.IsSelected).ToList();
         var trades = selectedFindings.Select(f => f.Trade).Distinct().ToList();
-        var providerLookup = await db.IndorRealtorQuoteProviders.AsNoTracking()
-            .ToDictionaryAsync(p => p.Id, cancellationToken);
 
         var property = await db.IndorRealtorPropertyFiles
             .Include(p => p.Items)
@@ -525,12 +704,17 @@ public class RealtorInspectionUploadWizardService(
 
         foreach (var trade in trades)
         {
-            var tradeMeta = RealtorInspectionTrades.All.First(t => t.Value == trade);
+            var tradeMeta = RealtorInspectionTrades.All.FirstOrDefault(t => t.Value == trade);
+            if (tradeMeta.Value != trade)
+            {
+                tradeMeta = (trade, trade, "fa-wrench", "handyman");
+            }
             var tradeFindings = selectedFindings.Where(f => f.Trade == trade).ToList();
             var providerIds = providersByTrade.GetValueOrDefault(trade) ?? [];
             if (providerIds.Count == 0)
             {
-                providerIds = MatchProvidersForTrade(trade, providerLookup.Values).Take(2).Select(p => p.Id).ToList();
+                providerIds = (await providerBridge.MatchProveedoresForTradeAsync(trade, cancellationToken))
+                    .Take(2).Select(p => p.Id).ToList();
             }
 
             var quoteCode = await GenerateQuoteCodeAsync(realtor.Id, cancellationToken);
@@ -551,23 +735,42 @@ public class RealtorInspectionUploadWizardService(
                 RequestType = RealtorQuoteRequestTypes.ByItem,
                 ResponseDeadlineHours = draft.ResponseDeadlineHours,
                 ProviderSelectionMode = RealtorQuoteProviderSelectionModes.IndorRecommended,
-                SentUtc = DateTime.UtcNow
+                SentUtc = DateTime.UtcNow,
+                OptionalMessage = TruncateText(draft.AnalysisSummary, 500)
             };
 
             db.IndorRealtorQuotes.Add(quote);
             await db.SaveChangesAsync(cancellationToken);
 
-            foreach (var providerId in providerIds)
+            var proveedores = await db.IndorProveedores
+                .AsNoTracking()
+                .Where(p => providerIds.Contains(p.Id))
+                .ToListAsync(cancellationToken);
+
+            if (proveedores.Count == 0)
             {
-                if (providerLookup.TryGetValue(providerId, out var prov))
+                proveedores = (await providerBridge.MatchProveedoresForTradeAsync(trade, cancellationToken))
+                    .Take(2)
+                    .ToList();
+            }
+
+            foreach (var proveedor in proveedores)
+            {
+                var lead = await providerBridge.CreateLeadFromRealtorQuoteAsync(
+                    quote,
+                    proveedor,
+                    tradeFindings,
+                    draft.ReportFileUrl,
+                    cancellationToken);
+
+                db.IndorRealtorQuoteSentProviders.Add(new IndorRealtorQuoteSentProvider
                 {
-                    db.IndorRealtorQuoteSentProviders.Add(new IndorRealtorQuoteSentProvider
-                    {
-                        QuoteId = quote.Id,
-                        ProviderId = providerId,
-                        ProviderName = prov.CompanyName
-                    });
-                }
+                    QuoteId = quote.Id,
+                    ProviderId = proveedor.Id,
+                    ProveedorId = proveedor.Id,
+                    LeadId = lead.Id,
+                    ProviderName = TruncateText(ResolveProveedorName(proveedor), 120) ?? "INDOR Provider"
+                });
             }
 
             quoteCodes.Add(quoteCode);
@@ -579,7 +782,9 @@ public class RealtorInspectionUploadWizardService(
         {
             RealtorId = realtor.Id,
             ActivityType = "upload",
-            Description = $"Inspection report analyzed for {draft.Address} — {quoteCodes.Count} quote requests created",
+            Description = TruncateText(
+                $"Inspection analyzed — {quoteCodes.Count} quote requests for {draft.Address}",
+                300) ?? "Inspection analyzed",
             CategoryTag = "Files",
             OccurredUtc = DateTime.UtcNow
         });
@@ -588,7 +793,9 @@ public class RealtorInspectionUploadWizardService(
         {
             RealtorId = realtor.Id,
             ActivityType = "quote",
-            Description = $"{selectedFindings.Count} findings sent to providers for {draft.Address}",
+            Description = TruncateText(
+                $"{selectedFindings.Count} findings sent for {draft.Address}",
+                300) ?? "Findings sent to providers",
             CategoryTag = "Quotes",
             OccurredUtc = DateTime.UtcNow
         });
@@ -615,76 +822,34 @@ public class RealtorInspectionUploadWizardService(
         return result;
     }
 
-    private async Task SeedDemoFindingsIfNeededAsync(int draftId, CancellationToken cancellationToken)
+    private Task EnsureDefaultProvidersAsync(int draftId, CancellationToken cancellationToken) =>
+        EnsureDefaultProvidersAsync(draftId, db, providerBridge, cancellationToken);
+
+    private static async Task EnsureDefaultProvidersAsync(
+        int draftId,
+        AppDbContext scopedDb,
+        IRealtorProviderBridgeService scopedBridge,
+        CancellationToken cancellationToken = default)
     {
-        var exists = await db.IndorRealtorInspectionUploadFindings
-            .AnyAsync(f => f.DraftId == draftId, cancellationToken);
-        if (exists)
-        {
-            return;
-        }
-
-        var demo = new (string Title, string Priority, string Trade, int Score, int Sort)[]
-        {
-            ("Exposed electrical wiring", RealtorInspectionFindingPriorities.Urgent, RealtorInspectionTrades.Electrical, 95, 1),
-            ("Panel grounding issue", RealtorInspectionFindingPriorities.Urgent, RealtorInspectionTrades.Electrical, 92, 2),
-            ("Missing GFCI outlet", RealtorInspectionFindingPriorities.Urgent, RealtorInspectionTrades.Electrical, 88, 3),
-            ("A/C not cooling properly", RealtorInspectionFindingPriorities.High, RealtorInspectionTrades.Hvac, 87, 4),
-            ("Dirty condenser coils", RealtorInspectionFindingPriorities.High, RealtorInspectionTrades.Hvac, 84, 5),
-            ("Leaky pipe under sink", RealtorInspectionFindingPriorities.High, RealtorInspectionTrades.Plumbing, 83, 6),
-            ("Water heater sediment buildup", RealtorInspectionFindingPriorities.High, RealtorInspectionTrades.Plumbing, 81, 7),
-            ("Missing shingles on roof", RealtorInspectionFindingPriorities.High, RealtorInspectionTrades.Roof, 80, 8),
-            ("Peeling exterior paint", RealtorInspectionFindingPriorities.Moderate, RealtorInspectionTrades.Paint, 72, 9),
-            ("Loose handrail", RealtorInspectionFindingPriorities.Moderate, RealtorInspectionTrades.Electrical, 70, 10),
-            ("Minor grout cracking", RealtorInspectionFindingPriorities.Moderate, RealtorInspectionTrades.Plumbing, 68, 11),
-            ("Attic insulation gaps", RealtorInspectionFindingPriorities.Moderate, RealtorInspectionTrades.Hvac, 65, 12)
-        };
-
-        foreach (var item in demo)
-        {
-            var tradeMeta = RealtorInspectionTrades.All.First(t => t.Value == item.Trade);
-            db.IndorRealtorInspectionUploadFindings.Add(new IndorRealtorInspectionUploadFinding
-            {
-                DraftId = draftId,
-                Title = item.Title,
-                Priority = item.Priority,
-                Trade = item.Trade,
-                TradeLabel = tradeMeta.Label,
-                AiScore = item.Score,
-                ImageUrl = "/welcome-house.png",
-                SortOrder = item.Sort,
-                IsSelected = item.Priority != RealtorInspectionFindingPriorities.Moderate || item.Sort <= 11
-            });
-        }
-
-        await db.SaveChangesAsync(cancellationToken);
-    }
-
-    private async Task EnsureDefaultProvidersAsync(int draftId, CancellationToken cancellationToken)
-    {
-        var hasProviders = await db.IndorRealtorInspectionDraftProviders
+        var hasProviders = await scopedDb.IndorRealtorInspectionDraftProviders
             .AnyAsync(p => p.DraftId == draftId, cancellationToken);
         if (hasProviders)
         {
             return;
         }
 
-        var draft = await db.IndorRealtorInspectionUploadDrafts
+        var draft = await scopedDb.IndorRealtorInspectionUploadDrafts
             .Include(d => d.Findings)
             .FirstAsync(d => d.Id == draftId, cancellationToken);
-
-        var allProviders = await db.IndorRealtorQuoteProviders.AsNoTracking()
-            .Where(p => p.IsActive)
-            .ToListAsync(cancellationToken);
 
         var trades = draft.Findings.Where(f => f.IsSelected).Select(f => f.Trade).Distinct();
         foreach (var trade in trades)
         {
-            var matched = MatchProvidersForTrade(trade, allProviders);
+            var matched = await scopedBridge.MatchProveedoresForTradeAsync(trade, cancellationToken);
             var take = trade is RealtorInspectionTrades.Electrical or RealtorInspectionTrades.Hvac ? 2 : 1;
             foreach (var prov in matched.Take(take))
             {
-                db.IndorRealtorInspectionDraftProviders.Add(new IndorRealtorInspectionDraftProvider
+                scopedDb.IndorRealtorInspectionDraftProviders.Add(new IndorRealtorInspectionDraftProvider
                 {
                     DraftId = draftId,
                     Trade = trade,
@@ -693,37 +858,161 @@ public class RealtorInspectionUploadWizardService(
             }
         }
 
-        await db.SaveChangesAsync(cancellationToken);
+        await scopedDb.SaveChangesAsync(cancellationToken);
     }
 
-    private static List<IndorRealtorQuoteProvider> MatchProvidersForTrade(
-        string trade, IEnumerable<IndorRealtorQuoteProvider> providers)
+    private async Task EnsurePropertyFilesFromPortfolioAsync(int realtorId, CancellationToken cancellationToken)
     {
-        var keywords = trade switch
+        var hasFiles = await db.IndorRealtorPropertyFiles
+            .AnyAsync(p => p.RealtorId == realtorId && p.Status == "Active", cancellationToken);
+        if (hasFiles)
         {
-            RealtorInspectionTrades.Electrical => new[] { "electric", "electrical" },
-            RealtorInspectionTrades.Hvac => new[] { "hvac", "cool", "mechanical" },
-            RealtorInspectionTrades.Plumbing => new[] { "plumb" },
-            RealtorInspectionTrades.Roof => new[] { "roof", "gutter" },
-            RealtorInspectionTrades.Paint => new[] { "paint", "exterior" },
-            _ => Array.Empty<string>()
-        };
-
-        var matched = providers
-            .Where(p => keywords.Any(k =>
-                p.Categories.Contains(k, StringComparison.OrdinalIgnoreCase) ||
-                p.CompanyName.Contains(k, StringComparison.OrdinalIgnoreCase)))
-            .OrderByDescending(p => p.IsRecommended)
-            .ThenByDescending(p => p.Rating)
-            .ToList();
-
-        if (matched.Count == 0)
-        {
-            matched = providers.OrderByDescending(p => p.Rating).Take(2).ToList();
+            return;
         }
 
-        return matched;
+        var quoteRows = await db.IndorRealtorQuotes.AsNoTracking()
+            .Where(q => q.RealtorId == realtorId && q.Address != "")
+            .OrderByDescending(q => q.RequestedUtc)
+            .Select(q => new { q.Address, q.ClientName, q.PhotoUrl })
+            .ToListAsync(cancellationToken);
+
+        foreach (var quote in quoteRows
+                     .GroupBy(q => q.Address.Trim(), StringComparer.OrdinalIgnoreCase)
+                     .Select(g => g.First()))
+        {
+            await CreatePropertyFileIfMissingAsync(
+                realtorId,
+                quote.Address.Trim(),
+                quote.ClientName,
+                null,
+                quote.PhotoUrl,
+                cancellationToken);
+        }
+
+        var clientRows = await db.IndorRealtorClients.AsNoTracking()
+            .Where(c => c.RealtorId == realtorId && c.PropertyAddress != null && c.PropertyAddress != "")
+            .Select(c => new { c.PropertyAddress, c.FullName, c.ProfileImageUrl })
+            .ToListAsync(cancellationToken);
+
+        foreach (var client in clientRows
+                     .GroupBy(c => c.PropertyAddress!.Trim(), StringComparer.OrdinalIgnoreCase)
+                     .Select(g => g.First()))
+        {
+            await CreatePropertyFileIfMissingAsync(
+                realtorId,
+                client.PropertyAddress!.Trim(),
+                client.FullName,
+                null,
+                client.ProfileImageUrl,
+                cancellationToken);
+        }
     }
+
+    private async Task<int> ResolveOrCreatePropertyFileAsync(
+        int realtorId,
+        string? address,
+        string? clientName,
+        string? cityRegion,
+        CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            throw new InvalidOperationException("Select a property or enter the property address to continue.");
+        }
+
+        var normalizedAddress = address.Trim();
+        var existing = await db.IndorRealtorPropertyFiles
+            .FirstOrDefaultAsync(
+                p => p.RealtorId == realtorId &&
+                     p.Status == "Active" &&
+                     p.Address == normalizedAddress,
+                cancellationToken);
+
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        return await CreatePropertyFileIfMissingAsync(
+            realtorId,
+            normalizedAddress,
+            clientName,
+            cityRegion,
+            null,
+            cancellationToken);
+    }
+
+    private async Task<int> CreatePropertyFileIfMissingAsync(
+        int realtorId,
+        string address,
+        string? clientName,
+        string? cityRegion,
+        string? photoUrl,
+        CancellationToken cancellationToken)
+    {
+        var existing = await db.IndorRealtorPropertyFiles
+            .FirstOrDefaultAsync(
+                p => p.RealtorId == realtorId &&
+                     p.Status == "Active" &&
+                     p.Address == address,
+                cancellationToken);
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var file = new IndorRealtorPropertyFile
+        {
+            RealtorId = realtorId,
+            Title = address,
+            Address = address,
+            CityRegion = string.IsNullOrWhiteSpace(cityRegion) ? null : cityRegion.Trim(),
+            ClientName = string.IsNullOrWhiteSpace(clientName) ? null : clientName.Trim(),
+            PhotoUrl = photoUrl ?? "/welcome-house.png",
+            Status = "Active",
+            FilePhase = RealtorPropertyFilePhases.RepairReview,
+            UpdatedUtc = DateTime.UtcNow,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        db.IndorRealtorPropertyFiles.Add(file);
+        await db.SaveChangesAsync(cancellationToken);
+        return file.Id;
+    }
+
+    private string ResolveReportFullPath(string? reportFileUrl) =>
+        ResolveReportFullPath(env, reportFileUrl);
+
+    private static string ResolveReportFullPath(IWebHostEnvironment hostEnv, string? reportFileUrl)
+    {
+        if (string.IsNullOrWhiteSpace(reportFileUrl))
+        {
+            return string.Empty;
+        }
+
+        var relative = reportFileUrl.TrimStart('~', '/').Replace('/', Path.DirectorySeparatorChar);
+        return Path.Combine(hostEnv.WebRootPath, relative);
+    }
+
+    private static RealtorQuoteProviderCardViewModel MapProveedorCard(
+        IndorProveedor proveedor, HashSet<int> selectedForTrade) =>
+        new()
+        {
+            Id = proveedor.Id,
+            CompanyName = ResolveProveedorName(proveedor),
+            Categories = proveedor.ServiceDescription ?? "INDOR PRO",
+            Rating = 4.8m,
+            DistanceMiles = proveedor.TravelRadiusMiles > 0 ? proveedor.TravelRadiusMiles : 5m,
+            BadgeLabel = string.Equals(proveedor.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
+                ? "INDOR PRO" : "Verified",
+            IsVerified = true,
+            Selected = selectedForTrade.Contains(proveedor.Id)
+        };
+
+    private static string ResolveProveedorName(IndorProveedor proveedor) =>
+        !string.IsNullOrWhiteSpace(proveedor.DbaName) ? proveedor.DbaName!
+        : !string.IsNullOrWhiteSpace(proveedor.BusinessName) ? proveedor.BusinessName!
+        : "INDOR Provider";
 
     private async Task<string> GenerateQuoteCodeAsync(int realtorId, CancellationToken cancellationToken)
     {
@@ -751,39 +1040,116 @@ public class RealtorInspectionUploadWizardService(
         {
             Id = f.Id,
             Title = f.Title,
+            Description = f.Description,
+            SourceExcerpt = f.SourceExcerpt,
+            SourceSection = f.SourceSection,
+            SourcePage = f.SourcePage,
+            ReportReference = FormatReportReference(f.SourceSection, f.SourcePage),
             Priority = f.Priority,
             PriorityCss = f.Priority.ToLowerInvariant(),
+            Trade = f.Trade,
             TradeLabel = f.TradeLabel,
             TradeIcon = tradeMeta.Icon,
+            TradeCss = tradeMeta.Css,
             AiScore = f.AiScore,
             ImageUrl = f.ImageUrl,
             IsSelected = f.IsSelected
         };
     }
 
-    private static List<RealtorInspectionAnalyzeTaskViewModel> BuildAnalysisTasks(int progress, string status) =>
-    [
-        new() { Label = "Reading report pages", Detail = "42 / 42 pages", Status = progress >= 20 ? "Done" : "Pending" },
-        new() { Label = "Extracting repair findings", Detail = "188 findings", Status = progress >= 50 ? "Done" : progress >= 20 ? "InProgress" : "Pending" },
-        new() { Label = "Classifying by trade", Detail = "In progress", Status = progress >= 72 ? "InProgress" : "Pending" },
-        new() { Label = "Scoring urgency", Detail = "Pending", Status = status == RealtorInspectionAnalysisStatuses.Complete ? "Done" : "Pending" }
-    ];
+    private static List<RealtorInspectionAnalyzeTaskViewModel> BuildAnalysisTasks(
+        int progress, string status, int pageCount, int findingCount)
+    {
+        var pages = pageCount > 0 ? pageCount : 1;
+        var pagesRead = progress >= 20 ? pages : Math.Max(1, (int)(pages * progress / 20.0));
+        return
+        [
+            new()
+            {
+                Label = "Reading report pages",
+                Detail = $"{pagesRead} / {pages} pages",
+                Status = progress >= 20 ? "Done" : progress >= 8 ? "InProgress" : "Pending"
+            },
+            new()
+            {
+                Label = "Extracting repair findings",
+                Detail = findingCount > 0 ? $"{findingCount} findings" : "Analyzing with OpenAI",
+                Status = progress >= 50 ? "Done" : progress >= 20 ? "InProgress" : "Pending"
+            },
+            new()
+            {
+                Label = "Classifying by trade",
+                Detail = status == RealtorInspectionAnalysisStatuses.Complete
+                    ? "Trades assigned from AI"
+                    : progress >= 30 ? "OpenAI classifying trades" : "Waiting for AI",
+                Status = progress >= 75 ? "Done" : progress >= 30 ? "InProgress" : "Pending"
+            },
+            new()
+            {
+                Label = "Scoring urgency",
+                Detail = status == RealtorInspectionAnalysisStatuses.Complete ? "Complete" : "In progress",
+                Status = status == RealtorInspectionAnalysisStatuses.Complete ? "Done" : progress >= 75 ? "InProgress" : "Pending"
+            }
+        ];
+    }
 
-    private static List<RealtorInspectionCategoryChipViewModel> BuildDetectedCategories(int progress)
+    private async Task<List<RealtorInspectionCategoryChipViewModel>> BuildDetectedCategoriesAsync(
+        int progress, int draftId, CancellationToken cancellationToken)
     {
         if (progress < 50)
         {
             return [];
         }
 
-        return
-        [
-            new() { Label = "Electrical", Css = "electrical", Icon = "fa-bolt" },
-            new() { Label = "HVAC", Css = "hvac", Icon = "fa-fan" },
-            new() { Label = "Plumbing", Css = "plumbing", Icon = "fa-faucet-drip" },
-            new() { Label = "Roof", Css = "roof", Icon = "fa-house-chimney" },
-            new() { Label = "Paint", Css = "paint", Icon = "fa-paint-roller" }
-        ];
+        var trades = await db.IndorRealtorInspectionUploadFindings
+            .AsNoTracking()
+            .Where(f => f.DraftId == draftId)
+            .Select(f => f.Trade)
+            .Distinct()
+            .ToListAsync(cancellationToken);
+
+        if (trades.Count == 0)
+        {
+            return [];
+        }
+
+        return trades.Select(t =>
+        {
+            var meta = RealtorInspectionTrades.All.FirstOrDefault(x => x.Value == t);
+            return new RealtorInspectionCategoryChipViewModel
+            {
+                Label = meta.Value == t ? meta.Label.Split(' ')[0] : t,
+                Css = meta.Css,
+                Icon = meta.Icon
+            };
+        }).ToList();
+    }
+
+    private static string? TruncateText(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return value;
+        }
+
+        value = value.Trim();
+        return value.Length <= maxLength ? value : value[..(maxLength - 1)] + "…";
+    }
+
+    private static string? FormatReportReference(string? section, int? page)
+    {
+        var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(section))
+        {
+            parts.Add(section.Trim());
+        }
+
+        if (page is > 0)
+        {
+            parts.Add($"Page {page}");
+        }
+
+        return parts.Count == 0 ? null : string.Join(" · ", parts);
     }
 
     private static int PriorityWeight(string priority) => priority switch

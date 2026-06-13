@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace IndorMvcApp.Services;
 
 public static class HvacMaintenancePricingService
@@ -13,8 +15,26 @@ public static class HvacMaintenanceDisplayLabels
     public static string FormatSerial(string? serial, bool desconocido) =>
         desconocido || string.IsNullOrWhiteSpace(serial) ? "Not provided" : serial.Trim();
 
-    public static string FormatLastMaintenance(string? value, bool desconocido) =>
-        desconocido || string.IsNullOrWhiteSpace(value) ? "Not sure" : value.Trim();
+    public static string FormatLastMaintenance(string? value, bool desconocido)
+    {
+        if (desconocido || string.IsNullOrWhiteSpace(value))
+        {
+            return "Not sure";
+        }
+
+        if (DateTime.TryParseExact(value.Trim(), "yyyy-MM-dd", CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out var isoDate))
+        {
+            return isoDate.ToString("MMM d, yyyy", CultureInfo.InvariantCulture);
+        }
+
+        if (DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.None, out var date))
+        {
+            return date.ToString("MMM d, yyyy");
+        }
+
+        return value.Trim();
+    }
 
     public static string FormatTimeWindow(string? code) => code switch
     {

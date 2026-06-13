@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Controllers;
 
@@ -12,7 +13,8 @@ namespace IndorMvcApp.Controllers;
 public class RealtorInspectionUploadController(
     IRealtorInspectionUploadWizardService wizard,
     IRealtorRegistrationService registration,
-    UserManager<ApplicationUser> userManager) : Controller
+    UserManager<ApplicationUser> userManager,
+    ILogger<RealtorInspectionUploadController> logger) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -44,7 +46,7 @@ public class RealtorInspectionUploadController(
     public IActionResult Index() => RedirectToAction(nameof(Upload));
 
     [HttpGet]
-    public async Task<IActionResult> Upload(string? q)
+    public async Task<IActionResult> Upload(string? q, int? propertyFileId)
     {
         var draft = await wizard.GetDraftAsync();
         if (draft != null && draft.CurrentStep > 1)
@@ -52,26 +54,54 @@ public class RealtorInspectionUploadController(
             return RedirectToAction(wizard.ResolveResumeAction(draft.CurrentStep));
         }
 
-        return View(await wizard.BuildUploadAsync(q));
+        var vm = await wizard.BuildUploadAsync(q);
+        if (propertyFileId is > 0)
+        {
+            vm.SelectedPropertyFileId = propertyFileId;
+        }
+
+        return View(vm);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Upload(int propertyFileId, string uploadMethod, IFormFile? reportFile)
+    [RequestSizeLimit(RealtorInspectionUploadLimits.MaxFileBytes)]
+    public async Task<IActionResult> Upload(
+        int propertyFileId,
+        string uploadMethod,
+        IFormFile? reportFile,
+        string? newPropertyAddress,
+        string? newPropertyClientName,
+        string? newPropertyCityRegion)
     {
         try
         {
-            await wizard.SaveUploadAsync(propertyFileId, uploadMethod, reportFile);
+            await wizard.SaveUploadAsync(
+                propertyFileId,
+                uploadMethod,
+                reportFile,
+                newPropertyAddress,
+                newPropertyClientName,
+                newPropertyCityRegion);
             return RedirectToAction(nameof(Analyze));
         }
-        catch
+        catch (InvalidOperationException ex)
         {
-            ModelState.AddModelError(string.Empty, "Select a property and add a report to continue.");
-            var vm = await wizard.BuildUploadAsync(null);
-            vm.SelectedPropertyFileId = propertyFileId;
-            vm.UploadMethod = uploadMethod;
-            return View(vm);
+            ModelState.AddModelError(string.Empty, ex.Message);
         }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Inspection upload failed for property {PropertyFileId}", propertyFileId);
+            ModelState.AddModelError(string.Empty, "Unable to save the report. Please try again.");
+        }
+
+        var vm = await wizard.BuildUploadAsync(null);
+        vm.SelectedPropertyFileId = propertyFileId > 0 ? propertyFileId : null;
+        vm.UploadMethod = string.IsNullOrWhiteSpace(uploadMethod) ? "Pdf" : uploadMethod;
+        vm.NewPropertyAddress = newPropertyAddress;
+        vm.NewPropertyClientName = newPropertyClientName;
+        vm.NewPropertyCityRegion = newPropertyCityRegion;
+        return View(vm);
     }
 
     [HttpGet]
@@ -93,16 +123,41 @@ public class RealtorInspectionUploadController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RunAnalysis()
+    {
+        await wizard.RunAnalysisAsync();
+        var vm = await wizard.BuildAnalyzeAsync();
+        return Json(new
+        {
+            progress = vm.AnalysisProgress,
+            status = vm.AnalysisStatus,
+            complete = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete,
+            failed = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed,
+            error = vm.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed ? vm.AnalysisSummary : null,
+            findingCount = vm.Tasks.FirstOrDefault(t => t.Label.Contains("findings"))?.Detail ?? ""
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Analyze(string action)
     {
         if (string.Equals(action, "background", StringComparison.OrdinalIgnoreCase))
         {
-            await wizard.AdvanceAnalysisAsync();
+            await wizard.RunAnalysisAsync();
             return RedirectToAction("Dashboard", "Realtor");
         }
 
-        await wizard.CompleteAnalysisAsync();
-        return RedirectToAction(nameof(Priorities));
+        try
+        {
+            await wizard.CompleteAnalysisAsync();
+            return RedirectToAction(nameof(Priorities));
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["AnalysisError"] = ex.Message;
+            return RedirectToAction(nameof(Analyze));
+        }
     }
 
     [HttpGet]
@@ -110,6 +165,11 @@ public class RealtorInspectionUploadController(
     {
         var draft = await wizard.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 3)
+        {
+            return RedirectToAction(nameof(Analyze));
+        }
+
+        if (draft.AnalysisStatus != RealtorInspectionAnalysisStatuses.Complete)
         {
             return RedirectToAction(nameof(Analyze));
         }
@@ -177,9 +237,16 @@ public class RealtorInspectionUploadController(
             var result = await wizard.CreateQuoteRequestsAsync();
             return View("Success", result);
         }
-        catch
+        catch (Exception ex)
         {
-            ModelState.AddModelError(string.Empty, "Unable to create quote requests.");
+            logger.LogError(ex, "Create quote requests failed for realtor inspection upload");
+            var message = ex switch
+            {
+                InvalidOperationException => ex.Message,
+                DbUpdateException => "Could not save quote requests. Verify database scripts are up to date and try again.",
+                _ => "Unable to create quote requests. Please try again."
+            };
+            ModelState.AddModelError(string.Empty, message);
             return View("Review", await wizard.BuildReviewAsync());
         }
     }

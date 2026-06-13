@@ -6,7 +6,7 @@
     ViewBag.MyHomeNav = "maintenance";
 }
 <div class="hf-title-row">
-    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-back"><i class="fas fa-arrow-left"></i></a>
     <h1 class="hf-title">Maintenance details</h1>
 </div>
 <div class="hf-card">
@@ -34,4 +34,4 @@
         <p style="line-height:1.5;color:#475569;">@Model.Notes</p>
     </div>
 }
-<a asp-action="MaintenanceEdit" asp-route-id="@Model.Id" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> Edit task</a>
+<a asp-action="MaintenanceEdit" asp-route-id="@Model.Id" asp-route-from="@Model.NavigationFrom" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> Edit task</a>

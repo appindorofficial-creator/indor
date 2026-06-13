@@ -354,6 +354,19 @@ public class IndorProveedorLead
     [MaxLength(200)]
     public string? DefaultLaborWarranty { get; set; }
 
+    public int? RealtorQuoteId { get; set; }
+
+    [MaxLength(40)]
+    public string? LeadSource { get; set; }
+
+    [MaxLength(500)]
+    public string? InspectionReportUrl { get; set; }
+
+    public string? FindingsJson { get; set; }
+
+    [MaxLength(2000)]
+    public string? AnalysisSummary { get; set; }
+
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 }
 
@@ -504,6 +517,18 @@ public class IndorProveedorInvoice
 
     [ForeignKey(nameof(JobId))]
     public IndorProveedorJob? Job { get; set; }
+
+    public int? EstimateId { get; set; }
+
+    [ForeignKey(nameof(EstimateId))]
+    public IndorProveedorEstimate? Estimate { get; set; }
+
+    public int? LeadId { get; set; }
+
+    [ForeignKey(nameof(LeadId))]
+    public IndorProveedorLead? Lead { get; set; }
+
+    public DateTime? SentUtc { get; set; }
 
     [MaxLength(20)]
     public string? InvoiceCode { get; set; }

@@ -1,286 +1,162 @@
 @model IndorMvcApp.ViewModels.ProviderProQuickEstimateViewModel
-
 @using System.Globalization
-
 @{
-
     ViewData["Title"] = "Edit Estimate - INDOR PRO";
-
     Layout = "_ProviderProLayout";
-
     ViewBag.NavActive = "home";
-
     var money = CultureInfo.GetCultureInfo("en-US");
-
-    var steps = new[] { ("service", "Service"), ("scope", "Scope"), ("price", "Price"), ("review", "Review") };
-
 }
 
-
-
-<div class="prv-pro-shell prv-pro-shell--estimate">
-
+<div class="prv-pro-shell prv-pro-shell--estimate prv-pro-shell--estimate-wizard">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
-
-
-
-    <header class="prv-pro-workflow-head">
-
-        <a asp-controller="Proveedor" asp-action="PendingEstimates" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
-
+    <header class="prv-pro-wizard-head">
+        <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
         <div>
-
-            <h1>@Model.PageTitle</h1>
-
-            <small>@Model.EstimateCode · @Model.CreatedLabel</small>
-
+            <h1>Step @Model.StepNumber of @Model.TotalSteps · Edit Estimate</h1>
+            <p>Adjust line items, prices, quantities, materials, and notes before sending.</p>
         </div>
-
     </header>
 
+    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
 
-
-    @if (TempData["EstimateDraftSaved"] as bool? == true)
-
-    {
-
-        <div class="prv-pro-lead-toast">Estimate draft saved.</div>
-
-    }
-
-
-
-    <section class="prv-pro-estimate-summary">
-
-        <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Property" />
-
+    <section class="prv-pro-est-review-job">
+        <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@Model.ServiceTone">
+            <i class="fas @Model.ServiceIcon"></i>
+        </span>
         <div>
-
-            <strong>@Model.Address</strong>
-
-            @if (!string.IsNullOrWhiteSpace(Model.PropertyMeta))
-
-            {
-
-                <small>@Model.PropertyMeta</small>
-
-            }
-
-            <div class="prv-pro-lead-badges">
-
-                <span class="prv-pro-pill prv-pro-pill--draft">@Model.StatusLabel</span>
-
-                <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
-
-            </div>
-
+            <strong>@Model.Title</strong>
+            <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
+            <small>@Model.CustomerName · @Model.Address</small>
         </div>
-
     </section>
 
-
-
-    <section class="prv-pro-lead-section prv-pro-estimate-customer">
-
-        <div class="prv-pro-lead-homeowner-main">
-
-            <div class="prv-pro-lead-homeowner-avatar">@Model.CustomerInitials</div>
-
-            <div>
-
-                <strong>@Model.CustomerName</strong>
-
-                @if (Model.IsHomeownerVerified)
-
-                {
-
-                    <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Homeowner</span>
-
-                }
-
-            </div>
-
-        </div>
-
-    </section>
-
-
-
-    <nav class="prv-pro-estimate-stepper" aria-label="Estimate steps">
-
-        @foreach (var (id, label) in steps)
-
-        {
-
-            <span class="@(Model.ActiveStep == id ? "is-active" : id is "service" or "scope" ? "is-done" : "")">@label</span>
-
-        }
-
-    </nav>
-
-
-
-    <form asp-controller="Proveedor" asp-action="EditEstimate" method="post" class="prv-pro-estimate-form">
-
+    <form asp-controller="Proveedor" asp-action="EditEstimate" method="post" class="prv-pro-est-edit-form" id="estimateEditForm">
         @Html.AntiForgeryToken()
-
         <input type="hidden" name="LeadId" value="@Model.LeadId" />
-
         <input type="hidden" name="EstimateId" value="@Model.EstimateId" />
-
         <input type="hidden" name="TaxRate" value="@Model.TaxRate.ToString("0.####", CultureInfo.InvariantCulture)" />
-
-
-
-        <section class="prv-pro-lead-section">
-
-            <h3>Scope of Work</h3>
-
-            <ol class="prv-pro-scope-list">
-
-                @for (var i = 0; i < Model.ScopeItems.Count; i++)
-
-                {
-
-                    var item = Model.ScopeItems[i];
-
-                    <li>
-
-                        <input type="text" name="ScopeLabels" value="@item.Label" />
-
-                        <input type="number" name="ScopeAmounts" value="@item.Amount.ToString("0")" step="1" min="0" />
-
-                    </li>
-
-                }
-
-            </ol>
-
-            <button type="button" class="prv-pro-link-more">+ Add Line Item</button>
-
-        </section>
-
-
-
-        <div class="prv-pro-estimate-meta-grid">
-
-            <div class="prv-pro-lead-section">
-
-                <h3><i class="fas fa-calendar"></i> Timeline</h3>
-
-                <label>Estimated Start <input type="date" name="EstimatedStartDate" value="@Model.EstimatedStartDate" class="prv-pro-estimate-inline-input" /></label>
-
-                <label>Estimated Duration <input type="text" name="EstimatedDuration" value="@Model.EstimatedDuration" class="prv-pro-estimate-inline-input" /></label>
-
-            </div>
-
-            <div class="prv-pro-lead-section">
-
-                <h3><i class="fas fa-shield"></i> Warranty</h3>
-
-                <label>Labor Warranty <input type="text" name="LaborWarranty" value="@Model.LaborWarranty" class="prv-pro-estimate-inline-input" /></label>
-
-                <label>Parts Warranty <input type="text" name="PartsWarranty" value="@Model.PartsWarranty" class="prv-pro-estimate-inline-input" /></label>
-
-            </div>
-
-        </div>
-
-
-
-        <section class="prv-pro-estimate-pricing">
-
-            <h3>Materials &amp; Labor Summary</h3>
-
-            <div class="prv-pro-estimate-pricing-row">
-
-                <span>Materials</span>
-
-                <input type="number" name="MaterialsAmount" value="@Model.MaterialsAmount.ToString("0")" step="1" min="0" />
-
-            </div>
-
-            <div class="prv-pro-estimate-pricing-row">
-
-                <span>Labor</span>
-
-                <input type="number" name="LaborAmount" value="@Model.LaborAmount.ToString("0")" step="1" min="0" />
-
-            </div>
-
-            <div class="prv-pro-estimate-pricing-row">
-
-                <span>Discount</span>
-
-                <input type="number" name="DiscountAmount" value="@Model.DiscountAmount.ToString("0")" step="1" min="0" />
-
-            </div>
-
-            <div class="prv-pro-estimate-pricing-row">
-
-                <span>Subtotal</span>
-
-                <strong>@Model.SubtotalAmount.ToString("C2", money)</strong>
-
-            </div>
-
-            <div class="prv-pro-estimate-pricing-row">
-
-                <span>Tax (@(Model.TaxRate.ToString("P2", money)))</span>
-
-                <strong>@Model.TaxAmount.ToString("C2", money)</strong>
-
-            </div>
-
-            <div class="prv-pro-estimate-total">
-
-                <span>Total Estimate</span>
-
-                <strong>@Model.TotalAmount.ToString("C2", money)</strong>
-
-            </div>
-
-        </section>
-
-
-
-        <label class="prv-pro-create-field prv-pro-create-field--notes">
-
-            <i class="fas fa-note-sticky"></i>
-
-            <span>Notes to Homeowner</span>
-
-            <textarea name="HomeownerNotes" rows="3">@Model.HomeownerNotes</textarea>
-
-        </label>
-
         <input type="hidden" name="Timeline" value="@Model.Timeline" />
-
         <input type="hidden" name="Warranty" value="@Model.Warranty" />
-
         <input type="hidden" name="ServiceType" value="@Model.ServiceType" />
+        <input type="hidden" name="LaborAmount" value="@Model.LaborAmount.ToString("0.##", CultureInfo.InvariantCulture)" />
+        <input type="hidden" name="MaterialsAmount" value="@Model.MaterialsAmount.ToString("0.##", CultureInfo.InvariantCulture)" />
+        <input type="hidden" name="DiscountAmount" value="@Model.DiscountAmount.ToString("0.##", CultureInfo.InvariantCulture)" />
 
+        <section class="prv-pro-wizard-card prv-pro-est-line-items">
+            <div class="prv-pro-est-line-head">
+                <span>Line items</span>
+                <span>Qty / Hours</span>
+                <span>Price</span>
+            </div>
+            <div id="lineItemsList">
+                @for (var i = 0; i < Model.ScopeItems.Count; i++)
+                {
+                    var item = Model.ScopeItems[i];
+                    var qty = item.Qty > 0 ? item.Qty : 1m;
+                    var unitPrice = item.UnitPrice > 0 ? item.UnitPrice : item.Amount;
+                    <div class="prv-pro-est-line-row">
+                        <input type="text" name="ScopeLabels" value="@item.Label" placeholder="Description" />
+                        <input type="number" name="ScopeQtys" value="@qty.ToString("0.##", CultureInfo.InvariantCulture)" step="0.25" min="0" class="est-qty" />
+                        <input type="number" name="ScopeUnitPrices" value="@unitPrice.ToString("0.##", CultureInfo.InvariantCulture)" step="0.01" min="0" class="est-price" />
+                        <input type="hidden" name="ScopeAmounts" value="@item.Amount.ToString("0.##", CultureInfo.InvariantCulture)" class="est-amount" />
+                        <button type="button" class="prv-pro-est-line-remove" aria-label="Remove line"><i class="fas fa-trash"></i></button>
+                    </div>
+                }
+            </div>
+            <button type="button" class="prv-pro-est-add-line" id="addLineItem">+ Add line item</button>
+        </section>
 
+        <section class="prv-pro-wizard-card">
+            <h2>Customer notes</h2>
+            <textarea name="HomeownerNotes" rows="4" placeholder="Notes visible to the customer">@Model.HomeownerNotes</textarea>
+            <div class="prv-pro-est-attachments">
+                <div class="prv-pro-est-attachment">
+                    <i class="fas fa-camera"></i>
+                    <div>
+                        <strong>Photos</strong>
+                        <small>@Model.PhotoCount attached</small>
+                    </div>
+                </div>
+                <div class="prv-pro-est-attachment">
+                    <i class="fas fa-microphone"></i>
+                    <div>
+                        <strong>Voice transcript</strong>
+                        <small>@Model.VoiceTranscriptCount attached</small>
+                    </div>
+                </div>
+            </div>
+        </section>
 
-        <footer class="prv-pro-estimate-footer">
+        <section class="prv-pro-est-edit-totals">
+            <div><span>Subtotal</span><strong id="estSubtotal">@Model.SubtotalAmount.ToString("C2", money)</strong></div>
+            <div class="prv-pro-est-breakdown-total">
+                <span>Total estimate</span>
+                <strong id="estTotal">@Model.TotalAmount.ToString("C2", money)</strong>
+            </div>
+        </section>
 
+        <footer class="prv-pro-est-review-actions">
             <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
-
-                <i class="fas fa-floppy-disk"></i> Save Draft
-
+                <i class="fas fa-floppy-disk"></i> Save draft
             </button>
-
-            <button type="submit" name="GoToReview" value="true" class="prv-pro-btn prv-pro-btn--primary">
-
-                <i class="fas fa-file-lines"></i> Review Estimate
-
+            <button type="submit" name="GoToSend" value="true" class="prv-pro-btn prv-pro-btn--primary">
+                <i class="fas fa-paper-plane"></i> Update estimate / Next: Send Estimate
             </button>
-
         </footer>
-
     </form>
-
 </div>
 
+@section Scripts {
+<script>
+(function () {
+    const list = document.getElementById('lineItemsList');
+    const addBtn = document.getElementById('addLineItem');
+    const subtotalEl = document.getElementById('estSubtotal');
+    const totalEl = document.getElementById('estTotal');
+    const taxRate = @Model.TaxRate.ToString("0.####", CultureInfo.InvariantCulture);
+
+    function recalc() {
+        let subtotal = 0;
+        list.querySelectorAll('.prv-pro-est-line-row').forEach(row => {
+            const qty = parseFloat(row.querySelector('.est-qty')?.value || '0') || 0;
+            const price = parseFloat(row.querySelector('.est-price')?.value || '0') || 0;
+            const amount = Math.round(qty * price * 100) / 100;
+            const hidden = row.querySelector('.est-amount');
+            if (hidden) hidden.value = amount.toFixed(2);
+            subtotal += amount;
+        });
+        const tax = Math.round(subtotal * taxRate * 100) / 100;
+        const total = subtotal + tax;
+        subtotalEl.textContent = subtotal.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        totalEl.textContent = total.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+    }
+
+    function bindRow(row) {
+        row.querySelector('.est-qty')?.addEventListener('input', recalc);
+        row.querySelector('.est-price')?.addEventListener('input', recalc);
+        row.querySelector('.prv-pro-est-line-remove')?.addEventListener('click', () => {
+            row.remove();
+            recalc();
+        });
+    }
+
+    list.querySelectorAll('.prv-pro-est-line-row').forEach(bindRow);
+
+    addBtn?.addEventListener('click', () => {
+        const row = document.createElement('div');
+        row.className = 'prv-pro-est-line-row';
+        row.innerHTML = `
+            <input type="text" name="ScopeLabels" placeholder="Description" />
+            <input type="number" name="ScopeQtys" value="1" step="0.25" min="0" class="est-qty" />
+            <input type="number" name="ScopeUnitPrices" value="0" step="0.01" min="0" class="est-price" />
+            <input type="hidden" name="ScopeAmounts" value="0" class="est-amount" />
+            <button type="button" class="prv-pro-est-line-remove" aria-label="Remove line"><i class="fas fa-trash"></i></button>`;
+        list.appendChild(row);
+        bindRow(row);
+    });
+
+    document.getElementById('estimateEditForm')?.addEventListener('submit', recalc);
+})();
+</script>
+}

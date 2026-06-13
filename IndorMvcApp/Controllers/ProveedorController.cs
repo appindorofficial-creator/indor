@@ -92,7 +92,7 @@ public class ProveedorController(
 
 
     [HttpGet]
-    public async Task<IActionResult> AddCustomer(CancellationToken cancellationToken)
+    public async Task<IActionResult> AddCustomer(bool? fresh, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -100,8 +100,18 @@ public class ProveedorController(
             return proveedor.Result;
         }
 
-        ClearAddCustomerDraft();
-        var model = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, null);
+        if (fresh == true)
+        {
+            ClearAddCustomerDraft();
+        }
+
+        var draft = fresh == true ? null : GetAddCustomerDraft();
+        if (draft != null && string.IsNullOrWhiteSpace(draft.FirstName))
+        {
+            draft = null;
+        }
+
+        var model = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, draft);
         return View(model);
     }
 
@@ -117,18 +127,30 @@ public class ProveedorController(
 
         if (string.IsNullOrWhiteSpace(input.FirstName) || string.IsNullOrWhiteSpace(input.LastName))
         {
-            return RedirectToAction(nameof(AddCustomer));
+            TempData["AddCustomerError"] = "First name and last name are required.";
+            var invalidModel = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, new ProviderProAddCustomerDraft
+            {
+                CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType,
+                FirstName = TrimOrEmpty(input.FirstName),
+                LastName = TrimOrEmpty(input.LastName),
+                Phone = TrimOrEmpty(input.Phone),
+                Email = TrimOrEmpty(input.Email),
+                PreferredContactMethod = string.IsNullOrWhiteSpace(input.PreferredContactMethod) ? "SMS" : input.PreferredContactMethod,
+                CompanyName = TrimOrEmpty(input.CompanyName)
+            });
+            return View(invalidModel);
         }
 
         var draft = GetAddCustomerDraft();
-        draft.CustomerType = input.CustomerType;
+        draft.CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType;
         draft.FirstName = input.FirstName.Trim();
         draft.LastName = input.LastName.Trim();
-        draft.Phone = input.Phone.Trim();
-        draft.Email = input.Email.Trim();
-        draft.PreferredContactMethod = input.PreferredContactMethod;
-        draft.CompanyName = input.CompanyName.Trim();
+        draft.Phone = TrimOrEmpty(input.Phone);
+        draft.Email = TrimOrEmpty(input.Email);
+        draft.PreferredContactMethod = string.IsNullOrWhiteSpace(input.PreferredContactMethod) ? "SMS" : input.PreferredContactMethod;
+        draft.CompanyName = TrimOrEmpty(input.CompanyName);
         SaveAddCustomerDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
 
         return RedirectToAction(nameof(AddCustomerProperty));
     }
@@ -163,16 +185,16 @@ public class ProveedorController(
         }
 
         var draft = GetAddCustomerDraft();
-        draft.StreetAddress = input.StreetAddress.Trim();
-        draft.AptUnit = input.AptUnit.Trim();
-        draft.City = input.City.Trim();
-        draft.State = input.State;
-        draft.ZipCode = input.ZipCode.Trim();
-        draft.PropertyType = input.PropertyType;
+        draft.StreetAddress = TrimOrEmpty(input.StreetAddress);
+        draft.AptUnit = TrimOrEmpty(input.AptUnit);
+        draft.City = TrimOrEmpty(input.City);
+        draft.State = input.State ?? "";
+        draft.ZipCode = TrimOrEmpty(input.ZipCode);
+        draft.PropertyType = string.IsNullOrWhiteSpace(input.PropertyType) ? "Single Family" : input.PropertyType;
         draft.Bedrooms = input.Bedrooms;
         draft.Bathrooms = input.Bathrooms;
         draft.IsBillingAddressSame = input.IsBillingAddressSame;
-        draft.AccessNotes = input.AccessNotes.Trim();
+        draft.AccessNotes = TrimOrEmpty(input.AccessNotes);
         SaveAddCustomerDraft(draft);
 
         if (string.IsNullOrWhiteSpace(draft.StreetAddress) || string.IsNullOrWhiteSpace(draft.City))
@@ -218,7 +240,7 @@ public class ProveedorController(
         draft.PreferredLanguage = input.PreferredLanguage;
         draft.CustomerSource = input.CustomerSource;
         draft.Tags = input.Tags.Where(t => !string.IsNullOrWhiteSpace(t)).Distinct().ToList();
-        draft.InternalNotes = input.InternalNotes.Trim();
+        draft.InternalNotes = TrimOrEmpty(input.InternalNotes);
         draft.SendIndorInvite = input.SendIndorInvite;
         draft.AllowServiceUpdates = input.AllowServiceUpdates;
         SaveAddCustomerDraft(draft);
@@ -335,7 +357,7 @@ public class ProveedorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> UploadReport(string? q, string? filter, CancellationToken cancellationToken)
+    public async Task<IActionResult> UploadReport(string? q, string? filter, bool? fresh, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -343,7 +365,11 @@ public class ProveedorController(
             return proveedor.Result;
         }
 
-        ClearUploadReportDraft();
+        if (fresh == true || (string.IsNullOrWhiteSpace(q) && string.IsNullOrWhiteSpace(filter)))
+        {
+            ClearUploadReportDraft();
+        }
+
         var model = await proData.GetUploadReportSelectJobAsync(proveedor.Entity!, null, q, filter, cancellationToken);
         return View(model);
     }
@@ -366,6 +392,7 @@ public class ProveedorController(
         var draft = GetUploadReportDraft();
         draft.JobId = input.JobId;
         SaveUploadReportDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
         return RedirectToAction(nameof(UploadReportType));
     }
 
@@ -714,6 +741,60 @@ public class ProveedorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> EditProfile(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetEditProfileAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> EditProfile(ProviderProEditProfileInput input, IFormFile? profilePhoto, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (string.IsNullOrWhiteSpace(input.BusinessName) && string.IsNullOrWhiteSpace(input.DbaName))
+        {
+            ModelState.AddModelError(nameof(input.BusinessName), "Business name or DBA is required.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var model = await proData.GetEditProfileAsync(proveedor.Entity!, cancellationToken);
+            return View(model);
+        }
+
+        var saved = await proData.SaveEditProfileAsync(proveedor.Entity!.Id, input, cancellationToken);
+        if (!saved)
+        {
+            return RedirectToAction(nameof(Profile));
+        }
+
+        if (profilePhoto != null && profilePhoto.Length > 0)
+        {
+            var logoError = await SaveProfilePhotoAsync(proveedor.Entity.Id, profilePhoto);
+            if (!string.IsNullOrWhiteSpace(logoError))
+            {
+                TempData["ProfilePhotoError"] = logoError;
+            }
+        }
+
+        TempData["ProfileSaved"] = true;
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> NewLeads(string? filter, string? q, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -742,6 +823,49 @@ public class ProveedorController(
         }
 
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> InspectionFindings(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var model = await proData.GetInspectionFindingsAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InspectionFindings(int id, int[] selectedFindingIndices, string? action, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        await proData.SaveLeadFindingSelectionAsync(id, selectedFindingIndices ?? []);
+        if (string.Equals(action, "estimate", StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(SelectRepairItems), new { id });
+        }
+
+        return RedirectToAction(nameof(InspectionFindings), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SelectRepairItems(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var model = await proData.GetSelectRepairItemsAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SelectRepairItems(int id)
+    {
+        return RedirectToAction(nameof(QuickEstimate), new { id });
     }
 
     [HttpPost]
@@ -1048,6 +1172,24 @@ public class ProveedorController(
         return View(model);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> SendEstimate(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetSendEstimatePageAsync(proveedor.Entity!, id, cancellationToken);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        return View(model);
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SendEstimate(ProviderProSendEstimateInput input, CancellationToken cancellationToken)
@@ -1058,11 +1200,17 @@ public class ProveedorController(
             return proveedor.Result;
         }
 
-        var model = await proData.GetReviewEstimateAsync(proveedor.Entity!, input.EstimateId, cancellationToken);
+        var model = await proData.GetSendEstimatePageAsync(proveedor.Entity!, input.EstimateId, cancellationToken);
         var sent = await proData.SendEstimateAsync(proveedor.Entity!.Id, input, cancellationToken);
         if (!sent || model == null)
         {
-            return RedirectToAction(nameof(ReviewEstimate), new { id = input.EstimateId });
+            return RedirectToAction(nameof(SendEstimate), new { id = input.EstimateId });
+        }
+
+        if (input.SaveAsDraft)
+        {
+            TempData["EstimateDraftSaved"] = true;
+            return RedirectToAction(nameof(SendEstimate), new { id = input.EstimateId });
         }
 
         return RedirectToAction(nameof(EstimateSent), new { id = input.EstimateId });
@@ -1113,6 +1261,11 @@ public class ProveedorController(
         if (!estimateId.HasValue)
         {
             return RedirectToAction(nameof(PendingEstimates));
+        }
+
+        if (input.GoToSend)
+        {
+            return RedirectToAction(nameof(SendEstimate), new { id = estimateId.Value });
         }
 
         if (input.GoToReview)
@@ -1178,6 +1331,86 @@ public class ProveedorController(
         }
 
         return RedirectToAction(nameof(JobDetails), new { id = jobId.Value });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EstimateAccepted(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var model = await proData.GetEstimateAcceptedAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ApproveEstimate(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        await proData.ApproveEstimateAsync(proveedor.Entity!.Id, id, cancellationToken);
+        return RedirectToAction(nameof(EstimateAccepted), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CreateInvoice(int estimateId, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var model = await proData.GetCreateInvoiceAsync(proveedor.Entity!, estimateId, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateInvoice(ProviderProCreateInvoiceInput input, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var invoiceId = await proData.SaveCreateInvoiceAsync(proveedor.Entity!.Id, input, cancellationToken);
+        if (!invoiceId.HasValue)
+        {
+            return RedirectToAction(nameof(CreateInvoice), new { estimateId = input.EstimateId });
+        }
+
+        return input.GoToReview
+            ? RedirectToAction(nameof(ReviewInvoice), new { id = invoiceId.Value })
+            : RedirectToAction(nameof(CreateInvoice), new { estimateId = input.EstimateId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ReviewInvoice(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var model = await proData.GetReviewInvoiceAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SendInvoice(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        await proData.SendInvoiceAsync(proveedor.Entity!.Id, id, cancellationToken);
+        return RedirectToAction(nameof(InvoiceSent), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> InvoiceSent(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null) return proveedor.Result;
+
+        var model = await proData.GetInvoiceSentAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
     }
 
     [HttpGet]
@@ -1491,8 +1724,45 @@ public class ProveedorController(
         return View(model);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateJob(ProviderProCreateJobStep1Input input, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (string.IsNullOrWhiteSpace(input.ServiceCategoryId) || string.IsNullOrWhiteSpace(input.Title))
+        {
+            var model = await jobWorkflow.GetCreateJobCategoriesAsync(proveedor.Entity!, cancellationToken);
+            model.SelectedCategoryId = input.ServiceCategoryId;
+            model.JobTitle = input.Title;
+            return View(model);
+        }
+
+        var detailsModel = await jobWorkflow.GetCreateJobDetailsAsync(
+            proveedor.Entity!, input.ServiceCategoryId.Trim(), null, cancellationToken);
+        if (detailsModel == null)
+        {
+            var model = await jobWorkflow.GetCreateJobCategoriesAsync(proveedor.Entity!, cancellationToken);
+            model.SelectedCategoryId = input.ServiceCategoryId;
+            model.JobTitle = input.Title;
+            return View(model);
+        }
+
+        var draft = GetCreateJobDraft();
+        draft.ServiceCategoryId = input.ServiceCategoryId.Trim();
+        draft.ServiceCategoryLabel = detailsModel.ServiceCategoryLabel;
+        draft.Title = input.Title.Trim();
+        SaveCreateJobDraft(draft);
+
+        return RedirectToAction(nameof(CreateJobDetails));
+    }
+
     [HttpGet]
-    public async Task<IActionResult> CreateJobDetails(string categoryId, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateJobDetails(string? categoryId, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1506,7 +1776,7 @@ public class ProveedorController(
             draft.ServiceCategoryId = categoryId;
         }
 
-        if (string.IsNullOrWhiteSpace(draft.ServiceCategoryId))
+        if (string.IsNullOrWhiteSpace(draft.ServiceCategoryId) || string.IsNullOrWhiteSpace(draft.Title))
         {
             return RedirectToAction(nameof(CreateJob));
         }
@@ -1533,28 +1803,30 @@ public class ProveedorController(
             return proveedor.Result;
         }
 
-        if (string.IsNullOrWhiteSpace(input.Title) || string.IsNullOrWhiteSpace(input.Address)
+        var draft = GetCreateJobDraft();
+        if (string.IsNullOrWhiteSpace(input.Address)
             || (input.ClienteId == null && string.IsNullOrWhiteSpace(input.CustomerName)))
         {
-            return RedirectToAction(nameof(CreateJobDetails), new { categoryId = input.ServiceCategoryId });
+            return RedirectToAction(nameof(CreateJobDetails));
         }
 
-        var draft = GetCreateJobDraft();
         draft.ServiceCategoryId = input.ServiceCategoryId;
-        draft.Title = input.Title.Trim();
+        draft.Title = string.IsNullOrWhiteSpace(input.Title) ? draft.Title : input.Title.Trim();
         draft.ClienteId = input.ClienteId;
         draft.CustomerName = input.CustomerName.Trim();
         draft.Address = input.Address.Trim();
-        draft.Description = input.Description.Trim();
-        draft.Priority = input.Priority;
+        draft.Description = string.IsNullOrWhiteSpace(input.Description)
+            ? $"{draft.ServiceCategoryLabel} for {draft.CustomerName}"
+            : input.Description.Trim();
+        draft.Priority = string.IsNullOrWhiteSpace(input.Priority) ? "Medium" : input.Priority;
         draft.Notes = input.Notes.Trim();
         SaveCreateJobDraft(draft);
 
-        return RedirectToAction(nameof(CreateJobSchedule));
+        return RedirectToAction(nameof(CreateJobQuote));
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateJobSchedule(CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateJobQuote(CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1568,7 +1840,7 @@ public class ProveedorController(
             return RedirectToAction(nameof(CreateJob));
         }
 
-        var model = await jobWorkflow.GetCreateJobScheduleAsync(proveedor.Entity!, draft, cancellationToken);
+        var model = await jobWorkflow.GetCreateJobQuoteAsync(proveedor.Entity!, draft, cancellationToken);
         if (model == null)
         {
             return RedirectToAction(nameof(CreateJob));
@@ -1579,33 +1851,27 @@ public class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CreateJobSchedule(ProviderProCreateJobScheduleInput input, CancellationToken cancellationToken)
+    public IActionResult CreateJobQuote(ProviderProCreateJobQuoteInput input)
     {
-        var proveedor = await ResolveProveedorAsync(cancellationToken);
-        if (proveedor.Result != null)
-        {
-            return proveedor.Result;
-        }
-
         var draft = GetCreateJobDraft();
         if (string.IsNullOrWhiteSpace(draft.Title))
         {
             return RedirectToAction(nameof(CreateJob));
         }
 
-        draft.VisitDate = input.VisitDate;
-        draft.StartTimeLabel = input.StartTimeLabel;
-        draft.EndTimeLabel = input.EndTimeLabel;
-        draft.AddToCalendar = input.AddToCalendar;
-        draft.Reminder = input.Reminder;
-        draft.AssignedTechnician = input.AssignedTechnician;
+        draft.SendQuote = input.SendQuote && !string.Equals(input.SubmitAction, "skip", StringComparison.OrdinalIgnoreCase);
+        draft.QuoteRequestNotes = input.QuoteRequestNotes.Trim();
+        draft.Description = draft.QuoteRequestNotes;
+        draft.AiDraftGenerated = false;
         SaveCreateJobDraft(draft);
 
-        return RedirectToAction(nameof(CreateJobReview));
+        return draft.SendQuote
+            ? RedirectToAction(nameof(CreateJobAiDraft))
+            : RedirectToAction(nameof(CreateJobSend));
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateJobReview(CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateJobAiDraft(CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1614,18 +1880,67 @@ public class ProveedorController(
         }
 
         var draft = GetCreateJobDraft();
-        var model = await jobWorkflow.GetCreateJobReviewAsync(proveedor.Entity!, draft);
+        if (!draft.SendQuote)
+        {
+            return RedirectToAction(nameof(CreateJobSend));
+        }
+
+        var model = await jobWorkflow.GetCreateJobAiDraftAsync(proveedor.Entity!, draft);
         if (model == null)
         {
             return RedirectToAction(nameof(CreateJob));
         }
 
+        SaveCreateJobDraft(draft);
         return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ConfirmCreateJob(CancellationToken cancellationToken)
+    public IActionResult CreateJobAiDraft(ProviderProCreateJobAiDraftInput input)
+    {
+        var draft = GetCreateJobDraft();
+        if (!draft.SendQuote)
+        {
+            return RedirectToAction(nameof(CreateJobSend));
+        }
+
+        if (string.Equals(input.SubmitAction, "regenerate", StringComparison.OrdinalIgnoreCase))
+        {
+            jobWorkflow.GenerateCreateJobAiDraft(draft, regenerate: true);
+            SaveCreateJobDraft(draft);
+            return RedirectToAction(nameof(CreateJobAiDraft));
+        }
+
+        SaveCreateJobDraft(draft);
+        return RedirectToAction(nameof(CreateJobSend));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> CreateJobSend(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetCreateJobDraft();
+        var model = await jobWorkflow.GetCreateJobSendAsync(proveedor.Entity!, draft);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(CreateJob));
+        }
+
+        draft.CustomerMessage = model.CustomerMessage;
+        draft.DeliveryMethod = model.DeliveryMethod;
+        SaveCreateJobDraft(draft);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateJobSend(ProviderProCreateJobSendInput input, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1639,7 +1954,17 @@ public class ProveedorController(
             return RedirectToAction(nameof(CreateJob));
         }
 
-        var input = new ProviderProCreateJobInput
+        draft.DeliveryMethod = input.DeliveryMethod;
+        draft.CustomerMessage = input.CustomerMessage.Trim();
+        draft.IncludeAiSummary = input.IncludeAiSummary;
+        draft.IncludeVoiceTranscript = input.IncludeVoiceTranscript;
+        SaveCreateJobDraft(draft);
+
+        var saveAsDraft = string.Equals(input.SubmitAction, "save_draft", StringComparison.OrdinalIgnoreCase);
+        var sendQuote = draft.SendQuote
+            && string.Equals(input.SubmitAction, "job_and_quote", StringComparison.OrdinalIgnoreCase);
+
+        var jobInput = new ProviderProCreateJobInput
         {
             ServiceCategoryId = draft.ServiceCategoryId,
             ServiceCategory = draft.ServiceCategoryLabel,
@@ -1647,18 +1972,18 @@ public class ProveedorController(
             CustomerName = draft.CustomerName,
             Address = draft.Address,
             Title = draft.Title,
-            Description = draft.Description,
-            VisitDate = draft.VisitDate,
-            StartTimeLabel = draft.StartTimeLabel,
-            EndTimeLabel = draft.EndTimeLabel,
-            AssignedTechnician = draft.AssignedTechnician,
+            Description = draft.QuoteRequestNotes ?? draft.Description,
             Priority = draft.Priority,
             Notes = draft.Notes,
-            Reminder = draft.Reminder,
-            AddToCalendar = draft.AddToCalendar
+            SaveAsDraft = saveAsDraft,
+            SendQuoteWithJob = sendQuote,
+            EstimateAmount = sendQuote ? draft.EstimateTotal : null,
+            EstimateScopeSummary = sendQuote ? draft.ScopeSummary : null,
+            DeliveryMethod = draft.DeliveryMethod,
+            CustomerMessage = draft.CustomerMessage
         };
 
-        var jobId = await jobWorkflow.CreateJobAsync(proveedor.Entity!.Id, input, cancellationToken);
+        var jobId = await jobWorkflow.CreateJobAsync(proveedor.Entity!.Id, jobInput, cancellationToken);
         ClearCreateJobDraft();
         return RedirectToAction(nameof(CreateJobSuccess), new { id = jobId });
     }
@@ -1801,7 +2126,7 @@ public class ProveedorController(
 
             await userManager.AddToRoleAsync(user, "ProveedorServicios");
 
-            await signInManager.RefreshSignInAsync(user);
+            await signInManager.SignInAsync(user, isPersistent: true);
 
         }
 
@@ -1928,6 +2253,8 @@ public class ProveedorController(
     private void ClearUploadReportDraft() =>
         HttpContext.Session.Remove(UploadReportDraftSessionKey);
 
+    private static string TrimOrEmpty(string? value) => value?.Trim() ?? "";
+
     private static readonly HashSet<string> AllowedReportFileExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".pdf", ".jpg", ".jpeg", ".png"
@@ -2028,6 +2355,41 @@ public class ProveedorController(
         }
 
         return items;
+    }
+
+    private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    private const long MaxProfilePhotoBytes = 10_000_000;
+
+    private async Task<string?> SaveProfilePhotoAsync(int proveedorId, IFormFile file)
+    {
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) && file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        {
+            ext = ".jpg";
+        }
+
+        if (!ProfilePhotoExtensions.Contains(ext))
+        {
+            return "Photo must be JPG, PNG, or WEBP.";
+        }
+
+        if (file.Length > MaxProfilePhotoBytes)
+        {
+            return "Photo must be 10 MB or less.";
+        }
+
+        var uploadDir = Path.Combine(env.WebRootPath, "uploads", "provider", proveedorId.ToString());
+        Directory.CreateDirectory(uploadDir);
+        var storedName = $"{ProviderDocumentTypes.Logo}-{Guid.NewGuid():N}{ext}";
+        var fullPath = Path.Combine(uploadDir, storedName);
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var relativeUrl = $"/uploads/provider/{proveedorId}/{storedName}";
+        await registration.RegisterDocumentUploadAsync(ProviderDocumentTypes.Logo, relativeUrl);
+        return null;
     }
 }
 

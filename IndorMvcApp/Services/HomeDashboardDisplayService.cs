@@ -20,6 +20,10 @@ public static class HomeDashboardDisplayService
         IUrlHelper url)
     {
         var d = info?.PropertyDetails;
+        var maintenancePlan = info?.MaintenanceRecommendations
+            ?? PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
+        var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(maintenancePlan, maxItems: 6);
+        var aiAlertCount = maintenancePlan?.Items.Count(i => i.Priority is "Urgent" or "High") ?? 0;
 
         var vm = new HomeDashboardViewModel
         {
@@ -43,12 +47,20 @@ public static class HomeDashboardDisplayService
                 documentos,
                 hvacRecord?.LabelImagePath,
                 waterHeaterRecord?.LabelImagePath),
-            NotificationCount = notificationCount,
+            NotificationCount = notificationCount + aiAlertCount,
             QuickActions = BuildQuickActions(propiedad.Id, url),
-            TodayTasks = BuildTodayTasks(propiedad.Id, hvacRecord, waterHeaterRecord, documentos, mantenimiento, url),
+            TodayTasks = MergeTodayTasks(
+                maintenancePlan,
+                propiedad.Id,
+                hvacRecord,
+                waterHeaterRecord,
+                documentos,
+                mantenimiento,
+                url),
             UpcomingSchedule = BuildSchedule(mantenimiento),
             RecentDocuments = BuildDocuments(propiedad.Id, documentos, url),
-            RecentActivity = BuildActivity(historial)
+            RecentActivity = BuildActivity(historial),
+            MaintenanceSection = maintenanceSection
         };
 
         return vm;
@@ -72,6 +84,10 @@ public static class HomeDashboardDisplayService
         IUrlHelper url)
     {
         var d = info?.PropertyDetails;
+        var maintenancePlan = info?.MaintenanceRecommendations
+            ?? PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
+        var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(maintenancePlan, maxItems: 6);
+
         return new HomeDashboardViewModel
         {
             UserFirstName = FirstName(user),
@@ -91,24 +107,40 @@ public static class HomeDashboardDisplayService
             SqftLabel = d?.LivingArea.HasValue == true ? $"{d.LivingArea:N0} sqft" : null,
             HouseFactsUrl = $"{url.Action("Index", "Home")}#section-myhome",
             QuickActions = BuildQuickActions(propiedad.Id, url),
-            TodayTasks =
-            [
-                new HomeTodayTaskViewModel
-                {
-                    Icon = "fa-fan",
-                    Title = "Add your HVAC system details",
-                    Subtitle = "Get personalized maintenance tips",
-                    Url = url.Action("Add", "HvacSetup", new { propiedadId = propiedad.Id }) ?? "#"
-                },
-                new HomeTodayTaskViewModel
-                {
-                    Icon = "fa-fire-burner",
-                    Title = "Add water heater info",
-                    Subtitle = "Help us keep track age, model & warranty",
-                    Url = url.Action("Add", "WaterHeaterSetup", new { propiedadId = propiedad.Id }) ?? "#"
-                }
-            ]
+            TodayTasks = MergeTodayTasks(
+                maintenancePlan,
+                propiedad.Id,
+                null,
+                null,
+                [],
+                [],
+                url),
+            MaintenanceSection = maintenanceSection
         };
+    }
+
+    private static List<HomeTodayTaskViewModel> MergeTodayTasks(
+        PropertyMaintenancePlanViewModel? maintenancePlan,
+        int propiedadId,
+        PropiedadHvacSistema? hvacRecord,
+        PropiedadWaterHeaterSistema? waterHeaterRecord,
+        IReadOnlyList<PropiedadDocumento> documentos,
+        IReadOnlyList<PropiedadMantenimiento> mantenimiento,
+        IUrlHelper url)
+    {
+        var aiTasks = PropertyMaintenanceDisplayService.BuildAlertTasks(maintenancePlan, propiedadId, url);
+        var baseTasks = BuildTodayTasks(
+            propiedadId,
+            hvacRecord,
+            waterHeaterRecord,
+            documentos,
+            mantenimiento,
+            url);
+
+        return aiTasks
+            .Concat(baseTasks)
+            .Take(6)
+            .ToList();
     }
 
     private static string FirstName(ApplicationUser? user)
@@ -133,7 +165,7 @@ public static class HomeDashboardDisplayService
     private static List<HomeQuickActionViewModel> BuildQuickActions(int? propiedadId, IUrlHelper? url)
     {
         var maintenanceUrl = propiedadId.HasValue && url != null
-            ? url.Action("Maintenance", "MyHome", new { id = propiedadId.Value })
+            ? url.Action("Maintenance", "MyHome", new { id = propiedadId.Value, from = "home" })
             : null;
         var documentsUrl = propiedadId.HasValue && url != null
             ? url.Action("Documents", "MyHome", new { id = propiedadId.Value })
@@ -222,7 +254,7 @@ public static class HomeDashboardDisplayService
                 Title = "Review this month's reminders",
                 Subtitle = $"{dueSoon} task{(dueSoon == 1 ? "" : "s")} • Due soon",
                 Badge = "Due soon",
-                Url = url.Action("Maintenance", "MyHome", new { id = propiedadId }) ?? "#section-myhome"
+                Url = url.Action("Maintenance", "MyHome", new { id = propiedadId, from = "home" }) ?? "#section-myhome"
             });
         }
 

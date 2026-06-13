@@ -279,8 +279,11 @@ public class ExteriorPaintController : Controller
         HomeCarePriority priority,
         ExteriorPaintServicioLanding landing,
         SolicitudExteriorPaint? existing,
-        ExteriorPaintReviewViewModel? posted = null) =>
-        new()
+        ExteriorPaintReviewViewModel? posted = null)
+    {
+        var reviewComplete = existing != null && HasCompletedReview(existing);
+
+        return new ExteriorPaintReviewViewModel
         {
             HomeCarePriorityId = priority.Id,
             SolicitudId = existing?.Id ?? posted?.SolicitudId,
@@ -290,10 +293,17 @@ public class ExteriorPaintController : Controller
             InfoBoxTexto = landing.InfoBoxTexto,
             ImagenUrl = ResolveImageUrl(landing.ImagenUrl ?? priority.ImagenUrl),
             CtaTexto = landing.CtaTexto,
-            UltimaPintura = existing?.UltimaPintura ?? posted?.UltimaPintura ?? "DontKnow",
-            TipoSuperficie = existing?.TipoSuperficie ?? posted?.TipoSuperficie ?? "WoodSiding",
-            MantenerMismoColor = existing?.MantenerMismoColor ?? posted?.MantenerMismoColor ?? "Yes"
+            UltimaPintura = reviewComplete
+                ? existing!.UltimaPintura ?? string.Empty
+                : posted?.UltimaPintura ?? string.Empty,
+            TipoSuperficie = reviewComplete
+                ? existing!.TipoSuperficie ?? string.Empty
+                : posted?.TipoSuperficie ?? string.Empty,
+            MantenerMismoColor = reviewComplete
+                ? existing!.MantenerMismoColor ?? string.Empty
+                : posted?.MantenerMismoColor ?? string.Empty
         };
+    }
 
     private async Task<ExteriorPaintScheduleViewModel> BuildScheduleViewModelAsync(SolicitudExteriorPaint solicitud)
     {
@@ -482,9 +492,6 @@ public class ExteriorPaintController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                UltimaPintura = "DontKnow",
-                TipoSuperficie = "WoodSiding",
-                MantenerMismoColor = "Yes",
                 TimingPreferido = "AsSoonAsPossible"
             };
             _db.SolicitudesExteriorPaint.Add(solicitud);
@@ -546,4 +553,9 @@ public class ExteriorPaintController : Controller
             });
         }
     }
+
+    private static bool HasCompletedReview(SolicitudExteriorPaint solicitud) =>
+        string.Equals(solicitud.Estado, "ReviewCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "ConditionCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
 }

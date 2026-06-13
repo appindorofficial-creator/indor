@@ -65,6 +65,11 @@ else
         }
     </div>
 
+    @if (Model.MaintenanceSection is { Items.Count: > 0 } maintenanceSection)
+    {
+        @await Html.PartialAsync("_HomeMaintenanceAlerts", maintenanceSection)
+    }
+
     @if (Model.TodayTasks.Count > 0)
     {
         <h2 class="hd-section-title">For your home today</h2>

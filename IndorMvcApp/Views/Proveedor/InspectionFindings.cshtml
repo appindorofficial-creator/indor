@@ -1,0 +1,109 @@
+@model IndorMvcApp.ViewModels.ProviderProInspectionFindingsViewModel
+@{
+    ViewData["Title"] = "Inspection Findings - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+}
+
+<div class="prv-pro-shell prv-pro-shell--findings">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
+
+    <header class="prv-pro-workflow-head">
+        <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Inspection Findings</h1>
+            <small>@Model.Address · @Model.ServiceType</small>
+        </div>
+    </header>
+
+    @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
+    {
+        <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener"
+           class="prv-pro-btn prv-pro-btn--ghost prv-pro-inspection-pdf-btn">
+            <i class="fas fa-file-pdf"></i> View Full Inspection Report PDF
+        </a>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.AnalysisSummary))
+    {
+        <section class="prv-pro-ai-summary">
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <div>
+                <strong>AI Summary</strong>
+                <p>@Model.AnalysisSummary</p>
+            </div>
+        </section>
+    }
+
+    <form asp-controller="Proveedor" asp-action="InspectionFindings" method="post" class="prv-pro-findings-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.LeadId" />
+
+        <section class="prv-pro-inspection-findings prv-pro-inspection-findings--workflow">
+            @foreach (var item in Model.Findings)
+            {
+                <article class="prv-pro-inspection-finding prv-pro-finding-card">
+                    <label class="prv-pro-finding-select">
+                        <input type="checkbox" name="selectedFindingIndices" value="@item.Index"
+                               @(item.IsSelected ? "checked" : "") />
+                        <span class="prv-pro-finding-select-ui"></span>
+                    </label>
+                    <div class="prv-pro-finding-card-body">
+                        <div class="prv-pro-inspection-finding-head">
+                            @if (!string.IsNullOrWhiteSpace(item.Priority))
+                            {
+                                <span class="prv-pro-inspection-priority">@item.Priority</span>
+                            }
+                            <strong>@item.Title</strong>
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(item.ReportReference))
+                        {
+                            <p class="prv-pro-inspection-ref"><i class="fas fa-bookmark"></i> @item.ReportReference</p>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(item.SourceExcerpt))
+                        {
+                            <blockquote class="prv-pro-finding-note">@item.SourceExcerpt</blockquote>
+                        }
+                        else if (!string.IsNullOrWhiteSpace(item.Description))
+                        {
+                            <p class="prv-pro-finding-note">@item.Description</p>
+                        }
+                        <div class="prv-pro-finding-actions">
+                            @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl) && item.SourcePage.HasValue)
+                            {
+                                <a href="@($"{Url.Content($"~{Model.InspectionReportUrl}")}#page={item.SourcePage}")"
+                                   target="_blank" rel="noopener" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--sm">
+                                    <i class="fas fa-file-pdf"></i> View in PDF
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </article>
+            }
+        </section>
+
+        <footer class="prv-pro-workflow-footer">
+            <p class="prv-pro-workflow-footer-count">
+                <span id="selectedCount">@Model.SelectedCount</span> item@(Model.SelectedCount == 1 ? "" : "s") selected
+            </p>
+            <button type="submit" name="action" value="estimate" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full"
+                    @(Model.Findings.Count == 0 ? "disabled" : "")>
+                Continue to Estimate
+            </button>
+        </footer>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    const form = document.querySelector('.prv-pro-findings-form');
+    const countEl = document.getElementById('selectedCount');
+    form?.addEventListener('change', () => {
+        const n = form.querySelectorAll('input[name="selectedFindingIndices"]:checked').length;
+        if (countEl) countEl.textContent = String(n);
+    });
+})();
+</script>
+}

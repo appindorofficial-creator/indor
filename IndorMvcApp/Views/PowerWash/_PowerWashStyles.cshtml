@@ -1,6 +1,23 @@
 @await Html.PartialAsync("../HvacMaintenance/_HvacMaintenanceStyles")
 <style>
-    .pw-hero { width: 100%; border-radius: 16px; object-fit: cover; max-height: 180px; margin-bottom: 14px; border: 1px solid #E5E7EB; }
+    .hero-wrap {
+        position: relative;
+        margin-bottom: 16px;
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #E5E7EB;
+        background: linear-gradient(135deg, #E8F1FB 0%, #D6E8F9 100%);
+    }
+    .hero-wrap .hero-img {
+        width: 100%;
+        height: auto;
+        max-height: none;
+        display: block;
+        object-fit: contain;
+        object-position: center center;
+        border-radius: 0;
+        margin-bottom: 0;
+    }
     .bestfor-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
     .bestfor-item { background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 8px; text-align: center; min-height: 88px; }
     .bestfor-item i { color: #0066CC; font-size: 1rem; margin-bottom: 8px; display: block; }
@@ -62,4 +79,7 @@
     .summary-mini .summary-value { font-size: 0.78rem; font-weight: 700; color: #0066CC; line-height: 1.35; }
     .tip-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px; display: flex; gap: 10px; font-size: 0.78rem; font-weight: 600; margin-bottom: 14px; align-items: flex-start; }
     .tip-box i { color: #0066CC; margin-top: 2px; }
+    .field-hint { font-size: 0.75rem; color: #64748B; line-height: 1.4; font-weight: 500; }
+    .field-card .upload-drop-wrap { width: 100%; }
+    .field-card .upload-selected-list { width: 100%; }
 </style>

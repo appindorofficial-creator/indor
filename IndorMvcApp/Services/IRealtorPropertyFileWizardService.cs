@@ -23,4 +23,5 @@ public interface IRealtorPropertyFileWizardService
     Task<RealtorPropertyFileReviewViewModel> BuildReviewAsync(CancellationToken cancellationToken = default);
     Task<int> CreateFileAsync(bool createAndContinueLater, CancellationToken cancellationToken = default);
     Task<RealtorPropertyFileSuccessViewModel> BuildSuccessAsync(int propertyFileId, CancellationToken cancellationToken = default);
+    Task<RealtorPropertyFileViewViewModel> BuildViewAsync(int propertyFileId, CancellationToken cancellationToken = default);
 }

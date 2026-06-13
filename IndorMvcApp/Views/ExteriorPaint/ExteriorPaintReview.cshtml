@@ -97,20 +97,54 @@
 </div>
 <script>
     (function () {
-        function bindSingle(groupSelector, attr, input) {
+        function bindSingle(groupSelector, attr, input, initial) {
             document.querySelectorAll(groupSelector).forEach(function (btn) {
                 btn.addEventListener('click', function () {
                     document.querySelectorAll(groupSelector).forEach(function (b) { b.classList.remove('active'); });
                     btn.classList.add('active');
                     input.value = btn.getAttribute(attr);
                 });
-                if (btn.getAttribute(attr) === input.value) btn.classList.add('active');
             });
+
+            function setActive(value) {
+                var normalized = value && String(value).trim() ? value : '';
+                input.value = normalized;
+                document.querySelectorAll(groupSelector).forEach(function (btn) {
+                    btn.classList.toggle('active', normalized && btn.getAttribute(attr) === normalized);
+                });
+            }
+
+            var seed = (initial && String(initial).trim()) || (input.value && String(input.value).trim()) || '';
+            setActive(seed);
         }
 
-        bindSingle('[data-age]', 'data-age', document.getElementById('UltimaPintura'));
-        bindSingle('[data-surface]', 'data-surface', document.getElementById('TipoSuperficie'));
-        bindSingle('[data-color]', 'data-color', document.getElementById('MantenerMismoColor'));
+        bindSingle('[data-age]', 'data-age', document.getElementById('UltimaPintura'), '@Model.UltimaPintura');
+        bindSingle('[data-surface]', 'data-surface', document.getElementById('TipoSuperficie'), '@Model.TipoSuperficie');
+        bindSingle('[data-color]', 'data-color', document.getElementById('MantenerMismoColor'), '@Model.MantenerMismoColor');
+
+        var form = document.getElementById('ep-review-form');
+        var requiredFields = [
+            { id: 'UltimaPintura', message: 'Select when the exterior was last painted.' },
+            { id: 'TipoSuperficie', message: 'Select your exterior surface type.' },
+            { id: 'MantenerMismoColor', message: 'Select whether you want to keep the same color.' }
+        ];
+
+        form?.addEventListener('submit', function (e) {
+            var firstMissing = null;
+            requiredFields.forEach(function (field) {
+                var fieldInput = document.getElementById(field.id);
+                if (!fieldInput) return;
+                var empty = !fieldInput.value || !String(fieldInput.value).trim();
+                if (empty && !firstMissing) {
+                    firstMissing = field;
+                }
+            });
+
+            if (firstMissing) {
+                e.preventDefault();
+                alert(firstMissing.message);
+            }
+        });
     })();
 </script>
 </body>

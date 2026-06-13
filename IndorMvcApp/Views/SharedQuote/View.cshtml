@@ -1,0 +1,107 @@
+@model IndorMvcApp.ViewModels.HomeownerSharedQuoteViewModel
+@{
+    ViewData["Title"] = Model.Address;
+    Layout = "_RealtorLayout";
+}
+
+<div class="rl-dash-shell rl-dash-shell--homeowner-quote">
+    <div class="rl-hoquote-header">
+        <a href="javascript:history.back()" class="rl-back-link"><i class="fas fa-chevron-left"></i></a>
+        <div>
+            <strong>@Model.Address</strong>
+            <span>Shared by your realtor through INDOR</span>
+        </div>
+        <i class="fas fa-shield-halved rl-hoquote-shield"></i>
+    </div>
+
+    <div class="rl-hoquote-hero-img">
+        <img src="@(Model.PhotoUrl ?? "/welcome-house.png")" alt="" />
+    </div>
+
+    @if (Model.ShowProviderInfo)
+    {
+        <div class="rl-qview-provider">
+            <span class="rl-provider-avatar">@Model.ProviderInitials</span>
+            <div>
+                <strong>@Model.ProviderName</strong>
+                <span class="rl-premium-muted">Verified &amp; Trusted</span>
+            </div>
+            <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
+        </div>
+    }
+
+    <div class="rl-qview-metrics rl-qview-metrics--3">
+        <div><i class="fas fa-dollar-sign rl-metric-icon rl-metric-icon--blue"></i><span>Total</span><strong>@Model.TotalLabel</strong></div>
+        @if (!string.IsNullOrWhiteSpace(Model.TimelineLabel))
+        {
+            <div><i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i><span>Timeline</span><strong>@Model.TimelineLabel</strong></div>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.WarrantyLabel))
+        {
+            <div><i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i><span>Warranty</span><strong>@Model.WarrantyLabel</strong></div>
+        }
+    </div>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ScopeOfWork))
+    {
+        <section class="rl-dash-section">
+            <div class="rl-dash-section-head"><h2><i class="fas fa-clipboard-list"></i> Scope of Work</h2></div>
+            <p class="rl-qview-scope">@Model.ScopeOfWork</p>
+        </section>
+    }
+
+    @if (Model.IncludedRepairs.Count > 0)
+    {
+        <section class="rl-dash-section">
+            <div class="rl-dash-section-head"><h2><i class="fas fa-wrench"></i> Included Repairs</h2></div>
+            <ul class="rl-qview-repairs">
+                @foreach (var repair in Model.IncludedRepairs)
+                {
+                    <li><i class="fas fa-circle-check"></i> @repair</li>
+                }
+            </ul>
+        </section>
+    }
+
+    @if (Model.ShowFullPriceBreakdown && Model.PriceLines.Count > 0)
+    {
+        <section class="rl-dash-section">
+            <div class="rl-dash-section-head"><h2><i class="fas fa-receipt"></i> Price Breakdown</h2></div>
+            <div class="rl-qview-pricing">
+                @foreach (var line in Model.PriceLines)
+                {
+                    <div class="rl-qview-price-row"><span>@line.Label</span><span>@line.AmountLabel</span></div>
+                }
+                <div class="rl-qview-price-row rl-qview-price-row--total"><span>Total</span><strong>@Model.TotalAmountLabel</strong></div>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="rl-dash-section">
+            <div class="rl-qview-pricing">
+                <div class="rl-qview-price-row rl-qview-price-row--total"><span>Total Quote</span><strong>@Model.TotalAmountLabel</strong></div>
+            </div>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.RealtorMessage))
+    {
+        <section class="rl-dash-section">
+            <div class="rl-dash-section-head"><h2><i class="fas fa-user"></i> A Note from Your Realtor</h2></div>
+            <div class="rl-qshare-realtor-msg">
+                <span class="rl-provider-avatar rl-provider-avatar--sm">R</span>
+                <p>@Model.RealtorMessage</p>
+            </div>
+        </section>
+    }
+
+    <div class="rl-qview-actions">
+        <form asp-controller="SharedQuote" asp-action="Accept" asp-route-token="@Model.ShareToken" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-circle-check"></i> Accept Quote</button>
+        </form>
+        <button type="button" class="rl-btn-outline rl-qview-btn"><i class="fas fa-circle-question"></i> Ask a Question</button>
+        <a href="#" class="rl-qview-message">Request Another Quote</a>
+    </div>
+</div>

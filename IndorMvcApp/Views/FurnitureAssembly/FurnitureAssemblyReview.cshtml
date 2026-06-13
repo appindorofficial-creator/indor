@@ -48,16 +48,34 @@
         <input type="hidden" asp-for="NombreServicio" />
         <input type="hidden" asp-for="DisclaimerTexto" />
 
-        <div class="upload-box">
-            <i class="fas fa-cloud-arrow-up" style="color:#0066CC;font-size:1.6rem;"></i>
-            <p style="margin-top:8px;font-size:0.88rem;">Drag files here or <strong>browse</strong></p>
-            <p style="font-size:0.72rem;color:#94A3B8;">JPG, PNG, PDF up to 25 MB</p>
-            <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf" multiple style="margin-top:12px;width:100%;" />
+        <div class="upload-drop-wrap">
+            <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
+                   accept="image/*,.jpg,.jpeg,.png,.pdf,.webp,.heic,.heif" />
+            <label class="upload-drop" id="photoDropzone" for="photoInput">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <strong>Tap to upload photos or manuals</strong>
+                <span>JPG, PNG, PDF up to 25 MB</span>
+            </label>
         </div>
-
-        @foreach (var file in Model.ArchivosExistentes)
+        <div class="upload-selected-list" id="photoSelectedList" hidden></div>
+        @if (Model.ArchivosExistentes.Count > 0)
         {
-            <div class="included-row"><i class="fas fa-file"></i><span>@file.NombreArchivo</span></div>
+            <div class="upload-selected-list" id="photoSavedList">
+                @foreach (var file in Model.ArchivosExistentes)
+                {
+                    <div class="upload-selected-item">
+                        @if (file.CategoriaArchivo == "Manual" || file.NombreArchivo.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase))
+                        {
+                            <i class="fas fa-file-pdf"></i>
+                        }
+                        else
+                        {
+                            <img class="upload-preview-thumb" src="@Url.Content($"~{file.RutaArchivo}")" alt="" loading="lazy" />
+                        }
+                        <span>@file.NombreArchivo</span>
+                    </div>
+                }
+            </div>
         }
 
         <div class="field-card">
@@ -75,5 +93,88 @@
         <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
     </form>
 </div>
+<script>
+    (function () {
+        var photoInput = document.getElementById('photoInput');
+        var photoDropzone = document.getElementById('photoDropzone');
+        var photoSelectedList = document.getElementById('photoSelectedList');
+        var pendingPhotos = [];
+
+        function syncPhotoInputFiles() {
+            if (!photoInput) return;
+            var dt = new DataTransfer();
+            pendingPhotos.forEach(function (file) {
+                dt.items.add(file);
+            });
+            photoInput.files = dt.files;
+        }
+
+        function mergePhotoFiles(newFiles) {
+            Array.from(newFiles || []).forEach(function (file) {
+                if (file && file.size > 0) {
+                    pendingPhotos.push(file);
+                }
+            });
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function removePendingPhoto(index) {
+            pendingPhotos.splice(index, 1);
+            syncPhotoInputFiles();
+            renderPhotoSelection(pendingPhotos);
+        }
+
+        function renderPhotoSelection(files) {
+            if (!photoSelectedList || !photoDropzone) return;
+            var list = Array.from(files || []).filter(function (f) { return f && f.size > 0; });
+            photoSelectedList.innerHTML = '';
+            if (list.length === 0) {
+                photoSelectedList.hidden = true;
+                photoDropzone.classList.remove('has-files');
+                return;
+            }
+            photoDropzone.classList.add('has-files');
+            photoSelectedList.hidden = false;
+            list.forEach(function (file, index) {
+                var row = document.createElement('div');
+                row.className = 'upload-selected-item';
+                if (!file.type || file.type.indexOf('image/') === 0) {
+                    var img = document.createElement('img');
+                    img.className = 'upload-preview-thumb';
+                    img.alt = 'Selected file ' + (index + 1);
+                    row.appendChild(img);
+                    var reader = new FileReader();
+                    reader.onload = function (ev) { img.src = ev.target.result; };
+                    reader.readAsDataURL(file);
+                } else {
+                    var icon = document.createElement('i');
+                    icon.className = 'fas fa-file-pdf';
+                    row.appendChild(icon);
+                }
+                var name = document.createElement('span');
+                name.textContent = file.name || ('File ' + (index + 1));
+                row.appendChild(name);
+                var removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'upload-remove-btn';
+                removeBtn.setAttribute('aria-label', 'Remove ' + (file.name || 'file'));
+                removeBtn.innerHTML = '<i class="fas fa-xmark"></i>';
+                removeBtn.addEventListener('click', function (ev) {
+                    ev.preventDefault();
+                    ev.stopPropagation();
+                    removePendingPhoto(index);
+                });
+                row.appendChild(removeBtn);
+                photoSelectedList.appendChild(row);
+            });
+        }
+
+        photoInput?.addEventListener('change', function () {
+            mergePhotoFiles(this.files);
+            this.value = '';
+        });
+    })();
+</script>
 </body>
 </html>

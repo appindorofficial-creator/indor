@@ -230,6 +230,19 @@ public class RealtorPropertyFileController(
     public async Task<IActionResult> Success(int id) =>
         View(await wizard.BuildSuccessAsync(id));
 
+    [HttpGet]
+    public async Task<IActionResult> View(int id)
+    {
+        try
+        {
+            return View(await wizard.BuildViewAsync(id));
+        }
+        catch (InvalidOperationException)
+        {
+            return RedirectToAction("Files", "Realtor");
+        }
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel()

@@ -8,6 +8,30 @@
     .time-slot.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
     .time-slot .sub { display: block; font-size: 0.68rem; font-weight: 500; color: #94A3B8; margin-top: 4px; }
     .upload-box { border: 2px dashed #CBD5E1; border-radius: 14px; padding: 20px; text-align: center; margin-bottom: 12px; background: rgba(248,250,252,0.8); }
+    .upload-drop-wrap { position: relative; overflow: hidden; border-radius: 14px; margin-bottom: 12px; }
+    .upload-drop {
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        border: 1.5px dashed #CBD5E1; border-radius: 14px; padding: 18px; text-align: center;
+        color: #64748B; background: #FFF; cursor: pointer; min-height: 96px;
+        touch-action: manipulation; -webkit-tap-highlight-color: transparent;
+    }
+    .upload-drop i { color: #0066CC; font-size: 1.25rem; margin-bottom: 6px; pointer-events: none; }
+    .upload-drop strong { display: block; font-size: 0.82rem; margin-bottom: 4px; color: #334155; pointer-events: none; }
+    .upload-drop span { font-size: 0.72rem; pointer-events: none; }
+    .upload-input-hidden { display: none; }
+    .upload-drop.has-files { border-color: #0066CC; background: rgba(0,102,204,0.06); }
+    .upload-selected-list { margin-bottom: 12px; display: flex; flex-direction: column; gap: 6px; }
+    .upload-selected-item {
+        display: flex; align-items: center; gap: 8px; font-size: 0.78rem; color: #0A2540;
+        background: #F8FAFC; border: 1px solid #E5E7EB; border-radius: 10px; padding: 8px 10px;
+    }
+    .upload-selected-item i { color: #0066CC; flex-shrink: 0; }
+    .upload-selected-item span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .upload-preview-thumb { width: 40px; height: 40px; border-radius: 8px; object-fit: cover; flex-shrink: 0; }
+    .upload-remove-btn {
+        border: none; background: transparent; color: #94A3B8; padding: 4px; cursor: pointer;
+        flex-shrink: 0; line-height: 1;
+    }
     .fa-stepper { display: flex; gap: 4px; margin-bottom: 18px; overflow-x: auto; padding-bottom: 4px; }
     .fa-step { flex: 1; min-width: 72px; text-align: center; }
     .fa-step-dot { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto 6px; display: flex; align-items: center; justify-content: center; font-size: 0.78rem; font-weight: 700; border: 2px solid #CBD5E1; color: #94A3B8; background: #FFF; }
@@ -15,4 +39,48 @@
     .fa-step.active .fa-step-dot { border-color: #0066CC; color: #0066CC; background: #FFF; }
     .fa-step-label { font-size: 0.58rem; font-weight: 600; color: #94A3B8; line-height: 1.2; }
     .fa-step.active .fa-step-label, .fa-step.done .fa-step-label { color: #0066CC; }
+
+    .fa-condition-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+    }
+
+    .fa-condition-grid .type-card {
+        padding: 30px 10px 14px;
+        min-height: 96px;
+        font-size: 0.74rem;
+        line-height: 1.3;
+    }
+
+    .fa-condition-grid .type-card > i {
+        font-size: 1rem;
+        margin-bottom: 6px;
+    }
+
+    .fa-condition-grid .type-card .check {
+        top: 6px;
+        right: 6px;
+        width: 20px;
+        height: 20px;
+        border-width: 1.5px;
+        box-sizing: border-box;
+        z-index: 1;
+    }
+
+    .fa-condition-grid .type-card:not(.active) .check {
+        opacity: 0;
+    }
+
+    .fa-condition-grid .type-card.active .check {
+        opacity: 1;
+        border-color: #0066CC;
+        background: #0066CC;
+        box-shadow: none;
+    }
+
+    .fa-condition-grid .type-card .check i {
+        font-size: 0.62rem;
+        line-height: 1;
+    }
 </style>

@@ -12,6 +12,8 @@ public class ProviderProJobsPageViewModel : ProviderProPageBaseViewModel
     public int TodayCount { get; set; }
     public int ActiveCount { get; set; }
     public int NewLeadsCount { get; set; }
+    public int EstimatesCount { get; set; }
+    public int CompletedCount { get; set; }
     public int NeedsReportCount { get; set; }
     public decimal PaymentsDue { get; set; }
     public List<ProviderProJobsWorkItemViewModel> Items { get; set; } = [];
@@ -27,11 +29,13 @@ public class ProviderProJobsWorkItemViewModel
     public string Address { get; set; } = "";
     public string CustomerName { get; set; } = "";
     public string TimeLabel { get; set; } = "";
+    public string ScheduleTimeShort { get; set; } = "";
     public string StatusLabel { get; set; } = "";
     public string StatusClass { get; set; } = "scheduled";
     public string? SecondaryBadge { get; set; }
     public string SecondaryBadgeClass { get; set; } = "urgency";
     public string IconClass { get; set; } = "fa-wrench";
+    public string IconTone { get; set; } = "blue";
     public decimal? EstimateAmount { get; set; }
     public List<ProviderProJobMetaLineViewModel> MetaLines { get; set; } = [];
     public bool ShowEstimateLink { get; set; }
@@ -127,6 +131,8 @@ public class ProviderProReportCardViewModel
 
 public class ProviderProProfilePageViewModel : ProviderProPageBaseViewModel
 {
+    public string? LogoUrl { get; set; }
+    public string CompanyInitial { get; set; } = "P";
     public string BusinessName { get; set; } = "";
     public string DbaName { get; set; } = "";
     public string PrimaryContact { get; set; } = "";
@@ -196,4 +202,38 @@ public class ProviderProProfilePerformanceViewModel
     public string CompletionRate { get; set; } = "—";
     public string HomeownerApproval { get; set; } = "—";
     public int HouseFactsAdded { get; set; }
+}
+
+public class ProviderProEditProfileViewModel : ProviderProPageBaseViewModel
+{
+    public string? LogoUrl { get; set; }
+    public string CompanyInitial { get; set; } = "P";
+    public string BusinessName { get; set; } = "";
+    public string DbaName { get; set; } = "";
+    public string PrimaryContact { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string BusinessAddress { get; set; } = "";
+    public string PrimaryCity { get; set; } = "";
+    public string PreferredHours { get; set; } = "";
+    public string ServiceDescription { get; set; } = "";
+    public int TravelRadiusMiles { get; set; } = 25;
+    public bool EmergencyService { get; set; } = true;
+    public bool SameDayJobs { get; set; } = true;
+}
+
+public class ProviderProEditProfileInput
+{
+    public string BusinessName { get; set; } = "";
+    public string DbaName { get; set; } = "";
+    public string PrimaryContact { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string BusinessAddress { get; set; } = "";
+    public string PrimaryCity { get; set; } = "";
+    public string PreferredHours { get; set; } = "";
+    public string ServiceDescription { get; set; } = "";
+    public int TravelRadiusMiles { get; set; } = 25;
+    public bool EmergencyService { get; set; } = true;
+    public bool SameDayJobs { get; set; } = true;
 }

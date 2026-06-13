@@ -45,6 +45,8 @@ public class PropertyInfoViewModel
     public long? AttomPropertyId { get; set; }
     public string? AttomRawJson { get; set; }
     public string? DataSource { get; set; }
+
+    public PropertyMaintenancePlanViewModel? MaintenanceRecommendations { get; set; }
 }
 
 public class DeviceInfoViewModel

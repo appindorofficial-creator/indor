@@ -457,6 +457,75 @@ public class RealtorPropertyFileWizardService(
         };
     }
 
+    public async Task<RealtorPropertyFileViewViewModel> BuildViewAsync(int propertyFileId, CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+
+        var file = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .Include(f => f.Items)
+            .FirstOrDefaultAsync(f => f.Id == propertyFileId && f.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Property file not found.");
+
+        var (badge, css) = DeriveFileStatus(file);
+        var (primaryLabel, primaryUrl, secondaryLabel, secondaryUrl) = DeriveFileActions(file);
+        var firstName = (realtor.DisplayName ?? "Realtor").Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
+                        ?? "Realtor";
+
+        var sections = file.Items
+            .GroupBy(i => i.CategoryType)
+            .Select(g =>
+            {
+                var meta = RealtorPropertyFileCategoryTypes.All.FirstOrDefault(a =>
+                    a.Type.Equals(g.Key, StringComparison.OrdinalIgnoreCase));
+                return new RealtorPropertyFileViewSectionViewModel
+                {
+                    Label = meta.Label ?? g.Key,
+                    Icon = meta.Icon ?? "fa-folder",
+                    Items = g.OrderByDescending(i => i.UploadedUtc).Select(i => new RealtorPropertyFileViewItemViewModel
+                    {
+                        ItemLabel = i.ItemLabel,
+                        FileUrl = i.FileUrl,
+                        NoteText = i.NoteText,
+                        MetaLabel = i.FileSizeBytes.HasValue
+                            ? FormatFileSize(i.FileSizeBytes.Value)
+                            : i.ExpirationUtc?.ToLocalTime().ToString("Expires MMM d, yyyy")
+                    }).ToList()
+                };
+            })
+            .Where(s => s.Items.Count > 0)
+            .OrderBy(s => s.Label)
+            .ToList();
+
+        return new RealtorPropertyFileViewViewModel
+        {
+            DisplayName = firstName,
+            FullDisplayName = realtor.DisplayName ?? firstName,
+            ProfilePhotoUrl = string.IsNullOrWhiteSpace(realtor.ProfilePhotoUrl) ? null : realtor.ProfilePhotoUrl,
+            BadgeLabel = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified
+                ? "Verified Realtor"
+                : "Realtor Basic",
+            IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
+            PropertyFileId = file.Id,
+            FileCode = $"PF-{file.Id}",
+            Address = file.Address,
+            CityRegion = file.CityRegion ?? "",
+            PhotoUrl = string.IsNullOrWhiteSpace(file.PhotoUrl) ? "/welcome-house.png" : file.PhotoUrl,
+            ClientName = file.ClientName ?? "",
+            FilePhaseLabel = FormatFilePhaseLabel(file.FilePhase),
+            StatusBadge = badge,
+            StatusCss = css,
+            RepairItemsCount = file.RepairItemsCount,
+            QuotesReceivedCount = file.QuotesReceivedCount,
+            UpdatedLabel = $"Last updated {FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)}",
+            PrimaryActionLabel = primaryLabel,
+            PrimaryActionUrl = primaryUrl,
+            SecondaryActionLabel = secondaryLabel,
+            SecondaryActionUrl = secondaryUrl,
+            Sections = sections
+        };
+    }
+
     private static RealtorPropertyPickerViewModel MapPropertyPicker(IndorRealtorPropertyFile p) =>
         new()
         {
@@ -495,4 +564,87 @@ public class RealtorPropertyFileWizardService(
 
     private static string FormatFileSize(long bytes) =>
         bytes >= 1_000_000 ? $"{bytes / 1_000_000.0:0.#} MB" : $"{bytes / 1_000.0:0.#} KB";
+
+    private static string FormatRelativeTime(DateTime utc)
+    {
+        var local = utc.ToLocalTime();
+        var today = DateTime.Today;
+        if (local.Date == today)
+        {
+            return $"Today, {local:h:mm tt}";
+        }
+
+        if (local.Date == today.AddDays(-1))
+        {
+            return $"Yesterday, {local:h:mm tt}";
+        }
+
+        return local.ToString("MMM d, yyyy");
+    }
+
+    private static (string Badge, string Css) DeriveFileStatus(IndorRealtorPropertyFile file)
+    {
+        if (file.FilePhase == "Transfer")
+        {
+            return ("Shared Package", "shared");
+        }
+
+        if (file.QuotesReceivedCount > 0)
+        {
+            return ("Quotes Pending", "quotes");
+        }
+
+        if (file.RepairItemsCount > 0 || file.FilePhase == "Repair Review")
+        {
+            return ("Inspection Uploaded", "inspection");
+        }
+
+        if (file.Status == "Archived")
+        {
+            return ("Closed", "closed");
+        }
+
+        return ("Active", "active");
+    }
+
+    private static (string Label, string Url, string? SecondaryLabel, string? SecondaryUrl) DeriveFileActions(
+        IndorRealtorPropertyFile file)
+    {
+        var id = file.Id;
+        var viewUrl = $"/RealtorPropertyFile/View?id={id}";
+
+        if (file.FilePhase == "Transfer")
+        {
+            return ("View Package", viewUrl, null, null);
+        }
+
+        if (file.RepairItemsCount > 0 && file.QuotesReceivedCount == 0)
+        {
+            return (
+                "Request Quotes",
+                $"/RealtorQuoteRequest/Start?propertyFileId={id}",
+                "View Inspection",
+                viewUrl);
+        }
+
+        if (file.RepairItemsCount == 0 && file.FilePhase == "Pre-Closing")
+        {
+            return (
+                "Upload Report",
+                $"/RealtorInspectionUpload/Upload?propertyFileId={id}",
+                null,
+                null);
+        }
+
+        if (file.QuotesReceivedCount > 0)
+        {
+            return (
+                "View Quotes",
+                "/Realtor/Quotes",
+                "Open File",
+                viewUrl);
+        }
+
+        return ("Open File", viewUrl, null, null);
+    }
 }

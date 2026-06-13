@@ -45,6 +45,7 @@
     <form asp-action="PackingService" method="post">
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="BestForSelection" id="BestForSelection" />
 
         @if (Model.IncludedItems.Count > 0)
         {
@@ -61,10 +62,12 @@
         {
             <div class="field-card">
                 <span class="field-label">@Model.BestForLabel</span>
-                <div class="chip-row" style="flex-wrap:wrap;">
+                <div class="chip-row" id="bestForGroup" style="flex-wrap:wrap;">
                     @foreach (var opt in Model.BestForOptions)
                     {
-                        <span class="chip-btn" style="cursor:default;"><i class="fas @opt.Icon"></i> @opt.Label</span>
+                        <button type="button" class="chip-btn @(opt.Value == Model.BestForSelection ? "active" : "")" data-value="@opt.Value">
+                            <i class="fas @opt.Icon"></i> @opt.Label
+                        </button>
                     }
                 </div>
             </div>
@@ -92,5 +95,17 @@
         <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @Model.CtaUploadTexto</button>
     </form>
 </div>
+<script>
+    (function () {
+        const hidden = document.getElementById('BestForSelection');
+        document.querySelectorAll('#bestForGroup .chip-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('#bestForGroup .chip-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                hidden.value = btn.dataset.value;
+            });
+        });
+    })();
+</script>
 </body>
 </html>

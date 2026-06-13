@@ -4,9 +4,13 @@ public class ProviderProDashboardViewModel
 {
     public string CompanyName { get; set; } = "Your company";
 
+    public string CompanyInitial { get; set; } = "P";
+
     public string Greeting { get; set; } = "Good morning";
 
     public bool IsVerified { get; set; }
+
+    public bool IsProActive { get; set; }
 
     public bool ActivationPending { get; set; }
 
@@ -39,6 +43,10 @@ public class ProviderProDashboardViewModel
     public List<ProviderProCalendarDayViewModel> UpcomingCalendar { get; set; } = [];
 
     public int UnreadMessages { get; set; }
+
+    public bool ShowEstimateTutorial { get; set; }
+
+    public List<ProviderProWizardStepViewModel> EstimateWizardSteps { get; set; } = [];
 }
 
 public class ProviderProMetricsViewModel
@@ -55,6 +63,9 @@ public class ProviderProJobItemViewModel
     public string TimeLabel { get; set; } = "";
     public string Title { get; set; } = "";
     public string Address { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string IconClass { get; set; } = "fa-wrench";
+    public string IconTone { get; set; } = "blue";
     public string Status { get; set; } = "";
     public string StatusClass { get; set; } = "scheduled";
 }
@@ -73,6 +84,8 @@ public class ProviderProNewLeadsPageViewModel : ProviderProPageBaseViewModel
     public string ActiveFilter { get; set; } = "all";
     public string? SearchQuery { get; set; }
     public int NewCount { get; set; }
+    public int InProgressCount { get; set; }
+    public int RespondedCount { get; set; }
     public int AcceptedCount { get; set; }
     public int HighUrgencyCount { get; set; }
     public List<ProviderProNewLeadCardViewModel> Leads { get; set; } = [];
@@ -93,6 +106,11 @@ public class ProviderProNewLeadCardViewModel
     public string StatusClass { get; set; } = "new";
     public string ImageUrl { get; set; } = "/welcome-house.png";
     public bool CanAccept { get; set; }
+    public bool CanDecline { get; set; } = true;
+    public string? SourceBadge { get; set; }
+    public string ReceivedLabel { get; set; } = "";
+    public int FindingCount { get; set; }
+    public string? FindingSummary { get; set; }
 }
 
 public class ProviderProLeadDetailsViewModel : ProviderProPageBaseViewModel
@@ -123,7 +141,104 @@ public class ProviderProLeadDetailsViewModel : ProviderProPageBaseViewModel
     public bool CanScheduleVisit { get; set; }
     public bool CanCreateEstimate { get; set; }
     public bool CanDecline { get; set; }
+    public string? InspectionReportUrl { get; set; }
+    public string? SourceBadge { get; set; }
+    public string? AnalysisSummary { get; set; }
+    public int FindingCount { get; set; }
+    public bool HasInspectionFindings { get; set; }
+    public List<ProviderInspectionFindingItemViewModel> InspectionFindings { get; set; } = [];
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderProInspectionFindingsViewModel : ProviderProPageBaseViewModel
+{
+    public int LeadId { get; set; }
+    public string LeadCode { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public string? InspectionReportUrl { get; set; }
+    public string? AnalysisSummary { get; set; }
+    public List<ProviderInspectionFindingItemViewModel> Findings { get; set; } = [];
+    public int SelectedCount { get; set; }
+    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderProSelectRepairItemsViewModel : ProviderProPageBaseViewModel
+{
+    public int LeadId { get; set; }
+    public string Address { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public List<ProviderInspectionFindingItemViewModel> SelectedItems { get; set; } = [];
+    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderProEstimateAcceptedViewModel : ProviderProPageBaseViewModel
+{
+    public int EstimateId { get; set; }
+    public int LeadId { get; set; }
+    public string Address { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public decimal TotalAmount { get; set; }
+    public int ApprovedItemCount { get; set; }
+    public string ApprovedLabel { get; set; } = "";
+    public string ApprovedByLabel { get; set; } = "";
+    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderProCreateInvoiceViewModel : ProviderProPageBaseViewModel
+{
+    public int EstimateId { get; set; }
+    public int LeadId { get; set; }
+    public string Address { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public List<ProviderProEstimateLineItemViewModel> LineItems { get; set; } = [];
+    public decimal SubtotalAmount { get; set; }
+    public decimal TaxAmount { get; set; }
+    public decimal TotalAmount { get; set; }
+    public string PaymentTerms { get; set; } = "Due at completion";
+    public bool IncludeServiceCall { get; set; }
+    public decimal ServiceCallAmount { get; set; }
+    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderProReviewInvoiceViewModel : ProviderProPageBaseViewModel
+{
+    public int InvoiceId { get; set; }
+    public int EstimateId { get; set; }
+    public string InvoiceCode { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string CustomerName { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public string InvoiceDateLabel { get; set; } = "";
+    public string DueDateLabel { get; set; } = "";
+    public List<ProviderProEstimateLineItemViewModel> LineItems { get; set; } = [];
+    public decimal TotalAmount { get; set; }
+    public string PaymentTerms { get; set; } = "";
+    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderProInvoiceSentViewModel : ProviderProPageBaseViewModel
+{
+    public int InvoiceId { get; set; }
+    public string InvoiceCode { get; set; } = "";
+    public string Address { get; set; } = "";
+    public decimal TotalAmount { get; set; }
+    public string StatusLabel { get; set; } = "Sent";
+    public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
+}
+
+public class ProviderInspectionFindingItemViewModel
+{
+    public int Index { get; set; }
+    public bool IsSelected { get; set; }
+    public string Title { get; set; } = "";
+    public string? Description { get; set; }
+    public string Priority { get; set; } = "";
+    public string? SourceSection { get; set; }
+    public int? SourcePage { get; set; }
+    public string? SourceExcerpt { get; set; }
+    public string? ReportReference { get; set; }
 }
 
 public class ProviderProScheduleVisitViewModel : ProviderProPageBaseViewModel

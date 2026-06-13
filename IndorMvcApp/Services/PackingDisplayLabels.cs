@@ -106,6 +106,16 @@ public static class PackingDisplayLabels
             .Select(formatter));
     }
 
+    public static (string? TipoPropiedad, string? TamanoHogar, string? TipoEmpaque) MapBestForSelection(string? bestFor) =>
+        bestFor switch
+        {
+            "MoveOut" => (null, null, "FullPacking"),
+            "BusyFamilies" => (null, null, "PartialPacking"),
+            "Apartments" => ("Apartment", "OneTwoRooms", null),
+            "LargeHomes" => ("House", "FivePlusRooms", null),
+            _ => (null, null, null)
+        };
+
     public static DateTime? ResolveServiceDate(string? cuandoMudanza, DateTime? fechaServicio) =>
         cuandoMudanza switch
         {

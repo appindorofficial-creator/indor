@@ -93,7 +93,7 @@
 <body>
     <div class="page-container">
         <div class="top-bar">
-            <a asp-controller="Home" asp-action="Index" class="back-btn" aria-label="Back">
+            <a asp-controller="Home" asp-action="Index" asp-fragment="inspections" class="back-btn" aria-label="Back">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <strong>Purchase Details</strong>
@@ -152,7 +152,7 @@
                 </div>
                 <div class="segmented" data-target="TieneReporteExistente">
                     <button type="button" class="segment-btn" data-value="true">Yes</button>
-                    <button type="button" class="segment-btn" data-value="false"><i class="fas fa-check"></i> No</button>
+                    <button type="button" class="segment-btn" data-value="false">No</button>
                 </div>
             </div>
 
@@ -224,22 +224,30 @@
                 btn.addEventListener('click', () => setSegment(group, btn.dataset.value));
             });
             const target = document.getElementById(group.dataset.target);
-            const current = target.value === 'True' ? 'true' : 'false';
-            setSegment(group, current);
+            if (target.value === 'True' || target.value === 'False') {
+                const current = target.value === 'True' ? 'true' : 'false';
+                setSegment(group, current);
+            }
         });
 
         document.querySelectorAll('.chip-group').forEach(group => {
             group.querySelectorAll('.chip-btn').forEach(btn => {
                 btn.addEventListener('click', () => setSingle(group, '.chip-btn', btn.dataset.value));
             });
-            setSingle(group, '.chip-btn', document.getElementById(group.dataset.target).value);
+            const value = document.getElementById(group.dataset.target).value;
+            if (value) {
+                setSingle(group, '.chip-btn', value);
+            }
         });
 
         document.querySelectorAll('.goal-grid').forEach(group => {
             group.querySelectorAll('.goal-btn').forEach(btn => {
                 btn.addEventListener('click', () => setSingle(group, '.goal-btn', btn.dataset.value));
             });
-            setSingle(group, '.goal-btn', document.getElementById(group.dataset.target).value);
+            const value = document.getElementById(group.dataset.target).value;
+            if (value) {
+                setSingle(group, '.goal-btn', value);
+            }
         });
     </script>
 </body>

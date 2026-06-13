@@ -1,0 +1,90 @@
+@model IndorMvcApp.ViewModels.HomeownerEditProfileViewModel
+@{
+    ViewData["Title"] = "Edit Profile";
+    ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+}
+
+<form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form">
+    @Html.AntiForgeryToken()
+
+    <section class="pf-edit-photo-card" id="photo">
+        <h3><i class="fas fa-camera"></i> Profile photo</h3>
+        <p>Upload a photo. It will appear on your profile in the More section.</p>
+        <div class="pf-edit-photo-row">
+            <div class="pf-edit-photo-preview" id="photoPreview">
+                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+                {
+                    <img src="@Url.Content($"~{Model.PhotoUrl}")" alt="Current profile photo" id="photoPreviewImg" />
+                    <span id="photoPreviewInitial" hidden>@Model.DisplayInitial</span>
+                }
+                else
+                {
+                    <span id="photoPreviewInitial">@Model.DisplayInitial</span>
+                    <img src="" alt="" id="photoPreviewImg" hidden />
+                }
+            </div>
+            <div class="pf-edit-photo-actions">
+                <label class="pf-edit-upload-btn">
+                    <i class="fas fa-camera"></i> Choose photo
+                    <input type="file" name="foto" id="fotoInput" accept="image/jpeg,image/png,image/webp" hidden />
+                </label>
+                <small>JPG, PNG or WEBP · Max 10 MB</small>
+            </div>
+        </div>
+    </section>
+
+    <div class="pf-card" id="personal">
+        <h3><i class="fas fa-id-card"></i> Personal details</h3>
+        <div class="pf-form">
+            <div class="pf-row">
+                <label class="pf-field">
+                    <span>First name</span>
+                    <input type="text" name="nombre" value="@Model.Nombre" placeholder="First name" autocomplete="given-name" />
+                </label>
+                <label class="pf-field">
+                    <span>Last name</span>
+                    <input type="text" name="apellidos" value="@Model.Apellidos" placeholder="Last name" autocomplete="family-name" />
+                </label>
+            </div>
+            <label class="pf-field">
+                <span>Phone</span>
+                <input type="tel" name="telefono" value="@Model.Telefono" placeholder="Mobile phone" autocomplete="tel" />
+            </label>
+            <label class="pf-field">
+                <span>Email</span>
+                <div class="pf-field-readonly">@Model.Email</div>
+            </label>
+        </div>
+    </div>
+
+    <footer class="pf-edit-profile-actions">
+        <a asp-controller="Home" asp-action="Index" asp-route-section="more" class="pf-btn outline">Cancel</a>
+        <button type="submit" class="pf-btn">
+            <i class="fas fa-floppy-disk"></i> Save profile
+        </button>
+    </footer>
+</form>
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.getElementById('fotoInput');
+            var previewImg = document.getElementById('photoPreviewImg');
+            var previewInitial = document.getElementById('photoPreviewInitial');
+            if (!input || !previewImg) return;
+
+            input.addEventListener('change', function () {
+                var file = input.files && input.files[0];
+                if (!file) return;
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImg.src = e.target.result;
+                    previewImg.hidden = false;
+                    if (previewInitial) previewInitial.hidden = true;
+                };
+                reader.readAsDataURL(file);
+            });
+        })();
+    </script>
+}

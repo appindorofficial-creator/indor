@@ -17,22 +17,24 @@ public class PurchaseDetailsViewModel
     [MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Please indicate whether you are under contract.")]
     [Display(Name = "Are you under contract?")]
-    public bool BajoContrato { get; set; } = true;
+    public bool? BajoContrato { get; set; }
 
     [Display(Name = "Estimated closing date")]
     [DataType(DataType.Date)]
     [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
     public DateTime? FechaCierreEstimada { get; set; }
 
+    [Required(ErrorMessage = "Please indicate whether you already have a home inspection report.")]
     [Display(Name = "Do you already have a home inspection report?")]
-    public bool TieneReporteExistente { get; set; }
+    public bool? TieneReporteExistente { get; set; }
 
     [Required(ErrorMessage = "Please select who you are.")]
     [Display(Name = "Who are you?")]
-    public string RolComprador { get; set; } = "Buyer";
+    public string? RolComprador { get; set; }
 
     [Required(ErrorMessage = "Please select your main goal.")]
     [Display(Name = "Main goal")]
-    public string ObjetivoPrincipal { get; set; } = "UnderstandRepairRisks";
+    public string? ObjetivoPrincipal { get; set; }
 }

@@ -3,12 +3,11 @@
     ViewData["Title"] = "New Leads - INDOR PRO";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
-    var filters = new (string Id, string Label, bool ShowFire)[]
+    var filters = new (string Id, string Label, int Count)[]
     {
-        ("all", "All", false),
-        ("new", "New", false),
-        ("accepted", "Accepted", false),
-        ("urgent", "High Urgency", true)
+        ("new", "New", Model.NewCount),
+        ("in_progress", "In Progress", Model.InProgressCount),
+        ("responded", "Responded", Model.RespondedCount)
     };
 }
 
@@ -38,18 +37,14 @@
         </div>
     </form>
 
-    <nav class="prv-pro-leads-filters" aria-label="Lead filters">
-        @foreach (var (id, label, showFire) in filters)
+    <nav class="prv-pro-lead-tabs" aria-label="Lead tabs">
+        @foreach (var (id, label, count) in filters)
         {
             <a asp-controller="Proveedor" asp-action="NewLeads"
                asp-route-filter="@id"
                asp-route-q="@Model.SearchQuery"
                class="@(Model.ActiveFilter == id ? "is-active" : "")">
-                @if (showFire)
-                {
-                    <i class="fas fa-fire"></i>
-                }
-                @label
+                @label (@count)
             </a>
         }
     </nav>
@@ -69,51 +64,37 @@
                     <img src="@Url.Content($"~{lead.ImageUrl}")" alt="Property" class="prv-pro-new-lead-img" />
                     <div class="prv-pro-new-lead-body">
                         <div class="prv-pro-new-lead-top">
-                            <span class="prv-pro-pill prv-pro-pill--@lead.StatusClass">@lead.StatusLabel</span>
-                            @if (!string.IsNullOrWhiteSpace(lead.DistanceLabel))
+                            <span class="prv-pro-pill prv-pro-pill--urgency-@lead.UrgencyClass">
+                                <i class="fas @lead.UrgencyIcon"></i> @lead.Urgency
+                            </span>
+                            @if (!string.IsNullOrWhiteSpace(lead.ReceivedLabel))
                             {
-                                <small class="prv-pro-new-lead-distance"><i class="fas fa-location-crosshairs"></i> @lead.DistanceLabel</small>
+                                <small class="prv-pro-new-lead-time">@lead.ReceivedLabel</small>
                             }
                         </div>
                         <strong>@lead.Address</strong>
                         <div class="prv-pro-new-lead-tags">
                             <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @lead.ServiceType</span>
-                            <span class="prv-pro-pill prv-pro-pill--urgency-@lead.UrgencyClass">
-                                <i class="fas @lead.UrgencyIcon"></i> @lead.Urgency
-                            </span>
+                            @if (!string.IsNullOrWhiteSpace(lead.FindingSummary))
+                            {
+                                <span class="prv-pro-pill prv-pro-pill--realtor"><i class="fas fa-list-check"></i> @lead.FindingSummary</span>
+                            }
                         </div>
                         <div class="prv-pro-new-lead-actions">
-                            @if (lead.CanAccept)
+                            <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@lead.Id"
+                               class="prv-pro-btn prv-pro-btn--primary">View Lead</a>
+                            @if (lead.CanDecline)
                             {
-                                <form asp-controller="Proveedor" asp-action="AcceptLead" method="post">
+                                <form asp-controller="Proveedor" asp-action="DeclineLead" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@lead.Id" />
-                                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Accept</button>
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">Decline</button>
                                 </form>
                             }
-                            <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@lead.Id" class="prv-pro-btn prv-pro-btn--ghost">View</a>
-                            <button type="button" class="prv-pro-round-btn" aria-label="Message"><i class="fas fa-message"></i></button>
                         </div>
                     </div>
                 </article>
             }
         }
     </section>
-
-    <footer class="prv-pro-new-leads-footer">
-        <button type="button"><i class="fas fa-map"></i> Map View</button>
-        <a asp-controller="Proveedor" asp-action="NewLeads" asp-route-filter="urgent" asp-route-q="@Model.SearchQuery">
-            <i class="fas fa-fire"></i> High Urgency
-        </a>
-        @if (Model.Leads.Count > 0)
-        {
-            <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.Leads[0].Id">
-                <i class="fas fa-circle-info"></i> View Details
-            </a>
-        }
-        else
-        {
-            <span><i class="fas fa-circle-info"></i> View Details</span>
-        }
-    </footer>
 </div>

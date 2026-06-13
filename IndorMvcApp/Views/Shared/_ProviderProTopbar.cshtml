@@ -1,12 +1,19 @@
 @model string
-<header class="prv-pro-topbar">
+@{
+    var initial = ViewBag.CompanyInitial as string;
+    if (string.IsNullOrWhiteSpace(initial) && !string.IsNullOrWhiteSpace(Model))
+    {
+        initial = Model.Trim()[0].ToString().ToUpperInvariant();
+    }
+    initial ??= "P";
+}
+<header class="prv-pro-topbar prv-pro-topbar--v2">
     <div class="prv-pro-brand">
         <span class="prv-pro-brand-indor">INDOR</span>
         <span class="prv-pro-brand-pro">PRO</span>
     </div>
-    <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-profile-btn">
-        <span class="prv-pro-avatar"><i class="fas fa-building"></i></span>
-        <span>@Model</span>
-        <i class="fas fa-chevron-down"></i>
+    <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-profile-btn prv-pro-profile-btn--compact" aria-label="Profile menu">
+        <span class="prv-pro-avatar prv-pro-avatar--initial">@initial</span>
+        <i class="fas fa-chevron-down prv-pro-profile-chevron"></i>
     </a>
 </header>

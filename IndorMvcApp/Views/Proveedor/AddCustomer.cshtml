@@ -20,6 +20,11 @@
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
     </header>
 
+    @if (TempData["AddCustomerError"] is string addCustomerError)
+    {
+        <div class="prv-pro-form-error-banner" role="alert">@addCustomerError</div>
+    }
+
     <form asp-controller="Proveedor" asp-action="AddCustomer" method="post" class="prv-pro-add-customer-form">
         @Html.AntiForgeryToken()
 
@@ -87,6 +92,8 @@
                     ? '.prv-pro-customer-type-card' : '.prv-pro-contact-method';
                 document.querySelectorAll(group).forEach(function (i) { i.classList.remove('is-selected'); });
                 el.classList.add('is-selected');
+                var radio = el.querySelector('input[type="radio"]');
+                if (radio) radio.checked = true;
             });
         });
     </script>

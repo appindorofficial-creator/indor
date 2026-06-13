@@ -37,7 +37,7 @@ public partial class ProviderRegistrationController(
         if (!await userManager.IsInRoleAsync(user, "ProveedorServicios"))
         {
             await userManager.AddToRoleAsync(user, "ProveedorServicios");
-            await signInManager.RefreshSignInAsync(user);
+            await signInManager.SignInAsync(user, isPersistent: true);
         }
 
         await next();

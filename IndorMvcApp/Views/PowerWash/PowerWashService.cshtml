@@ -33,7 +33,9 @@
 
     @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
     {
-        <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="pw-hero" />
+        <div class="hero-wrap">
+            <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
+        </div>
     }
 
     @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))

@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.AddWaterHeaterViewModel
+@using IndorMvcApp.Validation
 @{
     ViewData["Title"] = "Enter water heater details";
     Layout = null;
@@ -20,11 +21,16 @@
 
     <div class="hvac-content">
         @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
+        @if (TempData["WaterHeaterSetupError"] is string setupError)
+        {
+            <div class="hvac-alert" role="alert">@setupError</div>
+        }
         <p class="hvac-lead">@Model.OpenAiHintNote</p>
 
-        <form asp-action="Manual" method="post">
+        <form asp-controller="WaterHeaterSetup" asp-action="Manual" method="post" id="manualForm">
             <input type="hidden" asp-for="PropiedadId" />
-            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom:12px;"></div>
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="All" class="text-danger" style="margin-bottom:12px;"></div>
 
             <div class="hvac-form-card">
                 <div class="hvac-row hvac-row-stacked">
@@ -47,13 +53,21 @@
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Model">Model</label>
-                    <input asp-for="Model" class="hvac-input" placeholder="e.g., PROG50-38N RH62" />
+                    <label class="hvac-label" asp-for="EquipmentModel">Model</label>
+                    <input asp-for="EquipmentModel" class="hvac-input" placeholder="e.g., PROG50-38N RH62" />
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
                     <label class="hvac-label" asp-for="SerialNumber">Serial number</label>
-                    <input asp-for="SerialNumber" class="hvac-input" placeholder="e.g., M123456789" />
+                    <input asp-for="SerialNumber"
+                           class="hvac-input"
+                           id="serialInput"
+                           placeholder="e.g., M123456789"
+                           maxlength="@EquipmentSerialNumberAttribute.MaxLength"
+                           autocomplete="off"
+                           spellcheck="false" />
+                    <span class="wh-field-hint">@EquipmentSerialNumberAttribute.HintText</span>
+                    <span asp-validation-for="SerialNumber" class="text-danger"></span>
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
@@ -86,6 +100,48 @@
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
 <script>
+    (function () {
+        var serialInput = document.getElementById('serialInput');
+        var form = document.getElementById('manualForm');
+
+        function serialErrorMessage(value) {
+            var serial = String(value || '').trim();
+            if (!serial) {
+                return '';
+            }
+            if (serial.length < @EquipmentSerialNumberAttribute.MinLength) {
+                return 'Serial number must be at least @EquipmentSerialNumberAttribute.MinLength characters.';
+            }
+            if (serial.length > @EquipmentSerialNumberAttribute.MaxLength) {
+                return 'Serial number cannot exceed @EquipmentSerialNumberAttribute.MaxLength characters.';
+            }
+            if (!/^[A-Za-z0-9\-]+$/.test(serial)) {
+                return 'Use only letters, numbers, and hyphens.';
+            }
+            if (!/\p{L}/u.test(serial) || !/\d/.test(serial)) {
+                return 'Serial number must include at least one letter and one number.';
+            }
+            return '';
+        }
+
+        function validateSerialField() {
+            if (!serialInput) return true;
+            var message = serialErrorMessage(serialInput.value);
+            serialInput.setCustomValidity(message);
+            return !message;
+        }
+
+        serialInput?.addEventListener('input', validateSerialField);
+        serialInput?.addEventListener('blur', validateSerialField);
+
+        form?.addEventListener('submit', function (e) {
+            if (!validateSerialField()) {
+                e.preventDefault();
+                serialInput.reportValidity();
+            }
+        });
+    })();
+
     document.querySelectorAll('.wh-type-btn input[type=radio]').forEach(radio => {
         radio.addEventListener('change', () => {
             document.querySelectorAll('.wh-type-btn').forEach(btn => btn.classList.remove('active'));

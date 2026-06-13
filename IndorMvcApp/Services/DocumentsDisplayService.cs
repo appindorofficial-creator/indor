@@ -298,6 +298,8 @@ public static class DocumentsDisplayService
         "Warranties" => "Warranty",
         "Invoices" => "Invoice",
         "Manuals" => "Manual",
+        "Photo" => "Photo",
+        "Photos" => "Photo",
         _ => category
     };
 
@@ -305,6 +307,8 @@ public static class DocumentsDisplayService
     {
         "Permits" => "permits",
         "Contracts" => "disclosures",
+        "Photo" => "photos",
+        "Photos" => "photos",
         _ => "reports"
     };
 }

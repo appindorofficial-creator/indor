@@ -69,7 +69,7 @@ BEGIN
     (N'HVAC maintenance', N'Every year', N'/priority-hvac-maintenance.png', N'fa-fan', N'HvacMaintenance', N'HvacMaintenanceService', 1, 1),
     (N'Water heater flush', N'Every year', N'/priority-water-heater-flush.png', N'fa-droplet', N'WaterHeaterFlush', N'WaterHeaterFlushService', 2, 1),
     (N'Crawlspace check', N'Every 1–2 years', N'/priority-crawlspace-check.png', N'fa-warehouse', N'CrawlspaceCheck', N'CrawlspaceCheckService', 3, 1),
-    (N'Roof inspection', N'Every 2–3 years', N'/priority-roof-inspection.png', N'fa-house-chimney', N'RoofInspection', N'RoofInspectionService', 4, 1),
+    (N'Roof inspection', N'Every 1–2 years', N'/priority-roof-inspection.png', N'fa-house-chimney', N'RoofInspection', N'RoofInspectionService', 4, 1),
     (N'Power wash exterior', N'Every 1–2 years', N'/priority-power-wash-exterior.png', N'fa-spray-can-sparkles', N'PowerWash', N'PowerWashService', 5, 1),
     (N'Exterior paint', N'Every 5–7 years', N'/priority-exterior-paint.png', N'fa-paint-roller', N'ExteriorPaint', N'ExteriorPaintReview', 6, 1),
     (N'Gutter cleaning', N'Recommended seasonally', N'/priority-gutter-cleaning.png', N'fa-water', N'GutterCleaning', N'GutterCleaningService', 7, 1),
@@ -104,6 +104,7 @@ BEGIN
     UPDATE dbo.HomeCarePriorities SET ImagenUrl = N'/priority-gutter-cleaning.png'       WHERE Nombre = N'Gutter cleaning';
     UPDATE dbo.HomeCarePriorities SET ImagenUrl = N'/priority-pest-control.png'           WHERE Nombre = N'Pest control';
     UPDATE dbo.HomeCarePriorities SET ImagenUrl = N'/priority-smoke-detector.png'        WHERE Nombre = N'Smoke Detector';
+    UPDATE dbo.HomeCarePriorities SET Subtitulo = N'Every 1–2 years'                    WHERE Nombre = N'Roof inspection';
     PRINT 'HomeCarePriorities images synced to priority-*.png assets.';
 END
 GO

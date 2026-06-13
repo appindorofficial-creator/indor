@@ -383,6 +383,10 @@ public class IndorRealtorQuote
 
     public DateTime? SentUtc { get; set; }
 
+    public int? SelectedBidId { get; set; }
+
+    public DateTime? AcceptedUtc { get; set; }
+
     public ICollection<IndorRealtorQuoteBid> Bids { get; set; } = [];
 
     public ICollection<IndorRealtorQuoteSentProvider> SentProviders { get; set; } = [];
@@ -584,6 +588,10 @@ public class IndorRealtorQuoteSentProvider
 
     [Required, MaxLength(120)]
     public string ProviderName { get; set; } = string.Empty;
+
+    public int? ProveedorId { get; set; }
+
+    public int? LeadId { get; set; }
 }
 
 public static class RealtorInspectionUploadDraftStatuses
@@ -597,6 +605,7 @@ public static class RealtorInspectionAnalysisStatuses
     public const string Pending = "Pending";
     public const string InProgress = "InProgress";
     public const string Complete = "Complete";
+    public const string Failed = "Failed";
 }
 
 public static class RealtorInspectionFindingPriorities
@@ -615,6 +624,7 @@ public static class RealtorInspectionTrades
     public const string Plumbing = "Plumbing";
     public const string Roof = "Roof";
     public const string Paint = "Paint";
+    public const string Handyman = "Handyman";
 
     public static IReadOnlyList<(string Value, string Label, string Icon, string Css)> All =>
     [
@@ -622,7 +632,8 @@ public static class RealtorInspectionTrades
         (Hvac, "HVAC Technician", "fa-fan", "hvac"),
         (Plumbing, "Plumber", "fa-faucet-drip", "plumbing"),
         (Roof, "Roofer", "fa-house-chimney", "roof"),
-        (Paint, "Painter", "fa-paint-roller", "paint")
+        (Paint, "Painter", "fa-paint-roller", "paint"),
+        (Handyman, "Handyman", "fa-wrench", "handyman")
     ];
 }
 
@@ -677,6 +688,9 @@ public class IndorRealtorInspectionUploadDraft
 
     public DateTime? FechaActualizacion { get; set; }
 
+    [MaxLength(2000)]
+    public string? AnalysisSummary { get; set; }
+
     public ICollection<IndorRealtorInspectionUploadFinding> Findings { get; set; } = [];
 
     public ICollection<IndorRealtorInspectionDraftProvider> TradeProviders { get; set; } = [];
@@ -708,6 +722,17 @@ public class IndorRealtorInspectionUploadFinding
 
     [MaxLength(500)]
     public string? ImageUrl { get; set; }
+
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [MaxLength(2000)]
+    public string? SourceExcerpt { get; set; }
+
+    [MaxLength(120)]
+    public string? SourceSection { get; set; }
+
+    public int? SourcePage { get; set; }
 
     public int SortOrder { get; set; }
 
@@ -1092,4 +1117,107 @@ public class IndorRealtorQuoteBid
     public decimal Rating { get; set; } = 4.5m;
 
     public int SortOrder { get; set; }
+
+    public int? ProveedorId { get; set; }
+
+    public int? EstimateId { get; set; }
+
+    public int? LeadId { get; set; }
+
+    public DateTime? SubmittedUtc { get; set; }
+}
+
+public static class RealtorSharedQuoteStatuses
+{
+    public const string Draft = "Draft";
+    public const string Sent = "Sent";
+    public const string Delivered = "Delivered";
+    public const string Viewed = "Viewed";
+    public const string Accepted = "Accepted";
+    public const string Waiting = "Waiting";
+}
+
+public static class RealtorSharedQuotePricingModes
+{
+    public const string TotalOnly = "TotalOnly";
+    public const string FullDetails = "FullDetails";
+}
+
+public static class RealtorSharedQuoteDeliveryMethods
+{
+    public const string InApp = "InApp";
+    public const string Email = "Email";
+    public const string Text = "Text";
+    public const string Link = "Link";
+}
+
+[Table("IndorRealtorSharedQuotes")]
+public class IndorRealtorSharedQuote
+{
+    public int Id { get; set; }
+
+    public int RealtorId { get; set; }
+
+    [ForeignKey(nameof(RealtorId))]
+    public IndorRealtor? Realtor { get; set; }
+
+    public int QuoteId { get; set; }
+
+    [ForeignKey(nameof(QuoteId))]
+    public IndorRealtorQuote? Quote { get; set; }
+
+    public int BidId { get; set; }
+
+    [ForeignKey(nameof(BidId))]
+    public IndorRealtorQuoteBid? Bid { get; set; }
+
+    public Guid ShareToken { get; set; } = Guid.NewGuid();
+
+    [Required, MaxLength(20)]
+    public string Status { get; set; } = RealtorSharedQuoteStatuses.Draft;
+
+    [Required, MaxLength(120)]
+    public string HomeownerName { get; set; } = string.Empty;
+
+    [MaxLength(256)]
+    public string? HomeownerEmail { get; set; }
+
+    [MaxLength(30)]
+    public string? HomeownerPhone { get; set; }
+
+    public bool ShareProviderInfo { get; set; } = true;
+
+    public bool ShareFullPriceBreakdown { get; set; }
+
+    public bool ShareScopeOfWork { get; set; } = true;
+
+    public bool ShareWarranty { get; set; } = true;
+
+    public bool ShareIncludedRepairs { get; set; } = true;
+
+    public bool ShareTimeline { get; set; } = true;
+
+    [Required, MaxLength(20)]
+    public string PricingDisplayMode { get; set; } = RealtorSharedQuotePricingModes.TotalOnly;
+
+    [MaxLength(500)]
+    public string? MessageToHomeowner { get; set; }
+
+    [MaxLength(500)]
+    public string? InternalNotes { get; set; }
+
+    [Required, MaxLength(20)]
+    public string DeliveryMethod { get; set; } = RealtorSharedQuoteDeliveryMethods.InApp;
+
+    public DateTime? SentUtc { get; set; }
+
+    public DateTime? DeliveredUtc { get; set; }
+
+    public DateTime? ViewedUtc { get; set; }
+
+    public DateTime? AcceptedUtc { get; set; }
+
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+
+    public DateTime? FechaActualizacion { get; set; }
 }

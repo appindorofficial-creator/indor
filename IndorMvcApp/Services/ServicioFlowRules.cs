@@ -112,8 +112,35 @@ public static class ServicioFlowRules
         ),
     ];
 
-    /// <summary>Legacy fallback — should not be used when all services are mapped.</summary>
+    /// <summary>Legacy fallback — catalog items should never use this.</summary>
     public static readonly ServicioFlowRoute SupportRoute = new("Perfil", "Soporte");
+
+    public readonly record struct ServicioOfferingLink(string Controller, string Action, int? RouteId);
+
+    /// <summary>
+    /// Resolves the MVC link for a catalog <see cref="Models.Servicio"/> card.
+    /// Never returns <see cref="SupportRoute"/> — unmapped items use <see cref="RemodelingRoute"/>.
+    /// </summary>
+    public static ServicioOfferingLink BuildOfferingLink(
+        Models.Servicio servicio,
+        IReadOnlyDictionary<string, int> homeCarePriorityIds)
+    {
+        var route = TryGetRoute(servicio.Nombre, servicio.Orden, out var mapped)
+            ? mapped
+            : RemodelingRoute;
+
+        int? routeId = route.RouteUsesServicioId
+            ? servicio.Id
+            : ResolveRouteId(route, homeCarePriorityIds, servicio.Orden);
+
+        if (!route.RouteUsesServicioId && !routeId.HasValue)
+        {
+            route = RemodelingRoute;
+            routeId = servicio.Id;
+        }
+
+        return new ServicioOfferingLink(route.Controller, route.Action, routeId);
+    }
 
     public static bool TryGetRoute(string? nombre, int orden, out ServicioFlowRoute route)
     {
@@ -137,7 +164,7 @@ public static class ServicioFlowRules
             7 => new ServicioFlowRoute("HvacMaintenance", "HvacMaintenanceService", "HVAC maintenance"),
             8 => new ServicioFlowRoute("WaterHeaterFlush", "WaterHeaterFlushService", "Water heater flush"),
             5 => new ServicioFlowRoute("PowerWash", "PowerWashService", "Power wash exterior"),
-            _ => default,
+            _ => RemodelingRoute,
         };
 
         return !string.IsNullOrWhiteSpace(route.Controller);
@@ -148,18 +175,74 @@ public static class ServicioFlowRules
 
     public static int? ResolveRouteId(
         ServicioFlowRoute route,
-        IReadOnlyDictionary<string, int> homeCarePriorityIds)
+        IReadOnlyDictionary<string, int> homeCarePriorityIds,
+        int servicioOrden = 0)
     {
         if (route.RouteUsesServicioId)
         {
             return null;
         }
 
-        if (string.IsNullOrWhiteSpace(route.HomeCarePriorityName))
+        if (!string.IsNullOrWhiteSpace(route.HomeCarePriorityName))
         {
-            return null;
+            if (TryResolvePriorityId(route.HomeCarePriorityName, homeCarePriorityIds, out var id))
+            {
+                return id;
+            }
         }
 
-        return homeCarePriorityIds.TryGetValue(route.HomeCarePriorityName, out var id) ? id : null;
+        var fallbackName = servicioOrden switch
+        {
+            5 => "Power wash exterior",
+            7 => "HVAC maintenance",
+            8 => "Water heater flush",
+            11 => "Exterior paint",
+            12 => "Smoke Detector",
+            _ => null
+        };
+
+        if (fallbackName != null
+            && TryResolvePriorityId(fallbackName, homeCarePriorityIds, out var ordenId))
+        {
+            return ordenId;
+        }
+
+        return null;
     }
+
+    private static bool TryResolvePriorityId(
+        string priorityName,
+        IReadOnlyDictionary<string, int> homeCarePriorityIds,
+        out int id)
+    {
+        if (homeCarePriorityIds.TryGetValue(priorityName.Trim(), out id))
+        {
+            return true;
+        }
+
+        foreach (var entry in homeCarePriorityIds)
+        {
+            if (string.Equals(entry.Key, priorityName, StringComparison.OrdinalIgnoreCase))
+            {
+                id = entry.Value;
+                return true;
+            }
+        }
+
+        var normalizedTarget = NormalizePriorityName(priorityName);
+        foreach (var entry in homeCarePriorityIds)
+        {
+            if (NormalizePriorityName(entry.Key) == normalizedTarget)
+            {
+                id = entry.Value;
+                return true;
+            }
+        }
+
+        id = default;
+        return false;
+    }
+
+    private static string NormalizePriorityName(string value) =>
+        new string(value.Where(char.IsLetterOrDigit).ToArray()).ToLowerInvariant();
 }

@@ -97,3 +97,39 @@ public class RealtorPropertyFileSuccessViewModel
     public string AddedNowLabel { get; set; } = "";
     public string StatusLabel { get; set; } = "Active";
 }
+
+public class RealtorPropertyFileViewViewModel : RealtorPortalShellViewModel
+{
+    public int PropertyFileId { get; set; }
+    public string FileCode { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string CityRegion { get; set; } = "";
+    public string? PhotoUrl { get; set; }
+    public string ClientName { get; set; } = "";
+    public string FilePhaseLabel { get; set; } = "";
+    public string StatusBadge { get; set; } = "";
+    public string StatusCss { get; set; } = "active";
+    public int RepairItemsCount { get; set; }
+    public int QuotesReceivedCount { get; set; }
+    public string UpdatedLabel { get; set; } = "";
+    public string PrimaryActionLabel { get; set; } = "Open File";
+    public string PrimaryActionUrl { get; set; } = "#";
+    public string? SecondaryActionLabel { get; set; }
+    public string? SecondaryActionUrl { get; set; }
+    public List<RealtorPropertyFileViewSectionViewModel> Sections { get; set; } = [];
+}
+
+public class RealtorPropertyFileViewSectionViewModel
+{
+    public string Label { get; set; } = "";
+    public string Icon { get; set; } = "";
+    public List<RealtorPropertyFileViewItemViewModel> Items { get; set; } = [];
+}
+
+public class RealtorPropertyFileViewItemViewModel
+{
+    public string ItemLabel { get; set; } = "";
+    public string? FileUrl { get; set; }
+    public string? NoteText { get; set; }
+    public string? MetaLabel { get; set; }
+}

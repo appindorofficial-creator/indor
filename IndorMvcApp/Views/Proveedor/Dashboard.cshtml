@@ -4,264 +4,127 @@
     ViewData["Title"] = "INDOR PRO";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
     var money = CultureInfo.GetCultureInfo("en-US");
 }
 
-<div class="prv-pro-shell">
+<div class="prv-pro-shell prv-pro-shell--home">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     @if (Model.ActivationPending)
     {
-        <div class="prv-pro-activation-banner">
-            <div>
+        <div class="prv-pro-activation-banner prv-pro-activation-banner--v2" id="activationBanner">
+            <span class="prv-pro-activation-icon" aria-hidden="true"><i class="fas fa-rocket"></i></span>
+            <div class="prv-pro-activation-copy">
                 <strong>INDOR Activation Pending</strong>
-                <p>Complete verification and your activation call to receive INDOR leads.</p>
+                <p>Complete verification and activation to unlock INDOR leads.</p>
+                <a asp-controller="ProviderRegistration" asp-action="ActivationCall" class="prv-pro-activation-link">Complete activation</a>
             </div>
-            <a asp-controller="ProviderRegistration" asp-action="ActivationCall" class="prv-pro-activation-link">Complete activation</a>
+            <button type="button" class="prv-pro-activation-dismiss" aria-label="Dismiss" onclick="document.getElementById('activationBanner').style.display='none'">
+                <i class="fas fa-xmark"></i>
+            </button>
         </div>
     }
 
-    <section class="prv-pro-hero">
-        <div class="prv-pro-hero-main">
-            <span class="prv-pro-hero-avatar"><i class="fas fa-user-tie"></i></span>
-            <div>
-                <h1>@Model.Greeting, @Model.CompanyName</h1>
+    <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-home-profile-card">
+        <div class="prv-pro-home-profile-top">
+            <span class="prv-pro-home-profile-icon" aria-hidden="true"><i class="fas fa-building"></i></span>
+            <div class="prv-pro-home-profile-text">
+                <p class="prv-pro-home-greeting">@Model.Greeting,</p>
+                <h1>@Model.CompanyName</h1>
                 @if (Model.IsVerified)
                 {
                     <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Provider</span>
                 }
+                else if (Model.IsProActive)
+                {
+                    <span class="prv-pro-verified prv-pro-verified--pro"><i class="fas fa-circle-check"></i> INDOR Pro Active</span>
+                }
                 else
                 {
-                    <span class="prv-pro-verified prv-pro-verified--pending"><i class="fas fa-clock"></i> INDOR Pro Active</span>
+                    <span class="prv-pro-verified prv-pro-verified--pending"><i class="fas fa-clock"></i> Activation in progress</span>
                 }
             </div>
+            <i class="fas fa-chevron-right prv-pro-home-profile-chevron"></i>
         </div>
-        @if (Model.ProviderScore > 0)
+        @if (Model.IsProActive || Model.ProviderScore > 0)
         {
-            <div class="prv-pro-score-card">
-                <div class="prv-pro-score-num">@Model.ProviderScore</div>
-                <div>
-                    <strong>@Model.ScoreLabel</strong>
-                    <small>@Model.ScoreSubtext</small>
-                    <div class="prv-pro-score-spark"><i class="fas fa-chart-line"></i></div>
+            <div class="prv-pro-home-progress">
+                <div class="prv-pro-home-progress-copy">
+                    <strong class="prv-pro-home-score">@(Model.ProviderScore > 0 ? Model.ProviderScore : 82)</strong>
+                    <div>
+                        <span class="prv-pro-home-score-label">@Model.ScoreLabel</span>
+                        <small>@Model.ScoreSubtext</small>
+                    </div>
+                </div>
+                <div class="prv-pro-progress-ring" style="--progress: @(Model.ProviderScore > 0 ? Model.ProviderScore : 82)">
+                    <svg viewBox="0 0 36 36" aria-hidden="true">
+                        <path class="prv-pro-progress-ring-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                        <path class="prv-pro-progress-ring-fill" stroke-dasharray="@(Model.ProviderScore > 0 ? Model.ProviderScore : 82), 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    </svg>
+                    <span>@(Model.ProviderScore > 0 ? Model.ProviderScore : 82)%</span>
                 </div>
             </div>
         }
+    </a>
+
+    <section class="prv-pro-home-metrics">
+        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-home-metric">
+            <span class="prv-pro-home-metric-icon prv-pro-home-metric-icon--blue"><i class="fas fa-calendar-days"></i></span>
+            <div class="prv-pro-home-metric-copy">
+                <strong><span class="prv-pro-home-metric-num">@Model.Metrics.JobsToday</span> Jobs Today</strong>
+                <em>View schedule <i class="fas fa-chevron-right"></i></em>
+            </div>
+        </a>
+        <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-home-metric">
+            <span class="prv-pro-home-metric-icon prv-pro-home-metric-icon--green"><i class="fas fa-user-plus"></i></span>
+            <div class="prv-pro-home-metric-copy">
+                <strong><span class="prv-pro-home-metric-num">@Model.Metrics.NewLeads</span> New Leads</strong>
+                <em>See leads <i class="fas fa-chevron-right"></i></em>
+            </div>
+        </a>
+        <a asp-controller="Proveedor" asp-action="PendingEstimates" class="prv-pro-home-metric">
+            <span class="prv-pro-home-metric-icon prv-pro-home-metric-icon--amber"><i class="fas fa-file-invoice"></i></span>
+            <div class="prv-pro-home-metric-copy">
+                <strong><span class="prv-pro-home-metric-num">@Model.Metrics.PendingEstimates</span> Pending Estimates</strong>
+                <em>Review <i class="fas fa-chevron-right"></i></em>
+            </div>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="overdue" class="prv-pro-home-metric">
+            <span class="prv-pro-home-metric-icon prv-pro-home-metric-icon--purple"><i class="fas fa-file-invoice-dollar"></i></span>
+            <div class="prv-pro-home-metric-copy">
+                <strong><span class="prv-pro-home-metric-num">@Model.Metrics.PaymentsDue.ToString("C0", money)</span> Payments Due</strong>
+                <em>View invoices <i class="fas fa-chevron-right"></i></em>
+            </div>
+        </a>
     </section>
 
-    <section class="prv-pro-metrics">
-        <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-metric prv-pro-metric--link">
-            <i class="fas fa-calendar-day"></i>
-            <strong>@Model.Metrics.JobsToday</strong>
-            <span>Jobs Today</span>
-            <span class="prv-pro-metric-link">View schedule <i class="fas fa-chevron-right"></i></span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-metric prv-pro-metric--link">
-            <i class="fas fa-user-group"></i>
-            <strong>@Model.Metrics.NewLeads</strong>
-            <span>New Leads</span>
-            <span class="prv-pro-metric-link">See leads <i class="fas fa-chevron-right"></i></span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="PendingEstimates" class="prv-pro-metric prv-pro-metric--link">
-            <i class="fas fa-file-invoice"></i>
-            <strong>@Model.Metrics.PendingEstimates</strong>
-            <span>Pending Estimates</span>
-            <span class="prv-pro-metric-link">Review <i class="fas fa-chevron-right"></i></span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="overdue" class="prv-pro-metric prv-pro-metric--link">
-            <i class="fas fa-dollar-sign"></i>
-            <strong>@Model.Metrics.PaymentsDue.ToString("C0", money)</strong>
-            <span>Payments Due</span>
-            <span class="prv-pro-metric-link">View invoices <i class="fas fa-chevron-right"></i></span>
-        </a>
-    </section>
-
-    <div class="prv-pro-grid">
-        <section class="prv-pro-panel prv-pro-panel--wide">
-            <div class="prv-pro-panel-head">
-                <h2>Today's Jobs</h2>
-                <a asp-controller="Proveedor" asp-action="DaySchedule">View all</a>
-            </div>
-            @if (Model.TodaysJobs.Count == 0)
-            {
-                <p class="prv-pro-empty">No jobs scheduled for today.</p>
-            }
-            else
-            {
-                @foreach (var job in Model.TodaysJobs)
-                {
-                    <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@job.Id" class="prv-pro-job-row prv-pro-job-row--link">
-                        <div>
-                            <strong>@job.TimeLabel · @job.Title</strong>
-                            <small>@job.Address</small>
-                        </div>
-                        <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.Status</span>
-                    </a>
-                }
-            }
-        </section>
-
-        <section class="prv-pro-panel">
-            <div class="prv-pro-panel-head">
-                <h2>New INDOR Leads</h2>
-                <a asp-controller="Proveedor" asp-action="NewLeads">View all</a>
-            </div>
-            @if (Model.NewLeads.Count == 0)
-            {
-                <p class="prv-pro-empty">No new leads yet. Complete activation to start receiving opportunities.</p>
-            }
-            else
-            {
-                @foreach (var lead in Model.NewLeads)
-                {
-                    <div class="prv-pro-lead-card">
-                        <div class="prv-pro-lead-top">
-                            <span class="prv-pro-pill prv-pro-pill--new">New</span>
-                            @if (lead.IsHighUrgency)
-                            {
-                                <span class="prv-pro-urgency"><i class="fas fa-fire"></i> @lead.Urgency</span>
-                            }
-                        </div>
-                        <strong>@lead.Address</strong>
-                        <small>@lead.ServiceType</small>
-                        <div class="prv-pro-lead-actions">
-                            <form asp-controller="Proveedor" asp-action="AcceptLead" method="post" style="display:inline;">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@lead.Id" />
-                                <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Accept</button>
-                            </form>
-                            <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@lead.Id" class="prv-pro-btn prv-pro-btn--ghost">View</a>
-                        </div>
-                    </div>
-                }
-            }
-        </section>
-
-        <section class="prv-pro-panel">
-            <div class="prv-pro-panel-head">
-                <h2>Pending Estimates</h2>
-                <a asp-controller="Proveedor" asp-action="PendingEstimates">View all</a>
-            </div>
-            @if (Model.PendingEstimates.Count == 0)
-            {
-                <p class="prv-pro-empty">No pending estimates.</p>
-            }
-            else
-            {
-                @foreach (var est in Model.PendingEstimates)
-                {
-                    var estAction = est.Status == "Draft" ? "EditEstimate"
-                        : est.Status is "Sent" or "Viewed" ? "EstimateSent"
-                        : "ReviewEstimate";
-                    <a asp-controller="Proveedor" asp-action="@estAction" asp-route-id="@est.Id" class="prv-pro-estimate-row prv-pro-job-row--link">
-                        <div>
-                            <strong>@est.EstimateId</strong>
-                            <small>@est.Address@(string.IsNullOrWhiteSpace(est.ServiceType) ? "" : $" · {est.ServiceType}")</small>
-                        </div>
-                        <div class="prv-pro-estimate-meta">
-                            <strong>@est.Amount.ToString("C0", money)</strong>
-                            <span class="prv-pro-pill prv-pro-pill--sent">@est.Status</span>
-                        </div>
-                    </a>
-                }
-            }
-        </section>
-
-        <section class="prv-pro-panel">
-            <div class="prv-pro-panel-head">
-                <h2>Pending Homeowner Approvals</h2>
-            </div>
-            @if (Model.PendingApprovals.Count == 0)
-            {
-                <p class="prv-pro-empty">No approvals waiting.</p>
-            }
-            else
-            {
-                @foreach (var item in Model.PendingApprovals)
-                {
-                    <div class="prv-pro-approval-row">
-                        <img src="@Url.Content($"~{item.ImageUrl}")" alt="Property" />
-                        <div>
-                            <strong>@item.Address</strong>
-                            @if (!string.IsNullOrWhiteSpace(item.ServiceType))
-                            {
-                                <small>@item.ServiceType</small>
-                            }
-                            <form asp-controller="Proveedor" asp-action="ApproveHomeowner" method="post">
-                                @Html.AntiForgeryToken()
-                                <input type="hidden" name="id" value="@item.Id" />
-                                <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">Approve</button>
-                            </form>
-                        </div>
-                    </div>
-                }
-            }
-        </section>
-
-        <section class="prv-pro-panel">
-            <div class="prv-pro-panel-head">
-                <h2>Payments &amp; Invoices</h2>
-                <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="pending" class="prv-pro-panel-link">View all</a>
-            </div>
-            <div class="prv-pro-pay-row"><span class="dot dot--paid"></span> Paid (This Month) <strong>@Model.Payments.Paid.ToString("C0", money)</strong></div>
-            <div class="prv-pro-pay-row"><span class="dot dot--pending"></span> Pending <strong>@Model.Payments.Pending.ToString("C0", money)</strong></div>
-            <div class="prv-pro-pay-row"><span class="dot dot--overdue"></span> Overdue <strong>@Model.Payments.Overdue.ToString("C0", money)</strong></div>
-        </section>
-
-        <section class="prv-pro-panel prv-pro-panel--stat">
-            <h3>Home Records Created</h3>
-            <div class="prv-pro-stat-num">@Model.HomeRecordsThisMonth</div>
-            <small>+@Model.HomeRecordsDelta vs last month</small>
-        </section>
-
-        <section class="prv-pro-panel prv-pro-panel--stat">
-            <h3>House Facts Impact</h3>
-            <div class="prv-pro-stat-num">@Model.HomesProtected</div>
-            <small>Total homes protected</small>
-        </section>
-    </div>
-
-    <section class="prv-pro-quick">
-        <h2>Quick Actions</h2>
-        <div class="prv-pro-quick-grid">
-            <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-quick-item"><i class="fas fa-plus"></i><span>Create Job</span></a>
-            <a asp-controller="Proveedor" asp-action="CreateEstimate" class="prv-pro-quick-item"><i class="fas fa-file-invoice-dollar"></i><span>Create Estimate</span></a>
-            <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-quick-item"><i class="fas fa-user-plus"></i><span>Add Customer</span></a>
-            <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-quick-item"><i class="fas fa-cloud-arrow-up"></i><span>Upload Report</span></a>
-            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-quick-item"><i class="fas fa-calendar"></i><span>Calendar</span></a>
-            <a asp-controller="Proveedor" asp-action="Messages" class="prv-pro-quick-item">
-                <i class="fas fa-message"></i><span>Messages</span>
-                @if (Model.UnreadMessages > 0)
-                {
-                    <em class="prv-pro-badge-count">@Model.UnreadMessages</em>
-                }
-            </a>
+    <section class="prv-pro-home-jobs">
+        <div class="prv-pro-home-jobs-head">
+            <h2><i class="fas fa-clipboard-list"></i> Today's Jobs</h2>
+            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today">View all <i class="fas fa-chevron-right"></i></a>
         </div>
-    </section>
-
-    <section class="prv-pro-panel prv-pro-panel--ai">
-        <div class="prv-pro-panel-head">
-            <h2><i class="fas fa-robot"></i> AI Assistant <span class="prv-pro-beta">Beta</span></h2>
-        </div>
-        <ul class="prv-pro-ai-list">
-            @foreach (var tip in Model.AiSuggestions)
-            {
-                <li>@tip</li>
-            }
-        </ul>
-    </section>
-
-    <section class="prv-pro-panel">
-        <div class="prv-pro-panel-head">
-            <h2>Upcoming Calendar</h2>
-            <a asp-controller="Proveedor" asp-action="Calendar">View Calendar</a>
-        </div>
-        @foreach (var day in Model.UpcomingCalendar)
+        @if (Model.TodaysJobs.Count == 0)
         {
-            <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@day.DateIso" class="prv-pro-cal-row prv-pro-cal-row--link">
-                <span>@day.DayLabel</span>
-                <strong>@day.JobCount job@(day.JobCount == 1 ? "" : "s") scheduled</strong>
-            </a>
+            <div class="prv-pro-home-jobs-empty">
+                <p class="prv-pro-empty">No jobs scheduled for today.</p>
+            </div>
+        }
+        else
+        {
+            @foreach (var job in Model.TodaysJobs)
+            {
+                <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@job.Id" class="prv-pro-home-job-row">
+                    <span class="prv-pro-home-job-icon prv-pro-home-job-icon--@job.IconTone"><i class="fas @job.IconClass"></i></span>
+                    <div class="prv-pro-home-job-body">
+                        <strong>@job.Title</strong>
+                        <small>@job.TimeLabel@if (!string.IsNullOrWhiteSpace(job.Address)) { <text> &bull; @job.Address</text> }</small>
+                    </div>
+                    <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.Status</span>
+                </a>
+            }
         }
     </section>
+
+    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-fab prv-pro-fab--home" aria-label="Create job"><i class="fas fa-plus"></i></a>
 </div>

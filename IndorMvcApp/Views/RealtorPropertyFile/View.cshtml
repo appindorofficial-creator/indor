@@ -1,0 +1,90 @@
+@model IndorMvcApp.ViewModels.RealtorPropertyFileViewViewModel
+@{
+    Layout = "_RealtorLayout";
+    ViewData["Title"] = "Property File";
+    ViewBag.NavActive = "files";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", Model)
+
+    <div class="rl-page-header rl-page-header--stack">
+        <a asp-controller="Realtor" asp-action="Files" class="rl-back-link"><i class="fas fa-chevron-left"></i> Property Files</a>
+        <h1 class="rl-page-title">@Model.Address</h1>
+        @if (!string.IsNullOrWhiteSpace(Model.CityRegion))
+        {
+            <p class="rl-page-subtitle">@Model.CityRegion</p>
+        }
+    </div>
+
+    <div class="rl-review-card rl-review-card--property rl-file-view-hero">
+        <img src="@Model.PhotoUrl" alt="" />
+        <div>
+            <strong>@Model.Address</strong>
+            @if (!string.IsNullOrWhiteSpace(Model.ClientName))
+            {
+                <span class="rl-premium-client"><i class="fas fa-user"></i> @Model.ClientName</span>
+            }
+            <span class="rl-file-code">File ID: @Model.FileCode</span>
+            <span class="rl-phase-badge rl-phase-badge--pre-closing">@Model.FilePhaseLabel</span>
+            <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusBadge</span>
+            <span class="rl-premium-muted">@Model.UpdatedLabel</span>
+            @if (Model.RepairItemsCount > 0)
+            {
+                <span class="rl-premium-muted">Repair items: @Model.RepairItemsCount</span>
+            }
+            @if (Model.QuotesReceivedCount > 0)
+            {
+                <span class="rl-premium-muted">Quotes received: @Model.QuotesReceivedCount</span>
+            }
+        </div>
+    </div>
+
+    <div class="rl-file-view-actions">
+        <a href="@Model.PrimaryActionUrl" class="ob-btn ob-btn-primary">@Model.PrimaryActionLabel</a>
+        @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel) && !string.IsNullOrWhiteSpace(Model.SecondaryActionUrl))
+        {
+            <a href="@Model.SecondaryActionUrl" class="rl-btn-outline">@Model.SecondaryActionLabel</a>
+        }
+    </div>
+
+    @if (Model.Sections.Count == 0)
+    {
+        <div class="rl-dash-empty">No items in this file yet. Upload an inspection report or add content to get started.</div>
+    }
+    else
+    {
+        @foreach (var fileSection in Model.Sections)
+        {
+            <div class="rl-dash-section">
+                <div class="rl-dash-section-head">
+                    <h2><i class="fas @fileSection.Icon"></i> @fileSection.Label</h2>
+                </div>
+                <ul class="rl-file-view-items">
+                    @foreach (var item in fileSection.Items)
+                    {
+                        <li class="rl-file-view-item">
+                            <div>
+                                <strong>@item.ItemLabel</strong>
+                                @if (!string.IsNullOrWhiteSpace(item.NoteText))
+                                {
+                                    <span class="rl-premium-muted">@item.NoteText</span>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(item.MetaLabel))
+                                {
+                                    <span class="rl-file-code">@item.MetaLabel</span>
+                                }
+                            </div>
+                            @if (!string.IsNullOrWhiteSpace(item.FileUrl))
+                            {
+                                <a href="@item.FileUrl" target="_blank" rel="noopener" class="rl-btn-outline rl-btn-outline--sm">
+                                    Open <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            }
+                        </li>
+                    }
+                </ul>
+            </div>
+        }
+    }
+</div>

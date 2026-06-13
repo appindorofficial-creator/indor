@@ -79,7 +79,7 @@ BEGIN
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 2),
 
     (N'Plumbing', N'Plumbing Emergency', N'Leaks, clogs, pipe bursts & more.', 45, N'fa-droplet', N'/emergency-plumbing.png',
-     N'Most requested', 1, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 3),
+     N'Most requested', 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 3),
 
     (N'Flood', N'Flood Emergency', N'Standing water, basement flooding, and urgent water removal.', 45, N'fa-water', N'/emergency-flood.png',
      NULL, 0, N'Arrives fast|Trusted pros|Upfront pricing', N'fa-clock|fa-shield-halved|fa-star', N'Request help', 1, 4),
@@ -115,6 +115,7 @@ BEGIN
     UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-roof-leak.png'       WHERE Nombre = N'Roof Leak';
     UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-tree-damage.png'     WHERE Nombre = N'Tree Damage';
     UPDATE dbo.ServiciosEmergencia SET ImagenUrl = N'/emergency-smoke-detector.png'  WHERE Nombre = N'Smoke Detector';
+    UPDATE dbo.ServiciosEmergencia SET EsPredeterminado = 0;
     PRINT 'ServiciosEmergencia images synced to emergency-*.png assets.';
 END
 GO

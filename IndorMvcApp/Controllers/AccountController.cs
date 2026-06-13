@@ -69,7 +69,7 @@ public class AccountController : Controller
 
             if (result.Succeeded)
             {
-                await _signInManager.SignInAsync(user, isPersistent: false);
+                await _signInManager.SignInAsync(user, isPersistent: true);
                 return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
             }
 
@@ -247,8 +247,8 @@ public class AccountController : Controller
                 await _userManager.AddToRoleAsync(user, model.SelectedRole);
             }
 
-            // Refresh cookie so [Authorize(Roles = ...)] sees the new role immediately.
-            await _signInManager.RefreshSignInAsync(user);
+            // Re-issue a persistent auth cookie so role claims and mobile sessions stay valid.
+            await _signInManager.SignInAsync(user, isPersistent: true);
 
             return model.SelectedRole switch
             {

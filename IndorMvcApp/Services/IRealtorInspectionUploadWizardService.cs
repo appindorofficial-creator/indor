@@ -12,9 +12,17 @@ public interface IRealtorInspectionUploadWizardService
     string ResolveResumeAction(int currentStep);
 
     Task<RealtorInspectionUploadViewModel> BuildUploadAsync(string? search, CancellationToken cancellationToken = default);
-    Task SaveUploadAsync(int propertyFileId, string uploadMethod, IFormFile? reportFile, CancellationToken cancellationToken = default);
+    Task SaveUploadAsync(
+        int propertyFileId,
+        string uploadMethod,
+        IFormFile? reportFile,
+        string? newPropertyAddress = null,
+        string? newPropertyClientName = null,
+        string? newPropertyCityRegion = null,
+        CancellationToken cancellationToken = default);
 
     Task<RealtorInspectionAnalyzeViewModel> BuildAnalyzeAsync(CancellationToken cancellationToken = default);
+    Task RunAnalysisAsync(CancellationToken cancellationToken = default);
     Task AdvanceAnalysisAsync(CancellationToken cancellationToken = default);
     Task CompleteAnalysisAsync(CancellationToken cancellationToken = default);
 

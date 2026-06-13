@@ -1,0 +1,96 @@
+@model IndorMvcApp.ViewModels.RealtorCompareQuotesPageViewModel
+@{
+    ViewData["Title"] = "Compare Quotes";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "quotes";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <div class="rl-page-header rl-page-header--stack">
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> Quotes</a>
+        <h1 class="rl-page-title">Compare Quotes</h1>
+    </div>
+
+    <div class="rl-qcmp-hero">
+        <img src="@Model.PhotoUrl" alt="" />
+        <div>
+            <strong>@Model.Address</strong>
+            <span class="rl-premium-muted">@Model.RequestedLabel</span>
+            <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
+        </div>
+    </div>
+    <p class="rl-section-caption rl-qcmp-caption">Review and compare quotes from trusted providers.</p>
+
+    @foreach (var quote in Model.Quotes)
+    {
+        <article class="rl-qcmp-card @(quote.IsBestValue ? "is-best" : null)">
+            @if (quote.IsBestValue)
+            {
+                <span class="rl-qcmp-best"><i class="fas fa-star"></i> Best Value</span>
+            }
+            <div class="rl-qcmp-card-head">
+                <span class="rl-provider-avatar">@quote.ProviderInitials</span>
+                <div>
+                    <strong>@quote.ProviderName</strong>
+                    <span><i class="fas fa-star"></i> @quote.Rating.ToString("0.0") (@quote.ReviewCount reviews)</span>
+                </div>
+            </div>
+            <div class="rl-qcmp-grid">
+                <div>
+                    <i class="fas fa-dollar-sign"></i>
+                    <span>Total Price</span>
+                    <strong>@quote.AmountLabel</strong>
+                    @if (quote.IsBestValue) { <em>Best Value</em> }
+                </div>
+                <div>
+                    <i class="fas fa-clock"></i>
+                    <span>Timeline</span>
+                    <strong>@quote.TimelineLabel</strong>
+                    <em>Estimated</em>
+                </div>
+                <div>
+                    <i class="fas fa-shield-halved"></i>
+                    <span>Warranty</span>
+                    <strong>@quote.WarrantyLabel</strong>
+                    <em>Included</em>
+                </div>
+                <div>
+                    <i class="fas fa-star"></i>
+                    <span>Rating</span>
+                    <strong>@quote.Rating.ToString("0.0")</strong>
+                    <em>@quote.ReviewCount reviews</em>
+                </div>
+            </div>
+            <div class="rl-qcmp-card-foot">
+                <a href="@quote.ViewDetailsUrl" class="rl-qcmp-details">View Details</a>
+                <form asp-controller="Realtor" asp-action="AcceptQuote" method="post" class="rl-qcmp-select-form">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="quoteId" value="@Model.QuoteId" />
+                    <input type="hidden" name="bidId" value="@quote.BidId" />
+                    <button type="submit" class="@(quote.IsBestValue ? "ob-btn ob-btn-primary" : "rl-btn-outline") rl-qcmp-select-btn">
+                        Select This Quote
+                    </button>
+                </form>
+            </div>
+        </article>
+    }
+
+    <div class="rl-qcmp-summary">
+        <div>
+            <i class="fas fa-chart-column"></i>
+            <span>Price Range</span>
+            <strong>@Model.PriceRangeLabel</strong>
+        </div>
+        <div>
+            <i class="fas fa-clock"></i>
+            <span>Timeline Range</span>
+            <strong>@Model.TimelineRangeLabel</strong>
+        </div>
+    </div>
+
+    <a href="@Model.InviteProvidersUrl" class="rl-qcmp-invite">
+        <i class="fas fa-user-plus"></i> Need another option? Invite more providers
+    </a>
+</div>

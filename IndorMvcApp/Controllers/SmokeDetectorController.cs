@@ -74,19 +74,21 @@ public class SmokeDetectorController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var setupComplete = HasCompletedSetup(solicitud);
+
         return View(new SmokeDetectorSetupViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Smoke / CO Check",
-            CantidadAlarmas = solicitud.CantidadAlarmas ?? "Two",
-            UbicacionesSeleccionadas = solicitud.UbicacionesSeleccionadas ?? string.Empty,
-            TiposAlarmas = solicitud.TiposAlarmas ?? string.Empty,
-            UltimaPrueba = solicitud.UltimaPrueba ?? "DontKnow",
-            UltimoCambioBateria = solicitud.UltimoCambioBateria ?? "DontKnow",
-            AnioInstalacion = solicitud.AnioInstalacion,
-            AnioInstalacionDesconocido = solicitud.AnioInstalacionDesconocido,
-            ProblemasSeleccionados = solicitud.ProblemasSeleccionados ?? string.Empty
+            CantidadAlarmas = setupComplete ? solicitud.CantidadAlarmas ?? string.Empty : string.Empty,
+            UbicacionesSeleccionadas = setupComplete ? solicitud.UbicacionesSeleccionadas ?? string.Empty : string.Empty,
+            TiposAlarmas = setupComplete ? solicitud.TiposAlarmas ?? string.Empty : string.Empty,
+            UltimaPrueba = setupComplete ? solicitud.UltimaPrueba ?? string.Empty : string.Empty,
+            UltimoCambioBateria = setupComplete ? solicitud.UltimoCambioBateria ?? string.Empty : string.Empty,
+            AnioInstalacion = setupComplete ? solicitud.AnioInstalacion : null,
+            AnioInstalacionDesconocido = setupComplete && solicitud.AnioInstalacionDesconocido,
+            ProblemasSeleccionados = setupComplete ? solicitud.ProblemasSeleccionados ?? string.Empty : string.Empty
         });
     }
 
@@ -396,7 +398,6 @@ public class SmokeDetectorController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                CantidadAlarmas = "Two",
                 RecordatorioMensual = true,
                 RecordatorioBateriaAnual = true,
                 RecordatorioReemplazo10Anos = true,
@@ -409,6 +410,10 @@ public class SmokeDetectorController : Controller
 
         return solicitud;
     }
+
+    private static bool HasCompletedSetup(SolicitudSmokeDetector solicitud) =>
+        string.Equals(solicitud.Estado, "SetupCompleted", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
 
     private async Task<SolicitudSmokeDetector?> LoadSolicitudForUserAsync(int id)
     {

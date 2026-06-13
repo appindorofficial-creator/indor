@@ -8,8 +8,10 @@ public interface IProviderProJobWorkflowService
     Task<ProviderProJobsScheduleViewModel> GetJobsScheduleAsync(IndorProveedor proveedor, string? view = "today", CancellationToken cancellationToken = default);
     Task<ProviderProCreateJobCategoriesViewModel> GetCreateJobCategoriesAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
     Task<ProviderProCreateJobDetailsViewModel?> GetCreateJobDetailsAsync(IndorProveedor proveedor, string categoryId, ProviderProCreateJobDraft? draft, CancellationToken cancellationToken = default);
-    Task<ProviderProCreateJobScheduleViewModel?> GetCreateJobScheduleAsync(IndorProveedor proveedor, ProviderProCreateJobDraft draft, CancellationToken cancellationToken = default);
-    Task<ProviderProCreateJobReviewViewModel?> GetCreateJobReviewAsync(IndorProveedor proveedor, ProviderProCreateJobDraft draft);
+    Task<ProviderProCreateJobQuoteViewModel?> GetCreateJobQuoteAsync(IndorProveedor proveedor, ProviderProCreateJobDraft draft, CancellationToken cancellationToken = default);
+    Task<ProviderProCreateJobAiDraftViewModel?> GetCreateJobAiDraftAsync(IndorProveedor proveedor, ProviderProCreateJobDraft draft);
+    Task<ProviderProCreateJobSendViewModel?> GetCreateJobSendAsync(IndorProveedor proveedor, ProviderProCreateJobDraft draft);
+    void GenerateCreateJobAiDraft(ProviderProCreateJobDraft draft, bool regenerate = false);
     Task<ProviderProCreateJobSuccessViewModel?> GetCreateJobSuccessAsync(IndorProveedor proveedor, int jobId, CancellationToken cancellationToken = default);
     Task<int> CreateJobAsync(int proveedorId, ProviderProCreateJobInput input, CancellationToken cancellationToken = default);
     Task<ProviderProJobDetailsViewModel?> GetJobDetailsAsync(IndorProveedor proveedor, int jobId, bool fromCalendar = false, string? calendarDate = null, CancellationToken cancellationToken = default);

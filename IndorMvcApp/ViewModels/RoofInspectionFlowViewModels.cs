@@ -20,6 +20,7 @@ public class RoofInspectionFeatureItemViewModel
 {
     public string Icon { get; set; } = "fa-check";
     public string Text { get; set; } = string.Empty;
+    public string? Subtext { get; set; }
 }
 
 public class RoofInspectionDetailsViewModel
@@ -28,17 +29,17 @@ public class RoofInspectionDetailsViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Roof Inspection";
 
-    [Required]
-    public string MotivoRevision { get; set; } = "RoutineInspection";
+    [Required(ErrorMessage = "Please select why you need a roof check.")]
+    public string MotivoRevision { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoTecho { get; set; } = "AsphaltShingle";
+    [Required(ErrorMessage = "Please select your roof type.")]
+    public string TipoTecho { get; set; } = string.Empty;
 
-    [Required]
-    public string EdadTecho { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Please indicate the approximate age of your roof.")]
+    public string EdadTecho { get; set; } = string.Empty;
 
-    [Required]
-    public string UltimaInspeccion { get; set; } = "DontKnow";
+    [Required(ErrorMessage = "Please indicate when your roof was last inspected.")]
+    public string UltimaInspeccion { get; set; } = string.Empty;
 
     public List<ExistingRoofInspectionFileViewModel> ArchivosExistentes { get; set; } = new();
 }
@@ -57,14 +58,14 @@ public class RoofInspectionScheduleViewModel
     public string PageTitle { get; set; } = "Roof Inspection";
     public string ScheduleIntro { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoServicio { get; set; } = "ReminderOnly";
+    [Required(ErrorMessage = "Please choose a service.")]
+    public string TipoServicio { get; set; } = string.Empty;
 
-    [Required]
-    public string Frecuencia { get; set; } = "Yearly";
+    [Required(ErrorMessage = "Please select how often you'd like a roof check.")]
+    public string Frecuencia { get; set; } = string.Empty;
 
-    [Required]
-    public string TimingPreferido { get; set; } = "Spring";
+    [Required(ErrorMessage = "Please select your preferred timing.")]
+    public string TimingPreferido { get; set; } = string.Empty;
 
     public DateTime? FechaPreferida { get; set; }
 

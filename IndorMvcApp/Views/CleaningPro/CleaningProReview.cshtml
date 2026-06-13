@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.CleaningProReviewViewModel
+@using IndorMvcApp.Services
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
     Layout = null;
@@ -90,9 +91,18 @@
             </div>
             <span asp-validation-for="FechaServicio" class="text-danger" style="font-size:0.75rem;"></span>
             <div class="time-grid" id="timeGroup">
-                <button type="button" class="time-btn" data-value="Morning10">10:00 AM<span class="check"><i class="fas fa-check"></i></span></button>
-                <button type="button" class="time-btn" data-value="Morning9_12">9:00 AM – 12:00 PM<span class="check"><i class="fas fa-check"></i></span></button>
-                <button type="button" class="time-btn" data-value="Afternoon1_5">1:00 PM – 5:00 PM<span class="check"><i class="fas fa-check"></i></span></button>
+                <button type="button" class="time-btn" data-value="Morning10">
+                    <span class="time-label">@CleaningProDisplayLabels.FormatTimeWindow("Morning10")</span>
+                    <span class="check"><i class="fas fa-check"></i></span>
+                </button>
+                <button type="button" class="time-btn" data-value="Morning9_12">
+                    <span class="time-label">@CleaningProDisplayLabels.FormatTimeWindow("Morning9_12")</span>
+                    <span class="check"><i class="fas fa-check"></i></span>
+                </button>
+                <button type="button" class="time-btn time-btn--wide" data-value="Afternoon1_5">
+                    <span class="time-label">@CleaningProDisplayLabels.FormatTimeWindow("Afternoon1_5")</span>
+                    <span class="check"><i class="fas fa-check"></i></span>
+                </button>
             </div>
         </div>
 

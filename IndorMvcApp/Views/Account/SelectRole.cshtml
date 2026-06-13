@@ -215,9 +215,10 @@
             font-family: 'Inter', sans-serif;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: center;
             text-decoration: none;
             border: none;
         }
@@ -241,13 +242,18 @@
             box-shadow: none;
         }
 
-        .btn-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .btn-icon {
+            font-size: 1.1rem;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .btn-icon { font-size: 1.1rem; }
+        .btn-icon-left { left: 22px; }
+
+        .btn-icon-right { right: 22px; }
+
+        .btn-label { line-height: 1; }
 
         .skip-link {
             text-align: center;
@@ -332,11 +338,9 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary" id="continueBtn" disabled>
-                    <div class="btn-content">
-                        <i class="fas fa-circle-check btn-icon"></i>
-                        <span>Continue</span>
-                    </div>
-                    <i class="fas fa-chevron-right btn-icon"></i>
+                    <i class="fas fa-circle-check btn-icon btn-icon-left"></i>
+                    <span class="btn-label">Continue</span>
+                    <i class="fas fa-chevron-right btn-icon btn-icon-right"></i>
                 </button>
 
                 <div class="skip-link">

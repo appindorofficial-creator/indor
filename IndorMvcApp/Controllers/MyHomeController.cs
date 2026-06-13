@@ -424,7 +424,7 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Maintenance(int id, string? filter)
+    public async Task<IActionResult> Maintenance(int id, string? filter, string? from)
     {
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
@@ -455,15 +455,21 @@ public class MyHomeController : Controller
             PropiedadId = propiedad.Id,
             Address = propiedad.Direccion ?? string.Empty,
             Filter = filter,
+            BackUrl = ResolveMaintenanceBackUrl(propiedad.Id, from),
+            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null,
             Items = items
         });
     }
 
     [HttpGet]
-    public async Task<IActionResult> MaintenanceCreate(int id)
+    public async Task<IActionResult> MaintenanceCreate(int id, string? from)
     {
         if (!await UserOwnsPropertyAsync(id)) return NotFound();
-        return View(new MyHomeMaintenanceFormViewModel { PropiedadId = id });
+        return View(new MyHomeMaintenanceFormViewModel
+        {
+            PropiedadId = id,
+            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null
+        });
     }
 
     [HttpPost]
@@ -483,11 +489,11 @@ public class MyHomeController : Controller
             PropiedadProveedorId = model.PropiedadProveedorId
         });
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Maintenance), new { id = model.PropiedadId });
+        return RedirectToAction(nameof(Maintenance), new { id = model.PropiedadId, from = model.NavigationFrom });
     }
 
     [HttpGet]
-    public async Task<IActionResult> MaintenanceEdit(int id)
+    public async Task<IActionResult> MaintenanceEdit(int id, string? from)
     {
         var item = await LoadMaintenanceAsync(id);
         if (item == null) return NotFound();
@@ -500,7 +506,8 @@ public class MyHomeController : Controller
             DueDate = item.DueDate,
             Status = item.Status,
             Notes = item.Notes,
-            PropiedadProveedorId = item.PropiedadProveedorId
+            PropiedadProveedorId = item.PropiedadProveedorId,
+            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null
         });
     }
 
@@ -522,11 +529,11 @@ public class MyHomeController : Controller
         item.FechaActualizacion = DateTime.UtcNow;
         await _db.SaveChangesAsync();
 
-        return RedirectToAction(nameof(MaintenanceDetail), new { id = item.Id });
+        return RedirectToAction(nameof(MaintenanceDetail), new { id = item.Id, from = model.NavigationFrom });
     }
 
     [HttpGet]
-    public async Task<IActionResult> MaintenanceDetail(int id)
+    public async Task<IActionResult> MaintenanceDetail(int id, string? from)
     {
         var item = await LoadMaintenanceAsync(id);
         if (item == null) return NotFound();
@@ -535,6 +542,7 @@ public class MyHomeController : Controller
         {
             Id = item.Id,
             PropiedadId = item.PropiedadId,
+            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null,
             Title = item.Title,
             DueDate = item.DueDate,
             CompletedDate = item.CompletedDate,
@@ -715,6 +723,11 @@ public class MyHomeController : Controller
             .Include(m => m.Proveedor)
             .FirstOrDefaultAsync(m => m.Id == id && m.Propiedad!.UserId == userId);
     }
+
+    private string ResolveMaintenanceBackUrl(int propiedadId, string? from) =>
+        string.Equals(from, "home", StringComparison.OrdinalIgnoreCase)
+            ? Url.Action("Index", "Home") ?? "/"
+            : Url.Action(nameof(Index), new { id = propiedadId }) ?? "/";
 
     private static string SerializePropertyInfo(PropertyInfoViewModel info)
     {

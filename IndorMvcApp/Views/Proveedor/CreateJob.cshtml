@@ -1,42 +1,93 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateJobCategoriesViewModel
 @{
-    ViewData["Title"] = "Create New Job - INDOR PRO";
+    ViewData["Title"] = "Create Job - INDOR PRO";
     Layout = "_ProviderProLayout";
-    ViewBag.NavActive = "home";
+    ViewBag.NavActive = "jobs";
+    var selectedId = Model.SelectedCategoryId ?? Model.Categories.FirstOrDefault()?.Id;
+    var selectedCategory = Model.Categories.FirstOrDefault(c => c.Id == selectedId) ?? Model.Categories.FirstOrDefault();
+    var jobTitle = !string.IsNullOrWhiteSpace(Model.JobTitle)
+        ? Model.JobTitle
+        : selectedCategory?.SuggestedJobName ?? "";
 }
 
-<div class="prv-pro-shell prv-pro-shell--create-job">
+<div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-    @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
-    <header class="prv-pro-workflow-head prv-pro-workflow-head--plain">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
-        <div>
-            <h1>Create New Job</h1>
-            <small>What type of job is this?</small>
-        </div>
+    <header class="prv-pro-wizard-head">
+        <h1>Create Job</h1>
+        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
     </header>
 
-    <p class="prv-pro-create-job-intro">Select a service category to get started.</p>
+    <form asp-controller="Proveedor" asp-action="CreateJob" method="post" class="prv-pro-wizard-form" id="createJobStep1Form">
+        @Html.AntiForgeryToken()
 
-    <div class="prv-pro-job-type-list">
-        @foreach (var cat in Model.Categories)
-        {
-            <a asp-controller="Proveedor" asp-action="CreateJobDetails" asp-route-categoryId="@cat.Id" class="prv-pro-job-type-card">
-                <div class="prv-pro-job-type-icon"><i class="fas @cat.IconClass"></i></div>
-                <div>
-                    <strong>@cat.Label</strong>
-                    @if (!string.IsNullOrWhiteSpace(cat.Description))
-                    {
-                        <small>@cat.Description</small>
-                    }
-                </div>
-                <i class="fas fa-chevron-right prv-pro-job-type-arrow"></i>
-            </a>
-        }
-    </div>
+        <section class="prv-pro-wizard-card">
+            <h2>What type of job are you creating?</h2>
+            <p>Choose a category so INDOR can organize the work and prepare the right quote flow.</p>
 
-    <footer class="prv-pro-create-job-cancel">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">Cancel</a>
-    </footer>
+            <div class="prv-pro-type-grid" role="radiogroup" aria-label="Job type">
+                @foreach (var cat in Model.Categories)
+                {
+                    var isSelected = cat.Id == selectedId;
+                    <label class="prv-pro-type-tile @(isSelected ? "is-selected" : "")" data-suggested="@cat.SuggestedJobName">
+                        <input type="radio" name="ServiceCategoryId" value="@cat.Id" @(isSelected ? "checked" : "") required />
+                        <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@cat.ToneClass">
+                            <i class="fas @cat.IconClass"></i>
+                        </span>
+                        <span class="prv-pro-type-tile-label">@cat.Label</span>
+                        @if (isSelected)
+                        {
+                            <span class="prv-pro-type-tile-check"><i class="fas fa-check"></i></span>
+                        }
+                    </label>
+                }
+            </div>
+        </section>
+
+        <section class="prv-pro-wizard-card">
+            <h2>Job naming</h2>
+            <label class="prv-pro-form-label">
+                Job name
+                <input type="text" name="Title" id="createJobTitle" value="@jobTitle" placeholder="Water Damage Inspection" required />
+            </label>
+            <small class="prv-pro-wizard-hint">This will help classify the job in your list.</small>
+        </section>
+
+        <div class="prv-pro-wizard-actions">
+            <a asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
+        </div>
+    </form>
+
+    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
 </div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var tiles = document.querySelectorAll('.prv-pro-type-tile');
+            var titleInput = document.getElementById('createJobTitle');
+
+            tiles.forEach(function (tile) {
+                tile.addEventListener('click', function () {
+                    tiles.forEach(function (t) {
+                        t.classList.remove('is-selected');
+                        var check = t.querySelector('.prv-pro-type-tile-check');
+                        if (check) check.remove();
+                    });
+                    tile.classList.add('is-selected');
+                    var checkEl = document.createElement('span');
+                    checkEl.className = 'prv-pro-type-tile-check';
+                    checkEl.innerHTML = '<i class="fas fa-check"></i>';
+                    tile.appendChild(checkEl);
+                    var radio = tile.querySelector('input[type="radio"]');
+                    if (radio) radio.checked = true;
+                    var suggested = tile.dataset.suggested;
+                    if (suggested && titleInput && !titleInput.value.trim()) {
+                        titleInput.value = suggested;
+                    }
+                });
+            });
+        })();
+    </script>
+}

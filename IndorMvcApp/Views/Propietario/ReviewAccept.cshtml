@@ -58,6 +58,16 @@
                         </span>
                     </div>
                 </div>
+
+                @{
+                    var maintenanceSection = ViewBag.MaintenanceSection as IndorMvcApp.ViewModels.PropertyMaintenanceSectionViewModel;
+                }
+                @if (maintenanceSection is { Items.Count: > 0 })
+                {
+                    <div class="ob-review-card ob-review-card--maintenance">
+                        @await Html.PartialAsync("_PropertyMaintenanceRecommendations", maintenanceSection, new ViewDataDictionary(ViewData) { { "Compact", true } })
+                    </div>
+                }
             </div>
 
             <form asp-action="ReviewAccept" method="post">

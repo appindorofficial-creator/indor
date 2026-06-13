@@ -19,14 +19,14 @@ public class ExteriorPaintReviewViewModel
     public string? ImagenUrl { get; set; }
     public string CtaTexto { get; set; } = "Continue";
 
-    [Required]
-    public string UltimaPintura { get; set; } = "DontKnow";
+    [Required(ErrorMessage = "Select when the exterior was last painted.")]
+    public string UltimaPintura { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoSuperficie { get; set; } = "WoodSiding";
+    [Required(ErrorMessage = "Select your exterior surface type.")]
+    public string TipoSuperficie { get; set; } = string.Empty;
 
-    [Required]
-    public string MantenerMismoColor { get; set; } = "Yes";
+    [Required(ErrorMessage = "Select whether you want to keep the same color.")]
+    public string MantenerMismoColor { get; set; } = string.Empty;
 }
 
 public class ExteriorPaintConditionViewModel

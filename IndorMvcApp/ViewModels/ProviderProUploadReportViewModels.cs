@@ -61,6 +61,8 @@ public class ProviderProUploadReportSelectJobViewModel : ProviderProPageBaseView
     public int TotalSteps { get; set; } = 5;
     public string? SearchQuery { get; set; }
     public string ActiveFilter { get; set; } = "all";
+    public int TotalJobsAvailable { get; set; }
+    public bool HasSearchWithNoResults { get; set; }
     public List<ProviderProUploadReportJobOptionViewModel> Jobs { get; set; } = [];
     public List<ProviderProFlowStepViewModel> FlowSteps { get; set; } = [];
 }

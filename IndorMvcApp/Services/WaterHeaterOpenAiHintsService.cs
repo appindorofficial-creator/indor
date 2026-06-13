@@ -127,7 +127,7 @@ public static class WaterHeaterOpenAiHintsService
 
         if (key.Contains("model"))
         {
-            if (IsUsableShortField(text)) hints.Model ??= text;
+            if (IsUsableShortField(text)) hints.EquipmentModel ??= text;
             return;
         }
 

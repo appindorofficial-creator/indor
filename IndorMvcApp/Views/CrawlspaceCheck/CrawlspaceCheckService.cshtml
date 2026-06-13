@@ -48,15 +48,19 @@
     {
         <div class="includes-box">
             <div class="includes-label">What we'll check</div>
-            <div class="csc-check-grid">
+            <p class="csc-check-hint">Tap to choose the areas you want included in your check.</p>
+            <div class="csc-check-grid" id="checkAreasGroup">
                 @foreach (var item in Model.CheckItems)
                 {
-                    <div class="csc-check-item">
-                        <i class="fas @item.Icon"></i>
-                        <span>@item.Text</span>
-                    </div>
+                    <button type="button" class="csc-check-item" data-check="@item.Value" aria-pressed="false">
+                        <span class="check"><i class="fas fa-check" aria-hidden="true"></i></span>
+                        <i class="fas @item.Icon main" aria-hidden="true"></i>
+                        <span class="label">@item.Text</span>
+                    </button>
                 }
             </div>
+            <span id="checkAreasClientError" class="field-error" hidden>Select at least one area to check.</span>
+            <span asp-validation-for="CheckAreasSeleccionadas" class="field-error"></span>
         </div>
     }
 
@@ -73,13 +77,74 @@
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="CrawlspaceCheckService" method="post">
+    <form asp-action="CrawlspaceCheckService" method="post" id="csc-service-form">
         <input type="hidden" asp-for="HomeCarePriorityId" />
         <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="CheckAreasSeleccionadas" id="CheckAreasSeleccionadas" />
         <button type="submit" name="action" value="continue" class="btn-primary">
             @Model.CtaTexto <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 </div>
+<script>
+    (function () {
+        var hidden = document.getElementById('CheckAreasSeleccionadas');
+        var form = document.getElementById('csc-service-form');
+        if (!hidden) return;
+
+        function getSelected() {
+            return hidden.value ? hidden.value.split('|').filter(Boolean) : [];
+        }
+
+        function setSelected(values) {
+            hidden.value = values.join('|');
+        }
+
+        function syncButtons() {
+            var selected = getSelected();
+            document.querySelectorAll('[data-check]').forEach(function (btn) {
+                var code = btn.getAttribute('data-check');
+                var active = selected.indexOf(code) >= 0;
+                btn.classList.toggle('active', active);
+                btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+            });
+        }
+
+        document.querySelectorAll('[data-check]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var code = btn.getAttribute('data-check');
+                var current = getSelected();
+                if (current.indexOf(code) >= 0) {
+                    current = current.filter(function (v) { return v !== code; });
+                } else {
+                    current.push(code);
+                }
+                setSelected(current);
+                syncButtons();
+                var clientError = document.getElementById('checkAreasClientError');
+                if (clientError) clientError.hidden = current.length > 0;
+            });
+        });
+
+        if (!hidden.value) {
+            var defaults = Array.from(document.querySelectorAll('[data-check]'))
+                .map(function (btn) { return btn.getAttribute('data-check'); })
+                .filter(Boolean);
+            setSelected(defaults);
+        }
+
+        syncButtons();
+
+        form?.addEventListener('submit', function (e) {
+            var clientError = document.getElementById('checkAreasClientError');
+            if (getSelected().length === 0) {
+                e.preventDefault();
+                if (clientError) clientError.hidden = false;
+            } else if (clientError) {
+                clientError.hidden = true;
+            }
+        });
+    })();
+</script>
 </body>
 </html>
