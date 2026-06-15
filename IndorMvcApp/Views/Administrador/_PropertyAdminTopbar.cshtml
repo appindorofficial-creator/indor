@@ -1,0 +1,35 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
+<header class="pa-portal-topbar">
+    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="INDOR home index">
+        <span class="pa-portal-logo-text">ÎNDÔR</span>
+        <span class="pa-portal-logo-sub">home index</span>
+    </a>
+
+    <div class="pa-portal-account-wrap">
+        <div class="pa-portal-account-pill">
+            <button type="button"
+                    class="pa-portal-pill-bell @(Model.NotificationCount > 0 ? "has-badge" : null)"
+                    aria-label="Notifications">
+                <i class="fas fa-bell"></i>
+                @if (Model.NotificationCount > 0)
+                {
+                    <span class="pa-portal-badge">@Model.NotificationCount</span>
+                }
+            </button>
+            <span class="pa-portal-pill-divider" aria-hidden="true"></span>
+            <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-avatar-link" aria-label="Profile">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+                {
+                    <img src="@Model.ProfilePhotoUrl" alt="" class="pa-portal-avatar" />
+                }
+                else
+                {
+                    <span class="pa-portal-avatar pa-portal-avatar--placeholder"><i class="fas fa-user"></i></span>
+                }
+            </a>
+        </div>
+        <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
+            My account <i class="fas fa-chevron-right"></i>
+        </a>
+    </div>
+</header>

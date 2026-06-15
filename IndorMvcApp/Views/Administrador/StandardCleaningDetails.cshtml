@@ -1,0 +1,193 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorStandardCleaningFormViewModel
+@{
+    ViewData["Title"] = "Standard Cleaning";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var tasks = Model.IncludedTasks.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Standard Cleaning <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--purple">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <p>Tell us what needs to be cleaned so we can schedule the visit.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="StandardCleaningDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-clipboard-list pa-q-icon pa-q-icon--purple"></i> What do you need?</label>
+            <div class="pa-chip-grid pa-chip-grid--scroll">
+                @foreach (var s in new (string Value, string Label)[]
+                {
+                    ("RoutineCleaning", "Routine cleaning"),
+                    ("DeepTouchUp", "Deep touch-up"),
+                    ("BeforeGuestArrival", "Before guest arrival"),
+                    ("AfterGuestCheckout", "After guest checkout")
+                })
+                {
+                    <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> When do you need it?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
+                {
+                    <label class="pa-toggle-btn @(Model.ScheduleWhen == w ? "is-selected" : null)">
+                        <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) /> @w
+                    </label>
+                }
+            </div>
+            <div class="pa-field pa-field--time">
+                <i class="fas fa-clock"></i>
+                <input type="text" name="ScheduleTimeWindow" value="@Model.ScheduleTimeWindow" placeholder="11:00 AM – 2:00 PM" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-sparkles pa-q-icon pa-q-icon--purple"></i> What should we include?</label>
+            <div class="pa-chip-grid pa-chip-grid--wrap">
+                @foreach (var t in new (string Value, string Label)[]
+                {
+                    ("Bathrooms", "Bathrooms"),
+                    ("Kitchen", "Kitchen"),
+                    ("Bedrooms", "Bedrooms"),
+                    ("Floors", "Floors"),
+                    ("TrashRemoval", "Trash removal"),
+                    ("Dusting", "Dusting"),
+                    ("Laundry", "Laundry"),
+                    ("RestockSupplies", "Restock supplies")
+                })
+                {
+                    <label class="pa-chip @(tasks.Contains(t.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="IncludedTasksList" value="@t.Value" @(tasks.Contains(t.Value) ? "checked" : null) />
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-triangle-exclamation pa-q-icon pa-q-icon--purple"></i> Any urgent issue right now?</label>
+            <div class="pa-toggle-pair">
+                @foreach (var v in new[] { "Yes", "No" })
+                {
+                    <label class="pa-toggle-btn @(Model.UrgentIssue == v ? "is-selected" : null)">
+                        <input type="radio" name="UrgentIssue" value="@v" @(Model.UrgentIssue == v ? "checked" : null) /> @v
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> Can the team enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("NeedApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
+                        <span>@e.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--purple"></i> Who should receive updates?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("CoHost", "Co-host"), ("Guest", "Guest") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--purple"></i> Best phone number for service contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> Add notes</label>
+            <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="scDetails">@Model.Details</textarea>
+            <small class="pa-char-count"><span id="scDetailsCount">@Model.Details.Length</span> / 250 characters</small>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-flow-pro-card pa-flow-pro-card--turnover">
+            <div class="pa-flow-pro-head">
+                <span class="pa-flow-pro-icon pa-flow-pro-icon--purple"><i class="fas fa-spray-can-sparkles"></i></span>
+                <div>
+                    <strong>@Model.ProEtaLabel</strong>
+                    <div class="pa-trust-badges">
+                        <span>Licensed</span>
+                        <span>Insured</span>
+                        <span>Fast response</span>
+                    </div>
+                </div>
+            </div>
+            <p>Estimated visit: <strong>@Model.EstimatedPrice</strong> <i class="fas fa-circle-info pa-price-info"></i> <small>Final price confirmed before booking</small></p>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Schedule cleaning <i class="fas fa-arrow-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        var details = document.getElementById('scDetails');
+        var counter = document.getElementById('scDetailsCount');
+        if (details && counter) {
+            details.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

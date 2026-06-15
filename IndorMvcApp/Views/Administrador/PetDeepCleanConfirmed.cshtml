@@ -1,0 +1,105 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPetDeepCleanConfirmedViewModel
+@{
+    ViewData["Title"] = "Pet Deep Cleaning scheduled";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowShowBack = false;
+    var propertyLabel = Model.ViewingProperty != null
+        ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
+        : "";
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <div class="pa-pet-success-card">
+        <span class="pa-success-icon"><i class="fas fa-check"></i></span>
+        <div>
+            <strong>Pet Deep Cleaning scheduled</strong>
+            <p>You're all set! We've scheduled a licensed pro to get your rental guest-ready after a pet stay.</p>
+        </div>
+    </div>
+
+    <article class="pa-pro-card">
+        <img src="/inspeccion2.jpeg" alt="" class="pa-pro-card-avatar" />
+        <div class="pa-pro-card-body">
+            <strong>@Model.TechnicianName</strong>
+            <span class="pa-pro-badge"><i class="fas fa-check"></i> @Model.TechnicianTitle</span>
+            <span class="pa-pro-rating"><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@Model.TechnicianReviewCount reviews)</span>
+            <small>@Model.TechnicianExperience</small>
+        </div>
+        <div class="pa-pro-card-actions">
+            <button type="button" class="pa-pro-action-btn"><i class="fas fa-comment"></i></button>
+            <button type="button" class="pa-pro-action-btn"><i class="fas fa-phone"></i></button>
+        </div>
+    </article>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <a asp-controller="Administrador" asp-action="Properties" class="pa-property-link-card">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+            <div>
+                <strong>@Model.ViewingProperty.PropertyName</strong>
+                <small>@propertyLabel</small>
+            </div>
+            <span>View property <i class="fas fa-chevron-right"></i></span>
+        </a>
+    }
+
+    <div class="pa-confirm-split">
+        <article class="pa-summary-card-block">
+            <h2>Booking details</h2>
+            <ul class="pa-booking-detail-list">
+                @foreach (var item in Model.BookingDetails)
+                {
+                    <li>
+                        <i class="fas @item.IconClass"></i>
+                        <div>
+                            <span>@item.Label</span>
+                            <strong>@item.Value</strong>
+                        </div>
+                        <i class="fas fa-chevron-right pa-booking-chevron"></i>
+                    </li>
+                }
+            </ul>
+        </article>
+
+        <article class="pa-timeline-card pa-timeline-card--inline">
+            <h2>Request timeline</h2>
+            <ul class="pa-timeline">
+                @foreach (var step in Model.Timeline)
+                {
+                    <li class="pa-timeline-item pa-timeline-item--@step.State">
+                        <span class="pa-timeline-dot"><i class="fas @step.IconClass"></i></span>
+                        <div class="pa-timeline-body">
+                            <strong>@step.Label</strong>
+                            <span>@step.StatusLabel</span>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </article>
+    </div>
+
+    <div class="pa-action-grid">
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message co-host</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>Reschedule</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>Add recurring</span></button>
+        <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
+            <i class="fas fa-file-lines"></i><span>View details</span>
+        </a>
+    </div>
+
+    <div class="pa-info-banner pa-info-banner--pet">
+        <i class="fas fa-circle-info"></i>
+        <span>@Model.InfoBanner</span>
+    </div>
+
+    <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">
+        Track request <i class="fas fa-chevron-right"></i>
+    </a>
+    <a asp-controller="Administrador" asp-action="Index" asp-route-propertyId="@Model.ViewingProperty?.Id" class="ob-btn ob-btn-outline pa-flow-edit">
+        Back to dashboard
+    </a>
+</div>

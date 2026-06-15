@@ -1,0 +1,86 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorReviewViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="Review" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
+
+    <div class="pa-review-card">
+        <div class="pa-review-illus" aria-hidden="true">
+            <span class="pa-review-cloud pa-review-cloud--1"></span>
+            <span class="pa-review-cloud pa-review-cloud--2"></span>
+            <div class="pa-review-building">
+                <div class="pa-review-building-block">
+                    <div class="pa-review-building-tower"></div>
+                </div>
+                <div class="pa-review-building-block">
+                    <div class="pa-review-building-base">
+                        <span></span><span></span><span></span>
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+            <span class="pa-review-check"><i class="fas fa-check"></i></span>
+        </div>
+
+        <div class="pa-review-line">
+            <span class="pa-review-line-label"><i class="fas fa-user"></i> Profile</span>
+            <strong>@s.DisplayName</strong>
+        </div>
+        <div class="pa-review-line">
+            <span class="pa-review-line-label"><i class="fas fa-briefcase"></i> Portfolio type</span>
+            <strong>@Model.PortfolioTypeLabel</strong>
+        </div>
+        <div class="pa-review-line">
+            <span class="pa-review-line-label"><i class="fas fa-house"></i> Properties</span>
+            <strong>@Model.PropertyCount</strong>
+        </div>
+        <div class="pa-review-line">
+            <span class="pa-review-line-label"><i class="fas fa-globe"></i> Markets</span>
+            <strong>@s.PrimaryMarket</strong>
+        </div>
+        <div class="pa-review-line">
+            <span class="pa-review-line-label"><i class="fas fa-gear"></i> Management style</span>
+            <strong>@Model.ManagementStyleLabel</strong>
+        </div>
+    </div>
+
+    <div class="pa-checklist">
+        @if (Model.AccountCreated)
+        {
+            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Account created</div>
+        }
+        @if (Model.PortfolioDetailsAdded)
+        {
+            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Portfolio details added</div>
+        }
+        @if (Model.PropertiesAdded)
+        {
+            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Properties added</div>
+        }
+        @if (Model.ToolsSelected)
+        {
+            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Tools selected</div>
+        }
+    </div>
+
+    <a href="#" class="pa-action-row" onclick="return false;" style="opacity:.7;margin-bottom:14px;">
+        <span><i class="fas fa-user-plus"></i> Invite team members later</span>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+
+    <label class="pa-terms">
+        <input type="checkbox" name="platformTermsAccepted" value="true" required />
+        <span>I agree to <a href="#" onclick="return false;">INDOR's platform terms</a></span>
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Go to Dashboard <i class="fas fa-chevron-right"></i></button>
+</form>
+
+<a href="@Model.BackUrl" class="pa-back-link">Back</a>

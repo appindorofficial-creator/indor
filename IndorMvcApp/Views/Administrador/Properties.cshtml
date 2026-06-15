@@ -1,0 +1,48 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPropertiesPortalViewModel
+@{
+    ViewData["Title"] = "Properties";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.NavActive = "properties";
+}
+
+<div class="pa-portal-shell">
+    @await Html.PartialAsync("_PropertyAdminTopbar", Model)
+
+    <section class="pa-hero-block">
+        <h1>Properties</h1>
+        <p>@Model.PortfolioTypeLabel · @Model.ManagementStyleLabel</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
+
+    <section class="pa-section">
+        <div class="pa-section-head">
+            <h2>Active properties</h2>
+            <span class="pa-section-count">@Model.Properties.Count</span>
+        </div>
+        @if (Model.Properties.Count == 0)
+        {
+            <div class="pa-empty-card">No properties in this portfolio yet.</div>
+        }
+        else
+        {
+            @foreach (var property in Model.Properties)
+            {
+                <div class="pa-property-card">
+                    <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-property-thumb" />
+                    <div class="pa-property-body">
+                        <strong>@property.PropertyName</strong>
+                        <small>@property.Location</small>
+                        <div class="pa-badge-row">
+                            <span class="pa-badge pa-badge-type">@property.PropertyTypeLabel</span>
+                            @if (!string.IsNullOrWhiteSpace(property.Status))
+                            {
+                                <span class="pa-badge pa-badge-added">@property.Status</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </section>
+</div>

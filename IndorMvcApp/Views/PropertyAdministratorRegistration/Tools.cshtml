@@ -1,0 +1,103 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorRegistrationStepViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="Tools" method="post" id="toolsForm">
+    @Html.AntiForgeryToken()
+
+    <div class="pa-tool-grid">
+        <label class="pa-tool-card @(s.ToolMaintenanceRequests ? "is-selected" : "")">
+            <input type="checkbox" name="toolMaintenanceRequests" value="true" @(s.ToolMaintenanceRequests ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-wrench"></i>
+            <strong>Maintenance requests</strong>
+            <small>Track and resolve issues</small>
+        </label>
+        <label class="pa-tool-card @(s.ToolTurnoverCleaning ? "is-selected" : "")">
+            <input type="checkbox" name="toolTurnoverCleaning" value="true" @(s.ToolTurnoverCleaning ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-wand-magic-sparkles"></i>
+            <strong>Turnover & cleaning</strong>
+            <small>Manage cleanings and turnovers</small>
+        </label>
+        <label class="pa-tool-card @(s.ToolGuestMessaging ? "is-selected" : "")">
+            <input type="checkbox" name="toolGuestMessaging" value="true" @(s.ToolGuestMessaging ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-comment-dots"></i>
+            <strong>Guest/tenant messaging</strong>
+            <small>Communicate in one place</small>
+        </label>
+        <label class="pa-tool-card @(s.ToolInvoicesPayments ? "is-selected" : "")">
+            <input type="checkbox" name="toolInvoicesPayments" value="true" @(s.ToolInvoicesPayments ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-file-invoice-dollar"></i>
+            <strong>Invoices & payments</strong>
+            <small>Create and collect payments</small>
+        </label>
+        <label class="pa-tool-card @(s.ToolDocumentsWarranties ? "is-selected" : "")">
+            <input type="checkbox" name="toolDocumentsWarranties" value="true" @(s.ToolDocumentsWarranties ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-folder-open"></i>
+            <strong>Documents & warranties</strong>
+            <small>Store important documents</small>
+        </label>
+        <label class="pa-tool-card @(s.ToolServiceProviders ? "is-selected" : "")">
+            <input type="checkbox" name="toolServiceProviders" value="true" @(s.ToolServiceProviders ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-user-gear"></i>
+            <strong>Service providers</strong>
+            <small>Manage vendors and contracts</small>
+        </label>
+        <label class="pa-tool-card wide @(s.ToolTeamAccess ? "is-selected" : "")">
+            <input type="checkbox" name="toolTeamAccess" value="true" @(s.ToolTeamAccess ? "checked" : null) />
+            <span class="pa-check"><i class="fas fa-check"></i></span>
+            <i class="fas fa-users"></i>
+            <strong>Team access</strong>
+            <small>Invite and manage your team</small>
+        </label>
+    </div>
+
+    <p class="pa-notify-title">NOTIFICATION PREFERENCES</p>
+    <div class="pa-review-card" style="padding:4px 16px;">
+        <div class="pa-toggle-row">
+            <div class="left"><i class="fas fa-bell"></i> Urgent maintenance alerts</div>
+            <label class="pa-switch">
+                <input type="checkbox" name="notifyUrgentMaintenance" value="true" @(s.NotifyUrgentMaintenance ? "checked" : null) />
+                <span></span>
+            </label>
+        </div>
+        <div class="pa-toggle-row">
+            <div class="left"><i class="fas fa-calendar-week"></i> Weekly portfolio summary</div>
+            <label class="pa-switch">
+                <input type="checkbox" name="notifyWeeklySummary" value="true" @(s.NotifyWeeklySummary ? "checked" : null) />
+                <span></span>
+            </label>
+        </div>
+        <div class="pa-toggle-row">
+            <div class="left"><i class="fas fa-envelope"></i> Booking or lease updates</div>
+            <label class="pa-switch">
+                <input type="checkbox" name="notifyBookingLeaseUpdates" value="true" @(s.NotifyBookingLeaseUpdates ? "checked" : null) />
+                <span></span>
+            </label>
+        </div>
+    </div>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+</form>
+
+<a href="@Model.BackUrl" class="pa-back-link">Back</a>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.pa-tool-card input[type="checkbox"]').forEach(input => {
+        input.addEventListener('change', () => {
+            input.closest('.pa-tool-card')?.classList.toggle('is-selected', input.checked);
+        });
+    });
+</script>
+}

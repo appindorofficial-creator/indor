@@ -1,0 +1,16 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorFlowPropertyViewModel
+@if (Model != null && Model.Id > 0)
+{
+    <div class="pa-viewing-strip">
+        <img src="@(Model.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+        <div class="pa-viewing-strip-main">
+            <strong>Viewing: @Model.PropertyName</strong>
+            @if (!string.IsNullOrWhiteSpace(ViewBag.BadgeLabel as string ?? Model.OccupancyLabel))
+            {
+                <span class="pa-occupancy-badge">@(ViewBag.BadgeLabel as string ?? Model.OccupancyLabel)</span>
+            }
+            <small>@Model.PropertyTypeLabel • @Model.Location</small>
+        </div>
+        <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property</a>
+    </div>
+}

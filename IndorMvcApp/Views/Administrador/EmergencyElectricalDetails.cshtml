@@ -1,0 +1,174 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyElectricalFormViewModel
+@{
+    ViewData["Title"] = "Emergency Electrical";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Emergency Electrical</h1>
+        <p>Answer a few quick questions so we can dispatch help fast.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="EmergencyElectricalDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>What's the electrical issue?</label>
+            <div class="pa-chip-grid">
+                @{
+                    var issues = new (string Value, string Label, string Icon)[]
+                    {
+                        ("PowerOutage", "Power outage", "fa-bolt"),
+                        ("BreakerTripping", "Breaker keeps tripping", "fa-plug-circle-exclamation"),
+                        ("BurningSmell", "Burning smell", "fa-fire"),
+                        ("SparksOutlet", "Sparks / outlet issue", "fa-bolt-lightning"),
+                        ("PartialPower", "Partial power", "fa-circle-half-stroke"),
+                        ("ExposedWire", "Exposed wire", "fa-triangle-exclamation")
+                    };
+                }
+                @foreach (var item in issues)
+                {
+                    <label class="pa-chip @(Model.IssueType == item.Value ? "is-selected" : null)">
+                        <input type="radio" name="IssueType" value="@item.Value" @(Model.IssueType == item.Value ? "checked" : null) />
+                        <i class="fas @item.Icon"></i>
+                        <span>@item.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>Is power fully out right now?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.PowerFullyOut == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="PowerFullyOut" value="Yes" @(Model.PowerFullyOut == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.PowerFullyOut == "No" ? "is-selected" : null)">
+                    <input type="radio" name="PowerFullyOut" value="No" @(Model.PowerFullyOut == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Are guests currently inside?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
+                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>How urgent is it?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                {
+                    <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
+                        @if (u.Item1 == "Emergency") { <i class="fas fa-circle-exclamation"></i> }
+                        @u.Item2
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>Where is the problem?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @{
+                    var locations = new (string Value, string Label, string? Icon)[]
+                    {
+                        ("Kitchen", "Kitchen", "fa-kitchen-set"),
+                        ("Bedroom", "Bedroom", "fa-bed"),
+                        ("LivingRoom", "Living room", "fa-couch"),
+                        ("Bathroom", "Bathroom", "fa-sink"),
+                        ("PanelBreaker", "Panel / breaker box", "fa-grip-lines-vertical"),
+                        ("Other", "Other", null)
+                    };
+                }
+                @foreach (var loc in locations)
+                {
+                    <label class="pa-chip @(Model.ProblemLocation == loc.Value ? "is-selected" : null)">
+                        <input type="radio" name="ProblemLocation" value="@loc.Value" @(Model.ProblemLocation == loc.Value ? "checked" : null) />
+                        @if (loc.Icon != null) { <i class="fas @loc.Icon"></i> }
+                        <span>@loc.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label>Can the technician enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
+                        <span>@e.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label>Best phone number for urgent contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" placeholder="(555) 555-0100" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label>Notes for the technician <small>(optional)</small></label>
+            <textarea class="pa-textarea" name="Notes" rows="3" placeholder="Describe what guests or tenants are experiencing...">@Model.Notes</textarea>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-notify-banner pa-notify-banner--info">
+            <i class="fas fa-circle-info"></i>
+            <span>Occupied guest stays are prioritized. We'll dispatch the closest available pro.</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input, .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+    </script>
+}

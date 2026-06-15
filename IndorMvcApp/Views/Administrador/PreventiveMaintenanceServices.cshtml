@@ -1,0 +1,95 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPreventiveServicesStepViewModel
+@{
+    ViewData["Title"] = "Preventive Maintenance";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Preventive Maintenance</h1>
+        <p>Choose the upkeep services your property needs.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip pa-viewing-strip--card">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+            {
+                <span class="pa-rental-ready-badge"><span class="pa-online-dot"></span> @Model.PropertyStatusLabel</span>
+            }
+        </div>
+    }
+
+    <form asp-action="PreventiveMaintenanceServices" method="post" class="pa-preventive-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+        @if (Model.PlanId.HasValue)
+        {
+            <input type="hidden" name="PlanId" value="@Model.PlanId" />
+        }
+
+        <section class="pa-prev-section">
+            <h2>Recommended services</h2>
+            <div class="pa-prev-service-grid">
+                @foreach (var svc in Model.Services)
+                {
+                    <label class="pa-prev-service-card @(svc.IsSelected ? "is-selected" : null)">
+                        <input type="checkbox" name="SelectedServices" value="@svc.ServiceKey" @(svc.IsSelected ? "checked" : null) />
+                        <span class="pa-prev-service-check"><i class="fas fa-check"></i></span>
+                        <span class="pa-prev-service-icon @svc.ToneClass"><i class="fas @svc.IconClass"></i></span>
+                        <strong>@svc.ServiceName</strong>
+                        <small>@svc.DefaultFrequency</small>
+                    </label>
+                }
+            </div>
+        </section>
+
+        <section class="pa-prev-section">
+            <h2>Plan options</h2>
+            <div class="pa-plan-tier-row">
+                @foreach (var tier in Model.PlanTiers)
+                {
+                    <label class="pa-plan-tier-card @(tier.IsSelected ? "is-selected" : null)">
+                        <input type="radio" name="PlanTier" value="@tier.TierKey" @(tier.IsSelected ? "checked" : null) />
+                        <span class="pa-prev-service-check"><i class="fas fa-check"></i></span>
+                        <strong>@tier.Title</strong>
+                        <small>@tier.Description</small>
+                        <span class="pa-plan-tier-price">@tier.PriceLabel</span>
+                    </label>
+                }
+            </div>
+        </section>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-prev-service-card input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var card = this.closest('.pa-prev-service-card');
+                if (card) card.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-plan-tier-card input[type="radio"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.pa-plan-tier-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                var card = this.closest('.pa-plan-tier-card');
+                if (card) card.classList.add('is-selected');
+            });
+        });
+    </script>
+}

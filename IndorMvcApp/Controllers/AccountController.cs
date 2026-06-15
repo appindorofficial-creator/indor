@@ -18,6 +18,7 @@ public class AccountController : Controller
     private readonly AppDbContext _db;
     private readonly IProviderRegistrationService _registration;
     private readonly IRealtorRegistrationService _realtorRegistration;
+    private readonly IPropertyAdministratorRegistrationService _propertyAdministratorRegistration;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -25,7 +26,8 @@ public class AccountController : Controller
         RoleManager<IdentityRole> roleManager,
         AppDbContext db,
         IProviderRegistrationService registration,
-        IRealtorRegistrationService realtorRegistration)
+        IRealtorRegistrationService realtorRegistration,
+        IPropertyAdministratorRegistrationService propertyAdministratorRegistration)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -33,6 +35,7 @@ public class AccountController : Controller
         _db = db;
         _registration = registration;
         _realtorRegistration = realtorRegistration;
+        _propertyAdministratorRegistration = propertyAdministratorRegistration;
     }
 
     [HttpPost]
@@ -255,7 +258,7 @@ public class AccountController : Controller
                 "Propietario" => RedirectToAction("AddProperty", "Propietario"),
                 "ProveedorServicios" => RedirectToAction("Entry", "ProviderRegistration"),
                 "Realtor" => RedirectToAction("Profile", "RealtorRegistration"),
-                "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
+                "AdministradorPropiedades" => RedirectToAction("Profile", "PropertyAdministratorRegistration"),
                 _ => RedirectToAction("Index", "Home")
             };
         }
@@ -292,6 +295,11 @@ public class AccountController : Controller
                 return await RedirectRealtorAsync(user);
             }
 
+            if (string.Equals(user.RolUsuario, "AdministradorPropiedades", StringComparison.OrdinalIgnoreCase))
+            {
+                return await RedirectAdministradorAsync(user);
+            }
+
             if (await _db.Propiedades.AnyAsync(p => p.UserId == user.Id && p.Activo))
             {
                 return RedirectToAction("Index", "Home");
@@ -301,7 +309,7 @@ public class AccountController : Controller
             {
                 "Propietario" => RedirectToAction("AddProperty", "Propietario"),
                 "Realtor" => RedirectToAction("Profile", "RealtorRegistration"),
-                "AdministradorPropiedades" => RedirectToAction("Dashboard", "Administrador"),
+                "AdministradorPropiedades" => RedirectToAction("Profile", "PropertyAdministratorRegistration"),
                 _ => RedirectToAction("Index", "Home")
             };
         }
@@ -354,5 +362,25 @@ public class AccountController : Controller
         }
 
         return RedirectToAction("Dashboard", "Realtor");
+    }
+
+    private async Task<IActionResult> RedirectAdministradorAsync(ApplicationUser user)
+    {
+        var admin = await _db.IndorPropertyAdministrators
+            .AsNoTracking()
+            .FirstOrDefaultAsync(a => a.UserId == user.Id);
+
+        if (admin == null)
+        {
+            return RedirectToAction("Profile", "PropertyAdministratorRegistration");
+        }
+
+        if (admin.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Draft)
+        {
+            var action = _propertyAdministratorRegistration.ResolveWizardResumeAction(Math.Max(1, admin.CurrentStep));
+            return RedirectToAction(action, "PropertyAdministratorRegistration");
+        }
+
+        return RedirectToAction("Index", "Administrador");
     }
 }

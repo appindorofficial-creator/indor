@@ -1,0 +1,168 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPreventiveScheduleStepViewModel
+@{
+    ViewData["Title"] = "Schedule preventive services";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.NavActive = "home";
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Schedule preventive services</h1>
+        <p>Set frequency, timing, and access details.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    @if (Model.SelectedServiceLabels.Count > 0)
+    {
+        <div class="pa-prev-selected-tags">
+            @foreach (var label in Model.SelectedServiceLabels)
+            {
+                <span class="pa-prev-tag">@label</span>
+            }
+        </div>
+    }
+
+    <form asp-action="PreventiveMaintenanceSchedule" method="post" class="pa-preventive-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PlanId" value="@Model.PlanId" />
+
+        <div class="pa-flow-question">
+            <label>How often?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--4">
+                @foreach (var f in new (string Value, string Label)[] { ("Monthly", "Monthly"), ("Every3Months", "Every 3 months"), ("TwiceAYear", "Twice a year"), ("Yearly", "Yearly") })
+                {
+                    <label class="pa-toggle-btn @(Model.Frequency == f.Value ? "is-selected" : null)">
+                        <input type="radio" name="Frequency" value="@f.Value" @(Model.Frequency == f.Value ? "checked" : null) />
+                        @f.Label
+                    </label>
+                }
+            </div>
+            <p class="pa-frequency-hint" id="frequencyHint">@Model.FrequencyHint</p>
+        </div>
+
+        <div class="pa-flow-question">
+            <label>Preferred timing</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var t in new[] { "Morning", "Afternoon", "Flexible" })
+                {
+                    <label class="pa-toggle-btn @(Model.PreferredTiming == t ? "is-selected" : null)">
+                        <input type="radio" name="PreferredTiming" value="@t" @(Model.PreferredTiming == t ? "checked" : null) />
+                        @t
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <label>Best day</label>
+            <div class="pa-day-picker">
+                @foreach (var d in new (string Value, string Label)[] { ("Mon", "Mon"), ("Tue", "Tue"), ("Wed", "Wed"), ("Thu", "Thu"), ("Fri", "Fri") })
+                {
+                    <label class="pa-day-btn @(Model.PreferredDay == d.Value ? "is-selected" : null)">
+                        <input type="radio" name="PreferredDay" value="@d.Value" @(Model.PreferredDay == d.Value ? "checked" : null) />
+                        @d.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <label>Access</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var a in new (string Value, string Label)[] { ("SmartLock", "Use smart lock"), ("HostPresent", "Host present"), ("GuestCoordination", "Coordinate with guest") })
+                {
+                    <label class="pa-toggle-btn @(Model.EntryAccess == a.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@a.Value" @(Model.EntryAccess == a.Value ? "checked" : null) />
+                        @a.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <label>Who gets updates?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var u in new (string Value, string Label)[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-toggle-btn @(Model.UpdateRecipients == u.Value ? "is-selected" : null)">
+                        <input type="radio" name="UpdateRecipients" value="@u.Value" @(Model.UpdateRecipients == u.Value ? "checked" : null) />
+                        @u.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <label>Add notes (optional)</label>
+            <textarea class="pa-textarea" name="Notes" rows="3" maxlength="250" id="prevNotes">@Model.Notes</textarea>
+            <small class="pa-char-count"><span id="notesCount">@Model.Notes.Length</span> / 250 characters</small>
+        </div>
+
+        <div class="pa-flow-question pa-reminder-toggle">
+            <div>
+                <label>Auto-reminders (optional)</label>
+                <small>We'll remind you before each scheduled visit.</small>
+            </div>
+            <label class="pa-switch">
+                <input type="hidden" name="AutoReminders" value="false" />
+                <input type="checkbox" name="AutoReminders" value="true" @(Model.AutoReminders ? "checked" : null) />
+                <span class="pa-switch-slider"></span>
+            </label>
+        </div>
+
+        <article class="pa-prev-price-card">
+            <div>
+                <span>Estimated preventive visit</span>
+                <strong>@Model.EstimatedPrice</strong>
+            </div>
+            <span class="pa-bundle-badge">Bundle savings included</span>
+        </article>
+
+        <div class="pa-flow-dual-actions">
+            <a href="@(ViewBag.FlowBackUrl ?? Url.Action("PreventiveMaintenanceServices", new { planId = Model.PlanId }))" class="ob-btn ob-btn-outline">Back</a>
+            <button type="submit" class="ob-btn ob-btn-primary">Review plan</button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        var hints = {
+            Monthly: "We'll schedule visits every month.",
+            Every3Months: "We'll filter change every 3 months. Full service visits twice a year.",
+            TwiceAYear: "We'll filter change every 3 months. Full service visits twice a year.",
+            Yearly: "We'll schedule annual preventive visits."
+        };
+        document.querySelectorAll('input[name="Frequency"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var hint = document.getElementById('frequencyHint');
+                if (hint && hints[this.value]) hint.textContent = hints[this.value];
+                var group = this.closest('.pa-toggle-pair');
+                if (group) {
+                    group.querySelectorAll('.pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                    var parent = this.closest('.pa-toggle-btn');
+                    if (parent) parent.classList.add('is-selected');
+                }
+            });
+        });
+        document.querySelectorAll('.pa-toggle-btn input, .pa-day-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-toggle-pair, .pa-day-picker');
+                if (!group) return;
+                group.querySelectorAll('.pa-toggle-btn, .pa-day-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-toggle-btn, .pa-day-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('prevNotes');
+        var counter = document.getElementById('notesCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

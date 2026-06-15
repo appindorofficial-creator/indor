@@ -1,0 +1,9 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
+<div class="pa-portfolio-card">
+    <span class="pa-portfolio-icon"><i class="fas fa-building"></i></span>
+    <div class="pa-portfolio-body">
+        <strong>@Model.PortfolioName</strong>
+        <small>@Model.ActivePropertyCount active @(Model.ActivePropertyCount == 1 ? "property" : "properties")</small>
+    </div>
+    <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
+</div>

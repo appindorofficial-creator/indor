@@ -1,0 +1,121 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPropertiesStepViewModel
+@using IndorMvcApp.Models
+@{
+    var s = Model.State;
+    var defaultCity = "";
+    var defaultState = "";
+    if (!string.IsNullOrWhiteSpace(s.PrimaryMarket) && !string.Equals(s.PrimaryMarket, "Other", StringComparison.OrdinalIgnoreCase))
+    {
+        var marketParts = s.PrimaryMarket.Split(',', 2, StringSplitOptions.TrimEntries);
+        if (marketParts.Length == 2)
+        {
+            defaultCity = marketParts[0];
+            defaultState = marketParts[1];
+        }
+    }
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+@if (TempData["PropertyAdminError"] is string err)
+{
+    <div class="pa-summary-error">@err</div>
+}
+
+@foreach (var property in Model.Properties)
+{
+    <div class="pa-property-card">
+        <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-property-thumb" />
+        <div class="pa-property-body">
+            <strong>@property.PropertyName</strong>
+            <small>@property.Location</small>
+            <div class="pa-badge-row">
+                <span class="pa-badge pa-badge-type"><i class="fas fa-building"></i> @property.PropertyTypeLabel</span>
+                <span class="pa-badge pa-badge-added"><i class="fas fa-check"></i> Added</span>
+            </div>
+        </div>
+        <form asp-action="RemoveProperty" method="post" style="align-self:flex-start;">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@property.Id" />
+            <button type="submit" class="ob-nav-back" aria-label="Remove" style="width:32px;height:32px;font-size:.8rem;"><i class="fas fa-times"></i></button>
+        </form>
+    </div>
+}
+
+<details class="pa-add-property-panel" @(Model.Properties.Count == 0 ? "open" : null)>
+    <summary class="pa-add-property-summary">
+        <span><i class="fas fa-house"></i> Add property manually</span>
+        <i class="fas fa-chevron-up"></i>
+    </summary>
+    <form asp-action="AddProperty" method="post" class="pa-add-property-form">
+        @Html.AntiForgeryToken()
+
+        <div class="pa-field-row pa-field-row--2">
+            <label class="pa-field">
+                <i class="fas fa-hashtag"></i>
+                <input type="text" name="houseNumber" placeholder="House number" inputmode="numeric" />
+            </label>
+            <label class="pa-field">
+                <i class="fas fa-road"></i>
+                <input type="text" name="streetName" placeholder="Street name" required autocomplete="address-line1" />
+            </label>
+        </div>
+
+        <div class="pa-field-row pa-field-row--3">
+            <label class="pa-field">
+                <i class="fas fa-city"></i>
+                <input type="text" name="city" value="@defaultCity" placeholder="City" required autocomplete="address-level2" />
+            </label>
+            <label class="pa-field pa-field--compact">
+                <i class="fas fa-map"></i>
+                <select name="state" required>
+                    <option value="">State</option>
+                    @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
+                    {
+                        <option value="@stateCode" selected="@(defaultState == stateCode)">@stateCode</option>
+                    }
+                </select>
+            </label>
+            <label class="pa-field pa-field--compact">
+                <i class="fas fa-mailbox"></i>
+                <input type="text" name="zipCode" placeholder="ZIP" inputmode="numeric" autocomplete="postal-code" maxlength="10" />
+            </label>
+        </div>
+
+        <label class="pa-field">
+            <i class="fas fa-tag"></i>
+            <select name="propertyType" required>
+                <option value="">Property type</option>
+                @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
+                {
+                    <option value="@item.Value">@item.Label</option>
+                }
+            </select>
+        </label>
+
+        <label class="pa-field">
+            <i class="fas fa-pen"></i>
+            <input type="text" name="propertyNickname" placeholder="Property nickname (optional)" />
+        </label>
+
+        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Save property</button>
+    </form>
+</details>
+
+<a href="#" class="pa-action-row" onclick="return false;" style="opacity:.55;">
+    <span><i class="fas fa-file-import"></i> Import portfolio</span>
+    <i class="fas fa-chevron-right"></i>
+</a>
+<a href="#" class="pa-action-row" onclick="return false;" style="opacity:.55;">
+    <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
+    <i class="fas fa-chevron-right"></i>
+</a>
+
+<form asp-action="ContinueFromProperties" method="post">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="ob-btn ob-btn-primary" style="margin-top:16px;">Continue <i class="fas fa-chevron-right"></i></button>
+</form>
+
+<a href="@Model.BackUrl" class="pa-back-link">Back</a>

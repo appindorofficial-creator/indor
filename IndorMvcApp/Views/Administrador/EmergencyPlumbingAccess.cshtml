@@ -1,0 +1,179 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyPlumbingStep2ViewModel
+@{
+    ViewData["Title"] = "Emergency Plumbing";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("EmergencyPlumbingDetails", "Administrador", new { propertyId = Model.PropertyId });
+    ViewBag.BadgeLabel = Model.GuestsOnSiteLabel;
+    var recipients = Model.UpdateRecipientsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var issueLabel = Model.IssueType switch
+    {
+        "ClogBackup" => "Clog / backup",
+        "NoHotWater" => "No hot water",
+        "ToiletIssue" => "Toilet issue",
+        "BurstPipe" => "Burst pipe",
+        "NotDraining" => "Water not draining",
+        _ => "Active leak"
+    };
+    var locationLabel = Model.ProblemLocation switch
+    {
+        "Kitchen" => "Kitchen",
+        "Laundry" => "Laundry",
+        "WaterHeater" => "Water heater",
+        "MainLine" => "Main line",
+        "Other" => "Other",
+        _ => "Bathroom"
+    };
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Emergency Plumbing</h1>
+        <p>Tell us how the technician can get in and review the details.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="EmergencyPlumbingAccess" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="IssueType" value="@Model.IssueType" />
+        <input type="hidden" name="ActivelyLeaking" value="@Model.ActivelyLeaking" />
+        <input type="hidden" name="GuestsInside" value="@Model.GuestsInside" />
+        <input type="hidden" name="Urgency" value="@Model.Urgency" />
+        <input type="hidden" name="ProblemLocation" value="@Model.ProblemLocation" />
+        <input type="hidden" name="QuickDetails" value="@Model.QuickDetails" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>Can the technician enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
+                        <span>@e.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>Smart lock / entry code</label>
+            <div class="pa-field">
+                <i class="fas fa-key"></i>
+                <input type="text" name="EntryCode" value="@Model.EntryCode" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Water shutoff access</label>
+            <div class="pa-field">
+                <i class="fas fa-droplet"></i>
+                <input type="text" name="WaterShutoffAccess" value="@Model.WaterShutoffAccess" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Gate, parking, or access notes</label>
+            <div class="pa-field">
+                <i class="fas fa-note-sticky"></i>
+                <input type="text" name="AccessNotes" value="@Model.AccessNotes" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>Who should receive updates?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label>Best phone number for urgent contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label>Do we have permission to enter while guests are inside?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.PermissionToEnter == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="PermissionToEnter" value="Yes" @(Model.PermissionToEnter == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.PermissionToEnter == "No" ? "is-selected" : null)">
+                    <input type="radio" name="PermissionToEnter" value="No" @(Model.PermissionToEnter == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-summary-grid">
+            <div class="pa-flow-summary-card">
+                <h3>Review request</h3>
+                <ul class="pa-summary-list">
+                    <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName)</li>
+                    <li><i class="fas fa-droplet"></i> @issueLabel / @locationLabel.ToLowerInvariant()</li>
+                    <li><i class="fas fa-users"></i> Occupied • Guests @(Model.GuestsInside.ToLowerInvariant())</li>
+                    <li><i class="fas fa-location-dot"></i> @locationLabel</li>
+                    <li><i class="fas fa-tint"></i> @(Model.ActivelyLeaking == "Yes" ? "Actively leaking" : "Not actively leaking")</li>
+                    <li><i class="fas fa-key"></i> Smart lock access</li>
+                    <li><i class="fas fa-bell"></i> Updates to you & guest</li>
+                </ul>
+            </div>
+            <div class="pa-flow-pro-card">
+                <div class="pa-flow-pro-head">
+                    <span class="pa-flow-pro-icon"><i class="fas fa-user-gear"></i></span>
+                    <div><strong>@Model.ProEtaLabel</strong><br /><small>Licensed • Insured • Background checked</small></div>
+                </div>
+                <p>Estimated diagnostic visit: <strong>@Model.EstimatedPrice</strong></p>
+                <p>Emergency priority fee: <span class="pa-included">Included</span></p>
+                <div class="pa-trust-badges">
+                    <span>Licensed</span><span>Insured</span><span>Fast response</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="pa-notify-banner">
+            <i class="fas fa-bell"></i>
+            <span>We'll send status updates to you and the guest.</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request emergency service</button>
+        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">Edit details</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input, .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') {
+                    this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+                    return;
+                }
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+    </script>
+}

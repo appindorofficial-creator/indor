@@ -148,6 +148,14 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorProveedorConversation> IndorProveedorConversations { get; set; }
     public DbSet<IndorProveedorMessage> IndorProveedorMessages { get; set; }
 
+    public DbSet<IndorPropertyAdministrator> IndorPropertyAdministrators { get; set; }
+    public DbSet<IndorPropertyAdminPortfolioProperty> IndorPropertyAdminPortfolioProperties { get; set; }
+    public DbSet<IndorPropertyAdminServiceRequest> IndorPropertyAdminServiceRequests { get; set; }
+    public DbSet<IndorPropertyAdminHomecarePlan> IndorPropertyAdminHomecarePlans { get; set; }
+    public DbSet<IndorPropertyAdminScheduledVisit> IndorPropertyAdminScheduledVisits { get; set; }
+    public DbSet<IndorPropertyAdminServiceCatalogItem> IndorPropertyAdminServiceCatalog { get; set; }
+    public DbSet<IndorPropertyAdminPreventiveServiceCatalogItem> IndorPropertyAdminPreventiveServiceCatalog { get; set; }
+    public DbSet<IndorPropertyAdminPreventivePlan> IndorPropertyAdminPreventivePlans { get; set; }
     public DbSet<IndorRealtor> IndorRealtors { get; set; }
     public DbSet<IndorRealtorDocumento> IndorRealtorDocumentos { get; set; }
     public DbSet<IndorRealtorPropertyFile> IndorRealtorPropertyFiles { get; set; }

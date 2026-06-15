@@ -1,0 +1,96 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorServicesViewModel
+@{
+    ViewData["Title"] = "Services";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.NavActive = "services";
+    var filters = new[] {
+        ("all", "All services", "fa-grid-2"),
+        ("emergency", "Emergency", "fa-truck-medical"),
+        ("homecare", "Homecare", "fa-house-chimney"),
+        ("cleaning", "Cleaning", "fa-broom"),
+        ("outdoor", "Outdoor", "fa-seedling")
+    };
+}
+
+<div class="pa-portal-shell">
+    @await Html.PartialAsync("_PropertyAdminTopbar", Model)
+
+    <section class="pa-hero-block">
+        <h1>Services</h1>
+        <p>Book emergency, recurring, and homecare services across your properties.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
+
+    <div class="pa-search-bar">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="search" placeholder="Search services (e.g., plumbing, cleaning, AC)" aria-label="Search services" />
+        <button type="button" class="pa-portal-icon-btn" aria-label="Filter"><i class="fas fa-sliders"></i></button>
+    </div>
+
+    <div class="pa-filter-pills">
+        @foreach (var (key, label, icon) in filters)
+        {
+            <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@(key == "all" ? null : key)"
+               class="pa-filter-pill @(Model.ActiveFilter == key ? "is-active" : null)">
+                <i class="fas @icon"></i> @label
+            </a>
+        }
+    </div>
+
+    <div class="pa-emergency-banner">
+        <div>
+            <strong><i class="fas fa-phone"></i> Help is available 24/7</strong>
+            <p>Call now to connect with an emergency service pro.</p>
+        </div>
+        <a asp-controller="Administrador" asp-action="RequestService" class="pa-emergency-btn">Call now</a>
+    </div>
+
+    @foreach (var category in Model.Categories)
+    {
+        <section class="pa-section">
+            <div class="pa-section-head">
+                <h2>@category.CategoryTitle</h2>
+                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">View all <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="pa-service-grid">
+                @foreach (var item in category.Items)
+                {
+                    <a href="@item.Url" class="pa-service-grid-item">
+                        <span class="pa-service-hub-icon @item.ToneClass"><i class="fas @item.IconClass"></i></span>
+                        <span>@item.ServiceName</span>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.ActivePlans.Count > 0)
+    {
+        <section class="pa-section">
+            <div class="pa-section-head">
+                <h2>Your service plans</h2>
+                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="homecare">Manage all <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="pa-hscroll">
+                @foreach (var plan in Model.ActivePlans)
+                {
+                    <article class="pa-plan-card">
+                        <span class="pa-plan-icon @plan.ToneClass"><i class="fas @plan.IconClass"></i></span>
+                        <strong>@plan.PlanName</strong>
+                        <small>@plan.Frequency</small>
+                        <span class="pa-plan-next">Next: @plan.NextDueLabel</span>
+                        <span class="pa-plan-status">@plan.StatusLabel</span>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    <div class="pa-trust-row">
+        <div><strong>Vetted & insured</strong><small>Service pros you can trust</small></div>
+        <div><strong>On-time guarantee</strong><small>We show up when we say</small></div>
+        <div><strong>Quality guarantee</strong><small>100% satisfaction promise</small></div>
+        <div><strong>Transparent pricing</strong><small>Upfront & always fair</small></div>
+    </div>
+</div>

@@ -1,0 +1,180 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPetDeepCleanFormViewModel
+@{
+    ViewData["Title"] = "Pet Deep Cleaning";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var focusAreas = Model.FocusAreas.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Pet Deep Cleaning</h1>
+        <p>Tell us a few details so we can get this right.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge">@Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property</a>
+        </div>
+    }
+
+    <form asp-action="PetDeepCleanDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-wand-magic-sparkles pa-q-icon pa-q-icon--purple"></i> What type of service do you need?</label>
+            <div class="pa-chip-grid pa-chip-grid--scroll">
+                @foreach (var s in new (string Value, string Label)[]
+                {
+                    ("AfterPetStayCleanup", "After pet stay cleanup"),
+                    ("RoutinePetRefresh", "Routine pet refresh"),
+                    ("OdorTreatmentAddon", "Odor treatment add-on")
+                })
+                {
+                    <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-paw pa-q-icon pa-q-icon--purple"></i> How many pets were in the home?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--4">
+                @foreach (var c in new (string Value, string Label)[] { ("1", "1"), ("2", "2"), ("3", "3"), ("FourPlus", "4+") })
+                {
+                    <label class="pa-toggle-btn @(Model.PetCount == c.Value ? "is-selected" : null)">
+                        <input type="radio" name="PetCount" value="@c.Value" @(Model.PetCount == c.Value ? "checked" : null) />
+                        @c.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-dog pa-q-icon pa-q-icon--purple"></i> What kind of pets?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var p in new (string Value, string Label, string Icon)[] { ("Dog", "Dog", "fa-dog"), ("Cat", "Cat", "fa-cat"), ("Other", "Other", "fa-paw") })
+                {
+                    <label class="pa-toggle-btn @(Model.PetType == p.Value ? "is-selected" : null)">
+                        <input type="radio" name="PetType" value="@p.Value" @(Model.PetType == p.Value ? "checked" : null) />
+                        <i class="fas @p.Icon"></i> @p.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-bullseye pa-q-icon pa-q-icon--purple"></i> What do you want us to focus on? <small>(Select all that apply)</small></label>
+            <div class="pa-pet-focus-grid">
+                @foreach (var f in new (string Value, string Label, string Icon)[]
+                {
+                    ("PetHair", "Pet hair", "fa-paw"),
+                    ("OdorRemoval", "Odor removal", "fa-wind"),
+                    ("AccidentsStains", "Accidents / stains", "fa-droplet"),
+                    ("BedsUpholstery", "Beds & upholstery", "fa-couch"),
+                    ("Floors", "Floors", "fa-border-all"),
+                    ("CratePetArea", "Crate / pet area", "fa-house-chimney")
+                })
+                {
+                    <label class="pa-pet-focus-card @(focusAreas.Contains(f.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="FocusAreasList" value="@f.Value" @(focusAreas.Contains(f.Value) ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @f.Icon"></i>
+                        <span>@f.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> When do you need it?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
+                {
+                    <label class="pa-toggle-btn @(Model.ScheduleWhen == w ? "is-selected" : null)">
+                        <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) /> @w
+                    </label>
+                }
+            </div>
+            <div class="pa-field pa-field--time">
+                <i class="fas fa-clock"></i>
+                <input type="text" name="ScheduleTimeWindow" value="@Model.ScheduleTimeWindow" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> Can the team enter?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Smart lock"), ("HostMeet", "Host will meet"), ("GuestStillInside", "Guest still inside") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
+                        <span>@e.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> Add notes</label>
+            <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="petDetails">@Model.Details</textarea>
+            <div class="pa-media-actions">
+                <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+                <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            </div>
+        </div>
+
+        <article class="pa-pet-info-box">
+            <i class="fas fa-house-chimney-user"></i>
+            <p>Great for Airbnb turnovers and rental homes after dog stays. Our pet deep cleaning removes hair, dander, and odors so your next guests walk into a fresh, clean home.</p>
+        </article>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue <i class="fas fa-arrow-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-pet-focus-card input, .pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-pet-focus-card, .pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+    </script>
+}

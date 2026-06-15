@@ -1,0 +1,63 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorCalendarViewModel
+@{
+    ViewData["Title"] = "Calendar";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.NavActive = "calendar";
+}
+
+<div class="pa-portal-shell">
+    @await Html.PartialAsync("_PropertyAdminTopbar", Model)
+
+    <section class="pa-hero-block">
+        <h1>Calendar</h1>
+        <p>Upcoming visits and scheduled service across your portfolio.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
+
+    <section class="pa-section">
+        <div class="pa-section-head">
+            <h2>Scheduled visits</h2>
+        </div>
+        @if (Model.Visits.Count == 0)
+        {
+            <div class="pa-empty-card">No visits on the calendar yet.</div>
+        }
+        else
+        {
+            @foreach (var visit in Model.Visits)
+            {
+                <article class="pa-calendar-visit">
+                    <img src="@(visit.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+                    <div>
+                        <strong>@visit.Title</strong>
+                        <span>@visit.PropertyName</span>
+                        <small>@visit.DateLabel</small>
+                    </div>
+                </article>
+            }
+        }
+    </section>
+
+    @if (Model.ScheduledRequests.Count > 0)
+    {
+        <section class="pa-section">
+            <div class="pa-section-head">
+                <h2>Scheduled requests</h2>
+                <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="scheduled">View all <i class="fas fa-chevron-right"></i></a>
+            </div>
+            @foreach (var request in Model.ScheduledRequests)
+            {
+                <article class="pa-request-row">
+                    <img src="@(request.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+                    <div class="pa-request-body">
+                        <span class="pa-status-pill pa-status-pill--@request.StatusCss">@request.StatusLabel</span>
+                        <strong>@request.Title</strong>
+                        <small>@request.PropertyName · @request.Location</small>
+                        <span class="pa-request-meta"><i class="fas fa-calendar"></i> @request.DateLabel</span>
+                    </div>
+                </article>
+            }
+        </section>
+    }
+</div>

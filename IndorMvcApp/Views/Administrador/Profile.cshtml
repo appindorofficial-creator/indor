@@ -1,0 +1,92 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorProfileViewModel
+@{
+    ViewData["Title"] = "Profile";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--profile">
+    <header class="pa-profile-header">
+        <a asp-controller="Administrador" asp-action="Index" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <a href="#account-preferences" class="pa-profile-settings" aria-label="Settings">
+            <i class="fas fa-gear"></i>
+        </a>
+    </header>
+
+    <section class="pa-profile-hero">
+        <div class="pa-profile-photo-wrap">
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+            {
+                <img src="@Model.ProfilePhotoUrl" alt="" class="pa-profile-photo" />
+            }
+            else
+            {
+                <span class="pa-profile-photo pa-profile-photo--placeholder"><i class="fas fa-user"></i></span>
+            }
+        </div>
+        <div class="pa-profile-identity">
+            <h1>@Model.DisplayName</h1>
+            <span class="pa-profile-badge">@Model.RoleBadge</span>
+            <ul class="pa-profile-contact">
+                @if (!string.IsNullOrWhiteSpace(Model.Email))
+                {
+                    <li><i class="fas fa-envelope"></i> @Model.Email</li>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Phone))
+                {
+                    <li><i class="fas fa-phone"></i> @Model.Phone</li>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.Location))
+                {
+                    <li><i class="fas fa-location-dot"></i> @Model.Location</li>
+                }
+            </ul>
+        </div>
+    </section>
+
+    <div class="pa-portfolio-panel pa-portfolio-panel--profile">
+        <div class="pa-portfolio-head">
+            <span class="pa-portfolio-icon"><i class="fas fa-building"></i></span>
+            <div class="pa-portfolio-body">
+                <strong>@Model.PortfolioName</strong>
+                <small>@Model.ActivePropertyCount active @(Model.ActivePropertyCount == 1 ? "property" : "properties")</small>
+            </div>
+            <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
+        </div>
+        <div class="pa-portfolio-actions">
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-portfolio-action">
+                <i class="fas fa-gear"></i> Manage properties
+            </a>
+            <span class="pa-portfolio-action-divider" aria-hidden="true"></span>
+            <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-portfolio-action">
+                <i class="fas fa-plus"></i> Add property
+            </a>
+        </div>
+    </div>
+
+    <section class="pa-profile-menu" id="account-preferences">
+        <h2>Account &amp; preferences</h2>
+        <nav class="pa-profile-menu-list" aria-label="Account and preferences">
+            @foreach (var item in Model.MenuItems.Where(i => !i.IsDanger))
+            {
+                <a href="@item.Url" class="pa-profile-menu-item">
+                    <span class="pa-profile-menu-icon"><i class="fas @item.IconClass"></i></span>
+                    <span class="pa-profile-menu-label">@item.Label</span>
+                    @if (item.BadgeCount is > 0)
+                    {
+                        <span class="pa-profile-menu-badge">@item.BadgeCount</span>
+                    }
+                    <i class="fas fa-chevron-right pa-profile-menu-chevron"></i>
+                </a>
+            }
+            <form asp-controller="Account" asp-action="Logout" method="post" class="pa-profile-signout-form">
+                @Html.AntiForgeryToken()
+                <button type="submit" class="pa-profile-menu-item is-danger">
+                    <span class="pa-profile-menu-icon"><i class="fas fa-right-from-bracket"></i></span>
+                    <span class="pa-profile-menu-label">Sign out</span>
+                </button>
+            </form>
+        </nav>
+    </section>
+</div>

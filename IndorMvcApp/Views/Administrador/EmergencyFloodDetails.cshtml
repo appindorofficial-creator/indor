@@ -1,0 +1,214 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyFloodFormViewModel
+@{
+    ViewData["Title"] = "Emergency Flood";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Emergency Flood <span class="pa-flow-step-pill pa-flow-step-pill--inline">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <p>Tell us what's happening, how bad it is, and whether you have insurance details ready.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="EmergencyFloodDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-droplet pa-q-icon"></i> What's the problem?</label>
+            <div class="pa-chip-grid pa-chip-grid--scroll">
+                @foreach (var p in new (string Value, string Label)[]
+                {
+                    ("ActiveFlooding", "Active flooding"),
+                    ("BurstPipe", "Burst pipe"),
+                    ("RoofLeak", "Roof leak"),
+                    ("ApplianceLeak", "Appliance leak"),
+                    ("SewageBackup", "Sewage backup"),
+                    ("Overflow", "Overflow")
+                })
+                {
+                    <label class="pa-chip @(Model.ProblemType == p.Value ? "is-selected" : null)">
+                        <input type="radio" name="ProblemType" value="@p.Value" @(Model.ProblemType == p.Value ? "checked" : null) />
+                        <span>@p.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-water pa-q-icon"></i> Is water actively coming in right now?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var v in new[] { "Yes", "No", "NotSure" })
+                {
+                    <label class="pa-toggle-btn @(Model.WaterActivelyComingIn == v ? "is-selected" : null)">
+                        <input type="radio" name="WaterActivelyComingIn" value="@v" @(Model.WaterActivelyComingIn == v ? "checked" : null) />
+                        @(v == "NotSure" ? "Not sure" : v)
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-users pa-q-icon"></i> Are guests currently inside?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var v in new[] { "Yes", "No", "NotSure" })
+                {
+                    <label class="pa-toggle-btn @(Model.GuestsInside == v ? "is-selected" : null)">
+                        <input type="radio" name="GuestsInside" value="@v" @(Model.GuestsInside == v ? "checked" : null) />
+                        @(v == "NotSure" ? "Not sure" : v)
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-triangle-exclamation pa-q-icon"></i> How urgent is it?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--4">
+                @foreach (var u in new[] { ("Emergency", "Emergency"), ("Urgent", "Urgent"), ("Soon", "Soon"), ("NotUrgent", "Not urgent") })
+                {
+                    <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null) @(u.Item1 == "Emergency" ? "is-urgent" : null)">
+                        <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
+                        @u.Item2
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-location-dot pa-q-icon"></i> Where is the water?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var loc in new[] { ("LivingRoom", "Living room"), ("Bathroom", "Bathroom"), ("Kitchen", "Kitchen"), ("Laundry", "Laundry"), ("Ceiling", "Ceiling"), ("Other", "Other") })
+                {
+                    <label class="pa-chip @(Model.WaterLocation == loc.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="WaterLocation" value="@loc.Item1" @(Model.WaterLocation == loc.Item1 ? "checked" : null) />
+                        <span>@loc.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-lock pa-q-icon"></i> Can the crew enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
+                        <span>@e.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-phone pa-q-icon"></i> Best urgent contact number</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label><i class="fas fa-note-sticky pa-q-icon"></i> Notes (what's happening?)</label>
+            <textarea class="pa-textarea" name="Notes" rows="3">@Model.Notes</textarea>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">9</span>
+            <label><i class="fas fa-camera pa-q-icon"></i> Photos & voice</label>
+            <div class="pa-media-actions pa-media-actions--stack">
+                <button type="button" class="pa-media-btn pa-media-btn--large"><i class="fas fa-camera"></i> Add photos — Help us assess faster</button>
+                <button type="button" class="pa-media-btn pa-media-btn--large"><i class="fas fa-microphone"></i> Voice note — Tap to record</button>
+            </div>
+        </div>
+
+        <article class="pa-insurance-card">
+            <div class="pa-insurance-head">
+                <i class="fas fa-shield-halved"></i>
+                <strong>Will this be processed through insurance?</strong>
+            </div>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var v in new[] { "Yes", "No", "NotSure" })
+                {
+                    <label class="pa-toggle-btn @(Model.ProcessThroughInsurance == v ? "is-selected" : null)">
+                        <input type="radio" name="ProcessThroughInsurance" value="@v" @(Model.ProcessThroughInsurance == v ? "checked" : null) />
+                        @(v == "NotSure" ? "Not sure" : v)
+                    </label>
+                }
+            </div>
+            <div class="pa-insurance-fields">
+                <div class="pa-field">
+                    <span>Carrier</span>
+                    <input type="text" name="InsuranceCarrier" value="@Model.InsuranceCarrier" placeholder="e.g. State Farm" />
+                </div>
+                <div class="pa-field">
+                    <span>Claim opened?</span>
+                    <input type="text" name="ClaimOpened" value="@Model.ClaimOpened" />
+                </div>
+                <div class="pa-field">
+                    <span>Claim # if available</span>
+                    <input type="text" name="ClaimNumber" value="@Model.ClaimNumber" placeholder="Enter claim number" />
+                </div>
+            </div>
+            <button type="button" class="pa-upload-policy-btn"><i class="fas fa-cloud-arrow-up"></i> Upload policy / claim docs</button>
+        </article>
+
+        <div class="pa-flow-summary-grid">
+            <div class="pa-flow-summary-card">
+                <h3>Request summary</h3>
+                <ul class="pa-summary-list">
+                    <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName)</li>
+                    <li><i class="fas fa-droplet"></i> Active flooding</li>
+                    <li><i class="fas fa-users"></i> Guests inside: Yes</li>
+                    <li><i class="fas fa-key"></i> Smart lock</li>
+                    <li><i class="fas fa-shield-halved"></i> Insurance: Yes</li>
+                </ul>
+            </div>
+            <div class="pa-flow-pro-card pa-flow-pro-card--flood">
+                <strong>@Model.ProEtaLabel</strong>
+                <small>Licensed • Insured • IICRC-ready</small>
+                <p>Estimated: <strong>@Model.EstimatedPrice</strong> diagnostic / emergency mitigation triage</p>
+                <p>Priority <span class="pa-included">included</span> <i class="fas fa-star pa-included"></i></p>
+            </div>
+        </div>
+
+        <div class="pa-notify-banner pa-notify-banner--warn">
+            <i class="fas fa-circle-info"></i>
+            <span>We can help coordinate with insurance-backed mitigation if documentation is available.</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request emergency service <i class="fas fa-arrow-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">Edit details</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input, .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair, .pa-insurance-card .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+    </script>
+}

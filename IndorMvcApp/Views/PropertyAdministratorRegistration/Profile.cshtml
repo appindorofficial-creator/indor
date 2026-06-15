@@ -1,0 +1,48 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorRegistrationStepViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<form asp-action="Profile" method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
+
+    <div class="pa-field pa-field-readonly">
+        <i class="fas fa-user"></i>
+        <span>@s.DisplayName</span>
+    </div>
+    <div class="pa-field pa-field-readonly">
+        <i class="fas fa-envelope"></i>
+        <span>@s.Email</span>
+    </div>
+    @if (!string.IsNullOrWhiteSpace(s.Phone))
+    {
+        <div class="pa-field pa-field-readonly">
+            <i class="fas fa-phone"></i>
+            <span>@s.Phone</span>
+        </div>
+    }
+
+    <label class="pa-field">
+        <i class="fas fa-building"></i>
+        <input type="text" name="portfolioBusinessName" value="@s.PortfolioBusinessName" placeholder="Portfolio / business name (optional)" />
+    </label>
+
+    <label class="pa-terms">
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
+        <span>I agree to the <a asp-controller="Account" asp-action="Terms">Terms</a></span>
+    </label>
+
+    <label class="pa-terms">
+        <input type="checkbox" name="marketingOptIn" value="true" @(s.MarketingOptIn ? "checked" : null) />
+        <span>Send me product updates and tips</span>
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+</form>
+
+<a href="@Model.BackUrl" class="pa-back-link">Back</a>

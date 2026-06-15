@@ -1,0 +1,190 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorSmokeDetectorFormViewModel
+@{
+    ViewData["Title"] = "Smoke Detector Check";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Smoke Detector Check <span class="pa-flow-step-pill pa-flow-step-pill--inline pa-flow-step-pill--green">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <p>Tell us what needs to be checked so we can schedule the visit.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="SmokeDetectorDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-clipboard-list pa-q-icon pa-q-icon--green"></i> What do you need?</label>
+            <div class="pa-sd-service-grid">
+                @foreach (var s in new (string Value, string Label, string Icon)[]
+                {
+                    ("FullDetectorCheck", "Full detector check", "fa-bell"),
+                    ("ReplaceBatteries", "Replace batteries", "fa-battery-full"),
+                    ("ChirpingDetector", "Chirping detector", "fa-volume-high"),
+                    ("InstallNewDetector", "Install new detector", "fa-plus")
+                })
+                {
+                    <label class="pa-sd-service-card @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check"><i class="fas fa-check"></i></span>
+                        <span class="pa-sd-service-icon"><i class="fas @s.Icon"></i></span>
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-bell pa-q-icon pa-q-icon--green"></i> How many detectors should we check?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var c in new (string Value, string Label)[] { ("OneToTwo", "1–2"), ("ThreeToFive", "3–5"), ("SixPlus", "6+") })
+                {
+                    <label class="pa-toggle-btn @(Model.DetectorCount == c.Value ? "is-selected" : null)">
+                        <input type="radio" name="DetectorCount" value="@c.Value" @(Model.DetectorCount == c.Value ? "checked" : null) />
+                        @c.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-triangle-exclamation pa-q-icon pa-q-icon--green"></i> Any urgent safety issue right now?</label>
+            <div class="pa-toggle-pair">
+                @foreach (var v in new[] { "No", "Yes" })
+                {
+                    <label class="pa-toggle-btn @(Model.UrgentSafetyIssue == v ? "is-selected" : null)">
+                        <input type="radio" name="UrgentSafetyIssue" value="@v" @(Model.UrgentSafetyIssue == v ? "checked" : null) /> @v
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-plug pa-q-icon pa-q-icon--green"></i> Do you know the detector type?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var t in new (string Value, string Label)[] { ("Battery", "Battery"), ("Hardwired", "Hardwired"), ("NotSure", "Not sure") })
+                {
+                    <label class="pa-toggle-btn @(Model.DetectorType == t.Value ? "is-selected" : null)">
+                        <input type="radio" name="DetectorType" value="@t.Value" @(Model.DetectorType == t.Value ? "checked" : null) />
+                        @t.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-lock pa-q-icon pa-q-icon--green"></i> Can the technician enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("NeedApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
+                        <span>@e.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should receive updates? <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--green"></i> Best phone number for urgent contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add details</label>
+            <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="sdDetails">@Model.Details</textarea>
+            <small class="pa-char-count"><span id="sdDetailsCount">@Model.Details.Length</span> / 250 characters</small>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-flow-pro-card pa-flow-pro-card--safety">
+            <div class="pa-flow-pro-head">
+                <span class="pa-flow-pro-icon pa-flow-pro-icon--green"><i class="fas fa-bell"></i></span>
+                <div>
+                    <strong>@Model.ProEtaLabel</strong>
+                    <div class="pa-flow-pro-mini">
+                        <img src="/inspeccion2.jpeg" alt="" class="pa-flow-pro-avatar" />
+                        <div class="pa-trust-badges">
+                            <span>Licensed</span>
+                            <span>Insured</span>
+                            <span>Fast response</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p>Estimated visit: <strong>@Model.EstimatedPrice</strong> <i class="fas fa-circle-info pa-price-info"></i></p>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Schedule detector check</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-sd-service-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.pa-sd-service-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-sd-service-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        var details = document.getElementById('sdDetails');
+        var counter = document.getElementById('sdDetailsCount');
+        if (details && counter) {
+            details.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

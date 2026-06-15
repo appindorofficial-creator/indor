@@ -1,0 +1,82 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPreventiveReviewStepViewModel
+@{
+    ViewData["Title"] = "Preventive maintenance plan ready";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("PreventiveMaintenanceSchedule", new { planId = Model.PlanId });
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Preventive maintenance plan ready</h1>
+        <p>Your homecare plan is ready to start.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <section class="pa-prev-section">
+        <h2>Maintenance plan</h2>
+        <ul class="pa-prev-review-services">
+            @foreach (var svc in Model.SelectedServices)
+            {
+                <li>
+                    <span class="pa-prev-service-icon @svc.ToneClass"><i class="fas @svc.IconClass"></i></span>
+                    <div>
+                        <strong>@svc.ServiceName</strong>
+                        <small>@svc.DefaultFrequency</small>
+                    </div>
+                </li>
+            }
+        </ul>
+    </section>
+
+    <section class="pa-prev-section">
+        <h2>Schedule &amp; preferences</h2>
+        <ul class="pa-prev-review-prefs">
+            @foreach (var pref in Model.Preferences)
+            {
+                <li>
+                    <i class="fas @pref.IconClass"></i>
+                    <div>
+                        <span>@pref.Label</span>
+                        <strong>@pref.Value</strong>
+                    </div>
+                </li>
+            }
+        </ul>
+    </section>
+
+    <section class="pa-prev-section">
+        <h2>What this helps prevent</h2>
+        <div class="pa-prev-benefits">
+            @foreach (var benefit in Model.PreventionBenefits)
+            {
+                <span class="pa-prev-benefit-chip"><i class="fas fa-shield-halved"></i> @benefit</span>
+            }
+        </div>
+    </section>
+
+    <article class="pa-prev-summary-card">
+        <div class="pa-prev-summary-head">
+            <div>
+                <strong>@Model.PlanTierLabel</strong>
+                <small>@Model.NextVisitLabel</small>
+            </div>
+            <div class="pa-prev-summary-price">
+                <span>Estimated bundle price</span>
+                <strong>@Model.BundlePriceLabel</strong>
+            </div>
+        </div>
+        <small class="pa-prev-summary-note">You can edit services anytime.</small>
+    </article>
+
+    <form asp-action="ActivatePreventivePlan" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="planId" value="@Model.PlanId" />
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Activate plan</button>
+    </form>
+    <a asp-action="Index" class="ob-btn ob-btn-outline pa-flow-edit">Back to dashboard</a>
+</div>

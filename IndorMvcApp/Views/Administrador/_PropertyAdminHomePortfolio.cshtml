@@ -1,0 +1,46 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorHomeViewModel
+<div class="pa-portfolio-panel">
+    <div class="pa-portfolio-head">
+        <span class="pa-portfolio-icon"><i class="fas fa-building"></i></span>
+        <div class="pa-portfolio-body">
+            <strong>@Model.PortfolioName</strong>
+            <small>@Model.ActivePropertyCount active @(Model.ActivePropertyCount == 1 ? "property" : "properties")</small>
+        </div>
+        <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
+    </div>
+
+    <div class="pa-portfolio-actions">
+        <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-portfolio-action">
+            <i class="fas fa-plus"></i> Add property
+        </a>
+        <span class="pa-portfolio-action-divider" aria-hidden="true"></span>
+        <a asp-controller="Administrador" asp-action="Properties" class="pa-portfolio-action">
+            <i class="fas fa-gear"></i> Manage properties
+        </a>
+    </div>
+
+    @if (Model.Properties.Count > 0 && Model.ViewingProperty != null)
+    {
+        <div class="pa-viewing-row">
+            <div class="pa-property-thumb-stack">
+                @foreach (var property in Model.Properties.Take(3))
+                {
+                    <a asp-controller="Administrador" asp-action="Index" asp-route-propertyId="@property.Id"
+                       class="pa-property-thumb-btn @(Model.ViewingProperty.Id == property.Id ? "is-active" : null)"
+                       title="@property.PropertyName">
+                        <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+                    </a>
+                }
+            </div>
+            <div class="pa-viewing-property-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.ViewingProperty.OccupancyLabel))
+                {
+                    <span class="pa-occupancy-badge">@Model.ViewingProperty.OccupancyLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property</a>
+        </div>
+    }
+</div>

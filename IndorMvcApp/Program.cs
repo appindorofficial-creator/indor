@@ -94,6 +94,18 @@ builder.Services.AddScoped<IProviderProJobWorkflowService, ProviderProJobWorkflo
 builder.Services.AddScoped<ProviderProDashboardService>();
 builder.Services.AddScoped<RealtorGuidanceService>();
 builder.Services.AddScoped<IRealtorRegistrationService, RealtorRegistrationService>();
+builder.Services.AddScoped<IPropertyAdministratorRegistrationService, PropertyAdministratorRegistrationService>();
+builder.Services.AddScoped<IPropertyAdministratorPortalService, PropertyAdministratorPortalService>();
+builder.Services.AddScoped<IPropertyAdministratorEmergencyAcService, PropertyAdministratorEmergencyAcService>();
+builder.Services.AddScoped<IPropertyAdministratorEmergencyElectricalService, PropertyAdministratorEmergencyElectricalService>();
+builder.Services.AddScoped<IPropertyAdministratorEmergencyPlumbingService, PropertyAdministratorEmergencyPlumbingService>();
+builder.Services.AddScoped<IPropertyAdministratorEmergencyFloodService, PropertyAdministratorEmergencyFloodService>();
+builder.Services.AddScoped<IPropertyAdministratorPreventiveMaintenanceService, PropertyAdministratorPreventiveMaintenanceService>();
+builder.Services.AddScoped<IPropertyAdministratorAirFilterService, PropertyAdministratorAirFilterService>();
+builder.Services.AddScoped<IPropertyAdministratorSmokeDetectorService, PropertyAdministratorSmokeDetectorService>();
+builder.Services.AddScoped<IPropertyAdministratorTurnoverCleaningService, PropertyAdministratorTurnoverCleaningService>();
+builder.Services.AddScoped<IPropertyAdministratorStandardCleaningService, PropertyAdministratorStandardCleaningService>();
+builder.Services.AddScoped<IPropertyAdministratorPetDeepCleanService, PropertyAdministratorPetDeepCleanService>();
 builder.Services.AddScoped<RealtorPortalService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();

@@ -1,0 +1,192 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorAirFilterFormViewModel
+@{
+    ViewData["Title"] = "Air Filter Change";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Air Filter Change <span class="pa-flow-step-pill pa-flow-step-pill--inline">Step @Model.FlowStep of @Model.TotalSteps</span></h1>
+        <p>Tell us what you need and how the technician can access the property.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="AirFilterDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-clipboard-list pa-q-icon"></i> What do you need?</label>
+            <div class="pa-chip-grid pa-chip-grid--scroll">
+                @foreach (var s in new (string Value, string Label)[]
+                {
+                    ("ReplaceFilter", "Replace filter"),
+                    ("BringFilters", "Bring filters"),
+                    ("CheckSize", "Check filter size"),
+                    ("FullService", "Full HVAC filter service")
+                })
+                {
+                    <label class="pa-chip @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-house pa-q-icon"></i> Is the home occupied right now?</label>
+            <div class="pa-toggle-pair">
+                @foreach (var v in new[] { "Yes", "No" })
+                {
+                    <label class="pa-toggle-btn @(Model.IsOccupied == v ? "is-selected" : null)">
+                        <input type="radio" name="IsOccupied" value="@v" @(Model.IsOccupied == v ? "checked" : null) /> @v
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-users pa-q-icon"></i> Are guests currently inside?</label>
+            <div class="pa-toggle-pair">
+                @foreach (var v in new[] { "Yes", "No" })
+                {
+                    <label class="pa-toggle-btn @(Model.GuestsInside == v ? "is-selected" : null)">
+                        <input type="radio" name="GuestsInside" value="@v" @(Model.GuestsInside == v ? "checked" : null) /> @v
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-ruler-combined pa-q-icon"></i> Do you know the filter size?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--4">
+                @foreach (var f in new (string Value, string Label)[] { ("16x20x1", "16x20x1"), ("20x20x1", "20x20x1"), ("20x25x1", "20x25x1"), ("NotSure", "Not sure") })
+                {
+                    <label class="pa-toggle-btn @(Model.FilterSize == f.Value ? "is-selected" : null)">
+                        <input type="radio" name="FilterSize" value="@f.Value" @(Model.FilterSize == f.Value ? "checked" : null) />
+                        @f.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-calendar pa-q-icon"></i> How often?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var f in new (string Value, string Label)[] { ("OneTime", "One-time"), ("Every2Months", "Every 2 months"), ("Every3Months", "Every 3 months") })
+                {
+                    <label class="pa-toggle-btn @(Model.Frequency == f.Value ? "is-selected" : null)">
+                        <input type="radio" name="Frequency" value="@f.Value" @(Model.Frequency == f.Value ? "checked" : null) />
+                        @f.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-lock pa-q-icon"></i> Can the technician enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("NeedApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Value" @(Model.EntryAccess == e.Value ? "checked" : null) />
+                        <span>@e.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-bell pa-q-icon"></i> Who should receive updates?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label><i class="fas fa-phone pa-q-icon"></i> Best phone number for urgent contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">9</span>
+            <label><i class="fas fa-note-sticky pa-q-icon"></i> Add details</label>
+            <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="airFilterDetails">@Model.Details</textarea>
+            <small class="pa-char-count"><span id="detailsCount">@Model.Details.Length</span> / 250 characters</small>
+        </div>
+
+        <div class="pa-media-actions pa-media-actions--stack">
+            <button type="button" class="pa-media-btn pa-media-btn--large"><i class="fas fa-camera"></i> Add photos — Help us prep the right filter</button>
+            <button type="button" class="pa-media-btn pa-media-btn--large"><i class="fas fa-microphone"></i> Voice note — Tap to record</button>
+        </div>
+
+        <div class="pa-flow-pro-card pa-flow-pro-card--homecare">
+            <div class="pa-flow-pro-head">
+                <img src="/inspeccion2.jpeg" alt="" class="pa-flow-pro-avatar" />
+                <div>
+                    <strong>@Model.ProEtaLabel</strong>
+                    <div class="pa-trust-badges">
+                        <span>Licensed</span>
+                        <span>Insured</span>
+                        <span>Fast response</span>
+                    </div>
+                </div>
+            </div>
+            <p>Estimated visit: <strong>@Model.EstimatedPrice</strong></p>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Schedule filter change</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        var details = document.getElementById('airFilterDetails');
+        var counter = document.getElementById('detailsCount');
+        if (details && counter) {
+            details.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

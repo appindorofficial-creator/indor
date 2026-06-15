@@ -1,0 +1,70 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorTasksViewModel
+@{
+    ViewData["Title"] = "Service requests";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.NavActive = "tasks";
+    var filters = new[] {
+        ("all", "All"),
+        ("emergency", "Emergency"),
+        ("scheduled", "Scheduled"),
+        ("inprogress", "In progress"),
+        ("completed", "Completed")
+    };
+}
+
+<div class="pa-portal-shell pa-portal-shell--tasks">
+    @await Html.PartialAsync("_PropertyAdminTopbar", Model)
+
+    <section class="pa-hero-block">
+        <h1>Service requests</h1>
+        <p>Track all home service activity in one place.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
+
+    @await Html.PartialAsync("_PropertyAdminStatRow", Model.SummaryStats)
+
+    <div class="pa-filter-pills">
+        @foreach (var (key, label) in filters)
+        {
+            <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="@(key == "all" ? null : key)"
+               class="pa-filter-pill @(Model.ActiveFilter == key ? "is-active" : null)">@label</a>
+        }
+    </div>
+
+    <section class="pa-section">
+        @if (Model.Requests.Count == 0)
+        {
+            <div class="pa-empty-card">No service requests match this filter.</div>
+        }
+        else
+        {
+            @foreach (var request in Model.Requests)
+            {
+                <article class="pa-request-row">
+                    <img src="@(request.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+                    <div class="pa-request-body">
+                        <span class="pa-status-pill pa-status-pill--@request.StatusCss">@request.StatusLabel</span>
+                        <strong>@request.Title</strong>
+                        <small>@request.PropertyName · @request.Location</small>
+                        <span class="pa-request-meta">
+                            <i class="fas fa-calendar"></i> @request.DateLabel
+                            @if (!string.IsNullOrWhiteSpace(request.TeamLabel))
+                            {
+                                <span>· <i class="fas fa-users"></i> @request.TeamLabel</span>
+                            }
+                        </span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(request.EtaLabel))
+                    {
+                        <span class="pa-request-eta">@request.EtaLabel</span>
+                    }
+                </article>
+            }
+        }
+    </section>
+
+    <a asp-controller="Administrador" asp-action="RequestService" class="pa-fab">
+        <i class="fas fa-plus"></i> Create request
+    </a>
+</div>
