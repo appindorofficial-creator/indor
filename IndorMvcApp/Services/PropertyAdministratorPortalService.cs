@@ -11,10 +11,14 @@ public interface IPropertyAdministratorPortalService
 {
     Task<PropertyAdministratorHomeViewModel> GetHomeAsync(IUrlHelper url, int? propertyId = null, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorCalendarViewModel> GetCalendarAsync(IUrlHelper url, CancellationToken cancellationToken = default);
-    Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(IUrlHelper url, string? from = null, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorPropertyDetailViewModel?> GetPropertyDetailAsync(IUrlHelper url, int propertyId, string? tab = null, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorServicesViewModel> GetServicesAsync(IUrlHelper url, string? filter, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorTasksViewModel> GetTasksAsync(IUrlHelper url, string? filter, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorProfileViewModel> GetProfileAsync(IUrlHelper url, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorPersonalInformationViewModel> GetPersonalInformationAsync(IUrlHelper url, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorNotificationPreferencesViewModel> GetNotificationPreferencesAsync(IUrlHelper url, bool saved = false, CancellationToken cancellationToken = default);
+    Task<bool> SaveNotificationPreferencesAsync(PropertyAdministratorNotificationPreferencesInput input, CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
 }
 
@@ -351,11 +355,14 @@ public class PropertyAdministratorPortalService(
         };
     }
 
-    public async Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(CancellationToken cancellationToken = default)
+    public async Task<PropertyAdministratorPropertiesPortalViewModel> GetPropertiesAsync(
+        IUrlHelper url, string? from = null, CancellationToken cancellationToken = default)
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
         var shell = await BuildShellAsync(admin, cancellationToken);
+        var properties = admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).ToList();
+        var fromProfile = string.Equals(from, "profile", StringComparison.OrdinalIgnoreCase);
 
         return new PropertyAdministratorPropertiesPortalViewModel
         {
@@ -367,18 +374,110 @@ public class PropertyAdministratorPortalService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PortfolioTypeLabel = PropertyAdministratorCatalog.LabelPortfolioType(admin.PortfolioType),
             ManagementStyleLabel = PropertyAdministratorCatalog.LabelManagementStyle(admin.ManagementStyle),
-            Properties = admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion)
-                .Select(p => new PropertyAdministratorPropertyItemViewModel
+            TotalPropertyCount = properties.Count,
+            ActivePropertiesCount = properties.Count(p => IsActivePropertyStatus(p.Status)),
+            ShowBackHeader = fromProfile,
+            BackUrl = fromProfile
+                ? url.Action("Profile", "Administrador") ?? "#"
+                : url.Action("Index", "Administrador") ?? "#",
+            AddPropertyUrl = url.Action("Properties", "PropertyAdministratorRegistration") ?? "#",
+            Properties = properties
+                .Select(p => MapPropertyListItem(p, url))
+                .ToList()
+        };
+    }
+
+    public async Task<PropertyAdministratorPropertyDetailViewModel?> GetPropertyDetailAsync(
+        IUrlHelper url, int propertyId, string? tab = null, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+
+        var property = await db.IndorPropertyAdminPortfolioProperties
+            .AsNoTracking()
+            .Include(p => p.Propiedad)
+            .FirstOrDefaultAsync(p => p.Id == propertyId && p.AdministratorId == admin.Id, cancellationToken);
+        if (property == null)
+        {
+            return null;
+        }
+
+        var activeTab = NormalizePropertyTab(tab);
+        var propertyInfo = property.Propiedad != null
+            ? MyHomeDisplayService.DeserializeProperty(property.Propiedad)
+            : null;
+        var summary = property.Propiedad != null
+            ? MyHomeDisplayService.BuildSummary(property.Propiedad, propertyInfo)
+            : null;
+        var details = property.Propiedad != null
+            ? MyHomeDisplayService.BuildDetails(property.Propiedad, propertyInfo)
+            : null;
+
+        var yearBuilt = summary?.YearBuilt?.ToString() ?? details?.YearBuilt?.ToString();
+        var livingArea = summary?.LivingArea ?? details?.LivingArea;
+        var bedrooms = summary?.Bedrooms ?? details?.Bedrooms;
+        var bathrooms = summary?.Bathrooms ?? details?.Bathrooms;
+        var propertyTypeLabel = !string.IsNullOrWhiteSpace(details?.PropertyType)
+            ? details.PropertyType!
+            : PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType);
+
+        var activityItems = admin.ServiceRequests
+            .Where(r => r.PortfolioPropertyId == property.Id)
+            .OrderByDescending(r => r.ScheduledUtc)
+            .Select(MapRequest)
+            .ToList();
+
+        return new PropertyAdministratorPropertyDetailViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            PropertyId = property.Id,
+            PropertyName = property.PropertyName,
+            Location = property.Location,
+            ImageUrl = property.ImageUrl ?? "/inspeccion2.jpeg",
+            StatusLabel = MapPropertyStatusLabel(property.Status),
+            ActiveTab = activeTab,
+            BackUrl = url.Action("Properties", "Administrador") ?? "#",
+            EditUrl = url.Action("Properties", "PropertyAdministratorRegistration") ?? "#",
+            PropertyTypeLabel = propertyTypeLabel,
+            YearBuiltLabel = yearBuilt ?? "—",
+            SquareFootageLabel = livingArea.HasValue
+                ? $"{livingArea.Value:N0} sq ft"
+                : "—",
+            BedsBathsLabel = bedrooms.HasValue || bathrooms.HasValue
+                ? $"{bedrooms ?? 0} / {bathrooms ?? 0}"
+                : "—",
+            QuickActions =
+            [
+                new()
                 {
-                    Id = p.Id,
-                    PropertyName = p.PropertyName,
-                    Location = p.Location,
-                    PropertyType = p.PropertyType,
-                    PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(p.PropertyType),
-                    ImageUrl = p.ImageUrl,
-                    Status = p.Status,
-                    OccupancyLabel = p.PropertyType == "ShortTermRental" ? "Occupied now" : null
-                }).ToList()
+                    Title = "View documents",
+                    Subtitle = "Deeds, insurance, and more",
+                    IconClass = "fa-file-lines",
+                    Url = url.Action("PropertyDetail", "Administrador", new { id = property.Id, tab = "documents" }) ?? "#"
+                },
+                new()
+                {
+                    Title = "Request a service",
+                    Subtitle = "Schedule maintenance or repairs",
+                    IconClass = "fa-wrench",
+                    Url = url.Action("Services", "Administrador") ?? "#"
+                },
+                new()
+                {
+                    Title = "View property tasks",
+                    Subtitle = "See tasks and upcoming items",
+                    IconClass = "fa-list-check",
+                    Url = url.Action("Tasks", "Administrador") ?? "#"
+                }
+            ],
+            DetailRows = BuildPropertyDetailRows(details, property),
+            ActivityItems = activityItems
         };
     }
 
@@ -513,19 +612,19 @@ public class PropertyAdministratorPortalService(
                 {
                     Label = "Personal information",
                     IconClass = "fa-user",
-                    Url = url.Action("Profile", "PropertyAdministratorRegistration") ?? "#"
+                    Url = url.Action("PersonalInformation", "Administrador") ?? "#"
                 },
                 new()
                 {
                     Label = "Portfolio & properties",
                     IconClass = "fa-building",
-                    Url = url.Action("Properties", "Administrador") ?? "#"
+                    Url = url.Action("Properties", "Administrador", new { from = "profile" }) ?? "#"
                 },
                 new()
                 {
                     Label = "Notifications",
                     IconClass = "fa-bell",
-                    Url = url.Action("Tasks", "Administrador") ?? "#",
+                    Url = url.Action("NotificationPreferences", "Administrador") ?? "#",
                     BadgeCount = shell.NotificationCount > 0 ? shell.NotificationCount : null
                 },
                 new()
@@ -567,6 +666,113 @@ public class PropertyAdministratorPortalService(
                 }
             ]
         };
+    }
+
+    public async Task<PropertyAdministratorPersonalInformationViewModel> GetPersonalInformationAsync(
+        IUrlHelper url, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        var user = !string.IsNullOrEmpty(userId)
+            ? await userManager.FindByIdAsync(userId)
+            : null;
+
+        var profilePhoto = user?.FotoUrl ?? shell.ProfilePhotoUrl;
+        var email = admin.Email ?? user?.Email ?? "";
+        var phone = !string.IsNullOrWhiteSpace(admin.Phone)
+            ? admin.Phone!
+            : user?.PhoneNumber ?? user?.Telefono ?? "";
+        var location = !string.IsNullOrWhiteSpace(admin.PrimaryMarket)
+            ? $"{admin.PrimaryMarket} United States"
+            : "United States";
+
+        return new PropertyAdministratorPersonalInformationViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = profilePhoto,
+            FullName = shell.DisplayName,
+            Email = email,
+            Phone = phone,
+            Address = location,
+            MarketingEmailsEnabled = admin.MarketingOptIn,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            PrivacyPolicyUrl = url.Action("Privacy", "Account") ?? "#"
+        };
+    }
+
+    public async Task<PropertyAdministratorNotificationPreferencesViewModel> GetNotificationPreferencesAsync(
+        IUrlHelper url, bool saved = false, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var quietStart = NormalizeQuietHour(admin.QuietHoursStart, "22:00");
+        var quietEnd = NormalizeQuietHour(admin.QuietHoursEnd, "07:00");
+
+        return new PropertyAdministratorNotificationPreferencesViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            Saved = saved,
+            PushEnabled = admin.NotifyPushEnabled,
+            EmailEnabled = admin.NotifyEmailEnabled,
+            SmsEnabled = admin.NotifySmsEnabled,
+            PropertyUpdatesEnabled = admin.NotifyPropertyUpdates,
+            ServiceUpdatesEnabled = admin.NotifyServiceUpdates,
+            TaskRemindersEnabled = admin.NotifyTaskReminders,
+            PaymentsBillingEnabled = admin.NotifyPaymentsBilling,
+            PromotionsTipsEnabled = admin.MarketingOptIn,
+            QuietHoursStart = quietStart,
+            QuietHoursEnd = quietEnd,
+            QuietHoursLabel = FormatQuietHoursLabel(quietStart, quietEnd)
+        };
+    }
+
+    public async Task<bool> SaveNotificationPreferencesAsync(
+        PropertyAdministratorNotificationPreferencesInput input, CancellationToken cancellationToken = default)
+    {
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return false;
+        }
+
+        var admin = await db.IndorPropertyAdministrators
+            .FirstOrDefaultAsync(a => a.UserId == userId
+                && a.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed, cancellationToken);
+        if (admin == null)
+        {
+            return false;
+        }
+
+        admin.NotifyPushEnabled = input.PushEnabled;
+        admin.NotifyEmailEnabled = input.EmailEnabled;
+        admin.NotifySmsEnabled = input.SmsEnabled;
+        admin.NotifyPropertyUpdates = input.PropertyUpdatesEnabled;
+        admin.NotifyServiceUpdates = input.ServiceUpdatesEnabled;
+        admin.NotifyTaskReminders = input.TaskRemindersEnabled;
+        admin.NotifyPaymentsBilling = input.PaymentsBillingEnabled;
+        admin.MarketingOptIn = input.PromotionsTipsEnabled;
+        admin.QuietHoursStart = NormalizeQuietHour(input.QuietHoursStart, "22:00");
+        admin.QuietHoursEnd = NormalizeQuietHour(input.QuietHoursEnd, "07:00");
+        admin.NotifyBookingLeaseUpdates = input.PropertyUpdatesEnabled;
+        admin.NotifyUrgentMaintenance = input.ServiceUpdatesEnabled;
+        admin.NotifyWeeklySummary = input.TaskRemindersEnabled;
+        admin.FechaActualizacion = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
     }
 
     private async Task<IndorPropertyAdministrator?> LoadAdminAsync(CancellationToken cancellationToken)
@@ -680,6 +886,126 @@ public class PropertyAdministratorPortalService(
         }
 
         return url.Action("RequestService", "Administrador", new { service = item.ServiceSlug }) ?? "#";
+    }
+
+    private static PropertyAdministratorPropertyItemViewModel MapPropertyListItem(
+        IndorPropertyAdminPortfolioProperty property, IUrlHelper url) =>
+        new()
+        {
+            Id = property.Id,
+            PropertyName = property.PropertyName,
+            Location = property.Location,
+            PropertyType = property.PropertyType,
+            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            ImageUrl = property.ImageUrl,
+            Status = property.Status,
+            StatusLabel = MapPropertyStatusLabel(property.Status),
+            DetailUrl = url.Action("PropertyDetail", "Administrador", new { id = property.Id }) ?? "#",
+            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+        };
+
+    private static string MapPropertyStatusLabel(string? status) =>
+        string.IsNullOrWhiteSpace(status) || status is "Added" or "Active"
+            ? "Active"
+            : status;
+
+    private static bool IsActivePropertyStatus(string? status) =>
+        string.IsNullOrWhiteSpace(status) || status is "Added" or "Active";
+
+    private static string NormalizePropertyTab(string? tab) => tab?.Trim().ToLowerInvariant() switch
+    {
+        "details" => "details",
+        "documents" => "documents",
+        "activity" => "activity",
+        _ => "overview"
+    };
+
+    private static IReadOnlyList<PropertyAdministratorPropertyDetailRowViewModel> BuildPropertyDetailRows(
+        MyHomePropertyDetailsViewModel? details,
+        IndorPropertyAdminPortfolioProperty property)
+    {
+        if (details == null)
+        {
+            return
+            [
+                new()
+                {
+                    Label = "Property type",
+                    Value = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+                    IconClass = "fa-house"
+                },
+                new()
+                {
+                    Label = "Address",
+                    Value = property.Location,
+                    IconClass = "fa-location-dot"
+                }
+            ];
+        }
+
+        var rows = new List<PropertyAdministratorPropertyDetailRowViewModel>
+        {
+            new()
+            {
+                Label = "Parcel ID",
+                Value = details.ParcelId ?? "—",
+                IconClass = "fa-hashtag"
+            },
+            new()
+            {
+                Label = "County",
+                Value = details.County ?? "—",
+                IconClass = "fa-map"
+            },
+            new()
+            {
+                Label = "Lot size",
+                Value = details.LotSizeSqFt.HasValue
+                    ? $"{details.LotSizeSqFt.Value:N0} sq ft"
+                    : details.LotSizeAcres.HasValue
+                        ? $"{details.LotSizeAcres.Value:N2} acres"
+                        : "—",
+                IconClass = "fa-ruler-combined"
+            },
+            new()
+            {
+                Label = "Last sale",
+                Value = details.LastSalePrice.HasValue || details.LastSaleDate.HasValue
+                    ? $"{MyHomeDisplayService.FormatCurrency(details.LastSalePrice)} • {(details.LastSaleDate.HasValue ? details.LastSaleDate.Value.ToString("MMM d, yyyy") : "—")}"
+                    : "—",
+                IconClass = "fa-hand-holding-dollar"
+            },
+            new()
+            {
+                Label = "Estimated value",
+                Value = MyHomeDisplayService.FormatCurrency(details.EstimatedValue),
+                IconClass = "fa-chart-line"
+            }
+        };
+
+        return rows;
+    }
+
+    private static string NormalizeQuietHour(string? value, string fallback)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return fallback;
+        }
+
+        return TimeOnly.TryParse(value, out var parsed)
+            ? parsed.ToString("HH:mm")
+            : fallback;
+    }
+
+    private static string FormatQuietHoursLabel(string start, string end)
+    {
+        static string Format(string value) =>
+            TimeOnly.TryParse(value, out var time)
+                ? time.ToString("h:mm tt")
+                : value;
+
+        return $"{Format(start)} - {Format(end)}";
     }
 
     private static int ParsePropertyCountRange(string? range) => range switch

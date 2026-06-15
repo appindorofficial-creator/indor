@@ -1,0 +1,208 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorNotificationPreferencesViewModel
+@{
+    ViewData["Title"] = "Notification preferences";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--notifications">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>Notification preferences</h1>
+            <p>Choose what updates you want to receive and how you want to receive them.</p>
+        </div>
+    </header>
+
+    @if (Model.Saved)
+    {
+        <div class="pa-notify-saved" role="status">Preferences saved.</div>
+    }
+
+    <form asp-controller="Administrador" asp-action="NotificationPreferences" method="post" class="pa-notify-form" id="pa-notify-form">
+        @Html.AntiForgeryToken()
+
+        <section class="pa-personal-section">
+            <h2>Channels</h2>
+            <div class="pa-personal-list">
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-bell"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Push notifications</strong>
+                        <small>Receive updates in the app.</small>
+                    </span>
+                    <input type="hidden" name="PushEnabled" value="false" />
+                    <input type="checkbox" name="PushEnabled" value="true" class="pa-notify-checkbox" @(Model.PushEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-envelope"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Email notifications</strong>
+                        <small>Receive updates to your email.</small>
+                    </span>
+                    <input type="hidden" name="EmailEnabled" value="false" />
+                    <input type="checkbox" name="EmailEnabled" value="true" class="pa-notify-checkbox" @(Model.EmailEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-comment-sms"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>SMS alerts</strong>
+                        <small>Receive text messages for important updates.</small>
+                    </span>
+                    <input type="hidden" name="SmsEnabled" value="false" />
+                    <input type="checkbox" name="SmsEnabled" value="true" class="pa-notify-checkbox" @(Model.SmsEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+            </div>
+        </section>
+
+        <section class="pa-personal-section">
+            <h2>Notification types</h2>
+            <div class="pa-personal-list">
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-house"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Property updates</strong>
+                        <small>Alerts about your homes and properties.</small>
+                    </span>
+                    <input type="hidden" name="PropertyUpdatesEnabled" value="false" />
+                    <input type="checkbox" name="PropertyUpdatesEnabled" value="true" class="pa-notify-checkbox" @(Model.PropertyUpdatesEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-wrench"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Service updates</strong>
+                        <small>Updates about scheduled and ongoing services.</small>
+                    </span>
+                    <input type="hidden" name="ServiceUpdatesEnabled" value="false" />
+                    <input type="checkbox" name="ServiceUpdatesEnabled" value="true" class="pa-notify-checkbox" @(Model.ServiceUpdatesEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-clipboard-list"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Task reminders</strong>
+                        <small>Reminders for tasks and action items.</small>
+                    </span>
+                    <input type="hidden" name="TaskRemindersEnabled" value="false" />
+                    <input type="checkbox" name="TaskRemindersEnabled" value="true" class="pa-notify-checkbox" @(Model.TaskRemindersEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-credit-card"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Payments &amp; billing</strong>
+                        <small>Receipts, payment confirmations and billing alerts.</small>
+                    </span>
+                    <input type="hidden" name="PaymentsBillingEnabled" value="false" />
+                    <input type="checkbox" name="PaymentsBillingEnabled" value="true" class="pa-notify-checkbox" @(Model.PaymentsBillingEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+                <label class="pa-notify-row">
+                    <span class="pa-notify-row-icon"><i class="fas fa-bullhorn"></i></span>
+                    <span class="pa-notify-row-copy">
+                        <strong>Promotions &amp; tips</strong>
+                        <small>Special offers, tips and product updates.</small>
+                    </span>
+                    <input type="hidden" name="PromotionsTipsEnabled" value="false" />
+                    <input type="checkbox" name="PromotionsTipsEnabled" value="true" class="pa-notify-checkbox" @(Model.PromotionsTipsEnabled ? "checked" : null) />
+                    <span class="pa-notify-toggle" aria-hidden="true"><span class="pa-notify-toggle-knob"></span></span>
+                </label>
+            </div>
+        </section>
+
+        <section class="pa-personal-section">
+            <h2>Quiet hours</h2>
+            <div class="pa-personal-list">
+                <details class="pa-notify-quiet">
+                    <summary class="pa-notify-row pa-notify-row--quiet">
+                        <span class="pa-notify-row-icon"><i class="fas fa-moon"></i></span>
+                        <span class="pa-notify-row-copy">
+                            <strong>Do not disturb</strong>
+                            <small>Pause non-urgent notifications during these hours.</small>
+                        </span>
+                        <span class="pa-notify-quiet-label" id="pa-quiet-hours-label">@Model.QuietHoursLabel</span>
+                        <i class="fas fa-chevron-right"></i>
+                    </summary>
+                    <div class="pa-notify-quiet-panel">
+                        <label>
+                            <span>Start</span>
+                            <input type="time" name="QuietHoursStart" value="@Model.QuietHoursStart" class="pa-notify-time-input" />
+                        </label>
+                        <label>
+                            <span>End</span>
+                            <input type="time" name="QuietHoursEnd" value="@Model.QuietHoursEnd" class="pa-notify-time-input" />
+                        </label>
+                    </div>
+                </details>
+            </div>
+        </section>
+
+        <section class="pa-notify-info-card">
+            <span class="pa-notify-info-icon"><i class="fas fa-circle-info"></i></span>
+            <p>Important alerts such as active jobs, payments, and upcoming appointments will still appear in the app inbox.</p>
+        </section>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var form = document.getElementById('pa-notify-form');
+            if (!form) return;
+
+            function syncToggleVisuals() {
+                form.querySelectorAll('.pa-notify-row').forEach(function (row) {
+                    var checkbox = row.querySelector('.pa-notify-checkbox');
+                    var toggle = row.querySelector('.pa-notify-toggle');
+                    if (!checkbox || !toggle) return;
+                    toggle.classList.toggle('is-on', checkbox.checked);
+                });
+            }
+
+            function formatQuietLabel() {
+                var start = form.querySelector('input[name="QuietHoursStart"]');
+                var end = form.querySelector('input[name="QuietHoursEnd"]');
+                var label = document.getElementById('pa-quiet-hours-label');
+                if (!start || !end || !label) return;
+
+                function toDisplay(value) {
+                    if (!value) return '';
+                    var parts = value.split(':');
+                    if (parts.length < 2) return value;
+                    var hours = parseInt(parts[0], 10);
+                    var minutes = parts[1];
+                    var suffix = hours >= 12 ? 'PM' : 'AM';
+                    var displayHour = hours % 12;
+                    if (displayHour === 0) displayHour = 12;
+                    return displayHour + ':' + minutes + ' ' + suffix;
+                }
+
+                label.textContent = toDisplay(start.value) + ' - ' + toDisplay(end.value);
+            }
+
+            function submitForm() {
+                formatQuietLabel();
+                form.requestSubmit();
+            }
+
+            syncToggleVisuals();
+            formatQuietLabel();
+
+            form.querySelectorAll('.pa-notify-checkbox').forEach(function (checkbox) {
+                checkbox.addEventListener('change', function () {
+                    syncToggleVisuals();
+                    submitForm();
+                });
+            });
+
+            form.querySelectorAll('.pa-notify-time-input').forEach(function (input) {
+                input.addEventListener('change', submitForm);
+            });
+        })();
+    </script>
+}

@@ -1,25 +1,56 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPropertiesPortalViewModel
 @{
-    ViewData["Title"] = "Properties";
+    ViewData["Title"] = "Portfolio & properties";
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "properties";
 }
 
-<div class="pa-portal-shell">
-    @await Html.PartialAsync("_PropertyAdminTopbar", Model)
+<div class="pa-portal-shell pa-portal-shell--portfolio">
+    @if (Model.ShowBackHeader)
+    {
+        <header class="pa-portfolio-page-header">
+            <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="pa-portfolio-page-header-text">
+                <h1>Portfolio &amp; properties</h1>
+                <p>View and manage all your properties in one place.</p>
+            </div>
+        </header>
+    }
+    else
+    {
+        @await Html.PartialAsync("_PropertyAdminTopbar", Model)
+        <header class="pa-portfolio-page-header pa-portfolio-page-header--nav">
+            <div class="pa-portfolio-page-header-text">
+                <h1>Portfolio &amp; properties</h1>
+                <p>View and manage all your properties in one place.</p>
+            </div>
+        </header>
+    }
 
-    <section class="pa-hero-block">
-        <h1>Properties</h1>
-        <p>@Model.PortfolioTypeLabel · @Model.ManagementStyleLabel</p>
+    <section class="pa-portfolio-stats">
+        <div class="pa-portfolio-stat">
+            <span class="pa-portfolio-stat-icon"><i class="fas fa-building"></i></span>
+            <div>
+                <small>Total properties</small>
+                <strong>@Model.TotalPropertyCount</strong>
+            </div>
+        </div>
+        <div class="pa-portfolio-stat-divider" aria-hidden="true"></div>
+        <div class="pa-portfolio-stat">
+            <span class="pa-portfolio-stat-icon"><i class="fas fa-house"></i></span>
+            <div>
+                <small>Active properties</small>
+                <strong>@Model.ActivePropertiesCount</strong>
+            </div>
+        </div>
+        <div class="pa-portfolio-stat-divider" aria-hidden="true"></div>
+        <a href="@Model.AddPropertyUrl" class="pa-portfolio-stat-link">+ Add property</a>
     </section>
 
-    @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
-
-    <section class="pa-section">
-        <div class="pa-section-head">
-            <h2>Active properties</h2>
-            <span class="pa-section-count">@Model.Properties.Count</span>
-        </div>
+    <section class="pa-portfolio-section">
+        <h2>Your properties</h2>
         @if (Model.Properties.Count == 0)
         {
             <div class="pa-empty-card">No properties in this portfolio yet.</div>
@@ -28,21 +59,27 @@
         {
             @foreach (var property in Model.Properties)
             {
-                <div class="pa-property-card">
-                    <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-property-thumb" />
-                    <div class="pa-property-body">
+                <a href="@property.DetailUrl" class="pa-portfolio-property-card">
+                    <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-portfolio-property-thumb" />
+                    <div class="pa-portfolio-property-body">
                         <strong>@property.PropertyName</strong>
                         <small>@property.Location</small>
-                        <div class="pa-badge-row">
-                            <span class="pa-badge pa-badge-type">@property.PropertyTypeLabel</span>
-                            @if (!string.IsNullOrWhiteSpace(property.Status))
-                            {
-                                <span class="pa-badge pa-badge-added">@property.Status</span>
-                            }
-                        </div>
+                        <span class="pa-portfolio-status @(property.StatusLabel == "Active" ? "is-active" : null)">
+                            <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
+                            @property.StatusLabel
+                        </span>
                     </div>
-                </div>
+                    <i class="fas fa-chevron-right pa-portfolio-property-chevron"></i>
+                </a>
             }
         }
+    </section>
+
+    <section class="pa-portfolio-tip-card">
+        <span class="pa-portfolio-tip-icon"><i class="fas fa-house-circle-check"></i></span>
+        <div>
+            <strong>Keep your portfolio up to date</strong>
+            <p>Add all your properties and keep details updated to get the most out of Home Indor.</p>
+        </div>
     </section>
 </div>

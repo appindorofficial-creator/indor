@@ -1,0 +1,103 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPersonalInformationViewModel
+@{
+    ViewData["Title"] = "Personal information";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--personal">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>Personal information</h1>
+            <p>Manage your personal details and how we contact you.</p>
+        </div>
+    </header>
+
+    <section class="pa-personal-profile-card">
+        <div class="pa-personal-photo-wrap">
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+            {
+                <img src="@Model.ProfilePhotoUrl" alt="" class="pa-personal-photo" />
+            }
+            else
+            {
+                <span class="pa-personal-photo pa-personal-photo--placeholder"><i class="fas fa-user"></i></span>
+            }
+            <span class="pa-personal-photo-edit" aria-hidden="true"><i class="fas fa-camera"></i></span>
+        </div>
+        <strong>@Model.FullName</strong>
+        <span class="pa-profile-badge">@Model.RoleBadge</span>
+    </section>
+
+    <section class="pa-personal-section">
+        <h2>Personal details</h2>
+        <div class="pa-personal-list">
+            <a href="#" class="pa-personal-row">
+                <span class="pa-personal-row-label">Full name</span>
+                <span class="pa-personal-row-value">@Model.FullName</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="#" class="pa-personal-row">
+                <span class="pa-personal-row-label">Email address</span>
+                <span class="pa-personal-row-value">@Model.Email</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="tel:@Model.Phone" class="pa-personal-row">
+                <span class="pa-personal-row-label">Phone number</span>
+                <span class="pa-personal-row-value is-link">@Model.Phone</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="#" class="pa-personal-row">
+                <span class="pa-personal-row-label">Address</span>
+                <span class="pa-personal-row-value">@Model.Address</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="#" class="pa-personal-row">
+                <span class="pa-personal-row-label">Date of birth</span>
+                <span class="pa-personal-row-value">@Model.DateOfBirthLabel</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <section class="pa-personal-section">
+        <h2>Communication preferences</h2>
+        <div class="pa-personal-list">
+            <a href="#" class="pa-personal-row">
+                <span class="pa-personal-row-label">Preferred contact method</span>
+                <span class="pa-personal-row-value">@Model.PreferredContactMethod</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <div class="pa-personal-row pa-personal-row--toggle">
+                <div>
+                    <strong>Marketing emails</strong>
+                    <small>Receive updates about new features and offers.</small>
+                </div>
+                <span class="pa-personal-toggle @(Model.MarketingEmailsEnabled ? "is-on" : null)" aria-hidden="true">
+                    <span class="pa-personal-toggle-knob"></span>
+                </span>
+            </div>
+        </div>
+    </section>
+
+    <section class="pa-personal-section">
+        <h2>Security</h2>
+        <div class="pa-personal-list">
+            <a href="@Model.ChangePasswordUrl" class="pa-personal-row">
+                <span class="pa-personal-row-icon"><i class="fas fa-lock"></i></span>
+                <span class="pa-personal-row-label">Change password</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <section class="pa-personal-info-card">
+        <div>
+            <strong>How we use your information</strong>
+            <p>We use your information to provide and improve our services. Learn more in our <a href="@Model.PrivacyPolicyUrl">Privacy Policy</a>.</p>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </section>
+</div>

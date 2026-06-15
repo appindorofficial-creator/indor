@@ -77,6 +77,45 @@ public class PropertyAdministratorPropertiesPortalViewModel : PropertyAdministra
     public IReadOnlyList<PropertyAdministratorPropertyItemViewModel> Properties { get; set; } = [];
     public string PortfolioTypeLabel { get; set; } = "";
     public string ManagementStyleLabel { get; set; } = "";
+    public int TotalPropertyCount { get; set; }
+    public int ActivePropertiesCount { get; set; }
+    public string BackUrl { get; set; } = "#";
+    public bool ShowBackHeader { get; set; }
+    public string AddPropertyUrl { get; set; } = "#";
+}
+
+public class PropertyAdministratorPropertyDetailViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int PropertyId { get; set; }
+    public string PropertyName { get; set; } = "";
+    public string Location { get; set; } = "";
+    public string? ImageUrl { get; set; }
+    public string StatusLabel { get; set; } = "Active";
+    public string ActiveTab { get; set; } = "overview";
+    public string BackUrl { get; set; } = "#";
+    public string EditUrl { get; set; } = "#";
+    public string PropertyTypeLabel { get; set; } = "";
+    public string YearBuiltLabel { get; set; } = "—";
+    public string SquareFootageLabel { get; set; } = "—";
+    public string BedsBathsLabel { get; set; } = "—";
+    public IReadOnlyList<PropertyAdministratorPropertyQuickActionViewModel> QuickActions { get; set; } = [];
+    public IReadOnlyList<PropertyAdministratorPropertyDetailRowViewModel> DetailRows { get; set; } = [];
+    public IReadOnlyList<PropertyAdministratorServiceRequestItemViewModel> ActivityItems { get; set; } = [];
+}
+
+public class PropertyAdministratorPropertyQuickActionViewModel
+{
+    public string Title { get; set; } = "";
+    public string Subtitle { get; set; } = "";
+    public string IconClass { get; set; } = "";
+    public string Url { get; set; } = "#";
+}
+
+public class PropertyAdministratorPropertyDetailRowViewModel
+{
+    public string Label { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string IconClass { get; set; } = "";
 }
 
 public class PropertyAdministratorServiceHubItemViewModel
@@ -160,4 +199,50 @@ public class PropertyAdministratorProfileViewModel : PropertyAdministratorPortal
     public string Location { get; set; } = "";
     public string RoleBadge { get; set; } = "Multi-Property Owner";
     public IReadOnlyList<PropertyAdministratorProfileMenuItemViewModel> MenuItems { get; set; } = [];
+}
+
+public class PropertyAdministratorPersonalInformationViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string RoleBadge { get; set; } = "Multi-Property Owner";
+    public string FullName { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Phone { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string DateOfBirthLabel { get; set; } = "Not set";
+    public string PreferredContactMethod { get; set; } = "Email & SMS";
+    public bool MarketingEmailsEnabled { get; set; }
+    public string ChangePasswordUrl { get; set; } = "#";
+    public string PrivacyPolicyUrl { get; set; } = "#";
+    public string BackUrl { get; set; } = "#";
+}
+
+public class PropertyAdministratorNotificationPreferencesInput
+{
+    public bool PushEnabled { get; set; } = true;
+    public bool EmailEnabled { get; set; } = true;
+    public bool SmsEnabled { get; set; }
+    public bool PropertyUpdatesEnabled { get; set; } = true;
+    public bool ServiceUpdatesEnabled { get; set; } = true;
+    public bool TaskRemindersEnabled { get; set; } = true;
+    public bool PaymentsBillingEnabled { get; set; } = true;
+    public bool PromotionsTipsEnabled { get; set; }
+    public string QuietHoursStart { get; set; } = "22:00";
+    public string QuietHoursEnd { get; set; } = "07:00";
+}
+
+public class PropertyAdministratorNotificationPreferencesViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public bool Saved { get; set; }
+    public bool PushEnabled { get; set; } = true;
+    public bool EmailEnabled { get; set; } = true;
+    public bool SmsEnabled { get; set; }
+    public bool PropertyUpdatesEnabled { get; set; } = true;
+    public bool ServiceUpdatesEnabled { get; set; } = true;
+    public bool TaskRemindersEnabled { get; set; } = true;
+    public bool PaymentsBillingEnabled { get; set; } = true;
+    public bool PromotionsTipsEnabled { get; set; }
+    public string QuietHoursStart { get; set; } = "22:00";
+    public string QuietHoursEnd { get; set; } = "07:00";
+    public string QuietHoursLabel { get; set; } = "10:00 PM - 7:00 AM";
 }

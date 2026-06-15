@@ -66,6 +66,20 @@ public class IndorPropertyAdministrator
     public bool NotifyWeeklySummary { get; set; } = true;
     public bool NotifyBookingLeaseUpdates { get; set; } = true;
 
+    public bool NotifyPushEnabled { get; set; } = true;
+    public bool NotifyEmailEnabled { get; set; } = true;
+    public bool NotifySmsEnabled { get; set; }
+    public bool NotifyPropertyUpdates { get; set; } = true;
+    public bool NotifyServiceUpdates { get; set; } = true;
+    public bool NotifyTaskReminders { get; set; } = true;
+    public bool NotifyPaymentsBilling { get; set; } = true;
+
+    [MaxLength(5)]
+    public string QuietHoursStart { get; set; } = "22:00";
+
+    [MaxLength(5)]
+    public string QuietHoursEnd { get; set; } = "07:00";
+
     public bool PlatformTermsAccepted { get; set; }
 
     public DateTime? RegistrationCompletedUtc { get; set; }

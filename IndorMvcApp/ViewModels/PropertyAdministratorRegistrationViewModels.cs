@@ -74,6 +74,8 @@ public class PropertyAdministratorPropertyItemViewModel
     public string PropertyTypeLabel { get; set; } = "";
     public string? ImageUrl { get; set; }
     public string Status { get; set; } = "";
+    public string StatusLabel { get; set; } = "Active";
+    public string DetailUrl { get; set; } = "#";
     public string? OccupancyLabel { get; set; }
 }
 

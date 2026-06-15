@@ -1952,7 +1952,7 @@ public class AdministradorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Properties()
+    public async Task<IActionResult> Properties(string? from)
     {
         if (await EnsureRegisteredAsync() is { } redirect)
         {
@@ -1960,7 +1960,25 @@ public class AdministradorController(
         }
 
         ViewBag.NavActive = "properties";
-        return View(await portal.GetPropertiesAsync());
+        return View(await portal.GetPropertiesAsync(Url, from));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PropertyDetail(int id, string? tab)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await portal.GetPropertyDetailAsync(Url, id, tab);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        ViewBag.NavActive = "properties";
+        return View(model);
     }
 
     [HttpGet]
@@ -2009,5 +2027,44 @@ public class AdministradorController(
         }
 
         return View(await portal.GetProfileAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PersonalInformation()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetPersonalInformationAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> NotificationPreferences(bool? saved)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetNotificationPreferencesAsync(Url, saved == true));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> NotificationPreferences(PropertyAdministratorNotificationPreferencesInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (!await portal.SaveNotificationPreferencesAsync(input))
+        {
+            return NotFound();
+        }
+
+        return RedirectToAction(nameof(NotificationPreferences), new { saved = true });
     }
 }

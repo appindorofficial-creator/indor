@@ -1,0 +1,141 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPropertyDetailViewModel
+@{
+    ViewData["Title"] = Model.PropertyName;
+    Layout = "_PropertyAdminLayout";
+    ViewBag.NavActive = "properties";
+    var tabs = new[] { "overview", "details", "documents", "activity" };
+}
+
+<div class="pa-portal-shell pa-portal-shell--property-detail">
+    <header class="pa-property-detail-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-property-detail-header-text">
+            <h1>@Model.PropertyName</h1>
+            <p>@Model.Location</p>
+        </div>
+        <a href="@Model.EditUrl" class="pa-property-detail-edit">Edit</a>
+    </header>
+
+    <section class="pa-property-detail-hero">
+        <img src="@(Model.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
+        <span class="pa-property-detail-status">
+            <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
+            @Model.StatusLabel
+        </span>
+    </section>
+
+    <nav class="pa-property-detail-tabs" aria-label="Property sections">
+        @foreach (var tab in tabs)
+        {
+            var label = char.ToUpper(tab[0]) + tab[1..];
+            <a href="@Url.Action("PropertyDetail", "Administrador", new { id = Model.PropertyId, tab })"
+               class="pa-property-detail-tab @(Model.ActiveTab == tab ? "is-active" : null)">
+                @label
+            </a>
+        }
+    </nav>
+
+    @if (Model.ActiveTab == "overview")
+    {
+        <section class="pa-property-detail-card">
+            <h2>Property overview</h2>
+            <div class="pa-property-overview-list">
+                <div class="pa-property-overview-row">
+                    <span class="pa-property-overview-icon"><i class="fas fa-house"></i></span>
+                    <span class="pa-property-overview-label">Property type</span>
+                    <span class="pa-property-overview-value">@Model.PropertyTypeLabel</span>
+                </div>
+                <div class="pa-property-overview-row">
+                    <span class="pa-property-overview-icon"><i class="fas fa-calendar"></i></span>
+                    <span class="pa-property-overview-label">Year built</span>
+                    <span class="pa-property-overview-value">@Model.YearBuiltLabel</span>
+                </div>
+                <div class="pa-property-overview-row">
+                    <span class="pa-property-overview-icon"><i class="fas fa-ruler-combined"></i></span>
+                    <span class="pa-property-overview-label">Square footage</span>
+                    <span class="pa-property-overview-value">@Model.SquareFootageLabel</span>
+                </div>
+                <div class="pa-property-overview-row">
+                    <span class="pa-property-overview-icon"><i class="fas fa-bed"></i></span>
+                    <span class="pa-property-overview-label">Bedrooms / Bathrooms</span>
+                    <span class="pa-property-overview-value">@Model.BedsBathsLabel</span>
+                </div>
+                <div class="pa-property-overview-row">
+                    <span class="pa-property-overview-icon is-status"><i class="fas fa-circle"></i></span>
+                    <span class="pa-property-overview-label">Status</span>
+                    <span class="pa-portfolio-status is-active">
+                        <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
+                        @Model.StatusLabel
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <section class="pa-property-detail-card">
+            <h2>Quick actions</h2>
+            <div class="pa-property-quick-actions">
+                @foreach (var action in Model.QuickActions)
+                {
+                    <a href="@action.Url" class="pa-property-quick-action">
+                        <span class="pa-property-quick-action-icon"><i class="fas @action.IconClass"></i></span>
+                        <div>
+                            <strong>@action.Title</strong>
+                            <small>@action.Subtitle</small>
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+    else if (Model.ActiveTab == "details")
+    {
+        <section class="pa-property-detail-card">
+            <h2>Property details</h2>
+            <div class="pa-property-overview-list">
+                @foreach (var row in Model.DetailRows)
+                {
+                    <div class="pa-property-overview-row">
+                        <span class="pa-property-overview-icon"><i class="fas @row.IconClass"></i></span>
+                        <span class="pa-property-overview-label">@row.Label</span>
+                        <span class="pa-property-overview-value">@row.Value</span>
+                    </div>
+                }
+            </div>
+        </section>
+    }
+    else if (Model.ActiveTab == "documents")
+    {
+        <section class="pa-property-detail-card">
+            <h2>Documents</h2>
+            <div class="pa-empty-card">No documents uploaded for this property yet.</div>
+        </section>
+    }
+    else
+    {
+        <section class="pa-property-detail-card">
+            <h2>Activity</h2>
+            @if (Model.ActivityItems.Count == 0)
+            {
+                <div class="pa-empty-card">No service activity for this property yet.</div>
+            }
+            else
+            {
+                <div class="pa-property-activity-list">
+                    @foreach (var item in Model.ActivityItems)
+                    {
+                        <div class="pa-property-activity-item">
+                            <div>
+                                <strong>@item.Title</strong>
+                                <small>@item.DateLabel</small>
+                            </div>
+                            <span class="pa-badge pa-badge-added">@item.StatusLabel</span>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+    }
+</div>
