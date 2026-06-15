@@ -1,0 +1,186 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorMovingHelpFormViewModel
+@{
+    ViewData["Title"] = "Moving Help";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var items = Model.ItemsToMove.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Moving Help</h1>
+        <p>Tell us what needs to be moved so we can schedule the right team.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+
+    <form asp-action="MovingHelpDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-dolly pa-q-icon pa-q-icon--blue"></i> What type of moving help do you need?</label>
+            <div class="pa-moving-service-grid">
+                @foreach (var s in new (string Value, string Label, string Icon)[]
+                {
+                    ("TurnoverSetup", "Turnover setup", "fa-dolly"),
+                    ("FurnitureMoving", "Furniture moving", "fa-couch"),
+                    ("BoxesSupplies", "Boxes & supplies", "fa-box"),
+                    ("GuestMoveInOut", "Guest move-in/out", "fa-person-walking-luggage")
+                })
+                {
+                    <label class="pa-moving-service-card @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
+                        <span class="pa-moving-service-icon"><i class="fas @s.Icon"></i></span>
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-boxes-stacked pa-q-icon pa-q-icon--blue"></i> What needs to be moved? <small>(Select all that apply)</small></label>
+            <div class="pa-moving-items-row">
+                @foreach (var i in new (string Value, string Label, string Icon)[]
+                {
+                    ("Boxes", "Boxes", "fa-box"),
+                    ("SmallFurniture", "Small furniture", "fa-couch"),
+                    ("BeddingLinens", "Bedding / linens", "fa-bed"),
+                    ("DecorSupplies", "Decor / supplies", "fa-seedling")
+                })
+                {
+                    <label class="pa-moving-item-card @(items.Contains(i.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="ItemsToMoveList" value="@i.Value" @(items.Contains(i.Value) ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--blue"><i class="fas fa-check"></i></span>
+                        <i class="fas @i.Icon"></i>
+                        <span>@i.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--blue"></i> How much help do you need?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var h in new (string Value, string Label, string Icon)[] { ("One", "1 helper", "fa-user"), ("Two", "2 helpers", "fa-user-group"), ("ThreePlus", "3+ helpers", "fa-users") })
+                {
+                    <label class="pa-toggle-btn pa-toggle-btn--icon @(Model.HelperCount == h.Value ? "is-selected" : null)">
+                        <input type="radio" name="HelperCount" value="@h.Value" @(Model.HelperCount == h.Value ? "checked" : null) />
+                        <i class="fas @h.Icon"></i> @h.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--blue"></i> When do you need it?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
+                {
+                    <label class="pa-toggle-btn @(Model.ScheduleWhen == w ? "is-selected" : null)">
+                        <input type="radio" name="ScheduleWhen" value="@w" @(Model.ScheduleWhen == w ? "checked" : null) />
+                        <i class="fas fa-calendar-day"></i> @w
+                    </label>
+                }
+            </div>
+            <div class="pa-field pa-field--time">
+                <i class="fas fa-clock"></i>
+                <select name="ScheduleTimeWindow" class="pa-time-select">
+                    @foreach (var tw in new[] { "8:00 AM – 11:00 AM", "10:00 AM – 1:00 PM", "1:00 PM – 4:00 PM", "4:00 PM – 7:00 PM" })
+                    {
+                        <option value="@tw" selected="@(Model.ScheduleTimeWindow == tw)">@tw</option>
+                    }
+                </select>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--blue"></i> Can the team enter?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var a in new (string Value, string Label, string Icon)[] { ("SmartLock", "Smart lock", "fa-lock"), ("HostMeet", "Host will meet", "fa-user"), ("GuestOnSite", "Guest on-site", "fa-user-check") })
+                {
+                    <label class="pa-toggle-btn pa-toggle-btn--icon @(Model.EntryAccess == a.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@a.Value" @(Model.EntryAccess == a.Value ? "checked" : null) />
+                        <i class="fas @a.Icon"></i> @a.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--blue"></i> Add notes</label>
+            <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="mhDetails">@Model.Details</textarea>
+            <small class="pa-char-count"><span id="mhDetailsCount">@Model.Details.Length</span> / 250</small>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-moving-info-box">
+            <i class="fas fa-circle-info"></i>
+            <p>Great for Airbnb turnovers and rental property move support. Trusted teams. On-time. Background checked.</p>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-moving-service-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.pa-moving-service-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-moving-service-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-moving-item-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-moving-item-card')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+        var details = document.getElementById('mhDetails');
+        var counter = document.getElementById('mhDetailsCount');
+        if (details && counter) {
+            details.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

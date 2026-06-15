@@ -1,0 +1,144 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPoolHotTubStep1ViewModel
+@{
+    ViewData["Title"] = "Pool & Hot Tub Repair";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-water-ladder pa-flow-title-icon pa-flow-title-icon--green"></i> Pool &amp; Hot Tub Repair</h1>
+        <p>Tell us what needs attention so we can send the right service pro.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="PoolHotTubDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-water-ladder pa-q-icon pa-q-icon--green"></i> What do you need help with?</label>
+            <div class="pa-pool-service-row">
+                @foreach (var s in new (string Value, string Label, string Icon)[] {
+                    ("PoolRepair", "Pool repair", "fa-screwdriver-wrench"),
+                    ("HotTubRepair", "Hot tub repair", "fa-hot-tub-person"),
+                    ("RoutinePoolService", "Routine pool service", "fa-water-ladder"),
+                    ("SpaHotTubService", "Spa / hot tub service", "fa-spa") })
+                {
+                    <label class="pa-pool-option-card @(Model.ServiceHelpType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceHelpType" value="@s.Value" @(Model.ServiceHelpType == s.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <i class="fas @s.Icon"></i>
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>What's the main issue?</label>
+            <div class="pa-pool-issue-grid">
+                @foreach (var i in new (string Value, string Label, string Icon)[] {
+                    ("PumpNotWorking", "Pump not working", "fa-gears"),
+                    ("HeaterIssue", "Heater issue", "fa-temperature-high"),
+                    ("WaterLeak", "Water leak", "fa-droplet"),
+                    ("CloudyDirtyWater", "Cloudy / dirty water", "fa-circle"),
+                    ("JetsNotWorking", "Jets not working", "fa-wind"),
+                    ("FilterProblem", "Filter problem", "fa-filter") })
+                {
+                    <label class="pa-pool-option-card @(Model.MainIssue == i.Value ? "is-selected" : null)">
+                        <input type="radio" name="MainIssue" value="@i.Value" @(Model.MainIssue == i.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <i class="fas @i.Icon"></i>
+                        <span>@i.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Is a guest stay affected?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.GuestStayAffected == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="GuestStayAffected" value="Yes" @(Model.GuestStayAffected == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.GuestStayAffected == "No" ? "is-selected" : null)">
+                    <input type="radio" name="GuestStayAffected" value="No" @(Model.GuestStayAffected == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>How urgent is it?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var u in new[] { ("Routine", "Routine"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                {
+                    <label class="pa-chip @(Model.Urgency == u.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
+                        <span>@u.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add quick details</label>
+            <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="250" id="poolDetails">@Model.QuickDetails</textarea>
+            <small class="pa-char-count"><span id="poolDetailsCount">@Model.QuickDetails.Length</span> / 250</small>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-video"></i> Add video</button>
+        </div>
+
+        <div class="pa-lawn-photo-banner">
+            <i class="fas fa-circle-info"></i>
+            <div>
+                <strong>We'll match you with a pool or spa pro based on the issue.</strong>
+                <small>Licensed, insured, and background-checked technicians.</small>
+            </div>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to services</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-pool-option-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var row = this.closest('.pa-pool-service-row, .pa-pool-issue-grid');
+                if (row) {
+                    row.querySelectorAll('.pa-pool-option-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                }
+                this.closest('.pa-pool-option-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip, .pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('poolDetails');
+        var counter = document.getElementById('poolDetailsCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

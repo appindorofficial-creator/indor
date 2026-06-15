@@ -106,6 +106,15 @@ builder.Services.AddScoped<IPropertyAdministratorSmokeDetectorService, PropertyA
 builder.Services.AddScoped<IPropertyAdministratorTurnoverCleaningService, PropertyAdministratorTurnoverCleaningService>();
 builder.Services.AddScoped<IPropertyAdministratorStandardCleaningService, PropertyAdministratorStandardCleaningService>();
 builder.Services.AddScoped<IPropertyAdministratorPetDeepCleanService, PropertyAdministratorPetDeepCleanService>();
+builder.Services.AddScoped<IPropertyAdministratorMovingHelpService, PropertyAdministratorMovingHelpService>();
+builder.Services.AddScoped<IPropertyAdministratorJunkRemovalService, PropertyAdministratorJunkRemovalService>();
+builder.Services.AddScoped<IPropertyAdministratorFurnitureHaulAwayService, PropertyAdministratorFurnitureHaulAwayService>();
+builder.Services.AddScoped<IPropertyAdministratorTrashOutService, PropertyAdministratorTrashOutService>();
+builder.Services.AddScoped<IPropertyAdministratorLawnCareService, PropertyAdministratorLawnCareService>();
+builder.Services.AddScoped<IPropertyAdministratorLandscapingService, PropertyAdministratorLandscapingService>();
+builder.Services.AddScoped<IPropertyAdministratorPressureWashingService, PropertyAdministratorPressureWashingService>();
+builder.Services.AddScoped<IPropertyAdministratorPestControlService, PropertyAdministratorPestControlService>();
+builder.Services.AddScoped<IPropertyAdministratorPoolHotTubService, PropertyAdministratorPoolHotTubService>();
 builder.Services.AddScoped<RealtorPortalService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();

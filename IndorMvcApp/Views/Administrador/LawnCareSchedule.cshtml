@@ -1,0 +1,171 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorLawnCareStep2ViewModel
+@{
+    ViewData["Title"] = "Lawn Care / Grass Cutting";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("LawnCareDetails", "Administrador", new { propertyId = Model.PropertyId });
+    var addOns = Model.AddOns.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-seedling pa-flow-title-icon pa-flow-title-icon--green"></i> Lawn Care / Grass Cutting</h1>
+        <p>Choose schedule, add-ons, and access details.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+
+    <form asp-action="LawnCareSchedule" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="ServiceType" value="@Model.ServiceType" />
+        <input type="hidden" name="YardArea" value="@Model.YardArea" />
+        <input type="hidden" name="YardSize" value="@Model.YardSize" />
+        <input type="hidden" name="Frequency" value="@Model.Frequency" />
+        <input type="hidden" name="IsOccupied" value="@Model.IsOccupied" />
+        <input type="hidden" name="AccessDetails" value="@Model.AccessDetails" />
+        <input type="hidden" name="QuickNotes" value="@Model.QuickNotes" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-bolt pa-q-icon pa-q-icon--green"></i> When do you need service?</label>
+            <div class="pa-toggle-pair">
+                @foreach (var w in new[] { ("Asap", "As soon as possible"), ("ScheduleLater", "Schedule later") })
+                {
+                    <label class="pa-toggle-btn @(Model.ScheduleWhen == w.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="ScheduleWhen" value="@w.Item1" @(Model.ScheduleWhen == w.Item1 ? "checked" : null) /> @w.Item2
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> Best arrival window</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var w in new (string Value, string Label)[] { ("Morning", "8 AM–12 PM"), ("Afternoon", "12 PM–4 PM"), ("Evening", "4 PM–7 PM") })
+                {
+                    <label class="pa-chip @(Model.ArrivalWindow == w.Value ? "is-selected" : null)">
+                        <input type="radio" name="ArrivalWindow" value="@w.Value" @(Model.ArrivalWindow == w.Value ? "checked" : null) />
+                        <span>@w.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-plus pa-q-icon pa-q-icon--green"></i> Any add-ons? <small>(Select all that apply)</small></label>
+            <div class="pa-lawn-addons-row">
+                @foreach (var a in new (string Value, string Label, string Icon)[] { ("Edging", "Edging", "fa-border-all"), ("BlowDebris", "Blow debris", "fa-wind"), ("WeedTrim", "Weed trim", "fa-scissors"), ("LeafPickup", "Leaf pickup", "fa-leaf") })
+                {
+                    <label class="pa-lawn-addon-card @(addOns.Contains(a.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="AddOnsList" value="@a.Value" @(addOns.Contains(a.Value) ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <i class="fas @a.Icon"></i>
+                        <span>@a.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Do we need to bag clippings?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.BagClippings == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="BagClippings" value="Yes" @(Model.BagClippings == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.BagClippings == "No" ? "is-selected" : null)">
+                    <input type="radio" name="BagClippings" value="No" @(Model.BagClippings == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should receive updates? <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Access / gate / parking notes</label>
+            <div class="pa-field">
+                <i class="fas fa-car"></i>
+                <input type="text" name="AccessNotes" value="@Model.AccessNotes" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-triangle-exclamation pa-q-icon pa-q-icon--green"></i> Anything we should avoid?</label>
+            <div class="pa-field">
+                <i class="fas fa-seedling"></i>
+                <input type="text" name="AvoidNotes" value="@Model.AvoidNotes" />
+            </div>
+        </div>
+
+        <div class="pa-lawn-photo-banner">
+            <i class="fas fa-camera"></i>
+            <div>
+                <strong>Photo confirmation included</strong>
+                <small>We'll send before/after photos when the lawn service is complete.</small>
+            </div>
+            <i class="fas fa-circle-check"></i>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-lawn-addon-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-lawn-addon-card')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip, .pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+    </script>
+}

@@ -1,0 +1,149 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPoolHotTubStep2ViewModel
+@{
+    ViewData["Title"] = "Access & review details";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("PoolHotTubDetails", "Administrador", new { propertyId = Model.PropertyId });
+    ViewBag.BadgeLabel = Model.PropertyStatusLabel;
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Access &amp; review details</h1>
+        <p>Tell us how the technician can access the area and confirm the service request.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <div class="pa-pool-summary-strip">
+        @foreach (var chip in Model.Step1Summary)
+        {
+            <div class="pa-pool-summary-chip">
+                <i class="fas @chip.IconClass"></i>
+                <small>@chip.Label</small>
+                <strong>@chip.Value</strong>
+            </div>
+        }
+    </div>
+
+    <form asp-action="PoolHotTubAccess" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="ServiceHelpType" value="@Model.ServiceHelpType" />
+        <input type="hidden" name="MainIssue" value="@Model.MainIssue" />
+        <input type="hidden" name="GuestStayAffected" value="@Model.GuestStayAffected" />
+        <input type="hidden" name="Urgency" value="@Model.Urgency" />
+        <input type="hidden" name="QuickDetails" value="@Model.QuickDetails" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>Where is the equipment?</label>
+            <div class="pa-chip-grid pa-chip-grid--2">
+                @foreach (var l in new[] { ("PoolPad", "Pool pad"), ("BackyardSpa", "Backyard spa"), ("EquipmentRoom", "Equipment room"), ("Other", "Other") })
+                {
+                    <label class="pa-chip @(Model.EquipmentLocation == l.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EquipmentLocation" value="@l.Item1" @(Model.EquipmentLocation == l.Item1 ? "checked" : null) />
+                        <span>@l.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> Can the pro enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var e in new[] { ("GateCode", "Yes, gate code"), ("HostOnSite", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
+                        <span>@e.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Gate / access code</label>
+            <div class="pa-field">
+                <i class="fas fa-lock"></i>
+                <input type="text" name="AccessCode" value="@Model.AccessCode" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should receive updates? <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--green"></i> Best contact number</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-lawn-availability-banner">
+            <div>
+                <strong>@Model.ProEtaLabel</strong>
+                <small>Licensed • Insured • Background checked</small>
+            </div>
+            <i class="fas fa-user-check"></i>
+        </div>
+
+        <article class="pa-pool-pricing-card">
+            <div class="pa-pool-pricing-row">
+                <span><i class="fas fa-tag"></i> Estimated diagnostic visit</span>
+                <strong>@Model.DiagnosticEstimate</strong>
+            </div>
+            <div class="pa-pool-pricing-row">
+                <span><i class="fas fa-bolt"></i> Emergency priority fee</span>
+                <strong class="pa-pool-pricing-included">@Model.EmergencyFeeLabel</strong>
+            </div>
+        </article>
+
+        <div class="pa-lawn-photo-banner">
+            <i class="fas fa-circle-info"></i>
+            <div>
+                <strong>We'll send status updates to you and the guest.</strong>
+            </div>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request repair service</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-chip-grid');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip')?.classList.add('is-selected');
+            });
+        });
+    </script>
+}

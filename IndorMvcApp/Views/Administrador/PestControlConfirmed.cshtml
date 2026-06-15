@@ -1,0 +1,108 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPestControlConfirmedViewModel
+@{
+    ViewData["Title"] = "Pest Control request sent";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowShowBack = false;
+    var propertyLabel = Model.ViewingProperty != null
+        ? $"{Model.ViewingProperty.PropertyTypeLabel} • {Model.ViewingProperty.Location}"
+        : "";
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Pest Control request sent</h1>
+        <p>A technician is on the way to @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+    </section>
+
+    <div class="pa-success-banner pa-success-banner--green">
+        <span class="pa-success-icon"><i class="fas fa-check"></i></span>
+        <div>
+            <strong>Request received</strong>
+            <span>We've dispatched a pest control pro to help.</span>
+        </div>
+    </div>
+
+    <article class="pa-tech-card">
+        <div class="pa-tech-head">
+            <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
+            <div class="pa-tech-meta">
+                <strong>@Model.TechnicianName</strong>
+                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
+                <small>@Model.TechnicianTitle</small>
+            </div>
+            <span class="pa-verified-badge"><i class="fas fa-check"></i> Verified</span>
+        </div>
+        <div class="pa-tech-stats">
+            <div>
+                <i class="fas fa-clock"></i>
+                <strong>@Model.EtaLabel</strong>
+                <small>ETA</small>
+            </div>
+            <div>
+                <i class="fas fa-truck"></i>
+                <strong>@Model.VehicleLabel</strong>
+                <small>Vehicle</small>
+            </div>
+            <div>
+                <i class="fas fa-house"></i>
+                <strong>@(Model.ViewingProperty?.PropertyName)</strong>
+                <small>@propertyLabel</small>
+            </div>
+        </div>
+    </article>
+
+    <article class="pa-timeline-card">
+        <h2>Request timeline</h2>
+        <ul class="pa-timeline">
+            @foreach (var step in Model.Timeline)
+            {
+                <li class="pa-timeline-item pa-timeline-item--@step.State">
+                    <span class="pa-timeline-dot"><i class="fas @step.IconClass"></i></span>
+                    <div class="pa-timeline-body">
+                        <strong>@step.Label</strong>
+                        <span>@step.StatusLabel</span>
+                    </div>
+                </li>
+            }
+        </ul>
+    </article>
+
+    <article class="pa-summary-card-block">
+        <h2>Request summary</h2>
+        <ul class="pa-summary-detail-list pa-summary-detail-list--green">
+            @foreach (var item in Model.Summary)
+            {
+                <li>
+                    <i class="fas @item.IconClass"></i>
+                    <span>@item.Label</span>
+                    <strong>@item.Value</strong>
+                </li>
+            }
+        </ul>
+    </article>
+
+    <div class="pa-action-grid">
+        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>Call technician</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message guest</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-share"></i><span>Share ETA</span></button>
+        <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
+            <i class="fas fa-file-lines"></i><span>View details</span>
+        </a>
+    </div>
+
+    <div class="pa-pc-tip-banner">
+        <i class="fas fa-bug"></i>
+        <p><strong>Tip:</strong> @Model.Tip</p>
+    </div>
+
+    <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">
+        Track request <i class="fas fa-location-dot"></i>
+    </a>
+    <a asp-controller="Administrador" asp-action="Services" class="ob-btn ob-btn-outline pa-flow-edit">
+        Back to services
+    </a>
+</div>

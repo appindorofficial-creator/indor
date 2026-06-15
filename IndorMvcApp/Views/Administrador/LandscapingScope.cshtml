@@ -1,0 +1,223 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorLandscapingStep2ViewModel
+@{
+    ViewData["Title"] = "Landscaping details";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("LandscapingDetails", "Administrador", new { propertyId = Model.PropertyId });
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-leaf pa-flow-title-icon pa-flow-title-icon--green"></i> Landscaping details</h1>
+        <p>Help us understand access, scope, and scheduling.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+
+    <form asp-action="LandscapingScope" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="ServiceType" value="@Model.ServiceType" />
+        <input type="hidden" name="WorkArea" value="@Model.WorkArea" />
+        <input type="hidden" name="ServiceReason" value="@Model.ServiceReason" />
+        <input type="hidden" name="Timeline" value="@Model.Timeline" />
+        <input type="hidden" name="IsOccupied" value="@Model.IsOccupied" />
+        <input type="hidden" name="QuickNotes" value="@Model.QuickNotes" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-clipboard-list pa-q-icon pa-q-icon--green"></i> What kind of visit do you need?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var v in new (string Value, string Label)[] {
+                    ("QuoteWalkthrough", "Quote / walkthrough"),
+                    ("OneTimeService", "One-time service"),
+                    ("OngoingLandscaping", "Ongoing landscaping") })
+                {
+                    <label class="pa-chip @(Model.VisitType == v.Value ? "is-selected" : null)">
+                        <input type="radio" name="VisitType" value="@v.Value" @(Model.VisitType == v.Value ? "checked" : null) />
+                        <span>@v.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-seedling pa-q-icon pa-q-icon--green"></i> Do you want us to provide plants/materials?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.ProvideMaterials == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="ProvideMaterials" value="Yes" @(Model.ProvideMaterials == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.ProvideMaterials == "No" ? "is-selected" : null)">
+                    <input type="radio" name="ProvideMaterials" value="No" @(Model.ProvideMaterials == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-truck pa-q-icon pa-q-icon--green"></i> Do you need haul away?</label>
+            <div class="pa-lawn-service-row">
+                @foreach (var h in new (string Value, string Label)[] {
+                    ("RemoveDamagedPlants", "Remove damaged plants"),
+                    ("RemoveTreeDebris", "Remove tree debris"),
+                    ("RemoveOldMulch", "Remove old mulch"),
+                    ("NoHaulAway", "No haul away") })
+                {
+                    <label class="pa-lawn-option-card @(Model.HaulAwayType == h.Value ? "is-selected" : null)">
+                        <input type="radio" name="HaulAwayType" value="@h.Value" @(Model.HaulAwayType == h.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <span>@h.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Any irrigation or sprinkler lines in the area?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var i in new[] { ("Yes", "Yes"), ("No", "No"), ("NotSure", "Not sure") })
+                {
+                    <label class="pa-chip @(Model.HasIrrigation == i.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="HasIrrigation" value="@i.Item1" @(Model.HasIrrigation == i.Item1 ? "checked" : null) />
+                        <span>@i.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> Can the crew access the yard?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var a in new (string Value, string Label)[] {
+                    ("UnlockedAccess", "Unlocked access"),
+                    ("GateCode", "Gate code"),
+                    ("MeetOnSite", "Meet on-site") })
+                {
+                    <label class="pa-chip @(Model.YardAccess == a.Value ? "is-selected" : null)">
+                        <input type="radio" name="YardAccess" value="@a.Value" @(Model.YardAccess == a.Value ? "checked" : null) />
+                        <span>@a.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-calendar-day pa-q-icon pa-q-icon--green"></i> Preferred date</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var d in new[] { ("Tomorrow", "Tomorrow"), ("ThisWeek", "This week"), ("Flexible", "Flexible") })
+                {
+                    <label class="pa-chip @(Model.PreferredDate == d.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="PreferredDate" value="@d.Item1" @(Model.PreferredDate == d.Item1 ? "checked" : null) />
+                        <span>@d.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> Best time window</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var w in new[] { ("Morning", "Morning"), ("Afternoon", "Afternoon"), ("AnyTime", "Any time") })
+                {
+                    <label class="pa-chip @(Model.TimeWindow == w.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="TimeWindow" value="@w.Item1" @(Model.TimeWindow == w.Item1 ? "checked" : null) />
+                        <span>@w.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Access / project notes</label>
+            <textarea class="pa-textarea" name="ProjectNotes" rows="3" maxlength="250" id="lsProjectNotes">@Model.ProjectNotes</textarea>
+            <small class="pa-char-count"><span id="lsProjectNotesCount">@Model.ProjectNotes.Length</span> / 250</small>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">9</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should receive updates? <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-lawn-availability-banner">
+            <div>
+                <strong>A landscaping pro can prepare a scope of work and estimate after the site review.</strong>
+                <small>We'll confirm your consultation time and send updates as the request progresses.</small>
+            </div>
+            <i class="fas fa-calendar-check"></i>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-lawn-option-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var row = this.closest('.pa-lawn-service-row');
+                if (row) {
+                    row.querySelectorAll('.pa-lawn-option-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                }
+                this.closest('.pa-lawn-option-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip, .pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('lsProjectNotes');
+        var counter = document.getElementById('lsProjectNotesCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

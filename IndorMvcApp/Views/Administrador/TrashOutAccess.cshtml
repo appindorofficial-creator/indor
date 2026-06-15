@@ -1,0 +1,188 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorTrashOutStep2ViewModel
+@{
+    ViewData["Title"] = "Trash Out Service";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("TrashOutDetails", "Administrador", new { propertyId = Model.PropertyId });
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-trash-can pa-flow-title-icon pa-flow-title-icon--purple"></i> Trash Out Service</h1>
+        <p>Set timing, access, and updates for your bin service.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+
+    <form asp-action="TrashOutAccess" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="ServiceNeed" value="@Model.ServiceNeed" />
+        <input type="hidden" name="BinCount" value="@Model.BinCount" />
+        <input type="hidden" name="BinLocation" value="@Model.BinLocation" />
+        <input type="hidden" name="PickupDay" value="@Model.PickupDay" />
+        <input type="hidden" name="QuickNotes" value="@Model.QuickNotes" />
+        @foreach (var bin in Model.Bins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            <input type="hidden" name="BinsList" value="@bin" />
+        }
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-moon pa-q-icon pa-q-icon--purple"></i> When should we take the bins out?</label>
+            <div class="pa-trash-timing-row">
+                @foreach (var t in new (string Value, string Label, string Icon)[] { ("EveningBeforePickup", "Evening before pickup", "fa-moon"), ("MorningOfPickup", "Morning of pickup", "fa-sun"), ("CustomTime", "Custom time", "fa-clock") })
+                {
+                    <label class="pa-trash-timing-card @(Model.TakeOutTiming == t.Value ? "is-selected" : null)">
+                        <input type="radio" name="TakeOutTiming" value="@t.Value" @(Model.TakeOutTiming == t.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @t.Icon"></i>
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-trash-arrow-down pa-q-icon pa-q-icon--purple"></i> When should we bring the bins back in?</label>
+            <div class="pa-trash-timing-row">
+                @foreach (var t in new (string Value, string Label, string Icon)[] { ("AfterCollection", "After collection", "fa-trash-can"), ("LateAfternoon", "Late afternoon", "fa-cloud-sun"), ("EndOfDay", "End of day", "fa-moon") })
+                {
+                    <label class="pa-trash-timing-card @(Model.BringInTiming == t.Value ? "is-selected" : null)">
+                        <input type="radio" name="BringInTiming" value="@t.Value" @(Model.BringInTiming == t.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @t.Icon"></i>
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> Service type</label>
+            <div class="pa-toggle-pair">
+                @foreach (var s in new (string Value, string Label, string Icon)[] { ("OneTime", "One-time", "fa-calendar-day"), ("WeeklyRecurring", "Weekly recurring", "fa-rotate") })
+                {
+                    <label class="pa-toggle-btn pa-toggle-btn--icon @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <i class="fas @s.Icon"></i> @s.Label
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--purple"></i> Who should receive updates? <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--purple"></i> How can we access the bins?</label>
+            <div class="pa-trash-timing-row">
+                @foreach (var a in new (string Value, string Label, string Icon)[] { ("OpenSideGate", "Open side gate", "fa-door-open"), ("CodeNeeded", "Code needed", "fa-keyboard"), ("HostWillProvide", "Host will provide", "fa-user-check") })
+                {
+                    <label class="pa-trash-timing-card @(Model.AccessMethod == a.Value ? "is-selected" : null)">
+                        <input type="radio" name="AccessMethod" value="@a.Value" @(Model.AccessMethod == a.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @a.Icon"></i>
+                        <span>@a.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--purple"></i> Best contact number</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> Gate / access notes</label>
+            <div class="pa-field">
+                <i class="fas fa-key"></i>
+                <input type="text" name="AccessNotes" value="@Model.AccessNotes" />
+            </div>
+        </div>
+
+        <div class="pa-junk-crew-banner">
+            <i class="fas fa-circle-check"></i>
+            <div>
+                <strong>@Model.AvailabilityLabel</strong>
+                <small>We'll take the bins out and bring them back in.</small>
+            </div>
+        </div>
+
+        <article class="pa-trash-price-card">
+            <i class="fas fa-tag"></i>
+            <div>
+                <strong>Service total: @Model.ServiceTotalLabel</strong>
+                <small>@Model.ServiceTotalDescription</small>
+            </div>
+            <span class="pa-trash-price-badge">@Model.ServiceTotalLabel</span>
+        </article>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-trash-timing-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-trash-timing-row');
+                if (!group) return;
+                group.querySelectorAll('.pa-trash-timing-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-trash-timing-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+    </script>
+}

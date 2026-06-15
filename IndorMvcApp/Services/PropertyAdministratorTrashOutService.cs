@@ -1,0 +1,404 @@
+using System.Text.Json;
+using IndorMvcApp.Data;
+using IndorMvcApp.Models;
+using IndorMvcApp.ViewModels;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+
+namespace IndorMvcApp.Services;
+
+public interface IPropertyAdministratorTrashOutService
+{
+    PropertyAdministratorTrashOutFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId);
+    Task<PropertyAdministratorTrashOutStep1ViewModel> GetStep1Async(IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorTrashOutStep2ViewModel?> GetStep2Async(
+        IUrlHelper url, PropertyAdministratorTrashOutStep1Input step1, CancellationToken cancellationToken = default);
+    Task<int> SubmitAsync(PropertyAdministratorTrashOutSubmitInput input, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorTrashOutConfirmedViewModel?> GetConfirmedAsync(IUrlHelper url, int requestId, CancellationToken cancellationToken = default);
+}
+
+public class PropertyAdministratorTrashOutService(
+    AppDbContext db,
+    UserManager<ApplicationUser> userManager,
+    IHttpContextAccessor httpContextAccessor) : IPropertyAdministratorTrashOutService
+{
+    public PropertyAdministratorTrashOutFeaturedViewModel BuildFeaturedCta(IUrlHelper url, int? propertyId) =>
+        new()
+        {
+            StartUrl = url.Action("TrashOutDetails", "Administrador", new { propertyId }) ?? "#"
+        };
+
+    public async Task<PropertyAdministratorTrashOutStep1ViewModel> GetStep1Async(
+        IUrlHelper url, int? propertyId, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken: cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var property = ResolveProperty(admin, propertyId);
+
+        return new PropertyAdministratorTrashOutStep1ViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            ViewingProperty = MapProperty(property),
+            PropertyStatusLabel = property?.PropertyType == "ShortTermRental" ? "Guest checkout tomorrow" : null,
+            QuickNotes = property?.PropertyType == "ShortTermRental"
+                ? "Two large curbside bins are by the side gate. Please roll them out tonight after guest checkout."
+                : "",
+            FlatRateLabel = ResolveFlatRate("TakeOutBringBack")
+        };
+    }
+
+    public async Task<PropertyAdministratorTrashOutStep2ViewModel?> GetStep2Async(
+        IUrlHelper url, PropertyAdministratorTrashOutStep1Input step1, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken: cancellationToken);
+        if (admin == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var property = admin.PortfolioProperties.FirstOrDefault(p => p.Id == step1.PropertyId)
+            ?? ResolveProperty(admin, step1.PropertyId);
+        if (property == null)
+        {
+            return null;
+        }
+
+        var user = await GetUserAsync();
+        var flatRate = ResolveFlatRate(step1.ServiceNeed);
+
+        return new PropertyAdministratorTrashOutStep2ViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            PropertyId = property.Id,
+            ViewingProperty = MapProperty(property),
+            PropertyStatusLabel = property.PropertyType == "ShortTermRental" ? "Guest checkout tomorrow" : null,
+            ServiceNeed = step1.ServiceNeed,
+            Bins = string.Join(",", step1.BinsList),
+            BinCount = step1.BinCount,
+            BinLocation = step1.BinLocation,
+            PickupDay = step1.PickupDay,
+            QuickNotes = step1.QuickNotes ?? "",
+            UpdateRecipients = step1.ServiceNeed == "TakeOutBringBack" ? "Me,Guest" : "Me",
+            ContactPhone = user?.PhoneNumber ?? admin.Phone ?? "(305) 555-0198",
+            ServiceTotalLabel = flatRate,
+            ServiceTotalDescription = LabelServiceNeed(step1.ServiceNeed),
+            AvailabilityLabel = step1.PickupDay == "Tomorrow" ? "Available tomorrow evening" : "Available for scheduling"
+        };
+    }
+
+    public async Task<int> SubmitAsync(
+        PropertyAdministratorTrashOutSubmitInput input, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(trackChanges: true, cancellationToken: cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var property = admin.PortfolioProperties.FirstOrDefault(p => p.Id == input.PropertyId)
+            ?? admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).FirstOrDefault()
+            ?? throw new InvalidOperationException("No portfolio property found.");
+
+        var detailsJson = JsonSerializer.Serialize(input);
+        var visitDate = input.PickupDay == "Today"
+            ? DateTime.Today.AddHours(19)
+            : DateTime.Today.AddDays(1).AddHours(19);
+        var flatRate = ResolveFlatRate(input.ServiceNeed);
+
+        var request = new IndorPropertyAdminServiceRequest
+        {
+            AdministratorId = admin.Id,
+            PortfolioPropertyId = property.Id,
+            Title = $"Trash Out at {property.PropertyName}",
+            PropertyName = property.PropertyName,
+            Location = property.Location,
+            Status = PropertyAdministratorRequestStatuses.Open,
+            Category = "Trash",
+            ScheduledUtc = visitDate,
+            IsEmergency = false,
+            EtaLabel = "7:00–9:00 PM",
+            TeamLabel = "Homecare runner • Trash Out",
+            ImageUrl = property.ImageUrl,
+            DetailsJson = detailsJson,
+            TechnicianName = "Homecare runner",
+            TechnicianRating = 4.8m,
+            TechnicianTitle = "Verified",
+            VehicleLabel = flatRate,
+            TimelineStep = 2
+        };
+
+        db.IndorPropertyAdminServiceRequests.Add(request);
+
+        db.IndorPropertyAdminScheduledVisits.Add(new IndorPropertyAdminScheduledVisit
+        {
+            AdministratorId = admin.Id,
+            Title = "Trash out service",
+            PropertyName = property.PropertyName,
+            VisitDate = visitDate.Date,
+            TimeWindow = "7:00–9:00 PM",
+            ImageUrl = property.ImageUrl
+        });
+
+        await db.SaveChangesAsync(cancellationToken);
+        return request.Id;
+    }
+
+    public async Task<PropertyAdministratorTrashOutConfirmedViewModel?> GetConfirmedAsync(
+        IUrlHelper url, int requestId, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken: cancellationToken);
+        if (admin == null)
+        {
+            return null;
+        }
+
+        var request = admin.ServiceRequests.FirstOrDefault(r => r.Id == requestId);
+        if (request == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellAsync(admin, cancellationToken);
+        var property = request.PortfolioPropertyId.HasValue
+            ? admin.PortfolioProperties.FirstOrDefault(p => p.Id == request.PortfolioPropertyId.Value)
+            : admin.PortfolioProperties.FirstOrDefault();
+
+        var input = DeserializeInput(request.DetailsJson);
+
+        return new PropertyAdministratorTrashOutConfirmedViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount + 1,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            RequestId = request.Id,
+            ViewingProperty = property == null ? null : MapProperty(property),
+            Summary = BuildSummary(property, input),
+            Timeline = BuildTimeline(input),
+            ArrivalWindow = request.EtaLabel ?? "7:00–9:00 PM"
+        };
+    }
+
+    private static PropertyAdministratorTrashOutSubmitInput DeserializeInput(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new PropertyAdministratorTrashOutSubmitInput();
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<PropertyAdministratorTrashOutSubmitInput>(json)
+                ?? new PropertyAdministratorTrashOutSubmitInput();
+        }
+        catch
+        {
+            return new PropertyAdministratorTrashOutSubmitInput();
+        }
+    }
+
+    private static IReadOnlyList<PropertyAdministratorTrashOutSummaryItemViewModel> BuildSummary(
+        IndorPropertyAdminPortfolioProperty? property, PropertyAdministratorTrashOutSubmitInput input) =>
+    [
+        new()
+        {
+            Label = "Property",
+            Value = property != null ? $"Viewing: {property.PropertyName}" : "—",
+            IconClass = "fa-house"
+        },
+        new() { Label = "Service", Value = LabelServiceNeed(input.ServiceNeed), IconClass = "fa-trash-arrow-up" },
+        new() { Label = "Bins", Value = LabelBins(input.BinsList), IconClass = "fa-trash-can" },
+        new() { Label = "Quantity", Value = LabelBinCount(input.BinCount), IconClass = "fa-hashtag" },
+        new() { Label = "Pickup day", Value = LabelPickupDay(input.PickupDay), IconClass = "fa-calendar" },
+        new() { Label = "Timing", Value = $"{LabelTakeOutTiming(input.TakeOutTiming)} / {LabelBringInTiming(input.BringInTiming)}", IconClass = "fa-clock" },
+        new() { Label = "Updates", Value = LabelUpdates(input.UpdateRecipientsList), IconClass = "fa-users" },
+        new() { Label = "Price", Value = $"{ResolveFlatRate(input.ServiceNeed)} flat rate", IconClass = "fa-tag" }
+    ];
+
+    private static IReadOnlyList<PropertyAdministratorTrashOutTimelineItemViewModel> BuildTimeline(
+        PropertyAdministratorTrashOutSubmitInput input)
+    {
+        var now = DateTime.Now;
+        var pickupLabel = input.PickupDay == "Today" ? "This evening" : "Tomorrow evening";
+
+        return
+        [
+            new() { Label = "Request submitted", StatusLabel = $"Today, {now:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = "Scheduled", StatusLabel = $"Today, {now:h:mm tt}", IconClass = "fa-circle-check", State = "done" },
+            new() { Label = "Bins out for pickup", StatusLabel = pickupLabel, IconClass = "fa-trash-arrow-up", State = "pending" },
+            new() { Label = "Collection in progress", StatusLabel = "Pending", IconClass = "fa-truck", State = "pending" },
+            new() { Label = "Bins returned", StatusLabel = "Pending", IconClass = "fa-trash-arrow-down", State = "pending" }
+        ];
+    }
+
+    private static string ResolveFlatRate(string serviceNeed) => serviceNeed switch
+    {
+        "TakeBinsOut" => "$18",
+        "BringBinsBackIn" => "$18",
+        _ => "$30"
+    };
+
+    private static string LabelServiceNeed(string value) => value switch
+    {
+        "TakeBinsOut" => "Take bins out",
+        "BringBinsBackIn" => "Bring bins back in",
+        _ => "Take out + bring back"
+    };
+
+    private static string LabelBins(IReadOnlyList<string> bins)
+    {
+        var labels = bins.Select(b => b switch
+        {
+            "Recycle" => "Recycle",
+            "YardWaste" => "Yard waste",
+            _ => "Trash"
+        }).Distinct().ToList();
+
+        return labels.Count switch
+        {
+            0 => "—",
+            1 => labels[0],
+            2 => $"{labels[0]} + {labels[1]}",
+            _ => string.Join(" + ", labels)
+        };
+    }
+
+    private static string LabelBinCount(string value) => value switch
+    {
+        "One" => "1 bin",
+        "ThreePlus" => "3+ bins",
+        _ => "2 bins"
+    };
+
+    private static string LabelPickupDay(string value) => value switch
+    {
+        "Today" => "Today",
+        "Later" => "Later",
+        _ => "Tomorrow"
+    };
+
+    private static string LabelTakeOutTiming(string value) => value switch
+    {
+        "MorningOfPickup" => "Morning out",
+        "CustomTime" => "Custom time out",
+        _ => "Evening out"
+    };
+
+    private static string LabelBringInTiming(string value) => value switch
+    {
+        "LateAfternoon" => "Late afternoon back in",
+        "EndOfDay" => "End of day back in",
+        _ => "After collection back in"
+    };
+
+    private static string LabelUpdates(IReadOnlyList<string> recipients)
+    {
+        var labels = recipients.Select(r => r switch
+        {
+            "Guest" => "Guest",
+            "CoHost" => "Co-host",
+            _ => "Me"
+        }).Distinct().ToList();
+
+        return labels.Count switch
+        {
+            0 => "Me",
+            1 => labels[0],
+            2 => $"{labels[0]} + {labels[1]}",
+            _ => string.Join(" + ", labels)
+        };
+    }
+
+    private async Task<IndorPropertyAdministrator?> LoadAdminAsync(
+        bool trackChanges = false, CancellationToken cancellationToken = default)
+    {
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return null;
+        }
+
+        var query = db.IndorPropertyAdministrators
+            .Include(a => a.PortfolioProperties)
+            .Include(a => a.ServiceRequests)
+            .Where(a => a.UserId == userId && a.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed);
+
+        return trackChanges
+            ? await query.FirstOrDefaultAsync(cancellationToken)
+            : await query.AsNoTracking().FirstOrDefaultAsync(cancellationToken);
+    }
+
+    private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
+        IndorPropertyAdministrator admin, CancellationToken cancellationToken)
+    {
+        var firstName = admin.DisplayName?.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
+        var hour = DateTime.Now.Hour;
+        var greeting = hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
+        var portfolioName = !string.IsNullOrWhiteSpace(admin.PortfolioBusinessName)
+            ? admin.PortfolioBusinessName
+            : $"{firstName} Portfolio";
+
+        var shell = new PropertyAdministratorPortalShellViewModel
+        {
+            DisplayName = admin.DisplayName ?? "Property Owner",
+            PortfolioName = portfolioName,
+            ActivePropertyCount = admin.PortfolioProperties.Count,
+            Greeting = $"{greeting}, {firstName}",
+            NotificationCount = admin.ServiceRequests.Count(r =>
+                r.Status is PropertyAdministratorRequestStatuses.Open
+                    or PropertyAdministratorRequestStatuses.Emergency
+                    or PropertyAdministratorRequestStatuses.InProgress)
+        };
+
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        if (!string.IsNullOrEmpty(userId))
+        {
+            var user = await userManager.FindByIdAsync(userId);
+            shell.ProfilePhotoUrl = user?.FotoUrl;
+        }
+
+        return shell;
+    }
+
+    private async Task<ApplicationUser?> GetUserAsync()
+    {
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        return string.IsNullOrEmpty(userId) ? null : await userManager.FindByIdAsync(userId);
+    }
+
+    private static IndorPropertyAdminPortfolioProperty? ResolveProperty(
+        IndorPropertyAdministrator admin, int? propertyId) =>
+        propertyId.HasValue
+            ? admin.PortfolioProperties.FirstOrDefault(p => p.Id == propertyId.Value)
+                ?? admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).FirstOrDefault()
+            : admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).FirstOrDefault();
+
+    private static PropertyAdministratorFlowPropertyViewModel MapProperty(IndorPropertyAdminPortfolioProperty? property)
+    {
+        if (property == null)
+        {
+            return new PropertyAdministratorFlowPropertyViewModel();
+        }
+
+        return new PropertyAdministratorFlowPropertyViewModel
+        {
+            Id = property.Id,
+            PropertyName = property.PropertyName,
+            Location = property.Location,
+            PropertyTypeLabel = PropertyAdministratorCatalog.LabelPropertyType(property.PropertyType),
+            ImageUrl = property.ImageUrl,
+            OccupancyLabel = property.PropertyType == "ShortTermRental" ? "Occupied now" : null
+        };
+    }
+}

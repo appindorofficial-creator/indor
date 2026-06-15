@@ -22,6 +22,15 @@ public class AdministradorController(
     IPropertyAdministratorTurnoverCleaningService turnoverCleaning,
     IPropertyAdministratorStandardCleaningService standardCleaning,
     IPropertyAdministratorPetDeepCleanService petDeepClean,
+    IPropertyAdministratorMovingHelpService movingHelp,
+    IPropertyAdministratorJunkRemovalService junkRemoval,
+    IPropertyAdministratorFurnitureHaulAwayService furnitureHaulAway,
+    IPropertyAdministratorTrashOutService trashOut,
+    IPropertyAdministratorLawnCareService lawnCare,
+    IPropertyAdministratorLandscapingService landscaping,
+    IPropertyAdministratorPressureWashingService pressureWashing,
+    IPropertyAdministratorPestControlService pestControl,
+    IPropertyAdministratorPoolHotTubService poolHotTub,
     UserManager<ApplicationUser> userManager) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -68,7 +77,16 @@ public class AdministradorController(
         ViewBag.NavActive = "home";
         var model = await portal.GetHomeAsync(Url, propertyId);
         var activePropertyId = propertyId ?? model.ViewingProperty?.Id;
-        model.FeaturedPetDeepClean = petDeepClean.BuildFeaturedCta(Url, activePropertyId);
+        model.FeaturedPoolHotTub = poolHotTub.BuildFeaturedCta(Url, activePropertyId);
+        model.FeaturedPestControl = null;
+        model.FeaturedPressureWashing = null;
+        model.FeaturedLandscaping = null;
+        model.FeaturedLawnCare = null;
+        model.FeaturedTrashOut = null;
+        model.FeaturedFurnitureHaulAway = null;
+        model.FeaturedJunkRemoval = null;
+        model.FeaturedMovingHelp = null;
+        model.FeaturedPetDeepClean = null;
         model.FeaturedStandardCleaning = null;
         model.FeaturedTurnoverCleaning = null;
         model.FeaturedSmokeDetector = null;
@@ -285,6 +303,802 @@ public class AdministradorController(
         }
 
         var model = await emergencyFlood.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PoolHotTubDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await poolHotTub.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PoolHotTubDetails(PropertyAdministratorPoolHotTubStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["PoolHotTubStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(PoolHotTubAccess));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PoolHotTubAccess()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["PoolHotTubStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(PoolHotTubDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorPoolHotTubStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(PoolHotTubDetails));
+        }
+
+        var model = await poolHotTub.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(PoolHotTubDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PoolHotTubAccess(PropertyAdministratorPoolHotTubSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await poolHotTub.SubmitAsync(input);
+        return RedirectToAction(nameof(PoolHotTubConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PoolHotTubConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await poolHotTub.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PestControlDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await pestControl.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PestControlDetails(PropertyAdministratorPestControlStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["PestControlStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(PestControlSchedule));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PestControlSchedule()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["PestControlStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(PestControlDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorPestControlStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(PestControlDetails));
+        }
+
+        var model = await pestControl.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(PestControlDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PestControlSchedule(PropertyAdministratorPestControlSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.TreatAreasList.Count == 0)
+        {
+            input.TreatAreasList = ["Kitchen"];
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await pestControl.SubmitAsync(input);
+        return RedirectToAction(nameof(PestControlConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PestControlConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await pestControl.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PressureWashingDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await pressureWashing.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PressureWashingDetails(PropertyAdministratorPressureWashingStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.WashAreasList.Count == 0)
+        {
+            input.WashAreasList = ["Walkway"];
+        }
+
+        TempData["PressureWashingStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(PressureWashingSchedule));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PressureWashingSchedule()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["PressureWashingStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(PressureWashingDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorPressureWashingStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(PressureWashingDetails));
+        }
+
+        var model = await pressureWashing.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(PressureWashingDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PressureWashingSchedule(PropertyAdministratorPressureWashingSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.WashAreasList.Count == 0)
+        {
+            input.WashAreasList = ["Walkway"];
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await pressureWashing.SubmitAsync(input);
+        return RedirectToAction(nameof(PressureWashingConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PressureWashingConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await pressureWashing.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LandscapingDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await landscaping.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LandscapingDetails(PropertyAdministratorLandscapingStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["LandscapingStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(LandscapingScope));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LandscapingScope()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["LandscapingStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(LandscapingDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorLandscapingStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(LandscapingDetails));
+        }
+
+        var model = await landscaping.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(LandscapingDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LandscapingScope(PropertyAdministratorLandscapingSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await landscaping.SubmitAsync(input);
+        return RedirectToAction(nameof(LandscapingConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LandscapingConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await landscaping.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LawnCareDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await lawnCare.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LawnCareDetails(PropertyAdministratorLawnCareStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["LawnCareStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(LawnCareSchedule));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LawnCareSchedule()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["LawnCareStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(LawnCareDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorLawnCareStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(LawnCareDetails));
+        }
+
+        var model = await lawnCare.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(LawnCareDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LawnCareSchedule(PropertyAdministratorLawnCareSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await lawnCare.SubmitAsync(input);
+        return RedirectToAction(nameof(LawnCareConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LawnCareConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await lawnCare.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TrashOutDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await trashOut.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> TrashOutDetails(PropertyAdministratorTrashOutStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["TrashOutStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(TrashOutAccess));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TrashOutAccess()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["TrashOutStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(TrashOutDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorTrashOutStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(TrashOutDetails));
+        }
+
+        var model = await trashOut.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(TrashOutDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> TrashOutAccess(PropertyAdministratorTrashOutSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await trashOut.SubmitAsync(input);
+        return RedirectToAction(nameof(TrashOutConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TrashOutConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await trashOut.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> FurnitureHaulAwayDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await furnitureHaulAway.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> FurnitureHaulAwayDetails(PropertyAdministratorFurnitureHaulAwayStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["FurnitureHaulAwayStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(FurnitureHaulAwayAccess));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> FurnitureHaulAwayAccess()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["FurnitureHaulAwayStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(FurnitureHaulAwayDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorFurnitureHaulAwayStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(FurnitureHaulAwayDetails));
+        }
+
+        var model = await furnitureHaulAway.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(FurnitureHaulAwayDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> FurnitureHaulAwayAccess(PropertyAdministratorFurnitureHaulAwaySubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await furnitureHaulAway.SubmitAsync(input);
+        return RedirectToAction(nameof(FurnitureHaulAwayConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> FurnitureHaulAwayConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await furnitureHaulAway.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> JunkRemovalDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await junkRemoval.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> JunkRemovalDetails(PropertyAdministratorJunkRemovalStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["JunkRemovalStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(JunkRemovalAccess));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> JunkRemovalAccess()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["JunkRemovalStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(JunkRemovalDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorJunkRemovalStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(JunkRemovalDetails));
+        }
+
+        var model = await junkRemoval.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(JunkRemovalDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> JunkRemovalAccess(PropertyAdministratorJunkRemovalSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me"];
+        }
+
+        var requestId = await junkRemoval.SubmitAsync(input);
+        return RedirectToAction(nameof(JunkRemovalConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> JunkRemovalConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await junkRemoval.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MovingHelpDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await movingHelp.GetFormAsync(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MovingHelpDetails(PropertyAdministratorMovingHelpSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (input.UpdateRecipientsList.Count == 0)
+        {
+            input.UpdateRecipientsList = ["Me", "CoHost"];
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View("MovingHelpReview", await movingHelp.GetReviewAsync(Url, input));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MovingHelpReview(PropertyAdministratorMovingHelpSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await movingHelp.SubmitAsync(input);
+        return RedirectToAction(nameof(MovingHelpConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> MovingHelpConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await movingHelp.GetConfirmedAsync(Url, id);
         if (model == null)
         {
             return RedirectToAction(nameof(Index));

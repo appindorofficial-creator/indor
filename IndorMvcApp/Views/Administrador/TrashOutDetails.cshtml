@@ -1,0 +1,173 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorTrashOutStep1ViewModel
+@{
+    ViewData["Title"] = "Trash Out Service";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+    var bins = Model.Bins.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-trash-can pa-flow-title-icon pa-flow-title-icon--purple"></i> Trash Out Service</h1>
+        <p>Set up curbside bin service for your rental or Airbnb property.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge"><i class="fas fa-clock"></i> @Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+
+    <form asp-action="TrashOutDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-trash-arrow-up pa-q-icon pa-q-icon--purple"></i> What do you need?</label>
+            <div class="pa-trash-service-row">
+                @foreach (var s in new (string Value, string Label, string Icon)[]
+                {
+                    ("TakeBinsOut", "Take bins out", "fa-arrow-up"),
+                    ("TakeOutBringBack", "Take out + bring back", "fa-arrows-up-down"),
+                    ("BringBinsBackIn", "Bring bins back in", "fa-arrow-down")
+                })
+                {
+                    <label class="pa-trash-service-card @(Model.ServiceNeed == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceNeed" value="@s.Value" @(Model.ServiceNeed == s.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @s.Icon"></i>
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-recycle pa-q-icon pa-q-icon--purple"></i> Which bins? <small>(Select all that apply)</small></label>
+            <div class="pa-trash-bins-row">
+                @foreach (var b in new (string Value, string Label, string Icon)[] { ("Trash", "Trash", "fa-trash-can"), ("Recycle", "Recycle", "fa-recycle"), ("YardWaste", "Yard waste", "fa-leaf") })
+                {
+                    <label class="pa-trash-bin-card @(bins.Contains(b.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="BinsList" value="@b.Value" @(bins.Contains(b.Value) ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @b.Icon"></i>
+                        <span>@b.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>How many bins?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var c in new (string Value, string Label)[] { ("One", "1"), ("Two", "2"), ("ThreePlus", "3+") })
+                {
+                    <label class="pa-chip @(Model.BinCount == c.Value ? "is-selected" : null)">
+                        <input type="radio" name="BinCount" value="@c.Value" @(Model.BinCount == c.Value ? "checked" : null) />
+                        <span>@c.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label><i class="fas fa-location-dot pa-q-icon pa-q-icon--purple"></i> Where are the bins now?</label>
+            <div class="pa-trash-location-grid">
+                @foreach (var l in new (string Value, string Label, string Icon)[] { ("Garage", "Garage", "fa-warehouse"), ("SideYard", "Side yard", "fa-fence"), ("Backyard", "Backyard", "fa-tree"), ("FrontCurb", "Front curb", "fa-road") })
+                {
+                    <label class="pa-trash-location-card @(Model.BinLocation == l.Value ? "is-selected" : null)">
+                        <input type="radio" name="BinLocation" value="@l.Value" @(Model.BinLocation == l.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--purple"><i class="fas fa-check"></i></span>
+                        <i class="fas @l.Icon"></i>
+                        <span>@l.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> Pickup day</label>
+            <div class="pa-trash-pickup-row">
+                @foreach (var d in new[] { "Today", "Tomorrow", "Later" })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.PickupDay == d ? "is-selected" : null)">
+                        <input type="radio" name="PickupDay" value="@d" @(Model.PickupDay == d ? "checked" : null) />
+                        <i class="fas fa-calendar-day"></i>
+                        <span>@d</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> Quick notes <small>(optional)</small></label>
+            <textarea class="pa-textarea" name="QuickNotes" rows="3" maxlength="250" id="toNotes">@Model.QuickNotes</textarea>
+            <small class="pa-char-count"><span id="toNotesCount">@Model.QuickNotes.Length</span> / 250</small>
+        </div>
+
+        <div class="pa-trash-rate-banner">
+            <i class="fas fa-circle-info"></i>
+            <div>
+                <strong>Flat rate: @Model.FlatRateLabel for take-out and return service.</strong>
+                <small>Includes taking bins out for collection and bringing them back in.</small>
+            </div>
+            <i class="fas fa-tag"></i>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-trash-service-card input, .pa-trash-location-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-trash-service-row, .pa-trash-location-grid');
+                if (group) {
+                    group.querySelectorAll('.pa-trash-service-card, .pa-trash-location-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                    this.closest('.pa-trash-service-card, .pa-trash-location-card')?.classList.add('is-selected');
+                }
+            });
+        });
+        document.querySelectorAll('.pa-trash-bin-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-trash-bin-card')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-chip-grid, .pa-trash-pickup-row');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip')?.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('toNotes');
+        var counter = document.getElementById('toNotesCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

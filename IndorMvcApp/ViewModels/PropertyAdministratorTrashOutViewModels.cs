@@ -1,0 +1,98 @@
+namespace IndorMvcApp.ViewModels;
+
+public class PropertyAdministratorTrashOutFeaturedViewModel
+{
+    public string Title { get; set; } = "Trash Out Service";
+    public string Subtitle { get; set; } = "Curbside bin take-out and return for rentals and Airbnb turnovers.";
+    public string StartUrl { get; set; } = "#";
+}
+
+public class PropertyAdministratorTrashOutStep1ViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int FlowStep { get; set; } = 1;
+    public int TotalSteps { get; set; } = 3;
+    public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
+    public string? PropertyStatusLabel { get; set; }
+    public string ServiceNeed { get; set; } = "TakeOutBringBack";
+    public string Bins { get; set; } = "Trash,Recycle";
+    public string BinCount { get; set; } = "Two";
+    public string BinLocation { get; set; } = "SideYard";
+    public string PickupDay { get; set; } = "Tomorrow";
+    public string QuickNotes { get; set; } = "";
+    public string FlatRateLabel { get; set; } = "$30";
+}
+
+public class PropertyAdministratorTrashOutStep1Input
+{
+    public int PropertyId { get; set; }
+    public string ServiceNeed { get; set; } = "TakeOutBringBack";
+    public List<string> BinsList { get; set; } = ["Trash", "Recycle"];
+    public string BinCount { get; set; } = "Two";
+    public string BinLocation { get; set; } = "SideYard";
+    public string PickupDay { get; set; } = "Tomorrow";
+    public string? QuickNotes { get; set; }
+}
+
+public class PropertyAdministratorTrashOutStep2ViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int FlowStep { get; set; } = 2;
+    public int TotalSteps { get; set; } = 3;
+    public int PropertyId { get; set; }
+    public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
+    public string? PropertyStatusLabel { get; set; }
+    public string ServiceNeed { get; set; } = "TakeOutBringBack";
+    public string Bins { get; set; } = "Trash,Recycle";
+    public string BinCount { get; set; } = "Two";
+    public string BinLocation { get; set; } = "SideYard";
+    public string PickupDay { get; set; } = "Tomorrow";
+    public string QuickNotes { get; set; } = "";
+    public string TakeOutTiming { get; set; } = "EveningBeforePickup";
+    public string BringInTiming { get; set; } = "AfterCollection";
+    public string ServiceType { get; set; } = "OneTime";
+    public string AccessMethod { get; set; } = "OpenSideGate";
+    public string ContactPhone { get; set; } = "";
+    public string AccessNotes { get; set; } = "Use the left side gate. No dog in yard.";
+    public string UpdateRecipients { get; set; } = "Me,Guest";
+    public string AvailabilityLabel { get; set; } = "Available tomorrow evening";
+    public string ServiceTotalLabel { get; set; } = "$30";
+    public string ServiceTotalDescription { get; set; } = "Take bins out + bring back in";
+}
+
+public class PropertyAdministratorTrashOutSubmitInput : PropertyAdministratorTrashOutStep1Input
+{
+    public string TakeOutTiming { get; set; } = "EveningBeforePickup";
+    public string BringInTiming { get; set; } = "AfterCollection";
+    public string ServiceType { get; set; } = "OneTime";
+    public string AccessMethod { get; set; } = "OpenSideGate";
+    public string? ContactPhone { get; set; }
+    public string? AccessNotes { get; set; }
+    public List<string> UpdateRecipientsList { get; set; } = ["Me", "Guest"];
+}
+
+public class PropertyAdministratorTrashOutSummaryItemViewModel
+{
+    public string Label { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string IconClass { get; set; } = "";
+}
+
+public class PropertyAdministratorTrashOutTimelineItemViewModel
+{
+    public string Label { get; set; } = "";
+    public string StatusLabel { get; set; } = "";
+    public string IconClass { get; set; } = "";
+    public string State { get; set; } = "pending";
+}
+
+public class PropertyAdministratorTrashOutConfirmedViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public int FlowStep { get; set; } = 3;
+    public int TotalSteps { get; set; } = 3;
+    public int RequestId { get; set; }
+    public PropertyAdministratorFlowPropertyViewModel? ViewingProperty { get; set; }
+    public IReadOnlyList<PropertyAdministratorTrashOutSummaryItemViewModel> Summary { get; set; } = [];
+    public IReadOnlyList<PropertyAdministratorTrashOutTimelineItemViewModel> Timeline { get; set; } = [];
+    public string RunnerLabel { get; set; } = "Homecare runner assigned";
+    public string ArrivalWindow { get; set; } = "7:00–9:00 PM";
+    public string Tip { get; set; } = "Leave gate access clear so the bins can be rolled out quickly.";
+}

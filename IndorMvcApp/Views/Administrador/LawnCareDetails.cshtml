@@ -1,0 +1,165 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorLawnCareStep1ViewModel
+@{
+    ViewData["Title"] = "Lawn Care / Grass Cutting";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Index", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-seedling pa-flow-title-icon pa-flow-title-icon--green"></i> Lawn Care / Grass Cutting</h1>
+        <p>Tell us what your property needs so we can schedule yard service.</p>
+    </section>
+
+    @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
+    {
+        <div class="pa-viewing-strip">
+            <img src="@(Model.ViewingProperty.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-viewing-strip-thumb" />
+            <div class="pa-viewing-strip-main">
+                <strong>Viewing: @Model.ViewingProperty.PropertyName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.PropertyStatusLabel))
+                {
+                    <span class="pa-checkout-badge"><i class="fas fa-calendar-day"></i> @Model.PropertyStatusLabel</span>
+                }
+                <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
+            </div>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+
+    <form asp-action="LawnCareDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-seedling pa-q-icon pa-q-icon--green"></i> What service do you need?</label>
+            <div class="pa-lawn-service-row">
+                @foreach (var s in new (string Value, string Label)[] { ("GrassCutting", "Grass cutting"), ("Edging", "Edging"), ("WeedTrimming", "Weed trimming"), ("FullYardRefresh", "Full yard refresh") })
+                {
+                    <label class="pa-lawn-option-card @(Model.ServiceType == s.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Value" @(Model.ServiceType == s.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <span>@s.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>Which area?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var a in new[] { ("FrontYard", "Front yard"), ("Backyard", "Backyard"), ("Both", "Both") })
+                {
+                    <label class="pa-chip @(Model.YardArea == a.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="YardArea" value="@a.Item1" @(Model.YardArea == a.Item1 ? "checked" : null) />
+                        <span>@a.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>How large is the yard?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var s in new[] { "Small", "Medium", "Large" })
+                {
+                    <label class="pa-chip @(Model.YardSize == s ? "is-selected" : null)">
+                        <input type="radio" name="YardSize" value="@s" @(Model.YardSize == s ? "checked" : null) />
+                        <span>@s</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>How often?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var f in new[] { ("OneTime", "One-time"), ("Weekly", "Weekly"), ("BiWeekly", "Bi-weekly") })
+                {
+                    <label class="pa-chip @(Model.Frequency == f.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="Frequency" value="@f.Item1" @(Model.Frequency == f.Item1 ? "checked" : null) />
+                        <span>@f.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>Is the property occupied right now?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.IsOccupied == "No" ? "is-selected" : null)">
+                    <input type="radio" name="IsOccupied" value="No" @(Model.IsOccupied == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Do we need gate or yard access details?</label>
+            <div class="pa-field">
+                <i class="fas fa-door-open"></i>
+                <input type="text" name="AccessDetails" value="@Model.AccessDetails" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add quick notes</label>
+            <textarea class="pa-textarea" name="QuickNotes" rows="3" maxlength="250" id="lcNotes">@Model.QuickNotes</textarea>
+            <small class="pa-char-count"><span id="lcNotesCount">@Model.QuickNotes.Length</span> / 250</small>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-lawn-availability-banner">
+            <div>
+                <strong>@Model.AvailabilityLabel</strong>
+                <small>Our team can arrive between @Model.AvailabilityWindow. You'll get updates and photos when the job is done.</small>
+            </div>
+            <i class="fas fa-circle-check"></i>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-lawn-option-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.pa-lawn-option-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-lawn-option-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip, .pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('lcNotes');
+        var counter = document.getElementById('lcNotesCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

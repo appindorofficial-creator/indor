@@ -1,0 +1,173 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPestControlStep2ViewModel
+@{
+    ViewData["Title"] = "Pest Control";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("PestControlDetails", "Administrador", new { propertyId = Model.PropertyId });
+    ViewBag.BadgeLabel = Model.PropertyStatusLabel;
+    var treatAreas = Model.TreatAreas.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-bug pa-flow-title-icon pa-flow-title-icon--green"></i> Pest Control</h1>
+        <p>Choose service timing and access so the pro can arrive prepared.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="PestControlSchedule" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="PestType" value="@Model.PestType" />
+        <input type="hidden" name="IssueLocation" value="@Model.IssueLocation" />
+        <input type="hidden" name="Urgency" value="@Model.Urgency" />
+        <input type="hidden" name="GuestsStaying" value="@Model.GuestsStaying" />
+        <input type="hidden" name="LivePestsToday" value="@Model.LivePestsToday" />
+        <input type="hidden" name="QuickDetails" value="@Model.QuickDetails" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>What type of service do you need?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var s in new[] { ("OneTimeTreatment", "One-time treatment"), ("RecurringService", "Recurring service"), ("InspectionOnly", "Inspection only") })
+                {
+                    <label class="pa-chip @(Model.ServiceType == s.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="ServiceType" value="@s.Item1" @(Model.ServiceType == s.Item1 ? "checked" : null) />
+                        <span>@s.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> Preferred arrival</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var a in new[] { ("Asap", "ASAP"), ("TodayLater", "Today later"), ("Tomorrow", "Tomorrow") })
+                {
+                    <label class="pa-chip @(Model.PreferredArrival == a.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="PreferredArrival" value="@a.Item1" @(Model.PreferredArrival == a.Item1 ? "checked" : null) />
+                        <span>@a.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> Can the technician enter now?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostOnSite", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
+                        <span>@e.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Are pets currently at the property?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.HasPets == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="HasPets" value="Yes" @(Model.HasPets == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.HasPets == "No" ? "is-selected" : null)">
+                    <input type="radio" name="HasPets" value="No" @(Model.HasPets == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>Areas to treat <small>(Select all that apply)</small></label>
+            <div class="pa-pw-areas-grid">
+                @foreach (var a in new[] { ("Kitchen", "Kitchen"), ("Pantry", "Pantry"), ("Bathroom", "Bathroom"), ("Bedrooms", "Bedrooms"), ("PatioExterior", "Patio / exterior") })
+                {
+                    <label class="pa-pw-area-card @(treatAreas.Contains(a.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="TreatAreasList" value="@a.Item1" @(treatAreas.Contains(a.Item1) ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <span>@a.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Best contact for updates <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Entry / access notes</label>
+            <textarea class="pa-textarea" name="AccessNotes" rows="3" maxlength="200" id="pcAccessNotes">@Model.AccessNotes</textarea>
+            <small class="pa-char-count"><span id="pcAccessNotesCount">@Model.AccessNotes.Length</span> / 200</small>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">8</span>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--green"></i> Best phone number</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-lawn-availability-banner">
+            <div>
+                <strong>@Model.ProEtaLabel</strong>
+                <small>We'll dispatch a licensed pest control pro based on your urgency and property access.</small>
+            </div>
+            <i class="fas fa-clock"></i>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-pw-area-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-pw-area-card')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip, .pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('pcAccessNotes');
+        var counter = document.getElementById('pcAccessNotesCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}

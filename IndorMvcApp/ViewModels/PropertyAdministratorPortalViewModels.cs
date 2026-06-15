@@ -39,6 +39,15 @@ public class PropertyAdministratorHomeViewModel : PropertyAdministratorPortalShe
 {
     public int HomeFlowStep { get; set; } = 1;
     public int HomeFlowTotalSteps { get; set; } = 3;
+    public PropertyAdministratorPoolHotTubFeaturedViewModel? FeaturedPoolHotTub { get; set; }
+    public PropertyAdministratorPestControlFeaturedViewModel? FeaturedPestControl { get; set; }
+    public PropertyAdministratorPressureWashingFeaturedViewModel? FeaturedPressureWashing { get; set; }
+    public PropertyAdministratorLandscapingFeaturedViewModel? FeaturedLandscaping { get; set; }
+    public PropertyAdministratorLawnCareFeaturedViewModel? FeaturedLawnCare { get; set; }
+    public PropertyAdministratorTrashOutFeaturedViewModel? FeaturedTrashOut { get; set; }
+    public PropertyAdministratorFurnitureHaulAwayFeaturedViewModel? FeaturedFurnitureHaulAway { get; set; }
+    public PropertyAdministratorJunkRemovalFeaturedViewModel? FeaturedJunkRemoval { get; set; }
+    public PropertyAdministratorMovingHelpFeaturedViewModel? FeaturedMovingHelp { get; set; }
     public PropertyAdministratorPetDeepCleanFeaturedViewModel? FeaturedPetDeepClean { get; set; }
     public PropertyAdministratorStandardCleaningFeaturedViewModel? FeaturedStandardCleaning { get; set; }
     public PropertyAdministratorTurnoverCleaningFeaturedViewModel? FeaturedTurnoverCleaning { get; set; }

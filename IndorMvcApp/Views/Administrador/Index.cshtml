@@ -30,6 +30,159 @@
 
     @await Html.PartialAsync("_PropertyAdminHomePortfolio", Model)
 
+    @if (Model.FeaturedPoolHotTub != null)
+    {
+        <a href="@Model.FeaturedPoolHotTub.StartUrl" class="pa-featured-turnover pa-featured-pool">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedPoolHotTub.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedPoolHotTub.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-water-ladder"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedPestControl != null)
+    {
+        <a href="@Model.FeaturedPestControl.StartUrl" class="pa-featured-turnover pa-featured-pest-control">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedPestControl.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedPestControl.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-bug"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedPressureWashing != null)
+    {
+        <a href="@Model.FeaturedPressureWashing.StartUrl" class="pa-featured-turnover pa-featured-pressure-wash">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedPressureWashing.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedPressureWashing.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-spray-can"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedLandscaping != null)
+    {
+        <a href="@Model.FeaturedLandscaping.StartUrl" class="pa-featured-turnover pa-featured-landscaping">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedLandscaping.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedLandscaping.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-leaf"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedLawnCare != null)
+    {
+        <a href="@Model.FeaturedLawnCare.StartUrl" class="pa-featured-turnover pa-featured-lawn">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedLawnCare.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedLawnCare.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-seedling"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedTrashOut != null)
+    {
+        <a href="@Model.FeaturedTrashOut.StartUrl" class="pa-featured-turnover pa-featured-trashout">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--purple">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedTrashOut.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedTrashOut.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-trash-can"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedFurnitureHaulAway != null)
+    {
+        <a href="@Model.FeaturedFurnitureHaulAway.StartUrl" class="pa-featured-turnover pa-featured-furniture">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--blue">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedFurnitureHaulAway.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedFurnitureHaulAway.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-couch"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedJunkRemoval != null)
+    {
+        <a href="@Model.FeaturedJunkRemoval.StartUrl" class="pa-featured-turnover pa-featured-junk">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--blue">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedJunkRemoval.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedJunkRemoval.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-dolly"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
+    @if (Model.FeaturedMovingHelp != null)
+    {
+        <a href="@Model.FeaturedMovingHelp.StartUrl" class="pa-featured-turnover pa-featured-moving">
+            <div class="pa-featured-turnover-top">
+                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--blue">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            </div>
+            <div class="pa-featured-turnover-body">
+                <div>
+                    <strong class="pa-featured-turnover-title">@Model.FeaturedMovingHelp.Title</strong>
+                    <p class="pa-featured-turnover-sub">@Model.FeaturedMovingHelp.Subtitle</p>
+                </div>
+                <span class="pa-featured-turnover-icon"><i class="fas fa-truck"></i></span>
+            </div>
+            <span class="pa-featured-turnover-btn">Start now</span>
+        </a>
+    }
+
     @if (Model.FeaturedPetDeepClean != null)
     {
         <a href="@Model.FeaturedPetDeepClean.StartUrl" class="pa-featured-turnover pa-featured-pet">

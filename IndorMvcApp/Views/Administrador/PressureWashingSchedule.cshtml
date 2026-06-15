@@ -1,0 +1,176 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPressureWashingStep2ViewModel
+@{
+    ViewData["Title"] = "Pressure Washing";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("PressureWashingDetails", "Administrador", new { propertyId = Model.PropertyId });
+    ViewBag.BadgeLabel = Model.PropertyStatusLabel;
+    var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1><i class="fas fa-spray-can pa-flow-title-icon pa-flow-title-icon--green"></i> Pressure Washing</h1>
+        <p>Choose timing and access details.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="PressureWashingSchedule" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="AreaSize" value="@Model.AreaSize" />
+        <input type="hidden" name="ServiceReason" value="@Model.ServiceReason" />
+        <input type="hidden" name="IsOccupied" value="@Model.IsOccupied" />
+        <input type="hidden" name="GuestNotification" value="@Model.GuestNotification" />
+        <input type="hidden" name="QuickNotes" value="@Model.QuickNotes" />
+        @foreach (var area in Model.WashAreas.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            <input type="hidden" name="WashAreasList" value="@area.Trim()" />
+        }
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label><i class="fas fa-calendar-day pa-q-icon pa-q-icon--green"></i> When should service happen?</label>
+            <div class="pa-pw-timing-row">
+                @foreach (var t in new (string Value, string Label)[] {
+                    ("NextAvailable", "Next available"),
+                    ("BeforeCheckIn", "Before check-in"),
+                    ("AfterCheckOut", "After check-out"),
+                    ("CustomDate", "Custom date") })
+                {
+                    <label class="pa-pw-timing-card @(Model.ServiceTiming == t.Value ? "is-selected" : null)">
+                        <input type="radio" name="ServiceTiming" value="@t.Value" @(Model.ServiceTiming == t.Value ? "checked" : null) />
+                        <span class="pa-prev-service-check pa-prev-service-check--green"><i class="fas fa-check"></i></span>
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> Preferred arrival window</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var w in new (string Value, string Label)[] {
+                    ("Morning", "Morning (8:00 AM – 12:00 PM)"),
+                    ("Midday", "Midday (11:00 AM – 2:00 PM)"),
+                    ("Afternoon", "Afternoon (2:00 PM – 5:00 PM)") })
+                {
+                    <label class="pa-chip @(Model.ArrivalWindow == w.Value ? "is-selected" : null)">
+                        <input type="radio" name="ArrivalWindow" value="@w.Value" @(Model.ArrivalWindow == w.Value ? "checked" : null) />
+                        <span>@w.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Do you have outdoor water access?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.HasWaterAccess == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="HasWaterAccess" value="Yes" @(Model.HasWaterAccess == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.HasWaterAccess == "No" ? "is-selected" : null)">
+                    <input type="radio" name="HasWaterAccess" value="No" @(Model.HasWaterAccess == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Is exterior power available?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.HasPower == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="HasPower" value="Yes" @(Model.HasPower == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.HasPower == "No" ? "is-selected" : null)">
+                    <input type="radio" name="HasPower" value="No" @(Model.HasPower == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> How should the crew enter?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var e in new (string Value, string Label)[] {
+                    ("GateCode", "Gate code"),
+                    ("HostOnSite", "Host on-site"),
+                    ("GuestAware", "Guest aware") })
+                {
+                    <label class="pa-chip @(Model.EntryMethod == e.Value ? "is-selected" : null)">
+                        <input type="radio" name="EntryMethod" value="@e.Value" @(Model.EntryMethod == e.Value ? "checked" : null) />
+                        <span>@e.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Gate / access notes</label>
+            <textarea class="pa-textarea" name="AccessNotes" rows="3" maxlength="200" id="pwAccessNotes">@Model.AccessNotes</textarea>
+            <small class="pa-char-count"><span id="pwAccessNotesCount">@Model.AccessNotes.Length</span> / 200</small>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should get updates? <small>(Select all that apply)</small></label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-lawn-availability-banner">
+            <div>
+                <strong>@Model.CrewEtaLabel</strong>
+                <small>We'll confirm your arrival window and send updates as the crew is assigned.</small>
+            </div>
+            <i class="fas fa-leaf"></i>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request <i class="fas fa-chevron-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-pw-timing-card input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                document.querySelectorAll('.pa-pw-timing-card').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-pw-timing-card')?.classList.add('is-selected');
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="checkbox"]').forEach(function (input) {
+            input.addEventListener('change', function () {
+                this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+            });
+        });
+        document.querySelectorAll('.pa-chip input[type="radio"], .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') return;
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                this.closest('.pa-chip, .pa-toggle-btn')?.classList.add('is-selected');
+            });
+        });
+        var notes = document.getElementById('pwAccessNotes');
+        var counter = document.getElementById('pwAccessNotesCount');
+        if (notes && counter) {
+            notes.addEventListener('input', function () { counter.textContent = this.value.length; });
+        }
+    </script>
+}
