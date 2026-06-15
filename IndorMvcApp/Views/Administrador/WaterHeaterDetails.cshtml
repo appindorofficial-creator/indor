@@ -1,0 +1,157 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyWaterHeaterStep1ViewModel
+@{
+    ViewData["Title"] = "Water Heater Emergency";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("Services", "Administrador", new { propertyId = Model.ViewingProperty?.Id });
+    var propertyId = Model.ViewingProperty?.Id ?? 0;
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Water Heater Emergency</h1>
+        <p>Tell us what's happening so we can dispatch help faster.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="WaterHeaterDetails" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@propertyId" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>What's the problem?</label>
+            <div class="pa-chip-grid">
+                @foreach (var item in new (string Value, string Label, string Icon)[]
+                {
+                    ("NoHotWater", "No hot water", "fa-temperature-arrow-down"),
+                    ("LeakingTank", "Leaking tank", "fa-droplet"),
+                    ("PilotLight", "Pilot light / ignition", "fa-fire"),
+                    ("StrangeNoise", "Strange noise", "fa-volume-high"),
+                    ("LowHotWater", "Low hot water", "fa-temperature-half"),
+                    ("Other", "Other", "fa-ellipsis")
+                })
+                {
+                    <label class="pa-chip @(Model.ProblemType == item.Value ? "is-selected" : null)">
+                        <input type="radio" name="ProblemType" value="@item.Value" @(Model.ProblemType == item.Value ? "checked" : null) />
+                        <i class="fas @item.Icon"></i>
+                        <span>@item.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>Is water actively leaking right now?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.ActivelyLeaking == "Yes" ? "is-selected is-urgent" : null)">
+                    <input type="radio" name="ActivelyLeaking" value="Yes" @(Model.ActivelyLeaking == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.ActivelyLeaking == "No" ? "is-selected" : null)">
+                    <input type="radio" name="ActivelyLeaking" value="No" @(Model.ActivelyLeaking == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Is the home occupied right now?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.HomeOccupied == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="HomeOccupied" value="Yes" @(Model.HomeOccupied == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.HomeOccupied == "No" ? "is-selected" : null)">
+                    <input type="radio" name="HomeOccupied" value="No" @(Model.HomeOccupied == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Are guests currently inside?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) />
+                    <i class="fas fa-users"></i> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.GuestsInside == "No" ? "is-selected" : null)">
+                    <input type="radio" name="GuestsInside" value="No" @(Model.GuestsInside == "No" ? "checked" : null) />
+                    <i class="fas fa-user-slash"></i> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>How urgent is it?</label>
+            <div class="pa-toggle-pair pa-toggle-pair--3">
+                @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
+                {
+                    <label class="pa-toggle-btn @(Model.Urgency == u.Item1 ? "is-selected" : null) @(u.Item1 == "Emergency" ? "is-urgent" : null)">
+                        <input type="radio" name="Urgency" value="@u.Item1" @(Model.Urgency == u.Item1 ? "checked" : null) />
+                        @if (u.Item1 == "Emergency") { <i class="fas fa-circle-exclamation"></i> }
+                        @u.Item2
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label>Water heater type</label>
+            <div class="pa-chip-grid pa-chip-grid--4">
+                @foreach (var t in new (string Value, string Label)[] { ("Gas", "Gas"), ("Electric", "Electric"), ("Tankless", "Tankless"), ("NotSure", "Not sure") })
+                {
+                    <label class="pa-chip @(Model.HeaterType == t.Value ? "is-selected" : null)">
+                        <input type="radio" name="HeaterType" value="@t.Value" @(Model.HeaterType == t.Value ? "checked" : null) />
+                        <span>@t.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">7</span>
+            <label>Add quick details</label>
+            <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="300" placeholder="Describe what's happening...">@Model.QuickDetails</textarea>
+        </div>
+
+        <div class="pa-media-actions">
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+        </div>
+
+        <div class="pa-notify-banner">
+            <i class="fas fa-bullhorn"></i>
+            <span>Occupied guest stays are prioritized. We'll dispatch the closest available pro.</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">Back to start</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input, .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) {
+                    el.classList.remove('is-selected', 'is-urgent');
+                });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) {
+                    parent.classList.add('is-selected');
+                    if (this.name === 'ActivelyLeaking' && this.value === 'Yes') parent.classList.add('is-urgent');
+                    if (this.name === 'Urgency' && this.value === 'Emergency') parent.classList.add('is-urgent');
+                }
+            });
+        });
+    </script>
+}

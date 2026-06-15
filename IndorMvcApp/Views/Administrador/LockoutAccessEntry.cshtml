@@ -1,0 +1,137 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorLockoutAccessStep2ViewModel
+@{
+    ViewData["Title"] = "Lockout / Access";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("LockoutAccessDetails", "Administrador", new { propertyId = Model.PropertyId });
+    ViewBag.BadgeLabel = Model.GuestsWaitingLabel;
+    var recipients = Model.UpdateRecipientsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Lockout / Access</h1>
+        <p>Tell us how the locksmith or access pro can help.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="LockoutAccessEntry" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="IssueType" value="@Model.IssueType" />
+        <input type="hidden" name="SomeoneOutside" value="@Model.SomeoneOutside" />
+        <input type="hidden" name="HomeOccupied" value="@Model.HomeOccupied" />
+        <input type="hidden" name="Urgency" value="@Model.Urgency" />
+        <input type="hidden" name="WhoNeedsAccess" value="@Model.WhoNeedsAccess" />
+        <input type="hidden" name="QuickDetails" value="@Model.QuickDetails" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>Do we have a working smart lock code?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.SmartLockCodeWorks == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="SmartLockCodeWorks" value="Yes" @(Model.SmartLockCodeWorks == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.SmartLockCodeWorks == "No" ? "is-selected" : null)">
+                    <input type="radio" name="SmartLockCodeWorks" value="No" @(Model.SmartLockCodeWorks == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>Backup access method</label>
+            <div class="pa-chip-grid pa-chip-grid--2">
+                @foreach (var b in new (string Value, string Label, string Icon)[]
+                {
+                    ("LockboxKey", "Key in lockbox", "fa-lock"),
+                    ("NeighborAccess", "Neighbor access", "fa-house"),
+                    ("CoHostArriving", "Co-host arriving", "fa-users"),
+                    ("NoBackup", "No backup", "fa-ban")
+                })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.BackupAccess == b.Value ? "is-selected" : null)">
+                        <input type="radio" name="BackupAccess" value="@b.Value" @(Model.BackupAccess == b.Value ? "checked" : null) />
+                        <i class="fas @b.Icon"></i>
+                        <span>@b.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Who should receive updates?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Best phone number for urgent contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>Can the pro enter immediately once access is restored?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.ProEnterImmediately == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="ProEnterImmediately" value="Yes" @(Model.ProEnterImmediately == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.ProEnterImmediately == "No" ? "is-selected" : null)">
+                    <input type="radio" name="ProEnterImmediately" value="No" @(Model.ProEnterImmediately == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label>Entry / gate / parking notes</label>
+            <div class="pa-field">
+                <i class="fas fa-note-sticky"></i>
+                <input type="text" name="EntryNotes" value="@Model.EntryNotes" />
+            </div>
+        </div>
+
+        <div class="pa-notify-banner pa-notify-banner--success">
+            <i class="fas fa-clock"></i>
+            <span>@Model.ProEtaLabel</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input, .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') {
+                    this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+                    return;
+                }
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+    </script>
+}

@@ -15,6 +15,12 @@ public class AdministradorController(
     IPropertyAdministratorEmergencyAcService emergencyAc,
     IPropertyAdministratorEmergencyElectricalService emergencyElectrical,
     IPropertyAdministratorEmergencyPlumbingService emergencyPlumbing,
+    IPropertyAdministratorEmergencyRoofLeakService emergencyRoofLeak,
+    IPropertyAdministratorEmergencyTreeBranchService emergencyTreeBranch,
+    IPropertyAdministratorLockoutAccessService lockoutAccess,
+    IPropertyAdministratorBrokenWindowBoardUpService brokenWindowBoardUp,
+    IPropertyAdministratorEmergencySewerBackupService emergencySewerBackup,
+    IPropertyAdministratorEmergencyWaterHeaterService emergencyWaterHeater,
     IPropertyAdministratorEmergencyFloodService emergencyFlood,
     IPropertyAdministratorPreventiveMaintenanceService preventiveMaintenance,
     IPropertyAdministratorAirFilterService airFilter,
@@ -260,6 +266,520 @@ public class AdministradorController(
         }
 
         var model = await emergencyPlumbing.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyRoofLeakDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await emergencyRoofLeak.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyRoofLeakDetails(PropertyAdministratorEmergencyRoofLeakStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["RoofLeakStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(EmergencyRoofLeakAccess));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyRoofLeakAccess()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["RoofLeakStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(EmergencyRoofLeakDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyRoofLeakStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(EmergencyRoofLeakDetails));
+        }
+
+        var model = await emergencyRoofLeak.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(EmergencyRoofLeakDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        ViewBag.BadgeLabel = model.GuestsOnSiteLabel;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyRoofLeakAccess(PropertyAdministratorEmergencyRoofLeakSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await emergencyRoofLeak.SubmitAsync(input);
+        return RedirectToAction(nameof(EmergencyRoofLeakConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyRoofLeakConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await emergencyRoofLeak.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyTreeBranchDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await emergencyTreeBranch.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyTreeBranchDetails(PropertyAdministratorEmergencyTreeBranchStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["TreeBranchStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(EmergencyTreeBranchReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyTreeBranchReview()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["TreeBranchStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(EmergencyTreeBranchDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyTreeBranchStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(EmergencyTreeBranchDetails));
+        }
+
+        var model = await emergencyTreeBranch.GetReviewAsync(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(EmergencyTreeBranchDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        ViewBag.BadgeLabel = model.GuestsOnSiteLabel;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EmergencyTreeBranchReview(PropertyAdministratorEmergencyTreeBranchSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await emergencyTreeBranch.SubmitAsync(input);
+        return RedirectToAction(nameof(EmergencyTreeBranchConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EmergencyTreeBranchConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await emergencyTreeBranch.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LockoutAccessDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await lockoutAccess.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LockoutAccessDetails(PropertyAdministratorLockoutAccessStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["LockoutAccessStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(LockoutAccessEntry));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LockoutAccessEntry()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["LockoutAccessStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(LockoutAccessDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorLockoutAccessStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(LockoutAccessDetails));
+        }
+
+        var model = await lockoutAccess.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(LockoutAccessDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        ViewBag.BadgeLabel = model.GuestsWaitingLabel;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LockoutAccessEntry(PropertyAdministratorLockoutAccessSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await lockoutAccess.SubmitAsync(input);
+        return RedirectToAction(nameof(LockoutAccessConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LockoutAccessConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await lockoutAccess.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BrokenWindowDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await brokenWindowBoardUp.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BrokenWindowDetails(PropertyAdministratorBrokenWindowBoardUpStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["BrokenWindowStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(BrokenWindowAccess));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BrokenWindowAccess()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["BrokenWindowStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(BrokenWindowDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorBrokenWindowBoardUpStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(BrokenWindowDetails));
+        }
+
+        var model = await brokenWindowBoardUp.GetStep2Async(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(BrokenWindowDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        ViewBag.BadgeLabel = model.GuestsOnSiteLabel;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> BrokenWindowAccess(PropertyAdministratorBrokenWindowBoardUpSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await brokenWindowBoardUp.SubmitAsync(input);
+        return RedirectToAction(nameof(BrokenWindowConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BrokenWindowConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await brokenWindowBoardUp.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SewerBackupDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await emergencySewerBackup.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SewerBackupDetails(PropertyAdministratorEmergencySewerBackupStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["SewerBackupStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(SewerBackupReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SewerBackupReview()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["SewerBackupStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(SewerBackupDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencySewerBackupStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(SewerBackupDetails));
+        }
+
+        var model = await emergencySewerBackup.GetReviewAsync(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(SewerBackupDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SewerBackupReview(PropertyAdministratorEmergencySewerBackupSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await emergencySewerBackup.SubmitAsync(input);
+        return RedirectToAction(nameof(SewerBackupConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SewerBackupConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await emergencySewerBackup.GetConfirmedAsync(Url, id);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> WaterHeaterDetails(int? propertyId)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(await emergencyWaterHeater.GetStep1Async(Url, propertyId));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> WaterHeaterDetails(PropertyAdministratorEmergencyWaterHeaterStep1Input input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        TempData["WaterHeaterStep1"] = System.Text.Json.JsonSerializer.Serialize(input);
+        return RedirectToAction(nameof(WaterHeaterReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> WaterHeaterReview()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (TempData["WaterHeaterStep1"] is not string json)
+        {
+            return RedirectToAction(nameof(WaterHeaterDetails));
+        }
+
+        var step1 = System.Text.Json.JsonSerializer.Deserialize<PropertyAdministratorEmergencyWaterHeaterStep1Input>(json);
+        if (step1 == null)
+        {
+            return RedirectToAction(nameof(WaterHeaterDetails));
+        }
+
+        var model = await emergencyWaterHeater.GetReviewAsync(Url, step1);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(WaterHeaterDetails));
+        }
+
+        ViewBag.HideBottomNav = true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> WaterHeaterReview(PropertyAdministratorEmergencyWaterHeaterSubmitInput input)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var requestId = await emergencyWaterHeater.SubmitAsync(input);
+        return RedirectToAction(nameof(WaterHeaterConfirmed), new { id = requestId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> WaterHeaterConfirmed(int id)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var model = await emergencyWaterHeater.GetConfirmedAsync(Url, id);
         if (model == null)
         {
             return RedirectToAction(nameof(Index));

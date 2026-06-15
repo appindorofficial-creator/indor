@@ -8,23 +8,19 @@
         ("emergency", "Emergency", "fa-truck-medical"),
         ("homecare", "Homecare", "fa-house-chimney"),
         ("cleaning", "Cleaning", "fa-broom"),
-        ("outdoor", "Outdoor", "fa-seedling")
+        ("outdoor", "Outdoor", "fa-seedling"),
+        ("moving", "Moving", "fa-truck")
     };
 }
 
 <div class="pa-portal-shell">
     @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
-    <section class="pa-hero-block">
-        <h1>Services</h1>
-        <p>Book emergency, recurring, and homecare services across your properties.</p>
-    </section>
-
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
 
     <div class="pa-search-bar">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" placeholder="Search services (e.g., plumbing, cleaning, AC)" aria-label="Search services" />
+        <input type="search" placeholder="Search services (e.g., plumbing, cleaning)" aria-label="Search services" />
         <button type="button" class="pa-portal-icon-btn" aria-label="Filter"><i class="fas fa-sliders"></i></button>
     </div>
 

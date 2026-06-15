@@ -1,0 +1,138 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorBrokenWindowBoardUpStep2ViewModel
+@{
+    ViewData["Title"] = "Broken Window / Board-Up";
+    Layout = "_PropertyAdminLayout";
+    ViewBag.FlowStep = Model.FlowStep;
+    ViewBag.FlowTotalSteps = Model.TotalSteps;
+    ViewBag.FlowBackUrl = Url.Action("BrokenWindowDetails", "Administrador", new { propertyId = Model.PropertyId });
+    ViewBag.BadgeLabel = Model.GuestsOnSiteLabel;
+    var recipients = Model.UpdateRecipientsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
+    var securityConcerns = Model.SecurityConcernsList.ToHashSet(StringComparer.OrdinalIgnoreCase);
+}
+
+<div class="pa-portal-shell pa-portal-shell--flow">
+    @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
+
+    <section class="pa-flow-intro">
+        <h1>Broken Window / Board-Up</h1>
+        <p>Help us secure access and confirm the request.</p>
+    </section>
+
+    @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
+
+    <form asp-action="BrokenWindowAccess" method="post" class="pa-emergency-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="PropertyId" value="@Model.PropertyId" />
+        <input type="hidden" name="HelpType" value="@Model.HelpType" />
+        <input type="hidden" name="Urgency" value="@Model.Urgency" />
+        <input type="hidden" name="DamageLocation" value="@Model.DamageLocation" />
+        <input type="hidden" name="GuestsInside" value="@Model.GuestsInside" />
+        <input type="hidden" name="ExposedToRisk" value="@Model.ExposedToRisk" />
+        <input type="hidden" name="QuickDetails" value="@Model.QuickDetails" />
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">1</span>
+            <label>Can the technician access the property now?</label>
+            <div class="pa-chip-grid pa-chip-grid--stack">
+                @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
+                {
+                    <label class="pa-chip pa-chip--wide @(Model.EntryAccess == e.Item1 ? "is-selected" : null)">
+                        <input type="radio" name="EntryAccess" value="@e.Item1" @(Model.EntryAccess == e.Item1 ? "checked" : null) />
+                        <span>@e.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">2</span>
+            <label>Entry instructions</label>
+            <div class="pa-field">
+                <i class="fas fa-key"></i>
+                <input type="text" name="EntryInstructions" value="@Model.EntryInstructions" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">3</span>
+            <label>Temporary security concern</label>
+            <div class="pa-chip-grid pa-chip-grid--4">
+                @foreach (var c in new (string Value, string Label)[]
+                {
+                    ("OpenToWeather", "Open to weather"),
+                    ("SecurityRisk", "Security risk"),
+                    ("GlassOnFloor", "Glass on floor"),
+                    ("ChildPetHazard", "Child or pet hazard")
+                })
+                {
+                    <label class="pa-chip @(securityConcerns.Contains(c.Value) ? "is-selected" : null)">
+                        <input type="checkbox" name="SecurityConcernsList" value="@c.Value" @(securityConcerns.Contains(c.Value) ? "checked" : null) />
+                        <span>@c.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">4</span>
+            <label>Who should receive updates?</label>
+            <div class="pa-chip-grid pa-chip-grid--3">
+                @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
+                {
+                    <label class="pa-chip @(recipients.Contains(r.Item1) ? "is-selected" : null)">
+                        <input type="checkbox" name="UpdateRecipientsList" value="@r.Item1" @(recipients.Contains(r.Item1) ? "checked" : null) />
+                        <span>@r.Item2</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">5</span>
+            <label>Best phone number for urgent contact</label>
+            <div class="pa-field">
+                <i class="fas fa-phone"></i>
+                <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
+            </div>
+        </div>
+
+        <div class="pa-flow-question">
+            <span class="pa-flow-qnum">6</span>
+            <label>Do you need emergency board-up tonight?</label>
+            <div class="pa-toggle-pair">
+                <label class="pa-toggle-btn @(Model.EmergencyBoardUpTonight == "Yes" ? "is-selected" : null)">
+                    <input type="radio" name="EmergencyBoardUpTonight" value="Yes" @(Model.EmergencyBoardUpTonight == "Yes" ? "checked" : null) /> Yes
+                </label>
+                <label class="pa-toggle-btn @(Model.EmergencyBoardUpTonight == "No" ? "is-selected" : null)">
+                    <input type="radio" name="EmergencyBoardUpTonight" value="No" @(Model.EmergencyBoardUpTonight == "No" ? "checked" : null) /> No
+                </label>
+            </div>
+        </div>
+
+        <div class="pa-notify-banner pa-notify-banner--success">
+            <i class="fas fa-clock"></i>
+            <span>@Model.ProEtaLabel</span>
+        </div>
+
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">Back</a>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.querySelectorAll('.pa-chip input, .pa-toggle-btn input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                if (this.type === 'checkbox') {
+                    this.closest('.pa-chip')?.classList.toggle('is-selected', this.checked);
+                    return;
+                }
+                var group = this.closest('.pa-chip-grid, .pa-toggle-pair');
+                if (!group) return;
+                group.querySelectorAll('.pa-chip, .pa-toggle-btn').forEach(function (el) { el.classList.remove('is-selected'); });
+                var parent = this.closest('.pa-chip, .pa-toggle-btn');
+                if (parent) parent.classList.add('is-selected');
+            });
+        });
+    </script>
+}
