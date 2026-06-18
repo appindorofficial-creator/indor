@@ -65,6 +65,7 @@
     background: transparent;
 }
 .rl-field-error { display: block; font-size: .75rem; color: #DC2626; margin: -6px 0 10px 4px; }
+.rl-field-hint { display: block; font-size: .72rem; color: #64748B; margin: -6px 0 10px 4px; line-height: 1.35; }
 
 .rl-info-box {
     display: flex;

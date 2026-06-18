@@ -1,5 +1,6 @@
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -62,7 +63,7 @@ public class RealtorRegistrationController(
         state.DisplayName ??= $"{user?.Nombre} {user?.Apellidos}".Trim();
 
         return View(StepVm(2, "Realtor Profile",
-            "Your license number is required.",
+            "Enter your brokerage and license details to continue.",
             state, Url.Action("SelectRole", "Account"),
             registration.GetLicenseStates()));
     }
@@ -78,14 +79,19 @@ public class RealtorRegistrationController(
     {
         var state = await registration.GetAsync();
 
-        if (string.IsNullOrWhiteSpace(licenseNumber))
+        if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError))
         {
-            ModelState.AddModelError(nameof(licenseNumber), "Required");
+            ModelState.AddModelError(nameof(brokerageName), brokerageError!);
+        }
+
+        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(licenseNumber, out var licenseError))
+        {
+            ModelState.AddModelError(nameof(licenseNumber), licenseError!);
         }
 
         if (string.IsNullOrWhiteSpace(licenseState))
         {
-            ModelState.AddModelError(nameof(licenseState), "Required");
+            ModelState.AddModelError(nameof(licenseState), "License state is required.");
         }
 
         if (!professionalTermsAccepted)
@@ -102,7 +108,7 @@ public class RealtorRegistrationController(
             state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
             return View(StepVm(2, "Realtor Profile",
-                "Your license number is required.",
+                "Please correct the highlighted fields.",
                 state, Url.Action("SelectRole", "Account"),
                 registration.GetLicenseStates()));
         }
