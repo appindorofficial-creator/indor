@@ -6,6 +6,7 @@
     var brokerageError = FieldError("brokerageName");
     var licenseError = FieldError("licenseNumber");
     var licenseStateError = FieldError("licenseState");
+    var termsError = FieldError("professionalTermsAccepted");
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
@@ -22,9 +23,6 @@
                name="brokerageName"
                value="@s.BrokerageName"
                placeholder="Brokerage / broker name"
-               minlength="@BrokerageNameAttribute.MinLength"
-               maxlength="@BrokerageNameAttribute.MaxLength"
-               required
                autocomplete="organization" />
     </label>
     @if (brokerageError.Length > 0)
@@ -42,11 +40,7 @@
                name="licenseNumber"
                value="@s.LicenseNumber"
                placeholder="License number (e.g. BRE123456)"
-               minlength="@RealtorLicenseNumberAttribute.MinLength"
-               maxlength="@RealtorLicenseNumberAttribute.MaxLength"
-               pattern="[A-Za-z0-9]*"
                inputmode="text"
-               required
                autocomplete="off" />
     </label>
     @if (licenseError.Length > 0)
@@ -60,7 +54,7 @@
 
     <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
         <i class="fas fa-shield-halved"></i>
-        <select name="licenseState" required>
+        <select name="licenseState">
             <option value="">License state</option>
             @foreach (var st in Model.LicenseStates)
             {
@@ -83,10 +77,14 @@
         <p>With this number, we validate that you are a realtor. Full verification can be completed now or later.</p>
     </div>
 
-    <label class="rl-terms">
-        <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) required />
+    <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
+        <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) />
         <span>I accept the Professional Terms and authorize validation of my license. <a asp-controller="Account" asp-action="Terms">View terms</a></span>
     </label>
+    @if (termsError.Length > 0)
+    {
+        <span class="rl-field-error">@termsError</span>
+    }
 
     <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
 </form>

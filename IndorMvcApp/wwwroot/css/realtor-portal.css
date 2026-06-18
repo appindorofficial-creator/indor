@@ -90,6 +90,8 @@
     margin-bottom: 16px;
     color: #334155;
 }
+.rl-terms.is-error { color: #B91C1C; }
+.rl-terms.is-error input[type="checkbox"] { outline: 2px solid #F87171; outline-offset: 2px; }
 .rl-terms a { color: #0066CC; font-weight: 600; }
 
 .rl-success-banner {

@@ -96,7 +96,7 @@ public class RealtorRegistrationController(
 
         if (!professionalTermsAccepted)
         {
-            ModelState.AddModelError(string.Empty, "Please accept the Professional Terms.");
+            ModelState.AddModelError(nameof(professionalTermsAccepted), "Please accept the Professional Terms to continue.");
         }
 
         if (!ModelState.IsValid)
