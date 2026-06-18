@@ -17,69 +17,79 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
 
-    <label class="rl-field @(brokerageError.Length > 0 ? "is-error" : "")">
-        <i class="fas fa-building"></i>
-        <input type="text"
-               name="brokerageName"
-               value="@s.BrokerageName"
-               placeholder="Brokerage / broker name"
-               autocomplete="organization" />
-    </label>
-    @if (brokerageError.Length > 0)
-    {
-        <span class="rl-field-error">@brokerageError</span>
-    }
-    else
-    {
-        <span class="rl-field-hint">Use your brokerage or broker name (letters required, @BrokerageNameAttribute.MinLength–@BrokerageNameAttribute.MaxLength characters).</span>
-    }
+    <div class="rl-field-block">
+        <span class="rl-field-label">Brokerage / Company Name</span>
+        <label class="rl-field @(brokerageError.Length > 0 ? "is-error" : "")">
+            <i class="fas fa-building"></i>
+            <input type="text"
+                   name="brokerageName"
+                   value="@s.BrokerageName"
+                   placeholder="Keller Williams Realty"
+                   autocomplete="organization" />
+        </label>
+        @if (brokerageError.Length > 0)
+        {
+            <span class="rl-field-error">@brokerageError</span>
+        }
+    </div>
 
-    <label class="rl-field @(licenseError.Length > 0 ? "is-error" : "")">
-        <i class="fas fa-id-card"></i>
-        <input type="text"
-               name="licenseNumber"
-               value="@s.LicenseNumber"
-               placeholder="License number (e.g. BRE123456)"
-               inputmode="text"
-               autocomplete="off" />
-    </label>
-    @if (licenseError.Length > 0)
-    {
-        <span class="rl-field-error">@licenseError</span>
-    }
-    else
-    {
-        <span class="rl-field-hint">@RealtorLicenseNumberAttribute.MinLength–@RealtorLicenseNumberAttribute.MaxLength alphanumeric characters; include at least one letter.</span>
-    }
+    <div class="rl-field-block">
+        <span class="rl-field-label">Real Estate License Number</span>
+        <label class="rl-field @(licenseError.Length > 0 ? "is-error" : "")">
+            <i class="fas fa-id-card"></i>
+            <input type="text"
+                   name="licenseNumber"
+                   value="@s.LicenseNumber"
+                   placeholder="BRE123456"
+                   inputmode="text"
+                   autocomplete="off" />
+        </label>
+        @if (licenseError.Length > 0)
+        {
+            <span class="rl-field-error">@licenseError</span>
+        }
+    </div>
 
-    <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
-        <i class="fas fa-shield-halved"></i>
-        <select name="licenseState">
-            <option value="">License state</option>
-            @foreach (var st in Model.LicenseStates)
-            {
-                <option value="@st" selected="@(s.LicenseState == st)">@st</option>
-            }
-        </select>
-    </label>
-    @if (licenseStateError.Length > 0)
-    {
-        <span class="rl-field-error">@licenseStateError</span>
-    }
+    <div class="rl-field-block">
+        <span class="rl-field-label">License State</span>
+        <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
+            <i class="fas fa-shield-halved"></i>
+            <select name="licenseState">
+                <option value="">Select state</option>
+                @foreach (var st in Model.LicenseStates)
+                {
+                    <option value="@st" selected="@(s.LicenseState == st)">@st</option>
+                }
+            </select>
+        </label>
+        @if (licenseStateError.Length > 0)
+        {
+            <span class="rl-field-error">@licenseStateError</span>
+        }
+    </div>
 
-    <label class="rl-field">
-        <i class="fas fa-map"></i>
-        <input type="text" name="serviceAreas" value="@s.ServiceAreas" placeholder="Ex. Miami, Fort Lauderdale, West Palm Beach" />
-    </label>
+    <div class="rl-field-block">
+        <span class="rl-field-label">City / Market Area</span>
+        <label class="rl-field">
+            <i class="fas fa-map"></i>
+            <input type="text"
+                   name="serviceAreas"
+                   value="@s.ServiceAreas"
+                   placeholder="Charlotte, NC" />
+        </label>
+    </div>
 
     <div class="rl-info-box">
         <i class="fas fa-circle-info"></i>
-        <p>With this number, we validate that you are a realtor. Full verification can be completed now or later.</p>
+        <div>
+            <strong class="rl-info-box-title">License Verification</strong>
+            <p>Your realtor license verification may take up to 24 hours. You can continue using Home Indor while we review your information. If there is any issue with your license or we need more information, we will notify you.</p>
+        </div>
     </div>
 
     <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
         <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) />
-        <span>I accept the Professional Terms and authorize validation of my license. <a asp-controller="Account" asp-action="Terms">View terms</a></span>
+        <span>I authorize Home Indor to verify my real estate license using the information provided.</span>
     </label>
     @if (termsError.Length > 0)
     {

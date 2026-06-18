@@ -42,6 +42,14 @@
 .rl-reg-step-line.is-done { background: #0066CC; }
 
 .rl-reg-form .ob-btn { width: 100%; margin-top: 8px; }
+.rl-field-block { margin-bottom: 14px; }
+.rl-field-label {
+    display: block;
+    font-size: .82rem;
+    font-weight: 600;
+    color: #0F172A;
+    margin-bottom: 6px;
+}
 .rl-field {
     display: flex;
     align-items: center;
@@ -49,7 +57,7 @@
     border: 1.5px solid #E2E8F0;
     border-radius: 12px;
     padding: 4px 12px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
     background: #fff;
 }
 .rl-field.is-error { border-color: #F87171; }
@@ -64,8 +72,8 @@
     font-family: inherit;
     background: transparent;
 }
-.rl-field-error { display: block; font-size: .75rem; color: #DC2626; margin: -6px 0 10px 4px; }
-.rl-field-hint { display: block; font-size: .72rem; color: #64748B; margin: -6px 0 10px 4px; line-height: 1.35; }
+.rl-field-error { display: block; font-size: .75rem; color: #DC2626; margin: 6px 0 0 4px; }
+.rl-field-hint { display: block; font-size: .72rem; color: #64748B; margin: 6px 0 0 4px; line-height: 1.35; }
 
 .rl-info-box {
     display: flex;
@@ -74,12 +82,20 @@
     background: rgba(0, 102, 204, 0.08);
     border-radius: 12px;
     padding: 12px;
-    margin: 14px 0;
+    margin: 14px 0 18px;
     font-size: .78rem;
     color: #334155;
     line-height: 1.45;
 }
-.rl-info-box i { color: #0066CC; margin-top: 2px; }
+.rl-info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
+.rl-info-box-title {
+    display: block;
+    font-size: .84rem;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 4px;
+}
+.rl-info-box p { margin: 0; }
 
 .rl-terms {
     display: flex;

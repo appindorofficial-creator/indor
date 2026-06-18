@@ -62,8 +62,8 @@ public class RealtorRegistrationController(
         state.Email ??= user?.Email ?? "";
         state.DisplayName ??= $"{user?.Nombre} {user?.Apellidos}".Trim();
 
-        return View(StepVm(2, "Realtor Profile",
-            "Enter your brokerage and license details to continue.",
+        return View(StepVm(2, "Realtor Verification",
+            "Enter your license information so we can verify your realtor profile.",
             state, Url.Action("SelectRole", "Account"),
             registration.GetLicenseStates()));
     }
@@ -96,7 +96,7 @@ public class RealtorRegistrationController(
 
         if (!professionalTermsAccepted)
         {
-            ModelState.AddModelError(nameof(professionalTermsAccepted), "Please accept the Professional Terms to continue.");
+            ModelState.AddModelError(nameof(professionalTermsAccepted), "Please authorize Home Indor to verify your license to continue.");
         }
 
         if (!ModelState.IsValid)
@@ -107,8 +107,8 @@ public class RealtorRegistrationController(
             state.ServiceAreas = serviceAreas?.Trim() ?? "";
             state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
-            return View(StepVm(2, "Realtor Profile",
-                "Please correct the highlighted fields.",
+            return View(StepVm(2, "Realtor Verification",
+                "Enter your license information so we can verify your realtor profile.",
                 state, Url.Action("SelectRole", "Account"),
                 registration.GetLicenseStates()));
         }
