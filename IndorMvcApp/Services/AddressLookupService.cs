@@ -206,7 +206,7 @@ public partial class AddressLookupService : IAddressLookupService
                     MaxLon = ParseDecimal(result.Boundingbox[3])
                 }
                 : null,
-            PropertyDetails = GeneratePropertyDetails(addressDetails, result.Type),
+            PropertyDetails = new PropertyDetailsInfo(),
             UtilityProviders = await GetAssignedUtilityProvidersAsync(
                 formattedAddress,
                 city,
@@ -246,7 +246,7 @@ public partial class AddressLookupService : IAddressLookupService
             PostalCode = postalCode,
             Country = "United States",
             PlaceType = "address",
-            PropertyDetails = GeneratePropertyDetails(null, "address"),
+            PropertyDetails = new PropertyDetailsInfo(),
             UtilityProviders = await GetAssignedUtilityProvidersAsync(
                 formattedAddress,
                 city,
@@ -307,60 +307,6 @@ public partial class AddressLookupService : IAddressLookupService
             return result;
 
         return 0;
-    }
-
-    private PropertyDetailsInfo GeneratePropertyDetails(NominatimAddress? addressDetails, string? placeType)
-    {
-        // Generar datos estimados basados en la ubicación
-        // En producción, esto vendría de una API de datos inmobiliarios real
-
-        var random = new Random();
-        var currentYear = DateTime.Now.Year;
-        var yearBuilt = random.Next(1950, 2010);
-
-        var details = new PropertyDetailsInfo
-        {
-            PropertyType = "Single-family home",
-            YearBuilt = yearBuilt,
-            YearRenovated = yearBuilt < 1980 ? random.Next(1990, 2020) : null,
-
-            // Dimensiones típicas para una casa en Charlotte, NC
-            LivingArea = random.Next(2000, 3000),
-            LotSize = Math.Round((decimal)(random.NextDouble() * 0.4 + 0.5), 2), // 0.5 - 0.9 acres
-            LotSizeSqFt = random.Next(20000, 30000),
-
-            // Habitaciones
-            Bedrooms = random.Next(3, 5),
-            Bathrooms = random.Next(2, 4) + (decimal)(random.Next(0, 2) * 0.5),
-            Floors = random.Next(1, 3),
-
-            // Estilo
-            ArchitecturalStyle = "Classic residential",
-            Features = new List<string>
-            {
-                "Garage",
-                "Backyard",
-                "Central HVAC system",
-                "Equipped kitchen",
-                "Laundry area"
-            },
-
-            // Valor estimado
-            LastSalePrice = random.Next(150000, 250000),
-            LastSaleDate = new DateTime(2021, 9, 1),
-            EstimatedValue = random.Next(200000, 350000),
-            EstimatedValueYear = currentYear,
-
-            // Impuestos (estimado ~1.2% del valor anual en NC)
-            AnnualTaxAmount = random.Next(2400, 4000),
-            TaxYear = currentYear - 1,
-
-            // Información adicional
-            ParcelNumber = $"NC-{random.Next(100000, 999999)}",
-            Zoning = "Residential R-1"
-        };
-
-        return details;
     }
 
     private async Task TryEnrichPropertyAsync(PropertyInfoViewModel propertyInfo)

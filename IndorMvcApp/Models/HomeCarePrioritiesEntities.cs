@@ -9,7 +9,7 @@ public class HomeCarePrioritiesConfig
     public int Id { get; set; }
 
     [Required, MaxLength(80)]
-    public string Titulo { get; set; } = "Home Care Guide";
+    public string Titulo { get; set; } = "Home Maintenance Planner";
 
     [Required, MaxLength(200)]
     public string Subtitulo { get; set; } = "Stay ahead of important home maintenance.";

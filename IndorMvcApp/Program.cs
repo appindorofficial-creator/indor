@@ -19,6 +19,14 @@ if (builder.Environment.IsDevelopment())
 
 builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
 builder.Services.AddDistributedMemoryCache();
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<PropertyEnrichmentCache>();
+
+builder.Services.AddRequestTimeouts(options =>
+{
+    options.AddPolicy("OnboardingAddressLookup", TimeSpan.FromMinutes(3));
+    options.AddPolicy("OnboardingPropertyDetails", TimeSpan.FromMinutes(2));
+});
 
 var dataProtectionKeysPath = ResolveDataProtectionKeysPath(builder.Environment);
 Directory.CreateDirectory(dataProtectionKeysPath);
@@ -175,6 +183,7 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseRequestTimeouts();
 app.UseStaticFiles(new StaticFileOptions
 {
     OnPrepareResponse = static ctx =>

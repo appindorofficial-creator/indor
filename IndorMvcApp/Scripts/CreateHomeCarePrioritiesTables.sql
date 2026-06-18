@@ -51,7 +51,7 @@ BEGIN
     INSERT INTO dbo.HomeCarePrioritiesConfig (
         Titulo, Subtitulo, IconoClase, ViewAllTexto, ViewAllController, ViewAllAction, Activo)
     VALUES (
-        N'Home Care Guide',
+        N'Home Maintenance Planner',
         N'Stay ahead of important home maintenance.',
         N'fa-shield-halved',
         N'View all tasks',
@@ -82,8 +82,8 @@ GO
 IF EXISTS (SELECT 1 FROM dbo.HomeCarePrioritiesConfig)
 BEGIN
     UPDATE dbo.HomeCarePrioritiesConfig
-    SET Titulo = N'Home Care Guide'
-    WHERE Titulo <> N'Home Care Guide';
+    SET Titulo = N'Home Maintenance Planner'
+    WHERE Titulo <> N'Home Maintenance Planner';
 
     UPDATE dbo.HomeCarePrioritiesConfig
     SET ViewAllController = N'Home',

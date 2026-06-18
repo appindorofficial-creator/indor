@@ -11,6 +11,7 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
 {
     private readonly HttpClient _httpClient;
     private readonly OpenAiPropertyOptions _options;
+    private readonly PropertyEnrichmentCache _enrichmentCache;
     private readonly ILogger<OpenAiPropertyEnrichmentService> _logger;
 
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -33,10 +34,12 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
     public OpenAiPropertyEnrichmentService(
         HttpClient httpClient,
         IOptions<OpenAiPropertyOptions> options,
+        PropertyEnrichmentCache enrichmentCache,
         ILogger<OpenAiPropertyEnrichmentService> logger)
     {
         _httpClient = httpClient;
         _options = options.Value;
+        _enrichmentCache = enrichmentCache;
         _logger = logger;
     }
 
@@ -63,6 +66,12 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
 
         try
         {
+            if (_enrichmentCache.TryGet(address, out var cached) && cached != null)
+            {
+                _logger.LogInformation("Using cached OpenAI enrichment for {Address}", address);
+                return ApplyEnrichmentPayload(propertyInfo, cached.RawJson, cached.DataSource);
+            }
+
             var researchPayload = await GetResearchPayloadAsync(address, propertyInfo);
             if (string.IsNullOrWhiteSpace(researchPayload))
             {
@@ -79,7 +88,7 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
                 var organizedJson = await CallChatJsonAsync(
                     HouseFactOrganizationPrompt.SystemMessage,
                     HouseFactOrganizationPrompt.BuildUserPrompt(researchPayload),
-                    temperature: 0.2,
+                    temperature: _options.OrganizationTemperature,
                     stepName: "organization");
 
                 if (!string.IsNullOrWhiteSpace(organizedJson))
@@ -92,20 +101,20 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
                 }
             }
 
-            var applied = PropertyEnrichmentMapper.ApplyPayload(propertyInfo, finalJson);
-            RegionalPropertyHints.Apply(propertyInfo);
-            propertyInfo.AttomRawJson = finalJson;
-            propertyInfo.DataSource = ReadDataSource(finalJson, _options.EnableWebSearch);
+            var dataSource = ReadDataSource(finalJson, _options.EnableWebSearch);
+            var result = ApplyEnrichmentPayload(propertyInfo, finalJson, dataSource);
 
-            return new PropertyEnrichmentResult
+            if (result.Success)
             {
-                Success = applied || HasOrganizedSections(finalJson) || HasLegacyHouseFact(finalJson),
-                RawJson = finalJson,
-                DataSource = propertyInfo.DataSource,
-                ErrorMessage = applied || HasOrganizedSections(finalJson) || HasLegacyHouseFact(finalJson)
-                    ? null
-                    : "OpenAI JSON did not include usable property details."
-            };
+                _enrichmentCache.Set(address, new CachedPropertyEnrichment
+                {
+                    RawJson = finalJson,
+                    DataSource = result.DataSource ?? "AI-estimated",
+                    Success = result.Success
+                });
+            }
+
+            return result;
         }
         catch (Exception ex)
         {
@@ -116,6 +125,29 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
                 ErrorMessage = ex.Message
             };
         }
+    }
+
+    private PropertyEnrichmentResult ApplyEnrichmentPayload(
+        PropertyInfoViewModel propertyInfo,
+        string finalJson,
+        string dataSource)
+    {
+        propertyInfo.PropertyDetails = new PropertyDetailsInfo();
+        var applied = PropertyEnrichmentMapper.ApplyPayload(propertyInfo, finalJson);
+        RegionalPropertyHints.Apply(propertyInfo);
+        propertyInfo.AttomRawJson = finalJson;
+        propertyInfo.DataSource = dataSource;
+        var success = applied || HasOrganizedSections(finalJson) || HasLegacyHouseFact(finalJson);
+
+        return new PropertyEnrichmentResult
+        {
+            Success = success,
+            RawJson = finalJson,
+            DataSource = propertyInfo.DataSource,
+            ErrorMessage = success
+                ? null
+                : "OpenAI JSON did not include usable property details."
+        };
     }
 
     private async Task<string?> GetResearchPayloadAsync(string address, PropertyInfoViewModel propertyInfo)
@@ -134,7 +166,7 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
         return await CallChatJsonAsync(
             HouseFactPrompt.SystemMessage,
             HouseFactPrompt.BuildUserPrompt(address),
-            temperature: 0.35,
+            temperature: _options.ResearchTemperature,
             stepName: "research-chat");
     }
 
@@ -259,6 +291,7 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
         {
             model = _options.Model,
             temperature,
+            seed = 42,
             max_tokens = 16384,
             response_format = new { type = "json_object" },
             messages = new[]

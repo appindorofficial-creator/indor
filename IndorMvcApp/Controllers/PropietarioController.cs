@@ -1,7 +1,9 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Helpers;
@@ -15,6 +17,14 @@ namespace IndorMvcApp.Controllers;
 public class PropietarioController : Controller
 {
     private const string OnboardingPropertySessionKey = "OnboardingPropertyInfo";
+    private const string OnboardingPropertyAttomSessionKey = "OnboardingPropertyAttomJson";
+    private static readonly TimeSpan AddressLookupTimeout = TimeSpan.FromMinutes(3);
+    private static readonly TimeSpan MaintenanceTimeout = TimeSpan.FromSeconds(90);
+    private static readonly JsonSerializerOptions OnboardingJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
+    };
 
     private readonly IAddressLookupService _addressLookupService;
     private readonly IOpenAiMaintenanceRecommendationService _maintenanceRecommendationService;
@@ -53,6 +63,7 @@ public class PropietarioController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestTimeout("OnboardingAddressLookup")]
     public async Task<IActionResult> AddProperty(AddPropertyViewModel model)
     {
         if (await UserHasPropertyAsync())
@@ -68,8 +79,12 @@ public class PropietarioController : Controller
 
         try
         {
-            _logger.LogInformation("Looking up address: {Address}", model.Address);
-            var propertyInfo = await _addressLookupService.GetPropertyInfoAsync(model.Address);
+            var lookupAddress = model.BuildLookupAddress();
+            _logger.LogInformation("Looking up address: {Address}", lookupAddress);
+
+            var propertyInfo = await _addressLookupService
+                .GetPropertyInfoAsync(lookupAddress)
+                .WaitAsync(AddressLookupTimeout, HttpContext.RequestAborted);
 
             if (propertyInfo == null)
             {
@@ -78,31 +93,28 @@ public class PropietarioController : Controller
                 return View(model);
             }
 
-            propertyInfo.MaintenanceRecommendations =
-                await _maintenanceRecommendationService.GenerateAsync(propertyInfo);
-
-            if (PropertyMaintenanceDisplayService.IsRealAiPlan(propertyInfo.MaintenanceRecommendations))
-            {
-                _logger.LogInformation(
-                    "OpenAI maintenance plan generated for {Address} ({Count} items)",
-                    propertyInfo.FormattedAddress,
-                    propertyInfo.MaintenanceRecommendations!.Items.Count);
-            }
-            else
-            {
-                _logger.LogWarning(
-                    "OpenAI maintenance unavailable for {Address}: {Reason}",
-                    propertyInfo.FormattedAddress,
-                    propertyInfo.MaintenanceRecommendations?.Summary ?? "unknown");
-            }
-
+            ApplyUserAddressFields(propertyInfo, model);
             SaveOnboardingProperty(propertyInfo);
             return RedirectToAction(nameof(PropertyDetails));
+        }
+        catch (TimeoutException)
+        {
+            _logger.LogWarning("Address lookup timed out for {Address}", model.BuildLookupAddress());
+            ModelState.AddModelError("", "Address lookup is taking longer than expected. Please try again in a moment.");
+            SetPropertyStepViewBag(showBack: false);
+            return View(model);
+        }
+        catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            _logger.LogWarning("Address lookup cancelled for {Address}", model.BuildLookupAddress());
+            ModelState.AddModelError("", "Address lookup was interrupted. Please try again.");
+            SetPropertyStepViewBag(showBack: false);
+            return View(model);
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error looking up address");
-            ModelState.AddModelError("", "An error occurred while processing the address. Please try again.");
+            ModelState.AddModelError("", DescribeAddressLookupError(ex));
             SetPropertyStepViewBag(showBack: false);
             return View(model);
         }
@@ -216,12 +228,19 @@ public class PropietarioController : Controller
     }
 
     [HttpGet]
-    public IActionResult PropertyDetails()
+    [RequestTimeout("OnboardingPropertyDetails")]
+    public async Task<IActionResult> PropertyDetails()
     {
         var propertyInfo = LoadOnboardingProperty();
         if (propertyInfo == null)
         {
             return RedirectToAction(nameof(AddProperty));
+        }
+
+        if (propertyInfo.MaintenanceRecommendations == null)
+        {
+            propertyInfo.MaintenanceRecommendations = await TryGenerateMaintenanceAsync(propertyInfo);
+            SaveOnboardingProperty(propertyInfo);
         }
 
         HouseFactPreviewContext.Save(HttpContext.Session, propertyInfo);
@@ -281,31 +300,148 @@ public class PropietarioController : Controller
     private PropertyInfoViewModel? LoadOnboardingProperty()
     {
         var sessionJson = HttpContext.Session.GetString(OnboardingPropertySessionKey);
+        PropertyInfoViewModel? propertyInfo = null;
+
         if (!string.IsNullOrWhiteSpace(sessionJson))
         {
-            return JsonSerializer.Deserialize<PropertyInfoViewModel>(sessionJson);
+            propertyInfo = JsonSerializer.Deserialize<PropertyInfoViewModel>(sessionJson, OnboardingJsonOptions);
         }
-
-        if (TempData["PropertyInfoJson"] is string json && !string.IsNullOrEmpty(json))
+        else if (TempData["PropertyInfoJson"] is string json && !string.IsNullOrEmpty(json))
         {
             TempData.Keep("PropertyInfoJson");
-            return JsonSerializer.Deserialize<PropertyInfoViewModel>(json);
+            propertyInfo = JsonSerializer.Deserialize<PropertyInfoViewModel>(json, OnboardingJsonOptions);
         }
 
-        return null;
+        if (propertyInfo == null)
+        {
+            return null;
+        }
+
+        var attomJson = HttpContext.Session.GetString(OnboardingPropertyAttomSessionKey);
+        if (!string.IsNullOrWhiteSpace(attomJson))
+        {
+            propertyInfo.AttomRawJson = attomJson;
+        }
+
+        return propertyInfo;
     }
 
     private void SaveOnboardingProperty(PropertyInfoViewModel info)
     {
-        var json = JsonSerializer.Serialize(info);
+        var attomJson = info.AttomRawJson;
+        info.AttomRawJson = null;
+
+        var json = JsonSerializer.Serialize(info, OnboardingJsonOptions);
         HttpContext.Session.SetString(OnboardingPropertySessionKey, json);
+
+        if (!string.IsNullOrWhiteSpace(attomJson))
+        {
+            HttpContext.Session.SetString(OnboardingPropertyAttomSessionKey, attomJson);
+        }
+        else
+        {
+            HttpContext.Session.Remove(OnboardingPropertyAttomSessionKey);
+        }
+
         TempData["PropertyInfoJson"] = json;
     }
 
     private void ClearOnboardingProperty()
     {
         HttpContext.Session.Remove(OnboardingPropertySessionKey);
+        HttpContext.Session.Remove(OnboardingPropertyAttomSessionKey);
     }
+
+    private static void ApplyUserAddressFields(PropertyInfoViewModel propertyInfo, AddPropertyViewModel model)
+    {
+        if (!string.IsNullOrWhiteSpace(model.Unit))
+        {
+            propertyInfo.Unit = model.Unit.Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(propertyInfo.Street))
+        {
+            propertyInfo.Street = model.StreetAddress.Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(propertyInfo.City))
+        {
+            propertyInfo.City = model.City.Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(propertyInfo.State))
+        {
+            propertyInfo.State = model.State.Trim().ToUpperInvariant();
+        }
+
+        if (string.IsNullOrWhiteSpace(propertyInfo.PostalCode))
+        {
+            propertyInfo.PostalCode = model.ZipCode.Trim();
+        }
+
+        propertyInfo.Country ??= "US";
+
+        if (string.IsNullOrWhiteSpace(propertyInfo.FormattedAddress))
+        {
+            propertyInfo.FormattedAddress = model.BuildLookupAddress();
+        }
+    }
+
+    private async Task<PropertyMaintenancePlanViewModel> TryGenerateMaintenanceAsync(
+        PropertyInfoViewModel propertyInfo)
+    {
+        try
+        {
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
+            cts.CancelAfter(MaintenanceTimeout);
+
+            var plan = await _maintenanceRecommendationService.GenerateAsync(propertyInfo, cts.Token);
+            if (PropertyMaintenanceDisplayService.IsRealAiPlan(plan))
+            {
+                _logger.LogInformation(
+                    "OpenAI maintenance plan generated for {Address} ({Count} items)",
+                    propertyInfo.FormattedAddress,
+                    plan.Items.Count);
+                return plan;
+            }
+
+            _logger.LogWarning(
+                "OpenAI maintenance unavailable for {Address}: {Reason}",
+                propertyInfo.FormattedAddress,
+                plan.Summary);
+            return plan;
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
+        {
+            _logger.LogWarning(ex, "Maintenance recommendation timed out for {Address}", propertyInfo.FormattedAddress);
+            return BuildUnavailableMaintenancePlan(
+                "Maintenance suggestions are still loading. You can continue and review them later.");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Maintenance recommendation failed for {Address}", propertyInfo.FormattedAddress);
+            return BuildUnavailableMaintenancePlan(
+                "We couldn't generate maintenance suggestions right now. You can continue onboarding.");
+        }
+    }
+
+    private static PropertyMaintenancePlanViewModel BuildUnavailableMaintenancePlan(string message) =>
+        new()
+        {
+            Summary = message,
+            DataSource = "Unavailable",
+            IsAiGenerated = false,
+            GeneratedUtc = DateTime.UtcNow,
+            Items = []
+        };
+
+    private static string DescribeAddressLookupError(Exception ex) =>
+        ex switch
+        {
+            InvalidOperationException => ex.Message,
+            HttpRequestException => "We couldn't reach the address lookup service. Check your connection and try again.",
+            _ => "An error occurred while processing the address. Please try again."
+        };
 
     private async Task<bool> UserHasPropertyAsync()
     {

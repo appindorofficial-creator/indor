@@ -92,6 +92,14 @@
 .ob-address-card{display:flex;align-items:flex-start;gap:12px;padding:14px;background:#fff;border:1.5px solid #0066CC;border-radius:12px;margin-bottom:16px;box-shadow:0 4px 14px rgba(0,102,204,.08)}
 .ob-address-card i{color:#0066CC;font-size:1.1rem;margin-top:2px;flex-shrink:0}
 .ob-address-card .addr{font-weight:700;font-size:.9rem;line-height:1.4;color:#0F172A}
+.ob-address-row{display:grid;gap:12px;margin-bottom:0}
+.ob-address-row--2{grid-template-columns:1fr 1fr}
+.ob-address-row .ob-field{margin-bottom:14px}
+.ob-label-optional{font-weight:400;color:#94A3B8}
+.ob-control--select{appearance:none;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2394A3B8' d='M1 1l5 5 5-5'/%3E%3C/svg%3E") no-repeat right 14px center;padding-right:36px}
+.ob-address-hint{display:flex;align-items:flex-start;gap:8px;margin:4px 0 18px;font-size:.74rem;line-height:1.45;color:#64748B}
+.ob-address-hint i{color:#0066CC;margin-top:2px;flex-shrink:0}
+@media (max-width:380px){.ob-address-row--2{grid-template-columns:1fr}}
 
 /* Review cards */
 .ob-review-stack{display:flex;flex-direction:column;gap:14px;margin-bottom:24px}

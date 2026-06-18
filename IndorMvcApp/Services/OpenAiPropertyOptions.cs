@@ -11,4 +11,8 @@ public class OpenAiPropertyOptions
     public bool Enabled { get; set; } = true;
     public bool EnableWebSearch { get; set; } = true;
     public bool UseTwoStepPipeline { get; set; } = true;
+    public bool EnableEnrichmentCache { get; set; } = true;
+    public int EnrichmentCacheHours { get; set; } = 168;
+    public double ResearchTemperature { get; set; } = 0;
+    public double OrganizationTemperature { get; set; } = 0;
 }
