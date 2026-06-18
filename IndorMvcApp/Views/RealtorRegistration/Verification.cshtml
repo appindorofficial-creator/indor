@@ -137,8 +137,7 @@
                 }
             }
             if (picker) {
-                picker.hidden = false;
-                picker.classList.remove('has-file');
+                picker.classList.remove('has-file', 'is-concealed');
                 var nameEl = picker.querySelector('.rl-file-picker-name');
                 if (nameEl) {
                     nameEl.textContent = 'No file selected';
@@ -154,7 +153,7 @@
             }
 
             pending.hidden = false;
-            picker.hidden = true;
+            picker.classList.add('is-concealed');
 
             var nameEl = pending.querySelector('.rl-file-pending-name');
             if (nameEl) {

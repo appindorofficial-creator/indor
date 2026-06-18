@@ -139,7 +139,7 @@
 .rl-doc-card small { font-size: .7rem; color: #64748B; margin-left: 6px; }
 .rl-doc-uploaded { display: block; font-size: .72rem; color: #15803D; font-weight: 700; margin-top: 4px; }
 
-.rl-doc-upload { margin-bottom: 14px; }
+.rl-doc-upload { margin-bottom: 14px; position: relative; }
 .rl-doc-upload-label,
 .rl-doc-upload label.rl-doc-upload-label {
     display: block;
@@ -192,6 +192,17 @@
 .rl-file-picker.has-file .rl-file-picker-name {
     color: #0F172A;
     font-weight: 600;
+}
+.rl-file-picker.is-concealed {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .rl-file-attached,

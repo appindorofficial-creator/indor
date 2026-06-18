@@ -166,13 +166,16 @@ public class RealtorRegistrationController(
 
         if (string.Equals(action, "upload", StringComparison.OrdinalIgnoreCase))
         {
-            await SaveDocumentFileAsync(licensePhotoFile, RealtorDocumentTypes.LicensePhoto);
-            await SaveDocumentFileAsync(governmentIdFile, RealtorDocumentTypes.GovernmentId);
-            await SaveDocumentFileAsync(businessCardFile, RealtorDocumentTypes.BusinessCard);
+            await SaveVerificationDocumentsAsync(licensePhotoFile, governmentIdFile, businessCardFile);
             return RedirectToAction(nameof(Verification));
         }
 
         var skipped = string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase);
+        if (!skipped)
+        {
+            await SaveVerificationDocumentsAsync(licensePhotoFile, governmentIdFile, businessCardFile);
+        }
+
         await registration.CompleteVerificationAsync(skipped);
         return RedirectToAction(nameof(Ready));
     }
@@ -208,6 +211,16 @@ public class RealtorRegistrationController(
             State = state,
             LicenseStates = licenseStates
         };
+
+    private async Task SaveVerificationDocumentsAsync(
+        IFormFile? licensePhotoFile,
+        IFormFile? governmentIdFile,
+        IFormFile? businessCardFile)
+    {
+        await SaveDocumentFileAsync(licensePhotoFile, RealtorDocumentTypes.LicensePhoto);
+        await SaveDocumentFileAsync(governmentIdFile, RealtorDocumentTypes.GovernmentId);
+        await SaveDocumentFileAsync(businessCardFile, RealtorDocumentTypes.BusinessCard);
+    }
 
     private async Task SaveDocumentFileAsync(IFormFile? file, string documentType)
     {
