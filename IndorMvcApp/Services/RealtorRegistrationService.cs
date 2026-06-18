@@ -164,6 +164,30 @@ public class RealtorRegistrationService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<string?> ClearDocumentAsync(string documentType, CancellationToken cancellationToken = default)
+    {
+        var realtorId = await ResolveRealtorIdAsync(cancellationToken);
+        if (realtorId is not > 0)
+        {
+            return null;
+        }
+
+        var doc = await db.IndorRealtorDocumentos.FirstOrDefaultAsync(
+            d => d.RealtorId == realtorId && d.DocumentType == documentType,
+            cancellationToken);
+
+        if (doc == null || string.IsNullOrWhiteSpace(doc.FileUrl))
+        {
+            return null;
+        }
+
+        var previousUrl = doc.FileUrl;
+        doc.FileUrl = null;
+        doc.UploadedUtc = null;
+        await db.SaveChangesAsync(cancellationToken);
+        return previousUrl;
+    }
+
     public async Task CompleteVerificationAsync(bool skipped, CancellationToken cancellationToken = default)
     {
         var realtorId = await EnsureDraftAsync(cancellationToken);

@@ -140,14 +140,122 @@
 .rl-doc-uploaded { display: block; font-size: .72rem; color: #15803D; font-weight: 700; margin-top: 4px; }
 
 .rl-doc-upload { margin-bottom: 14px; }
-.rl-doc-upload label {
+.rl-doc-upload-label,
+.rl-doc-upload label.rl-doc-upload-label {
     display: block;
     font-size: .78rem;
     font-weight: 700;
     color: #334155;
     margin-bottom: 6px;
 }
-.rl-doc-upload input[type="file"] { width: 100%; font-size: .82rem; }
+.rl-file-picker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+}
+.rl-file-picker-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.rl-file-picker-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #334155;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+.rl-file-picker-name {
+    font-size: .82rem;
+    color: #64748B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.rl-file-picker.has-file .rl-file-picker-name {
+    color: #0F172A;
+    font-weight: 600;
+}
+
+.rl-file-attached,
+.rl-file-pending {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1.5px solid #BFDBFE;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #F8FBFF;
+    margin-bottom: 0;
+}
+
+.rl-file-preview-thumb {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    background: #E2E8F0;
+}
+
+.rl-file-preview-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #E2E8F0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #64748B;
+    flex-shrink: 0;
+}
+
+.rl-file-attached-name,
+.rl-file-pending-name {
+    flex: 1;
+    font-size: .82rem;
+    color: #0F172A;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.rl-file-remove-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 999px;
+    background: #FEE2E2;
+    color: #DC2626;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 0;
+}
+
+.rl-file-remove-btn:hover {
+    background: #FECACA;
+}
 
 .rl-ready-hero { text-align: center; margin-bottom: 24px; }
 .rl-ready-hero h1 { font-size: 1.35rem; margin: 0 0 8px; }

@@ -1,7 +1,14 @@
+@using IndorMvcApp.Models
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
 @{
     var slots = ViewBag.DocumentSlots as IReadOnlyList<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel> ?? [];
     var licenseNumber = ViewBag.LicenseNumber as string ?? Model.State.LicenseNumber;
+    var uploadFields = new (string DocumentType, string InputName, string Label)[]
+    {
+        (RealtorDocumentTypes.LicensePhoto, "licensePhotoFile", "License photo"),
+        (RealtorDocumentTypes.GovernmentId, "governmentIdFile", "Government ID"),
+        (RealtorDocumentTypes.BusinessCard, "businessCardFile", "Business card (optional)")
+    };
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
@@ -28,20 +35,70 @@
     </div>
 }
 
-<form asp-action="Verification" method="post" enctype="multipart/form-data" class="rl-reg-form">
+<form asp-action="Verification" method="post" enctype="multipart/form-data" class="rl-reg-form" id="rlVerificationForm">
     @Html.AntiForgeryToken()
-    <div class="rl-doc-upload">
-        <label for="licensePhotoFile">License photo</label>
-        <input type="file" id="licensePhotoFile" name="licensePhotoFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" />
-    </div>
-    <div class="rl-doc-upload">
-        <label for="governmentIdFile">Government ID</label>
-        <input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" />
-    </div>
-    <div class="rl-doc-upload">
-        <label for="businessCardFile">Business card (optional)</label>
-        <input type="file" id="businessCardFile" name="businessCardFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*" />
-    </div>
+
+    @foreach (var field in uploadFields)
+    {
+        var slot = slots.FirstOrDefault(s => s.DocumentType.Equals(field.DocumentType, StringComparison.OrdinalIgnoreCase));
+        var uploaded = slot?.Uploaded == true && !string.IsNullOrWhiteSpace(slot.FileUrl);
+        var uploadedName = uploaded ? System.IO.Path.GetFileName(slot!.FileUrl!) : null;
+        var isImage = uploaded
+            && (slot!.FileUrl!.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
+                || slot.FileUrl.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
+                || slot.FileUrl.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                || slot.FileUrl.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
+
+        <div class="rl-doc-upload" data-doc-type="@field.DocumentType">
+            <span class="rl-doc-upload-label">@field.Label</span>
+
+            @if (uploaded)
+            {
+                <div class="rl-file-attached">
+                    @if (isImage)
+                    {
+                        <img src="@slot!.FileUrl" alt="" class="rl-file-preview-thumb" />
+                    }
+                    else
+                    {
+                        <span class="rl-file-preview-icon"><i class="fas fa-file-pdf"></i></span>
+                    }
+                    <span class="rl-file-attached-name">@uploadedName</span>
+                    <button type="submit"
+                            name="action"
+                            value="remove"
+                            class="rl-file-remove-btn rl-file-remove-uploaded"
+                            data-document-type="@field.DocumentType"
+                            aria-label="Remove @field.Label">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div class="rl-file-pending" hidden>
+                    <img src="" alt="" class="rl-file-preview-thumb rl-file-pending-thumb" hidden />
+                    <span class="rl-file-preview-icon rl-file-pending-icon" hidden><i class="fas fa-file"></i></span>
+                    <span class="rl-file-pending-name"></span>
+                    <button type="button" class="rl-file-remove-btn rl-file-pending-remove" aria-label="Remove selected file">
+                        <i class="fas fa-xmark"></i>
+                    </button>
+                </div>
+
+                <label class="rl-file-picker">
+                    <input type="file"
+                           id="@field.InputName"
+                           name="@field.InputName"
+                           class="rl-file-picker-input"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
+                    <span class="rl-file-picker-btn">Choose file</span>
+                    <span class="rl-file-picker-name">No file selected</span>
+                </label>
+            }
+        </div>
+    }
+
+    <input type="hidden" name="documentType" id="removeDocType" value="" />
 
     <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">Upload files</button>
     <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">Save and continue</button>
@@ -52,3 +109,123 @@
         <p>Without these documents, you can continue with a Basic profile and complete your verification later.</p>
     </div>
 </form>
+
+@section Scripts {
+<script>
+    (function () {
+        function isImageFile(file) {
+            return file.type && file.type.indexOf('image/') === 0;
+        }
+
+        function clearPendingSelection(uploadBlock) {
+            var input = uploadBlock.querySelector('.rl-file-picker-input');
+            var pending = uploadBlock.querySelector('.rl-file-pending');
+            var picker = uploadBlock.querySelector('.rl-file-picker');
+            if (input) {
+                input.value = '';
+            }
+            if (pending) {
+                pending.hidden = true;
+                var thumb = pending.querySelector('.rl-file-pending-thumb');
+                if (thumb) {
+                    thumb.hidden = true;
+                    thumb.removeAttribute('src');
+                }
+                var icon = pending.querySelector('.rl-file-pending-icon');
+                if (icon) {
+                    icon.hidden = true;
+                }
+            }
+            if (picker) {
+                picker.hidden = false;
+                picker.classList.remove('has-file');
+                var nameEl = picker.querySelector('.rl-file-picker-name');
+                if (nameEl) {
+                    nameEl.textContent = 'No file selected';
+                }
+            }
+        }
+
+        function showPendingSelection(uploadBlock, file) {
+            var pending = uploadBlock.querySelector('.rl-file-pending');
+            var picker = uploadBlock.querySelector('.rl-file-picker');
+            if (!pending || !picker) {
+                return;
+            }
+
+            pending.hidden = false;
+            picker.hidden = true;
+
+            var nameEl = pending.querySelector('.rl-file-pending-name');
+            if (nameEl) {
+                nameEl.textContent = file.name;
+            }
+
+            var thumb = pending.querySelector('.rl-file-pending-thumb');
+            var icon = pending.querySelector('.rl-file-pending-icon');
+            if (isImageFile(file) && thumb) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    thumb.src = e.target.result;
+                    thumb.hidden = false;
+                };
+                reader.readAsDataURL(file);
+                if (icon) {
+                    icon.hidden = true;
+                }
+            } else {
+                if (thumb) {
+                    thumb.hidden = true;
+                    thumb.removeAttribute('src');
+                }
+                if (icon) {
+                    icon.hidden = false;
+                }
+            }
+        }
+
+        document.querySelectorAll('.rl-file-picker-input').forEach(function (input) {
+            input.addEventListener('change', function () {
+                var uploadBlock = input.closest('.rl-doc-upload');
+                var picker = input.closest('.rl-file-picker');
+                var nameEl = picker?.querySelector('.rl-file-picker-name');
+                var file = input.files && input.files[0];
+
+                if (!uploadBlock || !file) {
+                    if (uploadBlock) {
+                        clearPendingSelection(uploadBlock);
+                    }
+                    return;
+                }
+
+                if (nameEl) {
+                    nameEl.textContent = file.name;
+                }
+                picker?.classList.add('has-file');
+                showPendingSelection(uploadBlock, file);
+            });
+        });
+
+        document.querySelectorAll('.rl-file-pending-remove').forEach(function (button) {
+            button.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var uploadBlock = button.closest('.rl-doc-upload');
+                if (uploadBlock) {
+                    clearPendingSelection(uploadBlock);
+                }
+            });
+        });
+
+        document.querySelectorAll('.rl-file-remove-uploaded').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var docType = button.getAttribute('data-document-type');
+                var hidden = document.getElementById('removeDocType');
+                if (hidden && docType) {
+                    hidden.value = docType;
+                }
+            });
+        });
+    })();
+</script>
+}

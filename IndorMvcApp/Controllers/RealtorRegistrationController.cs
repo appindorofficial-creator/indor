@@ -149,8 +149,21 @@ public class RealtorRegistrationController(
         IFormFile? licensePhotoFile,
         IFormFile? governmentIdFile,
         IFormFile? businessCardFile,
+        string? documentType,
         string? action)
     {
+        if (string.Equals(action, "remove", StringComparison.OrdinalIgnoreCase)
+            && !string.IsNullOrWhiteSpace(documentType))
+        {
+            var removedUrl = await registration.ClearDocumentAsync(documentType);
+            if (!string.IsNullOrWhiteSpace(removedUrl))
+            {
+                DeleteUploadedFile(removedUrl);
+            }
+
+            return RedirectToAction(nameof(Verification));
+        }
+
         if (string.Equals(action, "upload", StringComparison.OrdinalIgnoreCase))
         {
             await SaveDocumentFileAsync(licensePhotoFile, RealtorDocumentTypes.LicensePhoto);
@@ -226,5 +239,20 @@ public class RealtorRegistrationController(
 
         var relativeUrl = $"/uploads/realtor-docs/{realtor.Id}/{fileName}";
         await registration.RegisterDocumentUploadAsync(documentType, relativeUrl);
+    }
+
+    private void DeleteUploadedFile(string relativeUrl)
+    {
+        if (string.IsNullOrWhiteSpace(relativeUrl))
+        {
+            return;
+        }
+
+        var relativePath = relativeUrl.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+        var fullPath = Path.Combine(env.WebRootPath, relativePath);
+        if (System.IO.File.Exists(fullPath))
+        {
+            System.IO.File.Delete(fullPath);
+        }
     }
 }
