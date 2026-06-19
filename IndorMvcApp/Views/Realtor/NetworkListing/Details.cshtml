@@ -23,12 +23,10 @@
 
     <section class="rl-listing-section">
         <div class="rl-listing-section-head">
-            <div>
-                <h2>Property Photos</h2>
-                <p class="rl-listing-photo-lead">Add a gallery link, upload a PDF, or add individual photos. First photo is the cover.</p>
-            </div>
+            <h2>Property Photos</h2>
             <span class="rl-listing-photo-count" id="rlPhotoCount">0/20</span>
         </div>
+        <p class="rl-listing-photo-lead">Add up to 20 photos. First photo will be the cover.</p>
 
         <div class="rl-listing-photo-grid" id="rlListingPhotoGrid">
             <button type="button" class="rl-listing-photo-add" id="rlListingPhotoAdd" aria-label="Add photo">
@@ -37,7 +35,9 @@
             </button>
         </div>
 
-        <div class="rl-listing-photo-sources">
+        <details class="rl-listing-photo-more">
+            <summary>More photo options (gallery link or PDF)</summary>
+            <div class="rl-listing-photo-sources">
             <div class="rl-listing-photo-source-card">
                 <div class="rl-listing-photo-source-head">
                     <i class="fas fa-link"></i>
@@ -79,6 +79,23 @@
                     <button type="button" class="rl-listing-pdf-remove" id="rlPdfRemove" aria-label="Remove PDF">&times;</button>
                 </div>
             </div>
+            </div>
+        </details>
+    </section>
+
+    <section class="rl-listing-section">
+        <div class="rl-form-field">
+            <label asp-for="Address" class="rl-form-label">Address</label>
+            <div class="rl-listing-address-row">
+                <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
+                <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
+                <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation">
+                    <i class="fas fa-crosshairs"></i>
+                    <span>Use My Location</span>
+                </button>
+            </div>
+            <span asp-validation-for="Address" class="text-danger"></span>
+            <p class="rl-listing-field-hint" id="rlLocationHint" hidden>GPS coordinates captured. Your listing will appear on the Nearby map around this location.</p>
         </div>
     </section>
 
@@ -94,19 +111,20 @@
                 For Rent
             </label>
         </div>
-    </section>
 
-    <section class="rl-listing-section">
         <div class="rl-form-field">
             <label asp-for="Price" class="rl-form-label">Price</label>
-            <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="589900" />
+            <div class="rl-listing-price-input">
+                <span class="rl-listing-input-prefix">$</span>
+                <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="Enter price" />
+            </div>
             <span asp-validation-for="Price" class="text-danger"></span>
         </div>
 
         <div class="rl-form-field">
             <label asp-for="PropertySubtype" class="rl-form-label">Property Subtype</label>
             <select asp-for="PropertySubtype" class="rl-form-input">
-                <option value="">Select property type</option>
+                <option value="">Select subtype</option>
                 @foreach (var subtype in Model.PropertySubtypes)
                 {
                     if (Model.PropertySubtype == subtype.Value)
@@ -121,47 +139,43 @@
             </select>
         </div>
 
-        <div class="rl-form-field">
-            <label asp-for="Address" class="rl-form-label">Address</label>
-            <div class="rl-listing-address-row">
-                <input asp-for="Address" class="rl-form-input" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
-                <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation">
-                    <i class="fas fa-crosshairs"></i>
-                    <span>Use My Location</span>
-                </button>
-            </div>
-            <span asp-validation-for="Address" class="text-danger"></span>
-            <p class="rl-listing-field-hint" id="rlLocationHint" hidden>GPS coordinates captured. Address will be refined when you publish.</p>
-        </div>
-
         <div class="rl-form-grid rl-form-grid--2">
             <div class="rl-form-field">
-                <label asp-for="Bedrooms" class="rl-form-label">Beds</label>
-                <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" />
+                <label asp-for="Bedrooms" class="rl-form-label"><i class="fas fa-bed rl-field-icon"></i> Beds</label>
+                <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" placeholder="Beds" />
             </div>
             <div class="rl-form-field">
-                <label asp-for="Bathrooms" class="rl-form-label">Baths</label>
-                <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" />
+                <label asp-for="Bathrooms" class="rl-form-label"><i class="fas fa-bath rl-field-icon"></i> Baths</label>
+                <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" placeholder="Baths" />
             </div>
             <div class="rl-form-field">
-                <label asp-for="SquareFeet" class="rl-form-label">Sq Ft</label>
-                <input asp-for="SquareFeet" class="rl-form-input" type="number" />
+                <label asp-for="SquareFeet" class="rl-form-label"><i class="fas fa-ruler-combined rl-field-icon"></i> Sq Ft</label>
+                <input asp-for="SquareFeet" class="rl-form-input" type="number" placeholder="Square feet" />
             </div>
             <div class="rl-form-field">
-                <label asp-for="YearBuilt" class="rl-form-label">Year Built</label>
-                <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" />
+                <label asp-for="YearBuilt" class="rl-form-label"><i class="fas fa-calendar rl-field-icon"></i> Year Built</label>
+                <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" placeholder="Year built" />
             </div>
         </div>
 
         <div class="rl-form-field">
-            <label asp-for="Description" class="rl-form-label">Short Description</label>
-            <textarea asp-for="Description" class="rl-form-input rl-form-textarea" maxlength="500" rows="4" placeholder="Describe the property highlights (500 characters max)"></textarea>
+            <div class="rl-listing-section-head">
+                <label asp-for="Description" class="rl-form-label">Short Description</label>
+                <span class="rl-listing-photo-count" id="rlDescriptionCount">0/500</span>
+            </div>
+            <textarea asp-for="Description"
+                      class="rl-form-input rl-form-textarea"
+                      id="ListingDescription"
+                      maxlength="500"
+                      rows="4"
+                      placeholder="Highlight key features, upgrades, and what makes this home special..."></textarea>
         </div>
     </section>
 
     <section class="rl-listing-section">
         <div class="rl-listing-toggle-row">
-            <div>
+            <span class="rl-listing-row-icon"><i class="fas fa-calendar-days"></i></span>
+            <div class="rl-listing-toggle-row-copy">
                 <strong>Open House</strong>
                 <span>Allow visitors to discover your open house</span>
             </div>
@@ -178,21 +192,28 @@
     </section>
 
     <section class="rl-listing-section">
-        <div class="rl-form-field">
-            <label asp-for="VisibilityRadiusMiles" class="rl-form-label">Visibility Radius</label>
-            <span class="rl-listing-field-sub">Show this listing within</span>
-            <select asp-for="VisibilityRadiusMiles" class="rl-form-input">
+        <div class="rl-listing-toggle-row">
+            <span class="rl-listing-row-icon"><i class="fas fa-location-dot"></i></span>
+            <div class="rl-listing-toggle-row-copy">
+                <strong>Visibility Radius</strong>
+                <span>Show this listing within</span>
+            </div>
+            <select asp-for="VisibilityRadiusMiles" class="rl-form-input rl-form-input--compact">
                 @foreach (var option in Model.VisibilityRadiusOptions)
                 {
                     <option value="@option.Value.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)">@option.Label</option>
                 }
             </select>
         </div>
+        <p class="rl-listing-nearby-note">
+            People searching Nearby within this radius will see your listing on the map and feed — so you know what's active around you.
+        </p>
     </section>
 
     <section class="rl-listing-section">
         <h2 class="rl-listing-section-title">Programs <small>(optional)</small></h2>
-        <div class="rl-listing-program-select">
+        <p class="rl-listing-programs-lead">Choose programs to maximize your listing's reach and visibility.</p>
+        <div class="rl-listing-program-select rl-listing-program-select--3">
             <label class="rl-listing-program-select-card @(Model.PromoteInNearbyFeed ? "is-selected" : "")">
                 <input asp-for="PromoteInNearbyFeed" type="checkbox" />
                 <i class="fas fa-bullhorn"></i>
@@ -218,21 +239,17 @@
     </section>
 
     <div class="rl-info-box rl-info-box--muted">
-        <i class="fas fa-circle-info"></i>
-        <p>All inquiries will come through INDOR messages — not public phone numbers.</p>
+        <i class="fas fa-comment-dots"></i>
+        <p>All inquiries from this listing will come through INDOR messages. You'll be notified and can respond directly in the app.</p>
     </div>
 
-    <div class="rl-listing-publish-actions">
-        @if (!Model.IsEdit)
-        {
-            <a asp-action="PostListingBenefits" class="rl-listing-btn-outline">Back</a>
-        }
-        else
+    <div class="rl-listing-publish-actions @(Model.IsEdit ? "" : "rl-listing-publish-actions--dual")">
+        @if (Model.IsEdit)
         {
             <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-listing-btn-outline">Cancel</a>
         }
         <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-outline">Save Draft</button>
-        <button type="submit" class="ob-btn ob-btn-primary">Publish Listing</button>
+        <button type="submit" class="ob-btn ob-btn-primary">@(Model.IsEdit ? "Save Listing" : "Publish Listing")</button>
     </div>
 </form>
 

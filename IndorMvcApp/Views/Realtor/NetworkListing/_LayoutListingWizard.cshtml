@@ -38,7 +38,9 @@
                 IsVerified = formModel.IsVerified,
                 HasNotifications = formModel.HasNotifications,
                 Title = formModel.IsEdit ? "Edit Listing" : "Create Your Listing",
-                Subtitle = formModel.IsEdit ? "Update your Nearby Network listing." : null,
+                Subtitle = formModel.IsEdit
+                    ? "Update your Nearby Network listing."
+                    : "Add details to showcase your property",
                 DisplayStep = formModel.WizardStep,
                 TotalSteps = formModel.WizardTotalSteps,
                 ShowStepper = !formModel.IsEdit

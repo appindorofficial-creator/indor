@@ -23,6 +23,8 @@ window.rlListingWizardInit = function (config) {
     var locationHint = document.getElementById('rlLocationHint');
     var openHouseToggle = document.getElementById('IsOpenHouse');
     var openHouseWrap = document.getElementById('OpenHouseMetaWrap');
+    var descriptionInput = document.getElementById('ListingDescription');
+    var descriptionCountEl = document.getElementById('rlDescriptionCount');
     var form = document.getElementById('rlListingDetailsForm');
 
     var photos = [];
@@ -225,10 +227,25 @@ window.rlListingWizardInit = function (config) {
 
     document.querySelectorAll('.rl-listing-program-select-card input').forEach(function (checkbox) {
         checkbox.addEventListener('change', function () {
-            checkbox.closest('.rl-listing-program-select-card')
-                ?.classList.toggle('is-selected', checkbox.checked);
+            var card = checkbox.closest('.rl-listing-program-select-card');
+            if (card) {
+                card.classList.toggle('is-selected', checkbox.checked);
+            }
         });
     });
+
+    function updateDescriptionCount() {
+        if (!descriptionInput || !descriptionCountEl) {
+            return;
+        }
+        var length = (descriptionInput.value || '').length;
+        descriptionCountEl.textContent = length + '/500';
+    }
+
+    if (descriptionInput) {
+        descriptionInput.addEventListener('input', updateDescriptionCount);
+        updateDescriptionCount();
+    }
 
     if (openHouseToggle && openHouseWrap) {
         openHouseToggle.addEventListener('change', function () {

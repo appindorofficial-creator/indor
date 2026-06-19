@@ -293,6 +293,7 @@ public class RealtorController(
         }
 
         var model = await nearbyNetworkService.BuildListingFormAsync(realtor, null, cancellationToken);
+        model.WizardStep = 3;
         return model == null
             ? NotFound()
             : View("NetworkListing/Details", model);

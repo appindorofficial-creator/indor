@@ -1,41 +1,61 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
 
 <section class="rl-listing-intro">
-    <div class="rl-listing-hero">
+    <div class="rl-listing-hero rl-listing-hero--split">
+        <div class="rl-listing-hero-copy-block">
+            <h2 class="rl-listing-hero-title">List smarter. <span class="rl-listing-hero-accent">Reach closer.</span></h2>
+            <p class="rl-listing-hero-copy">
+                INDOR connects your listing with nearby buyers and renters who are actively looking.
+            </p>
+        </div>
         <div class="rl-listing-hero-visual">
             <img src="~/welcome-house.png" alt="" class="rl-listing-hero-img" />
             <span class="rl-listing-hero-pin"><i class="fas fa-location-dot"></i></span>
         </div>
-        <h2 class="rl-listing-hero-title">List smarter. Reach closer.</h2>
-        <p class="rl-listing-hero-copy">
-            INDOR connects your listing with nearby buyers, renters, and realtors who are ready to act.
-        </p>
     </div>
 
-    <div class="rl-listing-feature-grid">
+    <div class="rl-listing-feature-grid rl-listing-feature-grid--3 rl-listing-feature-grid--scroll">
         <article class="rl-listing-feature-card">
             <span class="rl-listing-feature-icon"><i class="fas fa-location-crosshairs"></i></span>
             <strong>Reach nearby homeowners</strong>
-            <span>Target people living and moving in your area.</span>
+            <span>Your listing is shown to people living and moving nearby.</span>
         </article>
         <article class="rl-listing-feature-card">
             <span class="rl-listing-feature-icon"><i class="fas fa-user-check"></i></span>
             <strong>Get qualified leads</strong>
-            <span>Connect with serious buyers and renters.</span>
+            <span>Connect with serious buyers and renters ready to take action.</span>
         </article>
         <article class="rl-listing-feature-card">
-            <span class="rl-listing-feature-icon"><i class="fas fa-house-chimney"></i></span>
-            <strong>Promote open houses</strong>
-            <span>Boost visibility for local listings and events.</span>
+            <span class="rl-listing-feature-icon"><i class="fas fa-bullhorn"></i></span>
+            <strong>Promote open houses and listings in your area</strong>
+            <span>Boost visibility for your listings and events nearby.</span>
         </article>
     </div>
 
     <div class="rl-listing-help-box">
         <h3>How INDOR helps</h3>
-        <ul>
-            <li><i class="fas fa-circle-check"></i> Show your listing within 3 miles of nearby users.</li>
-            <li><i class="fas fa-circle-check"></i> Connect buyers and renters through INDOR messaging.</li>
-            <li><i class="fas fa-circle-check"></i> Gain visibility inside the Neighborhood / Nearby Network.</li>
+        <ul class="rl-listing-help-list">
+            <li>
+                <i class="fas fa-circle-check"></i>
+                <div>
+                    <strong>Show your listing within 3 miles of nearby users</strong>
+                    <span>Reach people who live, own, or are looking to move nearby.</span>
+                </div>
+            </li>
+            <li>
+                <i class="fas fa-circle-check"></i>
+                <div>
+                    <strong>Connect buyers and renters directly through INDOR messaging</strong>
+                    <span>Communicate in-app and respond faster.</span>
+                </div>
+            </li>
+            <li>
+                <i class="fas fa-circle-check"></i>
+                <div>
+                    <strong>Gain visibility inside the Neighborhood / Nearby Network</strong>
+                    <span>Be seen by a trusted local network that drives results.</span>
+                </div>
+            </li>
         </ul>
     </div>
 

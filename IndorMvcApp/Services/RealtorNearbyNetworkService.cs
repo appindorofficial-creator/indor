@@ -217,7 +217,7 @@ public class RealtorNearbyNetworkService(
             SquareFeet = item?.SquareFeet,
             ImageUrl = item?.ImageUrl ?? "/inspeccion2.jpeg",
             StatusBadge = item?.StatusBadge ?? "ACTIVE",
-            IsOpenHouse = item?.CardType == NearbyNetworkCardTypes.OpenHouse,
+            IsOpenHouse = item?.CardType == NearbyNetworkCardTypes.OpenHouse || itemId is null,
             OpenHouseMeta = item?.MetaLabel,
             VisibilityRadiusMiles = settings.RadiusMiles
         };
@@ -230,6 +230,11 @@ public class RealtorNearbyNetworkService(
                 model.AddressLatitude = (double)item.Latitude.Value;
                 model.AddressLongitude = (double)item.Longitude.Value;
             }
+        }
+        else
+        {
+            model.PromoteInNearbyFeed = true;
+            model.PromoteOpenHouseProgram = true;
         }
 
         if (item?.Price is > 0 && string.IsNullOrWhiteSpace(model.Title))
@@ -476,7 +481,7 @@ public class RealtorNearbyNetworkService(
     {
         var query = db.IndorNearbyNetworkItems
             .AsNoTracking()
-            .Where(i => i.IsActive);
+            .Where(i => mineOnly || i.IsActive);
 
         if (mineOnly)
         {
