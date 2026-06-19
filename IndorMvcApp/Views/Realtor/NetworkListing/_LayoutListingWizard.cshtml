@@ -21,15 +21,15 @@
     <div class="rl-listing-wizard-shell">
         @if (wizardModel != null)
         {
-            @await Html.PartialAsync("_ListingWizardHeader", wizardModel)
+            @await Html.PartialAsync("~/Views/Realtor/NetworkListing/_ListingWizardHeader.cshtml", wizardModel)
             if (wizardModel.ShowStepper)
             {
-                @await Html.PartialAsync("_ListingStepper", wizardModel)
+                @await Html.PartialAsync("~/Views/Realtor/NetworkListing/_ListingStepper.cshtml", wizardModel)
             }
         }
         else if (formModel != null)
         {
-            @await Html.PartialAsync("_ListingWizardHeader", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+            @await Html.PartialAsync("~/Views/Realtor/NetworkListing/_ListingWizardHeader.cshtml", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
             {
                 DisplayName = formModel.DisplayName,
                 FullDisplayName = formModel.FullDisplayName,
@@ -45,7 +45,7 @@
             })
             if (!formModel.IsEdit)
             {
-                @await Html.PartialAsync("_ListingStepper", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+                @await Html.PartialAsync("~/Views/Realtor/NetworkListing/_ListingStepper.cshtml", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
                 {
                     DisplayStep = formModel.WizardStep,
                     TotalSteps = formModel.WizardTotalSteps,

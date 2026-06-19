@@ -1,9 +1,40 @@
 @model IndorMvcApp.ViewModels.RealtorNearbyNetworkViewModel
+@using System.Text.Json
 @{
     ViewData["Title"] = "Nearby Network";
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "network";
     var isMapView = Model.ActiveView == "map";
+    var mapConfigJson = isMapView && Model.HasGoogleMaps
+        ? JsonSerializer.Serialize(new
+        {
+            center = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
+            radiusMiles = Model.RadiusMiles,
+            useDeviceLocation = Model.UseDeviceLocation,
+            centerLabel = Model.MapCenterLabel,
+            activeFilter = Model.ActiveFilter,
+            mapDataUrl = Url.Action("NetworkMapData", "Realtor"),
+            providers = Model.MapProviders.Select(p => new
+            {
+                id = p.ProviderId,
+                name = p.Name,
+                category = p.Category,
+                lat = p.Latitude,
+                lng = p.Longitude,
+                distanceMiles = p.DistanceMiles,
+                verified = p.IsVerified
+            }),
+            listings = Model.MapPins
+                .Where(p => p.PinType != "you" && p.Latitude is not null && p.Longitude is not null)
+                .Select(p => new
+                {
+                    label = p.Label,
+                    type = p.PinType,
+                    lat = p.Latitude,
+                    lng = p.Longitude
+                })
+        }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+        : null;
 }
 
 <div class="rl-dash-shell rl-network-page @(isMapView ? "rl-network-page--map" : "")">
@@ -62,7 +93,7 @@
         @if (Model.HasGoogleMaps)
         {
             <section class="rl-zillow-map-shell" aria-label="Nearby map">
-                <div id="rlNearbyNetworkMap" class="rl-zillow-map-canvas"></div>
+                <div id="rlNearbyNetworkMap" class="rl-zillow-map-canvas" style="min-height:420px;"></div>
 
                 <form class="rl-zillow-map-search" id="rlMapSearchForm" autocomplete="off">
                     <div class="rl-zillow-map-search-inner">
@@ -84,39 +115,10 @@
                 <div class="rl-zillow-map-sheet" id="rlMapBottomSheet">
                     <div class="rl-zillow-map-sheet-handle"></div>
                     <strong id="rl-map-location-label">@Model.MapCenterLabel</strong>
-                    <span id="rl-map-location-meta">@Model.RadiusMiles.ToString("0.#") mi radius · @Model.MapNearbyCount nearby</span>
+                    <span id="rl-map-location-meta">@Model.RadiusMiles.ToString("0.#") mi radius ? @Model.MapNearbyCount nearby</span>
                 </div>
 
-                <script type="application/json" id="rl-network-map-data">
-                    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
-                    {
-                        center = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
-                        radiusMiles = Model.RadiusMiles,
-                        useDeviceLocation = Model.UseDeviceLocation,
-                        centerLabel = Model.MapCenterLabel,
-                        activeFilter = Model.ActiveFilter,
-                        mapDataUrl = Url.Action("NetworkMapData", "Realtor"),
-                        providers = Model.MapProviders.Select(p => new
-                        {
-                            id = p.ProviderId,
-                            name = p.Name,
-                            category = p.Category,
-                            lat = p.Latitude,
-                            lng = p.Longitude,
-                            distanceMiles = p.DistanceMiles,
-                            verified = p.IsVerified
-                        }),
-                        listings = Model.MapPins
-                            .Where(p => p.PinType != "you" && p.Latitude is not null && p.Longitude is not null)
-                            .Select(p => new
-                            {
-                                label = p.Label,
-                                type = p.PinType,
-                                lat = p.Latitude,
-                                lng = p.Longitude
-                            })
-                    }))
-                </script>
+                <script type="application/json" id="rl-network-map-data">@Html.Raw(mapConfigJson)</script>
             </section>
         }
         else
@@ -200,6 +202,13 @@
     @if (Model.ActiveView == "map" && Model.HasGoogleMaps)
     {
         <script src="@Url.Content("~/js/realtor-nearby-network-map.js")" asp-append-version="true"></script>
-        <script src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&libraries=geometry&callback=rlInitNearbyNetworkMap" async defer></script>
+        <script>
+            window.setTimeout(function () {
+                if (!window.rlNearbyNetworkMapReady && window.google && window.google.maps && window.rlInitNearbyNetworkMap) {
+                    window.rlInitNearbyNetworkMap();
+                }
+            }, 8000);
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&amp;loading=async&amp;callback=rlInitNearbyNetworkMap"></script>
     }
 }

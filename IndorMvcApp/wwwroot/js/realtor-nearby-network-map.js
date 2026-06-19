@@ -1,7 +1,31 @@
+window.rlShowNearbyMapError = function (message) {
+    var root = document.getElementById('rlNearbyNetworkMap');
+    if (!root) {
+        return;
+    }
+
+    root.innerHTML = '';
+    var panel = document.createElement('div');
+    panel.className = 'rl-map-error';
+    panel.innerHTML = '<i class="fas fa-map-location-dot"></i><strong>Map unavailable</strong><span>' +
+        (message || 'Google Maps could not load. Check your connection and try again.') + '</span>';
+    root.appendChild(panel);
+};
+
+window.gm_authFailure = function () {
+    window.rlShowNearbyMapError('Google Maps rejected this site or API key. Add this domain to your Maps key referrer restrictions.');
+};
+
 window.rlInitNearbyNetworkMap = function () {
     var root = document.getElementById('rlNearbyNetworkMap');
     var dataEl = document.getElementById('rl-network-map-data');
-    if (!root || !dataEl || !window.google || !google.maps) {
+
+    if (!root || !dataEl) {
+        return;
+    }
+
+    if (!window.google || !google.maps) {
+        window.rlShowNearbyMapError('Google Maps did not finish loading.');
         return;
     }
 
@@ -9,10 +33,20 @@ window.rlInitNearbyNetworkMap = function () {
     try {
         config = JSON.parse(dataEl.textContent || '{}');
     } catch (e) {
+        window.rlShowNearbyMapError('Map configuration could not be read.');
         return;
     }
 
-    if (!config.center || typeof config.center.lat !== 'number' || typeof config.center.lng !== 'number') {
+    function parseCoord(value, fallback) {
+        var num = typeof value === 'number' ? value : parseFloat(value);
+        return Number.isFinite(num) ? num : fallback;
+    }
+
+    var defaultLat = parseCoord(config.center && config.center.lat, 35.2271);
+    var defaultLng = parseCoord(config.center && config.center.lng, -80.8431);
+
+    if (!Number.isFinite(defaultLat) || !Number.isFinite(defaultLng)) {
+        window.rlShowNearbyMapError('Map center coordinates are invalid.');
         return;
     }
 
@@ -31,7 +65,7 @@ window.rlInitNearbyNetworkMap = function () {
     var infoWindow = new google.maps.InfoWindow();
 
     var state = {
-        center: { lat: config.center.lat, lng: config.center.lng },
+        center: { lat: defaultLat, lng: defaultLng },
         mode: 'initial',
         userLocation: null,
         markers: [],
@@ -40,55 +74,9 @@ window.rlInitNearbyNetworkMap = function () {
         radiusCircle: null
     };
 
-    var map = new google.maps.Map(root, {
-        center: state.center,
-        zoom: 13,
-        styles: mapStyles,
-        disableDefaultUI: true,
-        zoomControl: false,
-        gestureHandling: 'greedy',
-        clickableIcons: false
-    });
-
-    state.radiusCircle = new google.maps.Circle({
-        map: map,
-        center: state.center,
-        radius: radiusMeters,
-        fillColor: '#0066CC',
-        fillOpacity: 0.06,
-        strokeColor: '#0066CC',
-        strokeOpacity: 0.18,
-        strokeWeight: 1,
-        clickable: false
-    });
-
-    function updateFootLabel(title, subtitle) {
-        var titleEl = document.getElementById('rl-map-location-label');
-        var metaEl = document.getElementById('rl-map-location-meta');
-        if (titleEl && title) {
-            titleEl.textContent = title;
-        }
-        if (metaEl && subtitle) {
-            metaEl.textContent = subtitle;
-        }
-    }
-
-    function shortLabel(text, max) {
-        if (!text) {
-            return '';
-        }
-        text = String(text).trim();
-        if (text.length <= max) {
-            return text;
-        }
-        return text.slice(0, max - 1) + '…';
-    }
-
-    function clearMarkers() {
-        state.markers.forEach(function (marker) {
-            marker.setMap(null);
-        });
-        state.markers = [];
+    function inheritOverlay(ctor) {
+        ctor.prototype = Object.create(google.maps.OverlayView.prototype);
+        ctor.prototype.constructor = ctor;
     }
 
     function ZillowMarkerOverlay(position, options) {
@@ -96,7 +84,7 @@ window.rlInitNearbyNetworkMap = function () {
         this.options = options || {};
     }
 
-    ZillowMarkerOverlay.prototype = new google.maps.OverlayView();
+    inheritOverlay(ZillowMarkerOverlay);
     ZillowMarkerOverlay.prototype.onAdd = function () {
         var el = document.createElement('button');
         el.type = 'button';
@@ -132,7 +120,7 @@ window.rlInitNearbyNetworkMap = function () {
         this.position = position;
     }
 
-    UserDotOverlay.prototype = new google.maps.OverlayView();
+    inheritOverlay(UserDotOverlay);
     UserDotOverlay.prototype.onAdd = function () {
         this.div = document.createElement('div');
         this.div.className = 'rl-zillow-user-dot';
@@ -162,7 +150,7 @@ window.rlInitNearbyNetworkMap = function () {
         this.position = position;
     }
 
-    SearchCenterOverlay.prototype = new google.maps.OverlayView();
+    inheritOverlay(SearchCenterOverlay);
     SearchCenterOverlay.prototype.onAdd = function () {
         this.div = document.createElement('div');
         this.div.className = 'rl-zillow-search-dot';
@@ -186,6 +174,79 @@ window.rlInitNearbyNetworkMap = function () {
         }
         this.div = null;
     };
+
+    var map;
+    try {
+        map = new google.maps.Map(root, {
+            center: state.center,
+            zoom: 13,
+            mapTypeId: google.maps.MapTypeId.ROADMAP,
+            styles: mapStyles,
+            disableDefaultUI: true,
+            zoomControl: false,
+            gestureHandling: 'greedy',
+            clickableIcons: false
+        });
+    } catch (err) {
+        window.rlShowNearbyMapError('Google Maps failed to initialize.');
+        return;
+    }
+
+    function refreshMapLayout() {
+        if (!map) {
+            return;
+        }
+        google.maps.event.trigger(map, 'resize');
+        map.setCenter(state.center);
+    }
+
+    window.setTimeout(refreshMapLayout, 0);
+    window.setTimeout(refreshMapLayout, 250);
+    window.addEventListener('resize', refreshMapLayout);
+    window.addEventListener('orientationchange', function () {
+        window.setTimeout(refreshMapLayout, 300);
+    });
+
+    state.radiusCircle = new google.maps.Circle({
+        map: map,
+        center: state.center,
+        radius: radiusMeters,
+        fillColor: '#0066CC',
+        fillOpacity: 0.06,
+        strokeColor: '#0066CC',
+        strokeOpacity: 0.18,
+        strokeWeight: 1,
+        clickable: false
+    });
+
+    function updateFootLabel(title, subtitle) {
+        var titleEl = document.getElementById('rl-map-location-label');
+        var metaEl = document.getElementById('rl-map-location-meta');
+        if (titleEl && title) {
+            titleEl.textContent = title;
+        }
+        if (metaEl && subtitle) {
+            metaEl.textContent = subtitle;
+        }
+    }
+
+    function shortLabel(text, max) {
+        if (!text) {
+            return '';
+        }
+        text = String(text).trim();
+        if (text.length <= max) {
+            return text;
+        }
+        return text.slice(0, max - 1) + '\u2026';
+    }
+
+    function clearMarkers() {
+        state.markers.forEach(function (marker) {
+            marker.setMap(null);
+        });
+        state.markers = [];
+    }
 
     function setSearchCenter(lat, lng, label) {
         state.center = { lat: lat, lng: lng };
@@ -217,28 +278,40 @@ window.rlInitNearbyNetworkMap = function () {
         bounds.extend(new google.maps.LatLng(lat, lng));
 
         (providers || []).forEach(function (p) {
-            bounds.extend(new google.maps.LatLng(p.lat, p.lng));
+            var plat = parseCoord(p.lat, null);
+            var plng = parseCoord(p.lng, null);
+            if (Number.isFinite(plat) && Number.isFinite(plng)) {
+                bounds.extend(new google.maps.LatLng(plat, plng));
+            }
         });
         (listings || []).forEach(function (l) {
-            bounds.extend(new google.maps.LatLng(l.lat, l.lng));
+            var llat = parseCoord(l.lat, null);
+            var llng = parseCoord(l.lng, null);
+            if (Number.isFinite(llat) && Number.isFinite(llng)) {
+                bounds.extend(new google.maps.LatLng(llat, llng));
+            }
         });
 
         if ((providers || []).length + (listings || []).length === 0) {
             map.setCenter({ lat: lat, lng: lng });
             map.setZoom(13);
+            refreshMapLayout();
             return;
         }
 
         map.fitBounds(bounds, { top: 110, right: 36, bottom: 120, left: 36 });
+        refreshMapLayout();
     }
 
     function renderProviders(providers) {
         (providers || []).forEach(function (provider) {
-            if (typeof provider.lat !== 'number' || typeof provider.lng !== 'number') {
+            var plat = parseCoord(provider.lat, null);
+            var plng = parseCoord(provider.lng, null);
+            if (!Number.isFinite(plat) || !Number.isFinite(plng)) {
                 return;
             }
 
-            var overlay = new ZillowMarkerOverlay(new google.maps.LatLng(provider.lat, provider.lng), {
+            var overlay = new ZillowMarkerOverlay(new google.maps.LatLng(plat, plng), {
                 kind: 'provider',
                 label: shortLabel(provider.name || 'Provider', 14),
                 verified: !!provider.verified,
@@ -246,18 +319,20 @@ window.rlInitNearbyNetworkMap = function () {
                     document.querySelectorAll('.rl-zillow-marker.is-active').forEach(function (el) {
                         el.classList.remove('is-active');
                     });
-                    overlay.div?.classList.add('is-active');
+                    if (overlay.div) {
+                        overlay.div.classList.add('is-active');
+                    }
 
                     var html = '<div class="rl-map-info"><strong>' + (provider.name || 'Provider') + '</strong>';
                     if (provider.category) {
                         html += '<span>' + provider.category + '</span>';
                     }
                     if (provider.distanceMiles != null) {
-                        html += '<span>' + provider.distanceMiles.toFixed(1) + ' mi away</span>';
+                        html += '<span>' + Number(provider.distanceMiles).toFixed(1) + ' mi away</span>';
                     }
                     html += '</div>';
                     infoWindow.setContent(html);
-                    infoWindow.setPosition({ lat: provider.lat, lng: provider.lng });
+                    infoWindow.setPosition({ lat: plat, lng: plng });
                     infoWindow.open(map);
                 }
             });
@@ -268,7 +343,9 @@ window.rlInitNearbyNetworkMap = function () {
 
     function renderListings(listings) {
         (listings || []).forEach(function (pin) {
-            if (typeof pin.lat !== 'number' || typeof pin.lng !== 'number') {
+            var plat = parseCoord(pin.lat, null);
+            var plng = parseCoord(pin.lng, null);
+            if (!Number.isFinite(plat) || !Number.isFinite(plng)) {
                 return;
             }
 
@@ -279,12 +356,12 @@ window.rlInitNearbyNetworkMap = function () {
                 label = shortLabel(label, 12);
             }
 
-            var overlay = new ZillowMarkerOverlay(new google.maps.LatLng(pin.lat, pin.lng), {
+            var overlay = new ZillowMarkerOverlay(new google.maps.LatLng(plat, plng), {
                 kind: pin.type || 'home',
                 label: label,
                 onClick: function () {
                     infoWindow.setContent('<div class="rl-map-info"><strong>' + (pin.label || 'Listing') + '</strong></div>');
-                    infoWindow.setPosition({ lat: pin.lat, lng: pin.lng });
+                    infoWindow.setPosition({ lat: plat, lng: plng });
                     infoWindow.open(map);
                 }
             });
@@ -297,11 +374,14 @@ window.rlInitNearbyNetworkMap = function () {
         options = options || {};
         clearMarkers();
 
+        var lat = parseCoord(data.lat, defaultLat);
+        var lng = parseCoord(data.lng, defaultLng);
+
         if (options.showSearchCenter) {
-            setSearchCenter(data.lat, data.lng, data.centerLabel);
+            setSearchCenter(lat, lng, data.centerLabel);
         } else if (options.showUserCenter) {
             state.mode = 'gps';
-            state.center = { lat: data.lat, lng: data.lng };
+            state.center = { lat: lat, lng: lng };
             if (state.centerMarker) {
                 state.centerMarker.setMap(null);
                 state.centerMarker = null;
@@ -313,8 +393,7 @@ window.rlInitNearbyNetworkMap = function () {
 
         renderProviders(data.providers);
         renderListings(data.listings);
-
-        fitToResults(data.lat, data.lng, data.providers, data.listings);
+        fitToResults(lat, lng, data.providers, data.listings);
 
         var providerCount = data.providerCount != null ? data.providerCount : (data.providers || []).length;
         var listingCount = data.listingCount != null ? data.listingCount : (data.listings || []).length;
@@ -330,9 +409,9 @@ window.rlInitNearbyNetworkMap = function () {
         }
         var subtitle = (config.radiusMiles || 3).toFixed(1) + ' mi radius';
         if (parts.length) {
-            subtitle += ' · ' + parts.join(' · ');
+            subtitle += ' \u00b7 ' + parts.join(' \u00b7 ');
         } else {
-            subtitle += ' · ' + total + ' nearby';
+            subtitle += ' \u00b7 ' + total + ' nearby';
         }
 
         updateFootLabel(title, subtitle);
@@ -389,14 +468,7 @@ window.rlInitNearbyNetworkMap = function () {
                     });
             },
             function () {
-                applyMapData({
-                    lat: config.center.lat,
-                    lng: config.center.lng,
-                    centerLabel: config.centerLabel || 'Your service area',
-                    providers: config.providers || [],
-                    listings: config.listings || []
-                });
-                updateFootLabel(config.centerLabel || 'Your service area', 'Location unavailable · enable GPS for best results');
+                updateFootLabel(config.centerLabel || 'Your service area', 'Location unavailable \u00b7 enable GPS for best results');
             },
             { enableHighAccuracy: true, timeout: 12000, maximumAge: 60000 }
         );
@@ -437,15 +509,17 @@ window.rlInitNearbyNetworkMap = function () {
         });
     }
 
+    applyMapData({
+        lat: defaultLat,
+        lng: defaultLng,
+        centerLabel: config.centerLabel || 'Your service area',
+        providers: config.providers || [],
+        listings: config.listings || []
+    });
+
+    window.rlNearbyNetworkMapReady = true;
+
     if (config.useDeviceLocation) {
         loadFromGps();
-    } else {
-        applyMapData({
-            lat: config.center.lat,
-            lng: config.center.lng,
-            centerLabel: config.centerLabel,
-            providers: config.providers || [],
-            listings: config.listings || []
-        });
     }
 };
