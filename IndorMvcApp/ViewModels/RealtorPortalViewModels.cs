@@ -316,6 +316,7 @@ public class RealtorProfileViewModel : RealtorPortalShellViewModel
     public string FilesTrendLabel { get; set; } = "";
     public int ClientConnections { get; set; }
     public string ClientsTrendLabel { get; set; } = "";
+    public List<RealtorInsightViewModel> Insights { get; set; } = [];
 }
 
 public class RealtorProfileDocumentViewModel

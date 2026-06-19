@@ -57,57 +57,57 @@
     </section>
 
     <section class="rl-quick-actions rl-quick-actions--profile">
-        <a href="#" class="rl-quick-action">
+        <button type="button" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-user-pen"></i></span>
             <span>Edit Profile</span>
-        </a>
-        <a href="#" class="rl-quick-action">
+        </button>
+        <button type="button" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-globe"></i></span>
             <span>Public Profile</span>
-        </a>
-        <a href="#" class="rl-quick-action">
+        </button>
+        <button type="button" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-share-from-square"></i></span>
             <span>Share</span>
-        </a>
-        <a href="#" class="rl-quick-action">
+        </button>
+        <button type="button" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-gear"></i></span>
             <span>Settings</span>
-        </a>
+        </button>
     </section>
 
     <nav class="rl-profile-nav">
-        <a href="#" class="rl-profile-nav-item">
+        <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-building"></i></span>
             <div>
                 <strong>Business Information</strong>
-                <span>Manage your contact details, brokerage and license.</span>
+                <span class="rl-profile-nav-desc">Manage your contact details, brokerage and license.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </a>
-        <a href="#" class="rl-profile-nav-item">
+        </button>
+        <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-location-dot"></i></span>
             <div>
                 <strong>Service Area / Market Area</strong>
-                <span>Define the areas and neighborhoods you serve.</span>
+                <span class="rl-profile-nav-desc">Define the areas and neighborhoods you serve.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </a>
-        <a href="#" class="rl-profile-nav-item">
+        </button>
+        <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-tags"></i></span>
             <div>
                 <strong>Branding &amp; Shared Packages</strong>
-                <span>Customize your brand and manage shared packages.</span>
+                <span class="rl-profile-nav-desc">Customize your brand and manage shared packages.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </a>
-        <a href="#" class="rl-profile-nav-item">
+        </button>
+        <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-users"></i></span>
             <div>
                 <strong>Client Preferences</strong>
-                <span>Set communication and privacy preferences.</span>
+                <span class="rl-profile-nav-desc">Set communication and privacy preferences.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </a>
+        </button>
     </nav>
 
     <section class="rl-bottom-grid">
@@ -136,7 +136,7 @@
                 <input type="checkbox" />
                 <span class="rl-toggle"></span>
             </div>
-            <a href="#" class="rl-premium-link">Manage all notifications <i class="fas fa-chevron-right"></i></a>
+            <button type="button" class="rl-premium-link">Manage all notifications <i class="fas fa-chevron-right"></i></button>
         </div>
         <div class="rl-settings-card">
             <div class="rl-settings-head">
@@ -170,27 +170,43 @@
                     }
                 </div>
             </div>
-            <a href="#" class="rl-premium-link">View full insights <i class="fas fa-chevron-right"></i></a>
+            <div class="rl-perf-details" id="rlPerfDetails" hidden>
+                @foreach (var insight in Model.Insights)
+                {
+                    <div class="rl-perf-insight">
+                        <i class="fas @insight.Icon"></i>
+                        <span>@insight.Text</span>
+                    </div>
+                }
+            </div>
+            <button type="button"
+                    class="rl-premium-link"
+                    id="rlInsightsToggle"
+                    aria-expanded="false"
+                    aria-controls="rlPerfDetails">
+                <span class="rl-insights-toggle-label">View full insights</span>
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </section>
 
     <nav class="rl-profile-nav">
-        <a href="#" class="rl-profile-nav-item">
+        <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-people-group"></i></span>
             <div>
                 <strong>Connected Provider Network</strong>
-                <span>Manage and connect with trusted inspectors and providers.</span>
+                <span class="rl-profile-nav-desc">Manage and connect with trusted inspectors and providers.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </a>
-        <a href="#" class="rl-profile-nav-item">
+        </button>
+        <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-headset"></i></span>
             <div>
                 <strong>Support &amp; Account</strong>
-                <span>Get help, manage your subscription and account.</span>
+                <span class="rl-profile-nav-desc">Get help, manage your subscription and account.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </a>
+        </button>
     </nav>
 
     @if (Model.CanUpgradeToVerified)
@@ -213,3 +229,25 @@
         </button>
     </form>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var toggle = document.getElementById('rlInsightsToggle');
+        var details = document.getElementById('rlPerfDetails');
+        if (!toggle || !details) {
+            return;
+        }
+
+        var label = toggle.querySelector('.rl-insights-toggle-label');
+        toggle.addEventListener('click', function () {
+            var expanded = toggle.getAttribute('aria-expanded') === 'true';
+            toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+            details.hidden = expanded;
+            if (label) {
+                label.textContent = expanded ? 'View full insights' : 'Hide insights';
+            }
+        });
+    })();
+</script>
+}

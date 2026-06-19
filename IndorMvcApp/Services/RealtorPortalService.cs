@@ -719,7 +719,8 @@ public class RealtorPortalService(AppDbContext db)
             FilesThisMonth = filesThisMonth,
             FilesTrendLabel = filesTrend,
             ClientConnections = clientCount,
-            ClientsTrendLabel = clientCount > 0 ? $"+{Math.Min(clientCount, 5)} this month" : ""
+            ClientsTrendLabel = clientCount > 0 ? $"+{Math.Min(clientCount, 5)} this month" : "",
+            Insights = await BuildHomeInsightsAsync(realtor.Id, ct)
         };
     }
 

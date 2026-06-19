@@ -618,6 +618,11 @@
     box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
     transition: border-color .15s ease, box-shadow .15s ease;
 }
+button.rl-quick-action {
+    width: 100%;
+    cursor: pointer;
+    font: inherit;
+}
 .rl-quick-action:active,
 .rl-quick-action:hover {
     border-color: #BFDBFE;
@@ -2244,6 +2249,36 @@
     text-decoration: none;
     margin-top: 8px;
 }
+button.rl-premium-link {
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+}
+.rl-perf-details {
+    margin-top: 4px;
+}
+.rl-perf-details[hidden] {
+    display: none;
+}
+.rl-perf-insight {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #F8FAFC;
+    font-size: .72rem;
+    font-weight: 600;
+    color: #334155;
+}
+.rl-perf-insight:last-child {
+    border-bottom: none;
+}
+.rl-perf-insight i {
+    color: #0066CC;
+    margin-top: 2px;
+}
 .rl-card-menu {
     position: absolute;
     top: 10px;
@@ -2735,14 +2770,20 @@
     display: flex;
     align-items: center;
     gap: 12px;
+    width: 100%;
     background: #fff;
     border: 1px solid #E2E8F0;
     border-radius: 14px;
     padding: 14px;
     margin-bottom: 10px;
     text-decoration: none;
-    color: inherit;
+    color: #0F172A;
     box-shadow: 0 1px 4px rgba(15, 23, 42, 0.03);
+}
+button.rl-profile-nav-item {
+    cursor: pointer;
+    font: inherit;
+    text-align: left;
 }
 .rl-profile-nav-icon {
     width: 40px;
@@ -2759,8 +2800,9 @@
     display: block;
     font-size: .84rem;
     margin-bottom: 2px;
+    color: #0F172A;
 }
-.rl-profile-nav-item span {
+.rl-profile-nav-item .rl-profile-nav-desc {
     font-size: .72rem;
     color: #64748B;
     line-height: 1.35;
