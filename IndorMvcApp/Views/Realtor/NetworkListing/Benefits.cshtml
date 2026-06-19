@@ -1,0 +1,67 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+
+<section class="rl-listing-benefits">
+    <p class="rl-listing-lead">
+        INDOR connects your property with nearby buyers, renters, and realtors who are ready to act.
+    </p>
+
+    <div class="rl-listing-benefit-list">
+        <article class="rl-listing-benefit-row">
+            <span class="rl-listing-benefit-icon"><i class="fas fa-location-dot"></i></span>
+            <div>
+                <strong>Local exposure</strong>
+                <span>Your listing is seen by people actively searching in your area.</span>
+            </div>
+        </article>
+        <article class="rl-listing-benefit-row">
+            <span class="rl-listing-benefit-icon"><i class="fas fa-heart"></i></span>
+            <div>
+                <strong>Direct interest from buyers and renters</strong>
+                <span>Get inquiries from motivated people looking for properties like yours.</span>
+            </div>
+        </article>
+        <article class="rl-listing-benefit-row">
+            <span class="rl-listing-benefit-icon"><i class="fas fa-users"></i></span>
+            <div>
+                <strong>Nearby Network visibility</strong>
+                <span>Realtors in the INDOR network can see and share your listing with qualified clients.</span>
+            </div>
+        </article>
+        <article class="rl-listing-benefit-row">
+            <span class="rl-listing-benefit-icon"><i class="fas fa-headset"></i></span>
+            <div>
+                <strong>INDOR Realtor support</strong>
+                <span>Our team is here to help you get more visibility and better results.</span>
+            </div>
+        </article>
+    </div>
+
+    <h3 class="rl-listing-section-label">INDOR Programs</h3>
+    <div class="rl-listing-program-grid">
+        <article class="rl-listing-program-card">
+            <i class="fas fa-house"></i>
+            <strong>Open House Promotion</strong>
+            <span>We help promote your open house to nearby buyers and renters.</span>
+        </article>
+        <article class="rl-listing-program-card">
+            <i class="fas fa-handshake"></i>
+            <strong>Lead Support</strong>
+            <span>We follow up with inquiries so you can focus on closing.</span>
+        </article>
+        <article class="rl-listing-program-card">
+            <i class="fas fa-city"></i>
+            <strong>Neighborhood Visibility</strong>
+            <span>Your listing appears in neighborhood feeds and alerts.</span>
+        </article>
+    </div>
+
+    <div class="rl-info-box rl-info-box--muted rl-listing-privacy">
+        <i class="fas fa-shield-halved"></i>
+        <p>For your privacy and safety, all contact happens through INDOR messaging — not public phone numbers.</p>
+    </div>
+
+    <div class="rl-listing-wizard-actions">
+        <a asp-action="PostListingDetails" class="ob-btn ob-btn-primary ob-btn-block">Next: Listing Details</a>
+        <a asp-action="CreateNetworkListing" class="rl-listing-btn-outline">Back</a>
+    </div>
+</section>

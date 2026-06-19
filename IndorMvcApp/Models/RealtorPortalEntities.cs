@@ -57,6 +57,12 @@ public class IndorRealtor
     [MaxLength(500)]
     public string? ProfilePhotoUrl { get; set; }
 
+    [MaxLength(300)]
+    public string? PublicTagline { get; set; }
+
+    [MaxLength(1000)]
+    public string? PublicBio { get; set; }
+
     public ICollection<IndorRealtorDocumento> Documentos { get; set; } = [];
 
     public ICollection<IndorRealtorPropertyFile> PropertyFiles { get; set; } = [];

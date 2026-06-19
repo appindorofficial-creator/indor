@@ -393,3 +393,60 @@ public class RealtorSharedPackageCardViewModel
     public string IconColor { get; set; } = "teal";
     public string ActionLabel { get; set; } = "Open Package";
 }
+
+public class RealtorPublicProfileViewModel : RealtorPortalShellViewModel
+{
+    public bool IsOwnProfile { get; set; } = true;
+    public string FullName { get; set; } = "";
+    public string TitleLabel { get; set; } = "Realtor";
+    public string? Tagline { get; set; }
+    public string? Bio { get; set; }
+    public string? CoverImageUrl { get; set; }
+    public string? LocationLabel { get; set; }
+    public string? BrokerageName { get; set; }
+    public string? LicenseLabel { get; set; }
+    public List<RealtorPublicVerificationItemViewModel> VerificationItems { get; set; } = [];
+    public List<RealtorStatItemViewModel> Stats { get; set; } = [];
+    public List<string> ServiceAreaChips { get; set; } = [];
+    public List<RealtorPublicListingCardViewModel> ActiveListings { get; set; } = [];
+    public List<RealtorPublicOpenHouseViewModel> OpenHouses { get; set; } = [];
+    public List<RealtorPublicSharedPackageViewModel> SharedPackages { get; set; } = [];
+    public string ShareUrl { get; set; } = "";
+}
+
+public class RealtorPublicVerificationItemViewModel
+{
+    public string Label { get; set; } = "";
+    public bool IsComplete { get; set; }
+}
+
+public class RealtorPublicListingCardViewModel
+{
+    public int ItemId { get; set; }
+    public string Title { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string PriceLabel { get; set; } = "";
+    public string? StatusBadge { get; set; }
+    public string? ImageUrl { get; set; }
+    public string? SpecsLabel { get; set; }
+    public string ViewUrl { get; set; } = "#";
+}
+
+public class RealtorPublicOpenHouseViewModel
+{
+    public int ItemId { get; set; }
+    public string Title { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string? MetaLabel { get; set; }
+    public string? ImageUrl { get; set; }
+    public string ViewUrl { get; set; } = "#";
+}
+
+public class RealtorPublicSharedPackageViewModel
+{
+    public int Id { get; set; }
+    public string Title { get; set; } = "";
+    public string Subtitle { get; set; } = "";
+    public string SharedLabel { get; set; } = "";
+    public string StatusLabel { get; set; } = "";
+}

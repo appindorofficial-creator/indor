@@ -1,0 +1,61 @@
+@{
+    ViewBag.NavActive = "network";
+    var wizardModel = Model as IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel;
+    var formModel = Model as IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel;
+    var pageTitle = wizardModel?.Title ?? (formModel?.IsEdit == true ? "Edit Listing" : "Create Your Listing");
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@pageTitle - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-portal.css" asp-append-version="true" />
+    @await Html.PartialAsync("_TabletResponsiveHead")
+</head>
+<body class="rl-dash-page">
+    <div class="rl-listing-wizard-shell">
+        @if (wizardModel != null)
+        {
+            @await Html.PartialAsync("_ListingWizardHeader", wizardModel)
+            if (wizardModel.ShowStepper)
+            {
+                @await Html.PartialAsync("_ListingStepper", wizardModel)
+            }
+        }
+        else if (formModel != null)
+        {
+            @await Html.PartialAsync("_ListingWizardHeader", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+            {
+                DisplayName = formModel.DisplayName,
+                FullDisplayName = formModel.FullDisplayName,
+                ProfilePhotoUrl = formModel.ProfilePhotoUrl,
+                BadgeLabel = formModel.BadgeLabel,
+                IsVerified = formModel.IsVerified,
+                HasNotifications = formModel.HasNotifications,
+                Title = formModel.IsEdit ? "Edit Listing" : "Create Your Listing",
+                Subtitle = formModel.IsEdit ? "Update your Nearby Network listing." : null,
+                DisplayStep = formModel.WizardStep,
+                TotalSteps = formModel.WizardTotalSteps,
+                ShowStepper = !formModel.IsEdit
+            })
+            if (!formModel.IsEdit)
+            {
+                @await Html.PartialAsync("_ListingStepper", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+                {
+                    DisplayStep = formModel.WizardStep,
+                    TotalSteps = formModel.WizardTotalSteps,
+                    ShowStepper = true
+                })
+            }
+        }
+        @RenderBody()
+    </div>
+    @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

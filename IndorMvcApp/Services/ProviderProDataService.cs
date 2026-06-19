@@ -9,7 +9,8 @@ namespace IndorMvcApp.Services;
 public class ProviderProDataService(
     AppDbContext db,
     IRealtorProviderBridgeService realtorBridge,
-    IHttpContextAccessor httpContextAccessor) : IProviderProDataService
+    IHttpContextAccessor httpContextAccessor,
+    IAddressLookupService addressLookup) : IProviderProDataService
 {
     public async Task<ProviderProWorkspaceData> GetWorkspaceDataAsync(int proveedorId, bool includeLeads, CancellationToken cancellationToken = default)
     {
@@ -4532,6 +4533,8 @@ public class ProviderProDataService(
         entity.EmergencyService = input.EmergencyService;
         entity.SameDayJobs = input.SameDayJobs;
         entity.FechaActualizacion = DateTime.UtcNow;
+
+        await ProviderGeolocationHelper.ApplyGeocodeAsync(entity, addressLookup, cancellationToken);
 
         await db.SaveChangesAsync(cancellationToken);
         return true;

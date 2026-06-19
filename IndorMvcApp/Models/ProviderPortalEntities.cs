@@ -108,6 +108,12 @@ public class IndorProveedor
     [MaxLength(120)]
     public string? PrimaryCity { get; set; }
 
+    [Column(TypeName = "decimal(9,6)")]
+    public decimal? Latitude { get; set; }
+
+    [Column(TypeName = "decimal(9,6)")]
+    public decimal? Longitude { get; set; }
+
     public int TravelRadiusMiles { get; set; } = 25;
 
     [MaxLength(500)]

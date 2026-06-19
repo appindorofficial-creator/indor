@@ -9,7 +9,8 @@ namespace IndorMvcApp.Services;
 public class ProviderRegistrationService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
-    UserManager<ApplicationUser> userManager) : IProviderRegistrationService
+    UserManager<ApplicationUser> userManager,
+    IAddressLookupService addressLookup) : IProviderRegistrationService
 {
     private const string ProveedorIdSessionKey = "ProveedorRegistroId";
     private const int DefaultPassingPercent = 80;
@@ -47,6 +48,7 @@ public class ProviderRegistrationService(
         ApplyToEntity(entity, state, currentStep);
         SyncCategoriesOnEntity(entity, state.SelectedCategoryIds);
         SyncOfertasOnEntity(entity, state.SelectedServiceIds);
+        await ProviderGeolocationHelper.ApplyGeocodeAsync(entity, addressLookup, cancellationToken);
         entity.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
     }
@@ -986,6 +988,7 @@ public class ProviderRegistrationService(
         ApplyToEntity(entity, state, ProviderRegistrationState.TotalSteps);
         SyncCategoriesOnEntity(entity, state.SelectedCategoryIds);
         SyncOfertasOnEntity(entity, state.SelectedServiceIds);
+        await ProviderGeolocationHelper.ApplyGeocodeAsync(entity, addressLookup, cancellationToken);
         entity.RegistrationStatus = ProviderRegistrationStatuses.IndorProActive;
         entity.ProfileSubmittedUtc ??= DateTime.UtcNow;
         entity.FechaActualizacion = DateTime.UtcNow;

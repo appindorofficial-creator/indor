@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
@@ -712,9 +713,9 @@ public class RealtorPortalService(AppDbContext db)
             Stats =
             [
                 homeStats[0],
-                new RealtorStatItemViewModel { Label = "Clients", Count = clientCount, Icon = "fa-users", ColorClass = "blue" },
+                new RealtorStatItemViewModel { Label = "Clients", Count = clientCount, Icon = "fa-users", ColorClass = "teal" },
                 homeStats[2],
-                new RealtorStatItemViewModel { Label = "Quote Requests", Count = quoteRequestCount, Icon = "fa-comment-dollar", ColorClass = "teal" }
+                new RealtorStatItemViewModel { Label = "Quote Requests", Count = quoteRequestCount, Icon = "fa-comment-dollar", ColorClass = "orange" }
             ],
             FilesThisMonth = filesThisMonth,
             FilesTrendLabel = filesTrend,
@@ -723,6 +724,179 @@ public class RealtorPortalService(AppDbContext db)
             Insights = await BuildHomeInsightsAsync(realtor.Id, ct)
         };
     }
+
+    public async Task<RealtorPublicProfileViewModel> BuildPublicProfileAsync(
+        IndorRealtor realtor,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+
+        var docs = await db.IndorRealtorDocumentos.AsNoTracking()
+            .Where(d => d.RealtorId == realtor.Id)
+            .ToListAsync(ct);
+
+        var hasLicenseDoc = docs.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.LicensePhoto &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasGovId = docs.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.GovernmentId &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasLicenseNumber = !string.IsNullOrWhiteSpace(realtor.LicenseNumber) &&
+                               !string.IsNullOrWhiteSpace(realtor.LicenseState);
+
+        var networkItems = await db.IndorNearbyNetworkItems.AsNoTracking()
+            .Where(i => i.OwnerRealtorId == realtor.Id && i.IsOwnedListing && i.IsActive)
+            .OrderByDescending(i => i.UpdatedUtc ?? i.CreatedUtc)
+            .ToListAsync(ct);
+
+        var listings = networkItems
+            .Where(i => i.CardType == NearbyNetworkCardTypes.Listing)
+            .Select(i => MapPublicListing(i))
+            .ToList();
+
+        var openHouses = networkItems
+            .Where(i => i.CardType == NearbyNetworkCardTypes.OpenHouse)
+            .Select(i => MapPublicOpenHouse(i))
+            .ToList();
+
+        var serviceAreas = ParseServiceAreas(realtor.ServiceAreas);
+        var clientCount = await db.IndorRealtorClients.AsNoTracking()
+            .CountAsync(c => c.RealtorId == realtor.Id, ct);
+
+        var packages = await db.IndorRealtorSharedPackages.AsNoTracking()
+            .Where(p => p.RealtorId == realtor.Id)
+            .OrderByDescending(p => p.SharedUtc)
+            .Take(12)
+            .ToListAsync(ct);
+
+        var coverImage = listings.FirstOrDefault(l => !string.IsNullOrWhiteSpace(l.ImageUrl))?.ImageUrl
+                         ?? openHouses.FirstOrDefault(o => !string.IsNullOrWhiteSpace(o.ImageUrl))?.ImageUrl;
+
+        var licenseLabel = hasLicenseNumber
+            ? $"License #{realtor.LicenseNumber} ({realtor.LicenseState})"
+            : null;
+
+        return new RealtorPublicProfileViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            IsOwnProfile = true,
+            FullName = realtor.DisplayName ?? shell.FullDisplayName,
+            TitleLabel = shell.IsVerified ? "Realtor®" : "Realtor",
+            Tagline = string.IsNullOrWhiteSpace(realtor.PublicTagline) ? null : realtor.PublicTagline.Trim(),
+            Bio = string.IsNullOrWhiteSpace(realtor.PublicBio) ? null : realtor.PublicBio.Trim(),
+            CoverImageUrl = coverImage,
+            LocationLabel = serviceAreas.Count > 0
+                ? $"Serving {string.Join(", ", serviceAreas.Take(3))}{(serviceAreas.Count > 3 ? " and surrounding areas" : "")}"
+                : null,
+            BrokerageName = string.IsNullOrWhiteSpace(realtor.BrokerageName) ? null : realtor.BrokerageName.Trim(),
+            LicenseLabel = licenseLabel,
+            VerificationItems =
+            [
+                new() { Label = "Licensed Realtor®", IsComplete = hasLicenseDoc && hasLicenseNumber },
+                new() { Label = "Background Verified", IsComplete = hasGovId },
+                new() { Label = "INDOR Verified", IsComplete = shell.IsVerified }
+            ],
+            Stats =
+            [
+                new() { Label = "Listings Active", Count = listings.Count, Icon = "fa-house", ColorClass = "blue" },
+                new() { Label = "Clients Helped All-Time", Count = clientCount, Icon = "fa-users", ColorClass = "teal" },
+                new() { Label = "Market Areas Served", Count = serviceAreas.Count, Icon = "fa-map-location-dot", ColorClass = "purple" }
+            ],
+            ServiceAreaChips = serviceAreas,
+            ActiveListings = listings,
+            OpenHouses = openHouses,
+            SharedPackages = packages.Select(MapPublicPackage).ToList(),
+            ShareUrl = $"/Realtor/PublicProfile"
+        };
+    }
+
+    private static RealtorPublicListingCardViewModel MapPublicListing(IndorNearbyNetworkItem item)
+    {
+        var priceLabel = item.Price is > 0
+            ? FormatCurrency(item.Price.Value)
+            : item.Title.StartsWith('$')
+                ? item.Title
+                : item.Title;
+
+        return new RealtorPublicListingCardViewModel
+        {
+            ItemId = item.Id,
+            Title = item.Title,
+            Address = item.Subtitle ?? "",
+            PriceLabel = priceLabel,
+            StatusBadge = item.StatusBadge ?? item.BadgeLabel,
+            ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl) ? null : item.ImageUrl,
+            SpecsLabel = item.SpecsLabel ?? BuildSpecsLabel(item.Bedrooms, item.Bathrooms, item.SquareFeet),
+            ViewUrl = $"/Realtor/EditNetworkListing/{item.Id}"
+        };
+    }
+
+    private static RealtorPublicOpenHouseViewModel MapPublicOpenHouse(IndorNearbyNetworkItem item) =>
+        new()
+        {
+            ItemId = item.Id,
+            Title = item.Title,
+            Address = item.Subtitle ?? "",
+            MetaLabel = item.MetaLabel,
+            ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl) ? null : item.ImageUrl,
+            ViewUrl = $"/Realtor/EditNetworkListing/{item.Id}"
+        };
+
+    private static RealtorPublicSharedPackageViewModel MapPublicPackage(IndorRealtorSharedPackage package)
+    {
+        var isViewed = package.StatusLabel.Contains("view", StringComparison.OrdinalIgnoreCase);
+        return new RealtorPublicSharedPackageViewModel
+        {
+            Id = package.Id,
+            Title = $"{package.Address} Package",
+            Subtitle = package.ClientName,
+            SharedLabel = $"Shared {package.SharedUtc.ToLocalTime():MMM d, yyyy}",
+            StatusLabel = isViewed ? "Viewed" : package.StatusLabel
+        };
+    }
+
+    private static List<string> ParseServiceAreas(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return [];
+        }
+
+        return raw
+            .Split([',', ';', '\n', '|'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(s => s.Length > 0)
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+    }
+
+    private static string? BuildSpecsLabel(decimal? beds, decimal? baths, int? sqft)
+    {
+        var parts = new List<string>();
+        if (beds is > 0)
+        {
+            parts.Add($"{beds:0.#} bd");
+        }
+
+        if (baths is > 0)
+        {
+            parts.Add($"{baths:0.#} ba");
+        }
+
+        if (sqft is > 0)
+        {
+            parts.Add($"{sqft:N0} sqft");
+        }
+
+        return parts.Count > 0 ? string.Join(" · ", parts) : null;
+    }
+
+    private static string FormatCurrency(decimal amount) =>
+        amount.ToString("C0", CultureInfo.GetCultureInfo("en-US"));
 
     public async Task<RealtorNetworkViewModel> BuildNetworkAsync(
         IndorRealtor realtor,

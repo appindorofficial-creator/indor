@@ -34,22 +34,7 @@ public partial class AddressLookupService : IAddressLookupService
     {
         try
         {
-            PropertyInfoViewModel? propertyInfo = null;
-
-            if (LooksLikeUsAddress(address))
-            {
-                propertyInfo = await TryBuildFromCensusAsync(address);
-            }
-
-            if (propertyInfo == null)
-            {
-                propertyInfo = await TryBuildFromNominatimAsync(address);
-            }
-
-            if (propertyInfo == null && !LooksLikeUsAddress(address))
-            {
-                propertyInfo = await TryBuildFromCensusAsync(address);
-            }
+            var propertyInfo = await BuildGeocodedPropertyAsync(address);
 
             if (propertyInfo == null)
             {
@@ -72,11 +57,58 @@ public partial class AddressLookupService : IAddressLookupService
         }
     }
 
-    private async Task<PropertyInfoViewModel?> TryBuildFromCensusAsync(string address)
+    public async Task<(decimal Latitude, decimal Longitude)?> GeocodeAddressAsync(
+        string address,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return null;
+        }
+
+        try
+        {
+            var propertyInfo = await BuildGeocodedPropertyAsync(address.Trim(), cancellationToken);
+            return propertyInfo == null
+                ? null
+                : (propertyInfo.Latitude, propertyInfo.Longitude);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "Geocoding failed for address: {Address}", address);
+            return null;
+        }
+    }
+
+    private async Task<PropertyInfoViewModel?> BuildGeocodedPropertyAsync(
+        string address,
+        CancellationToken cancellationToken = default)
+    {
+        PropertyInfoViewModel? propertyInfo = null;
+
+        if (LooksLikeUsAddress(address))
+        {
+            propertyInfo = await TryBuildFromCensusAsync(address, cancellationToken);
+        }
+
+        if (propertyInfo == null)
+        {
+            propertyInfo = await TryBuildFromNominatimAsync(address, cancellationToken);
+        }
+
+        if (propertyInfo == null && !LooksLikeUsAddress(address))
+        {
+            propertyInfo = await TryBuildFromCensusAsync(address, cancellationToken);
+        }
+
+        return propertyInfo;
+    }
+
+    private async Task<PropertyInfoViewModel?> TryBuildFromCensusAsync(string address, CancellationToken cancellationToken = default)
     {
         try
         {
-            var censusMatch = await TryGetFromCensusGeocoderAsync(address);
+            var censusMatch = await TryGetFromCensusGeocoderAsync(address, cancellationToken);
             if (censusMatch == null)
             {
                 return null;
@@ -91,11 +123,11 @@ public partial class AddressLookupService : IAddressLookupService
         }
     }
 
-    private async Task<PropertyInfoViewModel?> TryBuildFromNominatimAsync(string address)
+    private async Task<PropertyInfoViewModel?> TryBuildFromNominatimAsync(string address, CancellationToken cancellationToken = default)
     {
         try
         {
-            var nominatimResult = await TryGetFromNominatimAsync(address);
+            var nominatimResult = await TryGetFromNominatimAsync(address, cancellationToken);
             if (nominatimResult == null || !IsPreciseAddress(nominatimResult))
             {
                 if (nominatimResult != null)
@@ -137,7 +169,7 @@ public partial class AddressLookupService : IAddressLookupService
     [GeneratedRegex(@"\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex UsAddressPattern();
 
-    private async Task<NominatimResult?> TryGetFromNominatimAsync(string address)
+    private async Task<NominatimResult?> TryGetFromNominatimAsync(string address, CancellationToken cancellationToken = default)
     {
         var encodedAddress = Uri.EscapeDataString(address);
         var url =
@@ -146,7 +178,7 @@ public partial class AddressLookupService : IAddressLookupService
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.TryAddWithoutValidation("User-Agent", "IndorApp/1.0");
 
-        var response = await _httpClient.SendAsync(request);
+        var response = await _httpClient.SendAsync(request, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();
@@ -156,13 +188,13 @@ public partial class AddressLookupService : IAddressLookupService
         return results is { Count: > 0 } ? results[0] : null;
     }
 
-    private async Task<CensusAddressMatch?> TryGetFromCensusGeocoderAsync(string address)
+    private async Task<CensusAddressMatch?> TryGetFromCensusGeocoderAsync(string address, CancellationToken cancellationToken = default)
     {
         var encodedAddress = Uri.EscapeDataString(address);
         var url =
             $"https://geocoding.geo.census.gov/geocoder/locations/onelineaddress?address={encodedAddress}&benchmark=Public_AR_Current&format=json";
 
-        var response = await _httpClient.GetAsync(url);
+        var response = await _httpClient.GetAsync(url, cancellationToken);
         response.EnsureSuccessStatusCode();
 
         var content = await response.Content.ReadAsStringAsync();

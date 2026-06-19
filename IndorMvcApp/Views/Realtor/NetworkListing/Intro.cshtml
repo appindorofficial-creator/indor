@@ -1,0 +1,46 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+
+<section class="rl-listing-intro">
+    <div class="rl-listing-hero">
+        <div class="rl-listing-hero-visual">
+            <img src="~/welcome-house.png" alt="" class="rl-listing-hero-img" />
+            <span class="rl-listing-hero-pin"><i class="fas fa-location-dot"></i></span>
+        </div>
+        <h2 class="rl-listing-hero-title">List smarter. Reach closer.</h2>
+        <p class="rl-listing-hero-copy">
+            INDOR connects your listing with nearby buyers, renters, and realtors who are ready to act.
+        </p>
+    </div>
+
+    <div class="rl-listing-feature-grid">
+        <article class="rl-listing-feature-card">
+            <span class="rl-listing-feature-icon"><i class="fas fa-location-crosshairs"></i></span>
+            <strong>Reach nearby homeowners</strong>
+            <span>Target people living and moving in your area.</span>
+        </article>
+        <article class="rl-listing-feature-card">
+            <span class="rl-listing-feature-icon"><i class="fas fa-user-check"></i></span>
+            <strong>Get qualified leads</strong>
+            <span>Connect with serious buyers and renters.</span>
+        </article>
+        <article class="rl-listing-feature-card">
+            <span class="rl-listing-feature-icon"><i class="fas fa-house-chimney"></i></span>
+            <strong>Promote open houses</strong>
+            <span>Boost visibility for local listings and events.</span>
+        </article>
+    </div>
+
+    <div class="rl-listing-help-box">
+        <h3>How INDOR helps</h3>
+        <ul>
+            <li><i class="fas fa-circle-check"></i> Show your listing within 3 miles of nearby users.</li>
+            <li><i class="fas fa-circle-check"></i> Connect buyers and renters through INDOR messaging.</li>
+            <li><i class="fas fa-circle-check"></i> Gain visibility inside the Neighborhood / Nearby Network.</li>
+        </ul>
+    </div>
+
+    <div class="rl-listing-wizard-actions">
+        <a asp-action="PostListingBenefits" class="ob-btn ob-btn-primary ob-btn-block">Continue</a>
+        <a asp-action="Network" class="rl-listing-btn-outline">Back to Feed</a>
+    </div>
+</section>

@@ -1,0 +1,251 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel
+@{
+    ViewData["Title"] = Model.IsEdit ? "Edit Listing" : "Create Your Listing";
+}
+
+<form asp-action="@(Model.IsEdit ? "EditNetworkListing" : "CreateNetworkListing")"
+      method="post"
+      enctype="multipart/form-data"
+      class="rl-listing-details-form"
+      id="rlListingDetailsForm">
+    @Html.AntiForgeryToken()
+    @if (Model.IsEdit)
+    {
+        <input type="hidden" asp-for="ItemId" />
+    }
+    <input type="hidden" asp-for="AddressLatitude" id="AddressLatitude" />
+    <input type="hidden" asp-for="AddressLongitude" id="AddressLongitude" />
+    <input type="hidden" asp-for="ImageUrl" id="ImageUrl" />
+    <input type="hidden" asp-for="AdditionalPhotoUrls" id="AdditionalPhotoUrls" />
+    <input type="hidden" asp-for="PhotoPdfUrl" id="PhotoPdfUrl" />
+    <input type="hidden" asp-for="PhotoPdfFileName" id="PhotoPdfFileName" />
+    <input type="hidden" asp-for="Title" id="Title" />
+
+    <section class="rl-listing-section">
+        <div class="rl-listing-section-head">
+            <div>
+                <h2>Property Photos</h2>
+                <p class="rl-listing-photo-lead">Add a gallery link, upload a PDF, or add individual photos. First photo is the cover.</p>
+            </div>
+            <span class="rl-listing-photo-count" id="rlPhotoCount">0/20</span>
+        </div>
+
+        <div class="rl-listing-photo-grid" id="rlListingPhotoGrid">
+            <button type="button" class="rl-listing-photo-add" id="rlListingPhotoAdd" aria-label="Add photo">
+                <i class="fas fa-plus"></i>
+                <span>Add Photos</span>
+            </button>
+        </div>
+
+        <div class="rl-listing-photo-sources">
+            <div class="rl-listing-photo-source-card">
+                <div class="rl-listing-photo-source-head">
+                    <i class="fas fa-link"></i>
+                    <div>
+                        <strong>Photo gallery link</strong>
+                        <span>Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)</span>
+                    </div>
+                </div>
+                <input asp-for="PhotoGalleryLink"
+                       class="rl-form-input"
+                       id="PhotoGalleryLink"
+                       type="url"
+                       placeholder="https://drive.google.com/..." />
+                <span asp-validation-for="PhotoGalleryLink" class="text-danger"></span>
+            </div>
+
+            <div class="rl-listing-photo-source-card">
+                <div class="rl-listing-photo-source-head">
+                    <i class="fas fa-file-pdf"></i>
+                    <div>
+                        <strong>Upload photos as PDF</strong>
+                        <span>Upload a PDF brochure with property photos (max 15 MB)</span>
+                    </div>
+                </div>
+                <label class="rl-listing-pdf-drop" id="rlPdfDropZone">
+                    <input type="file"
+                           name="photoPdfFile"
+                           id="photoPdfFile"
+                           accept=".pdf,application/pdf"
+                           class="rl-listing-pdf-input" />
+                    <i class="fas fa-cloud-arrow-up"></i>
+                    <span class="rl-listing-pdf-label">Choose PDF or drag here</span>
+                </label>
+                <div class="rl-listing-pdf-current @(string.IsNullOrWhiteSpace(Model.PhotoPdfUrl) ? "is-hidden" : "")" id="rlPdfCurrent">
+                    <i class="fas fa-file-pdf"></i>
+                    <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" id="rlPdfCurrentLink">
+                        @(Model.PhotoPdfFileName ?? "Property photos.pdf")
+                    </a>
+                    <button type="button" class="rl-listing-pdf-remove" id="rlPdfRemove" aria-label="Remove PDF">&times;</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="rl-listing-section">
+        <h2 class="rl-listing-section-title">Property Type</h2>
+        <div class="rl-listing-toggle-pair">
+            <label class="rl-listing-toggle-btn @(Model.ListingType == "sale" ? "is-active" : "")">
+                <input type="radio" asp-for="ListingType" value="sale" />
+                For Sale
+            </label>
+            <label class="rl-listing-toggle-btn @(Model.ListingType == "rent" ? "is-active" : "")">
+                <input type="radio" asp-for="ListingType" value="rent" />
+                For Rent
+            </label>
+        </div>
+    </section>
+
+    <section class="rl-listing-section">
+        <div class="rl-form-field">
+            <label asp-for="Price" class="rl-form-label">Price</label>
+            <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="589900" />
+            <span asp-validation-for="Price" class="text-danger"></span>
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="PropertySubtype" class="rl-form-label">Property Subtype</label>
+            <select asp-for="PropertySubtype" class="rl-form-input">
+                <option value="">Select property type</option>
+                @foreach (var subtype in Model.PropertySubtypes)
+                {
+                    if (Model.PropertySubtype == subtype.Value)
+                    {
+                        <option value="@subtype.Value" selected="selected">@subtype.Label</option>
+                    }
+                    else
+                    {
+                        <option value="@subtype.Value">@subtype.Label</option>
+                    }
+                }
+            </select>
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="Address" class="rl-form-label">Address</label>
+            <div class="rl-listing-address-row">
+                <input asp-for="Address" class="rl-form-input" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
+                <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation">
+                    <i class="fas fa-crosshairs"></i>
+                    <span>Use My Location</span>
+                </button>
+            </div>
+            <span asp-validation-for="Address" class="text-danger"></span>
+            <p class="rl-listing-field-hint" id="rlLocationHint" hidden>GPS coordinates captured. Address will be refined when you publish.</p>
+        </div>
+
+        <div class="rl-form-grid rl-form-grid--2">
+            <div class="rl-form-field">
+                <label asp-for="Bedrooms" class="rl-form-label">Beds</label>
+                <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" />
+            </div>
+            <div class="rl-form-field">
+                <label asp-for="Bathrooms" class="rl-form-label">Baths</label>
+                <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" />
+            </div>
+            <div class="rl-form-field">
+                <label asp-for="SquareFeet" class="rl-form-label">Sq Ft</label>
+                <input asp-for="SquareFeet" class="rl-form-input" type="number" />
+            </div>
+            <div class="rl-form-field">
+                <label asp-for="YearBuilt" class="rl-form-label">Year Built</label>
+                <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" />
+            </div>
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="Description" class="rl-form-label">Short Description</label>
+            <textarea asp-for="Description" class="rl-form-input rl-form-textarea" maxlength="500" rows="4" placeholder="Describe the property highlights (500 characters max)"></textarea>
+        </div>
+    </section>
+
+    <section class="rl-listing-section">
+        <div class="rl-listing-toggle-row">
+            <div>
+                <strong>Open House</strong>
+                <span>Allow visitors to discover your open house</span>
+            </div>
+            <label class="rl-toggle-row rl-toggle-row--compact">
+                <span class="visually-hidden">Open house</span>
+                <input asp-for="IsOpenHouse" type="checkbox" id="IsOpenHouse" />
+                <span class="rl-toggle"></span>
+            </label>
+        </div>
+        <div class="rl-form-field" id="OpenHouseMetaWrap" style="@(Model.IsOpenHouse ? null : "display:none")">
+            <label asp-for="OpenHouseMeta" class="rl-form-label">Open house date/time</label>
+            <input asp-for="OpenHouseMeta" class="rl-form-input" placeholder="Sat, May 17 · 12:00–3:00 PM" />
+        </div>
+    </section>
+
+    <section class="rl-listing-section">
+        <div class="rl-form-field">
+            <label asp-for="VisibilityRadiusMiles" class="rl-form-label">Visibility Radius</label>
+            <span class="rl-listing-field-sub">Show this listing within</span>
+            <select asp-for="VisibilityRadiusMiles" class="rl-form-input">
+                @foreach (var option in Model.VisibilityRadiusOptions)
+                {
+                    <option value="@option.Value.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)">@option.Label</option>
+                }
+            </select>
+        </div>
+    </section>
+
+    <section class="rl-listing-section">
+        <h2 class="rl-listing-section-title">Programs <small>(optional)</small></h2>
+        <div class="rl-listing-program-select">
+            <label class="rl-listing-program-select-card @(Model.PromoteInNearbyFeed ? "is-selected" : "")">
+                <input asp-for="PromoteInNearbyFeed" type="checkbox" />
+                <i class="fas fa-bullhorn"></i>
+                <strong>Promote in Nearby Feed</strong>
+                <span>Increase visibility in the local feed.</span>
+                <i class="fas fa-circle-check rl-listing-program-check"></i>
+            </label>
+            <label class="rl-listing-program-select-card @(Model.PromoteOpenHouseProgram ? "is-selected" : "")">
+                <input asp-for="PromoteOpenHouseProgram" type="checkbox" />
+                <i class="fas fa-house"></i>
+                <strong>Open House</strong>
+                <span>Highlight an open house event.</span>
+                <i class="fas fa-circle-check rl-listing-program-check"></i>
+            </label>
+            <label class="rl-listing-program-select-card @(Model.FeaturedListing ? "is-selected" : "")">
+                <input asp-for="FeaturedListing" type="checkbox" />
+                <i class="fas fa-star"></i>
+                <strong>Featured Listing</strong>
+                <span>Top placement in the Nearby feed.</span>
+                <i class="fas fa-circle-check rl-listing-program-check"></i>
+            </label>
+        </div>
+    </section>
+
+    <div class="rl-info-box rl-info-box--muted">
+        <i class="fas fa-circle-info"></i>
+        <p>All inquiries will come through INDOR messages — not public phone numbers.</p>
+    </div>
+
+    <div class="rl-listing-publish-actions">
+        @if (!Model.IsEdit)
+        {
+            <a asp-action="PostListingBenefits" class="rl-listing-btn-outline">Back</a>
+        }
+        else
+        {
+            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-listing-btn-outline">Cancel</a>
+        }
+        <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-outline">Save Draft</button>
+        <button type="submit" class="ob-btn ob-btn-primary">Publish Listing</button>
+    </div>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script src="@Url.Content("~/js/realtor-network-listing-wizard.js")" asp-append-version="true"></script>
+    <script>
+        window.rlListingWizardInit({
+            initialPhoto: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ImageUrl ?? "")),
+            extraPhotos: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.AdditionalPhotoUrls ?? "")),
+            galleryLink: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PhotoGalleryLink ?? "")),
+            pdfUrl: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PhotoPdfUrl ?? "")),
+            pdfFileName: @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.PhotoPdfFileName ?? ""))
+        });
+    </script>
+}

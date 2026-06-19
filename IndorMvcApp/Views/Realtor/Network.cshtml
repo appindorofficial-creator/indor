@@ -3,38 +3,31 @@
     ViewData["Title"] = "Nearby Network";
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "network";
+    var isMapView = Model.ActiveView == "map";
 }
 
-<div class="rl-dash-shell rl-network-page">
-    @await Html.PartialAsync("_RealtorTopbar", Model)
+<div class="rl-dash-shell rl-network-page @(isMapView ? "rl-network-page--map" : "")">
+    @if (!isMapView)
+    {
+        @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <div class="rl-network-head">
-        <div class="rl-network-head-main">
-            <a asp-controller="Realtor" asp-action="Dashboard" class="rl-network-back">
-                <i class="fas fa-chevron-left"></i> Back to Home
+        <div class="rl-network-head">
+            <div class="rl-network-head-main">
+                <a asp-controller="Realtor" asp-action="Dashboard" class="rl-network-back">
+                    <i class="fas fa-chevron-left"></i> Back to Home
+                </a>
+                <div>
+                    <h1 class="rl-page-title">@Model.PageTitle</h1>
+                    <p class="rl-page-subtitle">@Model.RadiusLabel</p>
+                </div>
+            </div>
+            <a asp-controller="Realtor" asp-action="Profile" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn">
+                <i class="fas fa-user"></i> My Realtor Profile
             </a>
-            <div>
-                <h1 class="rl-page-title">@Model.PageTitle</h1>
-                <p class="rl-page-subtitle">@Model.RadiusLabel</p>
-            </div>
         </div>
-        <a asp-controller="Realtor" asp-action="Profile" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn">
-            <i class="fas fa-user"></i> My Realtor Profile
-        </a>
-    </div>
+    }
 
-    <form asp-action="Network" method="get" class="rl-search-form">
-        <div class="rl-search-row">
-            <div class="rl-search-bar">
-                <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search your network..." />
-            </div>
-            <input type="hidden" name="view" value="@Model.ActiveView" />
-            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-        </div>
-    </form>
-
-    <div class="rl-network-view-toggle" role="tablist" aria-label="Network view">
+    <div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
         <a asp-action="Network"
            asp-route-view="map"
            asp-route-filter="@Model.ActiveFilter"
@@ -51,62 +44,142 @@
         </a>
     </div>
 
-    <div class="rl-filter-chips rl-filter-chips--scroll rl-network-filters">
-        @foreach (var chip in Model.Filters)
-        {
-            <a asp-action="Network"
-               asp-route-filter="@chip.Value"
-               asp-route-view="@Model.ActiveView"
-               asp-route-q="@Model.SearchQuery"
-               class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
-                <i class="fas @chip.Icon"></i> @chip.Label
-            </a>
-        }
-    </div>
-
-    <section class="rl-quick-actions rl-quick-actions--network">
-        @foreach (var action in Model.QuickActions)
-        {
-            <a href="@action.Url" class="rl-quick-action">
-                <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                <span class="rl-quick-action-label">@action.Label</span>
-                @if (!string.IsNullOrWhiteSpace(action.Subtitle))
-                {
-                    <span class="rl-quick-action-sub">@action.Subtitle</span>
-                }
-            </a>
-        }
-    </section>
-
-    @if (Model.ActiveView == "map")
+    @if (isMapView)
     {
-        <section class="rl-network-map-panel" aria-label="Nearby map">
-            <div class="rl-network-map-canvas">
-                <div class="rl-network-map-radius"></div>
-                @foreach (var pin in Model.MapPins)
-                {
-                    <button type="button"
-                            class="rl-network-map-pin rl-network-map-pin--@pin.PinType"
-                            style="top:@pin.TopPercent;left:@pin.LeftPercent"
-                            aria-label="@pin.Label">
-                        <i class="fas @(pin.PinType switch {
-                            "you" => "fa-location-crosshairs",
-                            "lead" => "fa-user",
-                            "provider" => "fa-screwdriver-wrench",
-                            "emergency" => "fa-bell",
-                            _ => "fa-house"
-                        })"></i>
+        <div class="rl-zillow-map-filters rl-filter-chips rl-filter-chips--scroll">
+            @foreach (var chip in Model.Filters)
+            {
+                <a asp-action="Network"
+                   asp-route-filter="@chip.Value"
+                   asp-route-view="map"
+                   asp-route-q="@Model.SearchQuery"
+                   class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                    <i class="fas @chip.Icon"></i> @chip.Label
+                </a>
+            }
+        </div>
+
+        @if (Model.HasGoogleMaps)
+        {
+            <section class="rl-zillow-map-shell" aria-label="Nearby map">
+                <div id="rlNearbyNetworkMap" class="rl-zillow-map-canvas"></div>
+
+                <form class="rl-zillow-map-search" id="rlMapSearchForm" autocomplete="off">
+                    <div class="rl-zillow-map-search-inner">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="search"
+                               id="rlMapSearchInput"
+                               value="@Model.SearchQuery"
+                               placeholder="Search address or neighborhood" />
+                    </div>
+                    <button type="button" class="rl-zillow-map-filter-btn" id="rlMapFilterBtn" aria-label="Filters">
+                        <i class="fas fa-sliders"></i>
                     </button>
-                }
-            </div>
-            <div class="rl-network-map-foot">
-                <strong>@Model.MapCenterLabel</strong>
-                <span>3 mi radius · @Model.FeedCards.Count items nearby</span>
-            </div>
-        </section>
+                </form>
+
+                <button type="button" class="rl-zillow-map-locate" id="rlMapLocateBtn" aria-label="My location">
+                    <i class="fas fa-location-crosshairs"></i>
+                </button>
+
+                <div class="rl-zillow-map-sheet" id="rlMapBottomSheet">
+                    <div class="rl-zillow-map-sheet-handle"></div>
+                    <strong id="rl-map-location-label">@Model.MapCenterLabel</strong>
+                    <span id="rl-map-location-meta">@Model.RadiusMiles.ToString("0.#") mi radius · @Model.MapNearbyCount nearby</span>
+                </div>
+
+                <script type="application/json" id="rl-network-map-data">
+                    @Html.Raw(System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        center = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
+                        radiusMiles = Model.RadiusMiles,
+                        useDeviceLocation = Model.UseDeviceLocation,
+                        centerLabel = Model.MapCenterLabel,
+                        activeFilter = Model.ActiveFilter,
+                        mapDataUrl = Url.Action("NetworkMapData", "Realtor"),
+                        providers = Model.MapProviders.Select(p => new
+                        {
+                            id = p.ProviderId,
+                            name = p.Name,
+                            category = p.Category,
+                            lat = p.Latitude,
+                            lng = p.Longitude,
+                            distanceMiles = p.DistanceMiles,
+                            verified = p.IsVerified
+                        }),
+                        listings = Model.MapPins
+                            .Where(p => p.PinType != "you" && p.Latitude is not null && p.Longitude is not null)
+                            .Select(p => new
+                            {
+                                label = p.Label,
+                                type = p.PinType,
+                                lat = p.Latitude,
+                                lng = p.Longitude
+                            })
+                    }))
+                </script>
+            </section>
+        }
+        else
+        {
+            <section class="rl-network-map-panel" aria-label="Nearby map">
+                <div class="rl-network-map-stage">
+                    <div class="rl-network-map-canvas rl-network-map-canvas--mock">
+                        <div class="rl-network-map-radius"></div>
+                        @foreach (var pin in Model.MapPins)
+                        {
+                            <button type="button"
+                                    class="rl-network-map-pin rl-network-map-pin--@pin.PinType"
+                                    style="top:@pin.TopPercent;left:@pin.LeftPercent"
+                                    aria-label="@pin.Label"
+                                    title="@pin.Label">
+                                <i class="fas @pin.IconClass"></i>
+                            </button>
+                        }
+                    </div>
+                </div>
+            </section>
+        }
     }
     else
     {
+        <form asp-action="Network" method="get" class="rl-search-form">
+            <div class="rl-search-row">
+                <div class="rl-search-bar">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search your network..." />
+                </div>
+                <input type="hidden" name="view" value="@Model.ActiveView" />
+                <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+            </div>
+        </form>
+
+        <div class="rl-filter-chips rl-filter-chips--scroll rl-network-filters">
+            @foreach (var chip in Model.Filters)
+            {
+                <a asp-action="Network"
+                   asp-route-filter="@chip.Value"
+                   asp-route-view="@Model.ActiveView"
+                   asp-route-q="@Model.SearchQuery"
+                   class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                    <i class="fas @chip.Icon"></i> @chip.Label
+                </a>
+            }
+        </div>
+
+        <section class="rl-quick-actions rl-quick-actions--network">
+            @foreach (var action in Model.QuickActions)
+            {
+                <a href="@action.Url" class="rl-quick-action">
+                    <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
+                    <span class="rl-quick-action-label">@action.Label</span>
+                    @if (!string.IsNullOrWhiteSpace(action.Subtitle))
+                    {
+                        <span class="rl-quick-action-sub">@action.Subtitle</span>
+                    }
+                </a>
+            }
+        </section>
+
         <section class="rl-network-feed">
             @if (Model.FeedCards.Count == 0)
             {
@@ -122,3 +195,11 @@
         </section>
     }
 </div>
+
+@section Scripts {
+    @if (Model.ActiveView == "map" && Model.HasGoogleMaps)
+    {
+        <script src="@Url.Content("~/js/realtor-nearby-network-map.js")" asp-append-version="true"></script>
+        <script src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&libraries=geometry&callback=rlInitNearbyNetworkMap" async defer></script>
+    }
+}

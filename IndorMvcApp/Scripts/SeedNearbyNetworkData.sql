@@ -1,7 +1,8 @@
 /*
-  INDOR — Seed Nearby Network settings and feed items for Realtor portal.
-  Run after CreateNearbyNetworkTables.sql.
-  Set @RealtorEmail to your test realtor account email.
+  INDOR — OPTIONAL demo seed for Nearby Network (local testing only).
+  Production does NOT need this script — realtors create listings in the app
+  and coordinates are saved automatically when they enter an address.
+  Run after CreateNearbyNetworkTables.sql only if you want sample data.
 */
 
 DECLARE @RealtorEmail NVARCHAR(256) = N'realtor@indor.test';

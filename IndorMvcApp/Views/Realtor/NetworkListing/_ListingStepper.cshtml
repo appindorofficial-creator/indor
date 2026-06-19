@@ -1,0 +1,9 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+
+<nav class="rl-listing-stepper" aria-label="Post listing progress">
+    @for (var i = 1; i <= Model.TotalSteps; i++)
+    {
+        var cls = i < Model.DisplayStep ? "is-done" : i == Model.DisplayStep ? "is-active" : "";
+        <div class="rl-listing-step-segment @cls"></div>
+    }
+</nav>

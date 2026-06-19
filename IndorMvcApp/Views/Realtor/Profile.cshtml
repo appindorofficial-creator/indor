@@ -10,7 +10,7 @@
 
     <section class="rl-profile-hero">
         <h1 class="rl-profile-hero-title">Profile</h1>
-        <p class="rl-profile-hero-subtitle">Your realtor account, branding, and settings.</p>
+        <p class="rl-profile-hero-subtitle">Manage your realtor account, branding, and settings.</p>
     </section>
 
     <section class="rl-profile-card-v2 rl-profile-card-v2--overlap">
@@ -61,10 +61,10 @@
             <span class="rl-quick-action-icon"><i class="fas fa-user-pen"></i></span>
             <span>Edit Profile</span>
         </button>
-        <button type="button" class="rl-quick-action">
+        <a asp-controller="Realtor" asp-action="PublicProfile" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-globe"></i></span>
             <span>Public Profile</span>
-        </button>
+        </a>
         <button type="button" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-share-from-square"></i></span>
             <span>Share</span>
@@ -101,10 +101,10 @@
             <i class="fas fa-chevron-right"></i>
         </button>
         <button type="button" class="rl-profile-nav-item">
-            <span class="rl-profile-nav-icon"><i class="fas fa-users"></i></span>
+            <span class="rl-profile-nav-icon"><i class="fas fa-shield-halved"></i></span>
             <div>
-                <strong>Client Preferences</strong>
-                <span class="rl-profile-nav-desc">Set communication and privacy preferences.</span>
+                <strong>Account Settings</strong>
+                <span class="rl-profile-nav-desc">Update your preferences and security settings.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </button>

@@ -81,6 +81,7 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Register HttpClient and property services
 builder.Services.Configure<OpenAiPropertyOptions>(builder.Configuration.GetSection(OpenAiPropertyOptions.SectionName));
+builder.Services.Configure<GoogleMapsOptions>(builder.Configuration.GetSection(GoogleMapsOptions.SectionName));
 builder.Services.Configure<AttomOptions>(builder.Configuration.GetSection(AttomOptions.SectionName));
 builder.Services.AddHttpClient<OpenAiPropertyEnrichmentService>((sp, client) =>
 {

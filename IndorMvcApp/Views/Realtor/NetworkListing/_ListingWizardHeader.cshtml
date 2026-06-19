@@ -1,0 +1,23 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
+
+@await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", Model)
+
+<div class="rl-listing-wizard-head">
+    @if (Model.DisplayStep == 0)
+    {
+        <a asp-action="Network" class="rl-network-back">
+            <i class="fas fa-chevron-left"></i> Back to Feed
+        </a>
+    }
+    else
+    {
+        <a asp-action="Network" class="rl-network-back">
+            <i class="fas fa-chevron-left"></i> Back to Nearby Network
+        </a>
+    }
+    <h1 class="rl-listing-wizard-title">@Model.Title</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+    {
+        <p class="rl-listing-wizard-sub">@Model.Subtitle</p>
+    }
+</div>

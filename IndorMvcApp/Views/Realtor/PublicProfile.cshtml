@@ -1,0 +1,278 @@
+@model IndorMvcApp.ViewModels.RealtorPublicProfileViewModel
+@{
+    ViewData["Title"] = "Public Profile";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "profile";
+    var hasAbout = !string.IsNullOrWhiteSpace(Model.Bio)
+                   || !string.IsNullOrWhiteSpace(Model.BrokerageName)
+                   || Model.VerificationItems.Any(v => v.IsComplete);
+}
+
+<div class="rl-dash-shell rl-public-profile">
+    <div class="rl-public-profile-top">
+        <a asp-controller="Realtor" asp-action="Profile" class="rl-public-back" aria-label="Back to profile">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        @await Html.PartialAsync("_RealtorTopbar", Model)
+    </div>
+
+    <section class="rl-public-hero" aria-label="Public profile header">
+        @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
+        {
+            <img src="@Model.CoverImageUrl" alt="" class="rl-public-hero-cover" />
+        }
+        <div class="rl-public-hero-overlay"></div>
+        <div class="rl-public-hero-content">
+            <div class="rl-public-hero-photo-wrap">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+                {
+                    <img src="@Model.ProfilePhotoUrl" alt="" class="rl-public-hero-photo" />
+                }
+                else
+                {
+                    <span class="rl-public-hero-photo rl-public-hero-photo--placeholder"><i class="fas fa-user"></i></span>
+                }
+                @if (Model.IsVerified)
+                {
+                    <span class="rl-public-hero-badge" aria-label="Verified"><i class="fas fa-circle-check"></i></span>
+                }
+            </div>
+            <h1 class="rl-public-hero-name">@Model.FullName</h1>
+            <p class="rl-public-hero-title">@Model.TitleLabel</p>
+            @if (Model.IsVerified)
+            {
+                <span class="rl-public-verified-pill"><i class="fas fa-shield-check"></i> Verified on INDOR</span>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
+            {
+                <p class="rl-public-hero-location"><i class="fas fa-location-dot"></i> @Model.LocationLabel</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Tagline))
+            {
+                <p class="rl-public-hero-tagline">@Model.Tagline</p>
+            }
+        </div>
+    </section>
+
+    <section class="rl-public-actions">
+        @if (Model.IsOwnProfile)
+        {
+            <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-public-btn rl-public-btn--primary">
+                <i class="fas fa-user-pen"></i>
+                <span>
+                    <strong>Edit Profile</strong>
+                    <small>Update photo, license, and bio</small>
+                </span>
+            </a>
+        }
+        <button type="button" class="rl-public-btn rl-public-btn--secondary" id="rlPublicShareBtn">
+            <i class="fas fa-share-from-square"></i> Share Profile
+        </button>
+    </section>
+
+    @if (Model.Stats.Count > 0)
+    {
+        <section class="rl-public-stats" aria-label="Profile stats">
+            @foreach (var stat in Model.Stats)
+            {
+                <div class="rl-public-stat">
+                    <span class="rl-stat-icon rl-stat-icon--@stat.ColorClass"><i class="fas @stat.Icon"></i></span>
+                    <strong>@stat.Count</strong>
+                    <span>@stat.Label</span>
+                </div>
+            }
+        </section>
+    }
+
+    @if (hasAbout)
+    {
+        <section class="rl-public-section rl-public-about">
+            <div class="rl-public-about-copy">
+                <h2>About</h2>
+                @if (!string.IsNullOrWhiteSpace(Model.Bio))
+                {
+                    <p>@Model.Bio</p>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.BrokerageName))
+                {
+                    <p>@Model.BrokerageName realtor serving local buyers and sellers through INDOR.</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.LicenseLabel))
+                {
+                    <p class="rl-public-license"><i class="fas fa-id-card"></i> @Model.LicenseLabel</p>
+                }
+            </div>
+            @if (Model.VerificationItems.Count > 0)
+            {
+                <ul class="rl-public-verify-list">
+                    @foreach (var item in Model.VerificationItems)
+                    {
+                        <li class="@(item.IsComplete ? "is-complete" : null)">
+                            <i class="fas @(item.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
+                            @item.Label
+                        </li>
+                    }
+                </ul>
+            }
+        </section>
+    }
+
+    @if (Model.ServiceAreaChips.Count > 0)
+    {
+        <section class="rl-public-section">
+            <div class="rl-public-section-head">
+                <h2>Service Areas</h2>
+                @if (Model.ServiceAreaChips.Count > 6)
+                {
+                    <span class="rl-public-section-meta">@Model.ServiceAreaChips.Count areas</span>
+                }
+            </div>
+            <div class="rl-public-chips">
+                @foreach (var area in Model.ServiceAreaChips)
+                {
+                    <span class="rl-public-chip"><i class="fas fa-location-dot"></i> @area</span>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.ActiveListings.Count > 0)
+    {
+        <section class="rl-public-section">
+            <div class="rl-public-section-head">
+                <h2>Active Listings</h2>
+                <a asp-controller="Realtor" asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-public-section-link">See all</a>
+            </div>
+            <div class="rl-public-carousel">
+                @foreach (var listing in Model.ActiveListings)
+                {
+                    <article class="rl-public-listing-card">
+                        <div class="rl-network-card-media">
+                            @if (!string.IsNullOrWhiteSpace(listing.ImageUrl))
+                            {
+                                <img src="@listing.ImageUrl" alt="" class="rl-network-card-img" />
+                            }
+                            else
+                            {
+                                <div class="rl-network-card-icon-wrap"><i class="fas fa-house"></i></div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(listing.StatusBadge))
+                            {
+                                <span class="rl-network-card-badge rl-network-card-badge--listing">@listing.StatusBadge</span>
+                            }
+                        </div>
+                        <div class="rl-network-card-body">
+                            <strong class="rl-network-card-price">@listing.PriceLabel</strong>
+                            @if (!string.IsNullOrWhiteSpace(listing.Address))
+                            {
+                                <span class="rl-network-card-sub">@listing.Address</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(listing.SpecsLabel))
+                            {
+                                <span class="rl-network-card-specs">@listing.SpecsLabel</span>
+                            }
+                            <a href="@listing.ViewUrl" class="rl-btn-outline rl-btn-outline--sm rl-public-listing-btn">View Listing</a>
+                        </div>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.OpenHouses.Count > 0)
+    {
+        <section class="rl-public-section">
+            <div class="rl-public-section-head">
+                <h2>Open Houses</h2>
+                <a asp-controller="Realtor" asp-action="Network" asp-route-view="feed" asp-route-filter="OpenHouses" class="rl-public-section-link">See all</a>
+            </div>
+            <div class="rl-public-openhouses">
+                @foreach (var openHouse in Model.OpenHouses)
+                {
+                    <a href="@openHouse.ViewUrl" class="rl-public-openhouse-card">
+                        @if (!string.IsNullOrWhiteSpace(openHouse.ImageUrl))
+                        {
+                            <img src="@openHouse.ImageUrl" alt="" />
+                        }
+                        else
+                        {
+                            <span class="rl-public-openhouse-placeholder"><i class="fas fa-door-open"></i></span>
+                        }
+                        <div>
+                            <strong>@openHouse.Title</strong>
+                            @if (!string.IsNullOrWhiteSpace(openHouse.MetaLabel))
+                            {
+                                <span>@openHouse.MetaLabel</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(openHouse.Address))
+                            {
+                                <small>@openHouse.Address</small>
+                            }
+                        </div>
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.SharedPackages.Count > 0)
+    {
+        <section class="rl-public-section">
+            <div class="rl-public-section-head">
+                <h2>Shared Packages</h2>
+            </div>
+            <p class="rl-public-section-desc">Curated packages and resources shared with clients on INDOR.</p>
+            <div class="rl-public-packages">
+                @foreach (var package in Model.SharedPackages)
+                {
+                    <article class="rl-public-package-card">
+                        <span class="rl-public-package-icon"><i class="fas fa-box-archive"></i></span>
+                        <strong>@package.Title</strong>
+                        <span>@package.Subtitle</span>
+                        <small>@package.SharedLabel · @package.StatusLabel</small>
+                    </article>
+                }
+            </div>
+        </section>
+    }
+
+    @if (Model.ActiveListings.Count == 0 && Model.OpenHouses.Count == 0 && Model.SharedPackages.Count == 0 && Model.ServiceAreaChips.Count == 0 && string.IsNullOrWhiteSpace(Model.Bio))
+    {
+        <section class="rl-public-empty">
+            <i class="fas fa-globe"></i>
+            <h3>Your public profile is live</h3>
+            <p>Add listings in Nearby Network, service areas in registration, and a public bio to enrich what clients see.</p>
+            <a asp-controller="Realtor" asp-action="CreateNetworkListing" class="rl-btn-primary">Post a Listing</a>
+        </section>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        (function () {
+            var btn = document.getElementById('rlPublicShareBtn');
+            if (!btn) return;
+            var shareUrl = window.location.origin + '@Model.ShareUrl';
+            btn.addEventListener('click', async function () {
+                var payload = {
+                    title: '@Model.FullName - INDOR',
+                    text: 'View my realtor profile on INDOR',
+                    url: shareUrl
+                };
+                if (navigator.share) {
+                    try { await navigator.share(payload); return; } catch (_) { }
+                }
+                try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    btn.innerHTML = '<i class="fas fa-check"></i> Link copied';
+                    setTimeout(function () {
+                        btn.innerHTML = '<i class="fas fa-share-from-square"></i> Share Profile';
+                    }, 2000);
+                } catch (_) {
+                    window.prompt('Copy profile link:', shareUrl);
+                }
+            });
+        })();
+    </script>
+}
