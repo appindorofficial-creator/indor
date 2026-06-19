@@ -62,12 +62,21 @@ public class RealtorInviteClientController(
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {
-            ModelState.AddModelError(nameof(fullName), "Required");
+            ModelState.AddModelError(nameof(fullName), "Full name is required.");
         }
 
         if (string.IsNullOrWhiteSpace(email))
         {
-            ModelState.AddModelError(nameof(email), "Required");
+            ModelState.AddModelError(nameof(email), "Email address is required.");
+        }
+        else if (!new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(email.Trim()))
+        {
+            ModelState.AddModelError(nameof(email), "Please enter a valid email address.");
+        }
+
+        if (!RealtorClientRoles.All.Contains(clientRole ?? "", StringComparer.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(nameof(clientRole), "Please select a client role.");
         }
 
         if (!ModelState.IsValid)

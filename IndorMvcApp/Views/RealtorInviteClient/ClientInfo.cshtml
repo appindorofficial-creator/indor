@@ -1,24 +1,38 @@
 @model IndorMvcApp.ViewModels.RealtorInviteClientInfoViewModel
+@{
+    string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+    var fullNameError = FieldError("fullName");
+    var emailError = FieldError("email");
+    var clientRoleError = FieldError("clientRole");
+}
 
-<form id="inviteClientForm" asp-action="ClientInfo" method="post" class="rl-invite-form">
+<form id="inviteClientForm" asp-action="ClientInfo" method="post" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
 
     <h2 class="rl-invite-section-title">Client Information</h2>
 
-    <label class="rl-field">
+    <label class="rl-field @(fullNameError.Length > 0 ? "is-error" : null)">
         <i class="fas fa-user"></i>
-        <input type="text" name="fullName" value="@Model.FullName" placeholder="Enter full name" required />
+        <input type="text" name="fullName" value="@Model.FullName" placeholder="Enter full name" autocomplete="name" />
     </label>
+    @if (!string.IsNullOrWhiteSpace(fullNameError))
+    {
+        <span class="rl-field-error">@fullNameError</span>
+    }
 
-    <label class="rl-field">
+    <label class="rl-field @(emailError.Length > 0 ? "is-error" : null)">
         <i class="fas fa-envelope"></i>
-        <input type="email" name="email" value="@Model.Email" placeholder="Enter email address" required />
+        <input type="email" name="email" value="@Model.Email" placeholder="Enter email address" autocomplete="email" inputmode="email" />
     </label>
+    @if (!string.IsNullOrWhiteSpace(emailError))
+    {
+        <span class="rl-field-error">@emailError</span>
+    }
 
     <label class="rl-field">
         <i class="fas fa-phone"></i>
-        <input type="tel" name="phone" value="@Model.Phone" placeholder="Enter phone number" />
+        <input type="tel" name="phone" value="@Model.Phone" placeholder="Enter phone number" autocomplete="tel" inputmode="tel" />
     </label>
 
     <p class="rl-invite-section-title">Client Role</p>
@@ -31,6 +45,10 @@
             </label>
         }
     </div>
+    @if (!string.IsNullOrWhiteSpace(clientRoleError))
+    {
+        <span class="rl-field-error">@clientRoleError</span>
+    }
 
     <p class="rl-invite-section-title">Quick Note <small>(optional)</small></p>
     <label class="rl-field rl-field--textarea">
