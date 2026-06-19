@@ -79,6 +79,7 @@
         .hf-quick-link { background:#FFF; border:1px solid #E5E7EB; border-radius:12px; padding:12px; text-decoration:none; color:#0A2540; font-weight:700; font-size:0.82rem; display:flex; align-items:center; gap:8px; }
         .hf-quick-link i { color:#0066CC; }
     </style>
+    @await Html.PartialAsync("_TabletResponsiveHead")
     @RenderSection("Head", required: false)
 </head>
 <body>

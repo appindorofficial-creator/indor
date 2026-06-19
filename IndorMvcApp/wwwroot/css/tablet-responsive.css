@@ -1,0 +1,203 @@
+/*
+ * Tablet layout layer — additive only.
+ * Mobile rules (max-width: 480/767px) are untouched.
+ * Targets iPad / tablet: 768px–1024px+.
+ */
+:root {
+    --indor-shell-tablet: 720px;
+    --indor-shell-tablet-lg: 900px;
+    --indor-shell-pad-tablet: 24px;
+}
+
+@media (min-width: 768px) {
+    /* Shared app shells — !important overrides inline styles in Index/MyHome layouts */
+    #section-home,
+    #section-schedule,
+    .section,
+    .home-search-panel,
+    .ob-shell-inner,
+    .ob-welcome-body,
+    .ob-success-wrap,
+    .rl-page .ob-shell-inner,
+    .prv-page .ob-shell-inner,
+    .rl-dash-shell,
+    .rl-invite-shell,
+    .pa-portal-shell,
+    .hvac-page,
+    .ms-page,
+    .perfil-page,
+    .hf-content,
+    .hf-top,
+    .hf-bottom-nav {
+        max-width: var(--indor-shell-tablet) !important;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    /* Home dashboard — inline styles in Index.cshtml */
+    .section {
+        padding-left: var(--indor-shell-pad-tablet);
+        padding-right: var(--indor-shell-pad-tablet);
+    }
+
+    #section-home {
+        padding-left: var(--indor-shell-pad-tablet);
+        padding-right: var(--indor-shell-pad-tablet);
+    }
+
+    /* Bottom nav aligned to content shell (not full viewport width) */
+    .bottom-nav,
+    .rl-bottom-nav,
+    .pa-bottom-nav,
+    .hf-bottom-nav,
+    .hvac-bottom-nav {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: min(100%, var(--indor-shell-tablet));
+        border-radius: 18px 18px 0 0;
+        box-shadow: 0 -6px 24px rgba(10, 37, 64, 0.1);
+    }
+
+    .prv-pro-bottom-nav {
+        left: 50%;
+        right: auto;
+        transform: translateX(-50%);
+        width: min(100%, 1280px);
+        border-radius: 18px 18px 0 0;
+    }
+
+    /* MyHome / House Facts layout */
+    .hf-content {
+        padding-left: var(--indor-shell-pad-tablet);
+        padding-right: var(--indor-shell-pad-tablet);
+    }
+
+    /* Grids — use tablet width better */
+    .hd-specs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .hd-spec {
+        justify-content: center;
+        text-align: center;
+    }
+
+    .hf-grid-2,
+    .hf-action-grid,
+    .hf-quick-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .pa-hscroll {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+        overflow: visible;
+        scroll-snap-type: none;
+    }
+
+    .pa-hscroll > * {
+        flex: unset;
+        max-width: none;
+        width: auto;
+    }
+
+    .hf-chip-row,
+    .hf-photo-row {
+        flex-wrap: wrap;
+        overflow-x: visible;
+    }
+
+    /* Portal pages — subtle outer background on tablet */
+    body.rl-dash-page,
+    body.pa-portal-page,
+    .ob-page {
+        background: #E8EEF5;
+    }
+
+    body.rl-dash-page .rl-dash-shell,
+    body.pa-portal-page .pa-portal-shell {
+        background: #F4F7FB;
+        border-radius: 20px 20px 0 0;
+        min-height: calc(100vh - 72px);
+        padding-top: 8px;
+    }
+
+    /* Auth / welcome onboarding */
+    .ob-welcome-body {
+        max-width: var(--indor-shell-tablet);
+    }
+
+    .welcome-landing-shell {
+        max-width: var(--indor-shell-tablet);
+    }
+
+    .top-bar {
+        max-width: var(--indor-shell-tablet) !important;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (min-width: 1024px) {
+    :root {
+        --indor-shell-tablet: var(--indor-shell-tablet-lg);
+    }
+
+    #section-home,
+    #section-schedule,
+    .section,
+    .home-search-panel,
+    .ob-shell-inner,
+    .ob-welcome-body,
+    .ob-success-wrap,
+    .rl-page .ob-shell-inner,
+    .prv-page .ob-shell-inner,
+    .rl-dash-shell,
+    .rl-invite-shell,
+    .pa-portal-shell,
+    .hvac-page,
+    .ms-page,
+    .perfil-page,
+    .hf-content,
+    .hf-top,
+    .hf-bottom-nav {
+        max-width: var(--indor-shell-tablet-lg) !important;
+    }
+
+    .bottom-nav,
+    .rl-bottom-nav,
+    .pa-bottom-nav,
+    .hf-bottom-nav,
+    .hvac-bottom-nav {
+        width: min(100%, var(--indor-shell-tablet-lg));
+    }
+
+    .hd-specs {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .hf-grid-2,
+    .hf-action-grid,
+    .hf-quick-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .pa-hscroll {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .top-bar {
+        max-width: var(--indor-shell-tablet-lg) !important;
+    }
+
+    /* Provider Pro job sub-flows */
+    .prv-pro-shell--jobs-v2 {
+        max-width: var(--indor-shell-tablet-lg);
+        margin-left: auto;
+        margin-right: auto;
+    }
+}

@@ -1,0 +1,90 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel
+@{
+    var isEdit = Model.ItemId is > 0;
+    ViewData["Title"] = isEdit ? "Edit Listing" : "Post Listing";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "network";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <div class="rl-page-header">
+        <div>
+            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-network-back">
+                <i class="fas fa-chevron-left"></i> Back to Nearby Network
+            </a>
+            <h1 class="rl-page-title">@(isEdit ? "Edit Listing" : "Post Listing")</h1>
+            <p class="rl-page-subtitle">Save your listing to the Nearby Network feed.</p>
+        </div>
+    </div>
+
+    <form asp-action="@(isEdit ? "EditNetworkListing" : "CreateNetworkListing")" method="post" class="rl-network-form">
+        @Html.AntiForgeryToken()
+        @if (isEdit)
+        {
+            <input type="hidden" asp-for="ItemId" />
+        }
+
+        <div class="rl-form-field">
+            <label asp-for="Title" class="rl-form-label">Headline</label>
+            <input asp-for="Title" class="rl-form-input" placeholder="Stunning home in Ballantyne" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="Address" class="rl-form-label">Address</label>
+            <input asp-for="Address" class="rl-form-input" placeholder="7404 Wallace Ln, Charlotte, NC 28212" />
+            <span asp-validation-for="Address" class="text-danger"></span>
+        </div>
+
+        <div class="rl-form-grid rl-form-grid--2">
+            <div class="rl-form-field">
+                <label asp-for="Price" class="rl-form-label">Price</label>
+                <input asp-for="Price" class="rl-form-input" type="number" step="1000" />
+            </div>
+            <div class="rl-form-field">
+                <label asp-for="SquareFeet" class="rl-form-label">Square feet</label>
+                <input asp-for="SquareFeet" class="rl-form-input" type="number" />
+            </div>
+            <div class="rl-form-field">
+                <label asp-for="Bedrooms" class="rl-form-label">Bedrooms</label>
+                <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" />
+            </div>
+            <div class="rl-form-field">
+                <label asp-for="Bathrooms" class="rl-form-label">Bathrooms</label>
+                <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" />
+            </div>
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="ImageUrl" class="rl-form-label">Photo URL</label>
+            <input asp-for="ImageUrl" class="rl-form-input" placeholder="/inspeccion2.jpeg" />
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="StatusBadge" class="rl-form-label">Status</label>
+            <input asp-for="StatusBadge" class="rl-form-input" placeholder="ACTIVE" />
+        </div>
+
+        <div class="rl-form-field rl-form-check">
+            <label>
+                <input asp-for="IsOpenHouse" type="checkbox" />
+                This is an open house event
+            </label>
+        </div>
+
+        <div class="rl-form-field">
+            <label asp-for="OpenHouseMeta" class="rl-form-label">Open house date/time</label>
+            <input asp-for="OpenHouseMeta" class="rl-form-input" placeholder="Sat, May 17 · 12:00–3:00 PM" />
+        </div>
+
+        <button type="submit" class="rl-btn-primary rl-btn-primary--block">
+            @(isEdit ? "Save changes" : "Publish listing")
+        </button>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

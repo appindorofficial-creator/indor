@@ -1,0 +1,68 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkFeedCardViewModel
+<article class="rl-network-card rl-network-card--@Model.CardType">
+    @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+    {
+        <div class="rl-network-card-media">
+            <img src="@Url.Content("~" + Model.ImageUrl)" alt="" class="rl-network-card-img" />
+            <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@Model.BadgeLabel</span>
+        </div>
+    }
+    else if (!string.IsNullOrWhiteSpace(Model.IconClass))
+    {
+        <div class="rl-network-card-icon-wrap rl-network-card-icon-wrap--@Model.BadgeCss">
+            <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@Model.BadgeLabel</span>
+            <i class="fas @Model.IconClass"></i>
+        </div>
+    }
+
+    <div class="rl-network-card-body">
+        <div class="rl-network-card-head">
+            <div class="rl-network-card-copy">
+                @if (!string.IsNullOrWhiteSpace(Model.PriceLabel))
+                {
+                    <strong class="rl-network-card-price">@Model.PriceLabel</strong>
+                }
+                <strong class="rl-network-card-title">@Model.Title</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+                {
+                    <span class="rl-network-card-sub">@Model.Subtitle</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.SpecsLabel))
+                {
+                    <span class="rl-network-card-specs">@Model.SpecsLabel</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
+                {
+                    <span class="rl-network-card-meta">@Model.MetaLabel</span>
+                }
+                @if (Model.Tags.Count > 0)
+                {
+                    <div class="rl-network-card-tags">
+                        @foreach (var tag in Model.Tags)
+                        {
+                            <span class="rl-network-tag">@tag</span>
+                        }
+                    </div>
+                }
+            </div>
+            <div class="rl-network-card-side">
+                @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
+                {
+                    <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                {
+                    <span class="rl-network-distance"><i class="fas fa-location-dot"></i> @Model.DistanceLabel</span>
+                }
+            </div>
+        </div>
+
+        <div class="rl-network-card-actions">
+            <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+            @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
+            {
+                <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+            }
+        </div>
+    </div>
+</article>

@@ -12,6 +12,7 @@ namespace IndorMvcApp.Controllers;
 public class RealtorController(
     IRealtorRegistrationService registration,
     RealtorPortalService portalService,
+    RealtorNearbyNetworkService nearbyNetworkService,
     RealtorSharedQuoteService sharedQuoteService,
     UserManager<ApplicationUser> userManager) : Controller
 {
@@ -220,11 +221,95 @@ public class RealtorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> Network(string? view, string? filter, string? q, string? scope, CancellationToken cancellationToken) =>
+        await PortalPageAsync(r => nearbyNetworkService.BuildAsync(r, view, filter, q, scope, cancellationToken), cancellationToken);
+
+    [HttpGet]
+    public async Task<IActionResult> CreateNetworkListing(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildListingFormAsync(realtor, null, cancellationToken);
+        return View("NetworkListingForm", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateNetworkListing(RealtorNetworkListingFormViewModel model, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var shell = await portalService.BuildShellAsync(realtor, cancellationToken);
+            model.DisplayName = shell.DisplayName;
+            model.FullDisplayName = shell.FullDisplayName;
+            model.ProfilePhotoUrl = shell.ProfilePhotoUrl;
+            model.BadgeLabel = shell.BadgeLabel;
+            model.IsVerified = shell.IsVerified;
+            model.HasNotifications = shell.HasNotifications;
+            return View("NetworkListingForm", model);
+        }
+
+        await nearbyNetworkService.SaveListingAsync(realtor, model, cancellationToken);
+        return RedirectToAction(nameof(Network), new { filter = "Homes", scope = "mine" });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditNetworkListing(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildListingFormAsync(realtor, id, cancellationToken);
+        return model == null ? NotFound() : View("NetworkListingForm", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditNetworkListing(RealtorNetworkListingFormViewModel model, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (!ModelState.IsValid || model.ItemId is not > 0)
+        {
+            var shell = await portalService.BuildShellAsync(realtor, cancellationToken);
+            model.DisplayName = shell.DisplayName;
+            model.FullDisplayName = shell.FullDisplayName;
+            model.ProfilePhotoUrl = shell.ProfilePhotoUrl;
+            model.BadgeLabel = shell.BadgeLabel;
+            model.IsVerified = shell.IsVerified;
+            model.HasNotifications = shell.HasNotifications;
+            return View("NetworkListingForm", model);
+        }
+
+        var savedId = await nearbyNetworkService.SaveListingAsync(realtor, model, cancellationToken);
+        return savedId == null
+            ? NotFound()
+            : RedirectToAction(nameof(Network), new { filter = "Homes", scope = "mine" });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Profile(CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildProfileAsync(r, cancellationToken), cancellationToken);
 
     [HttpGet]
-    public async Task<IActionResult> Network(string? q, string? filter, CancellationToken cancellationToken) =>
+    public async Task<IActionResult> ProviderNetwork(string? q, string? filter, CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildNetworkAsync(r, q, filter, cancellationToken), cancellationToken);
 
     private async Task<IActionResult> PortalPageAsync<T>(

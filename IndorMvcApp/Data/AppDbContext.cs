@@ -179,6 +179,8 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorRealtorActivity> IndorRealtorActivities { get; set; }
     public DbSet<IndorRealtorQuoteBid> IndorRealtorQuoteBids { get; set; }
     public DbSet<IndorRealtorSharedQuote> IndorRealtorSharedQuotes { get; set; }
+    public DbSet<IndorNearbyNetworkSetting> IndorNearbyNetworkSettings { get; set; }
+    public DbSet<IndorNearbyNetworkItem> IndorNearbyNetworkItems { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -1124,6 +1126,26 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany()
                   .HasForeignKey(e => e.UserId)
                   .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<IndorNearbyNetworkSetting>(entity =>
+        {
+            entity.HasOne(e => e.Realtor)
+                  .WithOne(r => r.NetworkSetting)
+                  .HasForeignKey<IndorNearbyNetworkSetting>(e => e.RealtorId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNearbyNetworkItem>(entity =>
+        {
+            entity.HasOne(e => e.OwnerRealtor)
+                  .WithMany(r => r.NetworkItems)
+                  .HasForeignKey(e => e.OwnerRealtorId)
+                  .OnDelete(DeleteBehavior.NoAction);
+            entity.HasOne(e => e.RelatedClient)
+                  .WithMany()
+                  .HasForeignKey(e => e.RelatedClientId)
+                  .OnDelete(DeleteBehavior.NoAction);
         });
     }
 }

@@ -6,6 +6,10 @@
         <i class="fas fa-house"></i>
         <span>Home</span>
     </a>
+    <a asp-controller="Realtor" asp-action="Network" class="@(active == "network" ? "is-active" : null)">
+        <i class="fas fa-location-dot"></i>
+        <span>Nearby</span>
+    </a>
     <a asp-controller="Realtor" asp-action="Clients" class="@(active == "clients" ? "is-active" : null)">
         <i class="fas fa-users"></i>
         <span>Clients</span>

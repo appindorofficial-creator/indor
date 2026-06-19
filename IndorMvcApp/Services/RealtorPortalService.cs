@@ -10,7 +10,7 @@ public class RealtorPortalService(AppDbContext db)
 {
     public async Task<RealtorHomeViewModel> BuildHomeAsync(IndorRealtor realtor, CancellationToken ct = default)
     {
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
 
         var properties = await db.IndorRealtorPropertyFiles.AsNoTracking()
             .Where(p => p.RealtorId == realtor.Id && p.Status == "Active")
@@ -58,7 +58,7 @@ public class RealtorPortalService(AppDbContext db)
     public async Task<RealtorClientsViewModel> BuildClientsAsync(
         IndorRealtor realtor, string? search, string? filter, CancellationToken ct = default)
     {
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var activeFilter = NormalizeClientFilter(filter);
 
         var clientsQuery = db.IndorRealtorClients.AsNoTracking()
@@ -144,7 +144,7 @@ public class RealtorPortalService(AppDbContext db)
     public async Task<RealtorFilesViewModel> BuildFilesAsync(
         IndorRealtor realtor, string? search, string? filter, CancellationToken ct = default)
     {
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var activeFilter = NormalizeFileFilter(filter);
 
         var query = db.IndorRealtorPropertyFiles.AsNoTracking()
@@ -213,7 +213,7 @@ public class RealtorPortalService(AppDbContext db)
 
         ApplyBidCountsToQuote(quote, await LoadBidCountsByQuoteAsync([quote.Id], ct));
 
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var bids = await db.IndorRealtorQuoteBids.AsNoTracking()
             .Where(b => b.QuoteId == quote.Id)
             .OrderBy(b => b.Amount)
@@ -282,7 +282,7 @@ public class RealtorPortalService(AppDbContext db)
     public async Task<RealtorQuotesViewModel> BuildQuotesAsync(
         IndorRealtor realtor, string? search, string? filter, CancellationToken ct = default)
     {
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var activeFilter = NormalizeQuoteFilter(filter);
 
         var query = db.IndorRealtorQuotes.AsNoTracking()
@@ -453,7 +453,7 @@ public class RealtorPortalService(AppDbContext db)
             ? bids.FirstOrDefault(b => b.Id == bidId) ?? bids[0]
             : bids[0];
 
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var details = await LoadBidEstimateDetailsAsync(bid, ct);
         var (statusLabel, _) = DeriveQuoteStatus(quote);
 
@@ -506,7 +506,7 @@ public class RealtorPortalService(AppDbContext db)
             return null;
         }
 
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var cards = new List<RealtorCompareQuoteCardViewModel>();
         var timelines = new List<string>();
         var bestBidId = bids[0].Id;
@@ -575,7 +575,7 @@ public class RealtorPortalService(AppDbContext db)
             return null;
         }
 
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
         var details = await LoadBidEstimateDetailsAsync(bid, ct);
         var approvedUtc = quote.AcceptedUtc ?? DateTime.UtcNow;
 
@@ -647,7 +647,7 @@ public class RealtorPortalService(AppDbContext db)
 
     public async Task<RealtorProfileViewModel> BuildProfileAsync(IndorRealtor realtor, CancellationToken ct = default)
     {
-        var shell = await BuildShellAsync(realtor, ct);
+        var shell = await BuildShellCoreAsync(realtor, ct);
 
         var docs = await db.IndorRealtorDocumentos.AsNoTracking()
             .Where(d => d.RealtorId == realtor.Id)
@@ -776,9 +776,12 @@ public class RealtorPortalService(AppDbContext db)
     }
 
     public Task<RealtorPortalShellViewModel> BuildShellForRealtorAsync(IndorRealtor realtor, CancellationToken ct = default) =>
-        BuildShellAsync(realtor, ct);
+        BuildShellCoreAsync(realtor, ct);
 
-    private async Task<RealtorPortalShellViewModel> BuildShellAsync(IndorRealtor realtor, CancellationToken ct)
+    public Task<RealtorPortalShellViewModel> BuildShellAsync(IndorRealtor realtor, CancellationToken ct = default) =>
+        BuildShellCoreAsync(realtor, ct);
+
+    private async Task<RealtorPortalShellViewModel> BuildShellCoreAsync(IndorRealtor realtor, CancellationToken ct)
     {
         var hasNotifications = await db.IndorRealtorActivities.AsNoTracking()
             .AnyAsync(a => a.RealtorId == realtor.Id &&

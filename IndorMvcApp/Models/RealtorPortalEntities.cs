@@ -70,6 +70,10 @@ public class IndorRealtor
     public ICollection<IndorRealtorInvitation> Invitations { get; set; } = [];
 
     public ICollection<IndorRealtorActivity> Activities { get; set; } = [];
+
+    public IndorNearbyNetworkSetting? NetworkSetting { get; set; }
+
+    public ICollection<IndorNearbyNetworkItem> NetworkItems { get; set; } = [];
 }
 
 public static class RealtorRegistrationStatuses

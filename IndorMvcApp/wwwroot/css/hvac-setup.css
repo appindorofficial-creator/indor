@@ -1120,3 +1120,12 @@ a.hvac-save-btn {
     width: 18px;
     text-align: center;
 }
+
+@media (min-width:768px){
+.hvac-page{max-width:720px!important;margin-left:auto;margin-right:auto}
+.hvac-bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(100%,720px);border-radius:18px 18px 0 0}
+}
+@media (min-width:1024px){
+.hvac-page{max-width:900px!important}
+.hvac-bottom-nav{width:min(100%,900px)}
+}

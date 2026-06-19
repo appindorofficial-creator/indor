@@ -240,3 +240,10 @@
         grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 }
+
+@media (min-width:768px){
+.ms-page{max-width:720px!important;margin-left:auto;margin-right:auto}
+}
+@media (min-width:1024px){
+.ms-page{max-width:900px!important}
+}

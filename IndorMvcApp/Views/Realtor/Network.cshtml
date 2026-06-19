@@ -1,20 +1,25 @@
-@model IndorMvcApp.ViewModels.RealtorNetworkViewModel
+@model IndorMvcApp.ViewModels.RealtorNearbyNetworkViewModel
 @{
-    ViewData["Title"] = "Provider Network";
+    ViewData["Title"] = "Nearby Network";
     Layout = "_RealtorLayout";
-    ViewBag.NavActive = "home";
+    ViewBag.NavActive = "network";
 }
 
-<div class="rl-dash-shell">
+<div class="rl-dash-shell rl-network-page">
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <div class="rl-page-header">
-        <div>
-            <h1 class="rl-page-title">Provider Network</h1>
-            <p class="rl-page-subtitle">Browse trusted inspectors, contractors, and service providers.</p>
+    <div class="rl-network-head">
+        <div class="rl-network-head-main">
+            <a asp-controller="Realtor" asp-action="Dashboard" class="rl-network-back">
+                <i class="fas fa-chevron-left"></i> Back to Home
+            </a>
+            <div>
+                <h1 class="rl-page-title">@Model.PageTitle</h1>
+                <p class="rl-page-subtitle">@Model.RadiusLabel</p>
+            </div>
         </div>
-        <a asp-controller="Realtor" asp-action="Dashboard" class="rl-btn-outline rl-btn-outline--sm">
-            <i class="fas fa-arrow-left"></i> Back
+        <a asp-controller="Realtor" asp-action="Profile" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn">
+            <i class="fas fa-user"></i> My Realtor Profile
         </a>
     </div>
 
@@ -22,45 +27,98 @@
         <div class="rl-search-row">
             <div class="rl-search-bar">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search company or service..." />
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search your network..." />
             </div>
-            <button type="submit" class="rl-filter-btn">Search</button>
-        </div>
-        <div class="rl-filter-chips">
-            @foreach (var chip in Model.ProviderFilters)
-            {
-                <a asp-action="Network" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
-            }
+            <input type="hidden" name="view" value="@Model.ActiveView" />
+            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
         </div>
     </form>
 
-    <section class="rl-dash-section">
-        @if (Model.Providers.Count == 0)
+    <div class="rl-network-view-toggle" role="tablist" aria-label="Network view">
+        <a asp-action="Network"
+           asp-route-view="map"
+           asp-route-filter="@Model.ActiveFilter"
+           asp-route-q="@Model.SearchQuery"
+           class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
+            <i class="fas fa-map"></i> Map
+        </a>
+        <a asp-action="Network"
+           asp-route-view="feed"
+           asp-route-filter="@Model.ActiveFilter"
+           asp-route-q="@Model.SearchQuery"
+           class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
+            <i class="fas fa-list"></i> Feed
+        </a>
+    </div>
+
+    <div class="rl-filter-chips rl-filter-chips--scroll rl-network-filters">
+        @foreach (var chip in Model.Filters)
         {
-            <div class="rl-dash-empty">No providers match your search yet.</div>
+            <a asp-action="Network"
+               asp-route-filter="@chip.Value"
+               asp-route-view="@Model.ActiveView"
+               asp-route-q="@Model.SearchQuery"
+               class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                <i class="fas @chip.Icon"></i> @chip.Label
+            </a>
         }
-        else
+    </div>
+
+    <section class="rl-quick-actions rl-quick-actions--network">
+        @foreach (var action in Model.QuickActions)
         {
-            @foreach (var provider in Model.Providers)
-            {
-                <article class="rl-provider-card rl-provider-card--browse">
-                    <span class="rl-provider-logo"><i class="fas fa-building"></i></span>
-                    <span class="rl-provider-body">
-                        <strong>@provider.CompanyName</strong>
-                        @if (!string.IsNullOrWhiteSpace(provider.BadgeLabel))
-                        {
-                            <span class="rl-provider-badge">@provider.BadgeLabel</span>
-                        }
-                        <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") Â· @provider.Categories</span>
-                        <span>@provider.DistanceMiles.ToString("0.0") mi away</span>
-                    </span>
-                    @if (provider.IsVerified)
-                    {
-                        <span class="rl-status-pill rl-status-pill--active">Verified</span>
-                    }
-                </article>
-            }
+            <a href="@action.Url" class="rl-quick-action">
+                <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
+                <span class="rl-quick-action-label">@action.Label</span>
+                @if (!string.IsNullOrWhiteSpace(action.Subtitle))
+                {
+                    <span class="rl-quick-action-sub">@action.Subtitle</span>
+                }
+            </a>
         }
     </section>
+
+    @if (Model.ActiveView == "map")
+    {
+        <section class="rl-network-map-panel" aria-label="Nearby map">
+            <div class="rl-network-map-canvas">
+                <div class="rl-network-map-radius"></div>
+                @foreach (var pin in Model.MapPins)
+                {
+                    <button type="button"
+                            class="rl-network-map-pin rl-network-map-pin--@pin.PinType"
+                            style="top:@pin.TopPercent;left:@pin.LeftPercent"
+                            aria-label="@pin.Label">
+                        <i class="fas @(pin.PinType switch {
+                            "you" => "fa-location-crosshairs",
+                            "lead" => "fa-user",
+                            "provider" => "fa-screwdriver-wrench",
+                            "emergency" => "fa-bell",
+                            _ => "fa-house"
+                        })"></i>
+                    </button>
+                }
+            </div>
+            <div class="rl-network-map-foot">
+                <strong>@Model.MapCenterLabel</strong>
+                <span>3 mi radius · @Model.FeedCards.Count items nearby</span>
+            </div>
+        </section>
+    }
+    else
+    {
+        <section class="rl-network-feed">
+            @if (Model.FeedCards.Count == 0)
+            {
+                <div class="rl-dash-empty">No nearby items match your filters.</div>
+            }
+            else
+            {
+                @foreach (var card in Model.FeedCards)
+                {
+                    @await Html.PartialAsync("_RealtorNetworkFeedCard", card)
+                }
+            }
+        </section>
+    }
 </div>

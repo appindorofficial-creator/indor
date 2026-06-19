@@ -191,14 +191,22 @@
     </section>
 
     <nav class="rl-profile-nav">
-        <button type="button" class="rl-profile-nav-item">
+        <a asp-controller="Realtor" asp-action="Network" class="rl-profile-nav-item">
+            <span class="rl-profile-nav-icon"><i class="fas fa-map-location-dot"></i></span>
+            <div>
+                <strong>Nearby Network</strong>
+                <span class="rl-profile-nav-desc">See listings, leads, providers and open houses within 3 miles.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-people-group"></i></span>
             <div>
                 <strong>Connected Provider Network</strong>
                 <span class="rl-profile-nav-desc">Manage and connect with trusted inspectors and providers.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </button>
+        </a>
         <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-headset"></i></span>
             <div>
