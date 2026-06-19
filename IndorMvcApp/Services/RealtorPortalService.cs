@@ -724,6 +724,57 @@ public class RealtorPortalService(AppDbContext db)
         };
     }
 
+    public async Task<RealtorNetworkViewModel> BuildNetworkAsync(
+        IndorRealtor realtor,
+        string? search,
+        string? filter,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellAsync(realtor, ct);
+        var activeFilter = string.IsNullOrWhiteSpace(filter) ? "Recommended" : filter.Trim();
+
+        var providersQuery = db.IndorRealtorQuoteProviders.AsNoTracking()
+            .Where(p => p.IsActive);
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var term = search.Trim();
+            providersQuery = providersQuery.Where(p =>
+                p.CompanyName.Contains(term) || p.Categories.Contains(term));
+        }
+
+        providersQuery = activeFilter switch
+        {
+            "Verified" => providersQuery.Where(p => p.IsVerified),
+            "Nearby" => providersQuery.OrderBy(p => p.DistanceMiles),
+            _ => providersQuery.Where(p => p.IsRecommended).OrderByDescending(p => p.Rating)
+        };
+
+        var providers = await providersQuery.Take(30).ToListAsync(ct);
+
+        return new RealtorNetworkViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            SearchQuery = search,
+            ActiveFilter = activeFilter,
+            Providers = providers.Select(p => new RealtorQuoteProviderCardViewModel
+            {
+                Id = p.Id,
+                CompanyName = p.CompanyName,
+                Categories = p.Categories,
+                Rating = p.Rating,
+                DistanceMiles = p.DistanceMiles,
+                BadgeLabel = p.BadgeLabel,
+                IsVerified = p.IsVerified
+            }).ToList()
+        };
+    }
+
     public Task<RealtorPortalShellViewModel> BuildShellForRealtorAsync(IndorRealtor realtor, CancellationToken ct = default) =>
         BuildShellAsync(realtor, ct);
 

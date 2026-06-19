@@ -327,6 +327,14 @@ public class RealtorProfileDocumentViewModel
     public bool Optional { get; set; }
 }
 
+public class RealtorNetworkViewModel : RealtorPortalShellViewModel
+{
+    public string? SearchQuery { get; set; }
+    public string ActiveFilter { get; set; } = "Recommended";
+    public List<RealtorQuoteProviderCardViewModel> Providers { get; set; } = [];
+    public IReadOnlyList<string> ProviderFilters { get; set; } = ["Recommended", "Verified", "Nearby"];
+}
+
 public class RealtorActivityItemViewModel
 {
     public int Id { get; set; }

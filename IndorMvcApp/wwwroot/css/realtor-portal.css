@@ -706,6 +706,10 @@ button.rl-quick-action {
     padding: 16px;
     margin-top: 8px;
 }
+.rl-network-banner--home {
+    margin-top: 0;
+    margin-bottom: 20px;
+}
 .rl-network-banner strong { display: block; font-size: .88rem; margin-bottom: 4px; }
 .rl-network-banner p { font-size: .75rem; color: #475569; margin: 0 0 10px; }
 .rl-network-btn {
@@ -1320,6 +1324,14 @@ button.rl-quick-action {
 }
 .rl-provider-card input { flex-shrink: 0; accent-color: #0066CC; margin-top: 4px; }
 .rl-provider-card.is-selected { border-color: #0066CC; background: #F8FBFF; }
+.rl-provider-card--browse {
+    cursor: default;
+    align-items: center;
+}
+.rl-provider-card--browse .rl-status-pill {
+    flex-shrink: 0;
+    margin-left: 8px;
+}
 .rl-provider-logo {
     width: 40px; height: 40px; border-radius: 10px; background: #E8F1FB;
     color: #0066CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -2358,6 +2370,9 @@ button.rl-premium-link {
     grid-template-columns: 1fr 1fr;
     gap: 12px;
     margin-bottom: 20px;
+}
+.rl-bottom-grid:has(:only-child) {
+    grid-template-columns: 1fr;
 }
 .rl-insights-card,
 .rl-settings-card {
