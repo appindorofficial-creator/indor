@@ -107,33 +107,50 @@
     </nav>
 
     <section class="rl-bottom-grid">
-        <div class="rl-settings-card">
+        <form asp-controller="Realtor" asp-action="ProfileNotificationPreferences" method="post" class="rl-settings-card" id="rl-notify-form">
+            @Html.AntiForgeryToken()
             <div class="rl-settings-head">
                 <span><i class="fas fa-bell"></i> Notifications</span>
                 <small>Choose what updates you want to receive.</small>
             </div>
+            @if (Model.NotificationsSaved)
+            {
+                <div class="rl-notify-saved" role="status">Notification preferences saved.</div>
+            }
             <label class="rl-toggle-row">
                 <span>Email alerts</span>
-                <input type="checkbox" checked />
-                <span class="rl-toggle" aria-hidden="true"></span>
+                <span class="rl-toggle-control">
+                    <input type="hidden" name="EmailAlertsEnabled" value="false" />
+                    <input type="checkbox" name="EmailAlertsEnabled" value="true" class="rl-notify-checkbox" @(Model.EmailAlertsEnabled ? "checked" : null) />
+                    <span class="rl-toggle" aria-hidden="true"></span>
+                </span>
             </label>
             <label class="rl-toggle-row">
                 <span>Quote updates</span>
-                <input type="checkbox" checked />
-                <span class="rl-toggle" aria-hidden="true"></span>
+                <span class="rl-toggle-control">
+                    <input type="hidden" name="QuoteUpdatesEnabled" value="false" />
+                    <input type="checkbox" name="QuoteUpdatesEnabled" value="true" class="rl-notify-checkbox" @(Model.QuoteUpdatesEnabled ? "checked" : null) />
+                    <span class="rl-toggle" aria-hidden="true"></span>
+                </span>
             </label>
             <label class="rl-toggle-row">
                 <span>Report notifications</span>
-                <input type="checkbox" checked />
-                <span class="rl-toggle" aria-hidden="true"></span>
+                <span class="rl-toggle-control">
+                    <input type="hidden" name="ReportNotificationsEnabled" value="false" />
+                    <input type="checkbox" name="ReportNotificationsEnabled" value="true" class="rl-notify-checkbox" @(Model.ReportNotificationsEnabled ? "checked" : null) />
+                    <span class="rl-toggle" aria-hidden="true"></span>
+                </span>
             </label>
             <label class="rl-toggle-row">
                 <span>Package-view alerts</span>
-                <input type="checkbox" />
-                <span class="rl-toggle" aria-hidden="true"></span>
+                <span class="rl-toggle-control">
+                    <input type="hidden" name="PackageViewAlertsEnabled" value="false" />
+                    <input type="checkbox" name="PackageViewAlertsEnabled" value="true" class="rl-notify-checkbox" @(Model.PackageViewAlertsEnabled ? "checked" : null) />
+                    <span class="rl-toggle" aria-hidden="true"></span>
+                </span>
             </label>
             <button type="button" class="rl-premium-link">Manage all notifications <i class="fas fa-chevron-right"></i></button>
-        </div>
+        </form>
         <div class="rl-settings-card">
             <div class="rl-settings-head">
                 <span><i class="fas fa-chart-line"></i> Performance Snapshot</span>
@@ -239,18 +256,42 @@
     (function () {
         var toggle = document.getElementById('rlInsightsToggle');
         var details = document.getElementById('rlPerfDetails');
-        if (!toggle || !details) {
+        if (toggle && details) {
+            var label = toggle.querySelector('.rl-insights-toggle-label');
+            toggle.addEventListener('click', function () {
+                var expanded = toggle.getAttribute('aria-expanded') === 'true';
+                toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
+                details.hidden = expanded;
+                if (label) {
+                    label.textContent = expanded ? 'View full insights' : 'Hide insights';
+                }
+            });
+        }
+
+        var notifyForm = document.getElementById('rl-notify-form');
+        if (!notifyForm) {
             return;
         }
 
-        var label = toggle.querySelector('.rl-insights-toggle-label');
-        toggle.addEventListener('click', function () {
-            var expanded = toggle.getAttribute('aria-expanded') === 'true';
-            toggle.setAttribute('aria-expanded', expanded ? 'false' : 'true');
-            details.hidden = expanded;
-            if (label) {
-                label.textContent = expanded ? 'View full insights' : 'Hide insights';
-            }
+        function syncNotifyToggles() {
+            notifyForm.querySelectorAll('.rl-toggle-row').forEach(function (row) {
+                var checkbox = row.querySelector('.rl-notify-checkbox');
+                var track = row.querySelector('.rl-toggle');
+                if (!checkbox || !track) {
+                    return;
+                }
+
+                track.classList.toggle('is-on', checkbox.checked);
+            });
+        }
+
+        syncNotifyToggles();
+
+        notifyForm.querySelectorAll('.rl-notify-checkbox').forEach(function (checkbox) {
+            checkbox.addEventListener('change', function () {
+                syncNotifyToggles();
+                notifyForm.requestSubmit();
+            });
         });
     })();
 </script>

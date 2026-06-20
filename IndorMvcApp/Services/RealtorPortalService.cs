@@ -3,12 +3,16 @@ using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Services;
 
-public class RealtorPortalService(AppDbContext db)
+public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpContextAccessor)
 {
+    private const string NotificationSessionKeyPrefix = "realtor-notify-";
+
+    private static RealtorNotificationPreferencesInput DefaultNotificationPreferences() => new();
     public async Task<RealtorHomeViewModel> BuildHomeAsync(IndorRealtor realtor, CancellationToken ct = default)
     {
         var shell = await BuildShellCoreAsync(realtor, ct);
@@ -693,6 +697,8 @@ public class RealtorPortalService(AppDbContext db)
             ? $"+{Math.Round((filesThisMonth - prevMonthFiles) * 100.0 / prevMonthFiles)}% vs last month"
             : filesThisMonth > 0 ? "+100% vs last month" : "";
 
+        var notificationPreferences = await LoadNotificationPreferencesAsync(realtor.Id, ct);
+
         return new RealtorProfileViewModel
         {
             DisplayName = shell.DisplayName,
@@ -721,9 +727,159 @@ public class RealtorPortalService(AppDbContext db)
             FilesTrendLabel = filesTrend,
             ClientConnections = clientCount,
             ClientsTrendLabel = clientCount > 0 ? $"+{Math.Min(clientCount, 5)} this month" : "",
-            Insights = await BuildHomeInsightsAsync(realtor.Id, ct)
+            Insights = await BuildHomeInsightsAsync(realtor.Id, ct),
+            EmailAlertsEnabled = notificationPreferences.EmailAlertsEnabled,
+            QuoteUpdatesEnabled = notificationPreferences.QuoteUpdatesEnabled,
+            ReportNotificationsEnabled = notificationPreferences.ReportNotificationsEnabled,
+            PackageViewAlertsEnabled = notificationPreferences.PackageViewAlertsEnabled
         };
     }
+
+    public async Task SaveNotificationPreferencesAsync(
+        IndorRealtor realtor,
+        RealtorNotificationPreferencesInput input,
+        CancellationToken ct = default)
+    {
+        SaveNotificationPreferencesToSession(realtor.Id, input);
+
+        if (!await TrySaveNotificationPreferencesToDatabaseAsync(realtor.Id, input, ct))
+        {
+            return;
+        }
+    }
+
+    private async Task<RealtorNotificationPreferencesInput> LoadNotificationPreferencesAsync(
+        int realtorId,
+        CancellationToken ct)
+    {
+        var fromDatabase = await TryLoadNotificationPreferencesFromDatabaseAsync(realtorId, ct);
+        if (fromDatabase != null)
+        {
+            SaveNotificationPreferencesToSession(realtorId, fromDatabase);
+            return fromDatabase;
+        }
+
+        return LoadNotificationPreferencesFromSession(realtorId) ?? DefaultNotificationPreferences();
+    }
+
+    private async Task<RealtorNotificationPreferencesInput?> TryLoadNotificationPreferencesFromDatabaseAsync(
+        int realtorId,
+        CancellationToken ct)
+    {
+        var connectionString = db.Database.GetConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return null;
+        }
+
+        try
+        {
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync(ct);
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                SELECT NotifyEmailAlerts, NotifyQuoteUpdates, NotifyReportNotifications, NotifyPackageViewAlerts
+                FROM IndorRealtors
+                WHERE Id = @id
+                """;
+            command.Parameters.Add(new SqlParameter("@id", realtorId));
+
+            await using var reader = await command.ExecuteReaderAsync(ct);
+            if (!await reader.ReadAsync(ct))
+            {
+                return null;
+            }
+
+            return new RealtorNotificationPreferencesInput
+            {
+                EmailAlertsEnabled = reader.GetBoolean(0),
+                QuoteUpdatesEnabled = reader.GetBoolean(1),
+                ReportNotificationsEnabled = reader.GetBoolean(2),
+                PackageViewAlertsEnabled = reader.GetBoolean(3)
+            };
+        }
+        catch (SqlException ex) when (IsMissingNotificationColumnException(ex))
+        {
+            return null;
+        }
+    }
+
+    private async Task<bool> TrySaveNotificationPreferencesToDatabaseAsync(
+        int realtorId,
+        RealtorNotificationPreferencesInput input,
+        CancellationToken ct)
+    {
+        var connectionString = db.Database.GetConnectionString();
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            return false;
+        }
+
+        try
+        {
+            await using var connection = new SqlConnection(connectionString);
+            await connection.OpenAsync(ct);
+
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                UPDATE IndorRealtors
+                SET NotifyEmailAlerts = @emailAlerts,
+                    NotifyQuoteUpdates = @quoteUpdates,
+                    NotifyReportNotifications = @reportNotifications,
+                    NotifyPackageViewAlerts = @packageViewAlerts,
+                    FechaActualizacion = SYSUTCDATETIME()
+                WHERE Id = @id
+                """;
+            command.Parameters.Add(new SqlParameter("@emailAlerts", input.EmailAlertsEnabled));
+            command.Parameters.Add(new SqlParameter("@quoteUpdates", input.QuoteUpdatesEnabled));
+            command.Parameters.Add(new SqlParameter("@reportNotifications", input.ReportNotificationsEnabled));
+            command.Parameters.Add(new SqlParameter("@packageViewAlerts", input.PackageViewAlertsEnabled));
+            command.Parameters.Add(new SqlParameter("@id", realtorId));
+
+            await command.ExecuteNonQueryAsync(ct);
+            return true;
+        }
+        catch (SqlException ex) when (IsMissingNotificationColumnException(ex))
+        {
+            return false;
+        }
+    }
+
+    private static bool IsMissingNotificationColumnException(SqlException ex) =>
+        ex.Number == 207 &&
+        ex.Message.Contains("Notify", StringComparison.OrdinalIgnoreCase);
+
+    private RealtorNotificationPreferencesInput? LoadNotificationPreferencesFromSession(int realtorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return null;
+        }
+
+        var json = session.GetString(NotificationSessionKey(realtorId));
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return null;
+        }
+
+        return JsonSerializer.Deserialize<RealtorNotificationPreferencesInput>(json);
+    }
+
+    private void SaveNotificationPreferencesToSession(int realtorId, RealtorNotificationPreferencesInput input)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return;
+        }
+
+        session.SetString(NotificationSessionKey(realtorId), JsonSerializer.Serialize(input));
+    }
+
+    private static string NotificationSessionKey(int realtorId) =>
+        NotificationSessionKeyPrefix + realtorId;
 
     public async Task<RealtorBusinessInformationViewModel> BuildBusinessInformationAsync(
         IndorRealtor realtor,

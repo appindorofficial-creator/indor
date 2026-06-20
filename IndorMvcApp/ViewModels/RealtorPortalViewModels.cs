@@ -410,6 +410,19 @@ public class RealtorProfileViewModel : RealtorPortalShellViewModel
     public int ClientConnections { get; set; }
     public string ClientsTrendLabel { get; set; } = "";
     public List<RealtorInsightViewModel> Insights { get; set; } = [];
+    public bool EmailAlertsEnabled { get; set; } = true;
+    public bool QuoteUpdatesEnabled { get; set; } = true;
+    public bool ReportNotificationsEnabled { get; set; } = true;
+    public bool PackageViewAlertsEnabled { get; set; }
+    public bool NotificationsSaved { get; set; }
+}
+
+public class RealtorNotificationPreferencesInput
+{
+    public bool EmailAlertsEnabled { get; set; } = true;
+    public bool QuoteUpdatesEnabled { get; set; } = true;
+    public bool ReportNotificationsEnabled { get; set; } = true;
+    public bool PackageViewAlertsEnabled { get; set; }
 }
 
 public class RealtorProfileDocumentViewModel

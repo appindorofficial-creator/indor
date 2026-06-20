@@ -1160,11 +1160,38 @@ button.rl-quick-action {
     -webkit-appearance: none;
     appearance: none;
 }
+.rl-toggle-control {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 24px;
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    flex-shrink: 0;
+}
+.rl-toggle-control input[type="checkbox"] {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 2;
+    -webkit-appearance: none;
+    appearance: none;
+}
 .rl-toggle-row .rl-toggle {
     grid-column: 2;
     grid-row: 1;
     justify-self: end;
     pointer-events: none;
+}
+.rl-toggle-control .rl-toggle {
+    display: block;
+    width: 100%;
+    height: 100%;
 }
 .rl-toggle {
     width: 44px; height: 24px; border-radius: 999px; background: #CBD5E1;
@@ -1177,6 +1204,18 @@ button.rl-quick-action {
 }
 .rl-toggle-row input:checked + .rl-toggle { background: #0066CC; }
 .rl-toggle-row input:checked + .rl-toggle::after { transform: translateX(20px); }
+.rl-toggle.is-on { background: #0066CC; }
+.rl-toggle.is-on::after { transform: translateX(20px); }
+
+.rl-notify-saved {
+    margin: 0 0 8px;
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: #ECFDF5;
+    color: #047857;
+    font-size: .72rem;
+    font-weight: 700;
+}
 
 .rl-collab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
 .rl-collab-card {

@@ -426,8 +426,50 @@ public class RealtorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Profile(CancellationToken cancellationToken) =>
-        await PortalPageAsync(r => portalService.BuildProfileAsync(r, cancellationToken), cancellationToken);
+    public async Task<IActionResult> Profile(bool? saved, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            var action = registration.ResolveWizardResumeAction(Math.Max(1, realtor.CurrentStep));
+            if (action == "Dashboard")
+            {
+                return RedirectToAction("Profile", "RealtorRegistration");
+            }
+
+            return RedirectToAction(action, "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildProfileAsync(realtor, cancellationToken);
+        model.NotificationsSaved = saved == true;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ProfileNotificationPreferences(
+        RealtorNotificationPreferencesInput input,
+        CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        await portalService.SaveNotificationPreferencesAsync(realtor, input, cancellationToken);
+        return RedirectToAction(nameof(Profile), new { saved = true });
+    }
 
     [HttpGet]
     public IActionResult EditProfile() =>
