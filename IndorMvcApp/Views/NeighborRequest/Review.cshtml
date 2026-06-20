@@ -1,0 +1,106 @@
+@model IndorMvcApp.ViewModels.NeighborRequestReviewStepViewModel
+@{
+    ViewData["Title"] = "Review request";
+}
+
+<div class="nr-wizard-heading">
+    <h1>Review request</h1>
+    <p>Confirm everything looks right before publishing</p>
+</div>
+
+<div class="nr-review-list">
+    <article class="nr-review-card">
+        <span class="nr-review-icon"><i class="fas @Model.CategoryIconClass"></i></span>
+        <div class="nr-review-copy">
+            <span class="nr-review-label">Category</span>
+            <span class="nr-review-value">@Model.CategoryLabel</span>
+        </div>
+    </article>
+
+    <article class="nr-review-card">
+        <span class="nr-review-icon"><i class="fas fa-font"></i></span>
+        <div class="nr-review-copy">
+            <span class="nr-review-label">Title</span>
+            <span class="nr-review-value">@Model.Title</span>
+        </div>
+    </article>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <article class="nr-review-card">
+            <span class="nr-review-icon"><i class="fas fa-align-left"></i></span>
+            <div class="nr-review-copy">
+                <span class="nr-review-label">Description</span>
+                <span class="nr-review-value">@Model.Description</span>
+            </div>
+        </article>
+    }
+
+    @if (Model.PhotoUrls.Count > 0)
+    {
+        <article class="nr-review-card">
+            <span class="nr-review-icon"><i class="fas fa-image"></i></span>
+            <div class="nr-review-copy">
+                <span class="nr-review-label">Photos</span>
+                <div class="nr-review-photos">
+                    @foreach (var photo in Model.PhotoUrls)
+                    {
+                        <img src="@Url.Content("~" + photo)" alt="" />
+                    }
+                </div>
+            </div>
+        </article>
+    }
+
+    <article class="nr-review-card">
+        <span class="nr-review-icon"><i class="fas fa-location-dot"></i></span>
+        <div class="nr-review-copy">
+            <span class="nr-review-label">Location</span>
+            <span class="nr-review-value">@Model.LocationAddress</span>
+        </div>
+    </article>
+
+    <article class="nr-review-card">
+        <span class="nr-review-icon"><i class="fas fa-calendar"></i></span>
+        <div class="nr-review-copy">
+            <span class="nr-review-label">Timeline</span>
+            <span class="nr-review-value">@Model.TimelineLabel</span>
+        </div>
+    </article>
+
+    <article class="nr-review-card">
+        <span class="nr-review-icon"><i class="fas fa-users"></i></span>
+        <div class="nr-review-copy">
+            <span class="nr-review-label">Who can help?</span>
+            <span class="nr-review-value">@Model.AudienceLabel</span>
+        </div>
+    </article>
+
+    @if (!string.IsNullOrWhiteSpace(Model.NeededByLabel))
+    {
+        <article class="nr-review-card">
+            <span class="nr-review-icon"><i class="fas fa-calendar-day"></i></span>
+            <div class="nr-review-copy">
+                <span class="nr-review-label">Needed by</span>
+                <span class="nr-review-value">@Model.NeededByLabel</span>
+            </div>
+        </article>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.BudgetLabel))
+    {
+        <article class="nr-review-card">
+            <span class="nr-review-icon"><i class="fas fa-dollar-sign"></i></span>
+            <div class="nr-review-copy">
+                <span class="nr-review-label">Budget</span>
+                <span class="nr-review-value">@Model.BudgetLabel</span>
+            </div>
+        </article>
+    }
+</div>
+
+<form asp-action="Publish" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
+    <button type="submit" class="nr-btn-primary">Post request</button>
+</form>

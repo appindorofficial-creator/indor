@@ -3,26 +3,20 @@
     ViewData["Title"] = "Public Profile";
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "profile";
-    var hasAbout = !string.IsNullOrWhiteSpace(Model.Bio)
-                   || !string.IsNullOrWhiteSpace(Model.BrokerageName)
-                   || Model.VerificationItems.Any(v => v.IsComplete);
+    var aboutText = !string.IsNullOrWhiteSpace(Model.Bio)
+        ? Model.Bio
+        : !string.IsNullOrWhiteSpace(Model.BrokerageName)
+            ? $"{Model.BrokerageName} realtor serving local buyers and sellers through INDOR."
+            : $"{Model.FullName} realtor serving local buyers and sellers through INDOR.";
 }
 
-<div class="rl-dash-shell rl-public-profile">
-    <div class="rl-public-profile-top">
-        <a asp-controller="Realtor" asp-action="Profile" class="rl-public-back" aria-label="Back to profile">
+<div class="rl-dash-shell rl-public-profile rl-public-profile--v2">
+    <section class="rl-public-hero rl-public-hero--banner" aria-label="Public profile header">
+        <a asp-controller="Realtor" asp-action="Profile" class="rl-public-hero-back" aria-label="Back to profile">
             <i class="fas fa-chevron-left"></i>
         </a>
-        @await Html.PartialAsync("_RealtorTopbar", Model)
-    </div>
-
-    <section class="rl-public-hero" aria-label="Public profile header">
-        @if (!string.IsNullOrWhiteSpace(Model.CoverImageUrl))
-        {
-            <img src="@Model.CoverImageUrl" alt="" class="rl-public-hero-cover" />
-        }
-        <div class="rl-public-hero-overlay"></div>
-        <div class="rl-public-hero-content">
+        <span class="rl-public-hero-wave" aria-hidden="true"></span>
+        <div class="rl-public-hero-main">
             <div class="rl-public-hero-photo-wrap">
                 @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
                 {
@@ -32,43 +26,65 @@
                 {
                     <span class="rl-public-hero-photo rl-public-hero-photo--placeholder"><i class="fas fa-user"></i></span>
                 }
-                @if (Model.IsVerified)
+                @if (Model.IsOwnProfile)
                 {
-                    <span class="rl-public-hero-badge" aria-label="Verified"><i class="fas fa-circle-check"></i></span>
+                    <a asp-controller="Realtor" asp-action="EditProfile" class="rl-public-hero-photo-edit" aria-label="Edit photo">
+                        <i class="fas fa-camera"></i>
+                    </a>
                 }
             </div>
-            <h1 class="rl-public-hero-name">@Model.FullName</h1>
-            <p class="rl-public-hero-title">@Model.TitleLabel</p>
-            @if (Model.IsVerified)
-            {
-                <span class="rl-public-verified-pill"><i class="fas fa-shield-check"></i> Verified on INDOR</span>
-            }
-            @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
-            {
-                <p class="rl-public-hero-location"><i class="fas fa-location-dot"></i> @Model.LocationLabel</p>
-            }
-            @if (!string.IsNullOrWhiteSpace(Model.Tagline))
-            {
-                <p class="rl-public-hero-tagline">@Model.Tagline</p>
-            }
+            <div class="rl-public-hero-info">
+                <h1 class="rl-public-hero-name">@Model.FullName</h1>
+                <div class="rl-public-hero-title-row">
+                    <span class="rl-public-hero-title">@Model.TitleLabel</span>
+                    @if (!string.IsNullOrWhiteSpace(Model.AccountStatusLabel))
+                    {
+                        <span class="rl-public-status-pill @Model.AccountStatusCss">@Model.AccountStatusLabel</span>
+                    }
+                </div>
+                @if (!string.IsNullOrWhiteSpace(Model.HeroLocationLabel))
+                {
+                    <p class="rl-public-hero-meta"><i class="fas fa-location-dot"></i> @Model.HeroLocationLabel</p>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.LicenseLabel))
+                {
+                    <p class="rl-public-hero-meta"><i class="fas fa-id-card"></i> @Model.LicenseLabel</p>
+                }
+            </div>
         </div>
+        @if (Model.HeroBadges.Count > 0)
+        {
+            <div class="rl-public-hero-badges">
+                @foreach (var badge in Model.HeroBadges)
+                {
+                    <span class="rl-public-hero-badge-pill @(badge.IsComplete ? "is-complete" : "")">
+                        <i class="fas @(badge.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
+                        @badge.Label
+                    </span>
+                }
+            </div>
+        }
     </section>
 
-    <section class="rl-public-actions">
-        @if (Model.IsOwnProfile)
-        {
-            <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-public-btn rl-public-btn--primary">
-                <i class="fas fa-user-pen"></i>
-                <span>
+    @if (Model.IsOwnProfile)
+    {
+        <section class="rl-public-actions rl-public-actions--split">
+            <a asp-controller="Realtor" asp-action="EditProfile" class="rl-public-action-card rl-public-action-card--primary">
+                <span class="rl-public-action-icon"><i class="fas fa-user-pen"></i></span>
+                <span class="rl-public-action-copy">
                     <strong>Edit Profile</strong>
                     <small>Update photo, license, and bio</small>
                 </span>
             </a>
-        }
-        <button type="button" class="rl-public-btn rl-public-btn--secondary" id="rlPublicShareBtn">
-            <i class="fas fa-share-from-square"></i> Share Profile
-        </button>
-    </section>
+            <button type="button" class="rl-public-action-card rl-public-action-card--secondary" id="rlPublicShareBtn">
+                <span class="rl-public-action-icon"><i class="fas fa-share-from-square"></i></span>
+                <span class="rl-public-action-copy">
+                    <strong>Share Profile</strong>
+                    <small>Share your profile link</small>
+                </span>
+            </button>
+        </section>
+    }
 
     @if (Model.Stats.Count > 0)
     {
@@ -84,55 +100,58 @@
         </section>
     }
 
-    @if (hasAbout)
-    {
-        <section class="rl-public-section rl-public-about">
-            <div class="rl-public-about-copy">
-                <h2>About</h2>
-                @if (!string.IsNullOrWhiteSpace(Model.Bio))
-                {
-                    <p>@Model.Bio</p>
-                }
-                else if (!string.IsNullOrWhiteSpace(Model.BrokerageName))
-                {
-                    <p>@Model.BrokerageName realtor serving local buyers and sellers through INDOR.</p>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model.LicenseLabel))
-                {
-                    <p class="rl-public-license"><i class="fas fa-id-card"></i> @Model.LicenseLabel</p>
-                }
-            </div>
-            @if (Model.VerificationItems.Count > 0)
-            {
-                <ul class="rl-public-verify-list">
-                    @foreach (var item in Model.VerificationItems)
-                    {
-                        <li class="@(item.IsComplete ? "is-complete" : null)">
-                            <i class="fas @(item.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
-                            @item.Label
-                        </li>
-                    }
-                </ul>
-            }
-        </section>
-    }
+    <section class="rl-public-section rl-public-about">
+        <h2>About</h2>
+        <p>@aboutText</p>
+        @if (!string.IsNullOrWhiteSpace(Model.LicenseLabel))
+        {
+            <p class="rl-public-license"><i class="fas fa-id-card"></i> @Model.LicenseLabel</p>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.HeroLocationLabel))
+        {
+            <p class="rl-public-license"><i class="fas fa-location-dot"></i> @Model.HeroLocationLabel</p>
+        }
+    </section>
 
     @if (Model.ServiceAreaChips.Count > 0)
     {
         <section class="rl-public-section">
-            <div class="rl-public-section-head">
-                <h2>Service Areas</h2>
-                @if (Model.ServiceAreaChips.Count > 6)
-                {
-                    <span class="rl-public-section-meta">@Model.ServiceAreaChips.Count areas</span>
-                }
-            </div>
+            <h2>Service Areas</h2>
             <div class="rl-public-chips">
                 @foreach (var area in Model.ServiceAreaChips)
                 {
                     <span class="rl-public-chip"><i class="fas fa-location-dot"></i> @area</span>
                 }
             </div>
+        </section>
+    }
+
+    @if (Model.IsOwnProfile && Model.ShowVerificationPrompt && Model.VerificationSteps.Count > 0)
+    {
+        <section class="rl-public-verify-card">
+            <img src="~/welcome-house.png" alt="" class="rl-public-verify-card-art" aria-hidden="true" />
+            <div class="rl-public-verify-card-head">
+                <span class="rl-public-verify-card-icon"><i class="fas fa-shield-check"></i></span>
+                <div>
+                    <h3>Become a Verified Realtor</h3>
+                    <p>Complete your verification to build trust, improve visibility, and unlock more opportunities in INDOR.</p>
+                </div>
+            </div>
+            <ul class="rl-public-verify-steps">
+                @foreach (var step in Model.VerificationSteps)
+                {
+                    <li class="@(step.IsComplete ? "is-complete" : "")">
+                        <span class="rl-public-verify-step-label">
+                            <i class="fas @(step.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
+                            @step.Label
+                        </span>
+                        <span class="rl-public-verify-step-status">@step.StatusLabel</span>
+                    </li>
+                }
+            </ul>
+            <a asp-controller="Realtor" asp-action="EditProfileLicense" class="rl-public-verify-cta">
+                Start Verification <i class="fas fa-arrow-right"></i>
+            </a>
         </section>
     }
 
@@ -236,16 +255,6 @@
             </div>
         </section>
     }
-
-    @if (Model.ActiveListings.Count == 0 && Model.OpenHouses.Count == 0 && Model.SharedPackages.Count == 0 && Model.ServiceAreaChips.Count == 0 && string.IsNullOrWhiteSpace(Model.Bio))
-    {
-        <section class="rl-public-empty">
-            <i class="fas fa-globe"></i>
-            <h3>Your public profile is live</h3>
-            <p>Add listings in Nearby Network, service areas in registration, and a public bio to enrich what clients see.</p>
-            <a asp-controller="Realtor" asp-action="CreateNetworkListing" class="rl-btn-primary">Post a Listing</a>
-        </section>
-    }
 </div>
 
 @section Scripts {
@@ -265,9 +274,9 @@
                 }
                 try {
                     await navigator.clipboard.writeText(shareUrl);
-                    btn.innerHTML = '<i class="fas fa-check"></i> Link copied';
+                    btn.querySelector('strong').textContent = 'Link copied';
                     setTimeout(function () {
-                        btn.innerHTML = '<i class="fas fa-share-from-square"></i> Share Profile';
+                        btn.querySelector('strong').textContent = 'Share Profile';
                     }, 2000);
                 } catch (_) {
                     window.prompt('Copy profile link:', shareUrl);

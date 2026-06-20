@@ -133,6 +133,9 @@ builder.Services.AddScoped<IPropertyAdministratorPestControlService, PropertyAdm
 builder.Services.AddScoped<IPropertyAdministratorPoolHotTubService, PropertyAdministratorPoolHotTubService>();
 builder.Services.AddScoped<RealtorPortalService>();
 builder.Services.AddScoped<RealtorNearbyNetworkService>();
+builder.Services.AddScoped<HomeownerNearbyNetworkService>();
+builder.Services.AddScoped<LawnCatalogService>();
+builder.Services.AddScoped<NeighborRequestWizardService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();
 builder.Services.AddScoped<IRealtorPropertyFileWizardService, RealtorPropertyFileWizardService>();

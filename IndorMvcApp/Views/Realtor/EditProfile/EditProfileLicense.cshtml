@@ -1,0 +1,123 @@
+@model IndorMvcApp.ViewModels.RealtorEditProfileLicenseViewModel
+@{
+    ViewData["Title"] = "License & Professional Details";
+}
+
+<form asp-action="EditProfileLicense" method="post" enctype="multipart/form-data" class="rl-ep-form" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+
+    <div class="rl-ep-form-card">
+        <div class="rl-ep-field-grid-2">
+            <label class="rl-ep-field rl-ep-field--stacked">
+                <span>License Number</span>
+                <input asp-for="LicenseNumber" placeholder="SL3456789" autocomplete="off" />
+            </label>
+            <label class="rl-ep-field rl-ep-field--stacked">
+                <span>State</span>
+                <select asp-for="LicenseState">
+                    <option value="">Select state</option>
+                    @foreach (var st in Model.LicenseStates)
+                    {
+                        <option value="@st">@st</option>
+                    }
+                </select>
+            </label>
+        </div>
+        <span asp-validation-for="LicenseNumber" class="rl-field-error"></span>
+        <span asp-validation-for="LicenseState" class="rl-field-error"></span>
+
+        <label class="rl-ep-field rl-ep-field--stacked">
+            <span>Years of Experience</span>
+            <select asp-for="YearsOfExperience">
+                <option value="">Select experience</option>
+                @foreach (var level in Model.ExperienceOptions)
+                {
+                    <option value="@level">@level</option>
+                }
+            </select>
+        </label>
+
+        <div class="rl-ep-specialties">
+            <span class="rl-ep-specialties-label">Specialties <small>(select up to 3)</small></span>
+            <div class="rl-ep-specialty-chips">
+                @foreach (var specialty in Model.SpecialtyOptions)
+                {
+                    var selected = Model.SelectedSpecialties.Contains(specialty, StringComparer.OrdinalIgnoreCase);
+                    <label class="rl-ep-specialty-chip @(selected ? "is-selected" : "")">
+                        <input type="checkbox"
+                               name="selectedSpecialties"
+                               value="@specialty"
+                               @(selected ? "checked" : null)
+                               class="rl-ep-specialty-input" />
+                        @if (selected)
+                        {
+                            <i class="fas fa-check"></i>
+                        }
+                        @specialty
+                    </label>
+                }
+            </div>
+        </div>
+
+        <label class="rl-ep-field rl-ep-field--stacked">
+            <span>Team Name (Optional)</span>
+            <input asp-for="TeamName" placeholder="Team name" />
+        </label>
+
+        <label class="rl-ep-field rl-ep-field--stacked">
+            <span>Broker-in-Charge (Optional)</span>
+            <input asp-for="BrokerInCharge" placeholder="Broker-in-charge" />
+        </label>
+    </div>
+
+    @if (Model.VerificationItems.Count > 0)
+    {
+        <div class="rl-ep-verification-list">
+            @foreach (var item in Model.VerificationItems)
+            {
+                <div class="rl-ep-verification-item @(item.IsVerified ? "is-verified" : "")">
+                    <span class="rl-ep-verification-icon">
+                        <i class="fas @(item.IsVerified ? "fa-circle-check" : "fa-circle")"></i>
+                    </span>
+                    <span>@item.Label</span>
+                    @if (item.IsVerified)
+                    {
+                        <span class="rl-ep-verification-badge">Verified</span>
+                    }
+                </div>
+            }
+        </div>
+    }
+
+    <div class="rl-ep-upload-card">
+        <div class="rl-ep-upload-copy">
+            <i class="fas fa-cloud-arrow-up"></i>
+            <div>
+                <strong>Upload License Documents</strong>
+                <p>Upload a clear photo or PDF of your real estate license.</p>
+                <small>JPG, PNG or PDF · Max size 10MB</small>
+            </div>
+        </div>
+        <label class="rl-ep-upload-btn">
+            Upload
+            <input type="file" name="licensePhotoFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
+        </label>
+        @{
+            var licenseSlot = Model.DocumentSlots.FirstOrDefault(d => d.DocumentType == IndorMvcApp.Models.RealtorDocumentTypes.LicensePhoto);
+        }
+        @if (licenseSlot?.Uploaded == true && !string.IsNullOrWhiteSpace(licenseSlot.FileUrl))
+        {
+            <p class="rl-ep-upload-status"><i class="fas fa-circle-check"></i> License document on file</p>
+        }
+    </div>
+
+    <footer class="rl-ep-footer">
+        <button type="submit" class="rl-ep-btn-primary">Save &amp; Continue</button>
+    </footer>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/realtor-edit-profile.js" asp-append-version="true"></script>
+}

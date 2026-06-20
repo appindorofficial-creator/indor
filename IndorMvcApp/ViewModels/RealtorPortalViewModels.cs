@@ -299,6 +299,98 @@ public class RealtorQuoteBidViewModel
     public decimal Rating { get; set; }
 }
 
+public class RealtorBusinessInformationViewModel : RealtorEditProfileWizardViewModel
+{
+    public int ProfileCompletionPercent { get; set; }
+    public List<RealtorBusinessInfoRowViewModel> Rows { get; set; } = [];
+}
+
+public class RealtorEditProfileWizardViewModel : RealtorPortalShellViewModel
+{
+    public int DisplayStep { get; set; } = 1;
+    public int TotalSteps { get; set; } = 4;
+    public string Title { get; set; } = "";
+    public string Subtitle { get; set; } = "";
+    public string HeaderBadge { get; set; } = "Start here";
+    public string BackAction { get; set; } = "Profile";
+    public string BackController { get; set; } = "Realtor";
+}
+
+public class RealtorEditProfileContactViewModel : RealtorEditProfileWizardViewModel
+{
+    public string BusinessName { get; set; } = "";
+    public string PublicDisplayName { get; set; } = "";
+    public string BrokerageName { get; set; } = "";
+    public string RealtorTitle { get; set; } = "";
+    public string Email { get; set; } = "";
+    public string Website { get; set; } = "";
+    public string OfficeAddress { get; set; } = "";
+    public string OfficeCity { get; set; } = "";
+    public string OfficeState { get; set; } = "";
+    public string OfficeZip { get; set; } = "";
+    public List<string> Languages { get; set; } = [];
+    public string LanguagesCsv { get; set; } = "";
+    public IReadOnlyList<string> LicenseStates { get; set; } = [];
+}
+
+public class RealtorEditProfileLicenseViewModel : RealtorEditProfileWizardViewModel
+{
+    public string LicenseNumber { get; set; } = "";
+    public string LicenseState { get; set; } = "";
+    public string YearsOfExperience { get; set; } = "";
+    public List<string> SelectedSpecialties { get; set; } = [];
+    public string TeamName { get; set; } = "";
+    public string BrokerInCharge { get; set; } = "";
+    public List<RealtorDocumentSlotViewModel> DocumentSlots { get; set; } = [];
+    public List<RealtorEditProfileVerificationItemViewModel> VerificationItems { get; set; } = [];
+    public IReadOnlyList<string> SpecialtyOptions { get; set; } = [];
+    public IReadOnlyList<string> ExperienceOptions { get; set; } = [];
+    public IReadOnlyList<string> LicenseStates { get; set; } = [];
+}
+
+public class RealtorEditProfileVerificationItemViewModel
+{
+    public string Label { get; set; } = "";
+    public bool IsVerified { get; set; }
+}
+
+public class RealtorEditProfileReviewViewModel : RealtorEditProfileWizardViewModel
+{
+    public List<RealtorEditProfileReviewRowViewModel> SummaryRows { get; set; } = [];
+    public RealtorEditProfilePreviewViewModel Preview { get; set; } = new();
+}
+
+public class RealtorEditProfileReviewRowViewModel
+{
+    public string Label { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string? SecondaryValue { get; set; }
+    public string Icon { get; set; } = "";
+    public string EditAction { get; set; } = "";
+    public string? StatusBadge { get; set; }
+    public string StatusCss { get; set; } = "";
+}
+
+public class RealtorEditProfilePreviewViewModel
+{
+    public string FullName { get; set; } = "";
+    public string BrokerageName { get; set; } = "";
+    public string LocationLabel { get; set; } = "";
+    public string? ProfilePhotoUrl { get; set; }
+}
+
+public class RealtorBusinessInfoRowViewModel
+{
+    public string Key { get; set; } = "";
+    public string Label { get; set; } = "";
+    public string Value { get; set; } = "";
+    public string? StatusBadge { get; set; }
+    public string StatusCss { get; set; } = "";
+    public string Icon { get; set; } = "";
+    public string? EditUrl { get; set; }
+    public bool IsEmpty { get; set; }
+}
+
 public class RealtorProfileViewModel : RealtorPortalShellViewModel
 {
     public string FullName { get; set; } = "";
@@ -412,6 +504,25 @@ public class RealtorPublicProfileViewModel : RealtorPortalShellViewModel
     public List<RealtorPublicOpenHouseViewModel> OpenHouses { get; set; } = [];
     public List<RealtorPublicSharedPackageViewModel> SharedPackages { get; set; } = [];
     public string ShareUrl { get; set; } = "";
+    public string AccountStatusLabel { get; set; } = "";
+    public string AccountStatusCss { get; set; } = "";
+    public string HeroLocationLabel { get; set; } = "";
+    public bool ShowVerificationPrompt { get; set; }
+    public List<RealtorPublicHeroBadgeViewModel> HeroBadges { get; set; } = [];
+    public List<RealtorPublicVerificationStepViewModel> VerificationSteps { get; set; } = [];
+}
+
+public class RealtorPublicHeroBadgeViewModel
+{
+    public string Label { get; set; } = "";
+    public bool IsComplete { get; set; }
+}
+
+public class RealtorPublicVerificationStepViewModel
+{
+    public string Label { get; set; } = "";
+    public string StatusLabel { get; set; } = "";
+    public bool IsComplete { get; set; }
 }
 
 public class RealtorPublicVerificationItemViewModel

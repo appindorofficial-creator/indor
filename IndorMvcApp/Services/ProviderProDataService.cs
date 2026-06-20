@@ -812,6 +812,7 @@ public class ProviderProDataService(
                 }
 
                 var section = ReadJsonString(node, "sourceSection", "SourceSection");
+                var sectionNumber = ReadJsonString(node, "sourceSectionNumber", "SourceSectionNumber");
                 int? page = null;
                 if (node.TryGetProperty("sourcePage", out var pageNode) && pageNode.TryGetInt32(out var pageValue) && pageValue > 0)
                 {
@@ -823,7 +824,7 @@ public class ProviderProDataService(
                 }
 
                 var reportReference = ReadJsonString(node, "reportReference", "ReportReference")
-                    ?? BuildReportReference(section, page);
+                    ?? BuildReportReference(sectionNumber, section, page);
 
                 items.Add(new ProviderInspectionFindingItemViewModel
                 {
@@ -832,6 +833,7 @@ public class ProviderProDataService(
                     Description = ReadJsonString(node, "description", "Description"),
                     Priority = ReadJsonString(node, "priority", "Priority") ?? "Moderate",
                     SourceSection = section,
+                    SourceSectionNumber = sectionNumber,
                     SourcePage = page,
                     SourceExcerpt = ReadJsonString(node, "sourceExcerpt", "SourceExcerpt"),
                     ReportReference = reportReference
@@ -861,9 +863,14 @@ public class ProviderProDataService(
         return null;
     }
 
-    private static string? BuildReportReference(string? section, int? page)
+    private static string? BuildReportReference(string? sectionNumber, string? section, int? page)
     {
         var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(sectionNumber))
+        {
+            parts.Add(sectionNumber.Trim());
+        }
+
         if (!string.IsNullOrWhiteSpace(section))
         {
             parts.Add(section.Trim());

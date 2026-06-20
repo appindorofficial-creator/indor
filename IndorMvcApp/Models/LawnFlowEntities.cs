@@ -45,6 +45,17 @@ public class LawnServicioLanding
     [Required, MaxLength(40)]
     public string CtaTexto { get; set; } = "Customize service";
 
+    [MaxLength(80)]
+    public string? ReminderBannerTitulo { get; set; }
+
+    [MaxLength(300)]
+    public string? ReminderBannerTexto { get; set; }
+
+    public bool ReminderDefaultOn { get; set; } = true;
+
+    [MaxLength(60)]
+    public string? RemindOnlyCtaTexto { get; set; }
+
     public bool Activo { get; set; } = true;
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 }
@@ -112,4 +123,64 @@ public class SolicitudLawn
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
     public DateTime? FechaActualizacion { get; set; }
     public DateTime? FechaConfirmacion { get; set; }
+
+    [Required, MaxLength(20)]
+    public string ModoServicio { get; set; } = "FullService";
+
+    public bool RecordatorioActivo { get; set; }
+
+    public int RecordatorioAvisoDias { get; set; } = 1;
+
+    [MaxLength(100)]
+    public string? RecordatorioCanales { get; set; }
+
+    public DateTime? ProximoRecordatorioUtc { get; set; }
+}
+
+[Table("LawnCatalogOptions")]
+public class LawnCatalogOption
+{
+    public int Id { get; set; }
+    public int MicroservicioId { get; set; }
+
+    [ForeignKey(nameof(MicroservicioId))]
+    public Microservicio? Microservicio { get; set; }
+
+    [Required, MaxLength(40)]
+    public string OptionGroup { get; set; } = string.Empty;
+
+    [Required, MaxLength(40)]
+    public string Code { get; set; } = string.Empty;
+
+    [Required, MaxLength(80)]
+    public string LabelEn { get; set; } = string.Empty;
+
+    [MaxLength(200)]
+    public string? DescriptionEn { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal Price { get; set; }
+
+    [Required, MaxLength(60)]
+    public string IconClass { get; set; } = "fa-circle";
+
+    public int SortOrder { get; set; }
+    public bool RequiresQuote { get; set; }
+    public bool IsActive { get; set; } = true;
+}
+
+public static class LawnServiceModes
+{
+    public const string FullService = "FullService";
+    public const string ReminderOnly = "ReminderOnly";
+}
+
+public static class LawnCatalogGroups
+{
+    public const string Frequency = "Frequency";
+    public const string Area = "Area";
+    public const string Addon = "Addon";
+    public const string TimeWindow = "TimeWindow";
+    public const string ReminderLead = "ReminderLead";
+    public const string ReminderChannel = "ReminderChannel";
 }

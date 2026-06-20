@@ -130,7 +130,7 @@ public class RealtorInspectionUploadWizardService(
         {
             DisplayStep = 1,
             Title = "Upload Inspection Report",
-            Subtitle = "Select a property and add your inspection report.",
+            Subtitle = "Choose the property and upload the inspection report to start AI analysis.",
             SearchQuery = search,
             SelectedPropertyFileId = draft.PropertyFileId,
             UploadMethod = draft.UploadMethod,
@@ -387,6 +387,7 @@ public class RealtorInspectionUploadWizardService(
                 Description = finding.Description,
                 SourceExcerpt = finding.SourceExcerpt,
                 SourceSection = finding.SourceSection,
+                SourceSectionNumber = finding.SourceSectionNumber,
                 SourcePage = finding.SourcePage,
                 Priority = finding.Priority,
                 Trade = finding.Trade,
@@ -394,7 +395,7 @@ public class RealtorInspectionUploadWizardService(
                 AiScore = finding.AiScore,
                 ImageUrl = null,
                 SortOrder = ++sort,
-                IsSelected = true
+                IsSelected = false
             });
         }
 
@@ -436,6 +437,11 @@ public class RealtorInspectionUploadWizardService(
                 "No AI findings are available yet. Wait for analysis to finish or retry.");
         }
 
+        foreach (var finding in draft.Findings)
+        {
+            finding.IsSelected = false;
+        }
+
         draft.CurrentStep = 3;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
@@ -468,11 +474,14 @@ public class RealtorInspectionUploadWizardService(
         {
             DisplayStep = 3,
             Title = "AI Inspection Findings",
-            Subtitle = "Review what INDOR AI discovered before sending requests to providers.",
+            Subtitle = "",
             PropertyDisplay = FormatDisplayAddress(draft.Address ?? "", draft.CityRegion),
             ReportFileName = draft.ReportFileName ?? "Inspection Report",
             ReportPdfUrl = draft.ReportFileUrl,
             AnalysisSummary = draft.AnalysisSummary,
+            ReportDateLabel = draft.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            InspectorLabel = FormatInspectorLabel(draft.ReportFileName),
+            AnalyzedLabel = FormatAnalyzedLabel(draft.FechaActualizacion ?? draft.FechaCreacion),
             TotalFindings = all.Count,
             UrgentCount = all.Count(f => f.Priority == RealtorInspectionFindingPriorities.Urgent),
             HighCount = all.Count(f => f.Priority == RealtorInspectionFindingPriorities.High),
@@ -492,7 +501,7 @@ public class RealtorInspectionUploadWizardService(
         var selected = (selectedFindingIds ?? []).ToHashSet();
         foreach (var finding in draft.Findings)
         {
-            finding.IsSelected = selected.Count == 0 || selected.Contains(finding.Id);
+            finding.IsSelected = selected.Contains(finding.Id);
         }
 
         draft.CurrentStep = 4;
@@ -1043,8 +1052,10 @@ public class RealtorInspectionUploadWizardService(
             Description = f.Description,
             SourceExcerpt = f.SourceExcerpt,
             SourceSection = f.SourceSection,
+            SourceSectionNumber = f.SourceSectionNumber,
             SourcePage = f.SourcePage,
-            ReportReference = FormatReportReference(f.SourceSection, f.SourcePage),
+            ReportReference = FormatReportReference(f.SourceSectionNumber, f.SourceSection, f.SourcePage),
+            SourceLineItem = FormatSourceLineItem(f.Description, f.Title),
             Priority = f.Priority,
             PriorityCss = f.Priority.ToLowerInvariant(),
             Trade = f.Trade,
@@ -1053,7 +1064,7 @@ public class RealtorInspectionUploadWizardService(
             TradeCss = tradeMeta.Css,
             AiScore = f.AiScore,
             ImageUrl = f.ImageUrl,
-            IsSelected = f.IsSelected
+            IsSelected = false
         };
     }
 
@@ -1136,9 +1147,14 @@ public class RealtorInspectionUploadWizardService(
         return value.Length <= maxLength ? value : value[..(maxLength - 1)] + "…";
     }
 
-    private static string? FormatReportReference(string? section, int? page)
+    private static string? FormatReportReference(string? sectionNumber, string? section, int? page)
     {
         var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(sectionNumber))
+        {
+            parts.Add(sectionNumber.Trim());
+        }
+
         if (!string.IsNullOrWhiteSpace(section))
         {
             parts.Add(section.Trim());
@@ -1150,6 +1166,42 @@ public class RealtorInspectionUploadWizardService(
         }
 
         return parts.Count == 0 ? null : string.Join(" · ", parts);
+    }
+
+    private static string FormatInspectorLabel(string? fileName)
+    {
+        if (string.IsNullOrWhiteSpace(fileName))
+        {
+            return "Residential Home Inspection";
+        }
+
+        var name = Path.GetFileNameWithoutExtension(fileName)
+            .Replace('_', ' ')
+            .Replace('-', ' ')
+            .Trim();
+
+        if (name.Contains("Residential Home Inspection", StringComparison.OrdinalIgnoreCase))
+        {
+            return "Residential Home Inspection";
+        }
+
+        return TruncateText(name, 60) ?? "Residential Home Inspection";
+    }
+
+    private static string FormatAnalyzedLabel(DateTime timestampUtc)
+    {
+        var local = timestampUtc.ToLocalTime();
+        return local.Date == DateTime.Today ? "Today" : local.ToString("MMM d, yyyy");
+    }
+
+    private static string? FormatSourceLineItem(string? description, string title)
+    {
+        if (!string.IsNullOrWhiteSpace(description))
+        {
+            return TruncateText(description.Trim(), 80);
+        }
+
+        return string.IsNullOrWhiteSpace(title) ? null : title;
     }
 
     private static int PriorityWeight(string priority) => priority switch

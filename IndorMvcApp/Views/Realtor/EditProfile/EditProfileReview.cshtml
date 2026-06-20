@@ -1,0 +1,66 @@
+@model IndorMvcApp.ViewModels.RealtorEditProfileReviewViewModel
+@{
+    ViewData["Title"] = "Review & Save";
+}
+
+<section class="rl-ep-review-list">
+    @foreach (var row in Model.SummaryRows)
+    {
+        <div class="rl-ep-review-row">
+            <span class="rl-ep-row-icon"><i class="fas @row.Icon"></i></span>
+            <div class="rl-ep-review-row-body">
+                <span class="rl-ep-row-label">@row.Label</span>
+                @if (row.Label == "Verification")
+                {
+                    <span class="rl-ep-row-value rl-ep-row-value--license">
+                        @if (!string.IsNullOrWhiteSpace(row.StatusBadge))
+                        {
+                            <span class="rl-ep-status @row.StatusCss">@row.StatusBadge</span>
+                        }
+                        @if (!string.IsNullOrWhiteSpace(row.Value))
+                        {
+                            <span>· @row.Value</span>
+                        }
+                    </span>
+                }
+                else
+                {
+                    <span class="rl-ep-row-value">@(string.IsNullOrWhiteSpace(row.Value) ? "Not provided" : row.Value)</span>
+                }
+            </div>
+            <a asp-controller="Realtor" asp-action="@row.EditAction" class="rl-ep-review-edit">Edit <i class="fas fa-chevron-right"></i></a>
+        </div>
+    }
+</section>
+
+<a asp-controller="Realtor" asp-action="PublicProfile" class="rl-ep-preview-card">
+    <div class="rl-ep-preview-photo-wrap">
+        @if (!string.IsNullOrWhiteSpace(Model.Preview.ProfilePhotoUrl))
+        {
+            <img src="@Model.Preview.ProfilePhotoUrl" alt="" class="rl-ep-preview-photo" />
+        }
+        else
+        {
+            <span class="rl-ep-preview-photo rl-ep-preview-photo--placeholder"><i class="fas fa-user"></i></span>
+        }
+    </div>
+    <div class="rl-ep-preview-copy">
+        <small>Public Profile Preview</small>
+        <strong>@Model.Preview.FullName</strong>
+        @if (!string.IsNullOrWhiteSpace(Model.Preview.BrokerageName))
+        {
+            <span>@Model.Preview.BrokerageName</span>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.Preview.LocationLabel))
+        {
+            <span class="rl-ep-preview-location"><i class="fas fa-location-dot"></i> @Model.Preview.LocationLabel</span>
+        }
+    </div>
+    <i class="fas fa-chevron-right rl-ep-preview-chevron"></i>
+</a>
+
+<form asp-action="SaveEditProfile" method="post" class="rl-ep-review-actions">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="rl-ep-btn-primary">Save Changes</button>
+    <a asp-controller="Realtor" asp-action="PublicProfile" class="rl-ep-btn-secondary">Preview Public Profile</a>
+</form>

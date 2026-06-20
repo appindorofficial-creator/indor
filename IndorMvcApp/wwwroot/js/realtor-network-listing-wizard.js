@@ -80,7 +80,7 @@ window.rlListingWizardInit = function (config) {
             thumb.innerHTML =
                 '<img src="' + escapeAttr(url) + '" alt="" />' +
                 '<button type="button" class="rl-listing-photo-remove" data-index="' + index + '" aria-label="Remove photo">&times;</button>';
-            photoGrid.insertBefore(thumb, photoAdd);
+            photoGrid.appendChild(thumb);
         });
 
         var placeholders = Math.max(0, 3 - photos.length);
@@ -88,7 +88,7 @@ window.rlListingWizardInit = function (config) {
             var placeholder = document.createElement('div');
             placeholder.className = 'rl-listing-photo-placeholder';
             placeholder.innerHTML = '<i class="fas fa-image"></i>';
-            photoGrid.insertBefore(placeholder, photoAdd);
+            photoGrid.appendChild(placeholder);
         }
 
         photoAdd.style.display = photos.length >= 20 ? 'none' : '';

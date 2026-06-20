@@ -1,6 +1,11 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
 
 <section class="rl-listing-benefits">
+    <div class="rl-listing-benefits-intro">
+        <h2 class="rl-listing-section-label">Why post your listing on INDOR?</h2>
+        <p class="rl-listing-lead">INDOR connects your property with nearby buyers, renters, and realtors who are ready to act.</p>
+    </div>
+
     <div class="rl-listing-benefit-list">
         <article class="rl-listing-benefit-row">
             <span class="rl-listing-benefit-icon"><i class="fas fa-location-dot"></i></span>
@@ -56,8 +61,7 @@
         <p>For your privacy and safety, all contact happens through INDOR messaging — not public phone numbers.</p>
     </div>
 
-    <div class="rl-listing-wizard-actions">
-        <a asp-action="PostListingDetails" class="ob-btn ob-btn-primary ob-btn-block">Next: Listing Details</a>
-        <a asp-action="CreateNetworkListing" class="rl-listing-btn-outline">Back</a>
-    </div>
+    <footer class="rl-listing-benefits-footer">
+        <a asp-action="PostListingDetails" class="rl-listing-btn-primary">Next: Listing Details</a>
+    </footer>
 </section>

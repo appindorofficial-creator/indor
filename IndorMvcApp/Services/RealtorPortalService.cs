@@ -725,6 +725,409 @@ public class RealtorPortalService(AppDbContext db)
         };
     }
 
+    public async Task<RealtorBusinessInformationViewModel> BuildBusinessInformationAsync(
+        IndorRealtor realtor,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+
+        var entity = await db.IndorRealtors.AsNoTracking()
+            .Include(r => r.Documentos)
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        var hasLicensePhoto = entity.Documentos.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.LicensePhoto &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasGovId = entity.Documentos.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.GovernmentId &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+
+        var businessName = entity.DisplayName?.Trim() ?? "";
+        var brokerage = entity.BrokerageName?.Trim() ?? "";
+        var email = entity.Email?.Trim() ?? "";
+        var officeAddress = entity.OfficeAddress?.Trim() ?? "";
+        var languages = FormatLanguagesLabel(entity.LanguagesJson);
+        var licenseNumber = entity.LicenseNumber?.Trim() ?? "";
+        var licenseState = entity.LicenseState?.Trim() ?? "";
+        var hasLicense = !string.IsNullOrWhiteSpace(licenseNumber) && !string.IsNullOrWhiteSpace(licenseState);
+        var licenseDisplay = hasLicense
+            ? string.IsNullOrWhiteSpace(licenseState) ? licenseNumber : $"{licenseState}{licenseNumber}"
+            : "";
+
+        var (licenseBadge, licenseCss) = ResolveLicenseStatus(entity, hasLicensePhoto, hasGovId, hasLicense);
+        var messagingLabel = entity.IndorMessagingEnabled ? "Enabled" : "Disabled";
+
+        var completionChecks = new[]
+        {
+            !string.IsNullOrWhiteSpace(businessName),
+            !string.IsNullOrWhiteSpace(brokerage),
+            hasLicense,
+            !string.IsNullOrWhiteSpace(email),
+            entity.IndorMessagingEnabled,
+            !string.IsNullOrWhiteSpace(officeAddress),
+            !string.IsNullOrWhiteSpace(languages)
+        };
+        var completionPercent = (int)Math.Round(completionChecks.Count(c => c) / (double)completionChecks.Length * 100);
+
+        var rows = new List<RealtorBusinessInfoRowViewModel>
+        {
+            BuildBusinessInfoRow(
+                "business-name",
+                "Business Name",
+                businessName,
+                "fa-store",
+                "/Realtor/EditProfileContact",
+                "Add business name"),
+            BuildBusinessInfoRow(
+                "brokerage",
+                "Brokerage",
+                brokerage,
+                "fa-user-group",
+                "/Realtor/EditProfileContact",
+                "Add brokerage"),
+            new RealtorBusinessInfoRowViewModel
+            {
+                Key = "license",
+                Label = "License Status",
+                Value = licenseDisplay,
+                StatusBadge = licenseBadge,
+                StatusCss = licenseCss,
+                Icon = "fa-file-circle-check",
+                EditUrl = "/Realtor/EditProfileLicense",
+                IsEmpty = !hasLicense && string.IsNullOrWhiteSpace(licenseBadge)
+            },
+            BuildBusinessInfoRow(
+                "email",
+                "Email",
+                email,
+                "fa-envelope",
+                null,
+                "Add email"),
+            new RealtorBusinessInfoRowViewModel
+            {
+                Key = "messaging",
+                Label = "INDOR Messaging",
+                Value = messagingLabel,
+                Icon = "fa-comment-dots",
+                IsEmpty = false
+            },
+            BuildBusinessInfoRow(
+                "office-address",
+                "Office Address",
+                officeAddress,
+                "fa-location-dot",
+                "/Realtor/EditProfileContact",
+                "Add office address"),
+            BuildBusinessInfoRow(
+                "languages",
+                "Languages",
+                languages,
+                "fa-globe",
+                "/Realtor/EditProfileContact",
+                "Add languages")
+        };
+
+        return new RealtorBusinessInformationViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            DisplayStep = 1,
+            TotalSteps = 4,
+            Title = "Business Information",
+            Subtitle = "Set up your business details and professional identity.",
+            HeaderBadge = "Start here",
+            BackAction = "Profile",
+            BackController = "Realtor",
+            ProfileCompletionPercent = completionPercent,
+            Rows = rows
+        };
+    }
+
+    public async Task<RealtorEditProfileContactViewModel> BuildEditProfileContactAsync(
+        IndorRealtor realtor,
+        IReadOnlyList<string> licenseStates,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+        var entity = await db.IndorRealtors.AsNoTracking()
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        return new RealtorEditProfileContactViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            DisplayStep = 2,
+            TotalSteps = 4,
+            Title = "Company & Contact Details",
+            Subtitle = "Add the contact and public business information clients will see.",
+            HeaderBadge = "Start here",
+            BackAction = RealtorEditProfileActions.BusinessInformation,
+            BackController = "Realtor",
+            BusinessName = entity.DisplayName ?? "",
+            PublicDisplayName = entity.PublicDisplayName ?? "",
+            BrokerageName = entity.BrokerageName ?? "",
+            RealtorTitle = entity.RealtorTitle ?? "Realtor®",
+            Email = entity.Email ?? "",
+            Website = entity.Website ?? "",
+            OfficeAddress = entity.OfficeAddress ?? "",
+            OfficeCity = entity.OfficeCity ?? "",
+            OfficeState = entity.OfficeState ?? "",
+            OfficeZip = entity.OfficeZip ?? "",
+            Languages = DeserializeStringList(entity.LanguagesJson),
+            LanguagesCsv = FormatLanguagesLabel(entity.LanguagesJson),
+            LicenseStates = licenseStates
+        };
+    }
+
+    public async Task SaveEditProfileContactAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileContactViewModel input,
+        CancellationToken ct = default)
+    {
+        var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
+
+        entity.DisplayName = input.BusinessName.Trim();
+        entity.PublicDisplayName = input.PublicDisplayName.Trim();
+        entity.BrokerageName = input.BrokerageName.Trim();
+        entity.RealtorTitle = input.RealtorTitle.Trim();
+        entity.Email = input.Email.Trim();
+        entity.Website = input.Website.Trim();
+        entity.OfficeAddress = input.OfficeAddress.Trim();
+        entity.OfficeCity = input.OfficeCity.Trim();
+        entity.OfficeState = input.OfficeState.Trim();
+        entity.OfficeZip = input.OfficeZip.Trim();
+        entity.LanguagesJson = SerializeStringList(ParseLanguagesCsv(input.LanguagesCsv));
+        entity.FechaActualizacion = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(ct);
+    }
+
+    public async Task<RealtorEditProfileLicenseViewModel> BuildEditProfileLicenseAsync(
+        IndorRealtor realtor,
+        IReadOnlyList<string> licenseStates,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+        var entity = await db.IndorRealtors.AsNoTracking()
+            .Include(r => r.Documentos)
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        var docs = entity.Documentos.ToList();
+        var hasLicensePhoto = docs.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.LicensePhoto &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasGovId = docs.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.GovernmentId &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasLicenseNumber = !string.IsNullOrWhiteSpace(entity.LicenseNumber) &&
+                               !string.IsNullOrWhiteSpace(entity.LicenseState);
+
+        var documentSlots = RealtorDocumentTypes.Slots.Select(slot =>
+        {
+            var row = docs.FirstOrDefault(d =>
+                d.DocumentType.Equals(slot.Type, StringComparison.OrdinalIgnoreCase));
+            return new RealtorDocumentSlotViewModel
+            {
+                DocumentType = slot.Type,
+                Label = slot.Label,
+                Required = slot.Required,
+                Uploaded = !string.IsNullOrWhiteSpace(row?.FileUrl),
+                FileUrl = row?.FileUrl
+            };
+        }).ToList();
+
+        return new RealtorEditProfileLicenseViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            DisplayStep = 3,
+            TotalSteps = 4,
+            Title = "License & Professional Details",
+            Subtitle = "Build trust with licensing, experience, specialties, and verification.",
+            HeaderBadge = "Start here",
+            BackAction = RealtorEditProfileActions.EditProfileContact,
+            BackController = "Realtor",
+            LicenseNumber = entity.LicenseNumber ?? "",
+            LicenseState = entity.LicenseState ?? "",
+            YearsOfExperience = entity.YearsOfExperience ?? "",
+            SelectedSpecialties = DeserializeStringList(entity.SpecialtiesJson),
+            TeamName = entity.TeamName ?? "",
+            BrokerInCharge = entity.BrokerInCharge ?? "",
+            DocumentSlots = documentSlots,
+            VerificationItems =
+            [
+                new() { Label = "Licensed Realtor", IsVerified = hasLicenseNumber && hasLicensePhoto },
+                new() { Label = "Background Verified", IsVerified = hasGovId },
+                new() { Label = "INDOR Verified", IsVerified = shell.IsVerified }
+            ],
+            SpecialtyOptions = RealtorEditProfileOptions.Specialties,
+            ExperienceOptions = RealtorEditProfileOptions.ExperienceLevels,
+            LicenseStates = licenseStates
+        };
+    }
+
+    public async Task SaveEditProfileLicenseAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileLicenseViewModel input,
+        CancellationToken ct = default)
+    {
+        var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
+
+        entity.LicenseNumber = input.LicenseNumber.Trim();
+        entity.LicenseState = input.LicenseState.Trim();
+        entity.YearsOfExperience = input.YearsOfExperience.Trim();
+        entity.SpecialtiesJson = SerializeStringList(input.SelectedSpecialties.Take(3).ToList());
+        entity.TeamName = input.TeamName.Trim();
+        entity.BrokerInCharge = input.BrokerInCharge.Trim();
+        entity.FechaActualizacion = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(ct);
+    }
+
+    public async Task<RealtorEditProfileReviewViewModel> BuildEditProfileReviewAsync(
+        IndorRealtor realtor,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+        var entity = await db.IndorRealtors.AsNoTracking()
+            .Include(r => r.Documentos)
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        var hasLicensePhoto = entity.Documentos.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.LicensePhoto &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasGovId = entity.Documentos.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.GovernmentId &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasLicense = !string.IsNullOrWhiteSpace(entity.LicenseNumber) &&
+                         !string.IsNullOrWhiteSpace(entity.LicenseState);
+        var licenseDisplay = hasLicense
+            ? $"{entity.LicenseState}{entity.LicenseNumber}"
+            : "";
+        var (licenseBadge, licenseCss) = ResolveLicenseStatus(entity, hasLicensePhoto, hasGovId, hasLicense);
+        var serviceAreas = ParseServiceAreas(entity.ServiceAreas);
+        var serviceAreaLabel = serviceAreas.Count > 0
+            ? $"{string.Join(", ", serviceAreas.Take(2))}{(serviceAreas.Count > 2 ? " and surrounding areas" : "")}"
+            : BuildOfficeLocationLabel(entity);
+
+        var messagingLines = new List<string>();
+        if (!string.IsNullOrWhiteSpace(entity.Email))
+        {
+            messagingLines.Add(entity.Email.Trim());
+        }
+
+        if (entity.IndorMessagingEnabled)
+        {
+            messagingLines.Add("INDOR Messaging Enabled");
+        }
+
+        var publicName = !string.IsNullOrWhiteSpace(entity.PublicDisplayName)
+            ? entity.PublicDisplayName.Trim()
+            : entity.DisplayName?.Trim() ?? shell.FullDisplayName;
+
+        return new RealtorEditProfileReviewViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            DisplayStep = 4,
+            TotalSteps = 4,
+            Title = "Review & Save",
+            Subtitle = "Review your business information before updating your public profile.",
+            HeaderBadge = "Final Step",
+            BackAction = RealtorEditProfileActions.EditProfileLicense,
+            BackController = "Realtor",
+            SummaryRows =
+            [
+                new()
+                {
+                    Label = "Business Name",
+                    Value = entity.DisplayName ?? "",
+                    Icon = "fa-store",
+                    EditAction = RealtorEditProfileActions.EditProfileContact
+                },
+                new()
+                {
+                    Label = "Brokerage",
+                    Value = entity.BrokerageName ?? "",
+                    Icon = "fa-user-group",
+                    EditAction = RealtorEditProfileActions.EditProfileContact
+                },
+                new()
+                {
+                    Label = "Service Area (Preview)",
+                    Value = serviceAreaLabel,
+                    Icon = "fa-globe",
+                    EditAction = RealtorEditProfileActions.EditProfileContact
+                },
+                new()
+                {
+                    Label = "Contact & Messaging",
+                    Value = string.Join(" · ", messagingLines),
+                    Icon = "fa-comment-dots",
+                    EditAction = RealtorEditProfileActions.EditProfileContact
+                },
+                new()
+                {
+                    Label = "Verification",
+                    Value = licenseDisplay,
+                    StatusBadge = licenseBadge,
+                    StatusCss = licenseCss,
+                    Icon = "fa-shield-halved",
+                    EditAction = RealtorEditProfileActions.EditProfileLicense
+                }
+            ],
+            Preview = new RealtorEditProfilePreviewViewModel
+            {
+                FullName = publicName,
+                BrokerageName = entity.BrokerageName?.Trim() ?? "",
+                LocationLabel = serviceAreaLabel,
+                ProfilePhotoUrl = shell.ProfilePhotoUrl
+            }
+        };
+    }
+
+    public async Task FinalizeEditProfileAsync(IndorRealtor realtor, CancellationToken ct = default)
+    {
+        var entity = await db.IndorRealtors
+            .Include(r => r.Documentos)
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        var hasLicensePhoto = entity.Documentos.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.LicensePhoto &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+        var hasGovId = entity.Documentos.Any(d =>
+            d.DocumentType == RealtorDocumentTypes.GovernmentId &&
+            !string.IsNullOrWhiteSpace(d.FileUrl));
+
+        if (!entity.VerificationSkipped && hasLicensePhoto && hasGovId)
+        {
+            entity.RegistrationStatus = RealtorRegistrationStatuses.Verified;
+        }
+        else if (entity.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            entity.RegistrationStatus = RealtorRegistrationStatuses.Basic;
+        }
+
+        entity.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task<RealtorPublicProfileViewModel> BuildPublicProfileAsync(
         IndorRealtor realtor,
         CancellationToken ct = default)
@@ -776,6 +1179,32 @@ public class RealtorPortalService(AppDbContext db)
             ? $"License #{realtor.LicenseNumber} ({realtor.LicenseState})"
             : null;
 
+        var heroLocation = serviceAreas.FirstOrDefault();
+        if (string.IsNullOrWhiteSpace(heroLocation))
+        {
+            var officeParts = new[] { realtor.OfficeCity, realtor.OfficeState }
+                .Where(p => !string.IsNullOrWhiteSpace(p))
+                .Select(p => p!.Trim());
+            heroLocation = string.Join(", ", officeParts);
+        }
+        else if (!heroLocation.Contains(',') && !string.IsNullOrWhiteSpace(realtor.LicenseState))
+        {
+            heroLocation = $"{heroLocation.Trim()}, {realtor.LicenseState.Trim()}";
+        }
+
+        var licensedComplete = hasLicenseDoc && hasLicenseNumber;
+        var backgroundComplete = hasGovId;
+        var indorVerified = shell.IsVerified;
+
+        var accountStatusLabel = "";
+        var accountStatusCss = "";
+        if (realtor.RegistrationStatus is RealtorRegistrationStatuses.Verified or RealtorRegistrationStatuses.Basic
+            && hasLicenseNumber)
+        {
+            accountStatusLabel = "Active";
+            accountStatusCss = "is-active";
+        }
+
         return new RealtorPublicProfileViewModel
         {
             DisplayName = shell.DisplayName,
@@ -785,8 +1214,12 @@ public class RealtorPortalService(AppDbContext db)
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
             IsOwnProfile = true,
-            FullName = realtor.DisplayName ?? shell.FullDisplayName,
-            TitleLabel = shell.IsVerified ? "Realtor®" : "Realtor",
+            FullName = !string.IsNullOrWhiteSpace(realtor.PublicDisplayName)
+                ? realtor.PublicDisplayName.Trim()
+                : realtor.DisplayName ?? shell.FullDisplayName,
+            TitleLabel = !string.IsNullOrWhiteSpace(realtor.RealtorTitle)
+                ? realtor.RealtorTitle.Trim()
+                : shell.IsVerified ? "Realtor®" : "Realtor",
             Tagline = string.IsNullOrWhiteSpace(realtor.PublicTagline) ? null : realtor.PublicTagline.Trim(),
             Bio = string.IsNullOrWhiteSpace(realtor.PublicBio) ? null : realtor.PublicBio.Trim(),
             CoverImageUrl = coverImage,
@@ -795,6 +1228,22 @@ public class RealtorPortalService(AppDbContext db)
                 : null,
             BrokerageName = string.IsNullOrWhiteSpace(realtor.BrokerageName) ? null : realtor.BrokerageName.Trim(),
             LicenseLabel = licenseLabel,
+            HeroLocationLabel = heroLocation ?? "",
+            AccountStatusLabel = accountStatusLabel,
+            AccountStatusCss = accountStatusCss,
+            ShowVerificationPrompt = !indorVerified,
+            HeroBadges =
+            [
+                new() { Label = "Licensed", IsComplete = licensedComplete },
+                new() { Label = "Background Checked", IsComplete = backgroundComplete },
+                new() { Label = "INDOR Member", IsComplete = indorVerified || realtor.RegistrationStatus == RealtorRegistrationStatuses.Basic }
+            ],
+            VerificationSteps =
+            [
+                new() { Label = "License Verification", IsComplete = licensedComplete, StatusLabel = licensedComplete ? "Completed" : "Not Started" },
+                new() { Label = "Background Check", IsComplete = backgroundComplete, StatusLabel = backgroundComplete ? "Completed" : "Not Started" },
+                new() { Label = "INDOR Verified Status", IsComplete = indorVerified, StatusLabel = indorVerified ? "Completed" : "Not Started" }
+            ],
             VerificationItems =
             [
                 new() { Label = "Licensed Realtor®", IsComplete = hasLicenseDoc && hasLicenseNumber },
@@ -1794,5 +2243,108 @@ public class RealtorPortalService(AppDbContext db)
         }
 
         return local.ToString("MMM d, yyyy");
+    }
+
+    private static RealtorBusinessInfoRowViewModel BuildBusinessInfoRow(
+        string key,
+        string label,
+        string value,
+        string icon,
+        string? editUrl,
+        string emptyLabel) =>
+        new()
+        {
+            Key = key,
+            Label = label,
+            Value = string.IsNullOrWhiteSpace(value) ? emptyLabel : value,
+            Icon = icon,
+            EditUrl = editUrl,
+            IsEmpty = string.IsNullOrWhiteSpace(value)
+        };
+
+    private static (string Badge, string Css) ResolveLicenseStatus(
+        IndorRealtor realtor,
+        bool hasLicensePhoto,
+        bool hasGovId,
+        bool hasLicense)
+    {
+        if (!hasLicense)
+        {
+            return ("Not provided", "is-incomplete");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified)
+        {
+            return ("Active", "is-active");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Basic)
+        {
+            return ("Active", "is-active");
+        }
+
+        if (hasLicensePhoto && hasGovId)
+        {
+            return ("Pending Review", "is-pending");
+        }
+
+        return ("Incomplete", "is-incomplete");
+    }
+
+    private static string FormatLanguagesLabel(string? languagesJson) =>
+        string.Join(", ", DeserializeStringList(languagesJson));
+
+    private static List<string> DeserializeStringList(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            var items = JsonSerializer.Deserialize<List<string>>(json);
+            return items?.Where(i => !string.IsNullOrWhiteSpace(i)).Select(i => i.Trim()).ToList() ?? [];
+        }
+        catch
+        {
+            return [];
+        }
+    }
+
+    private static string SerializeStringList(IReadOnlyList<string> items)
+    {
+        var normalized = items
+            .Where(i => !string.IsNullOrWhiteSpace(i))
+            .Select(i => i.Trim())
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return JsonSerializer.Serialize(normalized);
+    }
+
+    private static List<string> ParseLanguagesCsv(string? csv) =>
+        string.IsNullOrWhiteSpace(csv)
+            ? []
+            : csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+
+    private static string BuildOfficeLocationLabel(IndorRealtor entity)
+    {
+        var parts = new[]
+        {
+            entity.OfficeCity?.Trim(),
+            entity.OfficeState?.Trim(),
+            entity.OfficeZip?.Trim()
+        }.Where(p => !string.IsNullOrWhiteSpace(p));
+
+        var cityStateZip = string.Join(", ", parts);
+        if (!string.IsNullOrWhiteSpace(entity.OfficeAddress))
+        {
+            return string.IsNullOrWhiteSpace(cityStateZip)
+                ? entity.OfficeAddress.Trim()
+                : $"{entity.OfficeAddress.Trim()}, {cityStateZip}";
+        }
+
+        return cityStateZip;
     }
 }

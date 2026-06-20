@@ -1,0 +1,240 @@
+@model IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel
+@using System.Text.Json
+@{
+    var isMapView = Model.ActiveView == "map";
+    var mapConfigJson = isMapView && Model.HasGoogleMaps
+        ? JsonSerializer.Serialize(new
+        {
+            home = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
+            center = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
+            homeLabel = Model.MapCenterLabel,
+            propertyAddress = Model.PropertyAddress,
+            radiusMiles = Model.RadiusMiles,
+            activeFilter = Model.ActiveFilter,
+            carouselItems = Model.MapCarouselItems.Select(i => new
+            {
+                id = i.Id,
+                itemType = i.ItemType,
+                badgeLabel = i.BadgeLabel,
+                title = i.Title,
+                subtitle = i.Subtitle,
+                imageUrl = string.IsNullOrWhiteSpace(i.ImageUrl) ? null : Url.Content("~" + i.ImageUrl),
+                iconClass = i.IconClass,
+                latitude = i.Latitude,
+                longitude = i.Longitude,
+                distanceMiles = i.DistanceMiles,
+                metaLabel = i.MetaLabel,
+                tags = i.Tags,
+                isVerified = i.IsVerified,
+                primaryActionLabel = i.PrimaryActionLabel,
+                primaryActionUrl = i.PrimaryActionUrl,
+                secondaryActionLabel = i.SecondaryActionLabel,
+                secondaryActionUrl = i.SecondaryActionUrl
+            })
+        }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase })
+        : null;
+}
+
+<div class="hn-network @(isMapView ? "hn-network--map" : "")">
+    @{
+        ViewData["HomeViewSwitcherActive"] = "network";
+    }
+    @await Html.PartialAsync("_HomeViewSwitcher")
+
+    @if (isMapView)
+    {
+        <div class="hn-network-head hn-network-head--map">
+            <div class="hn-network-head-main">
+                <div>
+                    <h1 class="hn-page-title">@Model.PageTitle</h1>
+                    <p class="hn-page-subtitle"><i class="fas fa-location-dot"></i> @Model.RadiusLabel</p>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="hn-network-view-toggle @(isMapView ? "hn-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
+        <a asp-controller="Home"
+           asp-action="Index"
+           asp-route-view="map"
+           asp-route-filter="@Model.ActiveFilter"
+           asp-route-q="@Model.SearchQuery"
+           class="hn-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
+            <i class="fas fa-map"></i> Map
+        </a>
+        <a asp-controller="Home"
+           asp-action="Index"
+           asp-route-view="feed"
+           asp-route-filter="@Model.ActiveFilter"
+           asp-route-q="@Model.SearchQuery"
+           class="hn-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
+            <i class="fas fa-list"></i> Feed
+        </a>
+    </div>
+
+    @if (!Model.HasProperty)
+    {
+        <div class="hn-network-empty">
+            <i class="fas fa-house"></i>
+            <p>Add your home to explore the Nearby Network.</p>
+            <a asp-controller="Propietario" asp-action="AddProperty" class="hn-btn-primary">Add your home</a>
+        </div>
+    }
+    else if (isMapView)
+    {
+        <div class="hn-filter-chips hn-filter-chips--map hn-filter-chips--scroll">
+            @foreach (var chip in Model.Filters)
+            {
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   asp-route-filter="@chip.Value"
+                   asp-route-view="map"
+                   asp-route-q="@Model.SearchQuery"
+                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                    <i class="fas @chip.Icon"></i> @chip.Label
+                </a>
+            }
+        </div>
+
+        @if (Model.HasGoogleMaps)
+        {
+            <section class="hn-map-shell" aria-label="Nearby map">
+                <div id="hnNearbyNetworkMap" class="hn-map-canvas"></div>
+
+                <div class="hn-map-radius-badge" aria-hidden="true">@Model.RadiusMiles.ToString("0.#") mi</div>
+
+                <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="Recenter on your home">
+                    <i class="fas fa-location-arrow"></i>
+                </button>
+
+                <div class="hn-map-carousel-panel" id="hnMapCarouselPanel">
+                    <div class="hn-map-carousel-track" id="hnMapCarousel"></div>
+                    <div class="hn-map-carousel-dots" id="hnMapCarouselDots"></div>
+                </div>
+
+                <script type="application/json" id="hn-network-map-data">@Html.Raw(mapConfigJson)</script>
+            </section>
+
+            <div class="hn-privacy-banner hn-privacy-banner--map">
+                <i class="fas fa-lock"></i>
+                All communication happens in INDOR. No phone numbers shared.
+            </div>
+        }
+        else
+        {
+            <section class="hn-map-fallback" aria-label="Nearby map">
+                <div class="hn-map-stage">
+                    @foreach (var pin in Model.MapPins)
+                    {
+                        <button type="button"
+                                class="hn-map-pin hn-map-pin--@pin.PinType"
+                                style="top:@pin.TopPercent;left:@pin.LeftPercent"
+                                aria-label="@pin.Label"
+                                title="@pin.Label">
+                            <i class="fas @pin.IconClass"></i>
+                        </button>
+                    }
+                </div>
+            </section>
+        }
+    }
+    else
+    {
+        <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form">
+            <div class="hn-search-row">
+                <div class="hn-search-bar">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search in my neighborhood..." />
+                </div>
+                <input type="hidden" name="view" value="@Model.ActiveView" />
+                <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+            </div>
+        </form>
+
+        <div class="hn-filter-chips hn-filter-chips--scroll">
+            @foreach (var chip in Model.Filters)
+            {
+                <a asp-controller="Home"
+                   asp-action="Index"
+                   asp-route-filter="@chip.Value"
+                   asp-route-view="@Model.ActiveView"
+                   asp-route-q="@Model.SearchQuery"
+                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                    <i class="fas @chip.Icon"></i> @chip.Label
+                </a>
+            }
+        </div>
+
+        <section class="hn-quick-actions">
+            @foreach (var action in Model.QuickActions)
+            {
+                var isHash = action.Url.Contains('#');
+                if (isHash)
+                {
+                    var hash = action.Url[(action.Url.IndexOf('#') + 1)..];
+                    <button type="button" class="hn-quick-action nav-jump" data-target="@hash">
+                        <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
+                        <span class="hn-quick-action-label">@action.Label</span>
+                        @if (!string.IsNullOrWhiteSpace(action.Subtitle))
+                        {
+                            <span class="hn-quick-action-sub">@action.Subtitle</span>
+                        }
+                    </button>
+                }
+                else
+                {
+                    <a href="@action.Url" class="hn-quick-action">
+                        <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
+                        <span class="hn-quick-action-label">@action.Label</span>
+                        @if (!string.IsNullOrWhiteSpace(action.Subtitle))
+                        {
+                            <span class="hn-quick-action-sub">@action.Subtitle</span>
+                        }
+                    </a>
+                }
+            }
+        </section>
+
+        <section class="hn-network-feed">
+            @if (Model.FeedCards.Count == 0)
+            {
+                <div class="hn-feed-empty">No nearby items match your filters yet.</div>
+            }
+            else
+            {
+                @foreach (var card in Model.FeedCards)
+                {
+                    @await Html.PartialAsync("~/Views/Realtor/_RealtorNetworkFeedCard.cshtml", card)
+                }
+            }
+        </section>
+
+        <a href="@(Url.Action("Index", "Home") + "#section-services")" class="hn-emergency-banner nav-jump" data-target="section-services" data-scroll-target="emergency-services">
+            <span class="hn-emergency-banner-icon"><i class="fas fa-bell"></i></span>
+            <span class="hn-emergency-banner-copy">
+                <span class="hn-emergency-banner-badge">EMERGENCY</span>
+                <span class="hn-emergency-banner-title">Do you need urgent help?</span>
+                <span class="hn-emergency-banner-sub">Send an alert to certified providers in your area.</span>
+            </span>
+            <span class="hn-emergency-banner-arrow"><i class="fas fa-chevron-right"></i></span>
+        </a>
+
+        <div class="hn-privacy-banner">
+            <i class="fas fa-lock"></i>
+            All communication happens in INDOR. No phone numbers shared.
+        </div>
+    }
+</div>
+
+@if (isMapView && Model.HasGoogleMaps)
+{
+    <script src="@Url.Content("~/js/homeowner-nearby-network-map.js")" asp-append-version="true"></script>
+    <script>
+        window.setTimeout(function () {
+            if (!window.hnNearbyNetworkMapReady && window.google && window.google.maps && window.hnInitNearbyNetworkMap) {
+                window.hnInitNearbyNetworkMap();
+            }
+        }, 8000);
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&amp;loading=async&amp;callback=hnInitNearbyNetworkMap"></script>
+}

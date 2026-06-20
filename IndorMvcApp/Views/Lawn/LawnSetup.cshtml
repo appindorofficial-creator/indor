@@ -25,37 +25,37 @@
 
     @await Html.PartialAsync("_LawnStepper", 1)
 
-    <h2 class="page-heading" style="font-size:1.05rem;">Choose your lawn service</h2>
+    @if (Model.IsReminderOnly)
+    {
+        <div class="info-box-blue" style="margin-bottom:12px;">
+            <i class="fas fa-bell"></i>
+            <span>Reminder-only mode. You can still book the service later from your notification.</span>
+        </div>
+    }
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <form asp-action="LawnSetup" method="post" id="setupForm">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MicroservicioId" />
-        <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
         <input type="hidden" asp-for="Frecuencia" id="Frecuencia" />
         <input type="hidden" asp-for="AreaServicio" id="AreaServicio" />
+        <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" value="@Model.AddonsSeleccionados" />
         <input type="hidden" asp-for="EstimatedTotal" id="EstimatedTotal" />
 
         <div class="field-card">
-            <span class="field-label">Service type</span>
-            <div class="segment-group" id="typeGroup">
-                <button type="button" class="segment-btn" data-value="OneTime"><i class="fas fa-calendar-day"></i> One-time</button>
-                <button type="button" class="segment-btn" data-value="Subscription"><i class="fas fa-rotate"></i> Subscription</button>
-            </div>
-        </div>
-
-        <div class="field-card">
-            <span class="field-label">Frequency</span>
+            <span class="field-label"><i class="fas fa-calendar-day" style="color:#0066CC;margin-right:6px;"></i> How do you want it?</span>
             <div class="segment-group" id="freqGroup">
-                <button type="button" class="segment-btn" data-value="Weekly">Weekly</button>
-                <button type="button" class="segment-btn" data-value="Biweekly">Biweekly</button>
-                <button type="button" class="segment-btn" data-value="Monthly">Monthly</button>
+                @foreach (var freq in Model.FrequencyOptions)
+                {
+                    <button type="button" class="segment-btn" data-value="@freq.Code"><i class="fas @freq.Icon"></i> @freq.Label</button>
+                }
             </div>
+            <p class="field-hint">You can activate it as a recurring service or just as a reminder.</p>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Which area do you want serviced?</span>
+            <span class="field-label"><i class="fas fa-seedling" style="color:#0066CC;margin-right:6px;"></i> Area to service</span>
             <div class="area-grid" id="areaGroup">
                 @foreach (var area in Model.AreaOptions)
                 {
@@ -67,9 +67,17 @@
                     </button>
                 }
             </div>
-            <div class="info-box-blue" style="margin-top:12px;margin-bottom:0;">
-                <i class="fas fa-circle-info"></i>
-                <span>Pricing updates based on selected areas.</span>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label"><i class="fas fa-wand-magic-sparkles" style="color:#0066CC;margin-right:6px;"></i> Optional extras</span>
+            <div class="segment-group" id="addonGroup">
+                @foreach (var addon in Model.AddonOptions)
+                {
+                    <button type="button" class="segment-btn addon-pill @(addon.Selected ? "active" : "")" data-code="@addon.Code" data-price="@addon.Price" data-single="@(addon.Code == "NoThanks" ? "true" : "false")">
+                        @addon.Label
+                    </button>
+                }
             </div>
         </div>
 
@@ -78,7 +86,7 @@
                 <span class="label">Estimated total</span>
                 <span class="value" id="totalDisplay">$@Model.EstimatedTotal.ToString("0")</span>
             </div>
-            <button type="submit" name="action" value="continue" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+            <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
             <button type="submit" name="action" value="back" class="btn-outline">Back</button>
         </div>
     </form>
@@ -86,13 +94,15 @@
 <script>
     (function () {
         const discount = 10;
+        const addonsInput = document.getElementById('AddonsSeleccionados');
+        let selectedAddons = new Set((addonsInput.value || '').split('|').filter(Boolean));
 
         function initSingle(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
-            document.querySelectorAll('#' + groupId + ' .segment-btn, #' + groupId + ' .area-card').forEach(btn => {
+            document.querySelectorAll('#' + groupId + ' .segment-btn:not(.addon-pill), #' + groupId + ' .area-card').forEach(btn => {
                 if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
                 btn.addEventListener('click', () => {
-                    document.querySelectorAll('#' + groupId + ' .segment-btn, #' + groupId + ' .area-card').forEach(b => b.classList.remove('active'));
+                    document.querySelectorAll('#' + groupId + ' .segment-btn:not(.addon-pill), #' + groupId + ' .area-card').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
                     updateTotal();
@@ -100,16 +110,49 @@
             });
         }
 
+        document.querySelectorAll('#addonGroup .addon-pill').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.dataset.code;
+                if (btn.dataset.single === 'true') {
+                    selectedAddons = new Set([code]);
+                    document.querySelectorAll('#addonGroup .addon-pill').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                } else {
+                    selectedAddons.delete('NoThanks');
+                    document.querySelector('#addonGroup .addon-pill[data-code="NoThanks"]')?.classList.remove('active');
+                    if (selectedAddons.has(code)) {
+                        selectedAddons.delete(code);
+                        btn.classList.remove('active');
+                    } else {
+                        selectedAddons.add(code);
+                        btn.classList.add('active');
+                    }
+                    if (selectedAddons.size === 0) {
+                        selectedAddons.add('NoThanks');
+                        document.querySelector('#addonGroup .addon-pill[data-code="NoThanks"]')?.classList.add('active');
+                    }
+                }
+                addonsInput.value = Array.from(selectedAddons).join('|');
+                updateTotal();
+            });
+        });
+
         function updateTotal() {
-            const type = document.getElementById('TipoServicio').value;
+            const freq = document.getElementById('Frecuencia').value;
             const activeArea = document.querySelector('#areaGroup .area-card.active');
             const base = activeArea ? parseFloat(activeArea.dataset.price || '45') : 45;
-            const total = Math.max(0, base - (type === 'Subscription' ? discount : 0));
+            let addons = 0;
+            selectedAddons.forEach(code => {
+                if (code === 'NoThanks') return;
+                const btn = document.querySelector('#addonGroup .addon-pill[data-code="' + code + '"]');
+                addons += btn ? parseFloat(btn.dataset.price || '0') : 0;
+            });
+            const recurring = freq !== 'Once';
+            const total = Math.max(0, base + addons - (recurring ? discount : 0));
             document.getElementById('EstimatedTotal').value = total;
             document.getElementById('totalDisplay').textContent = '$' + total;
         }
 
-        initSingle('typeGroup', 'TipoServicio', '@Model.TipoServicio');
         initSingle('freqGroup', 'Frecuencia', '@Model.Frecuencia');
         initSingle('areaGroup', 'AreaServicio', '@Model.AreaServicio');
         updateTotal();

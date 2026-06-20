@@ -1,26 +1,55 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionPrioritiesViewModel
-@using IndorMvcApp.Models
+
+<h2 class="rl-insp-page-address">@Model.PropertyDisplay</h2>
+
+@if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
+{
+    var pdfUrl = string.IsNullOrWhiteSpace(Model.ReportPdfUrl) ? null : Url.Content($"~{Model.ReportPdfUrl}");
+    if (pdfUrl != null)
+    {
+        <a href="@pdfUrl" target="_blank" rel="noopener" class="rl-insp-report-link">
+            <i class="fas fa-file-pdf"></i>
+            <span>@Model.ReportFileName</span>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    }
+    else
+    {
+        <p class="rl-insp-report-link rl-insp-report-link--static">
+            <i class="fas fa-file-pdf"></i>
+            <span>@Model.ReportFileName</span>
+        </p>
+    }
+}
 
 <div class="rl-insp-findings-hero">
     <div class="rl-insp-findings-hero-glow" aria-hidden="true"></div>
     <div class="rl-insp-findings-hero-inner">
-        <span class="rl-insp-findings-badge"><i class="fas fa-wand-magic-sparkles"></i> AI Analysis Complete</span>
-        <h2 class="rl-insp-findings-property">@Model.PropertyDisplay</h2>
-        <p class="rl-insp-findings-report">
-            <i class="fas fa-file-pdf"></i>
-            @if (!string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
-            {
-                <a href="@Url.Content($"~{Model.ReportPdfUrl}")" target="_blank" rel="noopener">@Model.ReportFileName</a>
-            }
-            else
-            {
-                @Model.ReportFileName
-            }
-        </p>
+        <div class="rl-insp-findings-hero-top">
+            <span class="rl-insp-findings-badge"><i class="fas fa-wand-magic-sparkles"></i> AI Analysis Complete</span>
+            <span class="rl-insp-findings-hero-icon" aria-hidden="true"><i class="fas fa-house-circle-check"></i></span>
+        </div>
         @if (!string.IsNullOrWhiteSpace(Model.AnalysisSummary))
         {
             <p class="rl-insp-findings-summary">@Model.AnalysisSummary</p>
         }
+        <div class="rl-insp-findings-meta">
+            <div class="rl-insp-findings-meta-item">
+                <i class="fas fa-calendar"></i>
+                <small>Report date</small>
+                <strong>@Model.ReportDateLabel</strong>
+            </div>
+            <div class="rl-insp-findings-meta-item">
+                <i class="fas fa-user-tie"></i>
+                <small>Inspector</small>
+                <strong>@Model.InspectorLabel</strong>
+            </div>
+            <div class="rl-insp-findings-meta-item">
+                <i class="fas fa-wand-magic-sparkles"></i>
+                <small>Analyzed</small>
+                <strong>@Model.AnalyzedLabel</strong>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -56,7 +85,7 @@
             </a>
         }
     </div>
-    <select name="sort" class="rl-field-select" onchange="this.form.submit()">
+    <select name="sort" class="rl-field-select rl-field-select--full" onchange="this.form.submit()">
         <option value="Priority" selected="@(Model.SortBy == "Priority")">By urgency</option>
         <option value="Trade" selected="@(Model.SortBy == "Trade")">By trade</option>
         <option value="Score" selected="@(Model.SortBy == "Score")">By AI score</option>
@@ -76,7 +105,7 @@ else
         @Html.AntiForgeryToken()
 
         <div class="rl-insp-select-bar">
-            <span id="inspSelectedCount">@Model.Findings.Count(f => f.IsSelected) selected</span>
+            <span id="inspSelectedCount">@Model.TotalFindings issue@(Model.TotalFindings == 1 ? "" : "s") found</span>
             <div class="rl-insp-select-actions">
                 <button type="button" class="rl-insp-link-btn" id="inspSelectAll">Select all</button>
                 <button type="button" class="rl-insp-link-btn" id="inspClearAll">Clear</button>
@@ -84,95 +113,122 @@ else
         </div>
 
         <div class="rl-insp-findings-list">
-            @{
-                var priorityGroups = Model.Findings
-                    .GroupBy(f => f.Priority)
-                    .OrderByDescending(g => g.Key switch
-                    {
-                        RealtorInspectionFindingPriorities.Urgent => 3,
-                        RealtorInspectionFindingPriorities.High => 2,
-                        _ => 1
-                    });
-            }
-            @foreach (var group in priorityGroups)
+            @foreach (var finding in Model.Findings)
             {
-                <section class="rl-insp-priority-group rl-insp-priority-group--@group.Key.ToLowerInvariant()">
-                    <header class="rl-insp-priority-head">
-                        <span class="rl-insp-priority-icon">
-                            <i class="fas @(group.Key == RealtorInspectionFindingPriorities.Urgent ? "fa-circle-exclamation"
-                                : group.Key == RealtorInspectionFindingPriorities.High ? "fa-arrow-trend-up" : "fa-circle-info")"></i>
-                        </span>
-                        <div>
-                            <h3>@group.Key priority</h3>
-                            <p>@group.Count() issue@(group.Count() == 1 ? "" : "s") — @(group.Key switch
-                            {
-                                RealtorInspectionFindingPriorities.Urgent => "Address immediately",
-                                RealtorInspectionFindingPriorities.High => "Repair soon",
-                                _ => "Plan maintenance"
-                            })</p>
-                        </div>
-                    </header>
+                var pdfUrl = string.IsNullOrWhiteSpace(Model.ReportPdfUrl) ? null : Url.Content($"~{Model.ReportPdfUrl}");
+                var pageLink = finding.SourcePage is > 0 && pdfUrl != null
+                    ? $"{pdfUrl}#page={finding.SourcePage}"
+                    : pdfUrl;
 
-                    @foreach (var finding in group)
-                    {
-                        <label class="rl-insp-finding-card @(finding.IsSelected ? "is-selected" : "")">
-                            <input type="checkbox" name="selectedFindingIds" value="@finding.Id" @(finding.IsSelected ? "checked" : null) />
-                            <span class="rl-insp-finding-priority rl-insp-finding-priority--@finding.PriorityCss">@finding.Priority</span>
-                            <div class="rl-insp-finding-main">
-                                <div class="rl-insp-finding-top">
-                                    <strong>@finding.Title</strong>
-                                    <span class="rl-insp-ai-score" title="AI urgency score">
-                                        <i class="fas fa-gauge-high"></i> @finding.AiScore
-                                    </span>
-                                </div>
-                                @if (!string.IsNullOrWhiteSpace(finding.Description))
+                <label class="rl-insp-finding-card rl-insp-finding-card--@finding.PriorityCss">
+                    <input type="checkbox" name="selectedFindingIds" value="@finding.Id" />
+
+                    <div class="rl-insp-finding-card-head">
+                        <span class="rl-insp-finding-alert rl-insp-finding-alert--@finding.PriorityCss">
+                            <i class="fas fa-circle-exclamation"></i>
+                        </span>
+                        <div class="rl-insp-finding-head-copy">
+                            <strong>@finding.Title</strong>
+                            <div class="rl-insp-finding-badges">
+                                @if (!string.IsNullOrWhiteSpace(finding.SourceSectionNumber))
                                 {
-                                    <p class="rl-insp-finding-desc">@finding.Description</p>
+                                    <span class="rl-insp-section-index" title="Report index">@finding.SourceSectionNumber</span>
                                 }
-                                @if (!string.IsNullOrWhiteSpace(finding.ReportReference) || !string.IsNullOrWhiteSpace(finding.SourceExcerpt))
+                                <span class="rl-priority-tag rl-priority-tag--@finding.PriorityCss">@finding.Priority.ToUpperInvariant()</span>
+                                <span class="rl-insp-ai-score"><i class="fas fa-check"></i> @finding.AiScore</span>
+                            </div>
+                        </div>
+                        <span class="rl-insp-finding-check"><i class="fas fa-check"></i></span>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(finding.Description))
+                    {
+                        <p class="rl-insp-finding-desc">@finding.Description</p>
+                    }
+
+                    @if (!string.IsNullOrWhiteSpace(finding.SourceExcerpt)
+                         || finding.SourcePage is > 0
+                         || !string.IsNullOrWhiteSpace(finding.SourceSection)
+                         || !string.IsNullOrWhiteSpace(finding.SourceSectionNumber))
+                    {
+                        <div class="rl-insp-report-source">
+                            <h4>Found in Inspection Report</h4>
+
+                            <div class="rl-insp-report-grid">
+                                @if (!string.IsNullOrWhiteSpace(finding.SourceSectionNumber))
                                 {
-                                    <div class="rl-insp-finding-excerpt">
-                                        <div class="rl-insp-finding-excerpt-head">
-                                            <span><i class="fas fa-bookmark"></i> Report location</span>
-                                            @if (!string.IsNullOrWhiteSpace(finding.ReportReference))
-                                            {
-                                                <span class="rl-insp-finding-page">@finding.ReportReference</span>
-                                            }
-                                        </div>
-                                        @if (!string.IsNullOrWhiteSpace(finding.SourceSection) || finding.SourcePage is > 0)
-                                        {
-                                            <p class="rl-insp-finding-ref-hint">
-                                                Open the inspection PDF
-                                                @if (!string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
-                                                {
-                                                    <a href="@Url.Content($"~{Model.ReportPdfUrl}")" target="_blank" rel="noopener">here</a>
-                                                }
-                                                at this section and page to view the inspector's photos and notes.
-                                            </p>
-                                        }
-                                        @if (!string.IsNullOrWhiteSpace(finding.SourceExcerpt))
-                                        {
-                                            <div class="rl-insp-finding-quote-label"><i class="fas fa-file-lines"></i> Inspector wording</div>
-                                            <blockquote class="rl-insp-finding-quote">@finding.SourceExcerpt</blockquote>
-                                        }
+                                    <div class="rl-insp-report-field rl-insp-report-field--index">
+                                        <i class="fas fa-list-ol"></i>
+                                        <span><small>Report index</small><strong>@finding.SourceSectionNumber</strong></span>
                                     </div>
                                 }
-                                <div class="rl-insp-finding-meta">
-                                    <span class="rl-trade-chip rl-trade-chip--@finding.TradeCss">
-                                        <i class="fas @finding.TradeIcon"></i> @finding.TradeLabel
-                                    </span>
+                                <div class="rl-insp-report-field">
+                                    <i class="fas fa-calendar"></i>
+                                    <span><small>Report date</small><strong>@Model.ReportDateLabel</strong></span>
                                 </div>
+                                @if (finding.SourcePage is > 0)
+                                {
+                                    <div class="rl-insp-report-field">
+                                        <i class="fas fa-file-lines"></i>
+                                        <span><small>Page</small><strong>@finding.SourcePage</strong></span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(finding.TradeLabel))
+                                {
+                                    <div class="rl-insp-report-field">
+                                        <i class="fas fa-layer-group"></i>
+                                        <span><small>Section</small><strong>@finding.TradeLabel</strong></span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(finding.SourceSection))
+                                {
+                                    <div class="rl-insp-report-field">
+                                        <i class="fas fa-bookmark"></i>
+                                        <span><small>Subsection</small><strong>@finding.SourceSection</strong></span>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrWhiteSpace(finding.SourceLineItem))
+                                {
+                                    <div class="rl-insp-report-field rl-insp-report-field--wide">
+                                        <i class="fas fa-list-ul"></i>
+                                        <span><small>Line / Item</small><strong>@finding.SourceLineItem</strong></span>
+                                    </div>
+                                }
                             </div>
-                            <span class="rl-insp-finding-check"><i class="fas fa-check"></i></span>
-                        </label>
+
+                            @if (!string.IsNullOrWhiteSpace(finding.SourceExcerpt))
+                            {
+                                <div class="rl-insp-inspector-wording">
+                                    <span class="rl-insp-inspector-wording-label"><i class="fas fa-quote-left"></i> Inspector wording</span>
+                                    <blockquote class="rl-insp-finding-quote">@finding.SourceExcerpt</blockquote>
+                                </div>
+                            }
+
+                            @if (finding.SourcePage is > 0 && pageLink != null)
+                            {
+                                <a href="@pageLink" target="_blank" rel="noopener" class="rl-insp-open-page-btn">
+                                    <i class="fas fa-file-pdf"></i>
+                                    Open report page @finding.SourcePage
+                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                </a>
+                            }
+
+                            <p class="rl-insp-source-confirmed"><i class="fas fa-circle-check"></i> Source confirmed from report PDF</p>
+                        </div>
                     }
-                </section>
+
+                    <div class="rl-insp-finding-meta">
+                        <span class="rl-trade-chip rl-trade-chip--@finding.TradeCss">
+                            <i class="fas @finding.TradeIcon"></i> @finding.TradeLabel
+                        </span>
+                    </div>
+                </label>
             }
         </div>
 
         <div class="rl-info-box">
             <i class="fas fa-circle-info"></i>
-            <p>Uncheck any issue you don't want to include. Selected findings will be grouped by trade and sent to matching INDOR providers.</p>
+            <p>Select the issues you want to include. Only checked findings will be grouped by trade and sent to matching INDOR providers.</p>
         </div>
 
         <div class="rl-insp-sticky-actions">
@@ -200,10 +256,15 @@ else
         const checkboxes = form.querySelectorAll('input[name="selectedFindingIds"]');
         const countEl = document.getElementById('inspSelectedCount');
         const sendBtn = document.getElementById('inspSendProvidersBtn');
+        const totalIssues = @Model.TotalFindings;
 
         function updateUi() {
             const selected = Array.from(checkboxes).filter(c => c.checked).length;
-            if (countEl) countEl.textContent = selected + ' selected';
+            if (countEl) {
+                countEl.textContent = selected === 0
+                    ? totalIssues + ' issue' + (totalIssues === 1 ? '' : 's') + ' found — tap to select'
+                    : selected + ' of ' + totalIssues + ' selected';
+            }
             checkboxes.forEach(cb => {
                 cb.closest('.rl-insp-finding-card')?.classList.toggle('is-selected', cb.checked);
             });

@@ -1,0 +1,62 @@
+@model IndorMvcApp.ViewModels.NeighborRequestListViewModel
+@{
+    ViewData["Title"] = "My Requests";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>My Requests - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
+</head>
+<body class="nr-wizard-page">
+    <div class="nr-wizard-shell">
+        <header class="nr-wizard-top">
+            <a asp-controller="Home" asp-action="Index" class="nr-wizard-nav-btn"><i class="fas fa-arrow-left"></i></a>
+            <strong class="nr-wizard-top-title">My Requests</strong>
+            <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
+        </header>
+
+        <div class="nr-tabs">
+            <a asp-action="Mine" asp-route-propiedadId="@Model.PropiedadId" asp-route-tab="Active"
+               class="nr-tab @(Model.ActiveTab == "Active" ? "is-active" : null)">Active</a>
+            <a asp-action="Mine" asp-route-propiedadId="@Model.PropiedadId" asp-route-tab="InProgress"
+               class="nr-tab @(Model.ActiveTab == "InProgress" ? "is-active" : null)">In progress</a>
+            <a asp-action="Mine" asp-route-propiedadId="@Model.PropiedadId" asp-route-tab="Completed"
+               class="nr-tab @(Model.ActiveTab == "Completed" ? "is-active" : null)">Completed</a>
+        </div>
+
+        @if (Model.Items.Count == 0)
+        {
+            <div class="nr-empty">
+                <p>No requests in this tab yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="nr-request-list">
+                @foreach (var item in Model.Items)
+                {
+                    <a href="@item.DetailUrl" class="nr-request-item">
+                        <span class="nr-request-icon"><i class="fas @item.IconClass"></i></span>
+                        <span class="nr-request-body">
+                            <strong>@item.Title</strong>
+                            <span>@item.CategoryLabel</span>
+                            <span>@item.PostedLabel</span>
+                        </span>
+                        <span class="nr-offer-badge">@item.OfferCountLabel</span>
+                    </a>
+                }
+            </div>
+        }
+
+        <a asp-action="Create" asp-route-propiedadId="@Model.PropiedadId" class="nr-btn-outline">
+            <i class="fas fa-plus"></i>&nbsp; Post a new request
+        </a>
+    </div>
+</body>
+</html>

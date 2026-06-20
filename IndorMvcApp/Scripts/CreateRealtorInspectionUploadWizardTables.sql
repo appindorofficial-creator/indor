@@ -44,7 +44,7 @@ BEGIN
         AiScore         INT            NOT NULL CONSTRAINT DF_IndorInspFinding_Score DEFAULT (80),
         ImageUrl        NVARCHAR(500)  NULL,
         SortOrder       INT            NOT NULL CONSTRAINT DF_IndorInspFinding_Sort DEFAULT (0),
-        IsSelected      BIT            NOT NULL CONSTRAINT DF_IndorInspFinding_Selected DEFAULT (1),
+        IsSelected      BIT            NOT NULL CONSTRAINT DF_IndorInspFinding_Selected DEFAULT (0),
         CONSTRAINT PK_IndorRealtorInspectionUploadFindings PRIMARY KEY CLUSTERED (Id),
         CONSTRAINT FK_IndorInspFinding_Draft FOREIGN KEY (DraftId) REFERENCES dbo.IndorRealtorInspectionUploadDrafts(Id) ON DELETE CASCADE
     );

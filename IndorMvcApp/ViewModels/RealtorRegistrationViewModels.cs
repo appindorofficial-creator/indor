@@ -6,6 +6,8 @@ public class RealtorRegistrationState
     public string LicenseNumber { get; set; } = "";
     public string LicenseState { get; set; } = "";
     public string ServiceAreas { get; set; } = "";
+    public string OfficeAddress { get; set; } = "";
+    public string Languages { get; set; } = "";
     public bool ProfessionalTermsAccepted { get; set; }
     public bool VerificationSkipped { get; set; }
     public string DisplayName { get; set; } = "";

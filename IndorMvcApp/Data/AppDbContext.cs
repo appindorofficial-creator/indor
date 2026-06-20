@@ -100,6 +100,7 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<ArchivoSafeAir> ArchivosSafeAir { get; set; }
     public DbSet<LawnServicioLanding> LawnServicioLanding { get; set; }
     public DbSet<SolicitudLawn> SolicitudesLawn { get; set; }
+    public DbSet<LawnCatalogOption> LawnCatalogOptions { get; set; }
     public DbSet<TrashServicioLanding> TrashServicioLanding { get; set; }
     public DbSet<SolicitudTrash> SolicitudesTrash { get; set; }
     public DbSet<CleaningProServicioLanding> CleaningProServicioLanding { get; set; }
@@ -181,6 +182,10 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorRealtorSharedQuote> IndorRealtorSharedQuotes { get; set; }
     public DbSet<IndorNearbyNetworkSetting> IndorNearbyNetworkSettings { get; set; }
     public DbSet<IndorNearbyNetworkItem> IndorNearbyNetworkItems { get; set; }
+    public DbSet<IndorNeighborRequest> IndorNeighborRequests { get; set; }
+    public DbSet<IndorNeighborRequestCategory> IndorNeighborRequestCategories { get; set; }
+    public DbSet<IndorNeighborRequestPhoto> IndorNeighborRequestPhotos { get; set; }
+    public DbSet<IndorNeighborRequestOffer> IndorNeighborRequestOffers { get; set; }
 
     // Agrega más DbSets según necesites:
     // public DbSet<Usuario> Usuarios { get; set; }
@@ -758,6 +763,15 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                   .OnDelete(DeleteBehavior.SetNull);
         });
 
+        modelBuilder.Entity<LawnCatalogOption>(entity =>
+        {
+            entity.Property(o => o.Price).HasColumnType("decimal(10,2)");
+            entity.HasOne(o => o.Microservicio)
+                  .WithMany()
+                  .HasForeignKey(o => o.MicroservicioId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
         modelBuilder.Entity<TrashServicioLanding>(entity =>
         {
             entity.HasOne(l => l.Microservicio)
@@ -1146,6 +1160,34 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
                   .WithMany()
                   .HasForeignKey(e => e.RelatedClientId)
                   .OnDelete(DeleteBehavior.NoAction);
+        });
+
+        modelBuilder.Entity<IndorNeighborRequest>(entity =>
+        {
+            entity.HasOne(e => e.Propiedad)
+                  .WithMany()
+                  .HasForeignKey(e => e.PropiedadId)
+                  .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(e => e.Category)
+                  .WithMany()
+                  .HasForeignKey(e => e.CategoryId)
+                  .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<IndorNeighborRequestPhoto>(entity =>
+        {
+            entity.HasOne(e => e.Request)
+                  .WithMany(r => r.Photos)
+                  .HasForeignKey(e => e.RequestId)
+                  .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        modelBuilder.Entity<IndorNeighborRequestOffer>(entity =>
+        {
+            entity.HasOne(e => e.Request)
+                  .WithMany(r => r.Offers)
+                  .HasForeignKey(e => e.RequestId)
+                  .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

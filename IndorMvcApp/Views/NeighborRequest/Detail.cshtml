@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.NeighborRequestDetailViewModel
+@{
+    ViewData["Title"] = "Request details";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Request details - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
+</head>
+<body class="nr-wizard-page">
+    <div class="nr-wizard-shell">
+        <header class="nr-wizard-top">
+            <a asp-action="Mine" asp-route-propiedadId="@Model.PropiedadId" class="nr-wizard-nav-btn"><i class="fas fa-arrow-left"></i></a>
+            <strong class="nr-wizard-top-title">Request details</strong>
+            <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
+        </header>
+
+        <article class="nr-detail-hero">
+            <div class="nr-detail-head">
+                <span class="nr-request-icon"><i class="fas @Model.IconClass"></i></span>
+                <div class="nr-request-body">
+                    <strong>@Model.Title</strong>
+                    <span>@Model.PostedLabel</span>
+                    <span><i class="fas fa-location-dot"></i> @Model.LocationAddress</span>
+                </div>
+                <span class="nr-status-pill">@Model.StatusLabel</span>
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p style="margin:14px 0 0;color:#475569;font-size:.88rem;line-height:1.5;">@Model.Description</p>
+            }
+            @if (Model.PhotoUrls.Count > 0)
+            {
+                <div class="nr-photo-preview">
+                    @foreach (var photo in Model.PhotoUrls)
+                    {
+                        <img src="@Url.Content("~" + photo)" alt="" />
+                    }
+                </div>
+            }
+        </article>
+
+        <h2 style="font-size:1rem;margin:0 0 12px;">@Model.OfferCountLabel</h2>
+
+        @if (Model.Offers.Count == 0)
+        {
+            <div class="nr-empty">
+                <p>No offers yet. Your request is visible in the Nearby Network feed.</p>
+            </div>
+        }
+        else
+        {
+            <div class="nr-offer-list">
+                @foreach (var offer in Model.Offers)
+                {
+                    <article class="nr-offer-card">
+                        @if (!string.IsNullOrWhiteSpace(offer.OffererPhotoUrl))
+                        {
+                            <img class="nr-offer-avatar" src="@Url.Content("~" + offer.OffererPhotoUrl)" alt="" />
+                        }
+                        else
+                        {
+                            <span class="nr-request-icon"><i class="fas fa-user"></i></span>
+                        }
+                        <div class="nr-offer-body">
+                            <strong>@offer.OffererName</strong>
+                            <div class="nr-offer-meta">@offer.MetaLabel</div>
+                            @if (!string.IsNullOrWhiteSpace(offer.Message))
+                            {
+                                <p style="margin:8px 0 0;font-size:.82rem;color:#475569;">@offer.Message</p>
+                            }
+                        </div>
+                        @if (!string.IsNullOrWhiteSpace(offer.PriceLabel))
+                        {
+                            <div class="nr-offer-price">@offer.PriceLabel</div>
+                        }
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</body>
+</html>

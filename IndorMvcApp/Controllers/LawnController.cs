@@ -1,44 +1,38 @@
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Controllers;
 
 [Authorize]
-public class LawnController : Controller
+public class LawnController(
+    AppDbContext db,
+    UserManager<ApplicationUser> userManager,
+    LawnCatalogService catalog) : Controller
 {
-    private readonly AppDbContext _db;
-    private readonly UserManager<ApplicationUser> _userManager;
-
-    public LawnController(AppDbContext db, UserManager<ApplicationUser> userManager)
-    {
-        _db = db;
-        _userManager = userManager;
-    }
-
     [HttpGet]
-    public async Task<IActionResult> LawnService(int id)
+    public async Task<IActionResult> LawnService(int id, CancellationToken ct)
     {
-        var bundle = await LoadLandingBundleAsync(id);
+        var bundle = await LoadLandingBundleAsync(id, ct);
         if (bundle == null) return NotFound();
 
         var userId = RequireUserId();
         if (userId == null) return Challenge();
 
-        var existing = await GetActiveSolicitudAsync(userId, id);
-        return View(BuildServiceViewModel(bundle.Value.Microservicio, bundle.Value.Landing, existing));
+        var existing = await GetActiveSolicitudAsync(userId, id, ct);
+        return View(await BuildServiceViewModelAsync(bundle.Value.Microservicio, bundle.Value.Landing, existing, ct));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LawnService(LawnServiceViewModel model, string? action)
+    public async Task<IActionResult> LawnService(LawnServiceViewModel model, string? action, CancellationToken ct)
     {
-        var bundle = await LoadLandingBundleAsync(model.MicroservicioId);
+        var bundle = await LoadLandingBundleAsync(model.MicroservicioId, ct);
         if (bundle == null) return NotFound();
 
         var userId = RequireUserId();
@@ -46,47 +40,51 @@ public class LawnController : Controller
 
         if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
         {
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "Home", null, "home-care-essentials");
         }
 
         try
         {
-            var propiedadId = await GetLatestPropertyIdAsync(userId);
+            var propiedadId = await GetLatestPropertyIdAsync(userId, ct);
             var propiedad = propiedadId.HasValue
-                ? await _db.Propiedades.AsNoTracking().FirstOrDefaultAsync(p => p.Id == propiedadId)
+                ? await db.Propiedades.AsNoTracking().FirstOrDefaultAsync(p => p.Id == propiedadId, ct)
                 : null;
 
-            var solicitud = await GetOrCreateSolicitudAsync(userId, model.MicroservicioId, model.SolicitudId);
+            var solicitud = await GetOrCreateSolicitudAsync(userId, model.MicroservicioId, model.SolicitudId, ct);
             solicitud.PropiedadId = propiedadId;
             solicitud.DireccionPropiedad = propiedad?.Direccion;
+            solicitud.ModoServicio = string.Equals(action, "remindOnly", StringComparison.OrdinalIgnoreCase)
+                ? LawnServiceModes.ReminderOnly
+                : LawnServiceModes.FullService;
+            solicitud.RecordatorioActivo = model.RecordatorioActivo;
             solicitud.Estado = "InProgress";
             solicitud.FechaActualizacion = DateTime.Now;
 
-            await _db.SaveChangesAsync();
+            await db.SaveChangesAsync(ct);
             return RedirectToAction(nameof(LawnSetup), new { id = solicitud.Id });
         }
         catch (Exception)
         {
             ModelState.AddModelError("",
                 "Could not start your lawn service request. Please ensure the lawn flow tables exist in the database and try again.");
-            return View(BuildServiceViewModel(bundle.Value.Microservicio, bundle.Value.Landing, null, model));
+            return View(await BuildServiceViewModelAsync(bundle.Value.Microservicio, bundle.Value.Landing, null, ct, model));
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> LawnSetup(int id)
+    public async Task<IActionResult> LawnSetup(int id, CancellationToken ct)
     {
-        var solicitud = await LoadSolicitudForUserAsync(id);
+        var solicitud = await LoadSolicitudForUserAsync(id, ct);
         if (solicitud == null) return NotFound();
 
-        return View(BuildSetupViewModel(solicitud));
+        return View(await BuildSetupViewModelAsync(solicitud, ct));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LawnSetup(LawnSetupViewModel model, string? action)
+    public async Task<IActionResult> LawnSetup(LawnSetupViewModel model, string? action, CancellationToken ct)
     {
-        var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId);
+        var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId, ct);
         if (solicitud == null) return NotFound();
 
         if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
@@ -94,113 +92,67 @@ public class LawnController : Controller
             return RedirectToAction(nameof(LawnService), new { id = solicitud.MicroservicioId });
         }
 
+        model.AddonsSeleccionados ??= string.Empty;
+        ModelState.Remove(nameof(model.AddonsSeleccionados));
+
         if (!ModelState.IsValid)
         {
-            model.AreaOptions = BuildAreaCards(model.AreaServicio);
-            model.EstimatedTotal = LawnPricingService.CalculateTotal(model.TipoServicio, model.AreaServicio, solicitud.AddonsSeleccionados);
-            return View(model);
+            return View(await BuildSetupViewModelAsync(solicitud, ct, model));
         }
 
         try
         {
-            solicitud.TipoServicio = model.TipoServicio;
             solicitud.Frecuencia = model.Frecuencia;
+            solicitud.TipoServicio = LawnCatalogService.MapFrequencyToServiceType(model.Frecuencia);
             solicitud.AreaServicio = model.AreaServicio;
-            solicitud.PrecioBase = LawnPricingService.GetBasePrice(model.AreaServicio);
-            solicitud.PrecioAddons = LawnPricingService.GetAddonsTotal(solicitud.AddonsSeleccionados);
-            solicitud.DescuentoSuscripcion = LawnPricingService.GetSubscriptionDiscount(model.TipoServicio);
-            solicitud.PrecioTotal = LawnPricingService.CalculateTotal(model.TipoServicio, model.AreaServicio, solicitud.AddonsSeleccionados);
+            solicitud.AddonsSeleccionados = NormalizeAddons(model.AddonsSeleccionados);
+            solicitud.PrecioBase = await catalog.GetBasePriceAsync(solicitud.MicroservicioId, model.AreaServicio, ct);
+            solicitud.PrecioAddons = await catalog.GetAddonsTotalAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct);
+            solicitud.DescuentoSuscripcion = await catalog.GetSubscriptionDiscountAsync(model.Frecuencia);
+            solicitud.PrecioTotal = await catalog.CalculateTotalAsync(
+                solicitud.MicroservicioId, model.Frecuencia, model.AreaServicio, solicitud.AddonsSeleccionados, ct);
             solicitud.Estado = "SetupCompleted";
             solicitud.FechaActualizacion = DateTime.Now;
 
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(LawnAddons), new { id = solicitud.Id });
+            await db.SaveChangesAsync(ct);
+            return RedirectToAction(nameof(LawnSchedule), new { id = solicitud.Id });
         }
         catch (Exception)
         {
             ModelState.AddModelError("",
                 "Could not save your lawn setup. Please ensure the lawn flow tables exist in the database and try again.");
-            model.AreaOptions = BuildAreaCards(model.AreaServicio);
-            return View(model);
+            return View(await BuildSetupViewModelAsync(solicitud, ct, model));
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> LawnAddons(int id)
+    public async Task<IActionResult> LawnAddons(int id, CancellationToken ct) =>
+        RedirectToAction(nameof(LawnSetup), new { id });
+
+    [HttpGet]
+    public async Task<IActionResult> LawnSchedule(int id, CancellationToken ct)
     {
-        var solicitud = await LoadSolicitudForUserAsync(id);
+        var solicitud = await LoadSolicitudForUserAsync(id, ct);
         if (solicitud == null) return NotFound();
 
-        return View(BuildAddonsViewModel(solicitud));
+        if (solicitud.Estado is not ("SetupCompleted" or "ScheduleCompleted"))
+        {
+            return RedirectToAction(nameof(LawnSetup), new { id });
+        }
+
+        return View(await BuildScheduleViewModelAsync(solicitud, ct));
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LawnAddons(LawnAddonsViewModel model, string? action)
+    public async Task<IActionResult> LawnSchedule(LawnScheduleViewModel model, string? action, CancellationToken ct)
     {
-        var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId);
+        var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId, ct);
         if (solicitud == null) return NotFound();
 
         if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
         {
             return RedirectToAction(nameof(LawnSetup), new { id = solicitud.Id });
-        }
-
-        model.AddonsSeleccionados ??= string.Empty;
-        if (string.IsNullOrWhiteSpace(model.PreferenciaExtra))
-        {
-            model.PreferenciaExtra = "NoThanks";
-        }
-
-        ModelState.Remove(nameof(model.AddonsSeleccionados));
-        ModelState.Remove(nameof(model.PreferenciaExtra));
-
-        if (!ModelState.IsValid)
-        {
-            return View(BuildAddonsViewModel(solicitud, model));
-        }
-
-        try
-        {
-            solicitud.AddonsSeleccionados = model.AddonsSeleccionados;
-            solicitud.PreferenciaExtra = model.PreferenciaExtra;
-            solicitud.PrecioAddons = LawnPricingService.GetAddonsTotal(model.AddonsSeleccionados);
-            solicitud.DescuentoSuscripcion = LawnPricingService.GetSubscriptionDiscount(solicitud.TipoServicio);
-            solicitud.PrecioTotal = LawnPricingService.CalculateTotal(
-                solicitud.TipoServicio, solicitud.AreaServicio, model.AddonsSeleccionados);
-            solicitud.Estado = "AddonsCompleted";
-            solicitud.FechaActualizacion = DateTime.Now;
-
-            await _db.SaveChangesAsync();
-            return RedirectToAction(nameof(LawnReview), new { id = solicitud.Id });
-        }
-        catch (Exception)
-        {
-            ModelState.AddModelError("",
-                "Could not save add-ons. Please ensure the lawn flow tables exist in the database and try again.");
-            return View(BuildAddonsViewModel(solicitud, model));
-        }
-    }
-
-    [HttpGet]
-    public async Task<IActionResult> LawnReview(int id)
-    {
-        var solicitud = await LoadSolicitudForUserAsync(id);
-        if (solicitud == null) return NotFound();
-
-        return View(await BuildReviewViewModelAsync(solicitud));
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> LawnReview(LawnReviewViewModel model, string? action)
-    {
-        var solicitud = await LoadSolicitudForUserAsync(model.SolicitudId);
-        if (solicitud == null) return NotFound();
-
-        if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
-        {
-            return RedirectToAction(nameof(LawnAddons), new { id = solicitud.Id });
         }
 
         if (model.FechaPreferida.Date < DateTime.Today)
@@ -210,22 +162,73 @@ public class LawnController : Controller
 
         if (!ModelState.IsValid)
         {
-            var review = await BuildReviewViewModelAsync(solicitud);
-            review.FechaPreferida = model.FechaPreferida;
-            review.VentanaHorario = model.VentanaHorario;
-            return View(review);
+            return View(await BuildScheduleViewModelAsync(solicitud, ct, model));
         }
 
         try
         {
             solicitud.FechaPreferida = model.FechaPreferida.Date;
             solicitud.VentanaHorario = model.VentanaHorario;
+            solicitud.RecordatorioActivo = model.RecordatorioActivo;
+            solicitud.RecordatorioAvisoDias = model.RecordatorioAvisoDias;
+            solicitud.RecordatorioCanales = NormalizeChannels(model.RecordatorioCanales);
+            solicitud.ProximoRecordatorioUtc = model.RecordatorioActivo
+                ? LawnCatalogService.ComputeNextReminderUtc(model.FechaPreferida, solicitud.Frecuencia)
+                : null;
+            solicitud.Estado = "ScheduleCompleted";
+            solicitud.FechaActualizacion = DateTime.Now;
+
+            await db.SaveChangesAsync(ct);
+            return RedirectToAction(nameof(LawnReview), new { id = solicitud.Id });
+        }
+        catch (Exception)
+        {
+            ModelState.AddModelError("",
+                "Could not save your schedule. Please ensure the lawn flow tables exist in the database and try again.");
+            return View(await BuildScheduleViewModelAsync(solicitud, ct, model));
+        }
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> LawnReview(int id, CancellationToken ct)
+    {
+        var solicitud = await LoadSolicitudForUserAsync(id, ct);
+        if (solicitud == null) return NotFound();
+
+        if (solicitud.Estado is not ("ScheduleCompleted" or "Submitted"))
+        {
+            return RedirectToAction(nameof(LawnSchedule), new { id });
+        }
+
+        return View(await BuildReviewViewModelAsync(solicitud, ct));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> LawnReview(int id, string? action, CancellationToken ct)
+    {
+        var solicitud = await LoadSolicitudForUserAsync(id, ct);
+        if (solicitud == null) return NotFound();
+
+        if (string.Equals(action, "back", StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(LawnSchedule), new { id = solicitud.Id });
+        }
+
+        try
+        {
             solicitud.Estado = "Submitted";
             solicitud.FechaConfirmacion = DateTime.Now;
             solicitud.FechaActualizacion = DateTime.Now;
 
-            await UpsertProgramacionAsync(solicitud);
-            await _db.SaveChangesAsync();
+            if (solicitud.RecordatorioActivo)
+            {
+                solicitud.ProximoRecordatorioUtc ??= LawnCatalogService.ComputeNextReminderUtc(
+                    solicitud.FechaPreferida, solicitud.Frecuencia);
+            }
+
+            await UpsertProgramacionAsync(solicitud, ct);
+            await db.SaveChangesAsync(ct);
 
             return RedirectToAction(nameof(LawnConfirmed), new { id = solicitud.Id });
         }
@@ -233,14 +236,14 @@ public class LawnController : Controller
         {
             ModelState.AddModelError("",
                 "Could not submit your booking. Please ensure the lawn flow tables exist in the database and try again.");
-            return View(await BuildReviewViewModelAsync(solicitud));
+            return View(await BuildReviewViewModelAsync(solicitud, ct));
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> LawnConfirmed(int id)
+    public async Task<IActionResult> LawnConfirmed(int id, CancellationToken ct)
     {
-        var solicitud = await LoadSolicitudForUserAsync(id);
+        var solicitud = await LoadSolicitudForUserAsync(id, ct);
         if (solicitud == null) return NotFound();
 
         if (!string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase))
@@ -248,53 +251,46 @@ public class LawnController : Controller
             return RedirectToAction(nameof(LawnReview), new { id = solicitud.Id });
         }
 
-        return View(new LawnConfirmedViewModel
-        {
-            SolicitudId = solicitud.Id,
-            MicroservicioId = solicitud.MicroservicioId,
-            NombreServicio = solicitud.Microservicio?.Nombre ?? "Always Perfect Lawn",
-            SubscriptionLabel = LawnDisplayLabels.FormatSubscriptionLabel(solicitud.TipoServicio, solicitud.Frecuencia),
-            AreaLabel = LawnDisplayLabels.FormatArea(solicitud.AreaServicio),
-            AddonsLabel = LawnDisplayLabels.FormatAddonsList(solicitud.AddonsSeleccionados),
-            ScheduledLabel = LawnDisplayLabels.FormatScheduledLabel(solicitud.FechaPreferida, solicitud.VentanaHorario),
-            PrecioTotal = solicitud.PrecioTotal ?? 0m,
-            Moneda = solicitud.Microservicio?.Moneda ?? "USD"
-        });
+        return View(await BuildConfirmedViewModelAsync(solicitud, ct));
     }
 
-    private string? RequireUserId() => _userManager.GetUserId(User);
+    private string? RequireUserId() => userManager.GetUserId(User);
 
-    private async Task<(Microservicio Microservicio, LawnServicioLanding Landing)?> LoadLandingBundleAsync(int microservicioId)
+    private async Task<(Microservicio Microservicio, LawnServicioLanding Landing)?> LoadLandingBundleAsync(
+        int microservicioId,
+        CancellationToken ct)
     {
-        var microservicio = await _db.Microservicios.AsNoTracking()
-            .FirstOrDefaultAsync(m => m.Id == microservicioId && m.Activo);
+        var microservicio = await db.Microservicios.AsNoTracking()
+            .FirstOrDefaultAsync(m => m.Id == microservicioId && m.Activo, ct);
         if (microservicio == null) return null;
 
-        var landing = await _db.LawnServicioLanding.AsNoTracking()
-            .FirstOrDefaultAsync(l => l.MicroservicioId == microservicioId && l.Activo);
+        var landing = await db.LawnServicioLanding.AsNoTracking()
+            .FirstOrDefaultAsync(l => l.MicroservicioId == microservicioId && l.Activo, ct);
 
-        if (landing == null)
+        landing ??= new LawnServicioLanding
         {
-            landing = new LawnServicioLanding
-            {
-                MicroservicioId = microservicioId,
-                PageTitle = microservicio.Nombre,
-                LandingTitulo = microservicio.Nombre,
-                LandingTagline = microservicio.Subtitulo,
-                LandingSubtitulo = microservicio.DescripcionCompleta ?? microservicio.Descripcion,
-                ImagenUrl = microservicio.ImagenUrl,
-                PrecioDesde = microservicio.Valor > 0 ? microservicio.Valor : 45,
-                PrecioTexto = $"From ${(microservicio.Valor > 0 ? microservicio.Valor : 45):0} USD"
-            };
-        }
+            MicroservicioId = microservicioId,
+            PageTitle = microservicio.Nombre,
+            LandingTitulo = microservicio.Nombre,
+            LandingTagline = microservicio.Subtitulo,
+            LandingSubtitulo = microservicio.DescripcionCompleta ?? microservicio.Descripcion ?? string.Empty,
+            ImagenUrl = microservicio.ImagenUrl,
+            PrecioDesde = microservicio.Valor > 0 ? microservicio.Valor : 45,
+            PrecioTexto = $"From ${(microservicio.Valor > 0 ? microservicio.Valor : 45):0} USD",
+            ReminderBannerTitulo = "Automatic reminder",
+            ReminderBannerTexto = "Remind me every 15 days to mow the lawn. We will send you a notification to schedule or repeat the service.",
+            RemindOnlyCtaTexto = "Only remind me",
+            ReminderDefaultOn = true
+        };
 
         return (microservicio, landing);
     }
 
-    private static LawnServiceViewModel BuildServiceViewModel(
+    private async Task<LawnServiceViewModel> BuildServiceViewModelAsync(
         Microservicio microservicio,
         LawnServicioLanding landing,
         SolicitudLawn? existing,
+        CancellationToken ct,
         LawnServiceViewModel? posted = null)
     {
         var items = SplitPipePairs(landing.IncluyeItems, landing.IncluyeIconos);
@@ -316,115 +312,202 @@ public class LawnController : Controller
             PrecioTexto = landing.PrecioTexto ?? $"From ${(microservicio.Valor > 0 ? microservicio.Valor : 45):0} USD",
             IncludedItems = items,
             InfoBoxTexto = landing.InfoBoxTexto,
-            CtaTexto = landing.CtaTexto
+            CtaTexto = landing.CtaTexto,
+            ReminderBannerTitulo = landing.ReminderBannerTitulo ?? "Automatic reminder",
+            ReminderBannerTexto = landing.ReminderBannerTexto
+                ?? "Remind me every 15 days to mow the lawn. We will send you a notification to schedule or repeat the service.",
+            RemindOnlyCtaTexto = landing.RemindOnlyCtaTexto ?? "Only remind me",
+            RecordatorioActivo = posted?.RecordatorioActivo ?? existing?.RecordatorioActivo ?? landing.ReminderDefaultOn
         };
     }
 
-    private LawnSetupViewModel BuildSetupViewModel(SolicitudLawn solicitud) =>
-        new()
-        {
-            SolicitudId = solicitud.Id,
-            MicroservicioId = solicitud.MicroservicioId,
-            TipoServicio = solicitud.TipoServicio ?? "Subscription",
-            Frecuencia = solicitud.Frecuencia ?? "Biweekly",
-            AreaServicio = solicitud.AreaServicio ?? "FrontBack",
-            AreaOptions = BuildAreaCards(solicitud.AreaServicio ?? "FrontBack"),
-            EstimatedTotal = LawnPricingService.CalculateTotal(
-                solicitud.TipoServicio, solicitud.AreaServicio, solicitud.AddonsSeleccionados)
-        };
-
-    private static List<LawnAreaCardViewModel> BuildAreaCards(string selectedCode) =>
-        LawnPricingService.AreaOptions.Select(a => new LawnAreaCardViewModel
-        {
-            Code = a.Code,
-            Label = a.Label,
-            Price = a.Price,
-            Icon = a.Icon,
-            IsCustomQuote = a.IsCustomQuote
-        }).ToList();
-
-    private LawnAddonsViewModel BuildAddonsViewModel(SolicitudLawn solicitud, LawnAddonsViewModel? posted = null)
+    private async Task<LawnSetupViewModel> BuildSetupViewModelAsync(
+        SolicitudLawn solicitud,
+        CancellationToken ct,
+        LawnSetupViewModel? posted = null)
     {
-        var selectedCodes = (posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty)
-            .Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        var freqOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Frequency, ct);
+        var areaOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, ct);
+        var addonOptions = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.Addon, ct);
+
+        var frequency = posted?.Frecuencia ?? solicitud.Frecuencia ?? "Every15Days";
+        var area = posted?.AreaServicio ?? solicitud.AreaServicio ?? "FrontBack";
+        var addonsPipe = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados ?? string.Empty;
+        var selectedAddons = addonsPipe.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
             .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        var addonsPipe = posted?.AddonsSeleccionados ?? solicitud.AddonsSeleccionados;
-        var basePrice = LawnPricingService.GetBasePrice(solicitud.AreaServicio);
-        var addonsPrice = LawnPricingService.GetAddonsTotal(addonsPipe);
-        var discount = LawnPricingService.GetSubscriptionDiscount(solicitud.TipoServicio);
-
-        return new LawnAddonsViewModel
+        return new LawnSetupViewModel
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            TipoServicio = solicitud.TipoServicio,
-            AreaServicio = solicitud.AreaServicio ?? "FrontBack",
-            AddonsSeleccionados = addonsPipe ?? string.Empty,
-            PreferenciaExtra = posted?.PreferenciaExtra ?? solicitud.PreferenciaExtra ?? "NoThanks",
-            PrecioBase = basePrice,
-            PrecioAddons = addonsPrice,
-            DescuentoSuscripcion = discount,
-            PrecioTotal = Math.Max(0m, basePrice + addonsPrice - discount),
-            AreaLabel = LawnDisplayLabels.FormatArea(solicitud.AreaServicio),
-            AddonOptions = LawnPricingService.AddonOptions.Select(a => new LawnAddonCardViewModel
+            IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
+            Frecuencia = frequency,
+            AreaServicio = area,
+            AddonsSeleccionados = addonsPipe,
+            EstimatedTotal = await catalog.CalculateTotalAsync(
+                solicitud.MicroservicioId, frequency, area, addonsPipe, ct),
+            FrequencyOptions = freqOptions.Select(o => new LawnOptionCardViewModel
             {
-                Code = a.Code,
-                Label = a.Label,
-                Price = a.Price,
-                Icon = a.Icon,
-                Selected = selectedCodes.Contains(a.Code)
+                Code = o.Code,
+                Label = o.LabelEn,
+                Icon = o.IconClass
             }).ToList(),
-            SelectedAddonLines = LawnPricingService.ParseAddons(addonsPipe)
-                .Select(a => new LawnLineItemViewModel { Label = a.Label, Amount = a.Price, Icon = a.Icon })
-                .ToList()
+            AreaOptions = areaOptions.Select(o => new LawnAreaCardViewModel
+            {
+                Code = o.Code,
+                Label = o.LabelEn,
+                Price = o.Price,
+                Icon = o.IconClass,
+                IsCustomQuote = o.RequiresQuote
+            }).ToList(),
+            AddonOptions = addonOptions.Select(o => new LawnAddonCardViewModel
+            {
+                Code = o.Code,
+                Label = o.LabelEn,
+                Price = o.Price,
+                Icon = o.IconClass,
+                Selected = selectedAddons.Contains(o.Code)
+            }).ToList()
         };
     }
 
-    private async Task<LawnReviewViewModel> BuildReviewViewModelAsync(SolicitudLawn solicitud)
+    private async Task<LawnScheduleViewModel> BuildScheduleViewModelAsync(
+        SolicitudLawn solicitud,
+        CancellationToken ct,
+        LawnScheduleViewModel? posted = null)
     {
-        var landing = await _db.LawnServicioLanding.AsNoTracking()
-            .FirstOrDefaultAsync(l => l.MicroservicioId == solicitud.MicroservicioId);
+        var landing = await db.LawnServicioLanding.AsNoTracking()
+            .FirstOrDefaultAsync(l => l.MicroservicioId == solicitud.MicroservicioId, ct);
 
-        var fecha = solicitud.FechaPreferida ?? GetNextSaturday();
-        var dateOptions = BuildDateOptions(fecha);
+        var fecha = posted?.FechaPreferida ?? solicitud.FechaPreferida ?? GetNextSaturday();
+        var timeWindows = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.TimeWindow, ct);
+        var reminderLeads = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderLead, ct);
+        var reminderChannels = await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderChannel, ct);
+
+        var areaLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, solicitud.AreaServicio, ct);
+        var freqLabel = LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio);
+
+        return new LawnScheduleViewModel
+        {
+            SolicitudId = solicitud.Id,
+            MicroservicioId = solicitud.MicroservicioId,
+            IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
+            ImagenUrl = ResolveImageUrl(landing?.ImagenUrl ?? solicitud.Microservicio?.ImagenUrl),
+            FrequencyLabel = freqLabel,
+            AreaLabel = areaLabel,
+            PrecioTotal = solicitud.PrecioTotal ?? await catalog.CalculateTotalAsync(
+                solicitud.MicroservicioId, solicitud.Frecuencia, solicitud.AreaServicio, solicitud.AddonsSeleccionados, ct),
+            FechaPreferida = fecha,
+            VentanaHorario = posted?.VentanaHorario ?? solicitud.VentanaHorario ?? "Morning8_11",
+            RecordatorioActivo = posted?.RecordatorioActivo ?? solicitud.RecordatorioActivo,
+            Frecuencia = solicitud.Frecuencia ?? "Every15Days",
+            RecordatorioAvisoDias = posted?.RecordatorioAvisoDias ?? solicitud.RecordatorioAvisoDias,
+            RecordatorioCanales = posted?.RecordatorioCanales ?? solicitud.RecordatorioCanales ?? "Push",
+            DateOptions = BuildDateOptions(fecha),
+            TimeWindowOptions = timeWindows.Select(o => new LawnOptionCardViewModel
+            {
+                Code = o.Code,
+                Label = o.LabelEn,
+                Icon = o.IconClass
+            }).ToList(),
+            ReminderLeadOptions = reminderLeads.Select(o => new LawnOptionCardViewModel
+            {
+                Code = o.Code,
+                Label = o.LabelEn,
+                Icon = o.IconClass
+            }).ToList(),
+            ReminderChannelOptions = reminderChannels.Select(o => new LawnOptionCardViewModel
+            {
+                Code = o.Code,
+                Label = o.LabelEn,
+                Icon = o.IconClass
+            }).ToList()
+        };
+    }
+
+    private async Task<LawnReviewViewModel> BuildReviewViewModelAsync(SolicitudLawn solicitud, CancellationToken ct)
+    {
+        var landing = await db.LawnServicioLanding.AsNoTracking()
+            .FirstOrDefaultAsync(l => l.MicroservicioId == solicitud.MicroservicioId, ct);
+
+        var areaLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, solicitud.AreaServicio, ct);
+        var timeLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.TimeWindow, solicitud.VentanaHorario, ct);
+        var addonLabels = (await catalog.ParseAddonsAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct))
+            .Select(a => a.LabelEn);
+
+        var channelLabels = (await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderChannel, ct))
+            .ToDictionary(c => c.Code, c => c.LabelEn);
 
         return new LawnReviewViewModel
         {
             SolicitudId = solicitud.Id,
             MicroservicioId = solicitud.MicroservicioId,
-            ImagenUrl = ResolveImageUrl(landing?.ImagenUrl ?? solicitud.Microservicio?.ImagenUrl),
-            SubscriptionLabel = LawnDisplayLabels.FormatSubscriptionLabel(solicitud.TipoServicio, solicitud.Frecuencia),
-            AreaLabel = LawnDisplayLabels.FormatArea(solicitud.AreaServicio),
-            AddonsLabel = LawnDisplayLabels.FormatAddonsList(solicitud.AddonsSeleccionados),
-            PreferredDayLabel = LawnDisplayLabels.FormatPreferredDay(fecha),
+            IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
+            ServiceName = landing?.LandingTitulo ?? solicitud.Microservicio?.Nombre ?? "Always Perfect Lawn",
+            FrequencyLabel = LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio),
+            AreaLabel = areaLabel,
+            AddonsLabel = LawnDisplayLabels.FormatAddonsList(addonLabels),
+            ScheduledLabel = LawnDisplayLabels.FormatScheduledLabel(solicitud.FechaPreferida, solicitud.VentanaHorario, timeLabel),
+            ReminderLabel = LawnDisplayLabels.FormatReminderLabel(
+                solicitud.RecordatorioActivo,
+                solicitud.Frecuencia,
+                solicitud.RecordatorioAvisoDias,
+                (solicitud.RecordatorioCanales ?? "Push").Split('|', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(code => channelLabels.TryGetValue(code, out var label) ? label : code)),
             DireccionPropiedad = solicitud.DireccionPropiedad ?? "—",
-            FechaPreferida = fecha,
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning8_11",
-            PrecioBase = solicitud.PrecioBase ?? LawnPricingService.GetBasePrice(solicitud.AreaServicio),
-            PrecioAddons = solicitud.PrecioAddons ?? LawnPricingService.GetAddonsTotal(solicitud.AddonsSeleccionados),
-            DescuentoSuscripcion = solicitud.DescuentoSuscripcion ?? LawnPricingService.GetSubscriptionDiscount(solicitud.TipoServicio),
-            PrecioTotal = solicitud.PrecioTotal ?? LawnPricingService.CalculateTotal(
-                solicitud.TipoServicio, solicitud.AreaServicio, solicitud.AddonsSeleccionados),
-            AddonLines = LawnPricingService.ParseAddons(solicitud.AddonsSeleccionados)
-                .Select(a => new LawnLineItemViewModel { Label = a.Label, Amount = a.Price, Icon = a.Icon })
-                .ToList(),
-            DateOptions = dateOptions
+            PrecioBase = solicitud.PrecioBase ?? await catalog.GetBasePriceAsync(solicitud.MicroservicioId, solicitud.AreaServicio, ct),
+            PrecioAddons = solicitud.PrecioAddons ?? await catalog.GetAddonsTotalAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct),
+            DescuentoSuscripcion = solicitud.DescuentoSuscripcion ?? await catalog.GetSubscriptionDiscountAsync(solicitud.Frecuencia),
+            PrecioTotal = solicitud.PrecioTotal ?? await catalog.CalculateTotalAsync(
+                solicitud.MicroservicioId, solicitud.Frecuencia, solicitud.AreaServicio, solicitud.AddonsSeleccionados, ct),
+            AddonLines = (await catalog.ParseAddonsAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct))
+                .Select(a => new LawnLineItemViewModel { Label = a.LabelEn, Amount = a.Price, Icon = a.IconClass })
+                .ToList()
+        };
+    }
+
+    private async Task<LawnConfirmedViewModel> BuildConfirmedViewModelAsync(SolicitudLawn solicitud, CancellationToken ct)
+    {
+        var areaLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.Area, solicitud.AreaServicio, ct);
+        var timeLabel = await catalog.GetLabelAsync(solicitud.MicroservicioId, LawnCatalogGroups.TimeWindow, solicitud.VentanaHorario, ct);
+        var addonLabels = (await catalog.ParseAddonsAsync(solicitud.MicroservicioId, solicitud.AddonsSeleccionados, ct))
+            .Select(a => a.LabelEn);
+        var channelLabels = (await catalog.LoadGroupAsync(solicitud.MicroservicioId, LawnCatalogGroups.ReminderChannel, ct))
+            .ToDictionary(c => c.Code, c => c.LabelEn);
+
+        return new LawnConfirmedViewModel
+        {
+            SolicitudId = solicitud.Id,
+            MicroservicioId = solicitud.MicroservicioId,
+            IsReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly,
+            NombreServicio = solicitud.Microservicio?.Nombre ?? "Always Perfect Lawn",
+            FrequencyLabel = LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio),
+            AreaLabel = areaLabel,
+            AddonsLabel = LawnDisplayLabels.FormatAddonsList(addonLabels),
+            ScheduledLabel = LawnDisplayLabels.FormatScheduledLabel(solicitud.FechaPreferida, solicitud.VentanaHorario, timeLabel),
+            ReminderLabel = LawnDisplayLabels.FormatReminderLabel(
+                solicitud.RecordatorioActivo, solicitud.Frecuencia, solicitud.RecordatorioAvisoDias),
+            NextReminderLabel = LawnDisplayLabels.FormatNextReminderLabel(solicitud.ProximoRecordatorioUtc, solicitud.Frecuencia),
+            NotificationMethodLabel = LawnDisplayLabels.FormatNotificationChannels(solicitud.RecordatorioCanales, channelLabels),
+            RecordatorioActivo = solicitud.RecordatorioActivo,
+            PrecioTotal = solicitud.PrecioTotal ?? 0m,
+            Moneda = solicitud.Microservicio?.Moneda ?? "USD"
         };
     }
 
     private static List<LawnDateOptionViewModel> BuildDateOptions(DateTime selected)
     {
         var start = DateTime.Today.AddDays(1);
-        return Enumerable.Range(0, 7)
+        return Enumerable.Range(0, 10)
             .Select(offset =>
             {
                 var date = start.AddDays(offset);
                 return new LawnDateOptionViewModel
                 {
                     Date = date,
-                    DayLabel = date.ToString("ddd"),
+                    DayLabel = date.ToString("ddd").ToUpperInvariant(),
                     DateLabel = date.Day.ToString(),
+                    MonthLabel = date.ToString("MMM").ToUpperInvariant(),
                     Selected = date.Date == selected.Date
                 };
             })
@@ -441,6 +524,12 @@ public class LawnController : Controller
 
         return date;
     }
+
+    private static string NormalizeAddons(string? pipe) =>
+        string.IsNullOrWhiteSpace(pipe) ? "NoThanks" : pipe.Trim();
+
+    private static string NormalizeChannels(string? pipe) =>
+        string.IsNullOrWhiteSpace(pipe) ? "Push" : pipe.Trim();
 
     private static List<LawnFeatureItemViewModel> SplitPipePairs(string? texts, string? icons)
     {
@@ -461,39 +550,40 @@ public class LawnController : Controller
     private static string? ResolveImageUrl(string? url) =>
         string.IsNullOrWhiteSpace(url) ? null : url.StartsWith('/') ? url : $"/{url}";
 
-    private async Task<int?> GetLatestPropertyIdAsync(string userId) =>
-        await _db.Propiedades
+    private async Task<int?> GetLatestPropertyIdAsync(string userId, CancellationToken ct) =>
+        await db.Propiedades
             .Where(p => p.UserId == userId && p.Activo)
             .OrderByDescending(p => p.FechaCreacion)
             .Select(p => (int?)p.Id)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(ct);
 
-    private async Task<SolicitudLawn?> GetActiveSolicitudAsync(string userId, int microservicioId) =>
-        await _db.SolicitudesLawn
+    private async Task<SolicitudLawn?> GetActiveSolicitudAsync(string userId, int microservicioId, CancellationToken ct) =>
+        await db.SolicitudesLawn
             .Where(s => s.UserId == userId
                         && s.MicroservicioId == microservicioId
                         && s.Estado != "Submitted")
             .OrderByDescending(s => s.FechaActualizacion ?? s.FechaCreacion)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(ct);
 
     private async Task<SolicitudLawn> GetOrCreateSolicitudAsync(
         string userId,
         int microservicioId,
-        int? solicitudId)
+        int? solicitudId,
+        CancellationToken ct)
     {
         SolicitudLawn? solicitud = null;
 
         if (solicitudId.HasValue)
         {
-            solicitud = await _db.SolicitudesLawn
-                .FirstOrDefaultAsync(s => s.Id == solicitudId.Value && s.UserId == userId);
+            solicitud = await db.SolicitudesLawn
+                .FirstOrDefaultAsync(s => s.Id == solicitudId.Value && s.UserId == userId, ct);
         }
 
-        solicitud ??= await GetActiveSolicitudAsync(userId, microservicioId);
+        solicitud ??= await GetActiveSolicitudAsync(userId, microservicioId, ct);
 
         if (solicitud == null)
         {
-            var propiedadId = await GetLatestPropertyIdAsync(userId);
+            var propiedadId = await GetLatestPropertyIdAsync(userId, ct);
             solicitud = new SolicitudLawn
             {
                 UserId = userId,
@@ -501,38 +591,48 @@ public class LawnController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
+                ModoServicio = LawnServiceModes.FullService,
                 TipoServicio = "Subscription",
-                Frecuencia = "Biweekly",
+                Frecuencia = "Every15Days",
                 AreaServicio = "FrontBack",
-                PreferenciaExtra = "NoThanks"
+                AddonsSeleccionados = "NoThanks",
+                RecordatorioActivo = true,
+                RecordatorioAvisoDias = 1,
+                RecordatorioCanales = "Push"
             };
-            _db.SolicitudesLawn.Add(solicitud);
-            await _db.SaveChangesAsync();
+            db.SolicitudesLawn.Add(solicitud);
+            await db.SaveChangesAsync(ct);
         }
 
         return solicitud;
     }
 
-    private async Task<SolicitudLawn?> LoadSolicitudForUserAsync(int id)
+    private async Task<SolicitudLawn?> LoadSolicitudForUserAsync(int id, CancellationToken ct)
     {
         var userId = RequireUserId();
         if (userId == null) return null;
 
-        return await _db.SolicitudesLawn
+        return await db.SolicitudesLawn
             .Include(s => s.Microservicio)
-            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId);
+            .FirstOrDefaultAsync(s => s.Id == id && s.UserId == userId, ct);
     }
 
-    private async Task UpsertProgramacionAsync(SolicitudLawn solicitud)
+    private async Task UpsertProgramacionAsync(SolicitudLawn solicitud, CancellationToken ct)
     {
         var fechaProgramada = solicitud.FechaPreferida ?? DateTime.Today.AddDays(7);
+        var isReminderOnly = solicitud.ModoServicio == LawnServiceModes.ReminderOnly;
+        var estado = isReminderOnly && !solicitud.RecordatorioActivo
+            ? "Cancelled"
+            : isReminderOnly
+                ? "ReminderActive"
+                : "Scheduled";
 
-        var existing = await _db.ProgramacionesMicroservicio
+        var existing = await db.ProgramacionesMicroservicio
             .Where(p => p.UserId == solicitud.UserId
                         && p.MicroservicioId == solicitud.MicroservicioId
-                        && p.Estado == "Scheduled")
+                        && p.Estado != "Completed")
             .OrderByDescending(p => p.FechaActualizacion ?? p.FechaCreacion)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(ct);
 
         var notas = BuildScheduleNotes(solicitud);
 
@@ -541,18 +641,19 @@ public class LawnController : Controller
             existing.FechaProgramada = fechaProgramada;
             existing.PropiedadId = solicitud.PropiedadId;
             existing.Notas = notas;
+            existing.Estado = estado;
             existing.FechaActualizacion = DateTime.Now;
         }
         else
         {
-            _db.ProgramacionesMicroservicio.Add(new ProgramacionMicroservicio
+            db.ProgramacionesMicroservicio.Add(new ProgramacionMicroservicio
             {
                 UserId = solicitud.UserId,
                 MicroservicioId = solicitud.MicroservicioId,
                 PropiedadId = solicitud.PropiedadId,
                 FechaProgramada = fechaProgramada,
                 Notas = notas,
-                Estado = "Scheduled",
+                Estado = estado,
                 FechaCreacion = DateTime.Now
             });
         }
@@ -562,10 +663,13 @@ public class LawnController : Controller
     {
         var parts = new List<string>
         {
-            $"{LawnDisplayLabels.FormatSubscriptionLabel(solicitud.TipoServicio, solicitud.Frecuencia)}",
+            $"Mode: {solicitud.ModoServicio}",
+            $"Frequency: {LawnDisplayLabels.FormatFrequencyLabel(solicitud.Frecuencia, solicitud.TipoServicio)}",
             $"Area: {LawnDisplayLabels.FormatArea(solicitud.AreaServicio)}",
-            $"Add-ons: {LawnDisplayLabels.FormatAddonsList(solicitud.AddonsSeleccionados)}",
             $"Time: {LawnDisplayLabels.FormatScheduledLabel(solicitud.FechaPreferida, solicitud.VentanaHorario)}",
+            $"Reminder: {(solicitud.RecordatorioActivo ? "On" : "Off")}",
+            $"Notify: {solicitud.RecordatorioAvisoDias} day(s) before via {solicitud.RecordatorioCanales}",
+            $"Next reminder UTC: {solicitud.ProximoRecordatorioUtc:O}",
             $"Total: ${(solicitud.PrecioTotal ?? 0m):0}"
         };
 

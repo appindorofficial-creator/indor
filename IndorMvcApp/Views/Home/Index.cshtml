@@ -555,6 +555,7 @@
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home-dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home-nearby-network.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/profile-more.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/schedule-section.css" asp-append-version="true" />
     @await Html.PartialAsync("_AppVersionHead")
@@ -2315,9 +2316,9 @@
             </svg>
             R
         </a>
-        <button type="button" class="search-bar" id="homeSearchOpen" aria-label="Search your home">
+        <button type="button" class="search-bar" id="homeSearchOpen" aria-label="Search in my neighborhood">
             <i class="fas fa-search"></i>
-            <span>Search your home...</span>
+            <span>Search in my neighborhood...</span>
         </button>
         <div class="bell" id="bellToggle" role="button" aria-label="Notifications">
             <i class="far fa-bell"></i>
@@ -2365,8 +2366,27 @@
         </div>
     </div>
 
-    <!-- ====== HOME ====== -->
-    <section class="section active" id="section-home">
+    <!-- ====== HOME (Nearby Network) ====== -->
+    @{
+        var homeNearbyNetworkModel = ViewBag.HomeNearbyNetwork as IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel;
+        var isHomeMapView = homeNearbyNetworkModel?.ActiveView == "map";
+    }
+    <section class="section active @(isHomeMapView ? "hn-map-active" : "")" id="section-home">
+        @{
+            var homeNearbyNetwork = homeNearbyNetworkModel;
+        }
+        @if (TempData["NeighborRequestSaved"] is string neighborMsg)
+        {
+            <div class="alert-schedule-ok" style="margin:12px 16px;"><i class="fas fa-check-circle"></i> @neighborMsg</div>
+        }
+        @if (homeNearbyNetwork != null)
+        {
+            @await Html.PartialAsync("_HomeNearbyNetwork", homeNearbyNetwork)
+        }
+    </section>
+
+    <!-- ====== MY HOME (property dashboard) ====== -->
+    <section class="section" id="section-mydashboard">
         @{
             var homeDashboard = ViewBag.HomeDashboard as IndorMvcApp.ViewModels.HomeDashboardViewModel;
         }
@@ -2374,6 +2394,10 @@
         {
             <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
         }
+        @{
+            ViewData["HomeViewSwitcherActive"] = "myhome";
+        }
+        @await Html.PartialAsync("_HomeViewSwitcher")
         @if (homeDashboard != null)
         {
             @await Html.PartialAsync("_HomeDashboard", homeDashboard)
@@ -2693,8 +2717,10 @@
             const servicesScrollTargets = ['emergency-services', 'home-care-essentials', 'home-care-priorities', 'inspections', 'services'];
             if (servicesScrollTargets.includes(hash) && document.getElementById(hash)) {
                 activateSection('section-services', hash);
+            } else if (hash === 'section-mydashboard' || hash === 'mydashboard') {
+                activateSection('section-mydashboard');
             } else if (hash) {
-                activateSection(hash);
+                activateSection(hash.startsWith('section-') ? hash : 'section-' + hash);
             }
         }
 
@@ -2824,7 +2850,11 @@
         // === Atajos desde Home a otras secciones ===
         document.querySelectorAll('.home-shortcut[data-target], .nav-jump[data-target]').forEach(el => {
             el.addEventListener('click', () => {
-                activateSection(el.dataset.target, el.dataset.scrollTarget || null);
+                const target = el.dataset.target;
+                activateSection(target, el.dataset.scrollTarget || null);
+                if (target === 'section-mydashboard' || target === 'section-home') {
+                    history.replaceState(null, '', '#' + target);
+                }
             });
         });
 

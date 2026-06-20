@@ -13,9 +13,13 @@ public class LawnServiceViewModel
     public string? ImagenUrl { get; set; }
     public decimal PrecioDesde { get; set; }
     public string? PrecioTexto { get; set; }
-    public List<LawnFeatureItemViewModel> IncludedItems { get; set; } = new();
+    public List<LawnFeatureItemViewModel> IncludedItems { get; set; } = [];
     public string? InfoBoxTexto { get; set; }
     public string CtaTexto { get; set; } = "Customize service";
+    public string ReminderBannerTitulo { get; set; } = "Automatic reminder";
+    public string ReminderBannerTexto { get; set; } = string.Empty;
+    public string RemindOnlyCtaTexto { get; set; } = "Only remind me";
+    public bool RecordatorioActivo { get; set; } = true;
 }
 
 public class LawnFeatureItemViewModel
@@ -28,19 +32,27 @@ public class LawnSetupViewModel
 {
     public int SolicitudId { get; set; }
     public int MicroservicioId { get; set; }
-    public string PageTitle { get; set; } = "Lawn Service Setup";
+    public string PageTitle { get; set; } = "Configure your service";
+    public bool IsReminderOnly { get; set; }
 
     [Required]
-    public string TipoServicio { get; set; } = "Subscription";
-
-    [Required]
-    public string Frecuencia { get; set; } = "Biweekly";
+    public string Frecuencia { get; set; } = "Every15Days";
 
     [Required]
     public string AreaServicio { get; set; } = "FrontBack";
 
+    public string AddonsSeleccionados { get; set; } = string.Empty;
     public decimal EstimatedTotal { get; set; }
-    public List<LawnAreaCardViewModel> AreaOptions { get; set; } = new();
+    public List<LawnOptionCardViewModel> FrequencyOptions { get; set; } = [];
+    public List<LawnAreaCardViewModel> AreaOptions { get; set; } = [];
+    public List<LawnAddonCardViewModel> AddonOptions { get; set; } = [];
+}
+
+public class LawnOptionCardViewModel
+{
+    public string Code { get; set; } = string.Empty;
+    public string Label { get; set; } = string.Empty;
+    public string Icon { get; set; } = "fa-circle";
 }
 
 public class LawnAreaCardViewModel
@@ -53,27 +65,6 @@ public class LawnAreaCardViewModel
     public string PriceLabel => IsCustomQuote ? "custom quote" : $"from ${Price:0}";
 }
 
-public class LawnAddonsViewModel
-{
-    public int SolicitudId { get; set; }
-    public int MicroservicioId { get; set; }
-    public string PageTitle { get; set; } = "Customize add-ons";
-    public string TipoServicio { get; set; } = "Subscription";
-    public string AreaServicio { get; set; } = "FrontBack";
-
-    public string AddonsSeleccionados { get; set; } = string.Empty;
-
-    public string PreferenciaExtra { get; set; } = "NoThanks";
-
-    public decimal PrecioBase { get; set; }
-    public decimal PrecioAddons { get; set; }
-    public decimal DescuentoSuscripcion { get; set; }
-    public decimal PrecioTotal { get; set; }
-    public string AreaLabel { get; set; } = string.Empty;
-    public List<LawnAddonCardViewModel> AddonOptions { get; set; } = new();
-    public List<LawnLineItemViewModel> SelectedAddonLines { get; set; } = new();
-}
-
 public class LawnAddonCardViewModel
 {
     public string Code { get; set; } = string.Empty;
@@ -81,6 +72,33 @@ public class LawnAddonCardViewModel
     public decimal Price { get; set; }
     public string Icon { get; set; } = "fa-plus";
     public bool Selected { get; set; }
+}
+
+public class LawnScheduleViewModel
+{
+    public int SolicitudId { get; set; }
+    public int MicroservicioId { get; set; }
+    public string PageTitle { get; set; } = "Schedule your service";
+    public bool IsReminderOnly { get; set; }
+    public string? ImagenUrl { get; set; }
+    public string FrequencyLabel { get; set; } = string.Empty;
+    public string AreaLabel { get; set; } = string.Empty;
+    public decimal PrecioTotal { get; set; }
+
+    [Required]
+    public DateTime FechaPreferida { get; set; }
+
+    [Required]
+    public string VentanaHorario { get; set; } = "Morning8_11";
+
+    public bool RecordatorioActivo { get; set; } = true;
+    public string Frecuencia { get; set; } = "Every15Days";
+    public int RecordatorioAvisoDias { get; set; } = 1;
+    public string RecordatorioCanales { get; set; } = "Push";
+    public List<LawnDateOptionViewModel> DateOptions { get; set; } = [];
+    public List<LawnOptionCardViewModel> TimeWindowOptions { get; set; } = [];
+    public List<LawnOptionCardViewModel> ReminderLeadOptions { get; set; } = [];
+    public List<LawnOptionCardViewModel> ReminderChannelOptions { get; set; } = [];
 }
 
 public class LawnLineItemViewModel
@@ -94,26 +112,20 @@ public class LawnReviewViewModel
 {
     public int SolicitudId { get; set; }
     public int MicroservicioId { get; set; }
-    public string PageTitle { get; set; } = "Review your booking";
-    public string? ImagenUrl { get; set; }
-    public string SubscriptionLabel { get; set; } = string.Empty;
+    public string PageTitle { get; set; } = "Review and confirm";
+    public bool IsReminderOnly { get; set; }
+    public string ServiceName { get; set; } = "Always Perfect Lawn";
+    public string FrequencyLabel { get; set; } = string.Empty;
     public string AreaLabel { get; set; } = string.Empty;
     public string AddonsLabel { get; set; } = string.Empty;
-    public string PreferredDayLabel { get; set; } = string.Empty;
+    public string ScheduledLabel { get; set; } = string.Empty;
+    public string ReminderLabel { get; set; } = string.Empty;
     public string DireccionPropiedad { get; set; } = string.Empty;
-
-    [Required]
-    public DateTime FechaPreferida { get; set; }
-
-    [Required]
-    public string VentanaHorario { get; set; } = "Morning8_11";
-
     public decimal PrecioBase { get; set; }
     public decimal PrecioAddons { get; set; }
     public decimal DescuentoSuscripcion { get; set; }
     public decimal PrecioTotal { get; set; }
-    public List<LawnLineItemViewModel> AddonLines { get; set; } = new();
-    public List<LawnDateOptionViewModel> DateOptions { get; set; } = new();
+    public List<LawnLineItemViewModel> AddonLines { get; set; } = [];
 }
 
 public class LawnDateOptionViewModel
@@ -121,6 +133,7 @@ public class LawnDateOptionViewModel
     public DateTime Date { get; set; }
     public string DayLabel { get; set; } = string.Empty;
     public string DateLabel { get; set; } = string.Empty;
+    public string MonthLabel { get; set; } = string.Empty;
     public bool Selected { get; set; }
 }
 
@@ -128,11 +141,16 @@ public class LawnConfirmedViewModel
 {
     public int SolicitudId { get; set; }
     public int MicroservicioId { get; set; }
+    public bool IsReminderOnly { get; set; }
     public string NombreServicio { get; set; } = "Always Perfect Lawn";
-    public string SubscriptionLabel { get; set; } = string.Empty;
+    public string FrequencyLabel { get; set; } = string.Empty;
     public string AreaLabel { get; set; } = string.Empty;
     public string AddonsLabel { get; set; } = string.Empty;
     public string ScheduledLabel { get; set; } = string.Empty;
+    public string ReminderLabel { get; set; } = string.Empty;
+    public string NextReminderLabel { get; set; } = string.Empty;
+    public string NotificationMethodLabel { get; set; } = string.Empty;
+    public bool RecordatorioActivo { get; set; }
     public decimal PrecioTotal { get; set; }
     public string Moneda { get; set; } = "USD";
 }

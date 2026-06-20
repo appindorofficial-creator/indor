@@ -57,10 +57,6 @@
     </section>
 
     <section class="rl-quick-actions rl-quick-actions--profile">
-        <button type="button" class="rl-quick-action">
-            <span class="rl-quick-action-icon"><i class="fas fa-user-pen"></i></span>
-            <span>Edit Profile</span>
-        </button>
         <a asp-controller="Realtor" asp-action="PublicProfile" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-globe"></i></span>
             <span>Public Profile</span>
@@ -76,14 +72,14 @@
     </section>
 
     <nav class="rl-profile-nav">
-        <button type="button" class="rl-profile-nav-item">
+        <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-building"></i></span>
             <div>
                 <strong>Business Information</strong>
                 <span class="rl-profile-nav-desc">Manage your contact details, brokerage and license.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </button>
+        </a>
         <button type="button" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-location-dot"></i></span>
             <div>

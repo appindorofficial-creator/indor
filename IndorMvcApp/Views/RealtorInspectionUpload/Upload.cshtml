@@ -7,17 +7,17 @@
 
 <div class="rl-info-box">
     <i class="fas fa-circle-info"></i>
-    <p>First, search or select the property you want to analyze. Then upload the inspection report as a PDF, scanned pages, or photos.</p>
+    <p>First select the property. Then upload the report as a PDF, scanned pages, or photos.</p>
 </div>
 
-<h2 class="rl-invite-section-title">Select Property</h2>
+<h2 class="rl-invite-section-title">1. Select Property</h2>
 
 <form asp-action="Upload" method="get" class="rl-search-form">
     <div class="rl-search-bar">
         <i class="fas fa-magnifying-glass"></i>
         <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address or first property numbers" />
     </div>
-    <p class="rl-search-hint">Type 123 to find 123 Maple Street fast.</p>
+    <p class="rl-search-hint">Search for a saved property or enter a new address.</p>
 </form>
 
 <form id="inspUploadForm" asp-action="Upload" method="post" enctype="multipart/form-data" class="rl-invite-form" novalidate>
@@ -25,14 +25,7 @@
     <div asp-validation-summary="All" class="ob-summary"></div>
     <div id="inspClientError" class="ob-summary" role="alert" hidden></div>
 
-    @if (Model.Properties.Count == 0)
-    {
-        <div class="rl-info-box rl-info-box--warn">
-            <i class="fas fa-house-circle-exclamation"></i>
-            <p>No saved properties yet. Enter the property address below to continue with your inspection upload.</p>
-        </div>
-    }
-    else
+    @if (Model.Properties.Count > 0)
     {
         var firstProp = true;
         @foreach (var prop in Model.Properties)
@@ -54,52 +47,55 @@
         }
     }
 
-    <div class="rl-new-property-block">
-        <h3 class="rl-new-property-title">
-            @(Model.Properties.Count == 0 ? "Property address" : "Or add a new property")
-        </h3>
-        <div class="rl-new-property-fields">
+    <h2 class="rl-invite-section-title">2. Property Details</h2>
+
+    <div class="rl-property-fields">
+        <label class="rl-field-icon">
+            <i class="fas fa-location-dot" aria-hidden="true"></i>
             <input type="text"
                    name="newPropertyAddress"
                    value="@Model.NewPropertyAddress"
-                   placeholder="Street address (e.g. 123 Maple Street)"
-                   class="rl-text-input"
+                   placeholder="e.g. 123 Maple Street"
                    autocomplete="street-address" />
+        </label>
+        <label class="rl-field-icon">
+            <i class="fas fa-building" aria-hidden="true"></i>
             <input type="text"
                    name="newPropertyCityRegion"
                    value="@Model.NewPropertyCityRegion"
-                   placeholder="City, State (optional)"
-                   class="rl-text-input"
+                   placeholder="e.g. Toronto, ON"
                    autocomplete="address-level2" />
+        </label>
+        <label class="rl-field-icon">
+            <i class="fas fa-user" aria-hidden="true"></i>
             <input type="text"
                    name="newPropertyClientName"
                    value="@Model.NewPropertyClientName"
                    placeholder="Client name (optional)"
-                   class="rl-text-input"
                    autocomplete="name" />
-        </div>
+        </label>
     </div>
 
-    <h2 class="rl-invite-section-title">Add Report</h2>
+    <h2 class="rl-invite-section-title">3. Add Report</h2>
 
     <div class="rl-upload-method-grid">
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Pdf" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Pdf" @(Model.UploadMethod == "Pdf" ? "checked" : null) />
             <i class="fas fa-file-pdf rl-upload-method-icon rl-upload-method-icon--pdf"></i>
             <strong>Upload PDF</strong>
-            <span>Select a PDF file</span>
+            <span>Best for full inspection reports.</span>
         </label>
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Scan" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Scan" @(Model.UploadMethod == "Scan" ? "checked" : null) />
-            <i class="fas fa-expand rl-upload-method-icon"></i>
+            <i class="fas fa-camera rl-upload-method-icon"></i>
             <strong>Scan Pages</strong>
-            <span>Scan report pages</span>
+            <span>Use your camera to scan pages.</span>
         </label>
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Photos" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Photos" @(Model.UploadMethod == "Photos" ? "checked" : null) />
-            <i class="fas fa-camera rl-upload-method-icon"></i>
+            <i class="fas fa-image rl-upload-method-icon"></i>
             <strong>Add Photos</strong>
-            <span>Take or choose photos</span>
+            <span>Upload report photos or findings.</span>
         </label>
     </div>
 
@@ -108,14 +104,14 @@
         <div class="rl-file-drop-body">
             <i class="fas fa-cloud-arrow-up"></i>
             <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
-            <span id="rlFileDropHint">PDF recommended · Large reports OK · Max @maxFileLabel</span>
+            <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
             <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
         </div>
     </label>
 
     <div class="rl-info-box rl-info-box--ai">
         <i class="fas fa-wand-magic-sparkles"></i>
-        <p>INDOR AI reads your inspection report, detects findings, sorts them by urgency, and classifies them by trade.</p>
+        <p>INDOR AI reads your inspection report, detects findings, sorts them by urgency, and groups them by trade.</p>
     </div>
 
     <div class="rl-invite-actions">
@@ -182,7 +178,7 @@
                 document.getElementById('rlFileDrop')?.classList.add('has-file');
             } else {
                 fileNameEl.hidden = true;
-                fileHintEl.textContent = `PDF recommended · Large reports OK · Max ${maxFileLabel}`;
+                fileHintEl.textContent = `PDF recommended • Up to ${maxFileLabel}`;
                 document.getElementById('rlFileDrop')?.classList.remove('has-file');
             }
         }

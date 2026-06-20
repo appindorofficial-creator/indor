@@ -236,6 +236,7 @@ public class ProviderInspectionFindingItemViewModel
     public string? Description { get; set; }
     public string Priority { get; set; } = "";
     public string? SourceSection { get; set; }
+    public string? SourceSectionNumber { get; set; }
     public int? SourcePage { get; set; }
     public string? SourceExcerpt { get; set; }
     public string? ReportReference { get; set; }

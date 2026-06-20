@@ -48,6 +48,8 @@ public class RealtorRegistrationService(
         entity.LicenseNumber = state.LicenseNumber.Trim();
         entity.LicenseState = state.LicenseState.Trim();
         entity.ServiceAreas = state.ServiceAreas.Trim();
+        entity.OfficeAddress = state.OfficeAddress.Trim();
+        entity.LanguagesJson = SerializeLanguages(state.Languages);
         entity.ProfessionalTermsAccepted = state.ProfessionalTermsAccepted;
         entity.TermsAcceptedUtc = state.ProfessionalTermsAccepted ? DateTime.UtcNow : entity.TermsAcceptedUtc;
         entity.CurrentStep = 2;
@@ -342,9 +344,40 @@ public class RealtorRegistrationService(
             LicenseNumber = entity.LicenseNumber ?? "",
             LicenseState = entity.LicenseState ?? "",
             ServiceAreas = entity.ServiceAreas ?? "",
+            OfficeAddress = entity.OfficeAddress ?? "",
+            Languages = FormatLanguages(entity.LanguagesJson),
             ProfessionalTermsAccepted = entity.ProfessionalTermsAccepted,
             VerificationSkipped = entity.VerificationSkipped,
             DisplayName = entity.DisplayName ?? "",
             Email = entity.Email ?? ""
         };
+
+    private static string FormatLanguages(string? languagesJson)
+    {
+        if (string.IsNullOrWhiteSpace(languagesJson))
+        {
+            return "";
+        }
+
+        try
+        {
+            var languages = System.Text.Json.JsonSerializer.Deserialize<List<string>>(languagesJson);
+            return languages == null ? "" : string.Join(", ", languages.Where(l => !string.IsNullOrWhiteSpace(l)));
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
+    private static string SerializeLanguages(string languages)
+    {
+        var items = languages
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(l => !string.IsNullOrWhiteSpace(l))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return System.Text.Json.JsonSerializer.Serialize(items);
+    }
 }

@@ -1,0 +1,175 @@
+@model IndorMvcApp.ViewModels.LawnScheduleViewModel
+@{
+    ViewData["Title"] = Model.PageTitle + " - INDOR";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_LawnStyles")
+</head>
+<body>
+<div class="page-container">
+    <div class="top-bar">
+        <a asp-action="LawnSetup" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
+        <div class="page-title">@Model.PageTitle</div>
+        <div style="width:44px;"></div>
+    </div>
+
+    @await Html.PartialAsync("_LawnStepper", 2)
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+    <form asp-action="LawnSchedule" method="post">
+        <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="MicroservicioId" />
+        <input type="hidden" asp-for="FechaPreferida" id="FechaPreferida" />
+        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+        <input type="hidden" asp-for="RecordatorioActivo" id="RecordatorioActivo" value="@(Model.RecordatorioActivo ? "true" : "false")" />
+        <input type="hidden" asp-for="RecordatorioAvisoDias" id="RecordatorioAvisoDias" />
+        <input type="hidden" asp-for="RecordatorioCanales" id="RecordatorioCanales" value="@Model.RecordatorioCanales" />
+
+        <div class="review-card">
+            @if (!string.IsNullOrWhiteSpace(Model.ImagenUrl))
+            {
+                <img src="@Url.Content("~" + Model.ImagenUrl)" alt="Lawn service" loading="lazy" />
+            }
+            <div class="review-list">
+                <div class="review-item"><i class="fas fa-rotate"></i><span>@Model.FrequencyLabel</span></div>
+                <div class="review-item"><i class="fas fa-house"></i><span>@Model.AreaLabel</span></div>
+                <div class="review-item"><i class="fas fa-tag"></i><span>Estimated total <strong>$@Model.PrecioTotal.ToString("0")</strong></span></div>
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Choose the first date</span>
+            <div class="date-scroll" id="dateGroup">
+                @foreach (var date in Model.DateOptions)
+                {
+                    <button type="button"
+                            class="date-chip @(date.Selected ? "active" : "")"
+                            data-date="@date.Date.ToString("yyyy-MM-dd")">
+                        <div class="day">@date.DayLabel</div>
+                        <div class="num">@date.DateLabel</div>
+                        <div class="day" style="font-size:.62rem;">@date.MonthLabel</div>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="field-card">
+            <span class="field-label">Time window</span>
+            <div class="time-grid" id="timeGroup">
+                @foreach (var slot in Model.TimeWindowOptions)
+                {
+                    <button type="button" class="time-btn" data-value="@slot.Code">
+                        @slot.Label<span class="check"><i class="fas fa-check"></i></span>
+                    </button>
+                }
+            </div>
+        </div>
+
+        <div class="reminder-card">
+            <div class="reminder-card-head">
+                <span class="reminder-icon"><i class="fas fa-bell"></i></span>
+                <div>
+                    <strong>Active reminder</strong>
+                    <p>We will notify you to schedule or repeat the service.</p>
+                </div>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="reminderToggle" @(Model.RecordatorioActivo ? "checked" : null) />
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="reminder-settings" id="reminderSettings">
+                <div class="reminder-setting-row">
+                    <span>Repeat reminder</span>
+                    <strong id="repeatLabel">@Model.FrequencyLabel</strong>
+                </div>
+                <div class="field-card" style="margin:10px 0 0;padding:10px 0 0;border:none;box-shadow:none;">
+                    <span class="field-label" style="font-size:.78rem;">Notify me</span>
+                    <div class="segment-group" id="leadGroup">
+                        @foreach (var lead in Model.ReminderLeadOptions)
+                        {
+                            <button type="button" class="segment-btn" data-value="@lead.Code">@lead.Label</button>
+                        }
+                    </div>
+                </div>
+                <div class="field-card" style="margin:0;padding:10px 0 0;border:none;box-shadow:none;">
+                    <span class="field-label" style="font-size:.78rem;">Reminder channel</span>
+                    <div class="segment-group" id="channelGroup">
+                        @foreach (var channel in Model.ReminderChannelOptions)
+                        {
+                            var selected = Model.RecordatorioCanales.Contains(channel.Code, StringComparison.OrdinalIgnoreCase);
+                            <button type="button" class="segment-btn @(selected ? "active" : "")" data-value="@channel.Code">@channel.Label</button>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
+        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+    </form>
+</div>
+<script>
+    (function () {
+        const channels = new Set((document.getElementById('RecordatorioCanales').value || 'Push').split('|').filter(Boolean));
+
+        function initSingle(groupId, selector, hiddenId, initial) {
+            const hidden = document.getElementById(hiddenId);
+            document.querySelectorAll('#' + groupId + ' ' + selector).forEach(btn => {
+                const val = btn.dataset.value || btn.dataset.date;
+                if (val === (initial || hidden.value)) btn.classList.add('active');
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('#' + groupId + ' ' + selector).forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    hidden.value = btn.dataset.value || btn.dataset.date;
+                });
+            });
+        }
+
+        initSingle('dateGroup', '.date-chip', 'FechaPreferida', '@Model.FechaPreferida.ToString("yyyy-MM-dd")');
+        initSingle('timeGroup', '.time-btn', 'VentanaHorario', '@Model.VentanaHorario');
+        initSingle('leadGroup', '.segment-btn', 'RecordatorioAvisoDias', '@Model.RecordatorioAvisoDias');
+
+        document.querySelectorAll('#channelGroup .segment-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const code = btn.dataset.value;
+                if (channels.has(code)) {
+                    channels.delete(code);
+                    btn.classList.remove('active');
+                } else {
+                    channels.add(code);
+                    btn.classList.add('active');
+                }
+                if (channels.size === 0) {
+                    channels.add('Push');
+                    document.querySelector('#channelGroup .segment-btn[data-value="Push"]')?.classList.add('active');
+                }
+                document.getElementById('RecordatorioCanales').value = Array.from(channels).join('|');
+            });
+        });
+
+        const toggle = document.getElementById('reminderToggle');
+        const hiddenReminder = document.getElementById('RecordatorioActivo');
+        const settings = document.getElementById('reminderSettings');
+        function syncReminder() {
+            const on = toggle.checked;
+            hiddenReminder.value = on ? 'true' : 'false';
+            settings.style.opacity = on ? '1' : '0.45';
+            settings.style.pointerEvents = on ? 'auto' : 'none';
+        }
+        toggle.addEventListener('change', syncReminder);
+        syncReminder();
+    })();
+</script>
+</body>
+</html>

@@ -1,5 +1,6 @@
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -15,8 +16,11 @@ public class RealtorController(
     RealtorPortalService portalService,
     RealtorNearbyNetworkService nearbyNetworkService,
     RealtorSharedQuoteService sharedQuoteService,
-    UserManager<ApplicationUser> userManager) : Controller
+    UserManager<ApplicationUser> userManager,
+    IWebHostEnvironment env) : Controller
 {
+    private const long MaxDocumentBytes = 10 * 1024 * 1024;
+    private static readonly string[] AllowedDocExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -261,6 +265,7 @@ public class RealtorController(
             subtitle: null,
             showStepper: false,
             cancellationToken);
+        ViewBag.ListingWizardPage = "intro";
         return View("NetworkListing/Intro", model);
     }
 
@@ -277,9 +282,10 @@ public class RealtorController(
             realtor,
             displayStep: 1,
             title: "Post Listing",
-            subtitle: "Why post your listing on INDOR?",
+            subtitle: null,
             showStepper: true,
             cancellationToken);
+        ViewBag.ListingWizardPage = "benefits";
         return View("NetworkListing/Benefits", model);
     }
 
@@ -294,6 +300,7 @@ public class RealtorController(
 
         var model = await nearbyNetworkService.BuildListingFormAsync(realtor, null, cancellationToken);
         model.WizardStep = 3;
+        ViewBag.ListingWizardPage = "details";
         return model == null
             ? NotFound()
             : View("NetworkListing/Details", model);
@@ -341,6 +348,7 @@ public class RealtorController(
 
         model.IsEdit = true;
         model.WizardStep = 2;
+        ViewBag.ListingWizardPage = "details";
         return View("NetworkListing/Details", model);
     }
 
@@ -414,11 +422,179 @@ public class RealtorController(
         model.BadgeLabel = shell.BadgeLabel;
         model.IsVerified = shell.IsVerified;
         model.HasNotifications = shell.HasNotifications;
+        ViewBag.ListingWizardPage = "details";
     }
 
     [HttpGet]
     public async Task<IActionResult> Profile(CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildProfileAsync(r, cancellationToken), cancellationToken);
+
+    [HttpGet]
+    public IActionResult EditProfile() =>
+        RedirectToAction(nameof(EditProfileContact), new { from = "public" });
+
+    [HttpGet]
+    public async Task<IActionResult> BusinessInformation(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildBusinessInformationAsync(realtor, cancellationToken);
+        return View("EditProfile/BusinessInformation", model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfileContact(string? from, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildEditProfileContactAsync(
+            realtor,
+            registration.GetLicenseStates(),
+            cancellationToken);
+
+        if (string.Equals(from, "public", StringComparison.OrdinalIgnoreCase))
+        {
+            model.BackAction = "PublicProfile";
+            model.BackController = "Realtor";
+        }
+
+        return View("EditProfile/EditProfileContact", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfileContact(
+        RealtorEditProfileContactViewModel model,
+        CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (!BrokerageNameAttribute.IsValidBrokerageName(model.BrokerageName, out var brokerageError))
+        {
+            ModelState.AddModelError(nameof(model.BrokerageName), brokerageError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.BusinessName))
+        {
+            ModelState.AddModelError(nameof(model.BusinessName), "Business name is required.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
+            model.LicenseStates = registration.GetLicenseStates();
+            return View("EditProfile/EditProfileContact", model);
+        }
+
+        await portalService.SaveEditProfileContactAsync(realtor, model, cancellationToken);
+        return RedirectToAction(nameof(EditProfileLicense));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfileLicense(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildEditProfileLicenseAsync(
+            realtor,
+            registration.GetLicenseStates(),
+            cancellationToken);
+        return View("EditProfile/EditProfileLicense", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(50_000_000)]
+    public async Task<IActionResult> EditProfileLicense(
+        RealtorEditProfileLicenseViewModel model,
+        List<string>? selectedSpecialties,
+        IFormFile? licensePhotoFile,
+        CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        model.SelectedSpecialties = selectedSpecialties?
+            .Where(s => !string.IsNullOrWhiteSpace(s))
+            .Take(3)
+            .ToList() ?? [];
+
+        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(model.LicenseNumber, out var licenseError))
+        {
+            ModelState.AddModelError(nameof(model.LicenseNumber), licenseError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.LicenseState))
+        {
+            ModelState.AddModelError(nameof(model.LicenseState), "License state is required.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
+            model.SpecialtyOptions = RealtorEditProfileOptions.Specialties;
+            model.ExperienceOptions = RealtorEditProfileOptions.ExperienceLevels;
+            model.LicenseStates = registration.GetLicenseStates();
+            model.DocumentSlots = (await registration.GetDocumentSlotsAsync(cancellationToken)).ToList();
+            return View("EditProfile/EditProfileLicense", model);
+        }
+
+        await portalService.SaveEditProfileLicenseAsync(realtor, model, cancellationToken);
+        await SaveLicenseDocumentAsync(realtor, licensePhotoFile, cancellationToken);
+        return RedirectToAction(nameof(EditProfileReview));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfileReview(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildEditProfileReviewAsync(realtor, cancellationToken);
+        return View("EditProfile/EditProfileReview", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [ActionName("SaveEditProfile")]
+    public async Task<IActionResult> SaveEditProfileReview(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        await portalService.FinalizeEditProfileAsync(realtor, cancellationToken);
+        return RedirectToAction(nameof(PublicProfile));
+    }
 
     [HttpGet]
     public async Task<IActionResult> PublicProfile(CancellationToken cancellationToken) =>
@@ -451,5 +627,49 @@ public class RealtorController(
 
         var model = await build(realtor);
         return View(model);
+    }
+
+    private async Task ApplyEditProfileShellAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileWizardViewModel model,
+        CancellationToken cancellationToken)
+    {
+        var shell = await portalService.BuildShellAsync(realtor, cancellationToken);
+        model.DisplayName = shell.DisplayName;
+        model.FullDisplayName = shell.FullDisplayName;
+        model.ProfilePhotoUrl = shell.ProfilePhotoUrl;
+        model.BadgeLabel = shell.BadgeLabel;
+        model.IsVerified = shell.IsVerified;
+        model.HasNotifications = shell.HasNotifications;
+    }
+
+    private async Task SaveLicenseDocumentAsync(
+        IndorRealtor realtor,
+        IFormFile? licensePhotoFile,
+        CancellationToken cancellationToken)
+    {
+        if (licensePhotoFile == null || licensePhotoFile.Length == 0)
+        {
+            return;
+        }
+
+        var ext = Path.GetExtension(licensePhotoFile.FileName);
+        if (!AllowedDocExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase) ||
+            licensePhotoFile.Length > MaxDocumentBytes)
+        {
+            return;
+        }
+
+        var folder = Path.Combine(env.WebRootPath, "uploads", "realtor-docs", realtor.Id.ToString());
+        Directory.CreateDirectory(folder);
+        var fileName = $"{RealtorDocumentTypes.LicensePhoto}-{Guid.NewGuid():N}{ext}";
+        var fullPath = Path.Combine(folder, fileName);
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await licensePhotoFile.CopyToAsync(stream, cancellationToken);
+        }
+
+        var relativeUrl = $"/uploads/realtor-docs/{realtor.Id}/{fileName}";
+        await registration.RegisterDocumentUploadAsync(RealtorDocumentTypes.LicensePhoto, relativeUrl, cancellationToken);
     }
 }

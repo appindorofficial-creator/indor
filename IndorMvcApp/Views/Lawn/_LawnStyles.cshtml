@@ -72,4 +72,22 @@
     .status-pill.green { background: rgba(34,197,94,0.12); color: #15803D; }
     .status-pill.blue { background: rgba(0,102,204,0.12); color: #0066CC; }
     .status-pill.purple { background: rgba(139,92,246,0.12); color: #6D28D9; }
+    .reminder-card { background: rgba(0,102,204,0.06); border: 1px solid rgba(0,102,204,0.15); border-radius: 16px; padding: 14px; margin-bottom: 14px; }
+    .reminder-card-head { display: flex; align-items: flex-start; gap: 10px; }
+    .reminder-card-head strong { display: block; font-size: .88rem; margin-bottom: 4px; }
+    .reminder-card-head p { margin: 0; font-size: .78rem; color: #64748B; line-height: 1.4; }
+    .reminder-icon { width: 36px; height: 36px; border-radius: 50%; background: rgba(0,102,204,0.15); color: #0066CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .toggle-switch { position: relative; width: 46px; height: 26px; flex-shrink: 0; margin-left: auto; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; inset: 0; background: #CBD5E1; border-radius: 999px; cursor: pointer; transition: .2s; }
+    .toggle-slider:before { content: ''; position: absolute; width: 20px; height: 20px; left: 3px; top: 3px; background: #FFF; border-radius: 50%; transition: .2s; }
+    .toggle-switch input:checked + .toggle-slider { background: #0066CC; }
+    .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+    .reminder-setting-row { display: flex; justify-content: space-between; align-items: center; font-size: .82rem; padding: 8px 0; border-bottom: 1px solid rgba(0,102,204,0.12); }
+    .field-hint { font-size: .76rem; color: #64748B; margin-top: 8px; line-height: 1.4; }
+    .review-summary-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px; }
+    .review-summary-card { display: flex; align-items: flex-start; gap: 12px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px; }
+    .review-summary-icon { width: 36px; height: 36px; border-radius: 10px; background: rgba(0,102,204,0.1); color: #0066CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .review-summary-card .k { display: block; font-size: .68rem; color: #94A3B8; font-weight: 700; text-transform: uppercase; letter-spacing: .4px; margin-bottom: 2px; }
+    .review-summary-card strong { font-size: .88rem; line-height: 1.35; }
 </style>

@@ -465,9 +465,13 @@ public static class ScheduleDisplayService
             var solicitud = lawnSolicitudes.FirstOrDefault(s => s.MicroservicioId == lawnMicro.Id);
             if (solicitud != null)
             {
-                var action = solicitud.Estado is "Submitted" or "AddonsCompleted"
-                    ? "LawnReview"
-                    : "LawnSetup";
+                var action = solicitud.Estado switch
+                {
+                    "Submitted" => "LawnConfirmed",
+                    "ScheduleCompleted" => "LawnReview",
+                    "SetupCompleted" => "LawnSchedule",
+                    _ => "LawnSetup"
+                };
                 return url.Action(action, "Lawn", new { id = solicitud.Id }) ?? "#";
             }
 

@@ -143,6 +143,7 @@ public static class NearbyNetworkCardTypes
     public const string Provider = "Provider";
     public const string Promotion = "Promotion";
     public const string Emergency = "Emergency";
+    public const string NeighborRequest = "NeighborRequest";
 }
 
 public static class NearbyNetworkFilterCategories
@@ -153,4 +154,5 @@ public static class NearbyNetworkFilterCategories
     public const string Providers = "Providers";
     public const string Promotions = "Promotions";
     public const string Emergency = "Emergency";
+    public const string NeighborRequests = "NeighborRequests";
 }

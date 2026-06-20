@@ -6,6 +6,7 @@ public sealed class InspectionAnalysisFinding
     public string Description { get; set; } = string.Empty;
     public string? SourceExcerpt { get; set; }
     public string? SourceSection { get; set; }
+    public string? SourceSectionNumber { get; set; }
     public int? SourcePage { get; set; }
     public string Priority { get; set; } = "Moderate";
     public string Trade { get; set; } = "Electrical";

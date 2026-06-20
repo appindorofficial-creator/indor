@@ -1,0 +1,31 @@
+@{
+    var activeView = ViewData["HomeViewSwitcherActive"] as string ?? "network";
+    var isNetwork = activeView == "network";
+    var isMyHome = activeView == "myhome";
+}
+
+<div class="hv-view-switcher" role="tablist" aria-label="Home view">
+    <button type="button"
+            class="hv-view-card @(isNetwork ? "is-active" : null) nav-jump"
+            data-target="section-home"
+            role="tab"
+            aria-selected="@(isNetwork ? "true" : "false")">
+        <i class="fas fa-users hv-view-icon" aria-hidden="true"></i>
+        <span class="hv-view-copy">
+            <strong>Nearby Network</strong>
+            <small>Feed, neighbors, local help</small>
+        </span>
+    </button>
+    <button type="button"
+            class="hv-view-card @(isMyHome ? "is-active" : null) nav-jump"
+            data-target="section-mydashboard"
+            role="tab"
+            aria-selected="@(isMyHome ? "true" : "false")">
+        <i class="fas fa-house hv-view-icon" aria-hidden="true"></i>
+        <span class="hv-view-copy">
+            <strong>My Home</strong>
+            <small>Your home dashboard</small>
+        </span>
+    </button>
+</div>
+<p class="hv-view-switcher-hint">Switch between community view and your personal home.</p>

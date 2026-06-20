@@ -86,10 +86,12 @@
     <section class="rl-listing-section">
         <div class="rl-form-field">
             <label asp-for="Address" class="rl-form-label">Address</label>
-            <div class="rl-listing-address-row">
-                <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
-                <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
-                <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation">
+            <div class="rl-listing-address-row rl-listing-address-row--inline">
+                <div class="rl-listing-address-field">
+                    <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
+                    <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
+                </div>
+                <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation" aria-label="Use my location">
                     <i class="fas fa-crosshairs"></i>
                     <span>Use My Location</span>
                 </button>
@@ -139,7 +141,7 @@
             </select>
         </div>
 
-        <div class="rl-form-grid rl-form-grid--2">
+        <div class="rl-form-grid rl-form-grid--4">
             <div class="rl-form-field">
                 <label asp-for="Bedrooms" class="rl-form-label"><i class="fas fa-bed rl-field-icon"></i> Beds</label>
                 <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" placeholder="Beds" />
@@ -205,9 +207,6 @@
                 }
             </select>
         </div>
-        <p class="rl-listing-nearby-note">
-            People searching Nearby within this radius will see your listing on the map and feed — so you know what's active around you.
-        </p>
     </section>
 
     <section class="rl-listing-section">
@@ -216,21 +215,21 @@
         <div class="rl-listing-program-select rl-listing-program-select--3">
             <label class="rl-listing-program-select-card @(Model.PromoteInNearbyFeed ? "is-selected" : "")">
                 <input asp-for="PromoteInNearbyFeed" type="checkbox" />
-                <i class="fas fa-bullhorn"></i>
+                <i class="fas fa-bullhorn rl-program-icon rl-program-icon--blue"></i>
                 <strong>Promote in Nearby Feed</strong>
                 <span>Increase visibility in the local feed.</span>
                 <i class="fas fa-circle-check rl-listing-program-check"></i>
             </label>
             <label class="rl-listing-program-select-card @(Model.PromoteOpenHouseProgram ? "is-selected" : "")">
                 <input asp-for="PromoteOpenHouseProgram" type="checkbox" />
-                <i class="fas fa-house"></i>
+                <i class="fas fa-house rl-program-icon rl-program-icon--green"></i>
                 <strong>Open House</strong>
                 <span>Highlight an open house event.</span>
                 <i class="fas fa-circle-check rl-listing-program-check"></i>
             </label>
             <label class="rl-listing-program-select-card @(Model.FeaturedListing ? "is-selected" : "")">
                 <input asp-for="FeaturedListing" type="checkbox" />
-                <i class="fas fa-star"></i>
+                <i class="fas fa-star rl-program-icon rl-program-icon--purple"></i>
                 <strong>Featured Listing</strong>
                 <span>Top placement in the Nearby feed.</span>
                 <i class="fas fa-circle-check rl-listing-program-check"></i>
@@ -243,14 +242,14 @@
         <p>All inquiries from this listing will come through INDOR messages. You'll be notified and can respond directly in the app.</p>
     </div>
 
-    <div class="rl-listing-publish-actions @(Model.IsEdit ? "" : "rl-listing-publish-actions--dual")">
+    <footer class="rl-listing-details-footer @(Model.IsEdit ? "" : "rl-listing-details-footer--dual")">
         @if (Model.IsEdit)
         {
-            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-listing-btn-outline">Cancel</a>
+            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-listing-btn-secondary">Cancel</a>
         }
-        <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-outline">Save Draft</button>
-        <button type="submit" class="ob-btn ob-btn-primary">@(Model.IsEdit ? "Save Listing" : "Publish Listing")</button>
-    </div>
+        <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-secondary">Save Draft</button>
+        <button type="submit" class="rl-listing-btn-primary">@(Model.IsEdit ? "Save Listing" : "Publish Listing")</button>
+    </footer>
 </form>
 
 @section Scripts {

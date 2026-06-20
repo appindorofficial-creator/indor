@@ -15,9 +15,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/realtor-portal.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-listing-wizard.css" asp-append-version="true" />
     @await Html.PartialAsync("_TabletResponsiveHead")
 </head>
-<body class="rl-dash-page">
+<body class="rl-dash-page rl-listing-wizard-page @(ViewBag.ListingWizardPage != null ? $"rl-listing-wizard-page--{ViewBag.ListingWizardPage}" : "")">
     <div class="rl-listing-wizard-shell">
         @if (wizardModel != null)
         {
@@ -43,17 +44,8 @@
                     : "Add details to showcase your property",
                 DisplayStep = formModel.WizardStep,
                 TotalSteps = formModel.WizardTotalSteps,
-                ShowStepper = !formModel.IsEdit
+                ShowStepper = false
             })
-            if (!formModel.IsEdit)
-            {
-                @await Html.PartialAsync("~/Views/Realtor/NetworkListing/_ListingStepper.cshtml", new IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel
-                {
-                    DisplayStep = formModel.WizardStep,
-                    TotalSteps = formModel.WizardTotalSteps,
-                    ShowStepper = true
-                })
-            }
         }
         @RenderBody()
     </div>

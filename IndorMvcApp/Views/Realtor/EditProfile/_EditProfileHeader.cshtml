@@ -1,0 +1,35 @@
+@model IndorMvcApp.ViewModels.RealtorEditProfileWizardViewModel
+
+<header class="rl-ep-header">
+    <a asp-controller="@Model.BackController" asp-action="@Model.BackAction" class="rl-ep-back" aria-label="Back">
+        <i class="fas fa-chevron-left"></i>
+    </a>
+    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-ep-logo">
+        <i class="fas fa-house"></i> INDOR
+    </a>
+    @if (!string.IsNullOrWhiteSpace(Model.HeaderBadge))
+    {
+        <span class="rl-ep-badge @(Model.HeaderBadge.Contains("Final") ? "is-final" : "")">
+            @if (!Model.HeaderBadge.Contains("Final"))
+            {
+                <i class="fas fa-star"></i>
+            }
+            @Model.HeaderBadge
+        </span>
+    }
+</header>
+
+<section class="rl-ep-hero">
+    <h1 class="rl-ep-title">@Model.Title</h1>
+    @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+    {
+        <p class="rl-ep-subtitle">@Model.Subtitle</p>
+    }
+    <p class="rl-ep-step-label">Step @Model.DisplayStep of @Model.TotalSteps</p>
+    <div class="rl-ep-stepper" aria-label="Edit profile progress">
+        @for (var i = 1; i <= Model.TotalSteps; i++)
+        {
+            <span class="rl-ep-step-segment @(i <= Model.DisplayStep ? "is-active" : "")"></span>
+        }
+    </div>
+</section>

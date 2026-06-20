@@ -1,0 +1,69 @@
+@model IndorMvcApp.ViewModels.RealtorBusinessInformationViewModel
+@{
+    ViewData["Title"] = "Business Information";
+    ViewBag.NavActive = "profile";
+}
+
+<section class="rl-ep-progress-card">
+    <div class="rl-ep-progress-ring" style="--progress:@Model.ProfileCompletionPercent">
+        <span>@Model.ProfileCompletionPercent%</span>
+    </div>
+    <div class="rl-ep-progress-copy">
+        <strong>Profile @Model.ProfileCompletionPercent% complete</strong>
+        <p>Complete your business information to build trust and grow your visibility.</p>
+    </div>
+    <img src="~/welcome-house.png" alt="" class="rl-ep-progress-art" />
+</section>
+
+<nav class="rl-ep-summary-list" aria-label="Business information fields">
+    @foreach (var row in Model.Rows)
+    {
+        var rowClass = $"rl-ep-summary-row{(row.IsEmpty ? " is-empty" : "")}";
+        if (row.EditUrl != null)
+        {
+            <a href="@row.EditUrl" class="@rowClass">
+                <span class="rl-ep-row-icon"><i class="fas @row.Icon"></i></span>
+                <span class="rl-ep-row-body">
+                    <span class="rl-ep-row-label">@row.Label</span>
+                    @if (row.Key == "license")
+                    {
+                        <span class="rl-ep-row-value rl-ep-row-value--license">
+                            @if (!string.IsNullOrWhiteSpace(row.StatusBadge))
+                            {
+                                <span class="rl-ep-status @row.StatusCss">@row.StatusBadge</span>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(row.Value))
+                            {
+                                <span>@row.Value</span>
+                            }
+                        </span>
+                    }
+                    else
+                    {
+                        <span class="rl-ep-row-value">@row.Value</span>
+                    }
+                </span>
+                <i class="fas fa-chevron-right rl-ep-row-chevron"></i>
+            </a>
+        }
+        else
+        {
+            <div class="@rowClass">
+                <span class="rl-ep-row-icon"><i class="fas @row.Icon"></i></span>
+                <span class="rl-ep-row-body">
+                    <span class="rl-ep-row-label">@row.Label</span>
+                    <span class="rl-ep-row-value">@row.Value</span>
+                </span>
+            </div>
+        }
+    }
+</nav>
+
+<div class="rl-ep-privacy">
+    <i class="fas fa-lock"></i>
+    <p>Your phone number stays private. Clients contact you through INDOR messaging.</p>
+</div>
+
+<footer class="rl-ep-footer">
+    <a asp-controller="Realtor" asp-action="EditProfileContact" class="rl-ep-btn-primary">Continue</a>
+</footer>

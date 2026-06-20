@@ -84,9 +84,10 @@ public class RealtorProviderBridgeService(AppDbContext db) : IRealtorProviderBri
             f.Trade,
             f.AiScore,
             f.SourceSection,
+            f.SourceSectionNumber,
             f.SourcePage,
             f.SourceExcerpt,
-            reportReference = BuildReportReference(f.SourceSection, f.SourcePage)
+            reportReference = BuildReportReference(f.SourceSectionNumber, f.SourceSection, f.SourcePage)
         });
 
         var problem = tradeFindings.Count > 0
@@ -342,7 +343,7 @@ public class RealtorProviderBridgeService(AppDbContext db) : IRealtorProviderBri
             lines.Add($"  Summary: {f.Description}");
         }
 
-        var reference = BuildReportReference(f.SourceSection, f.SourcePage);
+        var reference = BuildReportReference(f.SourceSectionNumber, f.SourceSection, f.SourcePage);
         if (!string.IsNullOrWhiteSpace(reference))
         {
             lines.Add($"  In report: {reference} (open the PDF at this section/page to view inspector photos)");
@@ -357,9 +358,14 @@ public class RealtorProviderBridgeService(AppDbContext db) : IRealtorProviderBri
         return string.Join('\n', lines);
     }
 
-    private static string? BuildReportReference(string? section, int? page)
+    private static string? BuildReportReference(string? sectionNumber, string? section, int? page)
     {
         var parts = new List<string>();
+        if (!string.IsNullOrWhiteSpace(sectionNumber))
+        {
+            parts.Add(sectionNumber.Trim());
+        }
+
         if (!string.IsNullOrWhiteSpace(section))
         {
             parts.Add(section.Trim());

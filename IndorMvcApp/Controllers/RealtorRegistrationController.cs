@@ -75,6 +75,8 @@ public class RealtorRegistrationController(
         string licenseNumber,
         string licenseState,
         string serviceAreas,
+        string officeAddress,
+        string languages,
         bool professionalTermsAccepted)
     {
         var state = await registration.GetAsync();
@@ -105,6 +107,8 @@ public class RealtorRegistrationController(
             state.LicenseNumber = licenseNumber?.Trim() ?? "";
             state.LicenseState = licenseState?.Trim() ?? "";
             state.ServiceAreas = serviceAreas?.Trim() ?? "";
+            state.OfficeAddress = officeAddress?.Trim() ?? "";
+            state.Languages = languages?.Trim() ?? "";
             state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
             return View(StepVm(2, "Realtor Verification",
@@ -117,6 +121,8 @@ public class RealtorRegistrationController(
         state.LicenseNumber = licenseNumber.Trim();
         state.LicenseState = licenseState.Trim();
         state.ServiceAreas = serviceAreas?.Trim() ?? "";
+        state.OfficeAddress = officeAddress?.Trim() ?? "";
+        state.Languages = languages?.Trim() ?? "";
         state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
         await registration.SaveProfileAsync(state);

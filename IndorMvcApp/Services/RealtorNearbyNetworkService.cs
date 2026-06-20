@@ -314,6 +314,7 @@ public class RealtorNearbyNetworkService(
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
             DisplayStep = displayStep,
+            TotalSteps = 4,
             Title = title,
             Subtitle = subtitle,
             ShowStepper = showStepper

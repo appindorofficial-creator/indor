@@ -1,0 +1,76 @@
+@model IndorMvcApp.ViewModels.NeighborRequestDescribeStepViewModel
+@{
+    ViewData["Title"] = "Post a Request";
+}
+
+<div class="nr-wizard-heading">
+    <h1>Describe your request</h1>
+    <p>@Model.CategoryLabel</p>
+</div>
+
+<form asp-action="Describe" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PropiedadId" />
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+    <div class="nr-field">
+        <label asp-for="Title">Title</label>
+        <input asp-for="Title" class="nr-input" placeholder="Need lawn cleanup this week" maxlength="200" />
+        <span asp-validation-for="Title" class="field-validation-error"></span>
+    </div>
+
+    <div class="nr-field">
+        <label asp-for="Description">Description</label>
+        <textarea asp-for="Description" class="nr-textarea" maxlength="500" placeholder="Share timing, scope, or anything helpful for neighbors."></textarea>
+        <div class="nr-char-count"><span id="nrDescCount">0</span>/500</div>
+    </div>
+
+    <div class="nr-field">
+        <label>Add photos (optional)</label>
+        <label class="nr-photo-btn" style="display:block;margin-bottom:10px;">
+            <i class="fas fa-image"></i>
+            Add photos
+            <input type="file" asp-for="PhotoFiles" accept="image/jpeg,image/png,image/webp" multiple hidden />
+        </label>
+        @if (Model.ExistingPhotoUrls.Count > 0)
+        {
+            <div class="nr-photo-preview">
+                @foreach (var photo in Model.ExistingPhotoUrls)
+                {
+                    <img src="@Url.Content("~" + photo)" alt="" />
+                }
+            </div>
+        }
+    </div>
+
+    <div class="nr-field">
+        <label asp-for="LocationAddress">Location</label>
+        <div class="nr-location-row">
+            <input asp-for="LocationAddress" class="nr-input" />
+            <i class="fas fa-pen" style="color:#0066CC;"></i>
+        </div>
+        <span asp-validation-for="LocationAddress" class="field-validation-error"></span>
+    </div>
+
+    <div class="nr-field">
+        <label asp-for="NeededByDate">When do you need it?</label>
+        <input asp-for="NeededByDate" type="date" class="nr-input" />
+    </div>
+
+    <button type="submit" class="nr-btn-primary">Next</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var textarea = document.querySelector('[name="Description"]');
+            var counter = document.getElementById('nrDescCount');
+            if (!textarea || !counter) return;
+            var update = function () { counter.textContent = String(textarea.value.length); };
+            textarea.addEventListener('input', update);
+            update();
+        })();
+    </script>
+}

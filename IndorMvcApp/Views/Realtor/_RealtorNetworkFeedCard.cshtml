@@ -1,4 +1,50 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkFeedCardViewModel
+@if (Model.CardType == "mypost")
+{
+    <article class="rl-network-card rl-network-card--mypost">
+        @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
+        {
+            <div class="rl-network-card-media">
+                <img src="@Url.Content("~" + Model.ImageUrl)" alt="" class="rl-network-card-img" />
+                <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@Model.BadgeLabel</span>
+            </div>
+        }
+
+        <div class="rl-network-card-body">
+            <div class="rl-network-card-head">
+                <div class="rl-network-card-copy">
+                    <strong class="rl-network-card-title">@Model.Title</strong>
+                    @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+                    {
+                        <span class="rl-network-card-sub">@Model.Subtitle</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
+                    {
+                        <span class="rl-network-card-meta rl-network-card-meta--address">
+                            <i class="fas fa-location-dot"></i> @Model.MetaLabel
+                        </span>
+                    }
+                </div>
+                <div class="rl-network-card-side">
+                    @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
+                    {
+                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                    }
+                </div>
+            </div>
+
+            <div class="rl-network-card-actions">
+                <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
+                {
+                    <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                }
+            </div>
+        </div>
+    </article>
+}
+else
+{
 <article class="rl-network-card rl-network-card--@Model.CardType">
     @if (!string.IsNullOrWhiteSpace(Model.ImageUrl))
     {
@@ -66,3 +112,4 @@
         </div>
     </div>
 </article>
+}

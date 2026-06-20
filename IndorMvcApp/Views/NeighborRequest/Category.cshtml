@@ -1,0 +1,86 @@
+@model IndorMvcApp.ViewModels.NeighborRequestCategoryStepViewModel
+@{
+    ViewData["Title"] = "Post a Request";
+}
+
+<div class="nr-category-hero">
+    <div class="nr-category-hero-copy">
+        <h1>What do you need help with?</h1>
+        <p>Choose a category to continue</p>
+    </div>
+    <div class="nr-category-hero-art" aria-hidden="true">
+        <img src="@Url.Content("~/images/nr-category-hero.svg")" alt="" width="108" height="86" />
+    </div>
+</div>
+
+@if (Model.Categories.Count == 0)
+{
+    <div class="nr-empty">
+        <p>Request categories are not available yet. Run the database script and try again.</p>
+    </div>
+}
+else
+{
+    <div class="nr-category-search">
+        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
+        <input type="search"
+               id="nrCategorySearch"
+               placeholder="Search categories"
+               autocomplete="off"
+               aria-label="Search categories" />
+    </div>
+
+    <div class="nr-category-list" id="nrCategoryList">
+        @foreach (var category in Model.Categories)
+        {
+            var searchText = $"{category.Label} {category.Description}".Trim().ToLowerInvariant();
+            var isSelected = Model.SelectedCategoryId == category.Id;
+            <form asp-action="Category" method="post" class="nr-category-form" data-category-search="@searchText">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
+                <input type="hidden" name="categoryId" value="@category.Id" />
+                <button type="submit" class="nr-category-btn @(isSelected ? "is-selected" : null)">
+                    <span class="nr-category-icon"><i class="fas @category.IconClass" aria-hidden="true"></i></span>
+                    <span class="nr-category-copy">
+                        <span class="nr-category-title">@category.Label</span>
+                        @if (!string.IsNullOrWhiteSpace(category.Description))
+                        {
+                            <span class="nr-category-desc">@category.Description</span>
+                        }
+                    </span>
+                    <i class="fas fa-chevron-right nr-category-chevron" aria-hidden="true"></i>
+                </button>
+            </form>
+        }
+    </div>
+
+    <p class="nr-category-empty-search hidden" id="nrCategoryEmptySearch">No categories match your search.</p>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            var input = document.getElementById('nrCategorySearch');
+            var list = document.getElementById('nrCategoryList');
+            var empty = document.getElementById('nrCategoryEmptySearch');
+            if (!input || !list) return;
+
+            input.addEventListener('input', function () {
+                var term = (input.value || '').trim().toLowerCase();
+                var forms = list.querySelectorAll('.nr-category-form');
+                var visible = 0;
+
+                forms.forEach(function (form) {
+                    var haystack = form.getAttribute('data-category-search') || '';
+                    var show = !term || haystack.indexOf(term) !== -1;
+                    form.classList.toggle('is-hidden', !show);
+                    if (show) visible++;
+                });
+
+                if (empty) {
+                    empty.classList.toggle('hidden', visible > 0 || !term);
+                }
+            });
+        })();
+    </script>
+}

@@ -45,7 +45,7 @@
     @if (Model.IncludedItems.Count > 0)
     {
         <div class="includes-box">
-            <div class="includes-label">Includes</div>
+            <div class="includes-label">What's included</div>
             <ul>
                 @foreach (var item in Model.IncludedItems)
                 {
@@ -58,19 +58,37 @@
     @if (!string.IsNullOrWhiteSpace(Model.PrecioTexto))
     {
         <div class="lawn-price-row">
-            <span class="prefix">From</span>
+            <span class="prefix">Starting at</span>
             <span class="amount">$@Model.PrecioDesde.ToString("0")</span>
             <span class="prefix">USD</span>
         </div>
     }
 
+    <div class="reminder-card">
+        <div class="reminder-card-head">
+            <span class="reminder-icon"><i class="fas fa-bell"></i></span>
+            <div>
+                <strong>@Model.ReminderBannerTitulo</strong>
+                <p>@Model.ReminderBannerTexto</p>
+            </div>
+            <label class="toggle-switch">
+                <input type="checkbox" id="reminderToggle" @(Model.RecordatorioActivo ? "checked" : null) />
+                <span class="toggle-slider"></span>
+            </label>
+        </div>
+    </div>
+
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="LawnService" method="post">
+    <form asp-action="LawnService" method="post" id="serviceForm">
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="SolicitudId" />
+        <input type="hidden" asp-for="RecordatorioActivo" id="RecordatorioActivo" value="@(Model.RecordatorioActivo ? "true" : "false")" />
         <button type="submit" name="action" value="continue" class="btn-primary">
             <i class="fas fa-sliders"></i> @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+        </button>
+        <button type="submit" name="action" value="remindOnly" class="btn-outline" style="margin-top:10px;">
+            <i class="fas fa-bell"></i> @Model.RemindOnlyCtaTexto
         </button>
     </form>
 
@@ -82,5 +100,16 @@
         </div>
     }
 </div>
+<script>
+    (function () {
+        const toggle = document.getElementById('reminderToggle');
+        const hidden = document.getElementById('RecordatorioActivo');
+        if (toggle && hidden) {
+            toggle.addEventListener('change', () => {
+                hidden.value = toggle.checked ? 'true' : 'false';
+            });
+        }
+    })();
+</script>
 </body>
 </html>

@@ -1,0 +1,80 @@
+@model IndorMvcApp.ViewModels.NeighborRequestPreferencesStepViewModel
+@{
+    ViewData["Title"] = "Post a Request";
+}
+
+<div class="nr-wizard-heading">
+    <h1>Preferences</h1>
+    <p>Tell us how you'd like help</p>
+</div>
+
+<form asp-action="Preferences" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PropiedadId" />
+
+    <div class="nr-pref-card">
+        <div class="nr-section-title">
+            <span class="nr-section-icon"><i class="fas fa-clock"></i></span>
+            <span>Estimated time<br /><small class="nr-section-sub">When do you need help?</small></span>
+        </div>
+
+        <div class="nr-pref-options">
+            @foreach (var option in Model.TimelineOptions)
+            {
+                <label class="nr-pref-option">
+                    <input type="radio" name="TimelineCode" value="@option.Value" @(Model.TimelineCode == option.Value ? "checked" : null) />
+                    <span class="nr-pref-option-body">
+                        <span class="nr-option-radio"></span>
+                        <span>@option.Label</span>
+                    </span>
+                </label>
+            }
+        </div>
+    </div>
+
+    <div class="nr-pref-card">
+        <div class="nr-section-title">
+            <span class="nr-section-icon"><i class="fas fa-users"></i></span>
+            <span>Who can help?<br /><small class="nr-section-sub">Choose who can respond to your request</small></span>
+        </div>
+
+        <div class="nr-pref-options">
+            @foreach (var option in Model.AudienceOptions)
+            {
+                <label class="nr-pref-option nr-pref-option--audience">
+                    <input type="radio" name="AudienceCode" value="@option.Value" @(Model.AudienceCode == option.Value ? "checked" : null) />
+                    <span class="nr-pref-option-body">
+                        <span class="nr-audience-icon"><i class="fas @option.IconClass"></i></span>
+                        <span class="nr-pref-option-copy">
+                            <strong>@option.Label</strong>
+                            <small>@option.Subtitle</small>
+                        </span>
+                        <span class="nr-option-radio"></span>
+                    </span>
+                </label>
+            }
+        </div>
+    </div>
+
+    <button type="button" class="nr-budget-row" id="nrBudgetToggle">
+        <span class="nr-audience-icon"><i class="fas fa-dollar-sign"></i></span>
+        <span class="nr-budget-row-label">Add budget (optional)</span>
+        <i class="fas fa-chevron-right nr-budget-row-chevron"></i>
+    </button>
+    <div class="nr-budget-panel" id="nrBudgetPanel">
+        <div class="nr-field">
+            <label asp-for="BudgetAmount">Budget amount</label>
+            <input asp-for="BudgetAmount" type="number" min="0" step="1" class="nr-input" placeholder="150" />
+        </div>
+    </div>
+
+    <button type="submit" class="nr-btn-primary">Next</button>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('nrBudgetToggle')?.addEventListener('click', function () {
+            document.getElementById('nrBudgetPanel')?.classList.toggle('is-open');
+        });
+    </script>
+}

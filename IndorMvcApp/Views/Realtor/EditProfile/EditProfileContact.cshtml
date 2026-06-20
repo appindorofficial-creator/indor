@@ -1,0 +1,111 @@
+@model IndorMvcApp.ViewModels.RealtorEditProfileContactViewModel
+@{
+    ViewData["Title"] = "Company & Contact Details";
+}
+
+<form asp-action="EditProfileContact" method="post" class="rl-ep-form" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+
+    <div class="rl-ep-form-card">
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-store"></i></span>
+            <label class="rl-ep-field">
+                <span>Business Name</span>
+                <input asp-for="BusinessName" placeholder="Business name" autocomplete="organization" />
+            </label>
+        </div>
+        <span asp-validation-for="BusinessName" class="rl-field-error"></span>
+
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-user-group"></i></span>
+            <label class="rl-ep-field">
+                <span>Display Name (Public)</span>
+                <input asp-for="PublicDisplayName" placeholder="Public display name" />
+            </label>
+        </div>
+
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-building"></i></span>
+            <label class="rl-ep-field">
+                <span>Brokerage Name</span>
+                <input asp-for="BrokerageName" placeholder="Brokerage name" autocomplete="organization" />
+            </label>
+        </div>
+        <span asp-validation-for="BrokerageName" class="rl-field-error"></span>
+
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-briefcase"></i></span>
+            <label class="rl-ep-field">
+                <span>Realtor Title</span>
+                <input asp-for="RealtorTitle" placeholder="Realtor®" />
+            </label>
+        </div>
+
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-envelope"></i></span>
+            <label class="rl-ep-field">
+                <span>Email</span>
+                <input asp-for="Email" type="email" placeholder="Email" autocomplete="email" />
+            </label>
+        </div>
+
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-globe"></i></span>
+            <label class="rl-ep-field">
+                <span>Website</span>
+                <input asp-for="Website" placeholder="www.example.com" autocomplete="url" />
+            </label>
+        </div>
+
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-location-dot"></i></span>
+            <label class="rl-ep-field">
+                <span>Office Address</span>
+                <input asp-for="OfficeAddress" placeholder="123 Business Ave, Suite 101" autocomplete="street-address" />
+            </label>
+        </div>
+
+        <div class="rl-ep-address-grid">
+            <label class="rl-ep-field rl-ep-field--compact">
+                <span>City</span>
+                <input asp-for="OfficeCity" placeholder="City" />
+            </label>
+            <label class="rl-ep-field rl-ep-field--compact">
+                <span>State</span>
+                <select asp-for="OfficeState">
+                    <option value="">State</option>
+                    @foreach (var st in Model.LicenseStates)
+                    {
+                        <option value="@st">@st</option>
+                    }
+                </select>
+            </label>
+            <label class="rl-ep-field rl-ep-field--compact">
+                <span>ZIP</span>
+                <input asp-for="OfficeZip" placeholder="ZIP" inputmode="numeric" />
+            </label>
+        </div>
+
+        <div class="rl-ep-languages">
+            <span class="rl-ep-languages-label">Languages Spoken</span>
+            <div class="rl-ep-language-chips" id="rlLanguageChips" data-initial="@string.Join(",", Model.Languages)"></div>
+            <input type="hidden" asp-for="LanguagesCsv" id="rlLanguagesInput" />
+            <button type="button" class="rl-ep-language-add" id="rlLanguageAddBtn">+ Add</button>
+        </div>
+    </div>
+
+    <div class="rl-ep-privacy">
+        <i class="fas fa-lock"></i>
+        <p>Your phone number stays private. Clients contact you through INDOR messaging.</p>
+    </div>
+
+    <footer class="rl-ep-footer">
+        <button type="submit" class="rl-ep-btn-primary">Save &amp; Continue</button>
+    </footer>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/realtor-edit-profile.js" asp-append-version="true"></script>
+}

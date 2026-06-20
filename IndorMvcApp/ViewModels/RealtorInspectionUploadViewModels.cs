@@ -64,6 +64,9 @@ public class RealtorInspectionPrioritiesViewModel : RealtorInspectionUploadStepV
     public string ReportFileName { get; set; } = "";
     public string? ReportPdfUrl { get; set; }
     public string? AnalysisSummary { get; set; }
+    public string ReportDateLabel { get; set; } = "";
+    public string InspectorLabel { get; set; } = "Residential Home Inspection";
+    public string AnalyzedLabel { get; set; } = "Today";
     public int TotalFindings { get; set; }
     public int UrgentCount { get; set; }
     public int HighCount { get; set; }
@@ -81,8 +84,10 @@ public class RealtorInspectionFindingCardViewModel
     public string? Description { get; set; }
     public string? SourceExcerpt { get; set; }
     public string? SourceSection { get; set; }
+    public string? SourceSectionNumber { get; set; }
     public int? SourcePage { get; set; }
     public string? ReportReference { get; set; }
+    public string? SourceLineItem { get; set; }
     public string Priority { get; set; } = "";
     public string PriorityCss { get; set; } = "";
     public string Trade { get; set; } = "";

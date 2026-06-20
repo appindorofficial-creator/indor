@@ -18,21 +18,24 @@ public class HomeController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<HomeController> _logger;
     private readonly IConfiguration _configuration;
+    private readonly HomeownerNearbyNetworkService _nearbyNetworkService;
 
     public HomeController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         ILogger<HomeController> logger,
-        IConfiguration configuration)
+        IConfiguration configuration,
+        HomeownerNearbyNetworkService nearbyNetworkService)
     {
         _db = db;
         _userManager = userManager;
         _logger = logger;
         _configuration = configuration;
+        _nearbyNetworkService = nearbyNetworkService;
     }
 
     [Authorize]
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(string? view, string? filter, string? q)
     {
         var userId = _userManager.GetUserId(User);
         var usuario = await _userManager.GetUserAsync(User);
@@ -708,6 +711,38 @@ public class HomeController : Controller
             ViewBag.HomeDashboard = HomeDashboardDisplayService.BuildEmpty(usuario);
         }
 
+        var primaryPropiedadForNetwork = propiedades.FirstOrDefault();
+        var primaryInfoForNetwork = primaryPropiedadForNetwork != null
+            ? MyHomeDisplayService.DeserializeProperty(primaryPropiedadForNetwork)
+            : null;
+        var networkNotificationCount = (ViewBag.HomeDashboard as HomeDashboardViewModel)?.NotificationCount ?? 0;
+
+        try
+        {
+            ViewBag.HomeNearbyNetwork = await _nearbyNetworkService.BuildAsync(
+                primaryPropiedadForNetwork,
+                primaryInfoForNetwork,
+                networkNotificationCount,
+                view,
+                filter,
+                q,
+                Url,
+                userId);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to build homeowner nearby network feed");
+            ViewBag.HomeNearbyNetwork = new HomeownerNearbyNetworkViewModel
+            {
+                HasProperty = primaryPropiedadForNetwork != null,
+                PropiedadId = primaryPropiedadForNetwork?.Id ?? 0,
+                NotificationCount = networkNotificationCount,
+                ActiveView = string.Equals(view, "map", StringComparison.OrdinalIgnoreCase) ? "map" : "feed",
+                ActiveFilter = filter ?? "All",
+                SearchQuery = q
+            };
+        }
+
         if (primaryPropiedad != null && !string.IsNullOrWhiteSpace(primaryPropiedad.AttomRawJson))
         {
             var info = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
@@ -807,6 +842,45 @@ public class HomeController : Controller
         }
 
         return View(model);
+    }
+
+    [Authorize]
+    [HttpGet]
+    public async Task<IActionResult> NearbyNetworkMapData(
+        double? lat,
+        double? lng,
+        string? addressQuery,
+        string? filter,
+        CancellationToken cancellationToken)
+    {
+        var userId = _userManager.GetUserId(User);
+        var propiedad = await _db.Propiedades
+            .AsNoTracking()
+            .Where(p => p.UserId == userId && p.Activo)
+            .OrderByDescending(p => p.FechaCreacion)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (propiedad == null)
+        {
+            return NotFound();
+        }
+
+        var info = MyHomeDisplayService.DeserializeProperty(propiedad);
+        var data = await _nearbyNetworkService.GetMapDataAsync(
+            propiedad,
+            info,
+            lat,
+            lng,
+            addressQuery,
+            filter,
+            cancellationToken);
+
+        if (data == null)
+        {
+            return NotFound(new { error = "Address not found." });
+        }
+
+        return Json(data);
     }
 
     public IActionResult Privacy()

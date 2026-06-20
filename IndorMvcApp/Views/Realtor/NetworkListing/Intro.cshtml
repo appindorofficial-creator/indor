@@ -8,13 +8,14 @@
                 INDOR connects your listing with nearby buyers and renters who are actively looking.
             </p>
         </div>
-        <div class="rl-listing-hero-visual">
+        <div class="rl-listing-hero-visual rl-listing-hero-visual--frame">
+            <span class="rl-listing-hero-blob" aria-hidden="true"></span>
             <img src="~/welcome-house.png" alt="" class="rl-listing-hero-img" />
             <span class="rl-listing-hero-pin"><i class="fas fa-location-dot"></i></span>
         </div>
     </div>
 
-    <div class="rl-listing-feature-grid rl-listing-feature-grid--3 rl-listing-feature-grid--scroll">
+    <div class="rl-listing-feature-grid rl-listing-feature-grid--3">
         <article class="rl-listing-feature-card">
             <span class="rl-listing-feature-icon"><i class="fas fa-location-crosshairs"></i></span>
             <strong>Reach nearby homeowners</strong>
@@ -32,9 +33,9 @@
         </article>
     </div>
 
-    <div class="rl-listing-help-box">
+    <div class="rl-listing-help-section rl-listing-help-card">
         <h3>How INDOR helps</h3>
-        <ul class="rl-listing-help-list">
+        <ul class="rl-listing-help-list rl-listing-help-list--divided">
             <li>
                 <i class="fas fa-circle-check"></i>
                 <div>
@@ -59,8 +60,8 @@
         </ul>
     </div>
 
-    <div class="rl-listing-wizard-actions">
-        <a asp-action="PostListingBenefits" class="ob-btn ob-btn-primary ob-btn-block">Continue</a>
-        <a asp-action="Network" class="rl-listing-btn-outline">Back to Feed</a>
-    </div>
+    <footer class="rl-listing-intro-footer">
+        <a asp-action="PostListingBenefits" class="rl-listing-btn-primary">Continue</a>
+        <a asp-action="Network" class="rl-listing-btn-secondary">Back to Feed</a>
+    </footer>
 </section>

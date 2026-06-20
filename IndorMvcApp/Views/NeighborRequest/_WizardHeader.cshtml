@@ -1,0 +1,13 @@
+@model IndorMvcApp.ViewModels.NeighborRequestWizardShellViewModel
+<header class="nr-wizard-top">
+    @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
+    {
+        <a href="@Model.BackUrl" class="nr-wizard-nav-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+    }
+    else
+    {
+        <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
+    }
+    <strong class="nr-wizard-top-title">@Model.PageTitle</strong>
+    <a href="@Model.CloseUrl" class="nr-wizard-nav-btn" aria-label="Close"><i class="fas fa-xmark"></i></a>
+</header>

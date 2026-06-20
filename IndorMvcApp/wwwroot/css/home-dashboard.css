@@ -1,5 +1,77 @@
-/* INDOR Home dashboard (mockup) */
-#section-home {
+/* INDOR Home dashboard (My Home section) */
+
+.hv-view-switcher {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 12px 0 6px;
+}
+
+.hv-view-card {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    padding: 12px 14px;
+    border: 1.5px solid #E5E7EB;
+    border-radius: 14px;
+    background: #fff;
+    cursor: pointer;
+    text-align: left;
+    font: inherit;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.hv-view-card.is-active {
+    border-color: #0066CC;
+    background: #F0F7FF;
+    box-shadow: 0 0 0 1px #0066CC;
+}
+
+.hv-view-icon {
+    font-size: 1.05rem;
+    color: #94A3B8;
+}
+
+.hv-view-card.is-active .hv-view-icon {
+    color: #0066CC;
+}
+
+.hv-view-copy strong {
+    display: block;
+    font-size: .88rem;
+    font-weight: 800;
+    color: #0A2540;
+    line-height: 1.2;
+}
+
+.hv-view-card.is-active .hv-view-copy strong {
+    color: #0066CC;
+}
+
+.hv-view-copy small {
+    display: block;
+    font-size: .68rem;
+    color: #64748B;
+    line-height: 1.35;
+    margin-top: 2px;
+    font-weight: 600;
+}
+
+.hv-view-card.is-active .hv-view-copy small {
+    color: #0066CC;
+}
+
+.hv-view-switcher-hint {
+    margin: 0 0 14px;
+    text-align: center;
+    font-size: .72rem;
+    color: #94A3B8;
+    font-weight: 500;
+    line-height: 1.4;
+}
+
+#section-mydashboard {
     padding: 0 16px 24px;
     max-width: 480px;
     margin: 0 auto;

@@ -1,10 +1,8 @@
 using System.Net.Http.Headers;
-
 using System.Text;
-
 using System.Text.Json;
-
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 
 using IndorMvcApp.Models;
 
@@ -611,6 +609,11 @@ public class OpenAiInspectionAnalysisService(
                 sourceSection = sourceSection[..120];
             }
 
+            var sourceSectionNumber = NormalizeSectionNumber(
+                node["sourceSectionNumber"]?.GetValue<string>()
+                ?? node["sectionNumber"]?.GetValue<string>()
+                ?? node["reportSectionNumber"]?.GetValue<string>());
+
             int? sourcePage = null;
 
             if (node["sourcePage"] != null && int.TryParse(node["sourcePage"]?.ToString(), out var page) && page > 0)
@@ -634,6 +637,8 @@ public class OpenAiInspectionAnalysisService(
                 SourceExcerpt = TruncateExcerpt(excerpt),
 
                 SourceSection = string.IsNullOrWhiteSpace(sourceSection) ? null : sourceSection,
+
+                SourceSectionNumber = sourceSectionNumber,
 
                 SourcePage = sourcePage,
 
@@ -696,15 +701,27 @@ public class OpenAiInspectionAnalysisService(
 
 
     private static string? TruncateExcerpt(string? excerpt)
-
     {
-
         if (string.IsNullOrWhiteSpace(excerpt)) return null;
-
         excerpt = excerpt.Trim();
-
         return excerpt.Length > 2000 ? excerpt[..2000] : excerpt;
+    }
 
+    private static string? NormalizeSectionNumber(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        value = value.Trim();
+        var match = Regex.Match(value, @"^\d+(?:\.\d+)+");
+        if (match.Success)
+        {
+            return match.Value.Length <= 30 ? match.Value : match.Value[..30];
+        }
+
+        return value.Length <= 30 ? value : value[..30];
     }
 
 

@@ -17,7 +17,8 @@ public static class InspectionAnalysisPrompt
               "title": "short issue title (max 80 chars)",
               "description": "brief plain-language summary of the issue",
               "sourceExcerpt": "1-3 sentence quote copied or closely paraphrased from the report text that proves this finding",
-              "sourceSection": "report section heading where this issue appears (e.g. Roof, Electrical, Plumbing, HVAC, Attic, Foundation, Exterior, Interior, Kitchen, Bathrooms, Garage)",
+              "sourceSection": "report section heading where this issue appears (e.g. Roof, Electrical, GFCI & AFCI)",
+              "sourceSectionNumber": "hierarchical index from the report table of contents or section header (e.g. 1.1.1, 1.2.1, 3.1.2) — copy exactly as printed",
               "sourcePage": number or null,
               "priority": "Urgent" | "High" | "Moderate",
               "trade": "Electrical" | "HVAC" | "Plumbing" | "Roof" | "Paint" | "Handyman",
@@ -42,9 +43,11 @@ public static class InspectionAnalysisPrompt
         - Do NOT stop at 10 or any round number; include all issues the inspector actually flagged, even if they seem minor
         - One finding per distinct issue; merge duplicates but do not omit real problems to shorten the list
         - For EACH finding, sourceExcerpt MUST be the most relevant passage from the report (inspector wording when possible)
-        - sourceSection MUST be the inspection report section/heading where the issue is documented (use the exact heading from the report when visible)
+        - sourceSection MUST be the inspection report section/heading title (e.g. Electrical, Roof, GFCI & AFCI)
+        - sourceSectionNumber MUST be the numbered index that appears in the report outline or next to the section heading (formats like 1.1.1, 1.2.1, 3.1.2, 10.2.1). Copy the exact number from the PDF text when visible; null only if no numbered index exists for that finding
+        - Most residential inspection PDFs use a consistent numbered outline — always look for these codes near headings and deficiency items
         - Use sourcePage when the report text includes "--- Page N ---" markers; otherwise null
-        - Realtors and contractors use sourceSection + sourcePage to locate the issue and photos in the PDF
+        - Realtors and contractors use sourceSectionNumber + sourceSection + sourcePage to locate the issue in the PDF index and photos
         - description = your short summary; sourceExcerpt = the evidence quote from the PDF
         - Ignore boilerplate, disclaimers, and table of contents
         - If report text is sparse, return fewer findings or an empty findings array — never invent addresses, issues, or fake quotes
@@ -70,7 +73,7 @@ public static class InspectionAnalysisPrompt
         Property address: {propertyAddress}
         Full report pages: {totalPageCount}
         This is section {chunkIndex} of {chunkCount} from the inspection report.
-        Extract ONLY findings that appear in this section. Use sourcePage from the --- Page N --- markers and sourceSection from the nearest report heading.
+        Extract ONLY findings that appear in this section. Use sourcePage from the --- Page N --- markers, sourceSectionNumber from numbered outline codes (1.1.1, 3.1.2, etc.), and sourceSection from the nearest report heading.
 
         Inspection report section:
         {chunkText}

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.LawnConfirmedViewModel
 @{
-    ViewData["Title"] = "Service Requested - INDOR";
+    ViewData["Title"] = Model.IsReminderOnly ? "Reminder activated - INDOR" : "Service scheduled - INDOR";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -19,7 +19,7 @@
 <div class="page-container">
     <div class="top-bar">
         <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">Service requested</div>
+        <div class="page-title">@(Model.IsReminderOnly ? "Reminder set" : "Service scheduled")</div>
         <div style="width:44px;"></div>
     </div>
 
@@ -27,28 +27,60 @@
 
     <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Your lawn service is booked!</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">We sent your request to a local provider.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">
+            @(Model.IsReminderOnly ? "Your reminder is active!" : "Your service is scheduled!")
+        </h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">
+            @if (Model.RecordatorioActivo)
+            {
+                <text>We also activated your @Model.FrequencyLabel.ToLower() reminder.</text>
+            }
+            else if (Model.IsReminderOnly)
+            {
+                <text>We will notify you when it is time to schedule lawn care.</text>
+            }
+            else
+            {
+                <text>We sent your request to a local provider.</text>
+            }
+        </p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-value">@Model.SubscriptionLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-value">@Model.AreaLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-leaf"></i><div><div class="summary-label">Add-ons</div><div class="summary-value">@Model.AddonsLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Scheduled for</div><div class="summary-value">@Model.ScheduledLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-tag"></i><div><div class="summary-label">Estimated total</div><div class="summary-value" style="color:#0066CC;font-size:1rem;">$@Model.PrecioTotal.ToString("0") @Model.Moneda</div></div></div>
+        <div class="summary-row"><i class="fas fa-seedling"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-label">Frequency</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
+        @if (!Model.IsReminderOnly)
+        {
+            <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Area</div><div class="summary-value">@Model.AreaLabel</div></div></div>
+            <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Next visit</div><div class="summary-value">@Model.ScheduledLabel</div></div></div>
+        }
+        @if (Model.RecordatorioActivo)
+        {
+            <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">Next reminder</div><div class="summary-value">@Model.NextReminderLabel</div></div></div>
+            <div class="summary-row"><i class="fas fa-mobile-screen"></i><div><div class="summary-label">Notification method</div><div class="summary-value">@Model.NotificationMethodLabel</div></div></div>
+        }
+        @if (!Model.IsReminderOnly)
+        {
+            <div class="summary-row"><i class="fas fa-tag"></i><div><div class="summary-label">Estimated total</div><div class="summary-value" style="color:#0066CC;font-size:1rem;">$@Model.PrecioTotal.ToString("0") @Model.Moneda</div></div></div>
+        }
     </div>
 
     <div class="status-row">
         <span class="status-pill green"><i class="fas fa-check"></i> Request received</span>
-        <span class="status-pill blue"><i class="fas fa-spinner"></i> Provider matching</span>
-        <span class="status-pill purple"><i class="fas fa-bell"></i> Next reminder active</span>
+        @if (!Model.IsReminderOnly)
+        {
+            <span class="status-pill blue"><i class="fas fa-user-check"></i> Assigning provider</span>
+        }
+        @if (Model.RecordatorioActivo)
+        {
+            <span class="status-pill purple"><i class="fas fa-bell"></i> Reminder active</span>
+        }
     </div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
-        <i class="fas fa-calendar"></i> View schedule <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-calendar"></i> View schedule
     </a>
-    <a asp-action="LawnSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> Edit service</a>
+    <a asp-action="LawnSchedule" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-gear"></i> Manage reminder</a>
 </div>
 </body>
 </html>

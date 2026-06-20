@@ -1,0 +1,1702 @@
+/* ═══════════════════════════════════════════════════════════════
+   Post Listing Wizard — polished mobile design
+   ═══════════════════════════════════════════════════════════════ */
+
+.rl-listing-wizard-page {
+    --lw-primary: #0066CC;
+    --lw-primary-soft: #E8F1FB;
+    --lw-primary-glow: rgba(0, 102, 204, 0.14);
+    --lw-text: #0F172A;
+    --lw-muted: #64748B;
+    --lw-border: #E2E8F0;
+    --lw-surface: #FFFFFF;
+    --lw-bg: #F8FAFC;
+    --lw-radius-lg: 18px;
+    --lw-radius-md: 14px;
+    --lw-radius-sm: 12px;
+    --lw-shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.05);
+    --lw-shadow-md: 0 8px 24px rgba(15, 23, 42, 0.07);
+    --lw-shadow-primary: 0 10px 28px rgba(0, 102, 204, 0.28);
+
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--lw-bg);
+    padding-bottom: calc(88px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing: antialiased;
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 18px 190px;
+}
+
+/* ── Header ── */
+.rl-listing-wizard-page .rl-listing-wizard-topnav {
+    position: relative;
+    text-align: center;
+    margin: 10px 0 16px;
+    min-height: 44px;
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-back {
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 40px;
+    height: 40px;
+    border: none;
+    border-radius: 50%;
+    background: var(--lw-surface);
+    color: var(--lw-text);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1rem;
+    box-shadow: var(--lw-shadow-sm);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-back:active {
+    transform: scale(0.96);
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-topnav-title {
+    padding: 0 48px;
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-title {
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 4px;
+    color: var(--lw-text);
+    line-height: 1.3;
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-sub {
+    margin: 0;
+    color: var(--lw-muted);
+    font-size: .84rem;
+    line-height: 1.45;
+}
+
+/* ── Stepper ── */
+.rl-listing-wizard-page .rl-listing-stepper {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-bottom: 22px;
+}
+
+.rl-listing-wizard-page .rl-listing-step-segment {
+    height: 5px;
+    border-radius: 999px;
+    background: #CBD5E1;
+    transition: background 0.25s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-step-segment.is-active,
+.rl-listing-wizard-page .rl-listing-step-segment.is-done {
+    background: var(--lw-primary);
+    box-shadow: 0 2px 8px var(--lw-primary-glow);
+}
+
+/* ── Hero (Intro) ── */
+.rl-listing-wizard-page .rl-listing-hero--split {
+    display: grid;
+    grid-template-columns: 1fr 118px;
+    gap: 14px;
+    align-items: center;
+    margin-bottom: 22px;
+    text-align: left;
+}
+
+.rl-listing-wizard-page .rl-listing-hero-title {
+    font-size: 1.28rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.25;
+    margin: 0 0 10px;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-hero-accent {
+    color: var(--lw-primary);
+}
+
+.rl-listing-wizard-page .rl-listing-hero-copy {
+    margin: 0;
+    font-size: .84rem;
+    line-height: 1.55;
+    color: var(--lw-muted);
+}
+
+.rl-listing-wizard-page .rl-listing-hero-visual--frame {
+    position: relative;
+    width: 118px;
+    height: 118px;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-hero-blob {
+    position: absolute;
+    inset: 0;
+    border-radius: 22px;
+    background: linear-gradient(145deg, #DBEAFE 0%, #EFF6FF 55%, #F0F9FF 100%);
+    transform: rotate(-4deg);
+}
+
+.rl-listing-wizard-page .rl-listing-hero-img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 6px 14px rgba(15, 23, 42, 0.12));
+}
+
+.rl-listing-wizard-page .rl-listing-hero-pin {
+    position: absolute;
+    z-index: 2;
+    right: 4px;
+    top: 2px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--lw-primary);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    box-shadow: 0 6px 16px rgba(0, 102, 204, 0.4);
+}
+
+/* ── Feature cards (Intro) ── */
+.rl-listing-wizard-page .rl-listing-feature-grid--3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.rl-listing-wizard-page .rl-listing-feature-grid--3 .rl-listing-feature-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 16px 10px;
+    background: var(--lw-surface);
+    border: 1px solid var(--lw-border);
+    border-radius: var(--lw-radius-md);
+    box-shadow: var(--lw-shadow-sm);
+    min-height: 148px;
+}
+
+.rl-listing-wizard-page .rl-listing-feature-grid--3 .rl-listing-feature-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    background: var(--lw-primary-soft);
+    color: var(--lw-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-feature-grid--3 .rl-listing-feature-card strong {
+    font-size: .72rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-feature-grid--3 .rl-listing-feature-card span {
+    font-size: .64rem;
+    line-height: 1.4;
+    color: var(--lw-muted);
+}
+
+/* ── How INDOR helps card ── */
+.rl-listing-wizard-page .rl-listing-help-card {
+    background: var(--lw-surface);
+    border: 1px solid var(--lw-border);
+    border-radius: var(--lw-radius-lg);
+    padding: 18px 16px 6px;
+    margin-bottom: 24px;
+    box-shadow: var(--lw-shadow-sm);
+}
+
+.rl-listing-wizard-page .rl-listing-help-card h3 {
+    margin: 0 0 14px;
+    font-size: .95rem;
+    font-weight: 800;
+    color: var(--lw-text);
+    letter-spacing: -0.01em;
+}
+
+.rl-listing-wizard-page .rl-listing-help-list--divided {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-help-list--divided li {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 0;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.rl-listing-wizard-page .rl-listing-help-list--divided li:last-child {
+    border-bottom: none;
+    padding-bottom: 8px;
+}
+
+.rl-listing-wizard-page .rl-listing-help-list--divided li > i {
+    color: var(--lw-primary);
+    font-size: 1.05rem;
+    margin-top: 1px;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-help-list--divided li strong {
+    display: block;
+    font-size: .82rem;
+    font-weight: 700;
+    color: var(--lw-text);
+    margin-bottom: 3px;
+    line-height: 1.35;
+}
+
+.rl-listing-wizard-page .rl-listing-help-list--divided li span {
+    display: block;
+    font-size: .76rem;
+    color: var(--lw-muted);
+    line-height: 1.45;
+}
+
+/* ── Benefits page ── */
+.rl-listing-wizard-page .rl-listing-benefits-intro {
+    margin-bottom: 18px;
+}
+
+.rl-listing-wizard-page .rl-listing-benefits-intro .rl-listing-section-label {
+    font-size: .98rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-lead {
+    margin: 0;
+    font-size: .84rem;
+    line-height: 1.55;
+    color: var(--lw-muted);
+}
+
+.rl-listing-wizard-page .rl-listing-benefit-list {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 22px;
+}
+
+.rl-listing-wizard-page .rl-listing-benefit-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 16px;
+    background: var(--lw-surface);
+    border: 1px solid var(--lw-border);
+    border-radius: var(--lw-radius-md);
+    box-shadow: var(--lw-shadow-sm);
+}
+
+.rl-listing-wizard-page .rl-listing-benefit-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    background: var(--lw-primary-soft);
+    color: var(--lw-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-benefit-row strong {
+    display: block;
+    font-size: .86rem;
+    font-weight: 700;
+    color: var(--lw-text);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.rl-listing-wizard-page .rl-listing-benefit-row span {
+    display: block;
+    font-size: .78rem;
+    color: var(--lw-muted);
+    line-height: 1.45;
+}
+
+.rl-listing-wizard-page .rl-listing-section-label {
+    font-size: .95rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-program-grid--3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.rl-listing-wizard-page .rl-listing-program-grid--3 .rl-listing-program-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    padding: 16px 10px;
+    background: var(--lw-surface);
+    border: 1px solid var(--lw-border);
+    border-radius: var(--lw-radius-md);
+    box-shadow: var(--lw-shadow-sm);
+    min-height: 130px;
+}
+
+.rl-listing-wizard-page .rl-listing-program-grid--3 .rl-listing-program-card > i {
+    display: inline-flex;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--lw-primary-soft);
+    color: var(--lw-primary);
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 4px;
+}
+
+.rl-listing-wizard-page .rl-listing-program-grid--3 .rl-listing-program-card strong {
+    font-size: .7rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-program-grid--3 .rl-listing-program-card span {
+    font-size: .62rem;
+    line-height: 1.4;
+    color: var(--lw-muted);
+}
+
+.rl-listing-wizard-page .rl-listing-privacy {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    margin: 0 0 20px;
+    background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+    border: 1px solid #BFDBFE;
+    border-radius: var(--lw-radius-md);
+}
+
+.rl-listing-wizard-page .rl-listing-privacy i {
+    color: var(--lw-primary);
+    font-size: 1.1rem;
+    margin-top: 2px;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-privacy p {
+    margin: 0;
+    font-size: .78rem;
+    line-height: 1.5;
+    color: #334155;
+    font-weight: 500;
+}
+
+/* ── Details form ── */
+.rl-listing-wizard-page .rl-listing-details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.rl-listing-wizard-page .rl-listing-section {
+    background: var(--lw-surface);
+    border: 1px solid var(--lw-border);
+    border-radius: var(--lw-radius-lg);
+    padding: 18px 16px;
+    margin-bottom: 0;
+    box-shadow: var(--lw-shadow-sm);
+}
+
+.rl-listing-wizard-page .rl-listing-section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.rl-listing-wizard-page .rl-listing-section-head h2,
+.rl-listing-wizard-page .rl-listing-section-title {
+    font-size: .92rem;
+    font-weight: 800;
+    margin: 0 0 12px;
+    color: var(--lw-text);
+    letter-spacing: -0.01em;
+}
+
+.rl-listing-wizard-page .rl-listing-section-head h2 {
+    margin-bottom: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-count {
+    font-size: .72rem;
+    font-weight: 700;
+    color: var(--lw-primary);
+    background: var(--lw-primary-soft);
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-lead {
+    margin: 0 0 14px;
+    font-size: .76rem;
+    color: var(--lw-muted);
+    line-height: 1.45;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-add {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    aspect-ratio: 1;
+    border-radius: var(--lw-radius-sm);
+    border: 2px dashed var(--lw-primary);
+    background: linear-gradient(180deg, #F8FBFF 0%, #EFF6FF 100%);
+    color: var(--lw-primary);
+    font-size: .68rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-add:active {
+    transform: scale(0.97);
+}
+
+.rl-listing-wizard-page .rl-listing-photo-add i {
+    font-size: 1.2rem;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1;
+    border-radius: var(--lw-radius-sm);
+    border: 1.5px dashed #E2E8F0;
+    background: #F8FAFC;
+    color: #CBD5E1;
+    font-size: 1.15rem;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-thumb {
+    aspect-ratio: 1;
+    border-radius: var(--lw-radius-sm);
+    overflow: hidden;
+    border: 1.5px solid var(--lw-border);
+    position: relative;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.rl-listing-wizard-page .rl-form-label {
+    font-size: .8rem;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 2px;
+}
+
+.rl-listing-wizard-page .rl-form-input {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1.5px solid var(--lw-border);
+    border-radius: var(--lw-radius-sm);
+    font-family: inherit;
+    font-size: .9rem;
+    color: var(--lw-text);
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.rl-listing-wizard-page .rl-form-input:focus {
+    outline: none;
+    border-color: var(--lw-primary);
+    box-shadow: 0 0 0 3px var(--lw-primary-glow);
+}
+
+.rl-listing-wizard-page .rl-form-input--with-icon {
+    padding-left: 38px;
+}
+
+.rl-listing-wizard-page .rl-listing-address-row--inline {
+    display: flex;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.rl-listing-wizard-page .rl-listing-address-field {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-input-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--lw-muted);
+    z-index: 1;
+    font-size: .9rem;
+}
+
+.rl-listing-wizard-page .rl-listing-locate-btn {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    width: 88px;
+    padding: 8px 6px;
+    min-height: 48px;
+    border: 1.5px solid var(--lw-primary);
+    border-radius: var(--lw-radius-sm);
+    background: var(--lw-primary-soft);
+    color: var(--lw-primary);
+    font-size: .58rem;
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    transition: background 0.15s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-locate-btn i {
+    font-size: 1.05rem;
+}
+
+.rl-listing-wizard-page .rl-listing-locate-btn:active {
+    background: #DBEAFE;
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-pair {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-btn {
+    border: 1.5px solid var(--lw-border);
+    border-radius: var(--lw-radius-sm);
+    padding: 14px;
+    text-align: center;
+    font-weight: 700;
+    font-size: .88rem;
+    color: var(--lw-muted);
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.15s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-btn.is-active {
+    border-color: var(--lw-primary);
+    color: var(--lw-primary);
+    background: var(--lw-primary-soft);
+    box-shadow: 0 0 0 3px var(--lw-primary-glow);
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-btn input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.rl-listing-wizard-page .rl-listing-price-input {
+    position: relative;
+}
+
+.rl-listing-wizard-page .rl-listing-input-prefix {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--lw-muted);
+    font-weight: 700;
+}
+
+.rl-listing-wizard-page .rl-listing-price-input .rl-form-input {
+    padding-left: 30px;
+}
+
+.rl-listing-wizard-page .rl-form-grid--4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 14px;
+}
+
+.rl-listing-wizard-page .rl-form-grid--4 .rl-form-label {
+    font-size: .68rem;
+    white-space: nowrap;
+}
+
+.rl-listing-wizard-page .rl-form-grid--4 .rl-form-input {
+    padding: 11px 8px;
+    font-size: .82rem;
+    text-align: center;
+}
+
+.rl-listing-wizard-page .rl-field-icon {
+    color: var(--lw-muted);
+    margin-right: 2px;
+    font-size: .75rem;
+}
+
+.rl-listing-wizard-page .rl-form-textarea {
+    min-height: 100px;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.rl-listing-wizard-page .rl-form-field {
+    margin-bottom: 14px;
+}
+
+.rl-listing-wizard-page .rl-form-field:last-child {
+    margin-bottom: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    margin-bottom: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-row-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--lw-primary-soft);
+    color: var(--lw-primary);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: .95rem;
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-row-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-row-copy strong {
+    display: block;
+    font-size: .88rem;
+    font-weight: 700;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-toggle-row-copy span {
+    display: block;
+    font-size: .74rem;
+    color: var(--lw-muted);
+    margin-top: 2px;
+}
+
+.rl-listing-wizard-page .rl-form-input--compact {
+    width: 100px;
+    min-height: 42px;
+    padding: 8px 12px;
+    font-size: .84rem;
+    font-weight: 600;
+}
+
+.rl-listing-wizard-page .rl-listing-programs-lead {
+    margin: -6px 0 14px;
+    font-size: .78rem;
+    color: var(--lw-muted);
+    line-height: 1.45;
+}
+
+.rl-listing-wizard-page .rl-listing-program-select--3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.rl-listing-wizard-page .rl-listing-program-select-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 16px 8px 36px;
+    min-height: 120px;
+    border: 1.5px solid var(--lw-border);
+    border-radius: var(--lw-radius-md);
+    background: #fff;
+    cursor: pointer;
+    transition: all 0.18s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-program-select-card.is-selected {
+    border-color: var(--lw-primary);
+    background: linear-gradient(180deg, #F8FBFF 0%, #EFF6FF 100%);
+    box-shadow: 0 0 0 3px var(--lw-primary-glow);
+}
+
+.rl-listing-wizard-page .rl-listing-program-select-card > i:first-of-type {
+    font-size: 1.25rem;
+    margin-bottom: 8px;
+}
+
+.rl-listing-wizard-page .rl-listing-program-select-card strong {
+    font-size: .66rem;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--lw-text);
+}
+
+.rl-listing-wizard-page .rl-listing-program-select-card span {
+    display: none;
+}
+
+.rl-listing-wizard-page .rl-listing-program-check {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: .95rem;
+    color: var(--lw-primary);
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-program-select-card.is-selected .rl-listing-program-check {
+    opacity: 1;
+}
+
+.rl-listing-wizard-page .rl-program-icon--blue { color: #0066CC !important; }
+.rl-listing-wizard-page .rl-program-icon--green { color: #16A34A !important; }
+.rl-listing-wizard-page .rl-program-icon--purple { color: #9333EA !important; }
+
+.rl-listing-wizard-page .rl-info-box {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, #EFF6FF 0%, #F0F9FF 100%);
+    border: 1px solid #BFDBFE;
+    border-radius: var(--lw-radius-md);
+    margin: 4px 0 0;
+}
+
+.rl-listing-wizard-page .rl-info-box i {
+    color: var(--lw-primary);
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.rl-listing-wizard-page .rl-info-box p {
+    margin: 0;
+    font-size: .78rem;
+    line-height: 1.5;
+    color: #334155;
+    font-weight: 500;
+}
+
+.rl-listing-wizard-page .rl-listing-photo-more {
+    display: none;
+}
+
+/* ── Docked action buttons ── */
+.rl-listing-wizard-page .rl-listing-wizard-actions--dock,
+.rl-listing-wizard-page .rl-listing-publish-actions--dock {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: calc(68px + env(safe-area-inset-bottom));
+    width: min(480px, calc(100% - 36px));
+    z-index: 90;
+    margin: 0;
+    padding: 12px 0 8px;
+    background: linear-gradient(180deg, rgba(248, 250, 252, 0) 0%, rgba(248, 250, 252, 0.92) 18%, #F8FAFC 100%);
+}
+
+.rl-listing-wizard-page .rl-listing-wizard-actions--dock {
+    display: grid;
+    gap: 10px;
+}
+
+.rl-listing-wizard-page .rl-listing-publish-actions--dock {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.rl-listing-wizard-page .rl-listing-publish-actions--dock .ob-btn-primary {
+    grid-column: auto;
+}
+
+.rl-listing-wizard-page .ob-btn-primary,
+.rl-listing-wizard-page .ob-btn-block {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 50px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: var(--lw-radius-sm);
+    background: var(--lw-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: .92rem;
+    text-decoration: none;
+    cursor: pointer;
+    box-shadow: var(--lw-shadow-primary);
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.rl-listing-wizard-page .ob-btn-primary:active,
+.rl-listing-wizard-page .ob-btn-block:active {
+    transform: scale(0.98);
+}
+
+.rl-listing-wizard-page .rl-listing-btn-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 50px;
+    padding: 14px 20px;
+    border: 1.5px solid var(--lw-primary);
+    border-radius: var(--lw-radius-sm);
+    background: #fff;
+    color: var(--lw-primary);
+    font-weight: 700;
+    font-size: .92rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.12s ease, transform 0.12s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-btn-outline:active {
+    transform: scale(0.98);
+    background: var(--lw-primary-soft);
+}
+
+/* Toggle switch polish */
+.rl-listing-wizard-page .rl-toggle-row--compact .rl-toggle {
+    width: 48px;
+    height: 28px;
+    border-radius: 999px;
+    background: #CBD5E1;
+    position: relative;
+    display: block;
+    transition: background 0.2s ease;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page .rl-toggle-row--compact .rl-toggle::after {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.rl-listing-wizard-page .rl-toggle-row--compact input:checked + .rl-toggle {
+    background: var(--lw-primary);
+}
+
+.rl-listing-wizard-page .rl-toggle-row--compact input:checked + .rl-toggle::after {
+    transform: translateX(20px);
+}
+
+@media (max-width: 360px) {
+    .rl-listing-wizard-page .rl-listing-hero--split {
+        grid-template-columns: 1fr 100px;
+    }
+
+    .rl-listing-wizard-page .rl-listing-hero-visual--frame {
+        width: 100px;
+        height: 100px;
+    }
+
+    .rl-listing-wizard-page .rl-listing-feature-grid--3 .rl-listing-feature-card {
+        padding: 12px 8px;
+        min-height: 132px;
+    }
+}
+
+/* ═══ Benefits screen — exact mockup (no fixed overlap) ═══ */
+.rl-listing-wizard-page--benefits {
+    background: #fff !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-wizard-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 20px 24px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-wizard-back {
+    box-shadow: none;
+    background: transparent;
+    width: 36px;
+    height: 36px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-wizard-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+/* Stepper: 4 equal thin bars */
+.rl-listing-wizard-page--benefits .rl-listing-stepper {
+    display: flex !important;
+    flex-direction: row;
+    gap: 8px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-step-segment {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 4px !important;
+    border-radius: 999px;
+    background: #CBD5E1;
+    box-shadow: none !important;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-step-segment.is-active,
+.rl-listing-wizard-page--benefits .rl-listing-step-segment.is-done {
+    background: #0066CC !important;
+    box-shadow: none !important;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefits-intro {
+    margin-bottom: 16px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefits-intro .rl-listing-section-label {
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #0F172A;
+    letter-spacing: -0.02em;
+    margin: 0 0 8px;
+    line-height: 1.3;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-lead {
+    font-size: .84rem;
+    color: #64748B;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefit-list {
+    display: grid;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefit-row {
+    display: flex !important;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: none !important;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefit-icon {
+    width: 48px !important;
+    height: 48px !important;
+    min-width: 48px;
+    border-radius: 50% !important;
+    background: #E8F1FB !important;
+    color: #0066CC !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem !important;
+    flex-shrink: 0;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefit-row strong {
+    display: block;
+    font-size: .88rem !important;
+    font-weight: 700 !important;
+    color: #0066CC !important;
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-benefit-row span {
+    display: block;
+    font-size: .78rem !important;
+    color: #64748B !important;
+    line-height: 1.45;
+}
+
+.rl-listing-wizard-page--benefits > .rl-listing-section-label {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0 0 12px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-program-grid--3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-program-grid--3 .rl-listing-program-card {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 14px 10px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: none !important;
+    min-height: 0;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-program-grid--3 .rl-listing-program-card > i {
+    display: block !important;
+    width: auto !important;
+    height: auto !important;
+    background: transparent !important;
+    color: #0066CC !important;
+    font-size: 1.3rem !important;
+    margin: 0 0 8px !important;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-program-grid--3 .rl-listing-program-card strong {
+    font-size: .72rem !important;
+    font-weight: 700 !important;
+    color: #0066CC !important;
+    line-height: 1.3;
+    margin-bottom: 4px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-program-grid--3 .rl-listing-program-card span {
+    font-size: .64rem !important;
+    color: #64748B !important;
+    line-height: 1.4;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-privacy {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    padding: 14px 16px;
+    margin: 0 0 20px;
+    background: #EFF6FF !important;
+    border: none !important;
+    border-radius: 12px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-privacy i {
+    color: #0066CC;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-privacy p {
+    margin: 0;
+    font-size: .78rem;
+    line-height: 1.5;
+    color: #334155;
+    font-weight: 500;
+}
+
+/* Footer button — in document flow, NOT fixed (fixes overlap) */
+.rl-listing-wizard-page--benefits .rl-listing-benefits-footer {
+    margin: 4px 0 0;
+    padding: 0;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    background: #0066CC;
+    color: #fff;
+    font-weight: 700;
+    font-size: .94rem;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0, 102, 204, 0.25);
+    transition: transform 0.12s ease;
+}
+
+.rl-listing-wizard-page--benefits .rl-listing-btn-primary:active {
+    transform: scale(0.98);
+}
+
+/* Shared buttons (all wizard pages) */
+.rl-listing-wizard-page .rl-listing-btn-primary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 12px;
+    background: #0066CC;
+    color: #fff;
+    font-weight: 700;
+    font-size: .94rem;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
+    box-shadow: 0 8px 20px rgba(0, 102, 204, 0.22);
+    transition: transform 0.12s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-btn-secondary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 52px;
+    padding: 14px 20px;
+    border: 1.5px solid #0066CC;
+    border-radius: 12px;
+    background: #fff;
+    color: #0066CC;
+    font-weight: 700;
+    font-size: .94rem;
+    text-decoration: none;
+    cursor: pointer;
+    font-family: inherit;
+    transition: transform 0.12s ease, background 0.12s ease;
+}
+
+.rl-listing-wizard-page .rl-listing-btn-primary:active,
+.rl-listing-wizard-page .rl-listing-btn-secondary:active {
+    transform: scale(0.98);
+}
+
+/* ═══ Intro screen — mockup ═══ */
+.rl-listing-wizard-page--intro {
+    background: #fff !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+.rl-listing-wizard-page--intro .rl-listing-wizard-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 20px 28px;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-wizard-back {
+    box-shadow: none;
+    background: transparent;
+    width: 36px;
+    height: 36px;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-wizard-title {
+    font-size: 1.02rem;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero--split {
+    display: grid;
+    grid-template-columns: 1fr 118px;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-title {
+    font-size: 1.22rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.28;
+    margin: 0 0 8px;
+    color: #0F172A;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-accent {
+    color: #0066CC;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-copy {
+    font-size: .82rem;
+    color: #64748B;
+    line-height: 1.55;
+    margin: 0;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-visual--frame {
+    width: 118px;
+    height: 118px;
+    position: relative;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-blob {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    background: linear-gradient(145deg, #DBEAFE 0%, #EFF6FF 60%, #F0F9FF 100%);
+    transform: rotate(-4deg);
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-img {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-hero-pin {
+    position: absolute;
+    z-index: 2;
+    right: 2px;
+    top: 0;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #0066CC;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.35);
+}
+
+.rl-listing-wizard-page--intro .rl-listing-feature-grid--3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-feature-grid--3 .rl-listing-feature-card {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 8px;
+    padding: 14px 10px;
+    min-height: 150px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: none !important;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-feature-grid--3 .rl-listing-feature-icon {
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 12px !important;
+    background: #E8F1FB !important;
+    color: #0066CC !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem !important;
+    margin: 0 !important;
+    grid-row: auto !important;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-feature-grid--3 .rl-listing-feature-card strong {
+    font-size: .72rem !important;
+    font-weight: 700 !important;
+    color: #0F172A !important;
+    line-height: 1.35;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-feature-grid--3 .rl-listing-feature-card span {
+    font-size: .64rem !important;
+    color: #64748B !important;
+    line-height: 1.4;
+    grid-column: auto !important;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-card {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 16px 16px 4px;
+    margin-bottom: 20px;
+    box-shadow: none;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-card h3 {
+    margin: 0 0 12px;
+    font-size: .92rem;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-list--divided {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-list--divided li {
+    display: flex;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-list--divided li:last-child {
+    border-bottom: none;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-list--divided li > i {
+    color: #0066CC;
+    font-size: 1rem;
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-list--divided li strong {
+    display: block;
+    font-size: .8rem;
+    font-weight: 700;
+    color: #0F172A;
+    margin-bottom: 2px;
+    line-height: 1.35;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-help-list--divided li span {
+    display: block;
+    font-size: .74rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.rl-listing-wizard-page--intro .rl-listing-intro-footer {
+    display: grid;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+/* ═══ Details / Create Listing — mockup ═══ */
+.rl-listing-wizard-page--details {
+    background: #fff !important;
+    padding-bottom: calc(72px + env(safe-area-inset-bottom));
+}
+
+.rl-listing-wizard-page--details .rl-listing-wizard-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 20px 28px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-wizard-back {
+    box-shadow: none;
+    background: transparent;
+    width: 36px;
+    height: 36px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-wizard-title {
+    font-size: 1.08rem;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.rl-listing-wizard-page--details .rl-listing-wizard-sub {
+    font-size: .82rem;
+    color: #64748B;
+}
+
+.rl-listing-wizard-page--details .rl-listing-details-form {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.rl-listing-wizard-page--details .rl-listing-section {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+    margin-bottom: 22px;
+    border-radius: 0;
+}
+
+.rl-listing-wizard-page--details .rl-listing-section-head h2,
+.rl-listing-wizard-page--details .rl-listing-section-title {
+    font-size: .9rem;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0 0 8px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-photo-count {
+    font-size: .72rem;
+    font-weight: 700;
+    color: #0066CC;
+    background: transparent;
+    padding: 0;
+}
+
+.rl-listing-wizard-page--details .rl-listing-photo-lead {
+    font-size: .76rem;
+    color: #64748B;
+    margin: 0 0 12px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-photo-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 0;
+}
+
+.rl-listing-wizard-page--details .rl-listing-photo-add {
+    border: 2px dashed #0066CC;
+    background: #F8FBFF;
+    border-radius: 10px;
+    color: #0066CC;
+    font-size: .64rem;
+    font-weight: 700;
+}
+
+.rl-listing-wizard-page--details .rl-listing-photo-placeholder {
+    border: 1.5px dashed #E2E8F0;
+    background: #F8FAFC;
+    border-radius: 10px;
+    color: #CBD5E1;
+}
+
+.rl-listing-wizard-page--details .rl-form-label {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.rl-listing-wizard-page--details .rl-form-input {
+    border: 1.5px solid #E2E8F0;
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: .88rem;
+    background: #fff;
+}
+
+.rl-listing-wizard-page--details .rl-form-input:focus {
+    border-color: #0066CC;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
+    outline: none;
+}
+
+.rl-listing-wizard-page--details .rl-listing-toggle-btn.is-active {
+    border-color: #0066CC;
+    color: #0066CC;
+    background: #F8FBFF;
+    box-shadow: none;
+}
+
+.rl-listing-wizard-page--details .rl-listing-toggle-row {
+    padding: 14px 0;
+    border-top: 1px solid #F1F5F9;
+    border-bottom: 1px solid #F1F5F9;
+    margin-bottom: 0;
+}
+
+.rl-listing-wizard-page--details .rl-listing-row-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #E8F1FB;
+    color: #0066CC;
+}
+
+.rl-listing-wizard-page--details .rl-form-grid--4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+}
+
+.rl-listing-wizard-page--details .rl-form-grid--4 .rl-form-label {
+    font-size: .66rem;
+}
+
+.rl-listing-wizard-page--details .rl-form-grid--4 .rl-form-input {
+    padding: 10px 6px;
+    font-size: .8rem;
+    text-align: center;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select--3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 10px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select-card {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 14px 8px 32px !important;
+    min-height: 110px;
+    border: 1.5px solid #E2E8F0 !important;
+    border-radius: 12px !important;
+    background: #fff !important;
+    box-shadow: none !important;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select-card.is-selected {
+    border-color: #0066CC !important;
+    background: #F8FBFF !important;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select-card > i:first-of-type {
+    font-size: 1.2rem !important;
+    margin-bottom: 6px !important;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select-card strong {
+    font-size: .64rem !important;
+    line-height: 1.25;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select-card span {
+    display: none !important;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-check {
+    bottom: 8px;
+    opacity: 0;
+}
+
+.rl-listing-wizard-page--details .rl-listing-program-select-card.is-selected .rl-listing-program-check {
+    opacity: 1;
+}
+
+.rl-listing-wizard-page--details .rl-info-box {
+    display: flex;
+    gap: 12px;
+    padding: 14px 16px;
+    margin: 8px 0 20px;
+    background: #EFF6FF !important;
+    border: none !important;
+    border-radius: 12px;
+}
+
+.rl-listing-wizard-page--details .rl-info-box i {
+    color: #0066CC;
+    font-size: 1.05rem;
+}
+
+.rl-listing-wizard-page--details .rl-info-box p {
+    margin: 0;
+    font-size: .76rem;
+    line-height: 1.5;
+    color: #334155;
+}
+
+.rl-listing-wizard-page--details .rl-listing-photo-more {
+    display: none !important;
+}
+
+.rl-listing-wizard-page--details .rl-listing-details-footer {
+    display: grid;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-details-footer--dual {
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-details-footer--dual .rl-listing-btn-primary {
+    grid-column: auto;
+}
+
+.rl-listing-wizard-page--details .rl-listing-locate-btn {
+    width: 86px;
+    font-size: .56rem;
+    min-height: 46px;
+    border-color: #0066CC;
+    background: #F8FBFF;
+    color: #0066CC;
+    border-radius: 10px;
+}
+
+.rl-listing-wizard-page--details .rl-listing-programs-lead {
+    font-size: .76rem;
+    color: #64748B;
+    margin: -4px 0 12px;
+}

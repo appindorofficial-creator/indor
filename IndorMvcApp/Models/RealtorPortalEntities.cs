@@ -63,6 +63,44 @@ public class IndorRealtor
     [MaxLength(1000)]
     public string? PublicBio { get; set; }
 
+    [MaxLength(500)]
+    public string? OfficeAddress { get; set; }
+
+    [MaxLength(200)]
+    public string? LanguagesJson { get; set; }
+
+    public bool IndorMessagingEnabled { get; set; } = true;
+
+    [MaxLength(120)]
+    public string? PublicDisplayName { get; set; }
+
+    [MaxLength(80)]
+    public string? RealtorTitle { get; set; }
+
+    [MaxLength(200)]
+    public string? Website { get; set; }
+
+    [MaxLength(80)]
+    public string? OfficeCity { get; set; }
+
+    [MaxLength(10)]
+    public string? OfficeState { get; set; }
+
+    [MaxLength(15)]
+    public string? OfficeZip { get; set; }
+
+    [MaxLength(30)]
+    public string? YearsOfExperience { get; set; }
+
+    [MaxLength(200)]
+    public string? SpecialtiesJson { get; set; }
+
+    [MaxLength(120)]
+    public string? TeamName { get; set; }
+
+    [MaxLength(120)]
+    public string? BrokerInCharge { get; set; }
+
     public ICollection<IndorRealtorDocumento> Documentos { get; set; } = [];
 
     public ICollection<IndorRealtorPropertyFile> PropertyFiles { get; set; } = [];
@@ -742,11 +780,14 @@ public class IndorRealtorInspectionUploadFinding
     [MaxLength(120)]
     public string? SourceSection { get; set; }
 
+    [MaxLength(30)]
+    public string? SourceSectionNumber { get; set; }
+
     public int? SourcePage { get; set; }
 
     public int SortOrder { get; set; }
 
-    public bool IsSelected { get; set; } = true;
+    public bool IsSelected { get; set; }
 }
 
 [Table("IndorRealtorInspectionDraftProviders")]
