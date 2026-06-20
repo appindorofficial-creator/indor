@@ -1,0 +1,69 @@
+@{
+    var activeRaw = ViewBag.BottomNavActive as string
+        ?? ViewData["BottomNavActive"] as string
+        ?? ViewBag.MyHomeNav as string
+        ?? "nearby";
+    var active = activeRaw.ToLowerInvariant();
+    var propiedadId = ViewBag.PropiedadId as int? ?? ViewBag.HouseFactPropiedadId as int?;
+    var navClass = ViewBag.BottomNavClass as string ?? "hvac-bottom-nav";
+    var spaMode = navClass == "bottom-nav";
+
+    Func<string, string> IsActive = key =>
+    {
+        var on = key switch
+        {
+            "home" => active is "home" or "summary" or "maintenance" or "mydashboard",
+            "nearby" => active is "nearby" or "network",
+            "clients" => active == "clients",
+            "files" => active is "files" or "documents",
+            "quotes" => active is "quotes" or "history",
+            "profile" => active is "profile" or "more",
+            _ => active == key
+        };
+        return on ? "active" : "";
+    };
+
+    var homeUrl = Url.Action("Index", "Home") + "#section-mydashboard";
+    var nearbyUrl = Url.Action("Index", "Home") + "#section-home";
+    var clientsUrl = propiedadId is > 0
+        ? Url.Action("Mine", "NeighborRequest", new { propiedadId = propiedadId.Value })
+        : nearbyUrl;
+    var filesUrl = propiedadId is > 0
+        ? Url.Action("Documents", "MyHome", new { id = propiedadId.Value })
+        : homeUrl;
+    var quotesUrl = Url.Action("Historial", "Perfil");
+    var profileUrl = Url.Action("Index", "Home") + "#section-more";
+}
+
+<nav class="@navClass" aria-label="Home navigation">
+    @if (spaMode)
+    {
+        <button type="button" class="nav-item @IsActive("home")" data-target="section-mydashboard">
+            <i class="fas fa-house"></i><span>Home</span>
+        </button>
+        <button type="button" class="nav-item @IsActive("nearby")" data-target="section-home">
+            <i class="fas fa-location-dot"></i><span>Nearby</span>
+        </button>
+        <a class="nav-item nav-item--link @IsActive("clients")" href="@clientsUrl">
+            <i class="fas fa-users"></i><span>Clients</span>
+        </a>
+        <a class="nav-item nav-item--link @IsActive("files")" href="@filesUrl">
+            <i class="fas fa-folder"></i><span>Files</span>
+        </a>
+        <a class="nav-item nav-item--link @IsActive("quotes")" href="@quotesUrl">
+            <i class="fas fa-file-invoice-dollar"></i><span>Quotes</span>
+        </a>
+        <button type="button" class="nav-item @IsActive("profile")" data-target="section-more">
+            <i class="fas fa-user"></i><span>Profile</span>
+        </button>
+    }
+    else
+    {
+        <a href="@homeUrl" class="@IsActive("home")"><i class="fas fa-house"></i><span>Home</span></a>
+        <a href="@nearbyUrl" class="@IsActive("nearby")"><i class="fas fa-location-dot"></i><span>Nearby</span></a>
+        <a href="@clientsUrl" class="@IsActive("clients")"><i class="fas fa-users"></i><span>Clients</span></a>
+        <a href="@filesUrl" class="@IsActive("files")"><i class="fas fa-folder"></i><span>Files</span></a>
+        <a href="@quotesUrl" class="@IsActive("quotes")"><i class="fas fa-file-invoice-dollar"></i><span>Quotes</span></a>
+        <a href="@profileUrl" class="@IsActive("profile")"><i class="fas fa-user"></i><span>Profile</span></a>
+    }
+</nav>

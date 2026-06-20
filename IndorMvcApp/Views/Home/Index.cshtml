@@ -889,9 +889,13 @@
             padding: 6px 2px;
             color: #9CA3AF;
             cursor: pointer;
-            font-size: 0.7rem;
-            font-weight: 500;
+            font-size: 0.58rem;
+            font-weight: 600;
             transition: color .2s;
+        }
+        a.nav-item,
+        a.nav-item--link {
+            text-decoration: none;
         }
         .nav-item i { font-size: 1.2rem; }
         .nav-item.active { color: #1867F2; }
@@ -2677,13 +2681,12 @@
     </section>
 
 	<!-- ====== BOTTOM NAV ====== -->
-    <nav class="bottom-nav">
-        <button class="nav-item active" data-target="section-home"><i class="fas fa-users"></i><span>Nearby</span></button>
-        <button class="nav-item" data-target="section-services"><i class="fas fa-screwdriver-wrench"></i><span>Services</span></button>
-        <button class="nav-item" data-target="section-myhome"><i class="fas fa-house-circle-check"></i><span>House Facts</span></button>
-        <button class="nav-item" data-target="section-schedule"><i class="fas fa-clipboard-list"></i><span>Schedule</span></button>
-        <button class="nav-item" data-target="section-more"><i class="fas fa-ellipsis"></i><span>More</span></button>
-    </nav>
+    @{
+        ViewBag.BottomNavClass = "bottom-nav";
+        ViewBag.PropiedadId = primaryProp?.Id;
+        ViewBag.BottomNavActive = "nearby";
+    }
+    @await Html.PartialAsync("_HomeownerBottomNav")
 
     <script>
         function activateSection(sectionId, scrollTargetId) {
@@ -2710,9 +2713,12 @@
         }
 
         // === Bottom nav ===
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => {
+        document.querySelectorAll('.bottom-nav .nav-item[data-target]').forEach(btn => {
             btn.addEventListener('click', () => {
                 activateSection(btn.dataset.target);
+                if (btn.dataset.target === 'section-mydashboard' || btn.dataset.target === 'section-home' || btn.dataset.target === 'section-more') {
+                    history.replaceState(null, '', '#' + btn.dataset.target);
+                }
             });
         });
 
@@ -2723,6 +2729,8 @@
                 activateSection('section-services', hash);
             } else if (hash === 'section-mydashboard' || hash === 'mydashboard') {
                 activateSection('section-mydashboard');
+            } else if (hash === 'section-more' || hash === 'more') {
+                activateSection('section-more');
             } else if (hash) {
                 activateSection(hash.startsWith('section-') ? hash : 'section-' + hash);
             }
