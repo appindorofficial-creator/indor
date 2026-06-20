@@ -98,6 +98,25 @@
             margin-bottom: 16px;
         }
 
+        .form-alert {
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            font-size: 0.88rem;
+            line-height: 1.45;
+        }
+
+        .form-alert.error {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            color: #991B1B;
+        }
+
+        .form-alert.error ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
         .section-head {
             display: flex;
             align-items: center;
@@ -291,7 +310,7 @@
 <body>
     <div class="page-container">
         <div class="top-bar">
-            <a asp-controller="Propietario" asp-action="AddProperty" class="back-btn" aria-label="Back">
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="back-btn" aria-label="Back">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
@@ -311,6 +330,13 @@
 
         <form asp-action="EditAddress" method="post" id="mainForm">
             <input type="hidden" name="OriginalJson" value='@((TempData["PropertyInfoJson"] ?? "").ToString())' />
+
+            @if (!ViewData.ModelState.IsValid)
+            {
+                <div class="form-alert error" role="alert">
+                    @Html.ValidationSummary(excludePropertyErrors: false, message: "We couldn't save your property yet. Please review the fields and try again.")
+                </div>
+            }
 
             <div class="form-card">
                 <div class="section-head">

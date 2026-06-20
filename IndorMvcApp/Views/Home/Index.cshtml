@@ -1,4 +1,4 @@
-﻿@model IEnumerable<IndorMvcApp.Models.Propiedad>
+@model IEnumerable<IndorMvcApp.Models.Propiedad>
 @using System.Text.Json
 @using IndorMvcApp.Services
 @using IndorMvcApp.ViewModels
@@ -2393,6 +2393,10 @@
         @if (TempData["InspectionSaved"] is string inspectionMsg)
         {
             <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
+        }
+        @if (TempData["PropertySaved"] is string propertySavedMsg)
+        {
+            <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @propertySavedMsg</div>
         }
         @{
             ViewData["HomeViewSwitcherActive"] = "myhome";

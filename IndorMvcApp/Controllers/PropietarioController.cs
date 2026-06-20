@@ -287,6 +287,7 @@ public class PropietarioController : Controller
         {
             await SavePropertyAsync(fullModel, userId);
             ClearOnboardingProperty();
+            TempData["PropertySaved"] = "Property saved successfully.";
             return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
