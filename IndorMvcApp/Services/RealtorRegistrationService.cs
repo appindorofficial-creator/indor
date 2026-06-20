@@ -168,11 +168,7 @@ public class RealtorRegistrationService(
 
     public async Task<string?> ClearDocumentAsync(string documentType, CancellationToken cancellationToken = default)
     {
-        var realtorId = await ResolveRealtorIdAsync(cancellationToken);
-        if (realtorId is not > 0)
-        {
-            return null;
-        }
+        var realtorId = await EnsureDraftAsync(cancellationToken);
 
         var doc = await db.IndorRealtorDocumentos.FirstOrDefaultAsync(
             d => d.RealtorId == realtorId && d.DocumentType == documentType,

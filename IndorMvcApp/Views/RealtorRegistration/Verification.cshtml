@@ -25,12 +25,15 @@
 
 @foreach (var slot in slots)
 {
-    <div class="rl-doc-card">
+    <div class="rl-doc-card" data-doc-card="@slot.DocumentType">
         <div class="rl-doc-card-icon"><i class="fas fa-id-card"></i></div>
         <div>
             <strong>@slot.Label</strong>
             @if (!slot.Required) { <small>Optional</small> }
-            @if (slot.Uploaded) { <span class="rl-doc-uploaded"><i class="fas fa-check"></i> Uploaded</span> }
+            @if (slot.Uploaded)
+            {
+                <span class="rl-doc-uploaded" data-uploaded-badge><i class="fas fa-check"></i> Uploaded</span>
+            }
         </div>
     </div>
 }
@@ -52,49 +55,44 @@
         <div class="rl-doc-upload" data-doc-type="@field.DocumentType">
             <span class="rl-doc-upload-label">@field.Label</span>
 
-            @if (uploaded)
-            {
-                <div class="rl-file-attached">
-                    @if (isImage)
-                    {
-                        <img src="@slot!.FileUrl" alt="" class="rl-file-preview-thumb" />
-                    }
-                    else
-                    {
-                        <span class="rl-file-preview-icon"><i class="fas fa-file-pdf"></i></span>
-                    }
-                    <span class="rl-file-attached-name">@uploadedName</span>
-                    <button type="submit"
-                            name="action"
-                            value="remove"
-                            class="rl-file-remove-btn rl-file-remove-uploaded"
-                            data-document-type="@field.DocumentType"
-                            aria-label="Remove @field.Label">
-                        <i class="fas fa-xmark"></i>
-                    </button>
-                </div>
-            }
-            else
-            {
-                <div class="rl-file-pending" hidden>
-                    <img src="" alt="" class="rl-file-preview-thumb rl-file-pending-thumb" hidden />
-                    <span class="rl-file-preview-icon rl-file-pending-icon" hidden><i class="fas fa-file"></i></span>
-                    <span class="rl-file-pending-name"></span>
-                    <button type="button" class="rl-file-remove-btn rl-file-pending-remove" aria-label="Remove selected file">
-                        <i class="fas fa-xmark"></i>
-                    </button>
-                </div>
+            <div class="rl-file-attached @(uploaded ? null : "is-hidden")" data-role="attached">
+                @if (isImage)
+                {
+                    <img src="@slot!.FileUrl" alt="" class="rl-file-preview-thumb rl-file-attached-thumb" />
+                }
+                else
+                {
+                    <span class="rl-file-preview-icon rl-file-attached-icon"><i class="fas fa-file-pdf"></i></span>
+                }
+                <span class="rl-file-attached-name">@uploadedName</span>
+                <button type="submit"
+                        name="action"
+                        value="remove"
+                        class="rl-file-remove-btn rl-file-remove-uploaded"
+                        data-document-type="@field.DocumentType"
+                        aria-label="Remove @field.Label">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
 
-                <label class="rl-file-picker">
-                    <input type="file"
-                           id="@field.InputName"
-                           name="@field.InputName"
-                           class="rl-file-picker-input"
-                           accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
-                    <span class="rl-file-picker-btn">Choose file</span>
-                    <span class="rl-file-picker-name">No file selected</span>
-                </label>
-            }
+            <div class="rl-file-pending is-hidden" data-role="pending">
+                <img src="" alt="" class="rl-file-preview-thumb rl-file-pending-thumb is-hidden" />
+                <span class="rl-file-preview-icon rl-file-pending-icon is-hidden"><i class="fas fa-file"></i></span>
+                <span class="rl-file-pending-name"></span>
+                <button type="button" class="rl-file-remove-btn rl-file-pending-remove" aria-label="Remove selected file">
+                    <i class="fas fa-xmark"></i>
+                </button>
+            </div>
+
+            <label class="rl-file-picker @(uploaded ? "is-hidden" : null)" data-role="picker">
+                <input type="file"
+                       id="@field.InputName"
+                       name="@field.InputName"
+                       class="rl-file-picker-input"
+                       accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
+                <span class="rl-file-picker-btn">Choose file</span>
+                <span class="rl-file-picker-name">No file selected</span>
+            </label>
         </div>
     }
 
@@ -117,27 +115,55 @@
             return file.type && file.type.indexOf('image/') === 0;
         }
 
+        function showBlock(block) {
+            if (block) {
+                block.classList.remove('is-hidden');
+            }
+        }
+
+        function hideBlock(block) {
+            if (block) {
+                block.classList.add('is-hidden');
+            }
+        }
+
+        function resetPendingPreview(pending) {
+            if (!pending) {
+                return;
+            }
+
+            var thumb = pending.querySelector('.rl-file-pending-thumb');
+            if (thumb) {
+                thumb.classList.add('is-hidden');
+                thumb.removeAttribute('src');
+            }
+
+            var icon = pending.querySelector('.rl-file-pending-icon');
+            if (icon) {
+                icon.classList.add('is-hidden');
+            }
+
+            var nameEl = pending.querySelector('.rl-file-pending-name');
+            if (nameEl) {
+                nameEl.textContent = '';
+            }
+        }
+
         function clearPendingSelection(uploadBlock) {
             var input = uploadBlock.querySelector('.rl-file-picker-input');
-            var pending = uploadBlock.querySelector('.rl-file-pending');
-            var picker = uploadBlock.querySelector('.rl-file-picker');
+            var pending = uploadBlock.querySelector('[data-role="pending"]');
+            var picker = uploadBlock.querySelector('[data-role="picker"]');
+
             if (input) {
                 input.value = '';
             }
-            if (pending) {
-                pending.hidden = true;
-                var thumb = pending.querySelector('.rl-file-pending-thumb');
-                if (thumb) {
-                    thumb.hidden = true;
-                    thumb.removeAttribute('src');
-                }
-                var icon = pending.querySelector('.rl-file-pending-icon');
-                if (icon) {
-                    icon.hidden = true;
-                }
-            }
+
+            resetPendingPreview(pending);
+            hideBlock(pending);
+
             if (picker) {
                 picker.classList.remove('has-file', 'is-concealed');
+                showBlock(picker);
                 var nameEl = picker.querySelector('.rl-file-picker-name');
                 if (nameEl) {
                     nameEl.textContent = 'No file selected';
@@ -145,14 +171,48 @@
             }
         }
 
+        function showEmptyPicker(uploadBlock) {
+            var attached = uploadBlock.querySelector('[data-role="attached"]');
+            var pending = uploadBlock.querySelector('[data-role="pending"]');
+            var picker = uploadBlock.querySelector('[data-role="picker"]');
+
+            hideBlock(attached);
+            resetPendingPreview(pending);
+            hideBlock(pending);
+
+            if (picker) {
+                var input = picker.querySelector('.rl-file-picker-input');
+                if (input) {
+                    input.value = '';
+                }
+                picker.classList.remove('has-file', 'is-concealed');
+                showBlock(picker);
+                var nameEl = picker.querySelector('.rl-file-picker-name');
+                if (nameEl) {
+                    nameEl.textContent = 'No file selected';
+                }
+            }
+
+            var docType = uploadBlock.getAttribute('data-doc-type');
+            if (docType) {
+                var docCard = document.querySelector('[data-doc-card="' + docType + '"]');
+                var badge = docCard?.querySelector('[data-uploaded-badge]');
+                if (badge) {
+                    badge.remove();
+                }
+            }
+        }
+
         function showPendingSelection(uploadBlock, file) {
-            var pending = uploadBlock.querySelector('.rl-file-pending');
-            var picker = uploadBlock.querySelector('.rl-file-picker');
+            var pending = uploadBlock.querySelector('[data-role="pending"]');
+            var picker = uploadBlock.querySelector('[data-role="picker"]');
+            var attached = uploadBlock.querySelector('[data-role="attached"]');
             if (!pending || !picker) {
                 return;
             }
 
-            pending.hidden = false;
+            hideBlock(attached);
+            showBlock(pending);
             picker.classList.add('is-concealed');
 
             var nameEl = pending.querySelector('.rl-file-pending-name');
@@ -166,19 +226,19 @@
                 var reader = new FileReader();
                 reader.onload = function (e) {
                     thumb.src = e.target.result;
-                    thumb.hidden = false;
+                    thumb.classList.remove('is-hidden');
                 };
                 reader.readAsDataURL(file);
                 if (icon) {
-                    icon.hidden = true;
+                    icon.classList.add('is-hidden');
                 }
             } else {
                 if (thumb) {
-                    thumb.hidden = true;
+                    thumb.classList.add('is-hidden');
                     thumb.removeAttribute('src');
                 }
                 if (icon) {
-                    icon.hidden = false;
+                    icon.classList.remove('is-hidden');
                 }
             }
         }
@@ -222,6 +282,11 @@
                 var hidden = document.getElementById('removeDocType');
                 if (hidden && docType) {
                     hidden.value = docType;
+                }
+
+                var uploadBlock = button.closest('.rl-doc-upload');
+                if (uploadBlock) {
+                    showEmptyPicker(uploadBlock);
                 }
             });
         });

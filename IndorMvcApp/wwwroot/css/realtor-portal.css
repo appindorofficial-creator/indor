@@ -204,6 +204,9 @@
     white-space: nowrap;
     border: 0;
 }
+.rl-doc-upload .is-hidden {
+    display: none !important;
+}
 
 .rl-file-attached,
 .rl-file-pending {
