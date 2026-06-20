@@ -3,7 +3,7 @@
     var active = Model ?? "home";
 }
 <nav class="hvac-bottom-nav">
-    <a asp-controller="Home" asp-action="Index" class="@(active == "home" ? "active" : "")"><i class="fas fa-house"></i>Home</a>
+    <a asp-controller="Home" asp-action="Index" class="@(active == "home" ? "active" : "")"><i class="fas fa-users"></i>Nearby</a>
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="@(active == "services" ? "active" : "")"><i class="fas fa-screwdriver-wrench"></i>Services</a>
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="@(active == "housefacts" ? "active" : "")"><i class="fas fa-house-circle-check"></i>House Facts</a>
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="@(active == "schedule" ? "active" : "")"><i class="fas fa-clipboard-list"></i>Schedule</a>

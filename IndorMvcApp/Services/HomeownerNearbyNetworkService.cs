@@ -20,7 +20,7 @@ public class HomeownerNearbyNetworkService(
     private static readonly IReadOnlyList<RealtorNetworkFilterChipViewModel> FilterChips =
     [
         new() { Label = "All", Value = NearbyNetworkHomeownerFilters.All, Icon = "fa-border-all" },
-        new() { Label = "Homes", Value = NearbyNetworkHomeownerFilters.Homes, Icon = "fa-house" },
+        new() { Label = "Listings", Value = NearbyNetworkHomeownerFilters.Homes, Icon = "fa-house" },
         new() { Label = "Services", Value = NearbyNetworkHomeownerFilters.Providers, Icon = "fa-screwdriver-wrench" },
         new() { Label = "Promotions", Value = NearbyNetworkHomeownerFilters.Promotions, Icon = "fa-tags" },
         new() { Label = "Emergency", Value = NearbyNetworkHomeownerFilters.Emergency, Icon = "fa-shield-halved" },
@@ -825,20 +825,6 @@ public class HomeownerNearbyNetworkService(
 
     private static List<RealtorQuickActionViewModel> BuildQuickActions(int? propiedadId, IUrlHelper url) =>
     [
-        new()
-        {
-            Label = "Certified Providers",
-            Subtitle = "Verified professionals in your area",
-            Icon = "fa-shield-halved",
-            Url = url.Action("Index", "Home") + "#section-services"
-        },
-        new()
-        {
-            Label = "My Home",
-            Subtitle = "View your home profile",
-            Icon = "fa-house",
-            Url = url.Action("Index", "Home") + "#section-mydashboard"
-        },
         new()
         {
             Label = "Post a Request",

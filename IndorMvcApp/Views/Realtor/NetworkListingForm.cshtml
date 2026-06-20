@@ -11,8 +11,8 @@
 
     <div class="rl-page-header">
         <div>
-            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-network-back">
-                <i class="fas fa-chevron-left"></i> Back to Nearby Network
+            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-network-back" aria-label="Back to Nearby Network">
+                <i class="fas fa-chevron-left"></i>
             </a>
             <h1 class="rl-page-title">@(isEdit ? "Edit Listing" : "Post Listing")</h1>
             <p class="rl-page-subtitle">Save your listing to the Nearby Network feed.</p>
