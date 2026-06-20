@@ -542,14 +542,16 @@ public class RealtorNearbyNetworkService(
             secondaryUrl = $"/Realtor/EditNetworkListing/{item.Id}";
         }
 
+        var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
+
         return new RealtorNetworkFeedCardViewModel
         {
             ItemId = item.Id,
             CardType = cardType,
             BadgeLabel = item.BadgeLabel,
             BadgeCss = item.BadgeCss,
-            ImageUrl = item.ImageUrl,
-            IconClass = item.IconClass,
+            ImageUrl = imageUrl,
+            IconClass = string.IsNullOrWhiteSpace(imageUrl) ? item.IconClass : null,
             Title = item.CardType == NearbyNetworkCardTypes.Listing && item.Price is > 0 && item.Title.StartsWith('$')
                 ? item.Title
                 : item.Title,

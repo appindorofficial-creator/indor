@@ -451,7 +451,7 @@ public class HomeownerNearbyNetworkService(
                     CardType = "provider",
                     BadgeLabel = "PROVIDER",
                     BadgeCss = "provider",
-                    IconClass = "fa-leaf",
+                    ImageUrl = NearbyNetworkImageResolver.ResolveServiceImage(provider.Name, provider.Category, null),
                     Title = provider.Name,
                     Subtitle = provider.Category,
                     Tags = provider.IsVerified
@@ -627,14 +627,16 @@ public class HomeownerNearbyNetworkService(
             }
         }
 
+        var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
+
         return new RealtorNetworkFeedCardViewModel
         {
             ItemId = item.Id,
             CardType = cardType,
             BadgeLabel = item.BadgeLabel,
             BadgeCss = item.BadgeCss,
-            ImageUrl = item.ImageUrl,
-            IconClass = item.IconClass,
+            ImageUrl = imageUrl,
+            IconClass = string.IsNullOrWhiteSpace(imageUrl) ? item.IconClass : null,
             Title = item.Title,
             PriceLabel = item.Price is > 0 && !item.Title.StartsWith('$')
                 ? FormatCurrency(item.Price.Value)
@@ -1068,8 +1070,8 @@ public class HomeownerNearbyNetworkService(
                 BadgeLabel = string.IsNullOrWhiteSpace(item.BadgeLabel) ? itemType.ToUpperInvariant() : item.BadgeLabel,
                 Title = card.Title,
                 Subtitle = card.Subtitle ?? card.SpecsLabel,
-                ImageUrl = item.ImageUrl,
-                IconClass = item.IconClass ?? (itemType switch
+                ImageUrl = card.ImageUrl,
+                IconClass = card.IconClass ?? (itemType switch
                 {
                     "emergency" => "fa-triangle-exclamation",
                     "promotion" => "fa-tags",
