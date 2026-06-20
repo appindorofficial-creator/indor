@@ -1,6 +1,7 @@
 using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
+using Microsoft.AspNetCore.Mvc;
 
 namespace IndorMvcApp.Services;
 
@@ -20,7 +21,8 @@ public static class ProfileDisplayService
         MembresiaUsuario? membresia,
         int homeCount,
         int documentCount,
-        int serviceCount)
+        int serviceCount,
+        IUrlHelper? url = null)
     {
         var fullName = UserDisplayName.Format(user);
         var hasName = !string.IsNullOrWhiteSpace(fullName);
@@ -30,8 +32,52 @@ public static class ProfileDisplayService
         var hasMembership = membresia?.Plan != null;
         var hasHome = homeCount > 0;
 
-        var checks = new[] { hasName, hasEmail, hasPhone, hasPhoto, hasMembership, hasHome };
-        var percent = (int)Math.Round(checks.Count(c => c) / (double)checks.Length * 100);
+        var profileChecks = new[] { hasName, hasEmail, hasPhone, hasPhoto };
+        var percent = (int)Math.Round(profileChecks.Count(c => c) / (double)profileChecks.Length * 100);
+
+        var items = new List<ProfileCompletionItemViewModel>
+        {
+            new()
+            {
+                Label = "Add your name",
+                IsComplete = hasName,
+                ActionUrl = url?.Action("EditarPerfil", "Perfil") + "#personal"
+            },
+            new()
+            {
+                Label = "Confirm your email",
+                IsComplete = hasEmail,
+                ActionUrl = url?.Action("Opciones", "Perfil") + "#contact"
+            },
+            new()
+            {
+                Label = "Add your phone number",
+                IsComplete = hasPhone,
+                ActionUrl = url?.Action("EditarPerfil", "Perfil") + "#personal"
+            },
+            new()
+            {
+                Label = "Upload a profile photo",
+                IsComplete = hasPhoto,
+                ActionUrl = url?.Action("EditarPerfil", "Perfil") + "#photo"
+            }
+        };
+
+        if (url != null)
+        {
+            items.Add(new ProfileCompletionItemViewModel
+            {
+                Label = "Register your home",
+                IsComplete = hasHome,
+                ActionUrl = url.Action("AddProperty", "Propietario")
+            });
+            items.Add(new ProfileCompletionItemViewModel
+            {
+                Label = "Choose a membership plan",
+                IsComplete = hasMembership,
+                ActionUrl = url.Action("Suscripciones", "Perfil")
+            });
+        }
 
         return new MoreProfileViewModel
         {
@@ -40,6 +86,7 @@ public static class ProfileDisplayService
             Phone = hasPhone ? user!.Telefono! : "Add your phone",
             PhotoUrl = user?.FotoUrl,
             ProfileCompletionPercent = percent,
+            CompletionItems = items,
             HasActiveMembership = hasMembership,
             MembershipLabel = hasMembership ? membresia!.Plan!.Nombre : "No Membership",
             HomeCount = homeCount,

@@ -13,6 +13,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
@@ -55,10 +56,6 @@
         .hf-label { display:block; font-weight:700; font-size:0.88rem; margin-bottom:6px; }
         .hf-banner { background:rgba(0,102,204,0.08); border:1px solid rgba(0,102,204,0.15); border-radius:14px; padding:14px 16px; display:flex; gap:10px; font-size:0.86rem; line-height:1.45; margin-bottom:14px; }
         .hf-banner i { color:#0066CC; margin-top:2px; }
-        .hf-bottom-nav { position:fixed; left:0; right:0; bottom:0; background:#FFF; border-top:1px solid #E5E7EB; display:flex; justify-content:space-around; padding:8px 4px calc(10px + env(safe-area-inset-bottom)); z-index:20; max-width:520px; margin:0 auto; }
-        .hf-bottom-nav a { text-decoration:none; color:#94A3B8; text-align:center; font-size:0.58rem; font-weight:600; padding:4px 2px; flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
-        .hf-bottom-nav a i { font-size:1.1rem; }
-        .hf-bottom-nav a.active { color:#0066CC; }
         .hf-hero { width:100%; height:180px; object-fit:cover; border-radius:16px; margin-bottom:12px; }
         .hf-address-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; font-weight:600; }
         .hf-timeline { position:relative; margin-left:8px; }
@@ -98,9 +95,12 @@
     </div>
     @if (propiedadId > 0)
     {
-        ViewBag.PropiedadId = propiedadId;
-        ViewBag.BottomNavClass = "hf-bottom-nav";
-        @await Html.PartialAsync("_HomeownerBottomNav")
+        <nav class="bottom-nav" aria-label="My Home navigation">
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-home" class="nav-item @(activeNav == "home" ? "active" : "")"><i class="fas fa-location-dot"></i><span>Nearby</span></a>
+            <a asp-controller="MyHome" asp-action="Index" asp-route-id="@propiedadId" class="nav-item @(activeNav == "summary" || activeNav == "maintenance" ? "active" : "")"><i class="fas fa-clipboard"></i><span>Summary</span></a>
+            <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId" class="nav-item @(activeNav == "history" ? "active" : "")"><i class="fas fa-clock-rotate-left"></i><span>History</span></a>
+            <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId" class="nav-item @(activeNav == "documents" ? "active" : "")"><i class="fas fa-file-lines"></i><span>Documents</span></a>
+        </nav>
     }
 </body>
 </html>

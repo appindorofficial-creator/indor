@@ -56,7 +56,10 @@ public class PerfilController : Controller
         var serviceCount = await _db.HistorialServicios.CountAsync(h => h.UserId == userId)
             + await _db.ProgramacionesMicroservicio.CountAsync(p => p.UserId == userId);
 
-        return ProfileDisplayService.Build(user, membresia, homeCount, docCount, serviceCount);
+        var primaryPropId = propIds.Count > 0 ? propIds.Max() : 0;
+        ViewBag.PropiedadId = primaryPropId > 0 ? (int?)primaryPropId : null;
+
+        return ProfileDisplayService.Build(user, membresia, homeCount, docCount, serviceCount, Url);
     }
 
     private async Task CargarUsuarioYMembresiaAsync()
@@ -96,11 +99,15 @@ public class PerfilController : Controller
     }
 
     [HttpGet]
+    public IActionResult Index() => RedirectToAction(nameof(Opciones));
+
+    [HttpGet]
     public async Task<IActionResult> Opciones()
     {
         await CargarUsuarioYMembresiaAsync();
         ViewData["Title"] = "Profile Options";
         ViewData["Subtitulo"] = "Manage your account details and preferences.";
+        ViewBag.BottomNavActive = "more";
         return View();
     }
 
@@ -110,8 +117,10 @@ public class PerfilController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
+        await CargarUsuarioYMembresiaAsync();
         ViewData["Title"] = "Edit Profile";
         ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+        ViewBag.BottomNavActive = "more";
         return View(MapEditProfileViewModel(user));
     }
 
@@ -143,7 +152,7 @@ public class PerfilController : Controller
 
         await _userManager.UpdateAsync(user);
         TempData["PerfilOk"] = "Profile updated successfully.";
-        return RedirectToAction("Index", "Home", new { section = "more" });
+        return RedirectToAction(nameof(Opciones));
     }
 
     [HttpGet]
@@ -644,6 +653,7 @@ public class PerfilController : Controller
             .OrderByDescending(h => h.Fecha)
             .ToListAsync();
         ViewData["Title"] = "History";
+        ViewBag.BottomNavActive = "more";
         ViewData["Subtitulo"] = "Microservices, inspections, and past services";
         return View();
     }

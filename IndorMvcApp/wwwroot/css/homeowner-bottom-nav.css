@@ -1,0 +1,65 @@
+/* Homeowner quick access bar — shared across Home, Profile, wizards, My Home */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #FFFFFF;
+    display: flex;
+    justify-content: space-around;
+    align-items: stretch;
+    padding: 10px 6px calc(env(safe-area-inset-bottom, 0) + 10px);
+    box-shadow: 0 -4px 16px rgba(10, 37, 64, 0.08);
+    z-index: 100;
+    border-top: 1px solid #E5E7EB;
+}
+
+.bottom-nav .nav-item {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 2px;
+    color: #9CA3AF;
+    cursor: pointer;
+    font-size: 0.58rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.bottom-nav a.nav-item,
+.bottom-nav a.nav-item--link {
+    text-decoration: none;
+}
+
+.bottom-nav .nav-item i {
+    font-size: 1.2rem;
+    line-height: 1;
+}
+
+.bottom-nav .nav-item span {
+    line-height: 1.1;
+    white-space: nowrap;
+}
+
+.bottom-nav .nav-item.active {
+    color: #1867F2;
+}
+
+.bottom-nav .nav-item.active::after {
+    content: '';
+    display: block;
+    width: 22px;
+    height: 3px;
+    margin-top: 4px;
+    border-radius: 999px;
+    background: #1867F2;
+}

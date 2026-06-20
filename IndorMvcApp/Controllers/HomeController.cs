@@ -126,7 +126,7 @@ public class HomeController : Controller
         var serviceCount = await _db.HistorialServicios.CountAsync(h => h.UserId == userId)
             + await _db.ProgramacionesMicroservicio.CountAsync(p => p.UserId == userId);
         ViewBag.MoreProfile = ProfileDisplayService.Build(
-            usuario, membresiaActual, propiedades.Count, docCount, serviceCount);
+            usuario, membresiaActual, propiedades.Count, docCount, serviceCount, Url);
 
         ViewBag.MetodosPago = await _db.MetodosPago
             .Where(m => m.UserId == userId && m.Activo)

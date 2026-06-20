@@ -1,4 +1,6 @@
 /* HVAC Setup flow */
+@import url('homeowner-bottom-nav.css');
+
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -526,51 +528,6 @@ a.hvac-save-btn {
     margin: 0 0 10px;
     font-size: 1rem;
     font-weight: 800;
-}
-
-.hvac-bottom-nav {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: #FFF;
-    border-top: 1px solid #E5E7EB;
-    display: flex;
-    justify-content: space-around;
-    padding: 8px 6px calc(env(safe-area-inset-bottom, 0px) + 8px);
-    z-index: 20;
-}
-
-.hvac-bottom-nav a {
-    flex: 1;
-    min-width: 0;
-    text-decoration: none;
-    color: #94A3B8;
-    text-align: center;
-    font-size: 0.58rem;
-    font-weight: 600;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    padding: 4px 2px;
-}
-
-.hvac-bottom-nav a i {
-    font-size: 1.1rem;
-}
-
-.hvac-bottom-nav a.active {
-    color: #1867F2;
-}
-
-.hvac-bottom-nav a.active::after {
-    content: '';
-    width: 22px;
-    height: 3px;
-    border-radius: 999px;
-    background: #1867F2;
-    margin-top: 2px;
 }
 
 .text-danger {
@@ -1125,9 +1082,9 @@ a.hvac-save-btn {
 
 @media (min-width:768px){
 .hvac-page{max-width:720px!important;margin-left:auto;margin-right:auto}
-.hvac-bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(100%,720px);border-radius:18px 18px 0 0}
+.bottom-nav{left:50%;right:auto;transform:translateX(-50%);width:min(100%,720px);border-radius:18px 18px 0 0}
 }
 @media (min-width:1024px){
 .hvac-page{max-width:900px!important}
-.hvac-bottom-nav{width:min(100%,900px)}
+.bottom-nav{width:min(100%,900px)}
 }

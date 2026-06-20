@@ -19,7 +19,7 @@
         }
         else
         {
-            <a class="perfil-back" asp-controller="Home" asp-action="Index" asp-route-section="more" title="Back">
+            <a class="perfil-back" asp-controller="Home" asp-action="Index" asp-fragment="section-mydashboard" title="Back">
                 <i class="fas fa-arrow-left"></i>
             </a>
         }
@@ -59,4 +59,8 @@
 
     @RenderBody()
 </div>
+@{
+    ViewBag.BottomNavActive ??= "more";
+}
+@await Html.PartialAsync("_AppBottomNav", ViewBag.BottomNavActive as string ?? "more")
 @await RenderSectionAsync("Scripts", required: false)

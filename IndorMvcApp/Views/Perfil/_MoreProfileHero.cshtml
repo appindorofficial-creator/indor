@@ -32,7 +32,29 @@
         <div class="more-progress-track">
             <div class="more-progress-fill" style="width:@Model.ProfileCompletionPercent%"></div>
         </div>
-        <p class="more-completion-hint">Complete your profile to unlock better recommendations.</p>
+        @if (Model.IsProfileComplete)
+        {
+            <p class="more-completion-hint is-complete"><i class="fas fa-circle-check"></i> Your profile is complete.</p>
+        }
+        else
+        {
+            <p class="more-completion-hint">Complete your profile to unlock better recommendations.</p>
+            <ul class="more-completion-list">
+                @foreach (var item in Model.CompletionItems.Where(i => !i.IsComplete).Take(4))
+                {
+                    <li>
+                        @if (!string.IsNullOrEmpty(item.ActionUrl))
+                        {
+                            <a href="@item.ActionUrl">@item.Label</a>
+                        }
+                        else
+                        {
+                            @item.Label
+                        }
+                    </li>
+                }
+            </ul>
+        }
     </div>
 
     @if (ViewData["ShowActions"] as bool? == true)
