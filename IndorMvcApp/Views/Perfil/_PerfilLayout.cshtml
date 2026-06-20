@@ -7,6 +7,7 @@
 }
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="~/css/profile-more.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/app-back-button.css" asp-append-version="true" />
 
 <div class="perfil-page">
     <div class="perfil-header-row">
@@ -15,12 +16,12 @@
         }
         @if (!string.IsNullOrEmpty(backUrl))
         {
-            <a class="perfil-back" href="@backUrl" title="Back"><i class="fas fa-arrow-left"></i></a>
+            <a class="app-back-btn" href="@backUrl" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
         }
         else
         {
-            <a class="perfil-back" asp-controller="Home" asp-action="Index" asp-fragment="section-mydashboard" title="Back">
-                <i class="fas fa-arrow-left"></i>
+            <a class="app-back-btn" asp-controller="Home" asp-action="Index" asp-fragment="section-mydashboard" aria-label="Back">
+                <i class="fas fa-chevron-left"></i>
             </a>
         }
         <div class="perfil-top-title" style="flex:1;">

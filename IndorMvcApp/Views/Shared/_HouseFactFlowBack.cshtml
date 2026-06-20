@@ -9,6 +9,6 @@
             ? Url.Action("PropertyDetails", "Propietario")
             : Url.Action("Details", "MyHome", new { id = propiedadId, tab = "attom" }));
 }
-<a href="@backUrl" aria-label="Back">
-    <i class="fas fa-arrow-left"></i>
+<a href="@backUrl" class="app-back-btn" aria-label="Back">
+    <i class="fas fa-chevron-left"></i>
 </a>

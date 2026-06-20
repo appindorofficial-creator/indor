@@ -6,7 +6,7 @@
     ViewBag.MyHomeNav = "documents";
 }
 <div class="hf-title-row">
-    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">@Model.Category</h1>
     <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-category="@Model.Category" class="hf-btn">+ Add</a>
 </div>

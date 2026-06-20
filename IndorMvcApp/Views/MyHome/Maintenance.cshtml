@@ -7,7 +7,7 @@
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
 }
 <div class="hf-title-row">
-    <a href="@Model.BackUrl" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <a href="@Model.BackUrl" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">Maintenance</h1>
     <a asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-btn">+ Add</a>
 </div>

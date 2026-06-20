@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-back-button.css" asp-append-version="true" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -94,11 +95,11 @@
 <body>
     <div class="page-container">
         <header class="app-header">
-            <a asp-action="AddProperty" class="icon-btn" aria-label="Back">
-                <i class="fas fa-arrow-left"></i>
+            <a asp-action="AddProperty" class="app-back-btn" aria-label="Back">
+                <i class="fas fa-chevron-left"></i>
             </a>
             <div class="app-header-title"><i class="fas fa-house"></i> Your Home</div>
-            <span class="icon-btn" style="visibility:hidden;" aria-hidden="true"></span>
+            <span class="app-back-btn" style="visibility:hidden;" aria-hidden="true"></span>
         </header>
 
         @{

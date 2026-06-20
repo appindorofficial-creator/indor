@@ -14,24 +14,17 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-back-button.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
     <style>
         * { margin:0; padding:0; box-sizing:border-box; }
         body { font-family:'Inter',sans-serif; background:#F4F7FB; color:#0A2540; min-height:100vh; padding-bottom:84px; }
         .hf-top { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:12px 16px; background:#FFF; border-bottom:1px solid #E5E7EB; }
-        .hf-top-home {
-            display:inline-flex; align-items:center; justify-content:center;
-            width:40px; height:40px; border-radius:50%;
-            border:1.5px solid #E5E7EB; background:#FFF;
-            color:#0A2540; text-decoration:none; flex-shrink:0;
-        }
-        .hf-top-home i { font-size:0.95rem; }
         .hf-brand { display:flex; align-items:center; justify-content:center; gap:8px; flex:1; font-weight:800; color:#0066CC; font-size:0.9rem; }
-        .hf-top-spacer { width:72px; flex-shrink:0; }
+        .hf-top-spacer { width: 44px; flex-shrink:0; }
         .hf-content { max-width:520px; margin:0 auto; padding:16px; }
         .hf-title-row { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:16px; }
         .hf-title { font-size:1.45rem; font-weight:800; }
-        .hf-back { width:40px; height:40px; border-radius:50%; border:1.5px solid #E5E7EB; background:#FFF; display:inline-flex; align-items:center; justify-content:center; color:#0A2540; text-decoration:none; }
         .hf-btn { border:1.5px solid #0066CC; background:#FFF; color:#0066CC; border-radius:12px; padding:10px 14px; font-weight:700; font-size:0.85rem; text-decoration:none; display:inline-flex; align-items:center; gap:6px; cursor:pointer; }
         .hf-btn-primary { background:linear-gradient(135deg,#0066CC,#004FA3); color:#FFF; border:none; width:100%; justify-content:center; padding:15px; border-radius:14px; font-size:1rem; }
         .hf-card { background:#FFF; border-radius:16px; padding:16px; border:1px solid rgba(229,231,235,0.9); margin-bottom:12px; }
@@ -84,7 +77,7 @@
 </head>
 <body>
     <div class="hf-top">
-        <a asp-controller="Home" asp-action="Index" class="hf-top-home" aria-label="Back">
+        <a asp-controller="Home" asp-action="Index" class="app-back-btn" aria-label="Back">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div class="hf-brand"><i class="fas fa-house-circle-check"></i> HOUSE FACTS</div>

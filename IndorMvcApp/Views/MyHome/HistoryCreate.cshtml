@@ -7,7 +7,7 @@
     ViewBag.MyHomeNav = "history";
 }
 <div class="hf-title-row">
-    <a asp-action="@(isEdit ? "HistoryDetail" : "History")" asp-route-id="@(isEdit ? Model.Id : Model.PropiedadId)" class="hf-back"><i class="fas fa-arrow-left"></i></a>
+    <a asp-action="@(isEdit ? "HistoryDetail" : "History")" asp-route-id="@(isEdit ? Model.Id : Model.PropiedadId)" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">@(isEdit ? "Edit record" : "Add record")</h1>
 </div>
 <form asp-action="@(isEdit ? "HistoryEdit" : "HistoryCreate")" method="post">

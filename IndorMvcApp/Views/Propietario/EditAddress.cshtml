@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
     <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/app-back-button.css" asp-append-version="true" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -47,26 +48,8 @@
             margin-bottom: 18px;
         }
 
-        .back-btn {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: #FFFFFF;
-            border: 1.5px solid #E5E7EB;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #0A2540;
-            text-decoration: none;
-            font-size: 1rem;
-            transition: all 0.25s ease;
-        }
 
-        .back-btn:hover {
-            border-color: #0066CC;
-            color: #0066CC;
-            transform: translateX(-2px);
-        }
+        .top-bar-spacer { width: 44px; }
 
         .smart-home-logo {
             max-height: 42px;
@@ -310,8 +293,8 @@
 <body>
     <div class="page-container">
         <div class="top-bar">
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="back-btn" aria-label="Back">
-                <i class="fas fa-arrow-left"></i>
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="app-back-btn" aria-label="Back">
+                <i class="fas fa-chevron-left"></i>
             </a>
             <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
             <div style="width:44px;"></div>
