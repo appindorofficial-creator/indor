@@ -1136,12 +1136,36 @@ button.rl-quick-action {
 
 .rl-toggle-list { background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
 .rl-toggle-row {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 14px 16px; border-bottom: 1px solid #F1F5F9;
-    font-size: .86rem; font-weight: 600;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: .86rem;
+    font-weight: 600;
+    cursor: pointer;
 }
 .rl-toggle-row:last-child { border-bottom: none; }
-.rl-toggle-row input { display: none; }
+.rl-toggle-row input[type="checkbox"] {
+    grid-column: 2;
+    grid-row: 1;
+    position: relative;
+    z-index: 2;
+    width: 44px;
+    height: 24px;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.rl-toggle-row .rl-toggle {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    pointer-events: none;
+}
 .rl-toggle {
     width: 44px; height: 24px; border-radius: 999px; background: #CBD5E1;
     position: relative; transition: background .15s;
@@ -3107,14 +3131,16 @@ button.rl-profile-nav-item {
 }
 
 .rl-settings-card .rl-toggle-row {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
-    justify-content: space-between;
+    gap: 12px;
     padding: 8px 0;
     font-size: .75rem;
     font-weight: 600;
     color: #334155;
     border-bottom: 1px solid #F8FAFC;
+    cursor: pointer;
 }
 .rl-settings-card .rl-toggle-row:last-of-type { border-bottom: none; }
 
