@@ -5,24 +5,29 @@
 }
 
 <div class="more-profile-card">
-    <img class="profile-house-art" src="~/images/profile-house.svg" alt="" asp-append-version="true"
-         onerror="this.style.display='none'" />
-    @if (!string.IsNullOrEmpty(linkUrl))
-    {
-        <a href="@linkUrl" class="more-profile-top" style="text-decoration:none;color:inherit;">
-            @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHeroInner.cshtml", Model)
-            @if (showChevron)
-            {
-                <i class="fas fa-chevron-right" style="position:absolute;right:16px;top:42px;color:#9CA3AF;"></i>
-            }
-        </a>
-    }
-    else
-    {
-        <div class="more-profile-top">
-            @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHeroInner.cshtml", Model)
-        </div>
-    }
+    <div class="more-profile-top-wrap">
+        @if (!Model.IsProfileComplete)
+        {
+            <img class="profile-house-art" src="~/images/profile-house.svg" alt="" asp-append-version="true"
+                 onerror="this.style.display='none'" />
+        }
+        @if (!string.IsNullOrEmpty(linkUrl))
+        {
+            <a href="@linkUrl" class="more-profile-top" style="text-decoration:none;color:inherit;">
+                @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHeroInner.cshtml", Model)
+                @if (showChevron)
+                {
+                    <i class="fas fa-chevron-right" style="position:absolute;right:16px;top:42px;color:#9CA3AF;"></i>
+                }
+            </a>
+        }
+        else
+        {
+            <div class="more-profile-top">
+                @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHeroInner.cshtml", Model)
+            </div>
+        }
+    </div>
 
     <div class="more-completion">
         <div class="more-completion-head">

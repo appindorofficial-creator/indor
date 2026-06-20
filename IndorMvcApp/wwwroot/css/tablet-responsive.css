@@ -46,7 +46,6 @@
     }
 
     /* Bottom nav aligned to content shell (not full viewport width) */
-    .bottom-nav,
     .rl-bottom-nav,
     .pa-bottom-nav,
     .hf-bottom-nav,
@@ -168,7 +167,6 @@
         max-width: var(--indor-shell-tablet-lg) !important;
     }
 
-    .bottom-nav,
     .rl-bottom-nav,
     .pa-bottom-nav,
     .hf-bottom-nav,

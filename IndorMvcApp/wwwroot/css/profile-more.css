@@ -9,16 +9,19 @@
     border: 1px solid #E8EEF5;
     box-shadow: 0 8px 24px rgba(10, 37, 64, .07);
     margin-bottom: 14px;
+    overflow: hidden;
+}
+
+.more-profile-top-wrap {
     position: relative;
     overflow: hidden;
 }
 
-.more-profile-card .profile-house-art {
+.more-profile-top-wrap .profile-house-art {
     position: absolute;
-    right: 8px;
-    top: 50%;
-    transform: translateY(-52%);
-    width: 110px;
+    top: -4px;
+    right: -6px;
+    width: 96px;
     height: auto;
     opacity: .95;
     pointer-events: none;
@@ -29,6 +32,15 @@
     gap: 14px;
     align-items: flex-start;
     padding-right: 72px;
+    position: relative;
+}
+
+.more-completion {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid #EEF2F7;
+    position: relative;
+    z-index: 1;
 }
 
 .more-avatar {
@@ -69,12 +81,6 @@
 .more-profile-meta .mp-row i { color: #6C8BD6; width: 16px; text-align: center; font-size: .78rem; }
 .more-profile-meta .mp-row.membership { color: #6B7280; }
 .more-profile-meta .mp-row.membership strong { color: #0A2540; font-weight: 600; }
-
-.more-completion {
-    margin-top: 14px;
-    padding-top: 12px;
-    border-top: 1px solid #EEF2F7;
-}
 
 .more-completion-head {
     display: flex;
@@ -304,23 +310,6 @@
     gap: 12px;
     margin-bottom: 16px;
 }
-
-.perfil-back {
-    width: 42px;
-    height: 42px;
-    border-radius: 50%;
-    background: #FFF;
-    border: 1px solid #E8EEF5;
-    color: #0066CC;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    box-shadow: 0 4px 14px rgba(10, 37, 64, .08);
-    flex-shrink: 0;
-}
-
-.perfil-back:hover { color: #004FA3; }
 
 .pf-cta-card {
     background: linear-gradient(135deg, #EBF4FF 0%, #F5F9FF 100%);
@@ -1562,7 +1551,7 @@
     .pay-summary-grid { grid-template-columns: 1fr; }
     .pf-row { grid-template-columns: 1fr; }
     .more-profile-top { padding-right: 0; }
-    .more-profile-card .profile-house-art { display: none; }
+    .more-profile-top-wrap .profile-house-art { display: none; }
 }
 
 /* Homeowner edit profile */
