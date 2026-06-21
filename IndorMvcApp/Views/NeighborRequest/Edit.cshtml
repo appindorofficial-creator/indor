@@ -1,0 +1,147 @@
+@using IndorMvcApp.Models
+@model IndorMvcApp.ViewModels.NeighborRequestEditDetailsStepViewModel
+@{
+    ViewData["Title"] = "Edit request";
+    var selectedCategory = Model.Categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? Model.Categories.FirstOrDefault();
+    var timeWindowLabel = Model.TimeWindowOptions.FirstOrDefault(o => o.Value == Model.TimeWindowPreset).Label
+        ?? Model.TimeWindowOptions.FirstOrDefault().Label;
+}
+
+<form asp-action="Edit" method="post" class="nr-edit-form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PropiedadId" />
+    <input type="hidden" asp-for="RequestId" />
+
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+
+    <div class="nr-edit-panel">
+        <section class="nr-edit-section">
+            <h2 class="nr-edit-section-title">What do you need help with?</h2>
+            <div class="nr-edit-picker" id="nrCategoryPicker">
+                <select asp-for="CategoryId" class="nr-edit-picker-native" aria-label="Category">
+                    @foreach (var category in Model.Categories)
+                    {
+                        <option value="@category.Id"
+                                data-icon="@category.IconClass"
+                                data-label="@category.Label"
+                                selected="@(category.Id == Model.CategoryId)">@category.Label</option>
+                    }
+                </select>
+                <div class="nr-edit-picker-face">
+                    <span class="nr-edit-picker-icon" id="nrCategoryIcon"><i class="fas @(selectedCategory?.IconClass ?? Model.CategoryIconClass)"></i></span>
+                    <span class="nr-edit-picker-label" id="nrCategoryLabel">@(selectedCategory?.Label ?? Model.CategoryLabel)</span>
+                    <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="nr-edit-section">
+            <h2 class="nr-edit-section-title">Details</h2>
+            <div class="nr-edit-field">
+                <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="2 bedrooms, 2 bathrooms, 1 cat" maxlength="200" />
+            </div>
+            <div class="nr-edit-field">
+                <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy."></textarea>
+            </div>
+        </section>
+
+        <section class="nr-edit-section">
+            <h2 class="nr-edit-section-title">Preferred date</h2>
+            <label class="nr-edit-picker nr-edit-picker--date">
+                <span class="nr-edit-picker-icon"><i class="far fa-calendar"></i></span>
+                <input asp-for="NeededByDate" type="date" class="nr-edit-picker-native nr-edit-picker-native--date" />
+                <span class="nr-edit-picker-label" id="nrPreferredDateLabel">
+                    @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? "Select a date")
+                </span>
+                <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
+            </label>
+        </section>
+
+        <section class="nr-edit-section">
+            <h2 class="nr-edit-section-title">Time window</h2>
+            <div class="nr-edit-picker">
+                <select asp-for="TimeWindowPreset" class="nr-edit-picker-native" asp-items="@(new SelectList(Model.TimeWindowOptions, "Value", "Label", Model.TimeWindowPreset))" aria-label="Time window"></select>
+                <div class="nr-edit-picker-face">
+                    <span class="nr-edit-picker-icon"><i class="far fa-clock"></i></span>
+                    <span class="nr-edit-picker-label" id="nrTimeWindowLabel">@timeWindowLabel</span>
+                    <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="nr-edit-section nr-edit-section--last">
+            <h2 class="nr-edit-section-title">Who can help?</h2>
+            <div class="nr-edit-audience" role="radiogroup" aria-label="Who can help">
+                <label class="nr-edit-audience-btn@(Model.AudienceCode == NeighborRequestAudienceCodes.Neighbors ? " is-selected" : string.Empty)">
+                    <input type="radio" asp-for="AudienceCode" value="@NeighborRequestAudienceCodes.Neighbors" />
+                    <i class="fas fa-users" aria-hidden="true"></i>
+                    <span>Neighbors</span>
+                </label>
+                <label class="nr-edit-audience-btn@(Model.AudienceCode == NeighborRequestAudienceCodes.CertifiedProviders ? " is-selected" : string.Empty)">
+                    <input type="radio" asp-for="AudienceCode" value="@NeighborRequestAudienceCodes.CertifiedProviders" />
+                    <i class="fas fa-user-shield" aria-hidden="true"></i>
+                    <span>INDOR Providers</span>
+                </label>
+                <label class="nr-edit-audience-btn@(Model.AudienceCode == NeighborRequestAudienceCodes.Both ? " is-selected" : string.Empty)">
+                    <input type="radio" asp-for="AudienceCode" value="@NeighborRequestAudienceCodes.Both" />
+                    <i class="fas fa-user-group" aria-hidden="true"></i>
+                    <span>Both</span>
+                </label>
+            </div>
+            <div class="nr-edit-info">
+                <i class="fas fa-circle-info" aria-hidden="true"></i>
+                <p>You can switch from neighbors to <strong>INDOR Providers</strong> anytime before booking.</p>
+            </div>
+        </section>
+    </div>
+
+    <button type="submit" class="nr-btn-primary nr-edit-continue">Continue</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        (function () {
+            var categorySelect = document.querySelector('[name="CategoryId"]');
+            var categoryLabel = document.getElementById('nrCategoryLabel');
+            var categoryIcon = document.getElementById('nrCategoryIcon');
+            if (categorySelect) {
+                categorySelect.addEventListener('change', function () {
+                    var option = categorySelect.options[categorySelect.selectedIndex];
+                    if (categoryLabel) categoryLabel.textContent = option.dataset.label || option.textContent;
+                    if (categoryIcon) categoryIcon.innerHTML = '<i class="fas ' + (option.dataset.icon || 'fa-house') + '"></i>';
+                });
+            }
+
+            var dateInput = document.querySelector('[name="NeededByDate"]');
+            var dateLabel = document.getElementById('nrPreferredDateLabel');
+            if (dateInput && dateLabel) {
+                var formatDate = function (value) {
+                    if (!value) return 'Select a date';
+                    var date = new Date(value + 'T12:00:00');
+                    return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+                };
+                dateInput.addEventListener('change', function () {
+                    dateLabel.textContent = formatDate(dateInput.value);
+                });
+                if (dateInput.value) dateLabel.textContent = formatDate(dateInput.value);
+            }
+
+            var timeSelect = document.querySelector('[name="TimeWindowPreset"]');
+            var timeLabel = document.getElementById('nrTimeWindowLabel');
+            if (timeSelect && timeLabel) {
+                timeSelect.addEventListener('change', function () {
+                    timeLabel.textContent = timeSelect.options[timeSelect.selectedIndex].textContent;
+                });
+            }
+
+            document.querySelectorAll('.nr-edit-audience-btn input').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    document.querySelectorAll('.nr-edit-audience-btn').forEach(function (btn) {
+                        btn.classList.toggle('is-selected', btn.querySelector('input')?.checked);
+                    });
+                });
+            });
+        })();
+    </script>
+}

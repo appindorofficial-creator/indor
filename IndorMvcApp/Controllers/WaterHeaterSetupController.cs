@@ -36,7 +36,7 @@ public class WaterHeaterSetupController : Controller
     public async Task<IActionResult> Add(int? propiedadId)
     {
         var propiedad = await LoadPropertyAsync(propiedadId);
-        if (propiedad == null) return RedirectToAction("AddProperty", "Propietario");
+        if (propiedad == null) return Redirect(Url.Action("EditarPerfil", "Perfil") + "#home");
 
         if (await HasSavedSystemAsync(propiedad.Id))
         {

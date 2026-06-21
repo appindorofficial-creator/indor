@@ -7,6 +7,7 @@ using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,20 +20,27 @@ public class PerfilController : Controller
     private const string MembershipSessionKey = "MembershipSignup";
     private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxProfilePhotoBytes = 10_000_000;
+    private static readonly TimeSpan AddressLookupTimeout = TimeSpan.FromMinutes(3);
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IHomeownerPropertyService _homeownerPropertyService;
+    private readonly ILogger<PerfilController> _logger;
 
     public PerfilController(AppDbContext db,
                             UserManager<ApplicationUser> userManager,
                             SignInManager<ApplicationUser> signInManager,
-                            IWebHostEnvironment env)
+                            IWebHostEnvironment env,
+                            IHomeownerPropertyService homeownerPropertyService,
+                            ILogger<PerfilController> logger)
     {
         _db = db;
         _userManager = userManager;
         _signInManager = signInManager;
         _env = env;
+        _homeownerPropertyService = homeownerPropertyService;
+        _logger = logger;
     }
 
     private async Task<MoreProfileViewModel> BuildMoreProfileAsync()
@@ -119,9 +127,67 @@ public class PerfilController : Controller
 
         await CargarUsuarioYMembresiaAsync();
         ViewData["Title"] = "Edit Profile";
-        ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+        ViewData["Subtitulo"] = "Update your details and connect your home with AI.";
         ViewBag.BottomNavActive = "more";
-        return View(MapEditProfileViewModel(user));
+        return View(await MapEditProfileViewModelAsync(user));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestTimeout("OnboardingAddressLookup")]
+    public async Task<IActionResult> EnriquecerPropiedad([Bind(Prefix = "AddressForm")] AddPropertyViewModel model)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null) return RedirectToAction("Login", "Account");
+
+        if (!ModelState.IsValid)
+        {
+            TempData["PerfilError"] = "Please complete your street address, city, state, and ZIP code.";
+            return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
+        }
+
+        var userId = user.Id;
+        var existing = await _homeownerPropertyService.GetPrimaryPropertyAsync(userId);
+
+        try
+        {
+            var propertyInfo = await _homeownerPropertyService
+                .EnrichAddressAsync(model)
+                .WaitAsync(AddressLookupTimeout, HttpContext.RequestAborted);
+
+            if (propertyInfo == null)
+            {
+                TempData["PerfilError"] = "No information was found for this address. Try a more specific address.";
+                return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
+            }
+
+            var propiedadId = await _homeownerPropertyService.SaveOrUpdatePropertyAsync(
+                propertyInfo,
+                userId,
+                existing?.Id,
+                HttpContext.RequestAborted);
+
+            TempData["PerfilOk"] = "Your home profile is ready — House Facts and maintenance insights are now available.";
+            TempData["HomeEnriched"] = true;
+            return Redirect(Url.Action(nameof(EditarPerfil), new { id = propiedadId }) + "#home");
+        }
+        catch (TimeoutException)
+        {
+            _logger.LogWarning("Home enrichment timed out for {Address}", model.BuildLookupAddress());
+            TempData["PerfilError"] = "Address lookup is taking longer than expected. Please try again in a moment.";
+            return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
+        }
+        catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested)
+        {
+            TempData["PerfilError"] = "Address lookup was interrupted. Please try again.";
+            return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Unexpected error enriching homeowner property");
+            TempData["PerfilError"] = "We couldn't research this address right now. Please try again.";
+            return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
+        }
     }
 
     [HttpPost]
@@ -147,7 +213,7 @@ public class PerfilController : Controller
             TempData["PerfilError"] = photoError;
             ViewData["Title"] = "Edit Profile";
             ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
-            return View(MapEditProfileViewModel(user));
+            return View(await MapEditProfileViewModelAsync(user));
         }
 
         await _userManager.UpdateAsync(user);
@@ -581,7 +647,7 @@ public class PerfilController : Controller
         return View();
     }
 
-    private static HomeownerEditProfileViewModel MapEditProfileViewModel(ApplicationUser user)
+    private async Task<HomeownerEditProfileViewModel> MapEditProfileViewModelAsync(ApplicationUser user)
     {
         var fullName = UserDisplayName.Format(user);
         var initial = "?";
@@ -594,7 +660,7 @@ public class PerfilController : Controller
             initial = user.Email.Trim()[..1].ToUpperInvariant();
         }
 
-        return new HomeownerEditProfileViewModel
+        var model = new HomeownerEditProfileViewModel
         {
             Nombre = user.Nombre,
             Apellidos = user.Apellidos,
@@ -603,6 +669,55 @@ public class PerfilController : Controller
             PhotoUrl = user.FotoUrl,
             DisplayInitial = initial
         };
+
+        var propiedad = await _homeownerPropertyService.GetPrimaryPropertyAsync(user.Id);
+        if (propiedad == null)
+        {
+            return model;
+        }
+
+        var info = MyHomeDisplayService.DeserializeProperty(propiedad);
+        model.HasHome = true;
+        model.PropiedadId = propiedad.Id;
+        model.HomeAddress = propiedad.Direccion ?? info?.FormattedAddress;
+        model.DataSource = info?.DataSource ?? propiedad.AttomSyncStatus;
+
+        if (info?.PropertyDetails != null)
+        {
+            model.YearBuilt = info.PropertyDetails.YearBuilt;
+            model.LivingArea = info.PropertyDetails.LivingArea;
+            model.Bedrooms = info.PropertyDetails.Bedrooms;
+            model.Bathrooms = info.PropertyDetails.Bathrooms;
+        }
+
+        model.HouseFactPreview = HouseFactDisplayService.BuildProfile(
+            propiedad.AttomRawJson,
+            model.DataSource,
+            model.HomeAddress);
+        model.HouseFactFieldCount = model.HouseFactPreview.FieldCount;
+        model.HasEnrichedData = !string.IsNullOrWhiteSpace(propiedad.AttomRawJson)
+            && (info?.PropertyDetails?.YearBuilt is > 0
+                || info?.PropertyDetails?.Bedrooms is > 0
+                || info?.PropertyDetails?.LivingArea is > 0
+                || info?.PropertyDetails?.Bathrooms is > 0
+                || model.HouseFactFieldCount > 5);
+
+        model.AddressForm = new AddPropertyViewModel
+        {
+            StreetAddress = info?.Street ?? string.Empty,
+            City = info?.City ?? string.Empty,
+            State = info?.State ?? string.Empty,
+            ZipCode = info?.PostalCode ?? string.Empty,
+            Unit = info?.Unit
+        };
+
+        if (string.IsNullOrWhiteSpace(model.AddressForm.StreetAddress)
+            && !string.IsNullOrWhiteSpace(model.HomeAddress))
+        {
+            model.AddressForm.Address = model.HomeAddress;
+        }
+
+        return model;
     }
 
     private async Task<string?> TrySaveHomeownerPhotoAsync(ApplicationUser user, IFormFile? foto)

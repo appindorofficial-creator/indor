@@ -49,10 +49,17 @@ public class IndorNeighborRequest
     [MaxLength(500)]
     public string? Description { get; set; }
 
+    [MaxLength(200)]
+    public string? DetailsSummary { get; set; }
+
     [MaxLength(500)]
     public string? LocationAddress { get; set; }
 
     public DateTime? NeededByDate { get; set; }
+
+    public TimeOnly? TimeWindowStart { get; set; }
+
+    public TimeOnly? TimeWindowEnd { get; set; }
 
     [Required, MaxLength(30)]
     public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.ThisWeek;
@@ -79,6 +86,14 @@ public class IndorNeighborRequest
     public DateTime? PublishedUtc { get; set; }
 
     public DateTime? UpdatedUtc { get; set; }
+
+    [MaxLength(40)]
+    public string? CancelReasonCode { get; set; }
+
+    [MaxLength(500)]
+    public string? CancelNote { get; set; }
+
+    public DateTime? CancelledUtc { get; set; }
 
     public ICollection<IndorNeighborRequestPhoto> Photos { get; set; } = [];
 
@@ -136,6 +151,12 @@ public class IndorNeighborRequestOffer
     [Column(TypeName = "decimal(5,2)")]
     public decimal? DistanceMiles { get; set; }
 
+    [Column(TypeName = "decimal(3,1)")]
+    public decimal? Rating { get; set; }
+
+    [MaxLength(80)]
+    public string? ScheduleLabel { get; set; }
+
     public bool IsVerified { get; set; }
 
     [MaxLength(30)]
@@ -152,6 +173,24 @@ public static class NeighborRequestStatuses
     public const string Cancelled = "Cancelled";
 }
 
+public static class NeighborRequestCancelReasons
+{
+    public const string FoundHelp = "FoundHelp";
+    public const string NoLongerNeeded = "NoLongerNeeded";
+    public const string PostedByMistake = "PostedByMistake";
+    public const string TakingTooLong = "TakingTooLong";
+    public const string Other = "Other";
+
+    public static IReadOnlyList<(string Value, string Label)> Options { get; } =
+    [
+        (FoundHelp, "I found help elsewhere"),
+        (NoLongerNeeded, "I no longer need this"),
+        (PostedByMistake, "I posted this by mistake"),
+        (TakingTooLong, "It is taking too long"),
+        (Other, "Other")
+    ];
+}
+
 public static class NeighborRequestTimelineCodes
 {
     public const string Asap = "Asap";
@@ -164,6 +203,7 @@ public static class NeighborRequestAudienceCodes
 {
     public const string Neighbors = "Neighbors";
     public const string CertifiedProviders = "CertifiedProviders";
+    public const string Both = "Both";
 }
 
 public static class NeighborRequestOfferTypes
@@ -195,10 +235,14 @@ public class NeighborRequestDraftState
     public int CategoryId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
+    public string DetailsSummary { get; set; } = string.Empty;
     public string LocationAddress { get; set; } = string.Empty;
     public DateTime? NeededByDate { get; set; }
+    public TimeOnly? TimeWindowStart { get; set; }
+    public TimeOnly? TimeWindowEnd { get; set; }
     public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.ThisWeek;
     public string AudienceCode { get; set; } = NeighborRequestAudienceCodes.Neighbors;
     public decimal? BudgetAmount { get; set; }
     public List<string> PhotoPaths { get; set; } = [];
+    public int? EditingRequestId { get; set; }
 }

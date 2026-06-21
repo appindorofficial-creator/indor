@@ -21,6 +21,8 @@ public class ScheduleQuickAddItemViewModel
 
     public string IconClass { get; set; } = "fa-calendar";
 
+    public string? ImageUrl { get; set; }
+
     public string ToneClass { get; set; } = "sch-tone-general";
 
     public string Url { get; set; } = "#";

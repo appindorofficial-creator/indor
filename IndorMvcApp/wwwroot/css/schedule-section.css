@@ -18,6 +18,13 @@
     margin: 0 auto;
 }
 
+.sch-intro {
+    margin: 0 0 18px;
+    font-size: 0.84rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
 .sch-header {
     display: flex;
     align-items: flex-start;
@@ -92,31 +99,31 @@
     text-decoration: none;
 }
 
-.sch-quick-row {
-    display: flex;
-    gap: 10px;
-    overflow-x: auto;
-    padding-bottom: 6px;
-    margin-bottom: 22px;
-    scrollbar-width: none;
+.sch-quick-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px 12px;
+    margin-bottom: 24px;
 }
 
-.sch-quick-row::-webkit-scrollbar {
-    display: none;
+.sch-quick-row {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px 12px;
+    margin-bottom: 24px;
 }
 
 .sch-quick-card {
-    flex: 0 0 76px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
+    min-width: 0;
 }
 
 .sch-quick-tap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    display: block;
+    width: 100%;
     text-decoration: none;
     color: inherit;
     -webkit-tap-highlight-color: transparent;
@@ -125,13 +132,19 @@
 .sch-quick-tap:focus-visible {
     outline: 2px solid #0066CC;
     outline-offset: 3px;
-    border-radius: 18px;
+    border-radius: 22px;
+}
+
+.sch-quick-tap:active .sch-quick-icon {
+    transform: scale(0.96);
 }
 
 .sch-quick-visual {
     position: relative;
-    width: 56px;
-    height: 56px;
+    width: 100%;
+    max-width: 108px;
+    margin: 0 auto;
+    aspect-ratio: 1;
     flex-shrink: 0;
     overflow: visible;
 }
@@ -139,50 +152,69 @@
 .sch-quick-icon {
     width: 100%;
     height: 100%;
-    border-radius: 16px;
+    border-radius: 22px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
-    background: #F8FAFC;
-    border: 1px solid #E5E7EB;
+    font-size: 2rem;
+    border: 1px solid transparent;
+    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.06);
+    transition: transform 0.15s ease;
+}
+
+.sch-quick-icon.has-image {
+    padding: 10px;
+}
+
+.sch-quick-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    pointer-events: none;
+}
+
+.sch-quick-icon i {
+    line-height: 1;
 }
 
 .sch-quick-name {
-    font-size: 0.72rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: #334155;
     text-align: center;
-    line-height: 1.2;
-    max-width: 76px;
-    padding-top: 2px;
+    line-height: 1.25;
+    width: 100%;
 }
 
 .sch-quick-plus {
     position: absolute;
-    top: -6px;
-    right: -6px;
-    width: 22px;
-    height: 22px;
+    top: -4px;
+    right: -4px;
+    width: 26px;
+    height: 26px;
     border-radius: 50%;
     background: #0066CC;
     color: #FFF;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.62rem;
-    border: 2px solid #FFF;
-    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+    font-size: 0.7rem;
+    border: 2.5px solid #FFF;
+    box-shadow: 0 3px 10px rgba(0, 102, 204, 0.35);
     pointer-events: none;
     z-index: 1;
 }
 
-.sch-tone-trash { color: #0066CC; background: rgba(0, 102, 204, 0.1); }
-.sch-tone-filter { color: #7C3AED; background: rgba(124, 58, 237, 0.1); }
-.sch-tone-lawn { color: #16A34A; background: rgba(22, 163, 74, 0.1); }
-.sch-tone-hvac { color: #0066CC; background: rgba(0, 102, 204, 0.1); }
-.sch-tone-water { color: #EA580C; background: rgba(234, 88, 12, 0.1); }
-.sch-tone-general { color: #475569; background: rgba(71, 85, 105, 0.1); }
+.sch-tone-trash { color: #0066CC; background: rgba(0, 102, 204, 0.12); border-color: rgba(0, 102, 204, 0.08); }
+.sch-tone-filter { color: #7C3AED; background: rgba(124, 58, 237, 0.12); border-color: rgba(124, 58, 237, 0.08); }
+.sch-tone-lawn { color: #16A34A; background: rgba(22, 163, 74, 0.12); border-color: rgba(22, 163, 74, 0.08); }
+.sch-tone-hvac,
+.sch-tone-ac { color: #0066CC; background: rgba(0, 102, 204, 0.12); border-color: rgba(0, 102, 204, 0.08); }
+.sch-tone-water { color: #EA580C; background: rgba(234, 88, 12, 0.12); border-color: rgba(234, 88, 12, 0.08); }
+.sch-tone-gutter { color: #1D4ED8; background: rgba(254, 215, 170, 0.45); border-color: rgba(251, 191, 36, 0.15); }
+.sch-tone-maintenance { color: #EA580C; background: rgba(255, 237, 213, 0.85); border-color: rgba(251, 146, 60, 0.2); }
+.sch-tone-general { color: #475569; background: rgba(71, 85, 105, 0.1); border-color: rgba(71, 85, 105, 0.08); }
 
 .sch-reminder-list {
     display: flex;

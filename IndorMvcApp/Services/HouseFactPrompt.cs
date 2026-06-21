@@ -12,10 +12,13 @@ public static class HouseFactPrompt
         Label estimates with "Estimated:" when not parcel-specific.
         Reserve "Not publicly confirmed — needs verification." ONLY for parcel-specific facts you truly cannot determine.
 
-        CRITICAL — numeric propertyDetails fields (estimatedValue, lastSalePrice, yearBuilt, bedrooms, bathrooms, livingArea, annualTaxAmount):
-        * Include a number ONLY when a named public source supports it (Zillow Zestimate, Redfin estimate, county assessed value, active list price, tax record).
-        * If no source provides the value, OMIT the field from propertyDetails — do NOT invent or guess a number.
-        * Never change a value between runs for the same address unless sources conflict; prefer the most recent official listing or assessor value.
+        CRITICAL — propertyDetails object (REQUIRED on every response):
+        * ALWAYS include a top-level propertyDetails object.
+        * Copy EVERY numeric fact you find anywhere in your research into propertyDetails: yearBuilt, yearRenovated, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, floors, roomsTotal, lastSalePrice, lastSaleDate, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces.
+        * Also copy string facts when found: propertyType, architecturalStyle, parcelNumber, legalDescription, zoning, subdivision, municipality, countyName, heatingType, heatingFuel, coolingType, wallType, parkingType, garageType, buildingCondition, assignedSchool.
+        * Use the same numbers in basicPropertyFacts AND propertyDetails — do not leave propertyDetails empty if beds/baths/sq ft appear in listing or assessor data.
+        * Include a number ONLY when a named public source supports it (Zillow, Redfin, Realtor.com, county assessor, tax record, MLS).
+        * If no source provides the value, OMIT that field — do NOT invent numbers.
         """;
 
     public const string WebSearchSystemMessage = """
@@ -25,7 +28,7 @@ public static class HouseFactPrompt
         Return ONLY valid JSON (no markdown fences) using the same schema as the research output format below.
         Include source names in mainSourcesUsed and in each section where data was found.
         Do NOT fabricate parcel IDs, MLS numbers, or sale dates — only include values found in search results.
-        Do NOT invent estimatedValue, list price, assessed value, beds, baths, or sq ft — only include numbers explicitly found in search results.
+        ALWAYS populate propertyDetails with every beds, baths, sq ft, lot size, year built, tax, and value figure found in search results — mirror them from listing/assessor pages into propertyDetails.
         If Zillow/Redfin/county records disagree on value, include the primary source value in propertyDetails and note the conflict in sources.
         """;
 
@@ -289,7 +292,7 @@ public static class HouseFactPrompt
         - sources (array of objects with sourceName, link, informationFound, conflicts for section 13)
         - formattedAddress (string)
         - confidence ("confirmed", "estimated", or "needs verification" — use "estimated" when most fields are inferred from address/market knowledge)
-        - propertyDetails (object — include numeric fields ONLY when supported by a named source: yearBuilt, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, floors, lastSalePrice, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces, roomsTotal, bathsFull; omit fields without source evidence)
+        - propertyDetails (object — REQUIRED summary for the app; include ALL numeric fields found in research: yearBuilt, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, floors, roomsTotal, lastSalePrice, lastSaleDate, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces, plus string fields propertyType, parcelNumber, zoning, subdivision, countyName, heatingType, coolingType, wallType, parkingType, garageType, architecturalStyle, assignedSchool)
         - utilityProviders (object with electric, water, gas, sewer, internet[], cableTv[] — each provider: name, serviceType, phone, website, coverage, notes)
         """;
 

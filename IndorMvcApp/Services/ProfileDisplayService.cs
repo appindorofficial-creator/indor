@@ -69,7 +69,7 @@ public static class ProfileDisplayService
             {
                 Label = "Register your home",
                 IsComplete = hasHome,
-                ActionUrl = url.Action("AddProperty", "Propietario")
+                ActionUrl = url.Action("EditarPerfil", "Perfil") + "#home"
             });
             items.Add(new ProfileCompletionItemViewModel
             {

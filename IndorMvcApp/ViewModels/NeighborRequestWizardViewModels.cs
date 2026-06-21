@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Models;
 using Microsoft.AspNetCore.Http;
 
 namespace IndorMvcApp.ViewModels;
@@ -6,11 +7,14 @@ namespace IndorMvcApp.ViewModels;
 public class NeighborRequestWizardShellViewModel
 {
     public int PropiedadId { get; set; }
+    public int? RequestId { get; set; }
+    public bool IsEditMode { get; set; }
     public string PageTitle { get; set; } = "Post a Request";
     public int DisplayStep { get; set; } = 1;
     public int TotalSteps { get; set; } = 5;
     public string? BackUrl { get; set; }
     public string CloseUrl { get; set; } = "/Home/Index";
+    public IReadOnlyList<string> StepLabels { get; set; } = ["Category", "Describe", "Preferences", "Review", "Done"];
 }
 
 public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellViewModel
@@ -58,6 +62,30 @@ public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShel
     public IReadOnlyList<(string Value, string Label, string Subtitle, string IconClass)> AudienceOptions { get; set; } = [];
 }
 
+public class NeighborRequestEditDetailsStepViewModel : NeighborRequestWizardShellViewModel
+{
+    public int CategoryId { get; set; }
+    public string CategoryLabel { get; set; } = string.Empty;
+    public string CategoryIconClass { get; set; } = "fa-house";
+
+    [MaxLength(200)]
+    public string? DetailsSummary { get; set; }
+
+    [MaxLength(1000)]
+    public string? Description { get; set; }
+
+    [DataType(DataType.Date)]
+    public DateTime? NeededByDate { get; set; }
+
+    public string? TimeWindowPreset { get; set; }
+
+    [Required]
+    public string AudienceCode { get; set; } = NeighborRequestAudienceCodes.Neighbors;
+
+    public List<NeighborRequestCategoryOptionViewModel> Categories { get; set; } = [];
+    public IReadOnlyList<(string Value, string Label)> TimeWindowOptions { get; set; } = [];
+}
+
 public class NeighborRequestReviewStepViewModel : NeighborRequestWizardShellViewModel
 {
     public string CategoryLabel { get; set; } = string.Empty;
@@ -69,7 +97,11 @@ public class NeighborRequestReviewStepViewModel : NeighborRequestWizardShellView
     public string TimelineLabel { get; set; } = string.Empty;
     public string AudienceLabel { get; set; } = string.Empty;
     public string? NeededByLabel { get; set; }
+    public string? TimeWindowLabel { get; set; }
+    public string? DetailsSummary { get; set; }
     public string? BudgetLabel { get; set; }
+    public string PublishButtonLabel { get; set; } = "Post request";
+    public string PublishSuccessUrl { get; set; } = string.Empty;
 }
 
 public class NeighborRequestSuccessViewModel
@@ -111,19 +143,80 @@ public class NeighborRequestDetailViewModel
     public string PostedLabel { get; set; } = string.Empty;
     public string LocationAddress { get; set; } = string.Empty;
     public string? Description { get; set; }
+    public string? DescriptionBody { get; set; }
+    public bool IsDescriptionLong { get; set; }
+    public string? HeroImageUrl { get; set; }
     public List<string> PhotoUrls { get; set; } = [];
+    public List<NeighborRequestDetailStatViewModel> DetailStats { get; set; } = [];
     public List<NeighborRequestOfferItemViewModel> Offers { get; set; } = [];
+    public List<NeighborRequestOfferItemViewModel> NeighborOffers { get; set; } = [];
+    public List<NeighborRequestOfferItemViewModel> ProviderOffers { get; set; } = [];
+    public int TotalNeighborOfferCount { get; set; }
     public string OfferCountLabel { get; set; } = string.Empty;
+    public bool HasNeighborOffers { get; set; }
+    public bool ShowProvidersPanel { get; set; }
+    public bool CanManage { get; set; }
+    public string BackUrl { get; set; } = "/";
+    public string EditUrl { get; set; } = "#";
+    public string CancelUrl { get; set; } = "#";
+    public string ProvidersUrl { get; set; } = "#";
+    public string SeeAllOffersUrl { get; set; } = "#";
+    public string ViewProvidersUrl { get; set; } = "#";
+}
+
+public class NeighborRequestCancelViewModel
+{
+    public int Id { get; set; }
+    public int PropiedadId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string IconClass { get; set; } = "fa-house";
+    public string StatusLabel { get; set; } = "ACTIVE";
+    public string StatusCss { get; set; } = "active";
+    public string LocationAddress { get; set; } = string.Empty;
+    public List<NeighborRequestDetailStatViewModel> DetailStats { get; set; } = [];
+    public string BackUrl { get; set; } = "/";
+    public string KeepUrl { get; set; } = "/";
+    public string CreateUrl { get; set; } = "/";
+
+    [MaxLength(40)]
+    public string? CancelReasonCode { get; set; }
+
+    [MaxLength(500)]
+    public string? CancelNote { get; set; }
+
+    public IReadOnlyList<(string Value, string Label)> ReasonOptions { get; set; } = [];
+}
+
+public class NeighborRequestDetailStatViewModel
+{
+    public string IconClass { get; set; } = "fa-circle";
+    public string Label { get; set; } = string.Empty;
 }
 
 public class NeighborRequestOfferItemViewModel
 {
     public int Id { get; set; }
+    public int? ProviderId { get; set; }
     public string OffererName { get; set; } = string.Empty;
     public string? OffererPhotoUrl { get; set; }
+    public string AvatarIconClass { get; set; } = "fa-user";
     public string? Message { get; set; }
     public string? PriceLabel { get; set; }
+    public string? ScheduleLabel { get; set; }
+    public string? RatingLabel { get; set; }
     public string MetaLabel { get; set; } = string.Empty;
+    public string RoleLabel { get; set; } = string.Empty;
     public bool IsVerified { get; set; }
+    public bool IsProviderOffer { get; set; }
     public string DetailUrl { get; set; } = "#";
+    public string ViewUrl { get; set; } = "#";
+    public string MessageUrl { get; set; } = "#";
+}
+
+public class NeighborRequestOffersListViewModel
+{
+    public int RequestId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string BackUrl { get; set; } = "/";
+    public List<NeighborRequestOfferItemViewModel> Offers { get; set; } = [];
 }

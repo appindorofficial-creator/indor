@@ -73,10 +73,11 @@ public static class HouseFactOrganizationPrompt
               "tableRows": [{"columns": {"colName":"value"}}]
             }
           ],
-          "propertyDetails": { same numeric/string summary for app use },
+          "propertyDetails": { "yearBuilt": 0, "bedrooms": 0, "bathrooms": 0, "livingArea": 0, "lotSizeAcres": 0, "lotSizeSqFt": 0, "...": "copy ALL numeric facts from research here" },
           "utilityProviders": { electric, water, gas, sewer, internet[], cableTv[] }
         }
 
+        The propertyDetails object is mandatory. Extract beds, baths, sq ft, lot size, year built, taxes, and values from the research JSON and copy them into propertyDetails even if they already appear in section fields.
         Include all 13 sections in the sections array. Use fields/checklistItems/tableRows as appropriate per section kind.
         """;
 

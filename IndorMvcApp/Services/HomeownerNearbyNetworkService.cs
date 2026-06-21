@@ -689,7 +689,7 @@ public class HomeownerNearbyNetworkService(
             PrimaryActionLabel = "View post",
             PrimaryActionUrl = url.Action("Detail", "NeighborRequest", new { id = request.Id }) ?? "#",
             SecondaryActionLabel = "Edit post",
-            SecondaryActionUrl = url.Action("Mine", "NeighborRequest", new { propiedadId = request.PropiedadId }) ?? "#"
+            SecondaryActionUrl = url.Action("Edit", "NeighborRequest", new { id = request.Id }) ?? "#"
         };
     }
 
@@ -834,7 +834,7 @@ public class HomeownerNearbyNetworkService(
             Icon = "fa-plus",
             Url = propiedadId is > 0
                 ? url.Action("Create", "NeighborRequest", new { propiedadId })
-                : url.Action("AddProperty", "Propietario")
+                : url.Action("EditarPerfil", "Perfil") + "#home"
         },
         new()
         {
@@ -843,7 +843,7 @@ public class HomeownerNearbyNetworkService(
             Icon = "fa-comment-dots",
             Url = propiedadId is > 0
                 ? url.Action("Mine", "NeighborRequest", new { propiedadId })
-                : url.Action("AddProperty", "Propietario")
+                : url.Action("EditarPerfil", "Perfil") + "#home"
         }
     ];
 

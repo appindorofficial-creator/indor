@@ -132,7 +132,7 @@ public class OpenAiPropertyEnrichmentService : IPropertyEnrichmentService
         string finalJson,
         string dataSource)
     {
-        propertyInfo.PropertyDetails = new PropertyDetailsInfo();
+        propertyInfo.PropertyDetails ??= new PropertyDetailsInfo();
         var applied = PropertyEnrichmentMapper.ApplyPayload(propertyInfo, finalJson);
         RegionalPropertyHints.Apply(propertyInfo);
         propertyInfo.AttomRawJson = finalJson;

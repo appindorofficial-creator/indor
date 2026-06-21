@@ -1,0 +1,36 @@
+@model IndorMvcApp.ViewModels.NeighborRequestOffersListViewModel
+@{
+    ViewData["Title"] = "Offers received";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Offers received - INDOR</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/neighbor-request-detail.css" asp-append-version="true" />
+</head>
+<body class="nr-detail-page">
+    <div class="nr-detail-shell">
+        <header class="nr-detail-top">
+            <a href="@Model.BackUrl" class="nr-detail-nav-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <strong class="nr-detail-top-title">Offers received</strong>
+            <span class="nr-detail-nav-btn nr-detail-nav-btn--spacer" aria-hidden="true"></span>
+        </header>
+
+        <p class="nr-detail-offers-intro">@Model.Title</p>
+
+        <div class="nr-detail-received-list">
+            @foreach (var offer in Model.Offers)
+            {
+                @await Html.PartialAsync("_NeighborOfferCard", offer)
+            }
+        </div>
+    </div>
+</body>
+</html>

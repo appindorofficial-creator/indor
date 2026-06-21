@@ -42,6 +42,11 @@ public sealed class PropertyEnrichmentCache
             });
     }
 
+    public void Remove(string address)
+    {
+        _cache.Remove(BuildKey(address));
+    }
+
     private string BuildKey(string address)
     {
         var normalized = NormalizeAddress(address);

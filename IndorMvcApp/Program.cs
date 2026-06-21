@@ -131,6 +131,7 @@ builder.Services.AddScoped<IPropertyAdministratorLandscapingService, PropertyAdm
 builder.Services.AddScoped<IPropertyAdministratorPressureWashingService, PropertyAdministratorPressureWashingService>();
 builder.Services.AddScoped<IPropertyAdministratorPestControlService, PropertyAdministratorPestControlService>();
 builder.Services.AddScoped<IPropertyAdministratorPoolHotTubService, PropertyAdministratorPoolHotTubService>();
+builder.Services.AddScoped<IHomeownerPropertyService, HomeownerPropertyService>();
 builder.Services.AddScoped<RealtorPortalService>();
 builder.Services.AddScoped<RealtorNearbyNetworkService>();
 builder.Services.AddScoped<HomeownerNearbyNetworkService>();

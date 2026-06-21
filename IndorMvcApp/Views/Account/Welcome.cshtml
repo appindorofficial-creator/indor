@@ -7,11 +7,11 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#0B1F3A" />
+    <meta name="theme-color" content="#EAF3FC" />
     <title>@ViewData["Title"]</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/welcome-landing.css" asp-append-version="true" />
 </head>
 <body class="wl-body">
@@ -20,38 +20,79 @@
             <div class="wl-hero-bg" aria-hidden="true"></div>
             <div class="wl-hero-overlay" aria-hidden="true"></div>
 
+            <div class="wl-hero-content">
             <header class="wl-top wl-reveal wl-reveal-1">
                 <div class="wl-brand" aria-label="INDOR home Indor">
                     <div class="wl-logo-main">
-                        <span>IND</span>
-                        <svg class="wl-logo-house" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-                            <path d="M14 3 L26 14 V26 H2 V14 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
-                            <rect x="9" y="15" width="4" height="4" fill="currentColor" />
-                            <rect x="15" y="15" width="4" height="4" fill="currentColor" />
-                            <rect x="9" y="21" width="4" height="4" fill="currentColor" />
-                            <rect x="15" y="21" width="4" height="4" fill="currentColor" />
+                        <span class="wl-logo-ind">IND</span>
+                        <svg class="wl-logo-house" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+                            <path d="M16 4 L28 15 V28 H4 V15 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+                            <rect x="11" y="16" width="4" height="4" rx="0.5" fill="currentColor" />
+                            <rect x="17" y="16" width="4" height="4" rx="0.5" fill="currentColor" />
+                            <rect x="11" y="22" width="4" height="4" rx="0.5" fill="currentColor" />
+                            <rect x="17" y="22" width="4" height="4" rx="0.5" fill="currentColor" />
                         </svg>
-                        <span>R</span>
+                        <span class="wl-logo-ind">R</span>
                     </div>
                     <p class="wl-logo-sub">
                         <span class="wl-logo-sub-home">home </span><span class="wl-logo-sub-indor">Indor</span>
                     </p>
                 </div>
-                <div class="wl-rule" aria-hidden="true"></div>
+
+                <div class="wl-rule" aria-hidden="true">
+                    <span class="wl-rule-line"></span>
+                    <span class="wl-rule-diamond"></span>
+                    <span class="wl-rule-line"></span>
+                </div>
+
                 <p class="wl-tagline">
                     <span class="wl-tagline-accent">The Home Operating System</span>,
-                    helping navigate owning a house.
+                    empowering you to navigate homeownership with clarity and confidence.
                 </p>
             </header>
 
-            <div class="wl-hero-copy wl-reveal wl-reveal-2">
-                <div class="wl-headline-wrap">
+            <div class="wl-hero-spacer" aria-hidden="true"></div>
+            </div>
+
+            <div class="wl-feature-anchor wl-reveal wl-reveal-2">
+                <div class="wl-feature-card">
+                    <div class="wl-feature-badge" aria-hidden="true">
+                        <svg viewBox="0 0 48 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M24 3L42 13V28C42 38.5 34 45.5 24 49C14 45.5 6 38.5 6 28V13L24 3Z" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+                            <path d="M24 15L31 19.5V29H17V19.5L24 15Z" fill="currentColor" />
+                            <rect x="21" y="22" width="2.2" height="2.2" fill="#fff" opacity="0.85" />
+                            <rect x="24.8" y="22" width="2.2" height="2.2" fill="#fff" opacity="0.85" />
+                            <rect x="21" y="25.8" width="2.2" height="2.2" fill="#fff" opacity="0.85" />
+                            <rect x="24.8" y="25.8" width="2.2" height="2.2" fill="#fff" opacity="0.85" />
+                        </svg>
+                    </div>
                     <h1 class="wl-headline">Navigate owning your house with confidence.</h1>
+                    <div class="wl-features">
+                        <div class="wl-feature">
+                            <span class="wl-feature-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M4 10L12 4L20 10V20H4V10Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><rect x="9" y="13" width="2" height="2" fill="currentColor"/><rect x="13" y="13" width="2" height="2" fill="currentColor"/></svg>
+                            </span>
+                            <span class="wl-feature-label">Smart Tools</span>
+                        </div>
+                        <div class="wl-feature-divider" aria-hidden="true"></div>
+                        <div class="wl-feature">
+                            <span class="wl-feature-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><path d="M12 2L20 6V12C20 17 16.5 21 12 22C7.5 21 4 17 4 12V6L12 2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M9 12L11 14L15 10" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                            </span>
+                            <span class="wl-feature-label">Trusted Support</span>
+                        </div>
+                        <div class="wl-feature-divider" aria-hidden="true"></div>
+                        <div class="wl-feature">
+                            <span class="wl-feature-icon" aria-hidden="true">
+                                <svg viewBox="0 0 24 24" fill="none"><circle cx="9" cy="9" r="3" stroke="currentColor" stroke-width="1.6"/><circle cx="16" cy="9" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M3 20C3 16.5 5.5 14 9 14C10.5 14 12 14.5 13 15.5M13 15.5C14 14.5 15.5 14 17 14C20.5 14 23 16.5 23 20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+                            </span>
+                            <span class="wl-feature-label">Peace of Mind</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="wl-sheet wl-reveal wl-reveal-3">
-                <div class="wl-sheet-handle" aria-hidden="true"></div>
                 <a asp-action="LoginForm" class="wl-btn">
                     <span>Log In</span>
                     <svg class="wl-btn-arrow" viewBox="0 0 20 20" aria-hidden="true" focusable="false">

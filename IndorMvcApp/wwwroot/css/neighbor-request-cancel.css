@@ -1,0 +1,303 @@
+/* Neighbor Request — cancel confirmation */
+.nr-cancel-page {
+    background: #F4F7FB;
+    color: #0A2540;
+    font-family: Inter, system-ui, sans-serif;
+    min-height: 100vh;
+}
+
+.nr-cancel-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 0 16px 28px;
+}
+
+.nr-cancel-top {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 0 12px;
+}
+
+.nr-cancel-top-title {
+    text-align: center;
+    font-size: .98rem;
+    font-weight: 700;
+    color: #0A2540;
+}
+
+.nr-cancel-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    background: transparent;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1rem;
+}
+
+.nr-cancel-nav-btn--spacer { visibility: hidden; }
+
+.nr-cancel-hero {
+    text-align: center;
+    padding: 8px 8px 18px;
+}
+
+.nr-cancel-warning {
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: #FEE2E2;
+    color: #EF4444;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.75rem;
+}
+
+.nr-cancel-hero h1 {
+    margin: 0 0 10px;
+    font-size: 1.35rem;
+    font-weight: 800;
+    line-height: 1.25;
+    color: #0A2540;
+}
+
+.nr-cancel-hero p {
+    margin: 0 auto;
+    max-width: 320px;
+    font-size: .88rem;
+    line-height: 1.5;
+    color: #64748B;
+}
+
+.nr-cancel-summary {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, 0.04);
+}
+
+.nr-cancel-summary-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.nr-cancel-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #E8F1FB;
+    color: #0066CC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.nr-cancel-title-wrap {
+    flex: 1;
+    min-width: 0;
+}
+
+.nr-cancel-title {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #0A2540;
+}
+
+.nr-cancel-status {
+    flex-shrink: 0;
+    border-radius: 999px;
+    padding: 5px 10px;
+    font-size: .62rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    background: #DCFCE7;
+    color: #15803D;
+}
+
+.nr-cancel-location {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: .78rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+
+.nr-cancel-location i {
+    width: 14px;
+    margin-top: 2px;
+    color: #94A3B8;
+    flex-shrink: 0;
+}
+
+.nr-cancel-stats {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #EEF2F7;
+}
+
+.nr-cancel-stat {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    min-width: 0;
+    padding: 0 4px;
+    text-align: center;
+}
+
+.nr-cancel-stat i {
+    color: #0066CC;
+    font-size: .95rem;
+}
+
+.nr-cancel-stat span {
+    font-size: .68rem;
+    font-weight: 700;
+    color: #0066CC;
+    line-height: 1.25;
+}
+
+.nr-cancel-stat-divider {
+    width: 1px;
+    align-self: stretch;
+    min-height: 34px;
+    background: #E2E8F0;
+    flex-shrink: 0;
+}
+
+.nr-cancel-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.nr-cancel-field label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: .88rem;
+    font-weight: 700;
+    color: #0A2540;
+}
+
+.nr-cancel-field label span {
+    font-weight: 500;
+    color: #64748B;
+}
+
+.nr-cancel-select-wrap {
+    position: relative;
+}
+
+.nr-cancel-select {
+    width: 100%;
+    appearance: none;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    padding: 14px 40px 14px 14px;
+    font: inherit;
+    font-size: .88rem;
+    color: #0A2540;
+    background: #fff;
+}
+
+.nr-cancel-select:invalid,
+.nr-cancel-select option[value=""] {
+    color: #94A3B8;
+}
+
+.nr-cancel-select-wrap i {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94A3B8;
+    pointer-events: none;
+    font-size: .78rem;
+}
+
+.nr-cancel-textarea {
+    width: 100%;
+    min-height: 112px;
+    border: 1px solid #E5E7EB;
+    border-radius: 14px;
+    padding: 14px;
+    font: inherit;
+    font-size: .88rem;
+    color: #0A2540;
+    background: #fff;
+    resize: vertical;
+    line-height: 1.5;
+}
+
+.nr-cancel-hint {
+    margin: 0;
+    font-size: .78rem;
+    color: #64748B;
+    text-align: center;
+}
+
+.nr-cancel-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.nr-cancel-submit {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    min-height: 50px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 14px;
+    background: #EF4444;
+    color: #fff;
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 800;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(239, 68, 68, 0.24);
+}
+
+.nr-cancel-keep {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 50px;
+    padding: 14px 20px;
+    border: 1.5px solid #0066CC;
+    border-radius: 14px;
+    background: #fff;
+    color: #0066CC;
+    font: inherit;
+    font-size: .95rem;
+    font-weight: 700;
+    text-decoration: none;
+}

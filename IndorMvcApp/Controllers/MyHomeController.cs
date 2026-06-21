@@ -36,7 +36,7 @@ public class MyHomeController : Controller
     public async Task<IActionResult> Index(int? id)
     {
         var propiedad = await LoadPropertyAsync(id);
-        if (propiedad == null) return RedirectToAction("AddProperty", "Propietario");
+        if (propiedad == null) return Redirect(Url.Action("EditarPerfil", "Perfil") + "#home");
 
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
         return View(MyHomeDisplayService.BuildSummary(propiedad, info));

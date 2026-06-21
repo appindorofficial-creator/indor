@@ -1643,6 +1643,218 @@
 .pf-edit-profile-actions .pf-btn { flex: 1; justify-content: center; }
 .pf-edit-profile-actions .pf-btn.outline { flex: 0 0 auto; min-width: 96px; }
 
+.pf-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    font-size: .82rem;
+    line-height: 1.45;
+    margin-bottom: 12px;
+}
+.pf-alert--success { background: #ECFDF5; border: 1px solid #A7F3D0; color: #065F46; }
+.pf-alert--error { background: #FEF2F2; border: 1px solid #FECACA; color: #991B1B; }
+.pf-alert i { margin-top: 2px; }
+
+.pf-edit-home-card {
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(155deg, #FFFFFF 0%, #F8FBFF 55%, #EFF6FF 100%);
+    border-radius: 20px;
+    padding: 18px 16px 16px;
+    border: 1px solid #BFDBFE;
+    box-shadow: 0 14px 36px rgba(0, 102, 204, .10);
+    margin-top: 6px;
+}
+.pf-edit-home-card.is-enriched { border-color: #86EFAC; background: linear-gradient(155deg, #FFFFFF 0%, #F0FDF4 48%, #ECFDF5 100%); }
+.pf-edit-home-card.is-celebrate { animation: pfHomeCelebrate .6s ease; }
+@keyframes pfHomeCelebrate {
+    0% { transform: scale(.98); box-shadow: 0 8px 20px rgba(0, 102, 204, .08); }
+    50% { transform: scale(1.01); box-shadow: 0 18px 40px rgba(0, 102, 204, .16); }
+    100% { transform: scale(1); }
+}
+.pf-home-card-glow {
+    position: absolute;
+    top: -40px;
+    right: -30px;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 102, 204, .14) 0%, transparent 70%);
+    pointer-events: none;
+}
+.pf-home-card-head {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+}
+.pf-home-card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #0066CC, #004FA3);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+    box-shadow: 0 8px 18px rgba(0, 102, 204, .28);
+}
+.pf-home-card-head h3 {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    font-weight: 800;
+    color: #0A2540;
+}
+.pf-home-card-head p {
+    margin: 0;
+    font-size: .78rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+.pf-home-enriched-banner,
+.pf-home-pending-banner {
+    position: relative;
+    z-index: 1;
+    background: rgba(255, 255, 255, .82);
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 14px;
+}
+.pf-home-enriched-banner strong,
+.pf-home-pending-banner strong {
+    display: block;
+    font-size: .88rem;
+    color: #0A2540;
+    margin: 6px 0 8px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+.pf-home-pending-banner {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+.pf-home-pending-banner > i { color: #0066CC; margin-top: 2px; }
+.pf-home-pending-banner small { display: block; color: #64748B; font-size: .74rem; margin-top: 2px; }
+.pf-home-ai-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #DCFCE7;
+    color: #166534;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+.pf-home-stat-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+.pf-home-stat-chips span {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #F1F5F9;
+    color: #334155;
+    font-size: .72rem;
+    font-weight: 600;
+}
+.pf-home-stat-chips i { color: #0066CC; font-size: .68rem; }
+.pf-home-view-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #0066CC;
+    text-decoration: none;
+}
+.pf-home-address-form { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+.pf-home-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #fff;
+    border: 1px solid #CBD5E1;
+    border-radius: 12px;
+    padding: 0 12px;
+}
+.pf-home-search i { color: #94A3B8; }
+.pf-home-search input {
+    border: none;
+    background: transparent;
+    flex: 1;
+    min-width: 0;
+    padding: 12px 0;
+    font-size: .88rem;
+}
+.pf-home-search input:focus { outline: none; }
+.pf-home-address-form select,
+.pf-home-address-form input:not(.pf-home-search input) {
+    width: 100%;
+    border: 1px solid #CBD5E1;
+    border-radius: 12px;
+    padding: 11px 12px;
+    font-size: .88rem;
+    background: #fff;
+}
+.pf-optional { font-weight: 500; color: #94A3B8; }
+.pf-home-hint {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+    margin: 2px 0 4px;
+    font-size: .74rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+.pf-home-hint i { color: #0066CC; margin-top: 2px; }
+.pf-home-ai-btn {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 14px;
+    border: none;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+    color: #fff;
+    cursor: pointer;
+    text-align: left;
+    box-shadow: 0 12px 28px rgba(0, 102, 204, .28);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+.pf-home-ai-btn:hover { transform: translateY(-1px); box-shadow: 0 16px 32px rgba(0, 102, 204, .32); }
+.pf-home-ai-btn-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .16);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+.pf-home-ai-btn-copy { flex: 1; min-width: 0; }
+.pf-home-ai-btn-copy strong { display: block; font-size: .92rem; margin-bottom: 2px; }
+.pf-home-ai-btn-copy small { display: block; font-size: .72rem; opacity: .88; line-height: 1.35; }
+.pf-home-ai-btn-arrow { opacity: .85; flex-shrink: 0; }
+
 .pf-form label.pf-field {
     display: flex;
     flex-direction: column;

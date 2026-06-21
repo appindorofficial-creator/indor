@@ -1,12 +1,15 @@
 @model IndorMvcApp.ViewModels.NeighborRequestReviewStepViewModel
 @{
-    ViewData["Title"] = "Review request";
+    ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Review request";
 }
 
-<div class="nr-wizard-heading">
-    <h1>Review request</h1>
-    <p>Confirm everything looks right before publishing</p>
-</div>
+@if (!Model.IsEditMode)
+{
+    <div class="nr-wizard-heading">
+        <h1>Review request</h1>
+        <p>Confirm everything looks right before publishing</p>
+    </div>
+}
 
 <div class="nr-review-list">
     <article class="nr-review-card">
@@ -24,6 +27,17 @@
             <span class="nr-review-value">@Model.Title</span>
         </div>
     </article>
+
+    @if (!string.IsNullOrWhiteSpace(Model.DetailsSummary))
+    {
+        <article class="nr-review-card">
+            <span class="nr-review-icon"><i class="fas fa-list"></i></span>
+            <div class="nr-review-copy">
+                <span class="nr-review-label">Details</span>
+                <span class="nr-review-value">@Model.DetailsSummary</span>
+            </div>
+        </article>
+    }
 
     @if (!string.IsNullOrWhiteSpace(Model.Description))
     {
@@ -87,6 +101,17 @@
         </article>
     }
 
+    @if (!string.IsNullOrWhiteSpace(Model.TimeWindowLabel))
+    {
+        <article class="nr-review-card">
+            <span class="nr-review-icon"><i class="fas fa-clock"></i></span>
+            <div class="nr-review-copy">
+                <span class="nr-review-label">Time window</span>
+                <span class="nr-review-value">@Model.TimeWindowLabel</span>
+            </div>
+        </article>
+    }
+
     @if (!string.IsNullOrWhiteSpace(Model.BudgetLabel))
     {
         <article class="nr-review-card">
@@ -102,5 +127,5 @@
 <form asp-action="Publish" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
-    <button type="submit" class="nr-btn-primary">Post request</button>
+    <button type="submit" class="nr-btn-primary">@Model.PublishButtonLabel</button>
 </form>

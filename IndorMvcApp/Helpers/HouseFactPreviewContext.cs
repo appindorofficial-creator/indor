@@ -64,7 +64,7 @@ public static class HouseFactPreviewContext
     public static IActionResult? RedirectIfMissing(Controller controller, (Propiedad, PropertyInfoViewModel)? bundle)
     {
         if (bundle != null) return null;
-        return controller.RedirectToAction("AddProperty", "Propietario");
+        return controller.Redirect(controller.Url.Action("EditarPerfil", "Perfil") + "#home");
     }
 
     public static bool IsPreview(Microsoft.AspNetCore.Mvc.Rendering.ViewContext? viewContext) =>

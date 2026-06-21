@@ -9,5 +9,13 @@
         <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
     }
     <strong class="nr-wizard-top-title">@Model.PageTitle</strong>
-    <a href="@Model.CloseUrl" class="nr-wizard-nav-btn" aria-label="Close"><i class="fas fa-xmark"></i></a>
+    @if (Model.IsEditMode)
+    {
+        <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
+    }
+    else
+    {
+        <a href="@Model.CloseUrl" class="nr-wizard-nav-btn" aria-label="Close"><i class="fas fa-xmark"></i></a>
+    }
 </header>
+@await Html.PartialAsync("_WizardStepper", Model)

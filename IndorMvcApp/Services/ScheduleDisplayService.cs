@@ -102,6 +102,18 @@ public static class ScheduleDisplayService
                 .Select(p => (int?)p.Id)
                 .FirstOrDefaultAsync();
 
+        var gutterCleaningPriorityId = await db.HomeCarePriorities
+            .AsNoTracking()
+            .Where(p => p.Activo && p.Nombre == "Gutter cleaning")
+            .Select(p => (int?)p.Id)
+            .FirstOrDefaultAsync();
+
+        var crawlspacePriorityId = await db.HomeCarePriorities
+            .AsNoTracking()
+            .Where(p => p.Activo && p.Nombre == "Crawlspace check")
+            .Select(p => (int?)p.Id)
+            .FirstOrDefaultAsync();
+
         var comingUp = new List<ScheduleReminderItemViewModel>();
 
         foreach (var item in programaciones)
@@ -154,13 +166,16 @@ public static class ScheduleDisplayService
                 propiedadId,
                 trashMicro,
                 lawnMicro,
+                safeAirMicro,
                 hvacRecords,
                 hvacMaintenancePriorityId,
+                gutterCleaningPriorityId,
+                crawlspacePriorityId,
                 url),
             ComingUpItems = comingUp,
             CreateReminderUrl = propiedadId.HasValue
                 ? url.Action("MaintenanceCreate", "MyHome", new { id = propiedadId.Value }) ?? "#"
-                : url.Action("AddProperty", "Propietario") ?? "#",
+                : url.Action("EditarPerfil", "Perfil") + "#home",
             BookServiceUrl = "#section-services"
         };
     }
@@ -169,11 +184,15 @@ public static class ScheduleDisplayService
         int? propiedadId,
         Microservicio? trashMicro,
         Microservicio? lawnMicro,
+        Microservicio? safeAirMicro,
         List<PropiedadHvacSistema> hvacRecords,
         int? hvacMaintenancePriorityId,
+        int? gutterCleaningPriorityId,
+        int? crawlspacePriorityId,
         IUrlHelper url)
     {
         var items = new List<ScheduleQuickAddItemViewModel>();
+        var servicesUrl = url.Action("Index", "Home") + "#section-services";
 
         if (trashMicro != null)
         {
@@ -181,19 +200,9 @@ public static class ScheduleDisplayService
             {
                 Label = "Trash",
                 IconClass = "fa-trash-can",
+                ImageUrl = ResolveQuickAddImage(trashMicro.ImagenUrl, "/trash-bin-trash.png"),
                 ToneClass = "sch-tone-trash",
-                Url = url.Action("TrashService", "Trash", new { id = trashMicro.Id }) ?? "#"
-            });
-        }
-
-        if (propiedadId.HasValue)
-        {
-            items.Add(new ScheduleQuickAddItemViewModel
-            {
-                Label = "Filter",
-                IconClass = "fa-table-cells",
-                ToneClass = "sch-tone-filter",
-                Url = ResolveFilterQuickAddUrl(propiedadId.Value, hvacRecords, url)
+                Url = url.Action("TrashService", "Trash", new { id = trashMicro.Id }) ?? servicesUrl
             });
         }
 
@@ -203,31 +212,87 @@ public static class ScheduleDisplayService
             {
                 Label = "Lawn",
                 IconClass = "fa-seedling",
+                ImageUrl = ResolveQuickAddImage(lawnMicro.ImagenUrl),
                 ToneClass = "sch-tone-lawn",
-                Url = url.Action("LawnService", "Lawn", new { id = lawnMicro.Id }) ?? "#"
+                Url = url.Action("LawnService", "Lawn", new { id = lawnMicro.Id }) ?? servicesUrl
             });
         }
 
-        if (propiedadId.HasValue)
+        items.Add(new ScheduleQuickAddItemViewModel
         {
-            items.Add(new ScheduleQuickAddItemViewModel
-            {
-                Label = "HVAC",
-                IconClass = "fa-snowflake",
-                ToneClass = "sch-tone-hvac",
-                Url = ResolveHvacQuickAddUrl(hvacMaintenancePriorityId, propiedadId.Value, url)
-            });
+            Label = "AC",
+            IconClass = "fa-snowflake",
+            ImageUrl = "/priority-hvac-maintenance.png",
+            ToneClass = "sch-tone-ac",
+            Url = ResolveHvacQuickAddUrl(hvacMaintenancePriorityId, propiedadId, url)
+        });
 
-            items.Add(new ScheduleQuickAddItemViewModel
-            {
-                Label = "Water Heater",
-                IconClass = "fa-fire-flame-simple",
-                ToneClass = "sch-tone-water",
-                Url = url.Action("Intro", "WaterHeaterFlushReminder", new { id = propiedadId.Value }) ?? "#"
-            });
-        }
+        items.Add(new ScheduleQuickAddItemViewModel
+        {
+            Label = "Filter",
+            IconClass = "fa-filter",
+            ImageUrl = ResolveQuickAddImage(safeAirMicro?.ImagenUrl),
+            ToneClass = "sch-tone-filter",
+            Url = propiedadId.HasValue
+                ? ResolveFilterQuickAddUrl(propiedadId.Value, hvacRecords, url)
+                : (safeAirMicro != null
+                    ? url.Action("SafeAirService", "SafeAir", new { id = safeAirMicro.Id }) ?? servicesUrl
+                    : servicesUrl)
+        });
+
+        items.Add(new ScheduleQuickAddItemViewModel
+        {
+            Label = "Gutters",
+            IconClass = "fa-water",
+            ImageUrl = "/priority-gutter-cleaning.png",
+            ToneClass = "sch-tone-gutter",
+            Url = gutterCleaningPriorityId.HasValue
+                ? url.Action("GutterCleaningService", "GutterCleaning", new { id = gutterCleaningPriorityId.Value }) ?? servicesUrl
+                : servicesUrl
+        });
+
+        items.Add(new ScheduleQuickAddItemViewModel
+        {
+            Label = "Maintenance",
+            IconClass = "fa-screwdriver-wrench",
+            ImageUrl = "/priority-crawlspace-check.png",
+            ToneClass = "sch-tone-maintenance",
+            Url = ResolveMaintenanceQuickAddUrl(propiedadId, crawlspacePriorityId, url)
+        });
 
         return items;
+    }
+
+    private static string? ResolveQuickAddImage(string? primary, string? fallback = null)
+    {
+        if (!string.IsNullOrWhiteSpace(primary))
+        {
+            return primary.StartsWith('/') || primary.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? primary
+                : $"/{primary.TrimStart('/')}";
+        }
+
+        return fallback;
+    }
+
+    private static string ResolveMaintenanceQuickAddUrl(
+        int? propiedadId,
+        int? crawlspacePriorityId,
+        IUrlHelper url)
+    {
+        if (propiedadId.HasValue)
+        {
+            return url.Action("MaintenanceCreate", "MyHome", new { id = propiedadId.Value })
+                ?? url.Action("EditarPerfil", "Perfil") + "#home";
+        }
+
+        if (crawlspacePriorityId.HasValue)
+        {
+            return url.Action("CrawlspaceCheckService", "CrawlspaceCheck", new { id = crawlspacePriorityId.Value })
+                ?? url.Action("Index", "Home") + "#section-services";
+        }
+
+        return url.Action("Index", "Home") + "#section-services";
     }
 
     private static string ResolveFilterQuickAddUrl(
@@ -244,14 +309,19 @@ public static class ScheduleDisplayService
         return url.Action("Pets", "HvacFilterReplacement", new { id = propiedadId }) ?? "#";
     }
 
-    private static string ResolveHvacQuickAddUrl(int? hvacMaintenancePriorityId, int propiedadId, IUrlHelper url)
+    private static string ResolveHvacQuickAddUrl(int? hvacMaintenancePriorityId, int? propiedadId, IUrlHelper url)
     {
         if (hvacMaintenancePriorityId.HasValue)
         {
             return url.Action("HvacMaintenanceService", "HvacMaintenance", new { id = hvacMaintenancePriorityId.Value }) ?? "#";
         }
 
-        return url.Action("Add", "HvacSetup", new { propiedadId }) ?? "#";
+        if (propiedadId.HasValue)
+        {
+            return url.Action("Add", "HvacSetup", new { propiedadId = propiedadId.Value }) ?? "#";
+        }
+
+        return url.Action("Index", "Home") + "#section-services";
     }
 
     private static ScheduleReminderItemViewModel MapProgramacion(

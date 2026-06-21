@@ -2,6 +2,9 @@
 @{
     ViewData["Title"] = "Request details";
     Layout = null;
+    var descriptionText = Model.DescriptionBody ?? string.Empty;
+    var hasStory = !Model.HasNeighborOffers && (!string.IsNullOrWhiteSpace(descriptionText) || !string.IsNullOrWhiteSpace(Model.HeroImageUrl));
+    var previewOffer = Model.NeighborOffers.FirstOrDefault();
 }
 <!DOCTYPE html>
 <html lang="en">
@@ -11,79 +14,217 @@
     <title>Request details - INDOR</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/neighbor-request-detail.css" asp-append-version="true" />
 </head>
-<body class="nr-wizard-page">
-    <div class="nr-wizard-shell">
-        <header class="nr-wizard-top">
-            <a asp-action="Mine" asp-route-propiedadId="@Model.PropiedadId" class="nr-wizard-nav-btn"><i class="fas fa-arrow-left"></i></a>
-            <strong class="nr-wizard-top-title">Request details</strong>
-            <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
+<body class="nr-detail-page">
+    <div class="nr-detail-shell">
+        <header class="nr-detail-top">
+            <a href="@Model.BackUrl" class="nr-detail-nav-btn" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <strong class="nr-detail-top-title">Request details</strong>
+            <span class="nr-detail-nav-btn nr-detail-nav-btn--spacer" aria-hidden="true"></span>
         </header>
 
-        <article class="nr-detail-hero">
-            <div class="nr-detail-head">
-                <span class="nr-request-icon"><i class="fas @Model.IconClass"></i></span>
-                <div class="nr-request-body">
-                    <strong>@Model.Title</strong>
-                    <span>@Model.PostedLabel</span>
-                    <span><i class="fas fa-location-dot"></i> @Model.LocationAddress</span>
+        <article class="nr-detail-card@(Model.HasNeighborOffers ? " nr-detail-card--compact" : string.Empty)">
+            <div class="nr-detail-card-head">
+                <span class="nr-detail-icon" aria-hidden="true">
+                    <i class="fas @Model.IconClass"></i>
+                </span>
+                <div class="nr-detail-title-wrap">
+                    <h1 class="nr-detail-title">@Model.Title</h1>
                 </div>
-                <span class="nr-status-pill">@Model.StatusLabel</span>
+                <span class="nr-detail-status @Model.StatusCss">@Model.StatusLabel</span>
             </div>
-            @if (!string.IsNullOrWhiteSpace(Model.Description))
+
+            @if (!Model.HasNeighborOffers)
             {
-                <p style="margin:14px 0 0;color:#475569;font-size:.88rem;line-height:1.5;">@Model.Description</p>
-            }
-            @if (Model.PhotoUrls.Count > 0)
-            {
-                <div class="nr-photo-preview">
-                    @foreach (var photo in Model.PhotoUrls)
+                <div class="nr-detail-meta">
+                    <div class="nr-detail-meta-row">
+                        <i class="far fa-clock" aria-hidden="true"></i>
+                        <span>@Model.PostedLabel</span>
+                    </div>
+                    @if (!string.IsNullOrWhiteSpace(Model.LocationAddress))
                     {
-                        <img src="@Url.Content("~" + photo)" alt="" />
+                        <div class="nr-detail-meta-row">
+                            <i class="fas fa-location-dot" aria-hidden="true"></i>
+                            <span>@Model.LocationAddress</span>
+                        </div>
                     }
+                </div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.LocationAddress))
+            {
+                <div class="nr-detail-meta nr-detail-meta--single">
+                    <div class="nr-detail-meta-row">
+                        <i class="fas fa-location-dot" aria-hidden="true"></i>
+                        <span>@Model.LocationAddress</span>
+                    </div>
+                </div>
+            }
+
+            @if (Model.DetailStats.Count > 0)
+            {
+                <div class="nr-detail-stats">
+                    @for (var i = 0; i < Model.DetailStats.Count; i++)
+                    {
+                        var stat = Model.DetailStats[i];
+                        if (i > 0)
+                        {
+                            <span class="nr-detail-stat-divider" aria-hidden="true"></span>
+                        }
+                        <div class="nr-detail-stat">
+                            <i class="fas @stat.IconClass" aria-hidden="true"></i>
+                            <span>@stat.Label</span>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (hasStory)
+            {
+                <div class="nr-detail-story">
+                    @if (!string.IsNullOrWhiteSpace(Model.HeroImageUrl))
+                    {
+                        <img class="nr-detail-thumb" src="@Url.Content("~" + Model.HeroImageUrl)" alt="" />
+                    }
+                    @if (!string.IsNullOrWhiteSpace(descriptionText))
+                    {
+                        <div class="nr-detail-story-copy">
+                            <p id="nrDetailDescription"
+                               class="nr-detail-story-preview@(Model.IsDescriptionLong ? " is-collapsed" : string.Empty)">@descriptionText</p>
+                            @if (Model.IsDescriptionLong)
+                            {
+                                <button type="button" class="nr-detail-toggle" id="nrDetailToggle" aria-expanded="false">See more</button>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (Model.CanManage)
+            {
+                <div class="nr-detail-actions">
+                    <a href="@Model.EditUrl" class="nr-detail-btn nr-detail-btn--edit">
+                        <i class="far fa-pen-to-square" aria-hidden="true"></i>
+                        <span>Edit request</span>
+                    </a>
+                    <a href="@Model.CancelUrl" class="nr-detail-btn nr-detail-btn--cancel">
+                        <i class="far fa-trash-can" aria-hidden="true"></i>
+                        <span>Cancel request</span>
+                    </a>
                 </div>
             }
         </article>
 
-        <h2 style="font-size:1rem;margin:0 0 12px;">@Model.OfferCountLabel</h2>
-
-        @if (Model.Offers.Count == 0)
+        @if (Model.HasNeighborOffers)
         {
-            <div class="nr-empty">
-                <p>No offers yet. Your request is visible in the Nearby Network feed.</p>
-            </div>
+            <section class="nr-detail-received">
+                <div class="nr-detail-received-head">
+                    <h2>@Model.OfferCountLabel</h2>
+                    @if (Model.TotalNeighborOfferCount > 1)
+                    {
+                        <a href="@Model.SeeAllOffersUrl">See all</a>
+                    }
+                </div>
+                @if (previewOffer != null)
+                {
+                    @await Html.PartialAsync("_NeighborOfferCard", previewOffer)
+                }
+            </section>
         }
         else
         {
-            <div class="nr-offer-list">
-                @foreach (var offer in Model.Offers)
+            <section class="nr-detail-offers-card">
+                <h2 class="nr-detail-offers-title">@Model.OfferCountLabel</h2>
+                <svg class="nr-detail-empty-art" viewBox="0 0 220 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <ellipse cx="110" cy="108" rx="72" ry="8" fill="#E8F1FB" />
+                    <path d="M92 92V58L110 48L128 58V92" stroke="#0066CC" stroke-width="3" stroke-linejoin="round" />
+                    <path d="M86 92H134" stroke="#0066CC" stroke-width="3" stroke-linecap="round" />
+                    <path d="M110 48V38" stroke="#0066CC" stroke-width="3" stroke-linecap="round" />
+                    <circle cx="110" cy="34" r="4" fill="#0066CC" />
+                    <path d="M44 36C52 28 62 24 72 26" stroke="#93C5FD" stroke-width="2" stroke-linecap="round" />
+                    <path d="M168 42C160 30 148 24 136 26" stroke="#93C5FD" stroke-width="2" stroke-linecap="round" />
+                    <circle cx="52" cy="22" r="2" fill="#BFDBFE" />
+                    <circle cx="164" cy="18" r="2.5" fill="#BFDBFE" />
+                    <circle cx="178" cy="34" r="2" fill="#BFDBFE" />
+                    <path d="M36 54H52M40 48V60" stroke="#0066CC" stroke-width="2.5" stroke-linecap="round" />
+                    <path d="M168 54H184M176 48V60" stroke="#0066CC" stroke-width="2.5" stroke-linecap="round" />
+                </svg>
+                <p class="nr-detail-empty-copy">Your request is visible in the Nearby Network feed.</p>
+            </section>
+        }
+
+        @if (Model.ShowProvidersPanel)
+        {
+            <section class="nr-detail-providers">
+                <div class="nr-detail-providers-banner">
+                    <span class="nr-detail-providers-icon" aria-hidden="true"><i class="fas fa-shield-halved"></i></span>
+                    <div class="nr-detail-providers-copy">
+                        <strong>INDOR Providers</strong>
+                        <p>Hire vetted professionals with insurance and top ratings.</p>
+                    </div>
+                    <a href="@Model.ViewProvidersUrl" class="nr-detail-providers-cta">View providers</a>
+                </div>
+
+                <div class="nr-detail-info nr-detail-info--inline">
+                    <i class="fas fa-circle-info" aria-hidden="true"></i>
+                    <p>You can keep your current request open or switch to <a href="@Model.ProvidersUrl">INDOR Providers</a>.</p>
+                </div>
+
+                @if (Model.ProviderOffers.Count > 0)
                 {
-                    <article class="nr-offer-card">
-                        @if (!string.IsNullOrWhiteSpace(offer.OffererPhotoUrl))
+                    <h3 class="nr-detail-providers-list-title">INDOR Providers offers</h3>
+                    <div class="nr-detail-provider-list">
+                        @foreach (var offer in Model.ProviderOffers)
                         {
-                            <img class="nr-offer-avatar" src="@Url.Content("~" + offer.OffererPhotoUrl)" alt="" />
+                            <a href="@offer.ViewUrl" class="nr-detail-provider-row">
+                                <span class="nr-detail-provider-icon" aria-hidden="true"><i class="fas @offer.AvatarIconClass"></i></span>
+                                <span class="nr-detail-provider-body">
+                                    <strong>@offer.OffererName</strong>
+                                    <span>@offer.ScheduleLabel</span>
+                                </span>
+                                <span class="nr-detail-provider-side">
+                                    @if (!string.IsNullOrWhiteSpace(offer.PriceLabel))
+                                    {
+                                        <strong>@offer.PriceLabel</strong>
+                                    }
+                                    @if (!string.IsNullOrWhiteSpace(offer.RatingLabel))
+                                    {
+                                        <span class="nr-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>@offer.RatingLabel</span>
+                                    }
+                                </span>
+                                <i class="fas fa-chevron-right nr-detail-provider-chevron" aria-hidden="true"></i>
+                            </a>
                         }
-                        else
-                        {
-                            <span class="nr-request-icon"><i class="fas fa-user"></i></span>
-                        }
-                        <div class="nr-offer-body">
-                            <strong>@offer.OffererName</strong>
-                            <div class="nr-offer-meta">@offer.MetaLabel</div>
-                            @if (!string.IsNullOrWhiteSpace(offer.Message))
-                            {
-                                <p style="margin:8px 0 0;font-size:.82rem;color:#475569;">@offer.Message</p>
-                            }
-                        </div>
-                        @if (!string.IsNullOrWhiteSpace(offer.PriceLabel))
-                        {
-                            <div class="nr-offer-price">@offer.PriceLabel</div>
-                        }
-                    </article>
+                    </div>
                 }
+            </section>
+        }
+        else if (Model.CanManage)
+        {
+            <div class="nr-detail-info">
+                <i class="fas fa-circle-info" aria-hidden="true"></i>
+                <p>You can edit your request anytime or switch later to <a href="@Model.ProvidersUrl">INDOR Providers</a>.</p>
             </div>
         }
     </div>
+
+    @if (Model.IsDescriptionLong)
+    {
+        <script>
+            (function () {
+                var description = document.getElementById('nrDetailDescription');
+                var toggle = document.getElementById('nrDetailToggle');
+                if (!description || !toggle) return;
+
+                toggle.addEventListener('click', function () {
+                    var collapsed = description.classList.toggle('is-collapsed');
+                    toggle.textContent = collapsed ? 'See more' : 'See less';
+                    toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+                });
+            })();
+        </script>
+    }
 </body>
 </html>

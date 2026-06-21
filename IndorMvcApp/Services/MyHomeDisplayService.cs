@@ -23,6 +23,16 @@ public static class MyHomeDisplayService
             }
         }
 
+        if (!string.IsNullOrWhiteSpace(propiedad.AttomRawJson))
+        {
+            info ??= new PropertyInfoViewModel
+            {
+                FormattedAddress = propiedad.Direccion ?? string.Empty
+            };
+            info.PropertyDetails ??= new PropertyDetailsInfo();
+            PropertyEnrichmentMapper.ApplyPayload(info, propiedad.AttomRawJson);
+        }
+
         var maintenance = PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
         if (maintenance != null)
         {

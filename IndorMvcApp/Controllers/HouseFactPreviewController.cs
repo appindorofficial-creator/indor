@@ -337,7 +337,7 @@ public class HouseFactPreviewController : Controller
 
     private void ConfigurePreview() => HouseFactPreviewContext.ConfigurePreviewView(this);
 
-    private IActionResult MissingPreview() => RedirectToAction("AddProperty", "Propietario");
+    private IActionResult MissingPreview() => Redirect(Url.Action("EditarPerfil", "Perfil") + "#home");
 
     private async Task<Dictionary<string, int>> LoadPriorityIdsAsync()
     {

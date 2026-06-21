@@ -217,18 +217,24 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Select your role";
+        ViewBag.OnboardingTitle = "Create your profile";
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
 
-        return View(new SelectRoleViewModel { UserId = userId });
+        return View(new SelectRoleViewModel { UserId = userId, SelectedRole = "Propietario" });
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize]
-    public async Task<IActionResult> SelectRole(SelectRoleViewModel model)
+    public async Task<IActionResult> SelectRole(SelectRoleViewModel model, string? skipLater)
     {
+        if (string.Equals(skipLater, "true", StringComparison.OrdinalIgnoreCase))
+        {
+            model.SelectedRole = "Propietario";
+            ModelState.Remove(nameof(model.SelectedRole));
+        }
+
         if (ModelState.IsValid && !string.IsNullOrEmpty(model.SelectedRole))
         {
             var user = await _userManager.FindByIdAsync(model.UserId);
@@ -253,9 +259,14 @@ public class AccountController : Controller
             // Re-issue a persistent auth cookie so role claims and mobile sessions stay valid.
             await _signInManager.SignInAsync(user, isPersistent: true);
 
+            if (string.Equals(model.SelectedRole, "Propietario", StringComparison.OrdinalIgnoreCase))
+            {
+                TempData["OnboardingComplete"] = true;
+            }
+
             return model.SelectedRole switch
             {
-                "Propietario" => RedirectToAction("AddProperty", "Propietario"),
+                "Propietario" => RedirectToAction("HomeReady", "Propietario", new { id = 0 }),
                 "ProveedorServicios" => RedirectToAction("Entry", "ProviderRegistration"),
                 "Realtor" => RedirectToAction("Profile", "RealtorRegistration"),
                 "AdministradorPropiedades" => RedirectToAction("Profile", "PropertyAdministratorRegistration"),
@@ -264,7 +275,7 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Select your role";
+        ViewBag.OnboardingTitle = "Create your profile";
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
         return View(model);
@@ -307,7 +318,7 @@ public class AccountController : Controller
 
             return user.RolUsuario switch
             {
-                "Propietario" => RedirectToAction("AddProperty", "Propietario"),
+                "Propietario" => RedirectToAction("Index", "Home"),
                 "Realtor" => RedirectToAction("Profile", "RealtorRegistration"),
                 "AdministradorPropiedades" => RedirectToAction("Profile", "PropertyAdministratorRegistration"),
                 _ => RedirectToAction("Index", "Home")

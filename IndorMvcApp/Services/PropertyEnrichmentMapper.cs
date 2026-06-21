@@ -1,12 +1,27 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Services;
 
-public static class PropertyEnrichmentMapper
+public static partial class PropertyEnrichmentMapper
 {
+    private static readonly string[] ResearchSectionKeys =
+    [
+        "propertyIdentity",
+        "basicPropertyFacts",
+        "listingMarketData",
+        "publicRecordsTaxes",
+        "salesHistory",
+        "mechanicalUtilitySystems",
+        "roofExteriorSite",
+        "foundationStructure",
+        "hoaCommunity",
+        "schoolsLocationUtilities"
+    ];
+
     public static bool ApplyPayload(PropertyInfoViewModel info, string rawJson)
     {
         var root = JsonNode.Parse(rawJson);
@@ -15,17 +30,34 @@ public static class PropertyEnrichmentMapper
             return false;
         }
 
+        info.PropertyDetails ??= new PropertyDetailsInfo();
+
         var detailsNode = root["propertyDetails"] ?? root["PropertyDetails"];
         if (detailsNode != null)
         {
-            info.PropertyDetails ??= new PropertyDetailsInfo();
             ApplyDetails(info.PropertyDetails, detailsNode);
         }
+
+        foreach (var sectionKey in ResearchSectionKeys)
+        {
+            var section = root[sectionKey];
+            if (section != null)
+            {
+                ApplyDetailsFromLooseObject(info.PropertyDetails, section);
+            }
+        }
+
+        ExtractFromSectionsArray(info.PropertyDetails, root["sections"]?.AsArray());
+        DeepScanForDetails(info.PropertyDetails, root);
 
         var utilitiesNode = root["utilityProviders"] ?? root["UtilityProviders"];
         if (utilitiesNode != null)
         {
             ApplyUtilities(info, utilitiesNode);
+        }
+        else
+        {
+            ExtractUtilitiesFromSchoolsSection(info, root["schoolsLocationUtilities"]);
         }
 
         var formatted = ReadString(root["formattedAddress"] ?? root["FormattedAddress"]);
@@ -34,56 +66,382 @@ public static class PropertyEnrichmentMapper
             info.FormattedAddress = formatted!;
         }
 
-        return detailsNode != null;
+        MergeCountyFromIdentity(info, root["propertyIdentity"]);
+
+        return detailsNode != null
+            || HasMeaningfulDetails(info.PropertyDetails)
+            || root["sections"]?.AsArray()?.Count > 0
+            || root["propertyIdentity"] != null
+            || root["basicPropertyFacts"] != null;
     }
 
     private static void ApplyDetails(PropertyDetailsInfo details, JsonNode node)
     {
-        details.PropertyType = ReadString(node["propertyType"]) ?? details.PropertyType;
-        details.YearBuilt = ReadInt(node["yearBuilt"]) ?? details.YearBuilt;
-        details.YearRenovated = ReadInt(node["yearRenovated"]) ?? details.YearRenovated;
-        details.LivingArea = ReadInt(node["livingArea"]) ?? details.LivingArea;
-        details.LotSize = ReadDecimal(node["lotSizeAcres"]) ?? details.LotSize;
-        details.LotSizeSqFt = ReadInt(node["lotSizeSqFt"]) ?? details.LotSizeSqFt;
-        details.Bedrooms = ReadInt(node["bedrooms"]) ?? details.Bedrooms;
-        details.Bathrooms = ReadDecimal(node["bathrooms"]) ?? details.Bathrooms;
-        details.Floors = ReadInt(node["floors"]) ?? details.Floors;
-        details.ArchitecturalStyle = ReadString(node["architecturalStyle"]) ?? details.ArchitecturalStyle;
-        details.LastSalePrice = ReadDecimal(node["lastSalePrice"]) ?? details.LastSalePrice;
-        details.LastSaleDate = ReadDate(node["lastSaleDate"]) ?? details.LastSaleDate;
-        details.EstimatedValue = ReadDecimal(node["estimatedValue"]) ?? details.EstimatedValue;
-        details.EstimatedValueYear = ReadInt(node["estimatedValueYear"]) ?? details.EstimatedValueYear;
-        details.AnnualTaxAmount = ReadDecimal(node["annualTaxAmount"]) ?? details.AnnualTaxAmount;
-        details.TaxYear = ReadInt(node["taxYear"]) ?? details.TaxYear;
-        details.ParcelNumber = ReadString(node["parcelNumber"]) ?? details.ParcelNumber;
-        details.LegalDescription = ReadString(node["legalDescription"]) ?? details.LegalDescription;
-        details.Zoning = ReadString(node["zoning"]) ?? details.Zoning;
-        details.AssignedSchool = ReadString(node["assignedSchool"]) ?? details.AssignedSchool;
-        details.Fips = ReadString(node["fips"]) ?? details.Fips;
-        details.Subdivision = ReadString(node["subdivision"]) ?? details.Subdivision;
-        details.Municipality = ReadString(node["municipality"]) ?? details.Municipality;
-        details.CountyName = ReadString(node["countyName"]) ?? details.CountyName;
-        details.Occupancy = ReadString(node["occupancy"]) ?? details.Occupancy;
-        details.YearBuiltEffective = ReadInt(node["yearBuiltEffective"]) ?? details.YearBuiltEffective;
-        details.RoomsTotal = ReadInt(node["roomsTotal"]) ?? details.RoomsTotal;
-        details.BathsFull = ReadInt(node["bathsFull"]) ?? details.BathsFull;
-        details.HeatingType = ReadString(node["heatingType"]) ?? details.HeatingType;
-        details.HeatingFuel = ReadString(node["heatingFuel"]) ?? details.HeatingFuel;
-        details.CoolingType = ReadString(node["coolingType"]) ?? details.CoolingType;
-        details.BuildingCondition = ReadString(node["buildingCondition"]) ?? details.BuildingCondition;
-        details.WallType = ReadString(node["wallType"]) ?? details.WallType;
-        details.ParkingType = ReadString(node["parkingType"]) ?? details.ParkingType;
-        details.GarageType = ReadString(node["garageType"]) ?? details.GarageType;
-        details.BasementSqFt = ReadInt(node["basementSqFt"]) ?? details.BasementSqFt;
-        details.Fireplaces = ReadInt(node["fireplaces"]) ?? details.Fireplaces;
-        details.LocationAccuracy = ReadString(node["locationAccuracy"]) ?? details.LocationAccuracy;
-
-        var features = ReadStringArray(node["features"]);
-        if (features.Count > 0)
+        if (node is JsonObject obj)
         {
-            details.Features = features;
+            ApplyDetailsFromLooseObject(details, obj);
+            return;
+        }
+
+        ApplyLabeledValue(details, "value", ReadString(node));
+    }
+
+    private static void ApplyDetailsFromLooseObject(PropertyDetailsInfo details, JsonNode node)
+    {
+        if (node is not JsonObject obj)
+        {
+            return;
+        }
+
+        foreach (var kv in obj)
+        {
+            ApplyFieldByKey(details, kv.Key, kv.Value);
+        }
+
+        if (node["fields"] is JsonArray fields)
+        {
+            ApplyLabeledFields(details, fields);
+        }
+
+        if (node["tableRows"] is JsonArray rows)
+        {
+            foreach (var row in rows)
+            {
+                if (row?["columns"] is JsonObject columns)
+                {
+                    foreach (var col in columns)
+                    {
+                        ApplyFieldByKey(details, col.Key, col.Value);
+                    }
+                }
+            }
         }
     }
+
+    private static void ExtractFromSectionsArray(PropertyDetailsInfo details, JsonArray? sections)
+    {
+        if (sections == null) return;
+
+        foreach (var section in sections)
+        {
+            if (section is not JsonObject obj) continue;
+
+            if (obj["fields"] is JsonArray fields)
+            {
+                ApplyLabeledFields(details, fields);
+            }
+
+            if (obj["tableRows"] is JsonArray rows)
+            {
+                foreach (var row in rows)
+                {
+                    if (row?["columns"] is JsonObject columns)
+                    {
+                        foreach (var col in columns)
+                        {
+                            ApplyFieldByKey(details, col.Key, col.Value);
+                        }
+                    }
+                }
+            }
+
+            ApplyDetailsFromLooseObject(details, obj);
+        }
+    }
+
+    private static void DeepScanForDetails(PropertyDetailsInfo details, JsonNode? node, int depth = 0)
+    {
+        if (node == null || depth > 12) return;
+
+        switch (node)
+        {
+            case JsonObject obj:
+                foreach (var kv in obj)
+                {
+                    if (IsDetailKey(kv.Key))
+                    {
+                        ApplyFieldByKey(details, kv.Key, kv.Value);
+                    }
+
+                    DeepScanForDetails(details, kv.Value, depth + 1);
+                }
+                break;
+            case JsonArray array:
+                foreach (var item in array)
+                {
+                    DeepScanForDetails(details, item, depth + 1);
+                }
+                break;
+        }
+    }
+
+    private static void ApplyLabeledFields(PropertyDetailsInfo details, JsonArray fields)
+    {
+        foreach (var field in fields)
+        {
+            if (field is not JsonObject obj) continue;
+            var label = ReadString(obj["label"]) ?? ReadString(obj["name"]) ?? ReadString(obj["key"]);
+            var value = ReadString(obj["value"]) ?? ReadString(obj["text"]);
+            if (!string.IsNullOrWhiteSpace(label))
+            {
+                ApplyLabeledValue(details, label, value);
+            }
+        }
+    }
+
+    private static void ApplyFieldByKey(PropertyDetailsInfo details, string key, JsonNode? value)
+    {
+        if (value == null) return;
+
+        var normalized = NormalizeToken(key);
+        var text = ReadString(value);
+
+        switch (normalized)
+        {
+            case "propertytype" or "landuse" or "propertytypecode":
+                details.PropertyType = CoalesceString(details.PropertyType, text);
+                break;
+            case "yearbuilt" or "yearbuiltdate":
+                details.YearBuilt ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "yearrenovated" or "yearrenovateddate":
+                details.YearRenovated ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "yearbuilteffective" or "effectiveyearbuilt":
+                details.YearBuiltEffective ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "livingarea" or "heatedsquarefootage" or "heatedsqft" or "squarefootage" or "sqft" or "livingsqft" or "livingsize" or "universalsize" or "grosssize" or "bldgsize" or "interiorlivingarea":
+                details.LivingArea ??= ReadInt(value) ?? ParseSqFtFromText(text);
+                break;
+            case "lotsizeacres" or "lotacres" or "lotsize1":
+                details.LotSize ??= ReadDecimal(value) ?? ParseDecimalFromText(text);
+                break;
+            case "lotsizesqft" or "lotsize2" or "lotsquarefeet":
+                details.LotSizeSqFt ??= ReadInt(value) ?? ParseSqFtFromText(text);
+                break;
+            case "lotsize":
+                ApplyLotSizeValue(details, value, text);
+                break;
+            case "bedrooms" or "beds" or "bed" or "bedroom":
+                details.Bedrooms ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "bathrooms" or "baths" or "bath" or "bathstotal":
+                details.Bathrooms ??= ReadDecimal(value) ?? ParseDecimalFromText(text);
+                break;
+            case "bathsfull" or "fullbathrooms" or "fullbaths":
+                details.BathsFull ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "floors" or "stories" or "levels" or "storycount":
+                details.Floors ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "roomstotal" or "totalrooms" or "rooms":
+                details.RoomsTotal ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "lastsaleprice" or "saleprice" or "saleamt":
+                details.LastSalePrice ??= ReadDecimal(value) ?? ParseMoneyFromText(text);
+                break;
+            case "lastsaledate" or "saledate" or "saletransdate":
+                details.LastSaleDate ??= ReadDate(value) ?? ParseDateFromText(text);
+                break;
+            case "estimatedvalue" or "marketvalue" or "assessedvalue" or "zestimate" or "redfinestimate" or "listprice" or "mktttlvalue" or "assdttlvalue":
+                details.EstimatedValue ??= ReadDecimal(value) ?? ParseMoneyFromText(text);
+                break;
+            case "estimatedvalueyear" or "valuationyear":
+                details.EstimatedValueYear ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "annualtaxamount" or "taxamount" or "taxamt" or "annualtaxes":
+                details.AnnualTaxAmount ??= ReadDecimal(value) ?? ParseMoneyFromText(text);
+                break;
+            case "taxyear" or "assessmentyear":
+                details.TaxYear ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "parcelnumber" or "apn" or "parcelid" or "apnparcelid" or "apnorig":
+                details.ParcelNumber = CoalesceString(details.ParcelNumber, text);
+                break;
+            case "legaldescription" or "legaldesc" or "legal1":
+                details.LegalDescription = CoalesceString(details.LegalDescription, text);
+                break;
+            case "zoning" or "zonetype":
+                details.Zoning = CoalesceString(details.Zoning, text);
+                break;
+            case "assignedschool" or "schoolname" or "schooldistrict":
+                details.AssignedSchool = CoalesceString(details.AssignedSchool, text);
+                break;
+            case "fips" or "fipscode":
+                details.Fips = CoalesceString(details.Fips, text);
+                break;
+            case "subdivision" or "subdivisionneighborhood" or "subdname" or "neighborhood":
+                details.Subdivision = CoalesceString(details.Subdivision, text);
+                break;
+            case "municipality" or "munname" or "jurisdiction" or "city":
+                details.Municipality = CoalesceString(details.Municipality, text);
+                break;
+            case "county" or "countyname" or "countrysecsubd":
+                details.CountyName = CoalesceString(details.CountyName, text);
+                break;
+            case "occupancy" or "absenteeind":
+                details.Occupancy = CoalesceString(details.Occupancy, text);
+                break;
+            case "heatingtype" or "hvacheating":
+                details.HeatingType = CoalesceString(details.HeatingType, text);
+                break;
+            case "heatingfuel" or "fuelsource":
+                details.HeatingFuel = CoalesceString(details.HeatingFuel, text);
+                break;
+            case "coolingtype" or "hvacooling":
+                details.CoolingType = CoalesceString(details.CoolingType, text);
+                break;
+            case "buildingcondition" or "condition":
+                details.BuildingCondition = CoalesceString(details.BuildingCondition, text);
+                break;
+            case "walltype" or "exterior" or "exteriormaterial" or "exteriorwall":
+                details.WallType = CoalesceString(details.WallType, text);
+                break;
+            case "architecturalstyle" or "archstyle" or "style":
+                details.ArchitecturalStyle = CoalesceString(details.ArchitecturalStyle, text);
+                break;
+            case "parkingtype" or "prkgtype" or "garageparking":
+                details.ParkingType = CoalesceString(details.ParkingType, text);
+                break;
+            case "garagetype" or "garage":
+                details.GarageType = CoalesceString(details.GarageType, text);
+                break;
+            case "basementsqft" or "bsmtsize" or "basementsize":
+                details.BasementSqFt ??= ReadInt(value) ?? ParseSqFtFromText(text);
+                break;
+            case "fireplaces" or "fireplacecount" or "fplccount":
+                details.Fireplaces ??= ReadInt(value) ?? ParseIntFromText(text);
+                break;
+            case "locationaccuracy" or "accuracy":
+                details.LocationAccuracy = CoalesceString(details.LocationAccuracy, text);
+                break;
+            default:
+                if (normalized.Contains("feature", StringComparison.Ordinal) && !string.IsNullOrWhiteSpace(text))
+                {
+                    AddFeature(details, text!);
+                }
+                break;
+        }
+    }
+
+    private static void ApplyLabeledValue(PropertyDetailsInfo details, string label, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)
+            || value.Contains("needs verification", StringComparison.OrdinalIgnoreCase)
+            || value.Contains("not publicly confirmed", StringComparison.OrdinalIgnoreCase))
+        {
+            return;
+        }
+
+        var normalized = NormalizeToken(label);
+        ApplyFieldByKey(details, normalized, JsonValue.Create(value));
+    }
+
+    private static void ApplyLotSizeValue(PropertyDetailsInfo details, JsonNode value, string? text)
+    {
+        var raw = text ?? ReadString(value);
+        if (string.IsNullOrWhiteSpace(raw)) return;
+
+        if (raw.Contains("acre", StringComparison.OrdinalIgnoreCase))
+        {
+            details.LotSize ??= ParseDecimalFromText(raw);
+            return;
+        }
+
+        var sqFt = ParseSqFtFromText(raw);
+        if (sqFt is > 0)
+        {
+            details.LotSizeSqFt ??= sqFt;
+            return;
+        }
+
+        details.LotSize ??= ReadDecimal(value) ?? ParseDecimalFromText(raw);
+    }
+
+    private static void MergeCountyFromIdentity(PropertyInfoViewModel info, JsonNode? identity)
+    {
+        if (identity == null) return;
+        info.County ??= info.PropertyDetails?.CountyName;
+        if (string.IsNullOrWhiteSpace(info.PropertyDetails?.CountyName) && identity is JsonObject obj)
+        {
+            var county = ReadString(obj["county"]) ?? ReadString(obj["countyName"]);
+            if (!string.IsNullOrWhiteSpace(county))
+            {
+                info.PropertyDetails!.CountyName = county;
+                info.County ??= county;
+            }
+        }
+    }
+
+    private static void ExtractUtilitiesFromSchoolsSection(PropertyInfoViewModel info, JsonNode? schoolsSection)
+    {
+        if (schoolsSection is not JsonObject obj) return;
+
+        info.UtilityProviders ??= new UtilityProvidersInfo();
+
+        foreach (var kv in obj)
+        {
+            var key = NormalizeToken(kv.Key);
+            var text = ReadString(kv.Value);
+            if (string.IsNullOrWhiteSpace(text)) continue;
+
+            if (key.Contains("electric", StringComparison.Ordinal))
+            {
+                info.UtilityProviders.Electric ??= new UtilityProvider { Name = text, ServiceType = "Electricity" };
+            }
+            else if (key.Contains("water", StringComparison.Ordinal) && !key.Contains("waterheater", StringComparison.Ordinal))
+            {
+                info.UtilityProviders.Water ??= new UtilityProvider { Name = text, ServiceType = "Water" };
+            }
+            else if (key.Contains("sewer", StringComparison.Ordinal) || key.Contains("septic", StringComparison.Ordinal))
+            {
+                info.UtilityProviders.Sewer ??= new UtilityProvider { Name = text, ServiceType = "Sewer" };
+            }
+            else if (key.Contains("gas", StringComparison.Ordinal))
+            {
+                info.UtilityProviders.Gas ??= new UtilityProvider { Name = text, ServiceType = "Gas" };
+            }
+        }
+    }
+
+    private static bool IsDetailKey(string key)
+    {
+        var normalized = NormalizeToken(key);
+        return normalized is "bedrooms" or "beds" or "bathrooms" or "baths"
+            or "livingarea" or "sqft" or "heatedsquarefootage" or "squarefootage"
+            or "yearbuilt" or "lotsize" or "lotsizeacres" or "lotsizesqft"
+            or "estimatedvalue" or "listprice" or "lastsaleprice" or "annualtaxamount"
+            or "parcelnumber" or "apn" or "floors" or "stories" or "fireplaces"
+            or "heatingtype" or "coolingtype" or "propertytype";
+    }
+
+    private static bool HasMeaningfulDetails(PropertyDetailsInfo details) =>
+        details.YearBuilt is > 0
+        || details.LivingArea is > 0
+        || details.Bedrooms is > 0
+        || details.Bathrooms is > 0
+        || details.EstimatedValue is > 0
+        || details.LotSize is > 0
+        || details.LotSizeSqFt is > 0;
+
+    private static void AddFeature(PropertyDetailsInfo details, string feature)
+    {
+        if (details.Features.Contains(feature, StringComparer.OrdinalIgnoreCase)) return;
+        details.Features.Add(feature);
+    }
+
+    private static string? CoalesceString(string? current, string? incoming)
+    {
+        if (string.IsNullOrWhiteSpace(incoming)) return current;
+        if (string.IsNullOrWhiteSpace(current)) return incoming.Trim();
+        if (current.Contains(incoming, StringComparison.OrdinalIgnoreCase)) return current;
+        return incoming.Trim();
+    }
+
+    private static string NormalizeToken(string? value) =>
+        string.IsNullOrWhiteSpace(value)
+            ? string.Empty
+            : Regex.Replace(value, @"[^a-zA-Z0-9]", string.Empty).ToLowerInvariant();
 
     private static void ApplyUtilities(PropertyInfoViewModel info, JsonNode node)
     {
@@ -125,7 +483,7 @@ public static class PropertyEnrichmentMapper
 
     private static List<UtilityProvider> ReadProviderList(JsonNode? node)
     {
-        if (node is not JsonArray array) return new List<UtilityProvider>();
+        if (node is not JsonArray array) return [];
 
         return array
             .Select(ReadProvider)
@@ -134,19 +492,18 @@ public static class PropertyEnrichmentMapper
             .ToList();
     }
 
-    private static List<string> ReadStringArray(JsonNode? node)
+    private static string? ReadString(JsonNode? node)
     {
-        if (node is not JsonArray array) return new List<string>();
-
-        return array
-            .Select(ReadString)
-            .Where(v => !string.IsNullOrWhiteSpace(v))
-            .Cast<string>()
-            .ToList();
+        if (node == null) return null;
+        return node.GetValueKind() switch
+        {
+            JsonValueKind.String => node.GetValue<string>(),
+            JsonValueKind.Number => node.ToString(),
+            JsonValueKind.True => "true",
+            JsonValueKind.False => "false",
+            _ => node.ToJsonString()
+        };
     }
-
-    private static string? ReadString(JsonNode? node) =>
-        node?.GetValueKind() == JsonValueKind.String ? node.GetValue<string>() : node?.ToString();
 
     private static int? ReadInt(JsonNode? node)
     {
@@ -157,13 +514,7 @@ public static class PropertyEnrichmentMapper
             catch { try { return Convert.ToInt32(node.GetValue<double>()); } catch { } }
         }
 
-        if (node.GetValueKind() == JsonValueKind.String
-            && int.TryParse(node.GetValue<string>(), NumberStyles.Integer, CultureInfo.InvariantCulture, out var i))
-        {
-            return i;
-        }
-
-        return null;
+        return ParseIntFromText(ReadString(node));
     }
 
     private static decimal? ReadDecimal(JsonNode? node)
@@ -175,22 +526,58 @@ public static class PropertyEnrichmentMapper
             catch { try { return Convert.ToDecimal(node.GetValue<double>()); } catch { } }
         }
 
-        if (node.GetValueKind() == JsonValueKind.String
-            && decimal.TryParse(node.GetValue<string>(), NumberStyles.Number, CultureInfo.InvariantCulture, out var d))
-        {
-            return d;
-        }
-
-        return null;
+        return ParseDecimalFromText(ReadString(node));
     }
 
     private static DateTime? ReadDate(JsonNode? node)
     {
-        var value = ReadString(node);
-        if (string.IsNullOrWhiteSpace(value)) return null;
+        return ParseDateFromText(ReadString(node));
+    }
 
-        return DateTime.TryParse(value, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dt)
+    private static int? ParseIntFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        if (int.TryParse(text, NumberStyles.Integer, CultureInfo.InvariantCulture, out var direct))
+        {
+            return direct;
+        }
+
+        var match = DigitsRegex().Match(text);
+        return match.Success && int.TryParse(match.Value, out var parsed) ? parsed : null;
+    }
+
+    private static int? ParseSqFtFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        var match = SqFtRegex().Match(text.Replace(",", string.Empty, StringComparison.Ordinal));
+        return match.Success && int.TryParse(match.Groups[1].Value, out var sqft) ? sqft : ParseIntFromText(text);
+    }
+
+    private static decimal? ParseDecimalFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        var cleaned = MoneyCleanupRegex().Replace(text, string.Empty).Replace(",", string.Empty).Trim();
+        return decimal.TryParse(cleaned, NumberStyles.Number, CultureInfo.InvariantCulture, out var value)
+            ? value
+            : null;
+    }
+
+    private static decimal? ParseMoneyFromText(string? text) => ParseDecimalFromText(text);
+
+    private static DateTime? ParseDateFromText(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return null;
+        return DateTime.TryParse(text, CultureInfo.InvariantCulture, DateTimeStyles.AssumeUniversal, out var dt)
             ? dt
             : null;
     }
+
+    [GeneratedRegex(@"\d+")]
+    private static partial Regex DigitsRegex();
+
+    [GeneratedRegex(@"([\d,]+)\s*(?:sq\.?\s*ft|sqft|square\s*feet)", RegexOptions.IgnoreCase)]
+    private static partial Regex SqFtRegex();
+
+    [GeneratedRegex(@"[$£€]")]
+    private static partial Regex MoneyCleanupRegex();
 }

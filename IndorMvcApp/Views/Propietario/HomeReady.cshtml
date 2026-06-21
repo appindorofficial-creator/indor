@@ -24,13 +24,15 @@
         <h1>Welcome to INDOR!</h1>
         <p>Your account has been created successfully.</p>
 
-        @if (propiedadId > 0)
+        @if (propiedadId <= 0)
         {
-            <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="ob-btn ob-btn-primary">Let's Go</a>
+            <p class="ob-success-sub">Add your home address in Edit Profile anytime — AI will build your House Facts when you're ready.</p>
+            <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="ob-btn ob-btn-primary">Add my home</a>
+            <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-outline ob-success-skip">Explore dashboard</a>
         }
         else
         {
-            <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-primary">Let's Go</a>
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="ob-btn ob-btn-primary">Let's Go</a>
         }
     </div>
 </body>

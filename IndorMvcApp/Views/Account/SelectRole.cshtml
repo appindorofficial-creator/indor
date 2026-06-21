@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.SelectRoleViewModel
 @{
-    ViewData["Title"] = "Select your role - INDOR";
+    ViewData["Title"] = "Create your profile - INDOR";
     Layout = null;
 }
 <!DOCTYPE html>
@@ -103,14 +103,12 @@
         }
 
         .brand-tagline {
-            font-size: 0.92rem;
+            font-size: 0.88rem;
             color: #6B7280;
             font-weight: 400;
-        }
-
-        .brand-tagline .highlight {
-            color: #0066CC;
-            font-weight: 600;
+            line-height: 1.45;
+            max-width: 360px;
+            margin: 0 auto;
         }
 
         .form-card {
@@ -128,71 +126,200 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        .roles-grid {
+        /* Primary — Personal Profile */
+        .role-card-primary {
+            position: relative;
+            background: #FFFFFF;
+            border: 2px solid #0066CC;
+            border-radius: 16px;
+            padding: 16px 14px 16px 16px;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            margin-bottom: 18px;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .role-card-primary:not(.selected) {
+            border-color: #E5E7EB;
+            box-shadow: none;
+            background: #F9FAFB;
+        }
+
+        .role-card-primary:hover {
+            border-color: #0066CC;
+            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.1);
+        }
+
+        .role-card-primary .role-icon {
+            width: 52px;
+            height: 52px;
+            min-width: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #FFFFFF;
+            font-size: 1.35rem;
+        }
+
+        .role-card-primary:not(.selected) .role-icon {
+            background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 79, 163, 0.12) 100%);
+            color: #0066CC;
+        }
+
+        .role-primary-body {
+            flex: 1;
+            min-width: 0;
+            padding-right: 28px;
+        }
+
+        .role-primary-title {
+            font-size: 1rem;
+            font-weight: 700;
+            color: #0A2540;
+            margin-bottom: 2px;
+        }
+
+        .role-primary-subtitle {
+            font-size: 0.78rem;
+            font-weight: 600;
+            color: #0066CC;
+            margin-bottom: 6px;
+        }
+
+        .role-primary-desc {
+            font-size: 0.78rem;
+            color: #64748B;
+            line-height: 1.45;
+        }
+
+        .role-recommended {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            color: #0066CC;
+            background: rgba(0, 102, 204, 0.08);
+            padding: 4px 8px;
+            border-radius: 999px;
+        }
+
+        .role-check {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: #0066CC;
+            color: #FFFFFF;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.72rem;
+        }
+
+        .role-card-primary.selected .role-check {
+            display: flex;
+        }
+
+        /* Divider */
+        .roles-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: #94A3B8;
+            font-size: 0.72rem;
+            font-weight: 500;
+        }
+
+        .roles-divider::before,
+        .roles-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #E5E7EB;
+        }
+
+        .roles-divider i {
+            color: #0066CC;
+            font-size: 0.85rem;
+        }
+
+        /* Secondary roles — 3 columns */
+        .roles-secondary {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 18px;
         }
 
-        .role-card {
+        .role-card-secondary {
             background: #F9FAFB;
             border: 1.5px solid #E5E7EB;
             border-radius: 14px;
-            padding: 18px 12px;
+            padding: 14px 8px;
             cursor: pointer;
             transition: all 0.25s ease;
             text-align: center;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 10px;
-            min-height: 148px;
-            justify-content: center;
+            gap: 8px;
+            min-height: 118px;
+            justify-content: flex-start;
         }
 
-        .role-card:hover {
+        .role-card-secondary:hover {
             border-color: #0066CC;
             background: #FFFFFF;
             transform: translateY(-2px);
             box-shadow: 0 6px 18px rgba(0, 102, 204, 0.12);
         }
 
-        .role-card.selected {
+        .role-card-secondary.selected {
             border-color: #0066CC;
             background: #FFFFFF;
-            box-shadow: 0 0 0 4px rgba(0, 102, 204, 0.12);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
         }
 
-        .role-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 14px;
+        .role-card-secondary .role-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             background: linear-gradient(135deg, rgba(0, 102, 204, 0.12) 0%, rgba(0, 79, 163, 0.12) 100%);
             display: flex;
             align-items: center;
             justify-content: center;
             color: #0066CC;
-            font-size: 1.4rem;
+            font-size: 1.15rem;
         }
 
-        .role-card.selected .role-icon {
+        .role-card-secondary.selected .role-icon {
             background: linear-gradient(135deg, #0066CC 0%, #004FA3 100%);
             color: #FFFFFF;
         }
 
-        .role-name {
-            font-size: 0.92rem;
+        .role-card-secondary .role-name {
+            font-size: 0.78rem;
             font-weight: 600;
             color: #0A2540;
             line-height: 1.25;
         }
 
-        .role-desc {
-            font-size: 0.72rem;
+        .role-card-secondary .role-desc {
+            font-size: 0.65rem;
             color: #64748B;
             line-height: 1.35;
-            margin-top: 2px;
         }
 
         .validation-error {
@@ -257,9 +384,7 @@
         }
 
         .btn-icon-left { left: 22px; }
-
         .btn-icon-right { right: 22px; }
-
         .btn-label { line-height: 1; }
 
         .skip-link {
@@ -268,20 +393,26 @@
             font-size: 0.9rem;
         }
 
-        .skip-link a {
-            color: #6B7280;
+        .skip-link button {
+            background: none;
+            border: none;
+            color: #0066CC;
             text-decoration: none;
-            font-weight: 500;
+            font-weight: 600;
+            font-family: inherit;
+            font-size: inherit;
+            cursor: pointer;
+            padding: 0;
         }
 
-        .skip-link a:hover { color: #0066CC; }
+        .skip-link button:hover { text-decoration: underline; }
 
         @@media (max-width: 380px) {
-            .roles-grid { gap: 8px; }
-            .role-card { padding: 14px 8px; min-height: 110px; }
-            .role-icon { width: 44px; height: 44px; font-size: 1.2rem; }
-            .role-name { font-size: 0.82rem; }
-            .smart-home-logo { width: 95px; }
+            .roles-secondary { gap: 6px; }
+            .role-card-secondary { padding: 12px 6px; min-height: 108px; }
+            .role-card-secondary .role-icon { width: 38px; height: 38px; font-size: 1rem; }
+            .role-card-secondary .role-name { font-size: 0.72rem; }
+            .role-card-secondary .role-desc { font-size: 0.6rem; }
             .form-card { padding: 18px 14px; }
         }
     </style>
@@ -309,53 +440,67 @@
         </div>
 
         <div class="brand-section">
-            <h1 class="brand-title">Select your role</h1>
+            <h1 class="brand-title">Create your profile</h1>
             <p class="brand-tagline">
-                Choose the profile that best <span class="highlight">matches you</span>.
+                Start with your personal profile. You can add or edit your home, address, or role later inside INDOR.
             </p>
         </div>
 
         <div class="form-card">
             <form asp-controller="Account" asp-action="SelectRole" method="post" id="roleForm">
+                @Html.AntiForgeryToken()
                 <input type="hidden" asp-for="UserId" />
-                <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" />
+                <input type="hidden" asp-for="SelectedRole" id="selectedRoleInput" value="Propietario" />
 
                 <div asp-validation-summary="ModelOnly" class="validation-error"></div>
 
-                <div class="roles-grid">
-                    <div class="role-card" data-role="Realtor" onclick="selectRole(this)">
+                <div class="role-card-primary selected" data-role="Propietario" onclick="selectRole(this)" role="button" tabindex="0">
+                    <div class="role-icon"><i class="fas fa-user"></i></div>
+                    <div class="role-primary-body">
+                        <div class="role-primary-title">Personal Profile</div>
+                        <div class="role-primary-subtitle">Neighbor / Personal Profile</div>
+                        <p class="role-primary-desc">
+                            For anyone joining INDOR—whether you own a home, rent, or are just getting started.
+                            <strong>Add your address or home later.</strong>
+                        </p>
+                    </div>
+                    <span class="role-recommended"><i class="fas fa-star"></i> Recommended</span>
+                    <span class="role-check" aria-hidden="true"><i class="fas fa-check"></i></span>
+                </div>
+
+                <div class="roles-divider">
+                    <i class="fas fa-shield-halved"></i>
+                    <span>You can change or expand your role later.</span>
+                </div>
+
+                <div class="roles-secondary">
+                    <div class="role-card-secondary" data-role="Realtor" onclick="selectRole(this)" role="button" tabindex="0">
                         <div class="role-icon"><i class="fas fa-user-tie"></i></div>
                         <div class="role-name">Realtor</div>
                         <div class="role-desc">Manage client properties and transactions.</div>
                     </div>
 
-                    <div class="role-card" data-role="Propietario" onclick="selectRole(this)">
-                        <div class="role-icon"><i class="fas fa-house"></i></div>
-                        <div class="role-name">Property Owner</div>
-                        <div class="role-desc">Manage your primary residence.</div>
-                    </div>
-
-                    <div class="role-card" data-role="AdministradorPropiedades" onclick="selectRole(this)">
+                    <div class="role-card-secondary" data-role="AdministradorPropiedades" onclick="selectRole(this)" role="button" tabindex="0">
                         <div class="role-icon"><i class="fas fa-building"></i></div>
                         <div class="role-name">Multi-Property Owner</div>
-                        <div class="role-desc">Airbnb, rentals &amp; multiple homes.</div>
+                        <div class="role-desc">Manage Airbnbs, rentals &amp; multiple homes.</div>
                     </div>
 
-                    <div class="role-card" data-role="ProveedorServicios" onclick="selectRole(this)">
+                    <div class="role-card-secondary" data-role="ProveedorServicios" onclick="selectRole(this)" role="button" tabindex="0">
                         <div class="role-icon"><i class="fas fa-tools"></i></div>
                         <div class="role-name">Service Provider</div>
                         <div class="role-desc">Manage services and maintenance work.</div>
                     </div>
                 </div>
 
-                <button type="submit" class="btn btn-primary" id="continueBtn" disabled>
+                <button type="submit" class="btn btn-primary" id="continueBtn">
                     <i class="fas fa-circle-check btn-icon btn-icon-left"></i>
                     <span class="btn-label">Continue</span>
                     <i class="fas fa-chevron-right btn-icon btn-icon-right"></i>
                 </button>
 
                 <div class="skip-link">
-                    <a href="#" onclick="skipRole(event)">Skip for now</a>
+                    <button type="submit" name="skipLater" value="true">I'll choose later</button>
                 </div>
             </form>
         </div>
@@ -363,23 +508,22 @@
 
     <script>
         function selectRole(card) {
-            document.querySelectorAll('.role-card').forEach(c => c.classList.remove('selected'));
+            document.querySelectorAll('.role-card-primary, .role-card-secondary').forEach(c => c.classList.remove('selected'));
             card.classList.add('selected');
-            const role = card.getAttribute('data-role');
-            document.getElementById('selectedRoleInput').value = role;
-            document.getElementById('continueBtn').disabled = false;
-        }
-
-        function skipRole(e) {
-            e.preventDefault();
-            window.location.href = '@Url.Action("Index", "Home")';
+            document.getElementById('selectedRoleInput').value = card.getAttribute('data-role');
         }
 
         document.getElementById('roleForm').addEventListener('submit', function (e) {
-            const selectedRole = document.getElementById('selectedRoleInput').value;
+            var skipBtn = e.submitter && e.submitter.name === 'skipLater';
+            if (skipBtn) {
+                document.getElementById('selectedRoleInput').value = 'Propietario';
+                return;
+            }
+
+            var selectedRole = document.getElementById('selectedRoleInput').value;
             if (!selectedRole) {
                 e.preventDefault();
-                alert('Please select a role before continuing.');
+                alert('Please select a profile before continuing.');
             }
         });
     </script>

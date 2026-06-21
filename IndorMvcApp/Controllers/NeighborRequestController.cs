@@ -126,7 +126,12 @@ public class NeighborRequestController(
     public async Task<IActionResult> Preferences(int propiedadId, CancellationToken cancellationToken)
     {
         var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
-        if (draft == null || string.IsNullOrWhiteSpace(draft.Title))
+        if (draft == null)
+        {
+            return RedirectToAction(nameof(Category), new { propiedadId });
+        }
+
+        if (draft.EditingRequestId is null && string.IsNullOrWhiteSpace(draft.Title))
         {
             return RedirectToAction(nameof(Describe), new { propiedadId });
         }
@@ -145,9 +150,19 @@ public class NeighborRequestController(
         }
 
         draft.TimelineCode = NormalizeTimeline(model.TimelineCode);
-        draft.AudienceCode = NormalizeAudience(model.AudienceCode);
+        if (!model.IsEditMode)
+        {
+            draft.AudienceCode = NormalizeAudience(model.AudienceCode);
+        }
+
         draft.BudgetAmount = model.BudgetAmount is > 0 ? model.BudgetAmount : null;
         wizardService.SaveDraft(HttpContext.Session, draft);
+
+        var userId = userManager.GetUserId(User);
+        if (userId != null)
+        {
+            await wizardService.PersistPreferencesAsync(userId, draft, cancellationToken);
+        }
 
         return RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId });
     }
@@ -156,7 +171,12 @@ public class NeighborRequestController(
     public async Task<IActionResult> Review(int propiedadId, CancellationToken cancellationToken)
     {
         var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
-        if (draft == null || string.IsNullOrWhiteSpace(draft.Title))
+        if (draft == null)
+        {
+            return RedirectToAction(nameof(Category), new { propiedadId });
+        }
+
+        if (draft.EditingRequestId is null && string.IsNullOrWhiteSpace(draft.Title))
         {
             return RedirectToAction(nameof(Describe), new { propiedadId });
         }
@@ -190,7 +210,15 @@ public class NeighborRequestController(
             return RedirectToAction(nameof(Review), new { propiedadId });
         }
 
+        var editingRequestId = draft.EditingRequestId;
         wizardService.ClearDraft(HttpContext.Session);
+
+        if (editingRequestId is > 0)
+        {
+            TempData["NeighborRequestSaved"] = "Your request was updated.";
+            return RedirectToAction(nameof(Detail), new { id = editingRequestId.Value });
+        }
+
         return RedirectToAction(nameof(Success), new { id = requestId });
     }
 
@@ -247,6 +275,113 @@ public class NeighborRequestController(
         return vm == null ? RedirectToAction("Index", "Home") : View(vm);
     }
 
+    [HttpGet]
+    public async Task<IActionResult> Offers(int id, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var vm = await wizardService.BuildOffersListAsync(userId, id, Url, cancellationToken);
+        return vm == null ? RedirectToAction("Index", "Home") : View(vm);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Edit(int id, string? step, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var propiedadId = await wizardService.LoadRequestForEditAsync(userId, id, HttpContext.Session, cancellationToken);
+
+        if (string.Equals(step, "providers", StringComparison.OrdinalIgnoreCase) && propiedadId != null)
+        {
+            return RedirectToAction(nameof(Preferences), new { propiedadId });
+        }
+
+        var vm = await wizardService.BuildEditDetailsStepAsync(userId, id, Url, cancellationToken);
+        return vm == null ? RedirectToAction("Index", "Home") : View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(NeighborRequestEditDetailsStepViewModel model, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        if (!ModelState.IsValid || model.RequestId is not > 0)
+        {
+            var invalidVm = await wizardService.BuildEditDetailsStepAsync(userId, model.RequestId ?? 0, Url, cancellationToken);
+            if (invalidVm != null)
+            {
+                invalidVm.CategoryId = model.CategoryId;
+                invalidVm.DetailsSummary = model.DetailsSummary;
+                invalidVm.Description = model.Description;
+                invalidVm.NeededByDate = model.NeededByDate;
+                invalidVm.TimeWindowPreset = model.TimeWindowPreset;
+                invalidVm.AudienceCode = model.AudienceCode;
+            }
+
+            return View(invalidVm);
+        }
+
+        var saved = await wizardService.SaveEditDetailsStepAsync(userId, model, HttpContext.Session, cancellationToken);
+        if (!saved)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return RedirectToAction(nameof(Preferences), new { propiedadId = model.PropiedadId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Cancel(int id, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var vm = await wizardService.BuildCancelStepAsync(userId, id, Url, cancellationToken);
+        return vm == null ? RedirectToAction("Index", "Home") : View(vm);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Cancel(NeighborRequestCancelViewModel model, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var propiedadId = await wizardService.CancelRequestAsync(
+            userId,
+            model.Id,
+            model.CancelReasonCode,
+            model.CancelNote,
+            cancellationToken);
+
+        if (propiedadId == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        TempData["NeighborRequestSaved"] = "Your request was cancelled.";
+        return RedirectToAction(nameof(Mine), new { propiedadId });
+    }
+
     private async Task<NeighborRequestDraftState?> RequireDraftAsync(
         int propiedadId,
         bool minCategory,
@@ -291,7 +426,10 @@ public class NeighborRequestController(
         };
 
     private static string NormalizeAudience(string? code) =>
-        code == NeighborRequestAudienceCodes.CertifiedProviders
-            ? NeighborRequestAudienceCodes.CertifiedProviders
-            : NeighborRequestAudienceCodes.Neighbors;
+        code?.Trim() switch
+        {
+            NeighborRequestAudienceCodes.CertifiedProviders => NeighborRequestAudienceCodes.CertifiedProviders,
+            NeighborRequestAudienceCodes.Both => NeighborRequestAudienceCodes.Both,
+            _ => NeighborRequestAudienceCodes.Neighbors
+        };
 }

@@ -1,7 +1,20 @@
 @model IndorMvcApp.ViewModels.HomeownerEditProfileViewModel
+@using IndorMvcApp.Models
 @{
     ViewData["Title"] = "Edit Profile";
-    ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+    ViewData["Subtitulo"] = "Update your details and connect your home with AI.";
+    var homeJustEnriched = TempData["HomeEnriched"] as bool? == true;
+}
+
+<link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
+
+@if (TempData["PerfilOk"] is string okMessage)
+{
+    <div class="pf-alert pf-alert--success"><i class="fas fa-circle-check"></i> @okMessage</div>
+}
+@if (TempData["PerfilError"] is string errorMessage)
+{
+    <div class="pf-alert pf-alert--error"><i class="fas fa-circle-exclamation"></i> @errorMessage</div>
 }
 
 <form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form">
@@ -65,26 +78,149 @@
     </footer>
 </form>
 
+<section class="pf-edit-home-card @(Model.HasEnrichedData ? "is-enriched" : "") @(homeJustEnriched ? "is-celebrate" : "")" id="home">
+    <div class="pf-home-card-glow" aria-hidden="true"></div>
+    <div class="pf-home-card-head">
+        <div class="pf-home-card-icon"><i class="fas fa-house-chimney"></i></div>
+        <div>
+            <h3>Your home</h3>
+            <p>Add your address and let AI build your House Facts profile — beds, baths, systems, maintenance, and more.</p>
+        </div>
+    </div>
+
+    @if (Model.HasEnrichedData)
+    {
+        <div class="pf-home-enriched-banner">
+            <span class="pf-home-ai-badge"><i class="fas fa-wand-magic-sparkles"></i> AI connected</span>
+            @if (!string.IsNullOrWhiteSpace(Model.HomeAddress))
+            {
+                <strong>@Model.HomeAddress</strong>
+            }
+            <div class="pf-home-stat-chips">
+                @if (Model.YearBuilt is > 0)
+                {
+                    <span><i class="fas fa-calendar"></i> Built @Model.YearBuilt</span>
+                }
+                @if (Model.LivingArea is > 0)
+                {
+                    <span><i class="fas fa-ruler-combined"></i> @(Model.LivingArea.Value.ToString("N0")) sq ft</span>
+                }
+                @if (Model.Bedrooms is > 0)
+                {
+                    <span><i class="fas fa-bed"></i> @Model.Bedrooms bed</span>
+                }
+                @if (Model.Bathrooms is > 0)
+                {
+                    <span><i class="fas fa-bath"></i> @Model.Bathrooms bath</span>
+                }
+                @if (Model.HouseFactFieldCount > 0)
+                {
+                    <span><i class="fas fa-database"></i> @Model.HouseFactFieldCount facts</span>
+                }
+            </div>
+            @if (Model.PropiedadId is > 0)
+            {
+                <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" class="pf-home-view-link">
+                    View full House Facts <i class="fas fa-arrow-right"></i>
+                </a>
+            }
+        </div>
+    }
+    else if (Model.HasHome)
+    {
+        <div class="pf-home-pending-banner">
+            <i class="fas fa-location-dot"></i>
+            <div>
+                <strong>@Model.HomeAddress</strong>
+                <small>Run AI research below to unlock House Facts and maintenance insights.</small>
+            </div>
+        </div>
+    }
+
+    <form asp-controller="Perfil" asp-action="EnriquecerPropiedad" method="post"
+          class="pf-home-address-form" data-property-research-loading autocomplete="on">
+        @Html.AntiForgeryToken()
+
+        <label class="pf-field">
+            <span>Street address</span>
+            <div class="pf-home-search">
+                <i class="fas fa-magnifying-glass"></i>
+                <input asp-for="AddressForm.StreetAddress" placeholder="House number and street name" autocomplete="address-line1" />
+            </div>
+        </label>
+
+        <div class="pf-row">
+            <label class="pf-field">
+                <span>City</span>
+                <input asp-for="AddressForm.City" placeholder="City" autocomplete="address-level2" />
+            </label>
+            <label class="pf-field">
+                <span>State</span>
+                <select asp-for="AddressForm.State" autocomplete="address-level1">
+                    <option value="">State</option>
+                    @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
+                    {
+                        <option value="@stateCode">@stateCode</option>
+                    }
+                </select>
+            </label>
+        </div>
+
+        <div class="pf-row">
+            <label class="pf-field">
+                <span>ZIP code</span>
+                <input asp-for="AddressForm.ZipCode" placeholder="ZIP" autocomplete="postal-code" inputmode="numeric" maxlength="10" />
+            </label>
+            <label class="pf-field">
+                <span>Unit <small class="pf-optional">(optional)</small></span>
+                <input asp-for="AddressForm.Unit" placeholder="Apt, suite, unit" autocomplete="address-line2" />
+            </label>
+        </div>
+
+        <p class="pf-home-hint">
+            <i class="fas fa-circle-info"></i>
+            OpenAI searches public records and listing sites. This can take up to 90 seconds — keep this screen open.
+        </p>
+
+        <button type="submit" class="pf-home-ai-btn">
+            <span class="pf-home-ai-btn-icon"><i class="fas fa-wand-magic-sparkles"></i></span>
+            <span class="pf-home-ai-btn-copy">
+                <strong>@(Model.HasEnrichedData ? "Refresh my home with AI" : "Discover my home with AI")</strong>
+                <small>Build House Facts, systems profile, and maintenance plan</small>
+            </span>
+            <i class="fas fa-arrow-right pf-home-ai-btn-arrow"></i>
+        </button>
+    </form>
+</section>
+
+@await Html.PartialAsync("_PropertyResearchLoading")
+
 @section Scripts {
     <script>
         (function () {
             var input = document.getElementById('fotoInput');
             var previewImg = document.getElementById('photoPreviewImg');
             var previewInitial = document.getElementById('photoPreviewInitial');
-            if (!input || !previewImg) return;
+            if (input && previewImg) {
+                input.addEventListener('change', function () {
+                    var file = input.files && input.files[0];
+                    if (!file) return;
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        previewImg.src = e.target.result;
+                        previewImg.hidden = false;
+                        if (previewInitial) previewInitial.hidden = true;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
 
-            input.addEventListener('change', function () {
-                var file = input.files && input.files[0];
-                if (!file) return;
-
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    previewImg.src = e.target.result;
-                    previewImg.hidden = false;
-                    if (previewInitial) previewInitial.hidden = true;
-                };
-                reader.readAsDataURL(file);
-            });
+            if (window.location.hash === '#home') {
+                var home = document.getElementById('home');
+                if (home) {
+                    setTimeout(function () { home.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 120);
+                }
+            }
         })();
     </script>
 }

@@ -1,16 +1,21 @@
 @model IndorMvcApp.ViewModels.NeighborRequestPreferencesStepViewModel
 @{
-    ViewData["Title"] = "Post a Request";
+    ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Post a Request";
 }
 
-<div class="nr-wizard-heading">
-    <h1>Preferences</h1>
-    <p>Tell us how you'd like help</p>
-</div>
+@if (!Model.IsEditMode)
+{
+    <div class="nr-wizard-heading">
+        <h1>Preferences</h1>
+        <p>Tell us how you'd like help</p>
+    </div>
+}
 
 <form asp-action="Preferences" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
+    <input type="hidden" asp-for="IsEditMode" />
+    <input type="hidden" asp-for="RequestId" />
 
     <div class="nr-pref-card">
         <div class="nr-section-title">
@@ -32,6 +37,8 @@
         </div>
     </div>
 
+    @if (!Model.IsEditMode)
+    {
     <div class="nr-pref-card">
         <div class="nr-section-title">
             <span class="nr-section-icon"><i class="fas fa-users"></i></span>
@@ -55,6 +62,7 @@
             }
         </div>
     </div>
+    }
 
     <button type="button" class="nr-budget-row" id="nrBudgetToggle">
         <span class="nr-audience-icon"><i class="fas fa-dollar-sign"></i></span>
@@ -68,7 +76,7 @@
         </div>
     </div>
 
-    <button type="submit" class="nr-btn-primary">Next</button>
+    <button type="submit" class="nr-btn-primary">@(Model.IsEditMode ? "Continue" : "Next")</button>
 </form>
 
 @section Scripts {

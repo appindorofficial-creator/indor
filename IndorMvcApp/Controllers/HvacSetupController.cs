@@ -35,7 +35,7 @@ public class HvacSetupController : Controller
     public async Task<IActionResult> Add(int? propiedadId)
     {
         var propiedad = await LoadPropertyAsync(propiedadId);
-        if (propiedad == null) return RedirectToAction("AddProperty", "Propietario");
+        if (propiedad == null) return Redirect(Url.Action("EditarPerfil", "Perfil") + "#home");
 
         var existing = await _db.PropiedadHvacSistemas.FirstOrDefaultAsync(h => h.PropiedadId == propiedad.Id);
         if (existing != null)

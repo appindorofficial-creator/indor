@@ -1,0 +1,39 @@
+@model IndorMvcApp.ViewModels.NeighborRequestOfferItemViewModel
+<article class="nr-detail-neighbor-offer">
+    <div class="nr-detail-neighbor-offer-top">
+        @if (!string.IsNullOrWhiteSpace(Model.OffererPhotoUrl))
+        {
+            <img class="nr-detail-neighbor-offer-avatar" src="@Url.Content("~" + Model.OffererPhotoUrl)" alt="" />
+        }
+        else
+        {
+            <span class="nr-detail-neighbor-offer-avatar nr-detail-neighbor-offer-avatar--icon" aria-hidden="true">
+                <i class="fas @Model.AvatarIconClass"></i>
+            </span>
+        }
+        <div class="nr-detail-neighbor-offer-body">
+            <div class="nr-detail-neighbor-offer-name-row">
+                <strong>@Model.OffererName</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.RatingLabel))
+                {
+                    <span class="nr-detail-rating"><i class="fas fa-star" aria-hidden="true"></i>@Model.RatingLabel</span>
+                }
+            </div>
+            <span class="nr-detail-neighbor-offer-role">@Model.RoleLabel</span>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.PriceLabel))
+        {
+            <div class="nr-detail-neighbor-offer-price">@Model.PriceLabel</div>
+        }
+    </div>
+    <div class="nr-detail-neighbor-offer-actions">
+        <a href="@Model.ViewUrl" class="nr-detail-offer-action">
+            <i class="far fa-eye" aria-hidden="true"></i>
+            <span>View</span>
+        </a>
+        <a href="@Model.MessageUrl" class="nr-detail-offer-action">
+            <i class="far fa-comment" aria-hidden="true"></i>
+            <span>Message</span>
+        </a>
+    </div>
+</article>

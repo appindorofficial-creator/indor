@@ -18,106 +18,40 @@ public class PropietarioController : Controller
 {
     private const string OnboardingPropertySessionKey = "OnboardingPropertyInfo";
     private const string OnboardingPropertyAttomSessionKey = "OnboardingPropertyAttomJson";
-    private static readonly TimeSpan AddressLookupTimeout = TimeSpan.FromMinutes(3);
-    private static readonly TimeSpan MaintenanceTimeout = TimeSpan.FromSeconds(90);
     private static readonly JsonSerializerOptions OnboardingJsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
     };
 
-    private readonly IAddressLookupService _addressLookupService;
-    private readonly IOpenAiMaintenanceRecommendationService _maintenanceRecommendationService;
+    private readonly IHomeownerPropertyService _homeownerPropertyService;
     private readonly ILogger<PropietarioController> _logger;
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
 
     public PropietarioController(
-        IAddressLookupService addressLookupService,
-        IOpenAiMaintenanceRecommendationService maintenanceRecommendationService,
+        IHomeownerPropertyService homeownerPropertyService,
         ILogger<PropietarioController> logger,
         AppDbContext db,
         UserManager<ApplicationUser> userManager)
     {
-        _addressLookupService = addressLookupService;
-        _maintenanceRecommendationService = maintenanceRecommendationService;
+        _homeownerPropertyService = homeownerPropertyService;
         _logger = logger;
         _db = db;
         _userManager = userManager;
     }
 
     [HttpGet]
-    public async Task<IActionResult> AddProperty()
+    public IActionResult AddProperty()
     {
-        if (await UserHasPropertyAsync())
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        ViewBag.OnboardingStep = 3;
-        ViewBag.OnboardingTitle = "Your property";
-        ViewBag.OnboardingBackUrl = Url.Action("SelectRole", "Account", new { userId = _userManager.GetUserId(User) });
-        ViewBag.OnboardingShowBack = false;
-        return View(new AddPropertyViewModel());
+        return Redirect(Url.Action("EditarPerfil", "Perfil") + "#home");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [RequestTimeout("OnboardingAddressLookup")]
-    public async Task<IActionResult> AddProperty(AddPropertyViewModel model)
+    public IActionResult AddProperty(AddPropertyViewModel model)
     {
-        if (await UserHasPropertyAsync())
-        {
-            return RedirectToAction("Index", "Home");
-        }
-
-        if (!ModelState.IsValid)
-        {
-            SetPropertyStepViewBag(showBack: false);
-            return View(model);
-        }
-
-        try
-        {
-            var lookupAddress = model.BuildLookupAddress();
-            _logger.LogInformation("Looking up address: {Address}", lookupAddress);
-
-            var propertyInfo = await _addressLookupService
-                .GetPropertyInfoAsync(lookupAddress)
-                .WaitAsync(AddressLookupTimeout, HttpContext.RequestAborted);
-
-            if (propertyInfo == null)
-            {
-                ModelState.AddModelError("", "No information was found for this address. Try a more specific address.");
-                SetPropertyStepViewBag(showBack: false);
-                return View(model);
-            }
-
-            ApplyUserAddressFields(propertyInfo, model);
-            SaveOnboardingProperty(propertyInfo);
-            return RedirectToAction(nameof(PropertyDetails));
-        }
-        catch (TimeoutException)
-        {
-            _logger.LogWarning("Address lookup timed out for {Address}", model.BuildLookupAddress());
-            ModelState.AddModelError("", "Address lookup is taking longer than expected. Please try again in a moment.");
-            SetPropertyStepViewBag(showBack: false);
-            return View(model);
-        }
-        catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested)
-        {
-            _logger.LogWarning("Address lookup cancelled for {Address}", model.BuildLookupAddress());
-            ModelState.AddModelError("", "Address lookup was interrupted. Please try again.");
-            SetPropertyStepViewBag(showBack: false);
-            return View(model);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Unexpected error looking up address");
-            ModelState.AddModelError("", DescribeAddressLookupError(ex));
-            SetPropertyStepViewBag(showBack: false);
-            return View(model);
-        }
+        return Redirect(Url.Action("EditarPerfil", "Perfil") + "#home");
     }
 
     [HttpGet]
@@ -208,7 +142,7 @@ public class PropietarioController : Controller
 
         try
         {
-            var propiedadId = await SavePropertyAsync(propertyInfo, userId);
+            var propiedadId = await _homeownerPropertyService.SaveOrUpdatePropertyAsync(propertyInfo, userId);
             ClearOnboardingProperty();
             TempData["OnboardingComplete"] = true;
             return RedirectToAction(nameof(HomeReady), new { id = propiedadId });
@@ -239,7 +173,7 @@ public class PropietarioController : Controller
 
         if (propertyInfo.MaintenanceRecommendations == null)
         {
-            propertyInfo.MaintenanceRecommendations = await TryGenerateMaintenanceAsync(propertyInfo);
+            propertyInfo.MaintenanceRecommendations = await _homeownerPropertyService.TryGenerateMaintenanceAsync(propertyInfo);
             SaveOnboardingProperty(propertyInfo);
         }
 
@@ -285,7 +219,8 @@ public class PropietarioController : Controller
 
         try
         {
-            await SavePropertyAsync(fullModel, userId);
+            var existing = await _homeownerPropertyService.GetPrimaryPropertyAsync(userId);
+            await _homeownerPropertyService.SaveOrUpdatePropertyAsync(fullModel, userId, existing?.Id);
             ClearOnboardingProperty();
             TempData["PropertySaved"] = "Property saved successfully.";
             return RedirectToAction("Index", "Home");
@@ -353,149 +288,6 @@ public class PropietarioController : Controller
         HttpContext.Session.Remove(OnboardingPropertyAttomSessionKey);
     }
 
-    private static void ApplyUserAddressFields(PropertyInfoViewModel propertyInfo, AddPropertyViewModel model)
-    {
-        if (!string.IsNullOrWhiteSpace(model.Unit))
-        {
-            propertyInfo.Unit = model.Unit.Trim();
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyInfo.Street))
-        {
-            propertyInfo.Street = model.StreetAddress.Trim();
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyInfo.City))
-        {
-            propertyInfo.City = model.City.Trim();
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyInfo.State))
-        {
-            propertyInfo.State = model.State.Trim().ToUpperInvariant();
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyInfo.PostalCode))
-        {
-            propertyInfo.PostalCode = model.ZipCode.Trim();
-        }
-
-        propertyInfo.Country ??= "US";
-
-        if (string.IsNullOrWhiteSpace(propertyInfo.FormattedAddress))
-        {
-            propertyInfo.FormattedAddress = model.BuildLookupAddress();
-        }
-    }
-
-    private async Task<PropertyMaintenancePlanViewModel> TryGenerateMaintenanceAsync(
-        PropertyInfoViewModel propertyInfo)
-    {
-        try
-        {
-            using var cts = CancellationTokenSource.CreateLinkedTokenSource(HttpContext.RequestAborted);
-            cts.CancelAfter(MaintenanceTimeout);
-
-            var plan = await _maintenanceRecommendationService.GenerateAsync(propertyInfo, cts.Token);
-            if (PropertyMaintenanceDisplayService.IsRealAiPlan(plan))
-            {
-                _logger.LogInformation(
-                    "OpenAI maintenance plan generated for {Address} ({Count} items)",
-                    propertyInfo.FormattedAddress,
-                    plan.Items.Count);
-                return plan;
-            }
-
-            _logger.LogWarning(
-                "OpenAI maintenance unavailable for {Address}: {Reason}",
-                propertyInfo.FormattedAddress,
-                plan.Summary);
-            return plan;
-        }
-        catch (Exception ex) when (ex is OperationCanceledException or TimeoutException)
-        {
-            _logger.LogWarning(ex, "Maintenance recommendation timed out for {Address}", propertyInfo.FormattedAddress);
-            return BuildUnavailableMaintenancePlan(
-                "Maintenance suggestions are still loading. You can continue and review them later.");
-        }
-        catch (Exception ex)
-        {
-            _logger.LogWarning(ex, "Maintenance recommendation failed for {Address}", propertyInfo.FormattedAddress);
-            return BuildUnavailableMaintenancePlan(
-                "We couldn't generate maintenance suggestions right now. You can continue onboarding.");
-        }
-    }
-
-    private static PropertyMaintenancePlanViewModel BuildUnavailableMaintenancePlan(string message) =>
-        new()
-        {
-            Summary = message,
-            DataSource = "Unavailable",
-            IsAiGenerated = false,
-            GeneratedUtc = DateTime.UtcNow,
-            Items = []
-        };
-
-    private static string DescribeAddressLookupError(Exception ex) =>
-        ex switch
-        {
-            InvalidOperationException => ex.Message,
-            HttpRequestException => "We couldn't reach the address lookup service. Check your connection and try again.",
-            _ => "An error occurred while processing the address. Please try again."
-        };
-
-    private async Task<bool> UserHasPropertyAsync()
-    {
-        var userId = _userManager.GetUserId(User);
-        if (string.IsNullOrEmpty(userId)) return false;
-        return await _db.Propiedades.AnyAsync(p => p.UserId == userId && p.Activo);
-    }
-
-    private async Task<int> SavePropertyAsync(PropertyInfoViewModel fullModel, string userId)
-    {
-        var jsonOptions = new JsonSerializerOptions
-        {
-            WriteIndented = false,
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull
-        };
-
-        var attomRawJson = fullModel.AttomRawJson;
-        fullModel.AttomRawJson = null;
-        var jsonRaw = JsonSerializer.Serialize(fullModel, jsonOptions);
-        var hasAttomPayload = !string.IsNullOrWhiteSpace(attomRawJson);
-
-        var propiedad = new Propiedad
-        {
-            Direccion = FormatAddressWithUnit(fullModel.FormattedAddress, fullModel.Unit),
-            DatosJson = jsonRaw,
-            UserId = userId,
-            FechaCreacion = DateTime.Now,
-            Activo = true,
-            AttomPropertyId = fullModel.AttomPropertyId,
-            AttomRawJson = attomRawJson,
-            AttomLastSyncUtc = hasAttomPayload ? DateTime.UtcNow : null,
-            AttomSyncStatus = IsSuccessfulEnrichment(fullModel.DataSource) || fullModel.AttomPropertyId.HasValue
-                ? "Success"
-                : (hasAttomPayload ? "Partial" : "Estimated"),
-            AttomSyncError = hasAttomPayload || IsSuccessfulEnrichment(fullModel.DataSource)
-                ? null
-                : "Property enrichment not available"
-        };
-
-        if (PropertyMaintenanceDisplayService.IsRealAiPlan(fullModel.MaintenanceRecommendations))
-        {
-            var maintenancePlan = fullModel.MaintenanceRecommendations!;
-            maintenancePlan.GeneratedUtc ??= DateTime.UtcNow;
-            propiedad.MantenimientoRecomendadoJson = JsonSerializer.Serialize(maintenancePlan, jsonOptions);
-            propiedad.MantenimientoRecomendadoUtc = maintenancePlan.GeneratedUtc;
-        }
-
-        _db.Propiedades.Add(propiedad);
-        await _db.SaveChangesAsync();
-        _logger.LogInformation("Property saved (Id={Id}) for user {UserId}", propiedad.Id, userId);
-        return propiedad.Id;
-    }
-
     private PropertyInfoViewModel MergeEditAddressModel(PropertyInfoViewModel model)
     {
         var originalJson = Request.Form["OriginalJson"].ToString();
@@ -557,28 +349,5 @@ public class PropietarioController : Controller
         }
 
         return devices;
-    }
-
-    private static bool IsSuccessfulEnrichment(string? dataSource)
-    {
-        if (string.IsNullOrWhiteSpace(dataSource)) return false;
-        return dataSource.Contains("AI", StringComparison.OrdinalIgnoreCase)
-            || dataSource.Contains("ATTOM", StringComparison.OrdinalIgnoreCase);
-    }
-
-    private static string FormatAddressWithUnit(string address, string? unit)
-    {
-        if (string.IsNullOrWhiteSpace(unit)) return address;
-        return $"{address}, {unit.Trim()}";
-    }
-
-    private void SetPropertyStepViewBag(bool showBack)
-    {
-        ViewBag.OnboardingStep = 3;
-        ViewBag.OnboardingTitle = "Your property";
-        ViewBag.OnboardingBackUrl = showBack
-            ? Url.Action(nameof(AddProperty))
-            : Url.Action("SelectRole", "Account", new { userId = _userManager.GetUserId(User) });
-        ViewBag.OnboardingShowBack = showBack;
     }
 }
