@@ -8,6 +8,11 @@ public static class HouseFactOrganizationPrompt
         Do not research, invent new facts, invent defects, or exaggerate risk.
         Return ONLY valid JSON (no markdown fences).
         Organize exactly what was provided in the research input.
+
+        NUMERIC FIDELITY — STRICT:
+        * Copy every numeric value (beds, baths, livingArea, lotSizeAcres, lotSizeSqFt, yearBuilt, sale price/date, assessed/estimated value, taxes, parcel number) EXACTLY as it appears in the research input. Do NOT round, average, convert, or alter digits.
+        * If the research input does NOT contain a given numeric field, leave it OUT of propertyDetails — never substitute a default, typical, or rounded number (e.g. 1500 sq ft, 0.25 acres).
+        * Do not move a value into a different field (e.g. never put lot size into living area).
         """;
 
     public const string UserPromptTemplate = """
@@ -73,11 +78,11 @@ public static class HouseFactOrganizationPrompt
               "tableRows": [{"columns": {"colName":"value"}}]
             }
           ],
-          "propertyDetails": { "yearBuilt": 0, "bedrooms": 0, "bathrooms": 0, "livingArea": 0, "lotSizeAcres": 0, "lotSizeSqFt": 0, "...": "copy ALL numeric facts from research here" },
+          "propertyDetails": { "yearBuilt": 0, "bedrooms": 0, "bathrooms": 0, "livingArea": 0, "lotSizeAcres": 0, "lotSizeSqFt": 0, "...": "copy ALL numeric facts from research here, verbatim, omitting any not present in research" },
           "utilityProviders": { electric, water, gas, sewer, internet[], cableTv[] }
         }
 
-        The propertyDetails object is mandatory. Extract beds, baths, sq ft, lot size, year built, taxes, and values from the research JSON and copy them into propertyDetails even if they already appear in section fields.
+        The propertyDetails object is mandatory. Extract beds, baths, sq ft, lot size, year built, taxes, and values from the research JSON and copy them VERBATIM into propertyDetails even if they already appear in section fields. Omit (do not zero-fill or guess) any numeric field absent from the research input.
         Include all 13 sections in the sections array. Use fields/checklistItems/tableRows as appropriate per section kind.
         """;
 

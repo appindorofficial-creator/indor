@@ -202,58 +202,61 @@ public static partial class PropertyEnrichmentMapper
                 details.PropertyType = CoalesceString(details.PropertyType, text);
                 break;
             case "yearbuilt" or "yearbuiltdate":
-                details.YearBuilt ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.YearBuilt ??= ConfirmedInt(value, text);
                 break;
             case "yearrenovated" or "yearrenovateddate":
-                details.YearRenovated ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.YearRenovated ??= ConfirmedInt(value, text);
                 break;
             case "yearbuilteffective" or "effectiveyearbuilt":
-                details.YearBuiltEffective ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.YearBuiltEffective ??= ConfirmedInt(value, text);
                 break;
             case "livingarea" or "heatedsquarefootage" or "heatedsqft" or "squarefootage" or "sqft" or "livingsqft" or "livingsize" or "universalsize" or "grosssize" or "bldgsize" or "interiorlivingarea":
-                details.LivingArea ??= ReadInt(value) ?? ParseSqFtFromText(text);
+                details.LivingArea ??= ConfirmedInt(value, text, ParseSqFtFromText(text));
                 break;
             case "lotsizeacres" or "lotacres" or "lotsize1":
-                details.LotSize ??= ReadDecimal(value) ?? ParseDecimalFromText(text);
+                details.LotSize ??= ConfirmedDecimal(value, text);
                 break;
             case "lotsizesqft" or "lotsize2" or "lotsquarefeet":
-                details.LotSizeSqFt ??= ReadInt(value) ?? ParseSqFtFromText(text);
+                details.LotSizeSqFt ??= ConfirmedInt(value, text, ParseSqFtFromText(text));
                 break;
             case "lotsize":
-                ApplyLotSizeValue(details, value, text);
+                if (!LooksEstimated(text))
+                {
+                    ApplyLotSizeValue(details, value, text);
+                }
                 break;
             case "bedrooms" or "beds" or "bed" or "bedroom":
-                details.Bedrooms ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.Bedrooms ??= ConfirmedInt(value, text);
                 break;
             case "bathrooms" or "baths" or "bath" or "bathstotal":
-                details.Bathrooms ??= ReadDecimal(value) ?? ParseDecimalFromText(text);
+                details.Bathrooms ??= ConfirmedDecimal(value, text);
                 break;
             case "bathsfull" or "fullbathrooms" or "fullbaths":
-                details.BathsFull ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.BathsFull ??= ConfirmedInt(value, text);
                 break;
             case "floors" or "stories" or "levels" or "storycount":
-                details.Floors ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.Floors ??= ConfirmedInt(value, text);
                 break;
             case "roomstotal" or "totalrooms" or "rooms":
-                details.RoomsTotal ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.RoomsTotal ??= ConfirmedInt(value, text);
                 break;
             case "lastsaleprice" or "saleprice" or "saleamt":
-                details.LastSalePrice ??= ReadDecimal(value) ?? ParseMoneyFromText(text);
+                details.LastSalePrice ??= PositiveDecimal(ReadDecimal(value) ?? ParseMoneyFromText(text));
                 break;
             case "lastsaledate" or "saledate" or "saletransdate":
                 details.LastSaleDate ??= ReadDate(value) ?? ParseDateFromText(text);
                 break;
             case "estimatedvalue" or "marketvalue" or "assessedvalue" or "zestimate" or "redfinestimate" or "listprice" or "mktttlvalue" or "assdttlvalue":
-                details.EstimatedValue ??= ReadDecimal(value) ?? ParseMoneyFromText(text);
+                details.EstimatedValue ??= PositiveDecimal(ReadDecimal(value) ?? ParseMoneyFromText(text));
                 break;
             case "estimatedvalueyear" or "valuationyear":
-                details.EstimatedValueYear ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.EstimatedValueYear ??= ConfirmedInt(value, text);
                 break;
             case "annualtaxamount" or "taxamount" or "taxamt" or "annualtaxes":
-                details.AnnualTaxAmount ??= ReadDecimal(value) ?? ParseMoneyFromText(text);
+                details.AnnualTaxAmount ??= PositiveDecimal(ReadDecimal(value) ?? ParseMoneyFromText(text));
                 break;
             case "taxyear" or "assessmentyear":
-                details.TaxYear ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.TaxYear ??= ConfirmedInt(value, text);
                 break;
             case "parcelnumber" or "apn" or "parcelid" or "apnparcelid" or "apnorig":
                 details.ParcelNumber = CoalesceString(details.ParcelNumber, text);
@@ -307,10 +310,10 @@ public static partial class PropertyEnrichmentMapper
                 details.GarageType = CoalesceString(details.GarageType, text);
                 break;
             case "basementsqft" or "bsmtsize" or "basementsize":
-                details.BasementSqFt ??= ReadInt(value) ?? ParseSqFtFromText(text);
+                details.BasementSqFt ??= ConfirmedInt(value, text, ParseSqFtFromText(text));
                 break;
             case "fireplaces" or "fireplacecount" or "fplccount":
-                details.Fireplaces ??= ReadInt(value) ?? ParseIntFromText(text);
+                details.Fireplaces ??= ConfirmedInt(value, text);
                 break;
             case "locationaccuracy" or "accuracy":
                 details.LocationAccuracy = CoalesceString(details.LocationAccuracy, text);
@@ -337,6 +340,49 @@ public static partial class PropertyEnrichmentMapper
         ApplyFieldByKey(details, normalized, JsonValue.Create(value));
     }
 
+    private static readonly string[] EstimateMarkers =
+    [
+        "estimated", "estimate", "approx", "approximate", "typical", "typically",
+        "average", "around", "about", "roughly", "circa", "~", "needs verification",
+        "not publicly confirmed", "unknown", "varies", "guess"
+    ];
+
+    private static bool LooksEstimated(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return false;
+        foreach (var marker in EstimateMarkers)
+        {
+            if (text.Contains(marker, StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Returns a confirmed positive integer, or null when the value is missing,
+    // zero/negative, or flagged as an estimate/placeholder.
+    private static int? ConfirmedInt(JsonNode? value, string? text, int? parsedOverride = null)
+    {
+        if (LooksEstimated(text)) return null;
+        var result = parsedOverride ?? ReadInt(value) ?? ParseIntFromText(text);
+        return result is > 0 ? result : null;
+    }
+
+    // Returns a confirmed positive decimal, or null when missing,
+    // zero/negative, or flagged as an estimate/placeholder.
+    private static decimal? ConfirmedDecimal(JsonNode? value, string? text)
+    {
+        if (LooksEstimated(text)) return null;
+        var result = ReadDecimal(value) ?? ParseDecimalFromText(text);
+        return result is > 0 ? result : null;
+    }
+
+    // Drops zero/negative values (e.g. schema 0-fill) but allows estimates,
+    // since market value / tax amounts are legitimately estimated.
+    private static decimal? PositiveDecimal(decimal? value) => value is > 0 ? value : null;
+
     private static void ApplyLotSizeValue(PropertyDetailsInfo details, JsonNode value, string? text)
     {
         var raw = text ?? ReadString(value);
@@ -344,7 +390,8 @@ public static partial class PropertyEnrichmentMapper
 
         if (raw.Contains("acre", StringComparison.OrdinalIgnoreCase))
         {
-            details.LotSize ??= ParseDecimalFromText(raw);
+            var acres = ParseDecimalFromText(raw);
+            if (acres is > 0) details.LotSize ??= acres;
             return;
         }
 
@@ -355,7 +402,8 @@ public static partial class PropertyEnrichmentMapper
             return;
         }
 
-        details.LotSize ??= ReadDecimal(value) ?? ParseDecimalFromText(raw);
+        var fallbackAcres = ReadDecimal(value) ?? ParseDecimalFromText(raw);
+        if (fallbackAcres is > 0) details.LotSize ??= fallbackAcres;
     }
 
     private static void MergeCountyFromIdentity(PropertyInfoViewModel info, JsonNode? identity)

@@ -12,9 +12,16 @@ public static class HouseFactPrompt
         Label estimates with "Estimated:" when not parcel-specific.
         Reserve "Not publicly confirmed — needs verification." ONLY for parcel-specific facts you truly cannot determine.
 
+        NUMERIC ACCURACY — STRICT (this overrides any urge to be complete):
+        * NEVER invent, guess, round, or use "typical"/"average"/placeholder numbers for parcel-specific facts.
+        * The following fields MUST be the EXACT value reported by a named public source for THIS exact address, or be OMITTED entirely: livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, yearBuilt, lastSalePrice, lastSaleDate, estimatedValue, assessedValue, annualTaxAmount, taxYear, parcelNumber.
+        * If you only have a regional/typical guess for any of those fields, OMIT it. Do NOT output round defaults such as 1500 sq ft or 0.25 acres.
+        * Do NOT prefix these numeric fields with "Estimated:" — either give the exact source-backed value or omit the field.
+        * For every numeric value you DO include, record the source name in the matching section so it can be verified.
+
         CRITICAL — propertyDetails object (REQUIRED on every response):
         * ALWAYS include a top-level propertyDetails object.
-        * Copy EVERY numeric fact you find anywhere in your research into propertyDetails: yearBuilt, yearRenovated, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, floors, roomsTotal, lastSalePrice, lastSaleDate, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces.
+        * Copy EVERY numeric fact you CONFIRMED from a named source into propertyDetails: yearBuilt, yearRenovated, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, floors, roomsTotal, lastSalePrice, lastSaleDate, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces.
         * Also copy string facts when found: propertyType, architecturalStyle, parcelNumber, legalDescription, zoning, subdivision, municipality, countyName, heatingType, heatingFuel, coolingType, wallType, parkingType, garageType, buildingCondition, assignedSchool.
         * Use the same numbers in basicPropertyFacts AND propertyDetails — do not leave propertyDetails empty if beds/baths/sq ft appear in listing or assessor data.
         * Include a number ONLY when a named public source supports it (Zillow, Redfin, Realtor.com, county assessor, tax record, MLS).
@@ -27,8 +34,13 @@ public static class HouseFactPrompt
         Collect confirmed public listing and property record data with source names.
         Return ONLY valid JSON (no markdown fences) using the same schema as the research output format below.
         Include source names in mainSourcesUsed and in each section where data was found.
+
+        NUMERIC ACCURACY — STRICT:
+        * Every beds, baths, sq ft (livingArea), lot size, year built, sale price/date, assessed/estimated value, tax amount, and parcel number you output MUST come verbatim from a page you actually found in search results for THIS exact address.
+        * If search did not surface the exact value, OMIT that field. NEVER substitute a regional, typical, or rounded placeholder (e.g. 1500 sq ft, 0.25 acres).
+        * Quote the source (e.g. "Zillow", "Redfin", "Mecklenburg County assessor") next to each numeric fact in its section.
         Do NOT fabricate parcel IDs, MLS numbers, or sale dates — only include values found in search results.
-        ALWAYS populate propertyDetails with every beds, baths, sq ft, lot size, year built, tax, and value figure found in search results — mirror them from listing/assessor pages into propertyDetails.
+        ALWAYS populate propertyDetails with every beds, baths, sq ft, lot size, year built, tax, and value figure CONFIRMED in search results — mirror them verbatim from listing/assessor pages into propertyDetails.
         If Zillow/Redfin/county records disagree on value, include the primary source value in propertyDetails and note the conflict in sources.
         """;
 
