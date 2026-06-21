@@ -12,8 +12,12 @@
     font-weight: 600;
 }
 
-#section-schedule {
-    padding: 0 16px 28px;
+#section-schedule,
+#section-schedule.section {
+    padding-top: 0;
+    padding-left: 20px;
+    padding-right: 20px;
+    padding-bottom: 28px;
     max-width: 480px;
     margin: 0 auto;
 }
@@ -101,9 +105,10 @@
 
 .sch-quick-grid {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 18px 12px;
-    margin-bottom: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: 14px;
+    row-gap: 18px;
+    margin-bottom: 26px;
 }
 
 .sch-quick-row {
@@ -123,6 +128,7 @@
 
 .sch-quick-tap {
     display: block;
+    position: relative;
     width: 100%;
     text-decoration: none;
     color: inherit;
@@ -132,65 +138,49 @@
 .sch-quick-tap:focus-visible {
     outline: 2px solid #0066CC;
     outline-offset: 3px;
-    border-radius: 22px;
+    border-radius: 18px;
 }
 
 .sch-quick-tap:active .sch-quick-icon {
-    transform: scale(0.96);
+    transform: scale(0.97);
 }
 
 .sch-quick-visual {
     position: relative;
     width: 100%;
-    max-width: 108px;
-    margin: 0 auto;
-    aspect-ratio: 1;
-    flex-shrink: 0;
-    overflow: visible;
 }
 
 .sch-quick-icon {
     width: 100%;
-    height: 100%;
-    border-radius: 22px;
+    height: 92px;
+    border-radius: 18px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem;
     border: 1px solid transparent;
-    box-shadow: 0 4px 14px rgba(10, 37, 64, 0.06);
+    box-shadow: 0 3px 10px rgba(10, 37, 64, 0.04);
     transition: transform 0.15s ease;
 }
 
-.sch-quick-icon.has-image {
-    padding: 10px;
-}
-
-.sch-quick-icon img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    display: block;
-    pointer-events: none;
-}
-
 .sch-quick-icon i {
+    font-size: 2.1rem;
     line-height: 1;
 }
 
 .sch-quick-name {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    color: #334155;
+    color: #1E293B;
     text-align: center;
-    line-height: 1.25;
+    line-height: 1.2;
     width: 100%;
 }
 
 .sch-quick-plus {
     position: absolute;
-    top: -4px;
-    right: -4px;
+    top: -7px;
+    right: -7px;
+    left: auto;
     width: 26px;
     height: 26px;
     border-radius: 50%;
@@ -201,19 +191,19 @@
     justify-content: center;
     font-size: 0.7rem;
     border: 2.5px solid #FFF;
-    box-shadow: 0 3px 10px rgba(0, 102, 204, 0.35);
+    box-shadow: 0 2px 8px rgba(0, 102, 204, 0.32);
     pointer-events: none;
-    z-index: 1;
+    z-index: 2;
 }
 
-.sch-tone-trash { color: #0066CC; background: rgba(0, 102, 204, 0.12); border-color: rgba(0, 102, 204, 0.08); }
-.sch-tone-filter { color: #7C3AED; background: rgba(124, 58, 237, 0.12); border-color: rgba(124, 58, 237, 0.08); }
-.sch-tone-lawn { color: #16A34A; background: rgba(22, 163, 74, 0.12); border-color: rgba(22, 163, 74, 0.08); }
+.sch-tone-trash { color: #0066CC; background: #EAF3FD; border-color: rgba(0, 102, 204, 0.08); }
+.sch-tone-filter { color: #7C3AED; background: #F3EDFF; border-color: rgba(124, 58, 237, 0.08); }
+.sch-tone-lawn { color: #16A34A; background: #EAF7EE; border-color: rgba(22, 163, 74, 0.08); }
 .sch-tone-hvac,
-.sch-tone-ac { color: #0066CC; background: rgba(0, 102, 204, 0.12); border-color: rgba(0, 102, 204, 0.08); }
-.sch-tone-water { color: #EA580C; background: rgba(234, 88, 12, 0.12); border-color: rgba(234, 88, 12, 0.08); }
-.sch-tone-gutter { color: #1D4ED8; background: rgba(254, 215, 170, 0.45); border-color: rgba(251, 191, 36, 0.15); }
-.sch-tone-maintenance { color: #EA580C; background: rgba(255, 237, 213, 0.85); border-color: rgba(251, 146, 60, 0.2); }
+.sch-tone-ac { color: #0066CC; background: #EAF3FD; border-color: rgba(0, 102, 204, 0.08); }
+.sch-tone-water { color: #EA580C; background: #FFF1E8; border-color: rgba(234, 88, 12, 0.08); }
+.sch-tone-gutter { color: #1D4ED8; background: #FEF8E8; border-color: rgba(251, 191, 36, 0.12); }
+.sch-tone-maintenance { color: #EA580C; background: #FFF3E8; border-color: rgba(251, 146, 60, 0.15); }
 .sch-tone-general { color: #475569; background: rgba(71, 85, 105, 0.1); border-color: rgba(71, 85, 105, 0.08); }
 
 .sch-reminder-list {

@@ -21,15 +21,8 @@
                 <div class="sch-quick-card">
                     <a href="@quick.Url" class="sch-quick-tap" aria-label="Add @quick.Label reminder">
                         <span class="sch-quick-visual">
-                            <span class="sch-quick-icon @quick.ToneClass @(string.IsNullOrWhiteSpace(quick.ImageUrl) ? "" : "has-image")">
-                                @if (!string.IsNullOrWhiteSpace(quick.ImageUrl))
-                                {
-                                    <img src="@quick.ImageUrl" alt="" loading="lazy" />
-                                }
-                                else
-                                {
-                                    <i class="fas @quick.IconClass"></i>
-                                }
+                            <span class="sch-quick-icon @quick.ToneClass">
+                                <i class="fas @quick.IconClass"></i>
                             </span>
                             <span class="sch-quick-plus" aria-hidden="true"><i class="fas fa-plus"></i></span>
                         </span>
