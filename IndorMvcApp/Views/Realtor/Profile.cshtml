@@ -65,10 +65,10 @@
             <span class="rl-quick-action-icon"><i class="fas fa-share-from-square"></i></span>
             <span>Share</span>
         </button>
-        <button type="button" class="rl-quick-action">
+        <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-gear"></i></span>
             <span>Settings</span>
-        </button>
+        </a>
     </section>
 
     <nav class="rl-profile-nav">
@@ -80,30 +80,30 @@
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
-        <button type="button" class="rl-profile-nav-item">
+        <a asp-controller="Realtor" asp-action="EditProfile" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-location-dot"></i></span>
             <div>
                 <strong>Service Area / Market Area</strong>
                 <span class="rl-profile-nav-desc">Define the areas and neighborhoods you serve.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </button>
-        <button type="button" class="rl-profile-nav-item">
+        </a>
+        <a asp-controller="Realtor" asp-action="Files" asp-route-filter="Shared" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-tags"></i></span>
             <div>
                 <strong>Branding &amp; Shared Packages</strong>
                 <span class="rl-profile-nav-desc">Customize your brand and manage shared packages.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </button>
-        <button type="button" class="rl-profile-nav-item">
+        </a>
+        <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-shield-halved"></i></span>
             <div>
                 <strong>Account Settings</strong>
                 <span class="rl-profile-nav-desc">Update your preferences and security settings.</span>
             </div>
             <i class="fas fa-chevron-right"></i>
-        </button>
+        </a>
     </nav>
 
     <section class="rl-bottom-grid">
