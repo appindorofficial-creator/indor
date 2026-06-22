@@ -971,10 +971,55 @@ button.hn-quick-action { width: 100%; font: inherit; }
     color: #fff !important;
     box-shadow: 0 6px 14px rgba(0, 102, 204, .25);
 }
+.hn-quick-action:nth-child(2) .hn-quick-action-icon {
+    background: linear-gradient(135deg, #A78BFA, #6D28D9) !important;
+    box-shadow: 0 6px 14px rgba(109, 40, 217, .25);
+}
+
+/* Illustrated quick-action cards (matches mockup) */
+.hn-quick-action {
+    position: relative;
+    overflow: hidden;
+    min-height: 116px;
+    padding-right: 78px;
+}
+.hn-quick-action > * { position: relative; z-index: 1; }
+.hn-quick-action::after {
+    content: "";
+    position: absolute;
+    right: 4px;
+    bottom: 0;
+    width: 80px;
+    height: 78px;
+    background-repeat: no-repeat;
+    background-position: right bottom;
+    background-size: contain;
+    pointer-events: none;
+}
+.hn-quick-action:nth-child(1)::after { background-image: url('../images/hn-neighbors.svg'); }
+.hn-quick-action:nth-child(2)::after { background-image: url('../images/hn-requests.svg'); }
 
 .hn-map-shell { border-radius: 20px; overflow: hidden; box-shadow: 0 10px 28px rgba(20, 66, 124, .08); }
 
-.hn-emergency-banner { border-radius: 20px; box-shadow: 0 10px 24px rgba(220, 38, 38, .08); }
+.hn-emergency-banner {
+    position: relative;
+    overflow: hidden;
+    border-radius: 20px;
+    box-shadow: 0 10px 24px rgba(220, 38, 38, .08);
+}
+.hn-emergency-banner > * { position: relative; z-index: 1; }
+.hn-emergency-banner::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 64px;
+    background: url('../images/hn-emergency-houses.svg') no-repeat right bottom;
+    background-size: auto 64px;
+    pointer-events: none;
+    z-index: 0;
+}
 
 /* Feed cards: rounder + softly elevated */
 #section-home .rl-network-card {

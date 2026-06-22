@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150 120" fill="none">
+  <!-- speech bubble -->
+  <g>
+    <rect x="48" y="8" width="54" height="26" rx="9" fill="#FFFFFF" stroke="#DBE7F7" stroke-width="1.5"/>
+    <path d="M66 32 L70 42 L78 32 Z" fill="#FFFFFF"/>
+    <circle cx="63" cy="21" r="3" fill="#2E8BFF"/>
+    <circle cx="75" cy="21" r="3" fill="#2DD4BF"/>
+    <circle cx="87" cy="21" r="3" fill="#A78BFA"/>
+  </g>
+  <!-- left person (blue) -->
+  <g>
+    <path d="M18 120 C18 96 30 86 44 86 C58 86 70 96 70 120 Z" fill="#2E8BFF"/>
+    <circle cx="44" cy="70" r="16" fill="#F1C8A6"/>
+    <path d="M28 66 C28 54 60 54 60 66 C60 60 52 50 44 50 C36 50 28 56 28 66 Z" fill="#5B4636"/>
+  </g>
+  <!-- right person (teal) -->
+  <g>
+    <path d="M80 120 C80 98 92 88 106 88 C120 88 132 98 132 120 Z" fill="#2DD4BF"/>
+    <circle cx="106" cy="74" r="15" fill="#F1C8A6"/>
+    <path d="M92 72 C90 58 122 58 120 72 C122 62 112 54 106 54 C98 54 92 60 92 72 Z" fill="#3A2E26"/>
+  </g>
+  <!-- plant -->
+  <g>
+    <path d="M8 120 L8 104 C2 104 2 96 8 98 C6 92 14 92 14 100 C20 96 22 104 14 106 L14 120 Z" fill="#5FC489"/>
+    <rect x="3" y="112" width="16" height="10" rx="2" fill="#C6E7D6"/>
+  </g>
+</svg>

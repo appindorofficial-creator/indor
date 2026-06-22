@@ -877,3 +877,41 @@
     background: linear-gradient(180deg, #F2F8FF, #FFFFFF);
     box-shadow: 0 0 0 1.5px #0066CC, 0 10px 24px rgba(0, 102, 204, .14);
 }
+
+/* Illustrated view cards (matches mockup): soft sky background + scene art */
+.hv-view-switcher .hv-view-card {
+    position: relative;
+    overflow: hidden;
+    min-height: 150px;
+    padding: 14px 14px 78px;
+    background: linear-gradient(180deg, #EAF3FF 0%, #FFFFFF 64%);
+}
+.hv-view-switcher .hv-view-card.is-active {
+    background: linear-gradient(180deg, #E4F0FF 0%, #FBFDFF 70%);
+}
+.hv-view-switcher .hv-view-card .hv-view-icon,
+.hv-view-switcher .hv-view-card .hv-view-copy {
+    position: relative;
+    z-index: 1;
+}
+.hv-view-switcher .hv-view-card::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 86px;
+    background-repeat: no-repeat;
+    pointer-events: none;
+}
+.hv-view-switcher .hv-view-card:nth-child(1)::after {
+    background-image: url('../images/hn-neighborhood.svg');
+    background-position: center bottom;
+    background-size: cover;
+}
+.hv-view-switcher .hv-view-card:nth-child(2)::after {
+    height: 100px;
+    background-image: url('../images/hn-house-scene.svg');
+    background-position: right bottom;
+    background-size: auto 100px;
+}

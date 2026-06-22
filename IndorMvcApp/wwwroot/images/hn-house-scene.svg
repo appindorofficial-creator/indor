@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 130" fill="none">
+  <circle cx="32" cy="30" r="15" fill="#FFD873"/>
+  <circle cx="32" cy="30" r="15" fill="#FFE9A8" opacity="0.4"/>
+  <g opacity="0.8" fill="#FFFFFF">
+    <ellipse cx="120" cy="26" rx="20" ry="8"/>
+    <ellipse cx="138" cy="30" rx="12" ry="6"/>
+  </g>
+  <!-- tree -->
+  <rect x="20" y="86" width="7" height="26" rx="3" fill="#8A6A4F"/>
+  <circle cx="23.5" cy="78" r="20" fill="#7BD3A0"/>
+  <circle cx="23.5" cy="78" r="13" fill="#5FC489"/>
+  <!-- house -->
+  <rect x="52" y="62" width="84" height="56" rx="6" fill="#FFFFFF"/>
+  <path d="M46 66 L94 30 L142 66 Z" fill="#3D8BFF"/>
+  <path d="M94 30 L142 66 L130 66 L94 42 Z" fill="#0066CC" opacity="0.55"/>
+  <rect x="118" y="40" width="9" height="20" rx="2" fill="#7FB0EC"/>
+  <rect x="84" y="84" width="20" height="34" rx="3" fill="#9CC4F5"/>
+  <circle cx="100" cy="102" r="1.8" fill="#3D8BFF"/>
+  <rect x="62" y="74" width="16" height="16" rx="2.5" fill="#CFE3FB"/>
+  <rect x="110" y="74" width="16" height="16" rx="2.5" fill="#CFE3FB"/>
+  <line x1="70" y1="74" x2="70" y2="90" stroke="#9CC4F5" stroke-width="1.4"/>
+  <line x1="62" y1="82" x2="78" y2="82" stroke="#9CC4F5" stroke-width="1.4"/>
+  <rect x="0" y="114" width="160" height="16" fill="#E4EFFF"/>
+</svg>
