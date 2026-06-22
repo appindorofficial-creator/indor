@@ -1639,12 +1639,18 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             .CountAsync(p => p.RealtorId == realtorId && (p.FilePhase == "Repair Review" || p.RepairItemsCount > 0), ct);
         var quotes = await db.IndorRealtorPropertyFiles.AsNoTracking()
             .CountAsync(p => p.RealtorId == realtorId && p.QuotesReceivedCount > 0, ct);
+        var shared = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.FilePhase == "Transfer", ct);
+        var closed = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.Status == "Archived", ct);
 
         return
         [
             new() { Label = "Active Files", Count = active, Icon = "fa-folder-open", ColorClass = "blue" },
             new() { Label = "Inspection Uploaded", Count = inspection, Icon = "fa-cloud-arrow-up", ColorClass = "teal" },
-            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange" }
+            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange" },
+            new() { Label = "Shared Packages", Count = shared, Icon = "fa-share-nodes", ColorClass = "purple" },
+            new() { Label = "Closed Files", Count = closed, Icon = "fa-box-archive", ColorClass = "red" }
         ];
     }
 

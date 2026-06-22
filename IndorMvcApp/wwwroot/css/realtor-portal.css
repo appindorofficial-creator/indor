@@ -529,6 +529,17 @@
     flex: 1;
     font-size: .88rem;
     font-family: inherit;
+    background: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+    color: #334155;
+}
+.rl-search-bar input::placeholder { color: #94A3B8; }
+.rl-search-bar input::-webkit-search-decoration,
+.rl-search-bar input::-webkit-search-cancel-button,
+.rl-search-bar input::-webkit-search-results-button {
+    -webkit-appearance: none;
+    appearance: none;
 }
 .rl-filter-chips {
     display: flex;
