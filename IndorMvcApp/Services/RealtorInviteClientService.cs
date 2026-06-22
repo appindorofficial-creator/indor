@@ -8,7 +8,8 @@ namespace IndorMvcApp.Services;
 public class RealtorInviteClientService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
-    IRealtorRegistrationService registration) : IRealtorInviteClientService
+    IRealtorRegistrationService registration,
+    IInvitationEmailSender emailSender) : IRealtorInviteClientService
 {
     private const string InviteIdSessionKey = "RealtorInviteId";
 
@@ -378,7 +379,152 @@ public class RealtorInviteClientService(
 
         await db.SaveChangesAsync(cancellationToken);
         httpContextAccessor.HttpContext?.Session.Remove(InviteIdSessionKey);
+
+        if (draft.DeliveryEmail && !string.IsNullOrWhiteSpace(draft.Email))
+        {
+            var acceptUrl = BuildInviteLink(draft.InvitationToken);
+            await emailSender.SendInvitationEmailAsync(new InvitationEmailModel(
+                ToEmail: draft.Email,
+                ClientName: draft.FullName,
+                RealtorName: ResolveRealtorName(realtor),
+                PropertyDisplay: FormatPropertyDisplay(draft),
+                AcceptUrl: acceptUrl,
+                WelcomeMessage: draft.WelcomeMessage), cancellationToken);
+        }
+
         return draft.Id;
+    }
+
+    public async Task<RealtorInvitePublicViewModel?> GetPublicInvitationAsync(Guid token, CancellationToken cancellationToken = default)
+    {
+        if (token == Guid.Empty)
+        {
+            return null;
+        }
+
+        var invitation = await db.IndorRealtorInvitations.AsNoTracking()
+            .Include(i => i.Realtor)
+            .FirstOrDefaultAsync(i => i.InvitationToken == token &&
+                                      i.Status != RealtorInvitationStatuses.Draft, cancellationToken);
+
+        return invitation == null ? null : MapPublic(invitation, justAccepted: false);
+    }
+
+    public async Task<RealtorInvitePublicViewModel?> AcceptInvitationAsync(Guid token, CancellationToken cancellationToken = default)
+    {
+        if (token == Guid.Empty)
+        {
+            return null;
+        }
+
+        var invitation = await db.IndorRealtorInvitations
+            .Include(i => i.Realtor)
+            .FirstOrDefaultAsync(i => i.InvitationToken == token &&
+                                      i.Status != RealtorInvitationStatuses.Draft, cancellationToken);
+
+        if (invitation == null)
+        {
+            return null;
+        }
+
+        var alreadyAccepted = invitation.Status == RealtorInvitationStatuses.Accepted;
+
+        if (!alreadyAccepted)
+        {
+            invitation.Status = RealtorInvitationStatuses.Accepted;
+            invitation.AcceptedUtc = DateTime.UtcNow;
+            invitation.FechaActualizacion = DateTime.UtcNow;
+
+            var client = await db.IndorRealtorClients
+                .FirstOrDefaultAsync(c => c.RealtorId == invitation.RealtorId &&
+                                          c.Email == invitation.Email, cancellationToken);
+
+            if (client == null)
+            {
+                db.IndorRealtorClients.Add(new IndorRealtorClient
+                {
+                    RealtorId = invitation.RealtorId,
+                    FullName = invitation.FullName,
+                    Email = invitation.Email,
+                    ClientRole = invitation.ClientRole ?? RealtorClientRoles.Buyer,
+                    PropertyAddress = invitation.PropertyAddress,
+                    StatusSummary = "Active",
+                    LastActiveUtc = DateTime.UtcNow,
+                    FechaCreacion = DateTime.UtcNow
+                });
+            }
+            else
+            {
+                client.StatusSummary = "Active";
+                client.LastActiveUtc = DateTime.UtcNow;
+                if (string.IsNullOrWhiteSpace(client.PropertyAddress))
+                {
+                    client.PropertyAddress = invitation.PropertyAddress;
+                }
+            }
+
+            db.IndorRealtorActivities.Add(new IndorRealtorActivity
+            {
+                RealtorId = invitation.RealtorId,
+                ActivityType = "check",
+                Description = $"{invitation.FullName} accepted the invitation for {FormatPropertyDisplay(invitation)}",
+                CategoryTag = "Clients",
+                OccurredUtc = DateTime.UtcNow
+            });
+
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        return MapPublic(invitation, justAccepted: !alreadyAccepted);
+    }
+
+    private RealtorInvitePublicViewModel MapPublic(IndorRealtorInvitation invitation, bool justAccepted)
+    {
+        var accepted = invitation.Status == RealtorInvitationStatuses.Accepted;
+        return new RealtorInvitePublicViewModel
+        {
+            Token = invitation.InvitationToken,
+            RealtorName = ResolveRealtorName(invitation.Realtor),
+            ClientName = invitation.FullName,
+            PropertyDisplay = FormatPropertyDisplay(invitation),
+            WelcomeMessage = invitation.WelcomeMessage ?? "",
+            AccessItems = BuildAccessItems(invitation),
+            AlreadyAccepted = accepted && !justAccepted,
+            JustAccepted = justAccepted
+        };
+    }
+
+    private static List<string> BuildAccessItems(IndorRealtorInvitation inv)
+    {
+        var parts = new List<string>();
+        if (inv.AccessPropertyOverview) parts.Add("View your home profile");
+        if (inv.AccessFilesReports) parts.Add("See inspection reports and documents");
+        if (inv.AccessQuotesEstimates) parts.Add("Track quotes and repairs");
+        if (inv.AccessProjectUpdates) parts.Add("Keep your home info in one place");
+        if (inv.AccessMessages) parts.Add("Collaborate with your realtor or provider");
+        if (inv.AccessPayments) parts.Add("Manage payments");
+        return parts;
+    }
+
+    private static string ResolveRealtorName(IndorRealtor? realtor)
+    {
+        if (realtor == null)
+        {
+            return "Your realtor";
+        }
+
+        return realtor.PublicDisplayName
+            ?? realtor.DisplayName
+            ?? realtor.BrokerageName
+            ?? "Your realtor";
+    }
+
+    private string BuildInviteLink(Guid token)
+    {
+        var request = httpContextAccessor.HttpContext?.Request;
+        return request == null
+            ? $"/invite/{token}"
+            : $"{request.Scheme}://{request.Host}/invite/{token}";
     }
 
     public async Task<RealtorInviteSuccessViewModel> BuildSuccessAsync(int invitationId, CancellationToken cancellationToken = default)

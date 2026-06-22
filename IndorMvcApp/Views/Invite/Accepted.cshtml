@@ -1,0 +1,44 @@
+@model IndorMvcApp.ViewModels.RealtorInvitePublicViewModel
+@{
+    ViewData["Title"] = "Invitation accepted";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #F8FAFC; font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; color: #0A2540; }
+        .ac-wrap { max-width: 480px; margin: 0 auto; padding: 64px 22px; text-align: center; }
+        .ac-logo { font-weight: 800; color: #0066CC; font-size: 20px; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 40px; }
+        .ac-badge { width: 88px; height: 88px; border-radius: 50%; background: #DCFCE7; color: #16A34A; font-size: 40px; display: flex; align-items: center; justify-content: center; margin: 0 auto 22px; }
+        .ac-title { font-size: 24px; font-weight: 800; margin: 0 0 10px; }
+        .ac-text { color: #64748B; font-size: 15.5px; line-height: 1.55; margin: 0 0 8px; }
+        .ac-prop { margin: 24px 0 0; padding: 16px; background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; font-weight: 700; }
+        .ac-foot { margin-top: 34px; color: #94A3B8; font-size: 12.5px; line-height: 1.5; }
+    </style>
+</head>
+<body>
+    <div class="ac-wrap">
+        <div class="ac-logo"><i class="fas fa-house"></i> INDOR</div>
+        <div class="ac-badge"><i class="fas fa-check"></i></div>
+        <h1 class="ac-title">@(Model.AlreadyAccepted ? "You're all set" : "Invitation accepted!")</h1>
+        <p class="ac-text">
+            Thanks, @Model.ClientName. @(Model.AlreadyAccepted
+                ? "You've already accepted this invitation."
+                : $"You're now connected with {Model.RealtorName} in INDOR.")
+        </p>
+        <p class="ac-text">Open or download the Home INDOR app to view your home profile and stay in the loop.</p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PropertyDisplay))
+        {
+            <div class="ac-prop"><i class="fas fa-house" style="color:#0066CC;margin-right:8px;"></i>@Model.PropertyDisplay</div>
+        }
+
+        <p class="ac-foot">This invitation was sent by @Model.RealtorName through INDOR.</p>
+    </div>
+</body>
+</html>

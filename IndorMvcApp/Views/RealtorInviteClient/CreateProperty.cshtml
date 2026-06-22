@@ -9,7 +9,7 @@
 
 <form id="createPropertyForm" asp-action="CreateProperty" method="post" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary"></div>
 
     <div class="rl-cp-card">
         <div class="rl-cp-field @(addressError.Length > 0 ? "is-error" : null)">
@@ -107,12 +107,12 @@
             </ol>
         </div>
     </div>
-</form>
 
-<div class="rl-invite-actions">
-    <a asp-action="Property" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="createPropertyForm" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
-</div>
+    <div class="rl-invite-actions">
+        <a asp-action="Property" class="rl-invite-cancel">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
+    </div>
+</form>
 
 @section Scripts {
 <script>

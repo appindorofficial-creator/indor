@@ -25,4 +25,7 @@ public interface IRealtorInviteClientService
     Task<RealtorInviteReviewViewModel> BuildReviewAsync(CancellationToken cancellationToken = default);
     Task<int> SendInvitationAsync(bool sendReminder48h, CancellationToken cancellationToken = default);
     Task<RealtorInviteSuccessViewModel> BuildSuccessAsync(int invitationId, CancellationToken cancellationToken = default);
+
+    Task<RealtorInvitePublicViewModel?> GetPublicInvitationAsync(Guid token, CancellationToken cancellationToken = default);
+    Task<RealtorInvitePublicViewModel?> AcceptInvitationAsync(Guid token, CancellationToken cancellationToken = default);
 }

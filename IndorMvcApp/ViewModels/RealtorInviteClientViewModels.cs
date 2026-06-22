@@ -38,12 +38,12 @@ public class RealtorInvitePropertyViewModel : RealtorInviteStepViewModel
 
 public class RealtorInviteCreatePropertyViewModel : RealtorInviteStepViewModel
 {
-    public string Address { get; set; } = "";
-    public string Unit { get; set; } = "";
-    public string City { get; set; } = "";
-    public string StateCode { get; set; } = "";
-    public string PostalCode { get; set; } = "";
-    public string Nickname { get; set; } = "";
+    public string? Address { get; set; }
+    public string? Unit { get; set; }
+    public string? City { get; set; }
+    public string? StateCode { get; set; }
+    public string? PostalCode { get; set; }
+    public string? Nickname { get; set; }
     public string PropertyType { get; set; } = "Single-family";
     public bool SelectForClient { get; set; } = true;
     public IReadOnlyList<string> States { get; set; } = [];
@@ -77,6 +77,19 @@ public class RealtorInviteReviewViewModel : RealtorInviteStepViewModel
     public string DeliveryLabel { get; set; } = "";
     public string WelcomeMessage { get; set; } = "";
     public bool SendReminder48h { get; set; } = true;
+}
+
+public class RealtorInvitePublicViewModel
+{
+    public Guid Token { get; set; }
+    public string RealtorName { get; set; } = "Your realtor";
+    public string ClientName { get; set; } = "";
+    public string PropertyDisplay { get; set; } = "";
+    public string? PropertyPhotoUrl { get; set; }
+    public string WelcomeMessage { get; set; } = "";
+    public List<string> AccessItems { get; set; } = [];
+    public bool AlreadyAccepted { get; set; }
+    public bool JustAccepted { get; set; }
 }
 
 public class RealtorInviteSuccessViewModel

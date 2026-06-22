@@ -138,6 +138,8 @@ builder.Services.AddScoped<HomeownerNearbyNetworkService>();
 builder.Services.AddScoped<LawnCatalogService>();
 builder.Services.AddScoped<NeighborRequestWizardService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();
+builder.Services.Configure<IndorMvcApp.Models.SmtpSettings>(builder.Configuration.GetSection("Smtp"));
+builder.Services.AddScoped<IInvitationEmailSender, SmtpInvitationEmailSender>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();
 builder.Services.AddScoped<IRealtorPropertyFileWizardService, RealtorPropertyFileWizardService>();
 builder.Services.AddScoped<IRealtorQuoteRequestService, RealtorQuoteRequestService>();

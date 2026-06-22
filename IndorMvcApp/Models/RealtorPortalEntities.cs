@@ -1152,6 +1152,8 @@ public class IndorRealtorInvitation
 
     public DateTime SentUtc { get; set; } = DateTime.UtcNow;
 
+    public DateTime? AcceptedUtc { get; set; }
+
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
     public DateTime? FechaActualizacion { get; set; }

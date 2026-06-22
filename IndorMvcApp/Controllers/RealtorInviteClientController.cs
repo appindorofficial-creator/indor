@@ -175,10 +175,10 @@ public class RealtorInviteClientController(
                 await inviteService.CreatePropertyAsync(model);
                 return RedirectToAction(nameof(Property));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 ModelState.AddModelError(string.Empty,
-                    "We couldn't save the property. Please try again, or contact support if the problem persists.");
+                    $"We couldn't save the property. {ex.GetBaseException().Message}");
             }
         }
 

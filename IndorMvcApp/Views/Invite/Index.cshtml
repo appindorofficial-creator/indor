@@ -1,0 +1,84 @@
+@model IndorMvcApp.ViewModels.RealtorInvitePublicViewModel
+@{
+    ViewData["Title"] = "You've been invited to INDOR";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+    <style>
+        :root { --blue: #0066CC; --ink: #0A2540; --muted: #64748B; --line: #E2E8F0; --bg: #F8FAFC; }
+        * { box-sizing: border-box; }
+        body { margin: 0; background: var(--bg); font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; color: var(--ink); }
+        .inv-wrap { max-width: 560px; margin: 0 auto; padding: 28px 18px 48px; }
+        .inv-logo { font-weight: 800; color: var(--blue); font-size: 20px; display: flex; align-items: center; gap: 8px; margin-bottom: 18px; }
+        .inv-title { font-size: 28px; line-height: 1.2; font-weight: 800; margin: 0 0 14px; }
+        .inv-lede { color: var(--muted); font-size: 16px; line-height: 1.5; margin: 0 0 22px; }
+        .inv-lede strong { color: var(--blue); }
+        .inv-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 18px; }
+        .inv-prop { display: flex; align-items: center; gap: 16px; }
+        .inv-prop-ico { width: 52px; height: 52px; border-radius: 50%; background: #E8F1FF; color: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 22px; flex: 0 0 auto; }
+        .inv-prop-text { font-weight: 700; font-size: 17px; }
+        .inv-note { margin: 18px 0 0; padding: 14px 16px; background: #F1F5F9; border-radius: 12px; color: #334155; font-size: 14px; line-height: 1.5; }
+        .inv-section-title { text-align: center; font-weight: 700; font-size: 17px; margin: 30px 0 16px; }
+        .inv-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .inv-feature { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+        .inv-feature i { color: var(--blue); font-size: 18px; }
+        .inv-feature h4 { margin: 10px 0 6px; font-size: 14px; }
+        .inv-feature p { margin: 0; color: var(--muted); font-size: 12.5px; line-height: 1.45; }
+        .inv-cta { display: block; width: 100%; text-align: center; background: var(--blue); color: #fff; border: none; font-weight: 700; font-size: 17px; padding: 16px; border-radius: 14px; cursor: pointer; margin-top: 28px; }
+        .inv-cta i { margin-left: 8px; }
+        .inv-foot { margin: 22px 0 0; color: #94A3B8; font-size: 12.5px; text-align: center; line-height: 1.5; }
+        @@media (max-width: 420px) { .inv-features { grid-template-columns: 1fr; } .inv-title { font-size: 24px; } }
+    </style>
+</head>
+<body>
+    <div class="inv-wrap">
+        <div class="inv-logo"><i class="fas fa-house"></i> INDOR</div>
+
+        <h1 class="inv-title">You've been invited to view your home in INDOR</h1>
+        <p class="inv-lede">
+            <strong>@Model.RealtorName</strong> has invited you to access your property in INDOR —
+            the home operating system that helps you stay organized, informed, and connected in one place.
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PropertyDisplay))
+        {
+            <div class="inv-card inv-prop">
+                <div class="inv-prop-ico"><i class="fas fa-house"></i></div>
+                <div class="inv-prop-text">@Model.PropertyDisplay</div>
+            </div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.WelcomeMessage))
+        {
+            <div class="inv-note">@Model.WelcomeMessage</div>
+        }
+
+        @if (Model.AccessItems.Count > 0)
+        {
+            <div class="inv-section-title">With Home INDOR, you can:</div>
+            <div class="inv-features">
+                @foreach (var item in Model.AccessItems)
+                {
+                    <div class="inv-feature">
+                        <i class="fas fa-circle-check"></i>
+                        <h4>@item</h4>
+                        <p>Access and stay up to date on everything shared by your realtor or provider.</p>
+                    </div>
+                }
+            </div>
+        }
+
+        <form asp-action="Accept" asp-route-token="@Model.Token" method="post">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="inv-cta">Accept Invitation <i class="fas fa-arrow-right"></i></button>
+        </form>
+
+        <p class="inv-foot">This invitation was sent by @Model.RealtorName through INDOR.</p>
+    </div>
+</body>
+</html>

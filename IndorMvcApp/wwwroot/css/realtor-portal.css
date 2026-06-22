@@ -2462,7 +2462,8 @@ button.rl-quick-action {
 .rl-preview-link a { color: #0066CC; text-decoration: none; }
 
 /* Urgente Quote wizard */
-.rl-pick-check { color: #0066CC; font-size: 1.1rem; }
+.rl-pick-check { color: #0066CC; font-size: 1.1rem; margin-left: auto; }
+.rl-property-pick-chevron { color: #CBD5E1; font-size: .9rem; margin-left: auto; }
 .rl-urgent-category-grid { display: grid; grid-template-columns: 1fr; gap: 8px; margin-bottom: 16px; }
 .rl-urgent-category {
     display: flex; align-items: center; gap: 12px; border: 1.5px solid #E2E8F0;
