@@ -3,12 +3,14 @@
     color: #0A2540;
     font-family: Inter, system-ui, sans-serif;
     min-height: 100vh;
+    min-height: 100dvh;
 }
 
 .nr-wizard-shell {
     max-width: 480px;
     margin: 0 auto;
     min-height: 100vh;
+    min-height: 100dvh;
     padding: 0 16px 32px;
 }
 

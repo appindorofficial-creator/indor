@@ -1,0 +1,43 @@
+/* ============================================================
+   INDOR THEME — global design tokens (DESIGN REFRESH v2)
+   Single source of truth for the bright "sky" visual language
+   used across every role portal. Purely additive: defines CSS
+   variables + a few opt-in utility classes. Existing styles keep
+   working; new/updated styles can reference these tokens.
+   ============================================================ */
+:root {
+    /* Brand */
+    --indor-blue-bright: #2E8BFF;
+    --indor-blue: #0066CC;
+    --indor-blue-dark: #004FA3;
+    --indor-navy: #0A2540;
+
+    /* Gradients */
+    --indor-grad-primary: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    --indor-grad-primary-hover: linear-gradient(135deg, #1E7AF0 0%, #0056B3 100%);
+    --indor-grad-danger: linear-gradient(135deg, #FB6A6A 0%, #DC2626 100%);
+    --indor-grad-purple: linear-gradient(135deg, #7C6BF0 0%, #4F46E5 100%);
+
+    /* Sky page background */
+    --indor-bg-sky:
+        radial-gradient(120% 70% at 85% -5%, rgba(140, 196, 255, .35) 0%, rgba(140, 196, 255, 0) 55%),
+        radial-gradient(110% 60% at 0% 0%, rgba(99, 160, 255, .18) 0%, rgba(99, 160, 255, 0) 50%),
+        linear-gradient(180deg, #E9F2FE 0%, #F2F8FF 22%, #F7FBFF 48%, #FFFFFF 100%);
+
+    /* Surfaces */
+    --indor-border: #E7EEF7;
+    --indor-radius-card: 20px;
+    --indor-radius-pill: 999px;
+
+    /* Shadows */
+    --indor-shadow-card: 0 10px 28px rgba(20, 66, 124, .08);
+    --indor-shadow-soft: 0 6px 18px rgba(20, 66, 124, .06);
+    --indor-shadow-primary: 0 8px 18px rgba(0, 102, 204, .28);
+}
+
+/* Opt-in utility classes (use when adding new markup) */
+.indor-bg-sky { background: var(--indor-bg-sky); background-attachment: fixed; }
+.indor-card { background: #fff; border: 1px solid var(--indor-border); border-radius: var(--indor-radius-card); box-shadow: var(--indor-shadow-card); }
+.indor-btn-primary { background: var(--indor-grad-primary); color: #fff; border: none; border-radius: 14px; box-shadow: var(--indor-shadow-primary); }
+.indor-btn-primary:hover { background: var(--indor-grad-primary-hover); }
+.indor-pill { border-radius: var(--indor-radius-pill); }

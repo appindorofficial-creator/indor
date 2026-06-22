@@ -10,15 +10,20 @@
 <div class="pa-portal-shell">
     @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
-    <section class="pa-hero-block">
-        <div class="pa-hero-block-head">
-            <div>
-                <h1>@Model.Greeting</h1>
-                <p>Manage your Airbnb homes, guests, services, and local operations across your portfolio.</p>
-            </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-flow-step-pill pa-portfolio-overview-pill">
+    <section class="pa-hero-banner">
+        <div class="pa-hero-banner-content">
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-hero-pill">
                 <i class="fas fa-chart-simple"></i> PORTFOLIO OVERVIEW
             </a>
+            <h1>@Model.Greeting</h1>
+            <p>Manage your Airbnb homes, guests, services &amp; local operations across your portfolio.</p>
+        </div>
+        <div class="pa-hero-scene" aria-hidden="true">
+            <i class="fas fa-sun pa-hero-sun"></i>
+            <i class="fas fa-cloud pa-hero-cloud pa-hero-cloud--1"></i>
+            <i class="fas fa-cloud pa-hero-cloud pa-hero-cloud--2"></i>
+            <i class="fas fa-tree pa-hero-tree"></i>
+            <i class="fas fa-house-chimney pa-hero-house"></i>
         </div>
     </section>
 

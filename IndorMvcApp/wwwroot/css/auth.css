@@ -1,6 +1,7 @@
 /* ===== AUTH PAGES (LOGIN/REGISTER) ===== */
 .auth-container {
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -346,3 +347,21 @@
         font-size: 15px;
     }
 }
+
+/* ============================================================
+   DESIGN REFRESH v2 — Auth pages (brand alignment)
+   Navy→blue brand gradient (keeps white text legible)
+   ============================================================ */
+.auth-container {
+    background:
+        radial-gradient(120% 80% at 85% 0%, rgba(46, 139, 255, .45) 0%, rgba(46, 139, 255, 0) 55%),
+        linear-gradient(135deg, #0A2540 0%, #0D2B5E 45%, #0066CC 100%);
+}
+.auth-icon {
+    background: linear-gradient(135deg, #2E8BFF, #0066CC);
+    box-shadow: 0 10px 30px rgba(0, 102, 204, .35);
+}
+.btn-submit {
+    background: linear-gradient(135deg, #2E8BFF, #0066CC);
+}
+.btn-submit:hover { background: linear-gradient(135deg, #1E7AF0, #0056B3); }

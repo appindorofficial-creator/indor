@@ -4,6 +4,7 @@
 
 .role-selection-container {
     min-height: 100vh;
+    min-height: 100dvh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     padding: 40px 20px;
     display: flex;
@@ -421,3 +422,17 @@
         font-size: 1.2rem;
     }
 }
+
+/* ============================================================
+   DESIGN REFRESH v2 — Role selection (brand alignment)
+   ============================================================ */
+.role-selection-container {
+    background:
+        radial-gradient(120% 80% at 85% 0%, rgba(46, 139, 255, .55) 0%, rgba(46, 139, 255, 0) 55%),
+        linear-gradient(135deg, #0066CC 0%, #0A2540 100%);
+}
+.role-card { border-radius: 20px; box-shadow: 0 14px 34px rgba(20, 66, 124, .14); }
+.role-card::before { background: linear-gradient(90deg, #2E8BFF, #0066CC); }
+.role-icon { background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%); }
+.role-card.selected { box-shadow: 0 0 0 2px #0066CC, 0 16px 36px rgba(0, 102, 204, .18); }
+.role-badge { background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%); color: #fff; }

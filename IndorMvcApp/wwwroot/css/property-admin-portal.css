@@ -104,7 +104,7 @@
 .pa-summary-error{background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
 
 /* Multi-property owner portal */
-.pa-portal-page{font-family:'Inter',sans-serif;background:#F8FAFC;min-height:100vh;padding-bottom:88px}
+.pa-portal-page{font-family:'Inter',sans-serif;background:#F8FAFC;min-height:100vh;min-height:100dvh;padding-bottom:88px}
 .pa-portal-shell{max-width:480px;margin:0 auto;padding:16px}
 .pa-portal-shell--tasks{padding-bottom:88px}
 .pa-portal-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px}
@@ -1164,3 +1164,153 @@
 .pa-notify-info-card{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;background:#EFF6FF;border:1.5px solid #DBEAFE;border-radius:16px}
 .pa-notify-info-icon{color:#0066CC;font-size:.9rem;margin-top:1px}
 .pa-notify-info-card p{margin:0;font-size:.72rem;color:#334155;line-height:1.45}
+
+/* ============================================================
+   DESIGN REFRESH v2 — softer, brighter "sky" visual language
+   (Property Administrator portal — reference for app-wide rollout)
+   ============================================================ */
+:root{
+    --pa-grad-primary:linear-gradient(135deg,#2E8BFF 0%,#0066CC 100%);
+    --pa-grad-danger:linear-gradient(135deg,#FB6A6A 0%,#DC2626 100%);
+    --pa-shadow-card:0 10px 28px rgba(20,66,124,.08);
+    --pa-shadow-soft:0 6px 18px rgba(20,66,124,.06);
+    --pa-radius-card:20px;
+    --pa-border:#E7EEF7;
+}
+
+/* Sky gradient page background */
+.pa-portal-page{
+    background:
+        radial-gradient(120% 70% at 85% -5%, rgba(140,196,255,.35) 0%, rgba(140,196,255,0) 55%),
+        radial-gradient(110% 60% at 0% 0%, rgba(99,160,255,.18) 0%, rgba(99,160,255,0) 50%),
+        linear-gradient(180deg,#E9F2FE 0%,#F2F8FF 22%,#F7FBFF 48%,#FFFFFF 100%);
+    background-attachment:fixed;
+}
+
+/* Hero typography a touch bolder */
+.pa-hero-block h1,.pa-hero-block-head h1{font-size:1.62rem;letter-spacing:-.01em}
+
+/* PORTFOLIO OVERVIEW pill */
+.pa-portfolio-overview-pill{
+    background:#EAF2FF;border:1px solid #CFE0FB;color:#0066CC;
+    border-radius:999px;padding:8px 14px;font-size:.66rem;font-weight:800;
+    letter-spacing:.05em;box-shadow:var(--pa-shadow-soft)
+}
+
+/* Elevated, rounder cards */
+.pa-portfolio-panel{border-radius:var(--pa-radius-card);border-color:var(--pa-border);box-shadow:var(--pa-shadow-card)}
+.pa-network-mode{border-radius:var(--pa-radius-card);border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft);transition:transform .15s,box-shadow .15s}
+.pa-network-mode.is-active{background:linear-gradient(160deg,#EAF3FF 0%,#FFFFFF 75%);box-shadow:0 0 0 1.6px #0066CC,var(--pa-shadow-card)}
+.pa-network-mode-icon{width:42px;height:42px;border-radius:13px;background:var(--pa-grad-primary);color:#fff;font-size:1rem;box-shadow:0 6px 14px rgba(0,102,204,.28)}
+.pa-network-mode-icon--muted{background:linear-gradient(135deg,#94A3B8,#64748B);color:#fff;box-shadow:0 6px 14px rgba(100,116,139,.25)}
+.pa-network-mode-body strong{font-size:.9rem;font-weight:800}
+
+/* Portfolio panel: vibrant icon + accent */
+.pa-portfolio-icon{background:var(--pa-grad-primary);color:#fff;box-shadow:0 8px 16px rgba(0,102,204,.28)}
+.pa-portfolio-panel{box-shadow:0 14px 34px rgba(20,66,124,.10)}
+
+/* Bottom nav: gradient pill on the active tab */
+.pa-bottom-nav{box-shadow:0 -10px 26px rgba(20,66,124,.08);border-top-color:#EEF3FA}
+.pa-bottom-nav a i{transition:.18s}
+.pa-bottom-nav a.is-active i{
+    background:var(--pa-grad-primary);color:#fff;width:36px;height:36px;border-radius:13px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,102,204,.32);
+    margin-top:-2px
+}
+.pa-bottom-nav a.is-active::after{display:none}
+
+/* Map / Feed toggle as a floating pill */
+.pa-network-viewtoggle{background:#fff;border:1px solid var(--pa-border);border-radius:999px;padding:5px;box-shadow:var(--pa-shadow-soft)}
+.pa-network-viewbtn{border-radius:999px;padding:11px;transition:.18s}
+.pa-network-viewbtn.is-active{background:var(--pa-grad-primary);color:#fff;box-shadow:0 8px 18px rgba(0,102,204,.32)}
+.pa-network-viewbtn.is-active i{color:#fff}
+
+/* Search + chips */
+.pa-network-search{border-radius:16px;border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft)}
+.pa-network-chip{border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft)}
+.pa-network-chip.is-active{background:var(--pa-grad-primary);border-color:transparent;box-shadow:0 8px 16px rgba(0,102,204,.28)}
+.pa-network-chip--danger.is-active{background:var(--pa-grad-danger);border-color:transparent;box-shadow:0 8px 16px rgba(220,38,38,.28)}
+
+/* Quick action tiles with soft pastel wash */
+.pa-network-action{border-radius:var(--pa-radius-card);border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft);background:linear-gradient(180deg,#F4F9FF 0%,#FFFFFF 70%)}
+.pa-network-action:nth-child(2){background:linear-gradient(180deg,#F4F2FF 0%,#FFFFFF 70%)}
+.pa-network-action-icon{width:40px;height:40px;border-radius:12px;background:var(--pa-grad-primary);color:#fff;box-shadow:0 6px 14px rgba(0,102,204,.25)}
+.pa-network-action-icon--chat{background:linear-gradient(135deg,#7C6BF0,#4F46E5);color:#fff;box-shadow:0 6px 14px rgba(79,70,229,.25)}
+
+/* Emergency card a bit more lifted */
+.pa-network-emergency{border-radius:var(--pa-radius-card);box-shadow:0 10px 24px rgba(220,38,38,.08)}
+
+/* Map shell rounding to match the new card language */
+.hn-map-shell{border-radius:var(--pa-radius-card);overflow:hidden;box-shadow:var(--pa-shadow-card)}
+
+/* ---- Phase 2: Properties / Services / Tasks / Calendar ---- */
+
+/* Primary / outline buttons with gradient + lift */
+.pa-btn-primary{background:var(--pa-grad-primary);border-color:transparent;border-radius:16px;box-shadow:0 10px 22px rgba(0,102,204,.28)}
+.pa-btn-outline{border-radius:16px;border-color:#CFE0FB;box-shadow:var(--pa-shadow-soft)}
+
+/* Search bar + filter pills */
+.pa-search-bar{border-radius:16px;border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft)}
+.pa-filter-pill{border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft)}
+.pa-filter-pill.is-active{background:var(--pa-grad-primary);border-color:transparent;box-shadow:0 8px 16px rgba(0,102,204,.28)}
+
+/* Floating action button */
+.pa-fab{background:var(--pa-grad-primary);box-shadow:0 14px 30px rgba(0,102,204,.4)}
+
+/* List + grid cards: rounder, softly elevated */
+.pa-request-row,
+.pa-portfolio-property-card,
+.pa-plan-card,
+.pa-calendar-visit{border-radius:var(--pa-radius-card);border-color:var(--pa-border);box-shadow:var(--pa-shadow-soft)}
+.pa-portfolio-property-card{transition:transform .15s,box-shadow .15s}
+.pa-portfolio-property-card:active{transform:scale(.99)}
+
+/* Stats strip */
+.pa-portfolio-stats{border-radius:18px;border-color:var(--pa-border);box-shadow:var(--pa-shadow-card)}
+
+/* Empty states */
+.pa-empty-card{border-radius:16px;box-shadow:var(--pa-shadow-soft)}
+.pa-portfolio-empty{border-radius:18px}
+
+/* Feature cards + promo banner */
+.pa-portfolio-feature{border-radius:16px;box-shadow:var(--pa-shadow-soft)}
+.pa-portfolio-banner{background:linear-gradient(135deg,#EAF2FF 0%,#F1ECFF 100%);border-color:#D9E5FB;box-shadow:var(--pa-shadow-soft)}
+.pa-portfolio-banner-icon{background:var(--pa-grad-primary);box-shadow:0 6px 14px rgba(0,102,204,.3)}
+
+/* Emergency banner pop */
+.pa-emergency-banner{border-radius:var(--pa-radius-card);box-shadow:0 10px 24px rgba(220,38,38,.1)}
+
+/* ---- Illustrated hero banner (flagship) ---- */
+.pa-hero-banner{
+    position:relative;overflow:hidden;isolation:isolate;
+    border-radius:24px;padding:20px 20px 24px;margin-bottom:18px;
+    background:linear-gradient(135deg,#37A0FF 0%,#0F7BEF 42%,#0057C8 78%,#063E8C 120%);
+    color:#fff;box-shadow:0 20px 44px rgba(0,86,200,.38)
+}
+.pa-hero-banner::after{
+    content:'';position:absolute;inset:0;z-index:0;
+    background:radial-gradient(130% 90% at 100% 0%,rgba(255,255,255,.22),rgba(255,255,255,0) 58%)
+}
+.pa-hero-banner-content{position:relative;z-index:2;max-width:70%}
+.pa-hero-pill{
+    display:inline-flex;align-items:center;gap:6px;margin-bottom:14px;
+    background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.4);
+    color:#fff;border-radius:999px;padding:6px 12px;font-size:.6rem;font-weight:800;
+    letter-spacing:.07em;text-decoration:none;backdrop-filter:blur(4px)
+}
+.pa-hero-pill i{font-size:.62rem}
+.pa-hero-banner h1{font-size:1.8rem;font-weight:800;color:#fff;margin:0 0 8px;line-height:1.14;letter-spacing:-.02em}
+.pa-hero-banner p{margin:0;font-size:.88rem;line-height:1.5;color:rgba(255,255,255,.92)}
+
+.pa-hero-scene{position:absolute;top:0;right:0;bottom:0;width:48%;z-index:1;pointer-events:none}
+.pa-hero-sun{position:absolute;top:14px;right:18px;font-size:1.55rem;color:#FFD46A;filter:drop-shadow(0 0 12px rgba(255,212,106,.7))}
+.pa-hero-cloud{position:absolute;color:rgba(255,255,255,.6)}
+.pa-hero-cloud--1{top:30px;right:62px;font-size:1.55rem}
+.pa-hero-cloud--2{top:60px;right:22px;font-size:1.05rem;color:rgba(255,255,255,.42)}
+.pa-hero-house{position:absolute;right:22px;bottom:-8px;font-size:3.5rem;color:#fff;filter:drop-shadow(0 8px 12px rgba(6,40,90,.45))}
+.pa-hero-tree{position:absolute;right:96px;bottom:-4px;font-size:2rem;color:#A7E8B8;filter:drop-shadow(0 6px 8px rgba(6,40,90,.35))}
+@media (max-width:360px){
+    .pa-hero-banner-content{max-width:78%}
+    .pa-hero-banner h1{font-size:1.55rem}
+    .pa-hero-house{font-size:2.8rem}
+}

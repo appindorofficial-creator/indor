@@ -337,6 +337,7 @@
     font-family: 'Inter', sans-serif;
     background: #F8FAFC;
     min-height: 100vh;
+    min-height: 100dvh;
     padding-bottom: 80px;
 }
 .rl-dash-shell { max-width: 480px; margin: 0 auto; padding: 16px; }
@@ -6557,3 +6558,87 @@ a.rl-profile-nav-item {
     text-decoration: none;
     color: inherit;
 }
+
+/* ============================================================
+   DESIGN REFRESH v2 — Realtor portal
+   Sky background, gradient accents, softly elevated cards
+   ============================================================ */
+.rl-dash-page {
+    background:
+        radial-gradient(120% 70% at 85% -5%, rgba(140, 196, 255, .32) 0%, rgba(140, 196, 255, 0) 55%),
+        radial-gradient(110% 60% at 0% 0%, rgba(99, 160, 255, .16) 0%, rgba(99, 160, 255, 0) 50%),
+        linear-gradient(180deg, #E9F2FE 0%, #F2F8FF 22%, #F7FBFF 48%, #FFFFFF 100%);
+    background-attachment: fixed;
+}
+
+/* Buttons */
+.rl-btn-primary {
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 18px rgba(0, 102, 204, .26);
+}
+.rl-btn-outline { border-radius: 12px; border-color: #CFE0FB; box-shadow: 0 6px 18px rgba(20, 66, 124, .06); }
+
+/* Search + filter chips */
+.rl-search-bar { border-radius: 16px; border-color: #E7EEF7; box-shadow: 0 6px 18px rgba(20, 66, 124, .06); }
+.rl-filter-chip { box-shadow: 0 6px 18px rgba(20, 66, 124, .05); }
+.rl-filter-chip.is-active {
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    border-color: transparent;
+    box-shadow: 0 8px 16px rgba(0, 102, 204, .28);
+}
+
+/* Map / Feed toggle */
+.rl-network-view-toggle { border-radius: 999px; }
+.rl-network-view-btn { border-radius: 999px; }
+.rl-network-view-btn.is-active {
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    box-shadow: 0 8px 18px rgba(0, 102, 204, .3);
+}
+
+/* Cards: rounder + softly elevated */
+.rl-stat-card { border-radius: 18px; border-color: #E7EEF7; box-shadow: 0 8px 20px rgba(20, 66, 124, .07); }
+.rl-network-card { border-radius: 20px; border-color: #E7EEF7; box-shadow: 0 10px 26px rgba(20, 66, 124, .08); }
+
+/* Vibrant illustrated home hero (CSS-only, FA glyph decorations) */
+.rl-home-hero {
+    margin: -16px -16px 18px;
+    padding: 22px 18px 26px;
+    overflow: hidden;
+    isolation: isolate;
+    border-radius: 0 0 28px 28px;
+    background: linear-gradient(135deg, #37A0FF 0%, #0F7BEF 45%, #0057C8 80%, #063E8C 125%) !important;
+    box-shadow: 0 16px 38px rgba(0, 86, 200, .32);
+}
+.rl-home-hero::before {
+    content: '\f185'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    position: absolute; top: 16px; right: 18px; font-size: 1.5rem; color: #FFD46A;
+    filter: drop-shadow(0 0 12px rgba(255, 212, 106, .7)); z-index: 0;
+}
+.rl-home-hero::after {
+    content: '\f015'; font-family: 'Font Awesome 6 Free'; font-weight: 900;
+    position: absolute; right: 16px; bottom: -14px; font-size: 3.3rem; color: rgba(255, 255, 255, .9);
+    filter: drop-shadow(0 8px 12px rgba(6, 40, 90, .4)); z-index: 0;
+}
+.rl-home-hero h1 { color: #fff; font-weight: 800; }
+.rl-home-hero .rl-verify-link { color: #fff; text-decoration: underline; }
+.rl-home-avatar { border: 2px solid rgba(255, 255, 255, .65); box-shadow: 0 6px 16px rgba(6, 40, 90, .3); }
+
+/* Pin wizard action footer just above the bottom nav (removes the empty gap
+   between "Continue" and the tab bar on short pages). Applies to all realtor
+   wizards that use .rl-invite-shell + the fixed bottom nav. */
+.rl-dash-page .rl-invite-actions {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 60;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 12px 16px calc(12px + 56px + env(safe-area-inset-bottom));
+    background: rgba(255, 255, 255, .97);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid #EEF3FA;
+    box-shadow: 0 -10px 26px rgba(20, 66, 124, .08);
+}
+.rl-invite-shell { padding-bottom: 156px; }

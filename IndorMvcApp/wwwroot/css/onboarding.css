@@ -1,13 +1,13 @@
 /* INDOR onboarding — mobile-first, matches create-account mockup */
 *,*::before,*::after{box-sizing:border-box}
-.ob-page{min-height:100vh;margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0F172A;background:#F1F5F9}
+.ob-page{min-height:100vh;min-height:100dvh;margin:0;font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;color:#0F172A;background:#F1F5F9}
 .ob-page--white{background:#fff}
 
 /* Welcome hero */
-.ob-welcome{position:relative;min-height:100vh;display:flex;flex-direction:column;background:#0a1628}
+.ob-welcome{position:relative;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;background:#0a1628}
 .ob-welcome-hero{position:absolute;inset:0;background:url('/inspeccion2.jpeg') center/cover no-repeat}
 .ob-welcome-hero::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,rgba(8,20,40,.55) 0%,rgba(8,20,40,.72) 45%,rgba(8,20,40,.92) 100%)}
-.ob-welcome-body{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:28px 24px 32px;max-width:430px;margin:0 auto;width:100%;min-height:100vh}
+.ob-welcome-body{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:28px 24px 32px;max-width:430px;margin:0 auto;width:100%;min-height:100vh;min-height:100dvh}
 .ob-welcome-logo{margin-top:8px}
 .ob-welcome-logo img{height:40px;width:auto;display:block}
 .ob-welcome-copy{margin-bottom:auto;padding-top:8px}
@@ -23,7 +23,7 @@
 .ob-welcome-legal a{color:rgba(255,255,255,.95);font-weight:700;text-decoration:underline;text-underline-offset:2px}
 
 /* Shared layout */
-.ob-shell{min-height:100vh;padding:0 0 40px;background:#F1F5F9}
+.ob-shell{min-height:100vh;min-height:100dvh;padding:0 0 40px;background:#F1F5F9}
 .ob-shell-inner{max-width:430px;margin:0 auto;padding:0 20px 24px}
 .ob-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;min-height:52px}
 .ob-nav-back{width:40px;height:40px;border:none;background:transparent;color:#0F172A;font-size:1.1rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:10px}

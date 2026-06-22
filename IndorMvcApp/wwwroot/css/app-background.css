@@ -11,6 +11,7 @@ body {
     background-image: none !important;
     position: relative !important;
     min-height: 100vh !important;
+    min-height: 100dvh !important;
 }
 
 body::before,

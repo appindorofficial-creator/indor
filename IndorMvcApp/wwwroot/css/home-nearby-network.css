@@ -928,3 +928,60 @@ button.hn-quick-action { width: 100%; font: inherit; }
     border-color: #CBD5E1;
     color: #475569;
 }
+
+/* ============================================================
+   DESIGN REFRESH v2 — Homeowner Nearby Network
+   Brighter pills, gradient accents, softly elevated cards
+   ============================================================ */
+.hn-network-view-toggle {
+    background: #fff;
+    border: 1px solid #E7EEF7;
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .06);
+}
+.hn-network-view-btn { border-radius: 999px; transition: .18s; }
+.hn-network-view-btn.is-active {
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(0, 102, 204, .32);
+}
+
+.hn-search-bar {
+    background: #fff;
+    border-color: #E7EEF7;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .06);
+}
+
+.hn-filter-chip { border-color: #E7EEF7; box-shadow: 0 6px 18px rgba(20, 66, 124, .06); }
+.hn-filter-chip.is-active {
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    border-color: transparent;
+    box-shadow: 0 8px 16px rgba(0, 102, 204, .28);
+}
+
+.hn-quick-action {
+    border-radius: 20px;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .06);
+    background: linear-gradient(180deg, #F4F9FF 0%, #FFFFFF 70%);
+}
+.hn-quick-action:nth-child(2) { background: linear-gradient(180deg, #F4F2FF 0%, #FFFFFF 70%); }
+.hn-quick-action-icon {
+    background: linear-gradient(135deg, #2E8BFF, #0066CC) !important;
+    color: #fff !important;
+    box-shadow: 0 6px 14px rgba(0, 102, 204, .25);
+}
+
+.hn-map-shell { border-radius: 20px; overflow: hidden; box-shadow: 0 10px 28px rgba(20, 66, 124, .08); }
+
+.hn-emergency-banner { border-radius: 20px; box-shadow: 0 10px 24px rgba(220, 38, 38, .08); }
+
+/* Feed cards: rounder + softly elevated */
+#section-home .rl-network-card {
+    border-radius: 20px;
+    box-shadow: 0 8px 22px rgba(20, 66, 124, .07);
+}
+#section-home .rl-btn-primary {
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    box-shadow: 0 6px 14px rgba(0, 102, 204, .25);
+}

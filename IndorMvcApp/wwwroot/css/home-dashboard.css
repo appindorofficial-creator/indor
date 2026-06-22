@@ -865,3 +865,15 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+/* ============================================================
+   DESIGN REFRESH v2 — Homeowner dashboard
+   ============================================================ */
+.hv-view-card {
+    border-radius: 18px;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .06);
+}
+.hv-view-card.is-active {
+    background: linear-gradient(180deg, #F2F8FF, #FFFFFF);
+    box-shadow: 0 0 0 1.5px #0066CC, 0 10px 24px rgba(0, 102, 204, .14);
+}
