@@ -144,7 +144,7 @@
     <section class="rl-dash-section" id="shared-packages">
         <div class="rl-dash-section-head">
             <h2>Shared Packages</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
+            <a asp-controller="Realtor" asp-action="Files" asp-route-filter="Shared">View all <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.SharedPackages.Count == 0)
         {
