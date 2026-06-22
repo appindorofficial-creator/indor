@@ -75,7 +75,7 @@ public class RealtorUrgentQuoteController(
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> QuickAddProperty(
-        string quickAddAddress, string quickAddCity, string quickAddState, string quickAddZip, bool quickAddUseForQuote = true)
+        string? quickAddAddress, string? quickAddCity, string? quickAddState, string? quickAddZip, bool quickAddUseForQuote = true)
     {
         if (string.IsNullOrWhiteSpace(quickAddAddress) ||
             string.IsNullOrWhiteSpace(quickAddCity) ||
@@ -93,7 +93,7 @@ public class RealtorUrgentQuoteController(
             return View("Property", vm);
         }
 
-        await wizard.QuickAddPropertyAsync(quickAddAddress, quickAddCity, quickAddState, quickAddZip, quickAddUseForQuote);
+        await wizard.QuickAddPropertyAsync(quickAddAddress!, quickAddCity!, quickAddState!, quickAddZip!, quickAddUseForQuote);
         return RedirectToAction(nameof(Property));
     }
 

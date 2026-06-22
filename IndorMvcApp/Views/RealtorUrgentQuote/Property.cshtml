@@ -49,7 +49,7 @@
             <div class="rl-uq-field">
                 <label>State</label>
                 <select name="quickAddState">
-                    <option value="">NC</option>
+                    <option value="">--</option>
                     @foreach (var st in Model.States)
                     {
                         <option value="@st" selected="@(Model.QuickAddState == st)">@st</option>

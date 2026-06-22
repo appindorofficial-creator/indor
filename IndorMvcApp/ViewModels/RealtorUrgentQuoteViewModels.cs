@@ -35,7 +35,7 @@ public class RealtorUrgentQuotePropertyViewModel : RealtorUrgentQuoteStepViewMod
     public bool QuickAddOpen { get; set; }
     public string QuickAddAddress { get; set; } = "";
     public string QuickAddCity { get; set; } = "";
-    public string QuickAddState { get; set; } = "";
+    public string QuickAddState { get; set; } = "NC";
     public string QuickAddZip { get; set; } = "";
     public bool QuickAddUseForQuote { get; set; } = true;
 }

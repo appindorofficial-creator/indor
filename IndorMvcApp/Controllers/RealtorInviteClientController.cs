@@ -168,22 +168,30 @@ public class RealtorInviteClientController(
             ModelState.AddModelError(nameof(model.PostalCode), "ZIP code is required.");
         }
 
-        if (!ModelState.IsValid)
+        if (ModelState.IsValid)
         {
-            var invalidVm = await inviteService.BuildCreatePropertyAsync();
-            invalidVm.Address = model.Address ?? "";
-            invalidVm.Unit = model.Unit ?? "";
-            invalidVm.City = model.City ?? "";
-            invalidVm.StateCode = model.StateCode ?? "";
-            invalidVm.PostalCode = model.PostalCode ?? "";
-            invalidVm.Nickname = model.Nickname ?? "";
-            invalidVm.PropertyType = model.PropertyType ?? RealtorPropertyTypes.SingleFamily;
-            invalidVm.SelectForClient = model.SelectForClient;
-            return View(invalidVm);
+            try
+            {
+                await inviteService.CreatePropertyAsync(model);
+                return RedirectToAction(nameof(Property));
+            }
+            catch (Exception)
+            {
+                ModelState.AddModelError(string.Empty,
+                    "We couldn't save the property. Please try again, or contact support if the problem persists.");
+            }
         }
 
-        await inviteService.CreatePropertyAsync(model);
-        return RedirectToAction(nameof(Property));
+        var invalidVm = await inviteService.BuildCreatePropertyAsync();
+        invalidVm.Address = model.Address ?? "";
+        invalidVm.Unit = model.Unit ?? "";
+        invalidVm.City = model.City ?? "";
+        invalidVm.StateCode = model.StateCode ?? "";
+        invalidVm.PostalCode = model.PostalCode ?? "";
+        invalidVm.Nickname = model.Nickname ?? "";
+        invalidVm.PropertyType = model.PropertyType ?? RealtorPropertyTypes.SingleFamily;
+        invalidVm.SelectForClient = model.SelectForClient;
+        return View(invalidVm);
     }
 
     [HttpGet]
