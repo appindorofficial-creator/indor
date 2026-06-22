@@ -1,458 +1,209 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorHomeViewModel
-
+@using System.Text.Json
 @{
-
     ViewData["Title"] = "Home";
-
     Layout = "_PropertyAdminLayout";
-
     ViewBag.NavActive = "home";
-
+    var isMapView = Model.NetworkView == "map";
 }
 
-
-
 <div class="pa-portal-shell">
-
     @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
-
-
-    <section class="pa-hero-block pa-hero-block--flow">
+    <section class="pa-hero-block">
         <div class="pa-hero-block-head">
             <div>
                 <h1>@Model.Greeting</h1>
-                <p>Manage service, homecare, and operations across your portfolio.</p>
+                <p>Manage your Airbnb homes, guests, services, and local operations across your portfolio.</p>
             </div>
-            <span class="pa-flow-step-pill">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-flow-step-pill pa-portfolio-overview-pill">
+                <i class="fas fa-chart-simple"></i> PORTFOLIO OVERVIEW
+            </a>
         </div>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminHomePortfolio", Model)
 
-    @if (Model.FeaturedPoolHotTub != null)
-    {
-        <a href="@Model.FeaturedPoolHotTub.StartUrl" class="pa-featured-turnover pa-featured-pool">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedPoolHotTub.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedPoolHotTub.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-water-ladder"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedPestControl != null)
-    {
-        <a href="@Model.FeaturedPestControl.StartUrl" class="pa-featured-turnover pa-featured-pest-control">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedPestControl.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedPestControl.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-bug"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedPressureWashing != null)
-    {
-        <a href="@Model.FeaturedPressureWashing.StartUrl" class="pa-featured-turnover pa-featured-pressure-wash">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedPressureWashing.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedPressureWashing.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-spray-can"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedLandscaping != null)
-    {
-        <a href="@Model.FeaturedLandscaping.StartUrl" class="pa-featured-turnover pa-featured-landscaping">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedLandscaping.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedLandscaping.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-leaf"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedLawnCare != null)
-    {
-        <a href="@Model.FeaturedLawnCare.StartUrl" class="pa-featured-turnover pa-featured-lawn">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedLawnCare.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedLawnCare.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-seedling"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedTrashOut != null)
-    {
-        <a href="@Model.FeaturedTrashOut.StartUrl" class="pa-featured-turnover pa-featured-trashout">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--purple">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedTrashOut.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedTrashOut.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-trash-can"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedFurnitureHaulAway != null)
-    {
-        <a href="@Model.FeaturedFurnitureHaulAway.StartUrl" class="pa-featured-turnover pa-featured-furniture">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--blue">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedFurnitureHaulAway.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedFurnitureHaulAway.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-couch"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedJunkRemoval != null)
-    {
-        <a href="@Model.FeaturedJunkRemoval.StartUrl" class="pa-featured-turnover pa-featured-junk">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--blue">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedJunkRemoval.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedJunkRemoval.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-dolly"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedMovingHelp != null)
-    {
-        <a href="@Model.FeaturedMovingHelp.StartUrl" class="pa-featured-turnover pa-featured-moving">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--blue">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedMovingHelp.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedMovingHelp.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-truck"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedPetDeepClean != null)
-    {
-        <a href="@Model.FeaturedPetDeepClean.StartUrl" class="pa-featured-turnover pa-featured-pet">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--purple">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedPetDeepClean.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedPetDeepClean.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-paw"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedStandardCleaning != null)
-    {
-        <a href="@Model.FeaturedStandardCleaning.StartUrl" class="pa-featured-turnover pa-featured-standard">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--purple">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedStandardCleaning.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedStandardCleaning.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-spray-can-sparkles"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedTurnoverCleaning != null)
-    {
-        <a href="@Model.FeaturedTurnoverCleaning.StartUrl" class="pa-featured-turnover">
-            <div class="pa-featured-turnover-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--purple">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-turnover-body">
-                <div>
-                    <strong class="pa-featured-turnover-title">@Model.FeaturedTurnoverCleaning.Title</strong>
-                    <p class="pa-featured-turnover-sub">@Model.FeaturedTurnoverCleaning.Subtitle</p>
-                </div>
-                <span class="pa-featured-turnover-icon"><i class="fas fa-broom"></i></span>
-            </div>
-            <span class="pa-featured-turnover-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedSmokeDetector != null)
-    {
-        <a href="@Model.FeaturedSmokeDetector.StartUrl" class="pa-featured-smokedetector">
-            <div class="pa-featured-smokedetector-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm pa-flow-step-pill--green">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-smokedetector-body">
-                <div>
-                    <strong class="pa-featured-smokedetector-title">@Model.FeaturedSmokeDetector.Title</strong>
-                    <p class="pa-featured-smokedetector-sub">@Model.FeaturedSmokeDetector.Subtitle</p>
-                </div>
-                <span class="pa-featured-smokedetector-icon"><i class="fas fa-bell"></i></span>
-            </div>
-            <span class="pa-featured-smokedetector-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedAirFilter != null)
-    {
-        <a href="@Model.FeaturedAirFilter.StartUrl" class="pa-featured-airfilter">
-            <div class="pa-featured-airfilter-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-airfilter-body">
-                <div class="pa-featured-airfilter-copy">
-                    <strong class="pa-featured-airfilter-title">@Model.FeaturedAirFilter.Title</strong>
-                    <p class="pa-featured-airfilter-sub">@Model.FeaturedAirFilter.Subtitle</p>
-                    <ul class="pa-featured-airfilter-benefits">
-                        @foreach (var benefit in Model.FeaturedAirFilter.Benefits)
-                        {
-                            <li><i class="fas @benefit.IconClass"></i> @benefit.Label</li>
-                        }
-                    </ul>
-                </div>
-                <span class="pa-featured-airfilter-art" aria-hidden="true"><i class="fas fa-fan"></i></span>
-            </div>
-            <span class="pa-featured-airfilter-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedPreventive != null)
-    {
-        <a href="@Model.FeaturedPreventive.StartUrl" class="pa-featured-preventive">
-            <div class="pa-featured-preventive-body">
-                <div>
-                    <div class="pa-featured-preventive-head">
-                        <strong class="pa-featured-preventive-title">@Model.FeaturedPreventive.Title</strong>
-                        <span class="pa-featured-preventive-badge">@Model.FeaturedPreventive.BadgeLabel</span>
-                    </div>
-                    <p class="pa-featured-preventive-sub">@Model.FeaturedPreventive.Subtitle</p>
-                </div>
-                <span class="pa-featured-preventive-icon"><i class="fas fa-clipboard-list"></i></span>
-            </div>
-            <span class="pa-featured-preventive-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.FeaturedEmergency != null)
-    {
-        <a href="@Model.FeaturedEmergency.StartUrl" class="pa-featured-emergency pa-featured-emergency--flood">
-            <div class="pa-featured-emergency-top">
-                <span class="pa-flow-step-pill pa-flow-step-pill--sm">STEP @Model.HomeFlowStep OF @Model.HomeFlowTotalSteps</span>
-            </div>
-            <div class="pa-featured-emergency-body">
-                <div>
-                    <strong class="pa-featured-emergency-title">@Model.FeaturedEmergency.Title</strong>
-                    <p class="pa-featured-emergency-sub">@Model.FeaturedEmergency.Subtitle</p>
-                </div>
-                <span class="pa-featured-emergency-icon"><i class="fas @Model.FeaturedEmergency.IconClass"></i></span>
-            </div>
-            <span class="pa-featured-emergency-btn">Start now</span>
-        </a>
-    }
-
-    @if (Model.NearestPro != null)
-    {
-        <div class="pa-nearest-pro">
-            <div class="pa-nearest-pro-copy">
-                <span>Nearest @Model.NearestPro.ProTypeLabel pro available in <strong>@Model.NearestPro.EtaMinutes minutes</strong></span>
-                <small>@Model.NearestPro.TrustLabel</small>
-            </div>
-            <span class="pa-nearest-pro-avatar"><img src="/inspeccion2.jpeg" alt="" /><span class="pa-online-dot"></span></span>
-        </div>
-    }
-
-
-
-    @await Html.PartialAsync("_PropertyAdminStatRow", Model.SummaryStats)
-
-
-
-    <section class="pa-section">
-
-        <div class="pa-section-head">
-
-            <h2>Service hub</h2>
-
-            <a asp-controller="Administrador" asp-action="Services">View all services <i class="fas fa-chevron-right"></i></a>
-
+    <section class="pa-network">
+        <div class="pa-network-modes">
+            <button type="button" class="pa-network-mode is-active" data-pamode="network">
+                <span class="pa-network-mode-icon"><i class="fas fa-people-group"></i></span>
+                <span class="pa-network-mode-body">
+                    <strong>Portfolio Network</strong>
+                    <small>Feed, nearby help, hosts &amp; local updates</small>
+                </span>
+            </button>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-network-mode">
+                <span class="pa-network-mode-icon pa-network-mode-icon--muted"><i class="fas fa-house"></i></span>
+                <span class="pa-network-mode-body">
+                    <strong>My Properties</strong>
+                    <small>Your homes dashboard</small>
+                </span>
+            </a>
         </div>
 
-        <div class="pa-service-hub">
-
-            @foreach (var item in Model.ServiceHub)
-
-            {
-
-                <a href="@item.Url" class="pa-service-hub-item">
-
-                    <span class="pa-service-hub-icon @item.ToneClass"><i class="fas @item.IconClass"></i></span>
-
-                    <span>@item.Label</span>
-
-                </a>
-
-            }
-
+        <div class="pa-network-viewtoggle" role="tablist" aria-label="Network view">
+            <a asp-controller="Administrador" asp-action="Index" asp-route-view="map" asp-route-filter="@Model.NetworkFilter"
+               class="pa-network-viewbtn @(isMapView ? "is-active" : null)"><i class="fas fa-map"></i> Map</a>
+            <a asp-controller="Administrador" asp-action="Index" asp-route-view="feed" asp-route-filter="@Model.NetworkFilter"
+               class="pa-network-viewbtn @(!isMapView ? "is-active" : null)"><i class="fas fa-list"></i> Feed</a>
         </div>
 
-    </section>
-
-
-
-    @if (Model.RecentRequests.Count > 0)
-    {
-        <section class="pa-section">
-            <div class="pa-section-head">
-                <h2>Recent requests</h2>
-                <a asp-controller="Administrador" asp-action="Tasks">View all <i class="fas fa-chevron-right"></i></a>
-            </div>
-            @foreach (var req in Model.RecentRequests)
-            {
-                <a href="@req.Url" class="pa-recent-request">
-                    <div class="pa-recent-request-body">
-                        <strong>@req.Title</strong>
-                        <span>@req.PropertyName</span>
-                    </div>
-                    <span class="pa-status-pill pa-status-pill--@req.StatusCss">@req.StatusLabel</span>
-                </a>
-            }
-        </section>
-    }
-
-
-
-    <section class="pa-section">
-
-        <div class="pa-section-head">
-
-            <h2>Today's service activity</h2>
-
-        </div>
-
-        <div class="pa-activity-row">
-
-            @foreach (var chip in Model.TodayActivity)
-
-            {
-
-                <div class="pa-activity-chip">
-
-                    <strong>@chip.Value</strong>
-
-                    <span><i class="fas @chip.IconClass"></i> @chip.Label</span>
-
-                </div>
-
-            }
-
-        </div>
-
-    </section>
-
-
-
-    @if (Model.UpcomingVisits.Count > 0)
-
-    {
-
-        <section class="pa-section">
-
-            <div class="pa-section-head">
-
-                <h2>Upcoming service visits</h2>
-
-                <a asp-controller="Administrador" asp-action="Calendar">View calendar <i class="fas fa-chevron-right"></i></a>
-
-            </div>
-
-            <div class="pa-hscroll">
-
-                @foreach (var visit in Model.UpcomingVisits)
-
+        @if (isMapView)
+        {
+            var nm = Model.NearbyMap;
+            <div class="pa-network-chips">
+                @if (nm != null)
                 {
-
-                    <article class="pa-visit-card">
-
-                        <img src="@(visit.ImageUrl ?? "/inspeccion2.jpeg")" alt="" />
-
-                        <div class="pa-visit-card-body">
-
-                            <strong>@visit.Title</strong>
-
-                            <span>@visit.PropertyName</span>
-
-                            <small>@visit.DateLabel</small>
-
-                        </div>
-
-                    </article>
-
+                    foreach (var chip in nm.Filters)
+                    {
+                        <a asp-controller="Administrador" asp-action="Index" asp-route-view="map" asp-route-filter="@chip.Value"
+                           class="pa-network-chip @(string.Equals(nm.ActiveFilter, chip.Value, StringComparison.OrdinalIgnoreCase) ? "is-active" : null)">
+                            <i class="fas @chip.Icon"></i> @chip.Label
+                        </a>
+                    }
                 }
-
             </div>
 
-        </section>
+            if (nm != null && nm.HasGoogleMaps)
+            {
+                var mapConfigJson = JsonSerializer.Serialize(new
+                {
+                    home = new { lat = nm.CenterLatitude, lng = nm.CenterLongitude },
+                    center = new { lat = nm.CenterLatitude, lng = nm.CenterLongitude },
+                    homeLabel = nm.MapCenterLabel,
+                    propertyAddress = nm.PropertyAddress,
+                    radiusMiles = nm.RadiusMiles,
+                    activeFilter = nm.ActiveFilter,
+                    carouselItems = nm.MapCarouselItems.Select(i => new
+                    {
+                        id = i.Id,
+                        itemType = i.ItemType,
+                        badgeLabel = i.BadgeLabel,
+                        title = i.Title,
+                        subtitle = i.Subtitle,
+                        imageUrl = string.IsNullOrWhiteSpace(i.ImageUrl) ? null : Url.Content("~" + i.ImageUrl),
+                        iconClass = i.IconClass,
+                        latitude = i.Latitude,
+                        longitude = i.Longitude,
+                        distanceMiles = i.DistanceMiles,
+                        metaLabel = i.MetaLabel,
+                        tags = i.Tags,
+                        isVerified = i.IsVerified,
+                        primaryActionLabel = i.PrimaryActionLabel,
+                        primaryActionUrl = i.PrimaryActionUrl,
+                        secondaryActionLabel = i.SecondaryActionLabel,
+                        secondaryActionUrl = i.SecondaryActionUrl
+                    })
+                }, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
 
-    }
+                <link rel="stylesheet" href="~/css/home-nearby-network.css" asp-append-version="true" />
 
+                <section class="hn-map-shell" aria-label="Nearby map">
+                    <div id="hnNearbyNetworkMap" class="hn-map-canvas"></div>
+
+                    <div class="hn-map-radius-badge" aria-hidden="true">@nm.RadiusMiles.ToString("0.#") mi</div>
+
+                    <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="Recenter on your portfolio">
+                        <i class="fas fa-location-arrow"></i>
+                    </button>
+
+                    <div class="hn-map-carousel-panel" id="hnMapCarouselPanel">
+                        <div class="hn-map-carousel-track" id="hnMapCarousel"></div>
+                        <div class="hn-map-carousel-dots" id="hnMapCarouselDots"></div>
+                    </div>
+
+                    <script type="application/json" id="hn-network-map-data">@Html.Raw(mapConfigJson)</script>
+                </section>
+
+                <div class="hn-privacy-banner hn-privacy-banner--map">
+                    <i class="fas fa-lock"></i>
+                    All communication happens in INDOR. No phone numbers shared.
+                </div>
+            }
+            else
+            {
+                <div class="pa-network-empty-map">
+                    <i class="fas fa-map-location-dot"></i>
+                    <p>The map is not available right now. Add a property location to see nearby providers.</p>
+                </div>
+            }
+        }
+        else
+        {
+            <form class="pa-network-search" asp-controller="Administrador" asp-action="Index" method="get">
+                <input type="hidden" name="view" value="feed" />
+                <input type="hidden" name="filter" value="@Model.NetworkFilter" />
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" value="@Model.NetworkSearch" placeholder="Search in my portfolio neighborhoods..." aria-label="Search neighborhoods" />
+            </form>
+
+            <div class="pa-network-chips">
+                <button type="button" class="pa-network-chip is-active"><i class="fas fa-table-cells-large"></i> All</button>
+                <button type="button" class="pa-network-chip"><i class="fas fa-house"></i> Listings</button>
+                <button type="button" class="pa-network-chip"><i class="fas fa-screwdriver-wrench"></i> Services</button>
+                <button type="button" class="pa-network-chip"><i class="fas fa-tag"></i> Promotions</button>
+                <button type="button" class="pa-network-chip pa-network-chip--danger"><i class="fas fa-triangle-exclamation"></i> Emergency</button>
+            </div>
+
+            <div class="pa-network-actions">
+                <a asp-controller="Administrador" asp-action="RequestService" class="pa-network-action">
+                    <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
+                    <strong>Post a Request</strong>
+                    <small>Ask your network for help or recommendations</small>
+                </a>
+                <a asp-controller="Administrador" asp-action="Tasks" class="pa-network-action">
+                    <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
+                    <strong>My Requests</strong>
+                    <small>Track &amp; manage your requests and updates</small>
+                </a>
+            </div>
+
+            <a asp-controller="Administrador" asp-action="EmergencyPlumbingDetails" class="pa-network-emergency">
+                <span class="pa-network-emergency-badge">EMERGENCY</span>
+                <div class="pa-network-emergency-main">
+                    <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
+                    <div class="pa-network-emergency-text">
+                        <strong>Emergency Help Nearby</strong>
+                        <p>Licensed plumber available near your Airbnb property</p>
+                    </div>
+                </div>
+                <div class="pa-network-emergency-foot">
+                    <div class="pa-network-emergency-meta">
+                        <span><i class="far fa-clock"></i> Average arrival time: 28 mins</span>
+                        <span><i class="fas fa-location-dot"></i> 2.6 mi away</span>
+                    </div>
+                    <span class="pa-network-emergency-call">Call now <i class="fas fa-chevron-right"></i></span>
+                </div>
+            </a>
+        }
+    </section>
 </div>
 
+@if (!isMapView)
+{
+    <script>
+        (function () {
+            var items = document.querySelectorAll('.pa-network-chip');
+            items.forEach(function (item) {
+                item.addEventListener('click', function () {
+                    items.forEach(function (i) { i.classList.remove('is-active'); });
+                    item.classList.add('is-active');
+                });
+            });
+        })();
+    </script>
+}
 
+@if (isMapView && Model.NearbyMap?.HasGoogleMaps == true)
+{
+    <script src="@Url.Content("~/js/homeowner-nearby-network-map.js")" asp-append-version="true"></script>
+    <script>
+        window.setTimeout(function () {
+            if (!window.hnNearbyNetworkMapReady && window.google && window.google.maps && window.hnInitNearbyNetworkMap) {
+                window.hnInitNearbyNetworkMap();
+            }
+        }, 8000);
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=@Model.NearbyMap.GoogleMapsApiKey&amp;loading=async&amp;callback=hnInitNearbyNetworkMap"></script>
+}

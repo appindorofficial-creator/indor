@@ -64,6 +64,11 @@ public class PropertyAdministratorHomeViewModel : PropertyAdministratorPortalShe
     public IReadOnlyList<PropertyAdministratorActivityChipViewModel> TodayActivity { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorVisitCardViewModel> UpcomingVisits { get; set; } = [];
     public IReadOnlyList<PropertyAdministratorHomecarePlanItemViewModel> HomecarePlans { get; set; } = [];
+
+    public string NetworkView { get; set; } = "feed";
+    public string NetworkFilter { get; set; } = "All";
+    public string? NetworkSearch { get; set; }
+    public HomeownerNearbyNetworkViewModel? NearbyMap { get; set; }
 }
 
 public class PropertyAdministratorCalendarViewModel : PropertyAdministratorPortalShellViewModel
@@ -79,6 +84,7 @@ public class PropertyAdministratorPropertiesPortalViewModel : PropertyAdministra
     public string ManagementStyleLabel { get; set; } = "";
     public int TotalPropertyCount { get; set; }
     public int ActivePropertiesCount { get; set; }
+    public int ServiceTasksPendingCount { get; set; }
     public string BackUrl { get; set; } = "#";
     public bool ShowBackHeader { get; set; }
     public string AddPropertyUrl { get; set; } = "#";

@@ -376,6 +376,10 @@ public class PropertyAdministratorPortalService(
             ManagementStyleLabel = PropertyAdministratorCatalog.LabelManagementStyle(admin.ManagementStyle),
             TotalPropertyCount = properties.Count,
             ActivePropertiesCount = properties.Count(p => IsActivePropertyStatus(p.Status)),
+            ServiceTasksPendingCount = admin.ServiceRequests.Count(r =>
+                r.Status is PropertyAdministratorRequestStatuses.Open
+                    or PropertyAdministratorRequestStatuses.Emergency
+                    or PropertyAdministratorRequestStatuses.InProgress),
             ShowBackHeader = fromProfile,
             BackUrl = fromProfile
                 ? url.Action("Profile", "Administrador") ?? "#"

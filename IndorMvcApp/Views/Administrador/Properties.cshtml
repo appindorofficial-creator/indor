@@ -3,6 +3,7 @@
     ViewData["Title"] = "Portfolio & properties";
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "properties";
+    var hasProperties = Model.Properties.Count > 0;
 }
 
 <div class="pa-portal-shell pa-portal-shell--portfolio">
@@ -14,7 +15,7 @@
             </a>
             <div class="pa-portfolio-page-header-text">
                 <h1>Portfolio &amp; properties</h1>
-                <p>View and manage all your properties in one place.</p>
+                <p>Add, organize, and manage all your Airbnb and short-term rental homes in one place.</p>
             </div>
         </header>
     }
@@ -24,36 +25,61 @@
         <header class="pa-portfolio-page-header pa-portfolio-page-header--nav">
             <div class="pa-portfolio-page-header-text">
                 <h1>Portfolio &amp; properties</h1>
-                <p>View and manage all your properties in one place.</p>
+                <p>Add, organize, and manage all your Airbnb and short-term rental homes in one place.</p>
             </div>
         </header>
     }
 
-    <section class="pa-portfolio-stats">
+    <section class="pa-portfolio-stats pa-portfolio-stats--3">
         <div class="pa-portfolio-stat">
             <span class="pa-portfolio-stat-icon"><i class="fas fa-building"></i></span>
             <div>
                 <small>Total properties</small>
                 <strong>@Model.TotalPropertyCount</strong>
+                <span class="pa-portfolio-stat-hint">All your homes</span>
             </div>
         </div>
-        <div class="pa-portfolio-stat-divider" aria-hidden="true"></div>
         <div class="pa-portfolio-stat">
             <span class="pa-portfolio-stat-icon"><i class="fas fa-house"></i></span>
             <div>
                 <small>Active properties</small>
                 <strong>@Model.ActivePropertiesCount</strong>
+                <span class="pa-portfolio-stat-hint">Ready to rent</span>
             </div>
         </div>
-        <div class="pa-portfolio-stat-divider" aria-hidden="true"></div>
-        <a href="@Model.AddPropertyUrl" class="pa-portfolio-stat-link">+ Add property</a>
+        <div class="pa-portfolio-stat">
+            <span class="pa-portfolio-stat-icon pa-portfolio-stat-icon--purple"><i class="fas fa-clipboard-check"></i></span>
+            <div>
+                <small>Service tasks pending</small>
+                <strong>@Model.ServiceTasksPendingCount</strong>
+                <span class="pa-portfolio-stat-hint">Stay on top</span>
+            </div>
+        </div>
     </section>
+
+    <div class="pa-portfolio-cta-row">
+        <a href="@Model.AddPropertyUrl" class="pa-btn-primary pa-portfolio-cta-primary">
+            <i class="fas fa-plus"></i> @(hasProperties ? "Add property" : "Add your first property")
+        </a>
+        <a href="@Model.AddPropertyUrl" class="pa-btn-outline pa-portfolio-cta-import">
+            <i class="fas fa-cloud-arrow-up"></i> Import portfolio
+        </a>
+    </div>
 
     <section class="pa-portfolio-section">
         <h2>Your properties</h2>
-        @if (Model.Properties.Count == 0)
+        @if (!hasProperties)
         {
-            <div class="pa-empty-card">No properties in this portfolio yet.</div>
+            <div class="pa-portfolio-empty">
+                <span class="pa-portfolio-empty-art" aria-hidden="true"><i class="fas fa-house-chimney"></i></span>
+                <div class="pa-portfolio-empty-body">
+                    <strong>No properties added yet</strong>
+                    <p>Start by adding your first home to track services, maintenance, guests, and operations.</p>
+                    <a href="@Model.AddPropertyUrl" class="pa-btn-outline pa-btn-outline--sm">
+                        <i class="fas fa-plus"></i> Add property
+                    </a>
+                </div>
+            </div>
         }
         else
         {
@@ -75,11 +101,46 @@
         }
     </section>
 
-    <section class="pa-portfolio-tip-card">
-        <span class="pa-portfolio-tip-icon"><i class="fas fa-house-circle-check"></i></span>
-        <div>
-            <strong>Keep your portfolio up to date</strong>
-            <p>Add all your properties and keep details updated to get the most out of Home Indor.</p>
-        </div>
-    </section>
+    @if (!hasProperties)
+    {
+        <section class="pa-portfolio-section">
+            <h2>What you can do here</h2>
+            <div class="pa-portfolio-features">
+                <div class="pa-portfolio-feature">
+                    <span class="pa-portfolio-feature-icon"><i class="fas fa-chart-pie"></i></span>
+                    <strong>Track every home</strong>
+                    <p>Monitor performance, bookings, and status from one dashboard.</p>
+                </div>
+                <div class="pa-portfolio-feature">
+                    <span class="pa-portfolio-feature-icon"><i class="fas fa-screwdriver-wrench"></i></span>
+                    <strong>Manage services faster</strong>
+                    <p>Request cleaning, repairs, and maintenance with just a few taps.</p>
+                </div>
+                <div class="pa-portfolio-feature">
+                    <span class="pa-portfolio-feature-icon"><i class="fas fa-calendar-check"></i></span>
+                    <strong>Stay organized</strong>
+                    <p>Keep house details, schedules, and tasks all in one place.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="pa-portfolio-banner">
+            <span class="pa-portfolio-banner-icon"><i class="fas fa-star"></i></span>
+            <div class="pa-portfolio-banner-body">
+                <strong>Built for portfolio owners</strong>
+                <p>Centralize operations across all your homes and save time managing what matters most.</p>
+            </div>
+            <span class="pa-portfolio-banner-art" aria-hidden="true"><i class="fas fa-house-chimney-window"></i></span>
+        </section>
+    }
+    else
+    {
+        <section class="pa-portfolio-tip-card">
+            <span class="pa-portfolio-tip-icon"><i class="fas fa-house-circle-check"></i></span>
+            <div>
+                <strong>Keep your portfolio up to date</strong>
+                <p>Add all your properties and keep details updated to get the most out of Home Indor.</p>
+            </div>
+        </section>
+    }
 </div>

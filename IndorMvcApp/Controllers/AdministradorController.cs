@@ -37,6 +37,7 @@ public class AdministradorController(
     IPropertyAdministratorPressureWashingService pressureWashing,
     IPropertyAdministratorPestControlService pestControl,
     IPropertyAdministratorPoolHotTubService poolHotTub,
+    HomeownerNearbyNetworkService nearbyNetwork,
     UserManager<ApplicationUser> userManager) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
@@ -73,7 +74,7 @@ public class AdministradorController(
     public IActionResult Dashboard() => RedirectToAction(nameof(Index));
 
     [HttpGet]
-    public async Task<IActionResult> Index(int? propertyId)
+    public async Task<IActionResult> Index(int? propertyId, string? view, string? filter, string? q)
     {
         if (await EnsureRegisteredAsync() is { } redirect)
         {
@@ -83,6 +84,24 @@ public class AdministradorController(
         ViewBag.NavActive = "home";
         var model = await portal.GetHomeAsync(Url, propertyId);
         var activePropertyId = propertyId ?? model.ViewingProperty?.Id;
+
+        model.NetworkView = string.Equals(view, "map", StringComparison.OrdinalIgnoreCase) ? "map" : "feed";
+        model.NetworkFilter = string.IsNullOrWhiteSpace(filter) ? "All" : filter.Trim();
+        model.NetworkSearch = q;
+        if (model.NetworkView == "map")
+        {
+            var centerAddress = model.ViewingProperty?.Location;
+            var servicesUrl = Url.Action(nameof(RequestService), "Administrador") ?? "#";
+            var messageUrl = Url.Action(nameof(Services), "Administrador") ?? "#";
+            model.NearbyMap = await nearbyNetwork.BuildMapForAddressAsync(
+                centerAddress,
+                "Your portfolio",
+                filter,
+                Url,
+                servicesUrl,
+                messageUrl);
+        }
+
         model.FeaturedPoolHotTub = poolHotTub.BuildFeaturedCta(Url, activePropertyId);
         model.FeaturedPestControl = null;
         model.FeaturedPressureWashing = null;

@@ -111,7 +111,9 @@ public class HomeownerNearbyNetworkService(
             mapProviders,
             mapItems,
             propiedad.Id,
-            url);
+            url,
+            url.Action("Index", "Home") + "#section-services",
+            url.Action("Index", "Home") + "#section-more");
         var propertyAddress = !string.IsNullOrWhiteSpace(propertyInfo?.FormattedAddress)
             ? propertyInfo!.FormattedAddress
             : propiedad.Direccion;
@@ -133,6 +135,66 @@ public class HomeownerNearbyNetworkService(
             MapProviders = mapProviders,
             MapCarouselItems = carouselItems,
             MapCenterLabel = "Your home",
+            CenterLatitude = centerLat,
+            CenterLongitude = centerLng,
+            RadiusMiles = radiusMiles,
+            GoogleMapsApiKey = _googleMaps.BrowserApiKey,
+            MapNearbyCount = carouselItems.Count
+        };
+    }
+
+    /// <summary>
+    /// Builds the Map view (Google map + nearby providers + carousel) centered on a free-form
+    /// address. Used by roles that are not tied to a single homeowner property (e.g. property
+    /// administrators with multiple homes). Falls back to the configured default center.
+    /// </summary>
+    public async Task<HomeownerNearbyNetworkViewModel> BuildMapForAddressAsync(
+        string? address,
+        string centerLabel,
+        string? filter,
+        IUrlHelper url,
+        string servicesUrl,
+        string messageUrl,
+        CancellationToken ct = default)
+    {
+        var activeFilter = NormalizeFilter(filter);
+        double centerLat = _googleMaps.DefaultLatitude;
+        double centerLng = _googleMaps.DefaultLongitude;
+
+        if (!string.IsNullOrWhiteSpace(address))
+        {
+            var coordinates = await addressLookup.GeocodeAddressAsync(address.Trim(), ct);
+            if (coordinates is { } coords)
+            {
+                centerLat = (double)coords.Latitude;
+                centerLng = (double)coords.Longitude;
+            }
+        }
+
+        var radiusMiles = (double)DefaultRadiusMiles;
+        var mapProviders = await LoadNearbyProvidersAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
+        var mapItems = await LoadMapItemsAsync(centerLat, centerLng, radiusMiles, activeFilter, ct);
+        var carouselItems = BuildMapCarouselItems(
+            centerLat,
+            centerLng,
+            mapProviders,
+            mapItems,
+            0,
+            url,
+            servicesUrl,
+            messageUrl);
+
+        return new HomeownerNearbyNetworkViewModel
+        {
+            HasProperty = true,
+            ActiveView = "map",
+            ActiveFilter = activeFilter,
+            Filters = FilterChips,
+            RadiusLabel = $"{DefaultRadiusMiles.ToString("0.#", CultureInfo.InvariantCulture)} miles around your portfolio",
+            PropertyAddress = address,
+            MapProviders = mapProviders,
+            MapCarouselItems = carouselItems,
+            MapCenterLabel = centerLabel,
             CenterLatitude = centerLat,
             CenterLongitude = centerLng,
             RadiusMiles = radiusMiles,
@@ -1014,11 +1076,11 @@ public class HomeownerNearbyNetworkService(
         IReadOnlyList<RealtorNetworkMapProviderViewModel> providers,
         IReadOnlyList<IndorNearbyNetworkItem> mapItems,
         int propiedadId,
-        IUrlHelper url)
+        IUrlHelper url,
+        string servicesUrl,
+        string messageUrl)
     {
         var items = new List<HomeownerMapCarouselItemViewModel>();
-        var servicesUrl = url.Action("Index", "Home") + "#section-services";
-        var messageUrl = url.Action("Index", "Home") + "#section-more";
 
         foreach (var provider in providers)
         {
