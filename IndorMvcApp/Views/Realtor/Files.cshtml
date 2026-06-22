@@ -40,7 +40,14 @@
     <section class="rl-dash-section">
         @if (Model.ActiveFiles.Count == 0)
         {
-            <div class="rl-dash-empty">No files match your filters.</div>
+            @if (!Model.HasAnyFiles)
+            {
+                <div class="rl-dash-empty">No property files yet.</div>
+            }
+            else
+            {
+                <div class="rl-dash-empty">No files match your filters.</div>
+            }
         }
         else
         {

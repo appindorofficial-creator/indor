@@ -101,6 +101,7 @@ public class RealtorFilesViewModel : RealtorPortalShellViewModel
     public List<RealtorFileCardViewModel> ActiveFiles { get; set; } = [];
     public List<RealtorActivityItemViewModel> RecentActivity { get; set; } = [];
     public List<RealtorInsightViewModel> Insights { get; set; } = [];
+    public bool HasAnyFiles { get; set; }
 }
 
 public class RealtorFileCardViewModel

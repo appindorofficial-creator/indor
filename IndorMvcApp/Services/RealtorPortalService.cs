@@ -152,6 +152,9 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         var shell = await BuildShellCoreAsync(realtor, ct);
         var activeFilter = NormalizeFileFilter(filter);
 
+        var hasAnyFiles = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .AnyAsync(p => p.RealtorId == realtor.Id, ct);
+
         var query = db.IndorRealtorPropertyFiles.AsNoTracking()
             .Where(p => p.RealtorId == realtor.Id);
 
@@ -200,7 +203,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             Stats = await BuildFileStatsAsync(realtor.Id, ct),
             ActiveFiles = files.Select(MapFile).ToList(),
             RecentActivity = activities.Select(MapActivity).ToList(),
-            Insights = await BuildFileInsightsAsync(realtor.Id, ct)
+            Insights = await BuildFileInsightsAsync(realtor.Id, ct),
+            HasAnyFiles = hasAnyFiles
         };
     }
 
