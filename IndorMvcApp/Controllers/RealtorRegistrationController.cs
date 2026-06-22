@@ -17,7 +17,7 @@ public class RealtorRegistrationController(
     IWebHostEnvironment env) : Controller
 {
     private static readonly string[] AllowedDocExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
-    private const long MaxDocumentBytes = 10_000_000;
+    private const long MaxDocumentBytes = 25_000_000;
 
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -150,7 +150,7 @@ public class RealtorRegistrationController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [RequestSizeLimit(50_000_000)]
+    [RequestSizeLimit(80_000_000)]
     public async Task<IActionResult> Verification(
         IFormFile? licensePhotoFile,
         IFormFile? governmentIdFile,
@@ -172,14 +172,24 @@ public class RealtorRegistrationController(
 
         if (string.Equals(action, "upload", StringComparison.OrdinalIgnoreCase))
         {
-            await SaveVerificationDocumentsAsync(licensePhotoFile, governmentIdFile, businessCardFile);
+            var uploadErrors = await SaveVerificationDocumentsAsync(licensePhotoFile, governmentIdFile, businessCardFile);
+            if (uploadErrors.Count > 0)
+            {
+                TempData["VerificationError"] = string.Join(" ", uploadErrors);
+            }
+
             return RedirectToAction(nameof(Verification));
         }
 
         var skipped = string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase);
         if (!skipped)
         {
-            await SaveVerificationDocumentsAsync(licensePhotoFile, governmentIdFile, businessCardFile);
+            var continueErrors = await SaveVerificationDocumentsAsync(licensePhotoFile, governmentIdFile, businessCardFile);
+            if (continueErrors.Count > 0)
+            {
+                TempData["VerificationError"] = string.Join(" ", continueErrors);
+                return RedirectToAction(nameof(Verification));
+            }
         }
 
         await registration.CompleteVerificationAsync(skipped);
@@ -218,17 +228,19 @@ public class RealtorRegistrationController(
             LicenseStates = licenseStates
         };
 
-    private async Task SaveVerificationDocumentsAsync(
+    private async Task<List<string>> SaveVerificationDocumentsAsync(
         IFormFile? licensePhotoFile,
         IFormFile? governmentIdFile,
         IFormFile? businessCardFile)
     {
-        await SaveDocumentFileAsync(licensePhotoFile, RealtorDocumentTypes.LicensePhoto);
-        await SaveDocumentFileAsync(governmentIdFile, RealtorDocumentTypes.GovernmentId);
-        await SaveDocumentFileAsync(businessCardFile, RealtorDocumentTypes.BusinessCard);
+        var errors = new List<string>();
+        await SaveDocumentFileAsync(licensePhotoFile, RealtorDocumentTypes.LicensePhoto, "License photo", errors);
+        await SaveDocumentFileAsync(governmentIdFile, RealtorDocumentTypes.GovernmentId, "Government ID", errors);
+        await SaveDocumentFileAsync(businessCardFile, RealtorDocumentTypes.BusinessCard, "Business card", errors);
+        return errors;
     }
 
-    private async Task SaveDocumentFileAsync(IFormFile? file, string documentType)
+    private async Task SaveDocumentFileAsync(IFormFile? file, string documentType, string label, List<string> errors)
     {
         if (file == null || file.Length == 0)
         {
@@ -242,8 +254,15 @@ public class RealtorRegistrationController(
         }
 
         var ext = Path.GetExtension(file.FileName);
-        if (!AllowedDocExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase) || file.Length > MaxDocumentBytes)
+        if (!AllowedDocExtensions.Contains(ext, StringComparer.OrdinalIgnoreCase))
         {
+            errors.Add($"{label}: unsupported file type. Use PDF, JPG, PNG or WEBP.");
+            return;
+        }
+
+        if (file.Length > MaxDocumentBytes)
+        {
+            errors.Add($"{label}: file is too large (max {MaxDocumentBytes / 1_000_000} MB).");
             return;
         }
 

@@ -23,6 +23,14 @@
     </div>
 }
 
+@if (TempData["VerificationError"] is string verificationError && !string.IsNullOrWhiteSpace(verificationError))
+{
+    <div class="rl-error-banner" role="alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>@verificationError</span>
+    </div>
+}
+
 @foreach (var slot in slots)
 {
     <div class="rl-doc-card" data-doc-card="@slot.DocumentType">
