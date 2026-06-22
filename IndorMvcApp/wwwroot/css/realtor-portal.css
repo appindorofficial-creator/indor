@@ -2928,6 +2928,20 @@ button.rl-premium-link {
     color: #CBD5E1;
     font-size: .65rem;
 }
+.rl-insight-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    color: inherit;
+    text-decoration: none;
+}
+.rl-insight-link > .fa-chevron-right {
+    margin-left: auto;
+    color: #CBD5E1;
+    font-size: .65rem;
+}
 .rl-insight-icon {
     width: 28px;
     height: 28px;

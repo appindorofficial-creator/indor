@@ -1720,7 +1720,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             {
                 Text = $"{inspectionReady} inspection report{(inspectionReady == 1 ? "" : "s")} ready for review",
                 Icon = "fa-file-circle-check",
-                ColorClass = "teal"
+                ColorClass = "teal",
+                TargetUrl = "/Realtor/Files?filter=Inspection"
             });
         }
 
@@ -1730,7 +1731,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             {
                 Text = $"{followUp} file{(followUp == 1 ? "" : "s")} need client follow-up",
                 Icon = "fa-user-clock",
-                ColorClass = "blue"
+                ColorClass = "blue",
+                TargetUrl = "/Realtor/Clients"
             });
         }
 
@@ -1740,7 +1742,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             {
                 Text = $"{needsSelection} quote request{(needsSelection == 1 ? "" : "s")} need provider selection",
                 Icon = "fa-hand-pointer",
-                ColorClass = "orange"
+                ColorClass = "orange",
+                TargetUrl = "/Realtor/Quotes?filter=Compare"
             });
         }
 

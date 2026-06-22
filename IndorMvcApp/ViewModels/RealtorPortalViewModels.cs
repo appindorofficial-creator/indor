@@ -24,6 +24,7 @@ public class RealtorInsightViewModel
     public string Text { get; set; } = "";
     public string Icon { get; set; } = "fa-lightbulb";
     public string ColorClass { get; set; } = "teal";
+    public string? TargetUrl { get; set; }
 }
 
 public class RealtorNextStepViewModel

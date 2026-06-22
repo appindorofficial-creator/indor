@@ -183,9 +183,19 @@
                 @foreach (var insight in Model.Insights)
                 {
                     <li>
-                        <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
-                        <span>@insight.Text</span>
-                        <i class="fas fa-chevron-right"></i>
+                        @if (!string.IsNullOrWhiteSpace(insight.TargetUrl))
+                        {
+                            <a href="@insight.TargetUrl" class="rl-insight-link">
+                                <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
+                                <span>@insight.Text</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
+                            <span>@insight.Text</span>
+                        }
                     </li>
                 }
             </ul>
