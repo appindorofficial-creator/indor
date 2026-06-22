@@ -72,6 +72,31 @@ public class RealtorUrgentQuoteController(
         }
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> QuickAddProperty(
+        string quickAddAddress, string quickAddCity, string quickAddState, string quickAddZip, bool quickAddUseForQuote = true)
+    {
+        if (string.IsNullOrWhiteSpace(quickAddAddress) ||
+            string.IsNullOrWhiteSpace(quickAddCity) ||
+            string.IsNullOrWhiteSpace(quickAddState) ||
+            string.IsNullOrWhiteSpace(quickAddZip))
+        {
+            ModelState.AddModelError(string.Empty, "Enter street, city, state and ZIP to add a property quickly.");
+            var vm = await wizard.BuildPropertyAsync(null);
+            vm.QuickAddOpen = true;
+            vm.QuickAddAddress = quickAddAddress ?? "";
+            vm.QuickAddCity = quickAddCity ?? "";
+            vm.QuickAddState = quickAddState ?? "";
+            vm.QuickAddZip = quickAddZip ?? "";
+            vm.QuickAddUseForQuote = quickAddUseForQuote;
+            return View("Property", vm);
+        }
+
+        await wizard.QuickAddPropertyAsync(quickAddAddress, quickAddCity, quickAddState, quickAddZip, quickAddUseForQuote);
+        return RedirectToAction(nameof(Property));
+    }
+
     [HttpGet]
     public async Task<IActionResult> Issue()
     {

@@ -57,6 +57,7 @@ public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShel
 {
     public string TimelineCode { get; set; } = "ThisWeek";
     public string AudienceCode { get; set; } = "Neighbors";
+    public List<string> SelectedAudiences { get; set; } = [];
     public decimal? BudgetAmount { get; set; }
     public IReadOnlyList<(string Value, string Label)> TimelineOptions { get; set; } = [];
     public IReadOnlyList<(string Value, string Label, string Subtitle, string IconClass)> AudienceOptions { get; set; } = [];

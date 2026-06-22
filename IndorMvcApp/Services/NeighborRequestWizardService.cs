@@ -137,6 +137,7 @@ public class NeighborRequestWizardService(
                 : ["Category", "Describe", "Preferences", "Review", "Done"],
             TimelineCode = draft.TimelineCode,
             AudienceCode = draft.AudienceCode,
+            SelectedAudiences = ExpandAudienceCode(draft.AudienceCode),
             BudgetAmount = draft.BudgetAmount,
             BackUrl = isEdit && draft.EditingRequestId is > 0
                 ? $"/NeighborRequest/Edit/{draft.EditingRequestId}"
@@ -1132,6 +1133,38 @@ public class NeighborRequestWizardService(
             NeighborRequestAudienceCodes.Both => NeighborRequestAudienceCodes.Both,
             _ => NeighborRequestAudienceCodes.Neighbors
         };
+
+    public static List<string> ExpandAudienceCode(string? code) =>
+        code?.Trim() switch
+        {
+            NeighborRequestAudienceCodes.Both =>
+                [NeighborRequestAudienceCodes.Neighbors, NeighborRequestAudienceCodes.CertifiedProviders],
+            NeighborRequestAudienceCodes.CertifiedProviders =>
+                [NeighborRequestAudienceCodes.CertifiedProviders],
+            _ => [NeighborRequestAudienceCodes.Neighbors]
+        };
+
+    public static string CombineAudienceCodes(IEnumerable<string>? codes)
+    {
+        var set = codes is null
+            ? new HashSet<string>()
+            : new HashSet<string>(codes.Select(c => c?.Trim()).Where(c => !string.IsNullOrEmpty(c))!, StringComparer.OrdinalIgnoreCase);
+
+        var hasNeighbors = set.Contains(NeighborRequestAudienceCodes.Neighbors);
+        var hasProviders = set.Contains(NeighborRequestAudienceCodes.CertifiedProviders);
+
+        if (hasNeighbors && hasProviders)
+        {
+            return NeighborRequestAudienceCodes.Both;
+        }
+
+        if (hasProviders)
+        {
+            return NeighborRequestAudienceCodes.CertifiedProviders;
+        }
+
+        return NeighborRequestAudienceCodes.Neighbors;
+    }
 
     private static (TimeOnly? Start, TimeOnly? End) ResolveTimeWindowPreset(string? presetValue)
     {

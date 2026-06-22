@@ -179,6 +179,18 @@ public class IndorRealtorPropertyFile
     [MaxLength(120)]
     public string? CityRegion { get; set; }
 
+    [MaxLength(60)]
+    public string? Unit { get; set; }
+
+    [MaxLength(20)]
+    public string? StateCode { get; set; }
+
+    [MaxLength(12)]
+    public string? PostalCode { get; set; }
+
+    [MaxLength(30)]
+    public string? PropertyType { get; set; }
+
     public int? Beds { get; set; }
 
     [Column(TypeName = "decimal(3,1)")]
@@ -223,6 +235,25 @@ public static class RealtorPropertyFilePhases
         (Transfer, "Transfer File", "fa-right-left"),
         (General, "General Property File", "fa-folder")
     ];
+}
+
+public static class RealtorPropertyTypes
+{
+    public const string SingleFamily = "Single-family";
+    public const string Condo = "Condo";
+    public const string Townhome = "Townhome";
+    public const string MultiFamily = "Multi-family";
+
+    public static IReadOnlyList<(string Value, string Label, string Icon)> Options =>
+    [
+        (SingleFamily, "Single-family", "fa-house"),
+        (Condo, "Condo", "fa-building"),
+        (Townhome, "Townhome", "fa-house-chimney"),
+        (MultiFamily, "Multi-family", "fa-city")
+    ];
+
+    public static bool IsValid(string? value) =>
+        Options.Any(o => string.Equals(o.Value, value, StringComparison.OrdinalIgnoreCase));
 }
 
 public static class RealtorPropertyFileCategoryTypes

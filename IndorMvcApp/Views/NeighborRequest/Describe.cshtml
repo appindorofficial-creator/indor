@@ -28,11 +28,25 @@
 
     <div class="nr-field">
         <label>Add photos (optional)</label>
-        <label class="nr-photo-btn" style="display:block;margin-bottom:10px;">
+        <label class="nr-photo-btn" id="nrPhotoDrop" style="display:block;margin-bottom:10px;">
             <i class="fas fa-image"></i>
             Add photos
-            <input type="file" asp-for="PhotoFiles" accept="image/jpeg,image/png,image/webp" multiple hidden />
+            <input type="file" asp-for="PhotoFiles" id="nrPhotoInput" accept="image/jpeg,image/png,image/webp" multiple hidden />
         </label>
+
+        <div class="nr-photo-card" id="nrPhotoCard" hidden>
+            <div class="nr-photo-card-head">
+                <span class="nr-photo-card-status">
+                    <i class="fas fa-circle-check"></i>
+                    <span id="nrPhotoCount">0 photos uploaded</span>
+                </span>
+                <button type="button" class="nr-photo-add-more" id="nrPhotoAddMore">
+                    <i class="fas fa-plus"></i> Add more
+                </button>
+            </div>
+            <div class="nr-photo-grid" id="nrPhotoGrid"></div>
+        </div>
+
         @if (Model.ExistingPhotoUrls.Count > 0)
         {
             <div class="nr-photo-preview">
@@ -67,10 +81,102 @@
         (function () {
             var textarea = document.querySelector('[name="Description"]');
             var counter = document.getElementById('nrDescCount');
-            if (!textarea || !counter) return;
-            var update = function () { counter.textContent = String(textarea.value.length); };
-            textarea.addEventListener('input', update);
-            update();
+            if (textarea && counter) {
+                var update = function () { counter.textContent = String(textarea.value.length); };
+                textarea.addEventListener('input', update);
+                update();
+            }
+        })();
+
+        (function () {
+            var input = document.getElementById('nrPhotoInput');
+            var drop = document.getElementById('nrPhotoDrop');
+            var card = document.getElementById('nrPhotoCard');
+            var grid = document.getElementById('nrPhotoGrid');
+            var count = document.getElementById('nrPhotoCount');
+            var addMore = document.getElementById('nrPhotoAddMore');
+            if (!input || !drop || !card || !grid || !count) return;
+
+            var selected = [];
+            var urls = [];
+
+            function syncInput() {
+                if (typeof DataTransfer === 'undefined') return;
+                var dt = new DataTransfer();
+                selected.forEach(function (f) { dt.items.add(f); });
+                input.files = dt.files;
+            }
+
+            function clearUrls() {
+                urls.forEach(function (u) { URL.revokeObjectURL(u); });
+                urls = [];
+            }
+
+            function render() {
+                clearUrls();
+                grid.innerHTML = '';
+
+                if (selected.length === 0) {
+                    drop.hidden = false;
+                    card.hidden = true;
+                    return;
+                }
+
+                drop.hidden = true;
+                card.hidden = false;
+                count.textContent = selected.length === 1
+                    ? '1 photo uploaded'
+                    : selected.length + ' photos uploaded';
+
+                selected.forEach(function (file, index) {
+                    var url = URL.createObjectURL(file);
+                    urls.push(url);
+
+                    var item = document.createElement('div');
+                    item.className = 'nr-photo-thumb';
+
+                    var img = document.createElement('img');
+                    img.src = url;
+                    img.alt = file.name || 'photo';
+                    item.appendChild(img);
+
+                    var remove = document.createElement('button');
+                    remove.type = 'button';
+                    remove.className = 'nr-photo-remove';
+                    remove.setAttribute('aria-label', 'Remove photo');
+                    remove.innerHTML = '<i class="fas fa-xmark"></i>';
+                    remove.addEventListener('click', function () {
+                        selected.splice(index, 1);
+                        syncInput();
+                        render();
+                    });
+                    item.appendChild(remove);
+
+                    grid.appendChild(item);
+                });
+            }
+
+            function addFiles(fileList) {
+                Array.prototype.forEach.call(fileList, function (file) {
+                    if (!file.type || file.type.indexOf('image/') !== 0) return;
+                    var dup = selected.some(function (f) {
+                        return f.name === file.name && f.size === file.size && f.lastModified === file.lastModified;
+                    });
+                    if (!dup) selected.push(file);
+                });
+                syncInput();
+                render();
+            }
+
+            input.addEventListener('change', function () {
+                if (input.files && input.files.length) {
+                    addFiles(input.files);
+                }
+            });
+
+            if (addMore) {
+                addMore.addEventListener('click', function () { input.click(); });
+            }
         })();
     </script>
 }

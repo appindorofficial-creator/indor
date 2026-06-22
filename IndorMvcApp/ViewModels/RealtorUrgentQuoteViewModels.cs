@@ -15,6 +15,7 @@ public class RealtorUrgentQuotePropertyOptionViewModel
     public int Id { get; set; }
     public string DisplayAddress { get; set; } = "";
     public string SpecsLabel { get; set; } = "";
+    public string LocationLabel { get; set; } = "";
     public string? PhotoUrl { get; set; }
 }
 
@@ -29,6 +30,14 @@ public class RealtorUrgentQuotePropertyViewModel : RealtorUrgentQuoteStepViewMod
     public IReadOnlyList<(string Value, string Label, string Icon)> CategoryOptions { get; set; } = [];
     public IReadOnlyList<string> ServiceTypes { get; set; } = [];
     public IReadOnlyList<(string Value, string Label, string Icon)> UrgencyOptions { get; set; } = [];
+
+    public IReadOnlyList<string> States { get; set; } = [];
+    public bool QuickAddOpen { get; set; }
+    public string QuickAddAddress { get; set; } = "";
+    public string QuickAddCity { get; set; } = "";
+    public string QuickAddState { get; set; } = "";
+    public string QuickAddZip { get; set; } = "";
+    public bool QuickAddUseForQuote { get; set; } = true;
 }
 
 public class RealtorUrgentQuoteSummaryViewModel

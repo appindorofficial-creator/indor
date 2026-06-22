@@ -152,7 +152,9 @@ public class NeighborRequestController(
         draft.TimelineCode = NormalizeTimeline(model.TimelineCode);
         if (!model.IsEditMode)
         {
-            draft.AudienceCode = NormalizeAudience(model.AudienceCode);
+            draft.AudienceCode = model.SelectedAudiences is { Count: > 0 }
+                ? NeighborRequestWizardService.CombineAudienceCodes(model.SelectedAudiences)
+                : NormalizeAudience(model.AudienceCode);
         }
 
         draft.BudgetAmount = model.BudgetAmount is > 0 ? model.BudgetAmount : null;

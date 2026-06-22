@@ -133,12 +133,76 @@ public class RealtorUrgentQuoteWizardService(
                 Id = p.Id,
                 DisplayAddress = FormatDisplayAddress(p.Address, p.CityRegion),
                 SpecsLabel = FormatSpecs(p.Beds, p.Baths, p.SqFt),
+                LocationLabel = FormatLocation(p.CityRegion, p.StateCode, p.PostalCode),
                 PhotoUrl = p.PhotoUrl ?? "/welcome-house.png"
             }).ToList(),
             CategoryOptions = RealtorUrgentQuoteCategories.Options,
             ServiceTypes = RealtorUrgentQuoteServiceTypes.All,
-            UrgencyOptions = RealtorUrgentQuoteUrgencyLevels.Options
+            UrgencyOptions = RealtorUrgentQuoteUrgencyLevels.Options,
+            States = registration.GetLicenseStates()
         };
+    }
+
+    public async Task<int> QuickAddPropertyAsync(
+        string address, string city, string state, string zip, bool useForQuote,
+        CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+        var draft = await EnsureDraftAsync(cancellationToken);
+
+        var street = address?.Trim() ?? "";
+        var cityValue = city?.Trim() ?? "";
+        var stateValue = state?.Trim() ?? "";
+        var zipValue = zip?.Trim() ?? "";
+
+        if (street.Length == 0 || cityValue.Length == 0 || stateValue.Length == 0 || zipValue.Length == 0)
+        {
+            throw new InvalidOperationException("Street, city, state and ZIP are required.");
+        }
+
+        var property = new IndorRealtorPropertyFile
+        {
+            RealtorId = realtor.Id,
+            Title = street,
+            Address = street,
+            CityRegion = cityValue,
+            StateCode = stateValue,
+            PostalCode = zipValue,
+            Status = "Active",
+            FilePhase = RealtorPropertyFilePhases.General,
+            UpdatedUtc = DateTime.UtcNow,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        db.IndorRealtorPropertyFiles.Add(property);
+        await db.SaveChangesAsync(cancellationToken);
+
+        if (useForQuote)
+        {
+            draft.PropertyFileId = property.Id;
+            draft.Address = property.Address;
+            draft.CityRegion = property.CityRegion;
+            draft.ClientName = property.ClientName;
+            draft.PhotoUrl = property.PhotoUrl;
+            draft.Beds = property.Beds;
+            draft.Baths = property.Baths;
+            draft.SqFt = property.SqFt;
+            draft.FechaActualizacion = DateTime.UtcNow;
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "file",
+            Description = $"Created property {property.Address}",
+            CategoryTag = "Properties",
+            OccurredUtc = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync(cancellationToken);
+
+        return property.Id;
     }
 
     public async Task SavePropertyAsync(
@@ -546,6 +610,19 @@ public class RealtorUrgentQuoteWizardService(
 
     private static string FormatDisplayAddress(string address, string? cityRegion) =>
         string.IsNullOrWhiteSpace(cityRegion) ? address : $"{address}, {cityRegion}";
+
+    private static string FormatLocation(string? cityRegion, string? state, string? zip)
+    {
+        var city = (cityRegion ?? "").Trim();
+        var stateZip = string.Join(" ", new[] { (state ?? "").Trim(), (zip ?? "").Trim() }.Where(s => s.Length > 0));
+
+        if (city.Length > 0 && stateZip.Length > 0)
+        {
+            return city.Contains(stateZip, StringComparison.OrdinalIgnoreCase) ? city : $"{city}, {stateZip}";
+        }
+
+        return city.Length > 0 ? city : stateZip;
+    }
 
     private static string FormatSpecs(int? beds, decimal? baths, int? sqFt)
     {

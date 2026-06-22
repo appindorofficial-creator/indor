@@ -1,0 +1,126 @@
+@model IndorMvcApp.ViewModels.RealtorInviteCreatePropertyViewModel
+@{
+    string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+    var addressError = FieldError("Address");
+    var cityError = FieldError("City");
+    var stateError = FieldError("StateCode");
+    var zipError = FieldError("PostalCode");
+}
+
+<form id="createPropertyForm" asp-action="CreateProperty" method="post" class="rl-invite-form" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+
+    <div class="rl-cp-card">
+        <div class="rl-cp-field @(addressError.Length > 0 ? "is-error" : null)">
+            <label>Property address <span class="rl-cp-req">*</span></label>
+            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" name="Address" value="@Model.Address" placeholder="Enter street address" autocomplete="street-address" /></div>
+            @if (addressError.Length > 0)
+            {
+                <span class="rl-field-error">@addressError</span>
+            }
+        </div>
+
+        <div class="rl-cp-field">
+            <label>Unit / Apt <small>(optional)</small></label>
+            <div class="rl-cp-input"><input type="text" name="Unit" value="@Model.Unit" placeholder="Unit, Apt, Suite, etc." /></div>
+        </div>
+
+        <div class="rl-cp-grid">
+            <div class="rl-cp-field @(cityError.Length > 0 ? "is-error" : null)">
+                <label>City <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input"><input type="text" name="City" value="@Model.City" placeholder="Enter city" autocomplete="address-level2" /></div>
+                @if (cityError.Length > 0)
+                {
+                    <span class="rl-field-error">@cityError</span>
+                }
+            </div>
+            <div class="rl-cp-field @(stateError.Length > 0 ? "is-error" : null)">
+                <label>State <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input rl-cp-input--select">
+                    <select name="StateCode">
+                        <option value="">Select state</option>
+                        @foreach (var state in Model.States)
+                        {
+                            <option value="@state" selected="@(Model.StateCode == state)">@state</option>
+                        }
+                    </select>
+                </div>
+                @if (stateError.Length > 0)
+                {
+                    <span class="rl-field-error">@stateError</span>
+                }
+            </div>
+        </div>
+
+        <div class="rl-cp-grid">
+            <div class="rl-cp-field @(zipError.Length > 0 ? "is-error" : null)">
+                <label>ZIP code <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input"><input type="text" name="PostalCode" value="@Model.PostalCode" placeholder="Enter ZIP code" inputmode="numeric" autocomplete="postal-code" /></div>
+                @if (zipError.Length > 0)
+                {
+                    <span class="rl-field-error">@zipError</span>
+                }
+            </div>
+            <div class="rl-cp-field">
+                <label>Property nickname <small>(optional)</small></label>
+                <div class="rl-cp-input"><input type="text" name="Nickname" value="@Model.Nickname" placeholder="e.g., Main House, Investment Property" /></div>
+            </div>
+        </div>
+
+        <div class="rl-cp-field">
+            <label>Property type <span class="rl-cp-req">*</span></label>
+            <div class="rl-cp-type-grid">
+                @foreach (var type in Model.PropertyTypes)
+                {
+                    <label class="rl-cp-type @(Model.PropertyType == type.Value ? "is-selected" : "")">
+                        <input type="radio" name="PropertyType" value="@type.Value" @(Model.PropertyType == type.Value ? "checked" : null) />
+                        <i class="fas @type.Icon"></i>
+                        <span>@type.Label</span>
+                    </label>
+                }
+            </div>
+        </div>
+
+        <label class="rl-cp-check">
+            <input type="checkbox" name="SelectForClient" value="true" @(Model.SelectForClient ? "checked" : null) />
+            <span>
+                <strong>Select this property for this client</strong>
+                <small>This property will be selected automatically for this invitation.</small>
+            </span>
+        </label>
+    </div>
+
+    <div class="rl-info-box">
+        <i class="fas fa-shield-halved"></i>
+        <p>Once saved, this property will be added to the list and selected automatically for this invitation.</p>
+    </div>
+
+    <div class="rl-cp-next">
+        <span class="rl-cp-next-icon"><i class="fas fa-list-check"></i></span>
+        <div>
+            <strong>What happens next</strong>
+            <ol class="rl-cp-next-steps">
+                <li>Property is created</li>
+                <li>It appears in the property list</li>
+                <li>It is selected for this client invite</li>
+            </ol>
+        </div>
+    </div>
+</form>
+
+<div class="rl-invite-actions">
+    <a asp-action="Property" class="rl-invite-cancel">Back</a>
+    <button type="submit" form="createPropertyForm" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
+</div>
+
+@section Scripts {
+<script>
+    document.querySelectorAll('.rl-cp-type input').forEach(r => {
+        r.addEventListener('change', () => {
+            document.querySelectorAll('.rl-cp-type').forEach(p => p.classList.remove('is-selected'));
+            r.closest('.rl-cp-type')?.classList.add('is-selected');
+        });
+    });
+</script>
+}

@@ -42,21 +42,21 @@
     <div class="nr-pref-card">
         <div class="nr-section-title">
             <span class="nr-section-icon"><i class="fas fa-users"></i></span>
-            <span>Who can help?<br /><small class="nr-section-sub">Choose who can respond to your request</small></span>
+            <span>Who can help?<br /><small class="nr-section-sub">You can select one or both</small></span>
         </div>
 
         <div class="nr-pref-options">
             @foreach (var option in Model.AudienceOptions)
             {
                 <label class="nr-pref-option nr-pref-option--audience">
-                    <input type="radio" name="AudienceCode" value="@option.Value" @(Model.AudienceCode == option.Value ? "checked" : null) />
+                    <input type="checkbox" name="SelectedAudiences" value="@option.Value" @(Model.SelectedAudiences.Contains(option.Value) ? "checked" : null) />
                     <span class="nr-pref-option-body">
                         <span class="nr-audience-icon"><i class="fas @option.IconClass"></i></span>
                         <span class="nr-pref-option-copy">
                             <strong>@option.Label</strong>
                             <small>@option.Subtitle</small>
                         </span>
-                        <span class="nr-option-radio"></span>
+                        <span class="nr-option-check" aria-hidden="true"><i class="fas fa-check"></i></span>
                     </span>
                 </label>
             }

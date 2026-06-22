@@ -128,6 +128,65 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> CreateProperty()
+    {
+        var draft = await inviteService.GetDraftAsync();
+        if (draft == null || draft.CurrentStep < 2)
+        {
+            return RedirectToAction(nameof(ClientInfo));
+        }
+
+        if (draft.CurrentStep > 2)
+        {
+            return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
+        }
+
+        return View(await inviteService.BuildCreatePropertyAsync());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CreateProperty(RealtorInviteCreatePropertyViewModel model)
+    {
+        if (string.IsNullOrWhiteSpace(model.Address))
+        {
+            ModelState.AddModelError(nameof(model.Address), "Property address is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.City))
+        {
+            ModelState.AddModelError(nameof(model.City), "City is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.StateCode))
+        {
+            ModelState.AddModelError(nameof(model.StateCode), "State is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.PostalCode))
+        {
+            ModelState.AddModelError(nameof(model.PostalCode), "ZIP code is required.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var invalidVm = await inviteService.BuildCreatePropertyAsync();
+            invalidVm.Address = model.Address ?? "";
+            invalidVm.Unit = model.Unit ?? "";
+            invalidVm.City = model.City ?? "";
+            invalidVm.StateCode = model.StateCode ?? "";
+            invalidVm.PostalCode = model.PostalCode ?? "";
+            invalidVm.Nickname = model.Nickname ?? "";
+            invalidVm.PropertyType = model.PropertyType ?? RealtorPropertyTypes.SingleFamily;
+            invalidVm.SelectForClient = model.SelectForClient;
+            return View(invalidVm);
+        }
+
+        await inviteService.CreatePropertyAsync(model);
+        return RedirectToAction(nameof(Property));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Access()
     {
         var draft = await inviteService.GetDraftAsync();

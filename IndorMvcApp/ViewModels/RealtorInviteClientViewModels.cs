@@ -36,6 +36,20 @@ public class RealtorInvitePropertyViewModel : RealtorInviteStepViewModel
     public List<RealtorInvitePropertyOptionViewModel> Properties { get; set; } = [];
 }
 
+public class RealtorInviteCreatePropertyViewModel : RealtorInviteStepViewModel
+{
+    public string Address { get; set; } = "";
+    public string Unit { get; set; } = "";
+    public string City { get; set; } = "";
+    public string StateCode { get; set; } = "";
+    public string PostalCode { get; set; } = "";
+    public string Nickname { get; set; } = "";
+    public string PropertyType { get; set; } = "Single-family";
+    public bool SelectForClient { get; set; } = true;
+    public IReadOnlyList<string> States { get; set; } = [];
+    public IReadOnlyList<(string Value, string Label, string Icon)> PropertyTypes { get; set; } = [];
+}
+
 public class RealtorInviteAccessViewModel : RealtorInviteStepViewModel
 {
     public bool AccessPropertyOverview { get; set; } = true;

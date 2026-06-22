@@ -186,6 +186,88 @@ public class RealtorInviteClientService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task<RealtorInviteCreatePropertyViewModel> BuildCreatePropertyAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || string.IsNullOrWhiteSpace(draft.FullName))
+        {
+            throw new InvalidOperationException("Complete client info first.");
+        }
+
+        return new RealtorInviteCreatePropertyViewModel
+        {
+            DisplayStep = 2,
+            Title = "Create New Property",
+            Subtitle = "Add the property and it will be added automatically for this client invitation.",
+            States = registration.GetLicenseStates(),
+            PropertyTypes = RealtorPropertyTypes.Options
+        };
+    }
+
+    public async Task<int> CreatePropertyAsync(RealtorInviteCreatePropertyViewModel model, CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+        var draft = await EnsureDraftAsync(cancellationToken);
+
+        var address = model.Address?.Trim() ?? "";
+        var city = model.City?.Trim() ?? "";
+        var state = model.StateCode?.Trim() ?? "";
+        var zip = model.PostalCode?.Trim() ?? "";
+        var nickname = model.Nickname?.Trim() ?? "";
+        var unit = model.Unit?.Trim() ?? "";
+        var propertyType = RealtorPropertyTypes.IsValid(model.PropertyType)
+            ? model.PropertyType.Trim()
+            : RealtorPropertyTypes.SingleFamily;
+
+        var cityRegion = string.Join(", ",
+            new[] { city, string.Join(" ", new[] { state, zip }.Where(s => s.Length > 0)) }
+                .Where(s => s.Length > 0));
+
+        var property = new IndorRealtorPropertyFile
+        {
+            RealtorId = realtor.Id,
+            Title = nickname.Length > 0 ? nickname : address,
+            Address = address,
+            Unit = unit.Length > 0 ? unit : null,
+            CityRegion = cityRegion.Length > 0 ? cityRegion : null,
+            StateCode = state.Length > 0 ? state : null,
+            PostalCode = zip.Length > 0 ? zip : null,
+            PropertyType = propertyType,
+            ClientName = draft.FullName,
+            Status = "Active",
+            FilePhase = RealtorPropertyFilePhases.General,
+            UpdatedUtc = DateTime.UtcNow,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        db.IndorRealtorPropertyFiles.Add(property);
+        await db.SaveChangesAsync(cancellationToken);
+
+        if (model.SelectForClient)
+        {
+            draft.PropertyFileId = property.Id;
+            draft.PropertyAddress = property.Address;
+            draft.PropertyCityRegion = property.CityRegion;
+            draft.PropertyLabel = MapPropertyLabel(property);
+            draft.PropertyStatusLabel = property.FilePhase ?? property.Status;
+            draft.FechaActualizacion = DateTime.UtcNow;
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "file",
+            Description = $"Created property {property.Address}",
+            CategoryTag = "Properties",
+            OccurredUtc = DateTime.UtcNow
+        });
+        await db.SaveChangesAsync(cancellationToken);
+
+        return property.Id;
+    }
+
     public async Task<RealtorInviteAccessViewModel> BuildAccessAsync(CancellationToken cancellationToken = default)
     {
         var draft = await GetDraftAsync(cancellationToken);
