@@ -24,7 +24,22 @@
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search clients by name, email or phone" />
             </div>
-            <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
+            <div class="rl-filter-wrap">
+                <button type="button" class="rl-filter-btn" id="rlClientsFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> Filter</button>
+                <div class="rl-filter-menu" id="rlClientsFilterMenu" role="menu" hidden>
+                    @foreach (var chip in Model.Filters)
+                    {
+                        <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                           class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
+                            <span>@chip</span>
+                            @if (Model.ActiveFilter == chip)
+                            {
+                                <i class="fas fa-check"></i>
+                            }
+                        </a>
+                    }
+                </div>
+            </div>
         </div>
         <div class="rl-filter-chips">
             @foreach (var chip in Model.Filters)
@@ -42,7 +57,14 @@
         {
             @if (Model.PendingInvitations.Count == 0)
             {
-                <div class="rl-dash-empty">No pending invitations.</div>
+                if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+                {
+                    <div class="rl-dash-empty">No invitations match &ldquo;@Model.SearchQuery&rdquo;.</div>
+                }
+                else
+                {
+                    <div class="rl-dash-empty">No pending invitations right now.</div>
+                }
             }
             else
             {
@@ -69,7 +91,27 @@
         }
         else if (Model.ActiveClients.Count == 0)
         {
-            <div class="rl-dash-empty">No active clients match your search.</div>
+            if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+            {
+                <div class="rl-dash-empty">No clients match &ldquo;@Model.SearchQuery&rdquo;.</div>
+            }
+            else if (Model.ActiveFilter == "All" && !Model.HasAnyClients)
+            {
+                <div class="rl-dash-empty">No clients match your filters.</div>
+            }
+            else
+            {
+                var emptyMessage = Model.ActiveFilter switch
+                {
+                    "Buyers" => "No buyers yet. Invited buyers will show up here.",
+                    "Sellers" => "No sellers yet. Invited sellers will show up here.",
+                    "Homeowners" => "No homeowners yet. Invited homeowners will show up here.",
+                    "Connect" => "No connected clients yet. Accepted invitations will appear here.",
+                    "Follow-up" => "No follow-ups needed right now.",
+                    _ => "No clients match your filters."
+                };
+                <div class="rl-dash-empty">@emptyMessage</div>
+            }
         }
         else
         {
@@ -132,3 +174,34 @@
         </section>
     }
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var filterBtn = document.getElementById('rlClientsFilterBtn');
+        var filterMenu = document.getElementById('rlClientsFilterMenu');
+        if (!filterBtn || !filterMenu) {
+            return;
+        }
+
+        function closeMenu() {
+            filterMenu.hidden = true;
+            filterBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        filterBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var willOpen = filterMenu.hidden;
+            filterMenu.hidden = !willOpen;
+            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    })();
+</script>
+}

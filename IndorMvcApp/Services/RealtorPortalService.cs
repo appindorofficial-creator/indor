@@ -83,6 +83,12 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             "Buyers" => clientsQuery.Where(c => c.ClientRole == RealtorClientRoles.Buyer),
             "Sellers" => clientsQuery.Where(c => c.ClientRole == RealtorClientRoles.Seller),
             "Homeowners" => clientsQuery.Where(c => c.ClientRole == RealtorClientRoles.Homeowner),
+            "Connect" => clientsQuery.Where(c =>
+                c.StatusSummary == null ||
+                (!c.StatusSummary.Contains("pending") && !c.StatusSummary.Contains("follow"))),
+            "Follow-up" => clientsQuery.Where(c =>
+                c.StatusSummary != null &&
+                (c.StatusSummary.Contains("pending") || c.StatusSummary.Contains("follow"))),
             "Invited" => clientsQuery.Where(c => false),
             _ => clientsQuery
         };
@@ -124,9 +130,12 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             .Take(5)
             .ToListAsync(ct);
 
-        var clientStats = await BuildClientStatsAsync(realtor.Id, ct);
+        var clientStats = await BuildClientStatsAsync(realtor.Id, activeFilter, ct);
         var pendingInviteCount = await db.IndorRealtorInvitations.AsNoTracking()
             .CountAsync(i => i.RealtorId == realtor.Id && i.Status == RealtorInvitationStatuses.Sent, ct);
+        var hasAnyClients = await db.IndorRealtorClients.AsNoTracking()
+                .AnyAsync(c => c.RealtorId == realtor.Id, ct)
+            || pendingInviteCount > 0;
 
         return new RealtorClientsViewModel
         {
@@ -138,6 +147,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             HasNotifications = shell.HasNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
+            HasAnyClients = hasAnyClients,
             Stats = clientStats,
             ActiveClients = clients.Select(c => MapClient(c, fileCounts, quoteCounts)).ToList(),
             PendingInvitations = invitations.Select(MapInvitation).ToList(),
@@ -1608,27 +1618,62 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         ];
     }
 
-    private async Task<List<RealtorStatItemViewModel>> BuildClientStatsAsync(int realtorId, CancellationToken ct)
+    private async Task<List<RealtorStatItemViewModel>> BuildClientStatsAsync(
+        int realtorId, string activeFilter, CancellationToken ct)
     {
-        var clients = await db.IndorRealtorClients.AsNoTracking().CountAsync(c => c.RealtorId == realtorId, ct);
+        var clientsQuery = db.IndorRealtorClients.AsNoTracking().Where(c => c.RealtorId == realtorId);
+        var clients = await clientsQuery.CountAsync(ct);
+        var buyers = await clientsQuery.CountAsync(c => c.ClientRole == RealtorClientRoles.Buyer, ct);
+        var sellers = await clientsQuery.CountAsync(c => c.ClientRole == RealtorClientRoles.Seller, ct);
+        var homeowners = await clientsQuery.CountAsync(c => c.ClientRole == RealtorClientRoles.Homeowner, ct);
         var activeFiles = await db.IndorRealtorPropertyFiles.AsNoTracking()
             .CountAsync(p => p.RealtorId == realtorId && p.Status == "Active", ct);
-        var pendingInvites = await db.IndorRealtorInvitations.AsNoTracking()
+        var invited = await db.IndorRealtorInvitations.AsNoTracking()
             .CountAsync(i => i.RealtorId == realtorId && i.Status == RealtorInvitationStatuses.Sent, ct);
-        var connected = clients;
-        var followUp = await db.IndorRealtorClients.AsNoTracking()
-            .CountAsync(c => c.RealtorId == realtorId &&
-                             c.StatusSummary != null &&
+        var followUpClients = await clientsQuery
+            .CountAsync(c => c.StatusSummary != null &&
                              (c.StatusSummary.Contains("pending") || c.StatusSummary.Contains("follow")), ct);
+        var connect = await clientsQuery
+            .CountAsync(c =>
+                c.StatusSummary == null ||
+                (!c.StatusSummary.Contains("pending") && !c.StatusSummary.Contains("follow")), ct);
+        var followUp = followUpClients + invited;
 
-        return
-        [
-            new() { Label = "Clients", Count = clients, Icon = "fa-users", ColorClass = "blue" },
-            new() { Label = "Active Files", Count = activeFiles, Icon = "fa-folder-open", ColorClass = "teal" },
-            new() { Label = "Pending Invites", Count = pendingInvites, Icon = "fa-envelope", ColorClass = "purple" },
-            new() { Label = "Connected", Count = connected, Icon = "fa-circle-check", ColorClass = "teal" },
-            new() { Label = "Follow-Up", Count = Math.Max(followUp, pendingInvites), Icon = "fa-clock", ColorClass = "orange" }
-        ];
+        return activeFilter switch
+        {
+            "Buyers" =>
+            [
+                new() { Label = "Buyers", Count = buyers, Icon = "fa-user-tag", ColorClass = "blue" }
+            ],
+            "Sellers" =>
+            [
+                new() { Label = "Sellers", Count = sellers, Icon = "fa-house-chimney", ColorClass = "teal" }
+            ],
+            "Homeowners" =>
+            [
+                new() { Label = "Homeowners", Count = homeowners, Icon = "fa-house-user", ColorClass = "purple" }
+            ],
+            "Invited" =>
+            [
+                new() { Label = "Invited", Count = invited, Icon = "fa-envelope", ColorClass = "purple" }
+            ],
+            "Connect" =>
+            [
+                new() { Label = "Connect", Count = connect, Icon = "fa-circle-check", ColorClass = "teal" }
+            ],
+            "Follow-up" =>
+            [
+                new() { Label = "Follow-up", Count = followUp, Icon = "fa-clock", ColorClass = "orange" }
+            ],
+            _ =>
+            [
+                new() { Label = "Clients", Count = clients, Icon = "fa-users", ColorClass = "blue" },
+                new() { Label = "Active Files", Count = activeFiles, Icon = "fa-folder-open", ColorClass = "teal", DetailUrl = "/Realtor/Files?filter=Active" },
+                new() { Label = "Invited", Count = invited, Icon = "fa-envelope", ColorClass = "purple" },
+                new() { Label = "Connect", Count = connect, Icon = "fa-circle-check", ColorClass = "teal" },
+                new() { Label = "Follow-up", Count = followUp, Icon = "fa-clock", ColorClass = "orange" }
+            ]
+        };
     }
 
     private async Task<List<RealtorStatItemViewModel>> BuildFileStatsAsync(int realtorId, CancellationToken ct)
@@ -1875,7 +1920,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
     private static string NormalizeClientFilter(string? filter) =>
         filter switch
         {
-            "Buyers" or "Sellers" or "Homeowners" or "Invited" => filter,
+            "Buyers" or "Sellers" or "Homeowners" or "Invited" or "Connect" or "Follow-up" => filter,
             _ => "All"
         };
 

@@ -57,7 +57,8 @@ public class RealtorClientsViewModel : RealtorPortalShellViewModel
 {
     public string? SearchQuery { get; set; }
     public string ActiveFilter { get; set; } = "All";
-    public IReadOnlyList<string> Filters { get; set; } = ["All", "Buyers", "Sellers", "Homeowners", "Invited"];
+    public IReadOnlyList<string> Filters { get; set; } = ["All", "Buyers", "Sellers", "Homeowners", "Invited", "Connect", "Follow-up"];
+    public bool HasAnyClients { get; set; }
     public List<RealtorStatItemViewModel> Stats { get; set; } = [];
     public List<RealtorClientCardViewModel> ActiveClients { get; set; } = [];
     public List<RealtorInvitationCardViewModel> PendingInvitations { get; set; } = [];
