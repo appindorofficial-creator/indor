@@ -74,14 +74,23 @@
 .rl-field.is-error { border-color: #F87171; }
 .rl-field i { color: #0066CC; width: 18px; text-align: center; }
 .rl-field input,
-.rl-field select {
-    border: none;
+.rl-field select,
+.rl-field textarea {
+    border: none !important;
     outline: none;
     flex: 1;
     padding: 10px 0;
     font-size: .88rem;
     font-family: inherit;
     background: transparent;
+    box-shadow: none !important;
+}
+.rl-field input:focus,
+.rl-field select:focus,
+.rl-field textarea:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none;
 }
 .rl-field-error { display: block; font-size: .75rem; color: #DC2626; margin: 6px 0 0 4px; }
 .rl-field-hint { display: block; font-size: .72rem; color: #64748B; margin: 6px 0 0 4px; line-height: 1.35; }
@@ -1151,8 +1160,14 @@ button.rl-network-btn {
 .rl-field--textarea { align-items: flex-start; }
 .rl-field--textarea i { margin-top: 12px; }
 .rl-field--textarea textarea {
-    border: none; outline: none; flex: 1; padding: 10px 0;
+    border: none !important; outline: none; flex: 1; padding: 10px 0;
     font-size: .88rem; font-family: inherit; resize: vertical; min-height: 72px;
+    box-shadow: none !important;
+}
+.rl-field--textarea textarea:focus {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none;
 }
 .rl-char-count { display: block; text-align: right; font-size: .72rem; color: #94A3B8; margin: -6px 0 12px; }
 

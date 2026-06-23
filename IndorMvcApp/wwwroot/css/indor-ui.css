@@ -152,8 +152,6 @@ a.btn-primary:not(.btn-outline) {
 .ob-input,
 .ob-textarea,
 .rl-field,
-.rl-field input,
-.rl-field select,
 .more-field input,
 .more-field textarea,
 input.form-control,
@@ -164,6 +162,14 @@ select.form-control,
     border: 1px solid var(--indor-border, #E7EEF7) !important;
     border-radius: 14px !important;
     font-family: inherit;
+}
+
+.rl-field input,
+.rl-field select,
+.rl-field textarea {
+    border: none !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
 }
 
 .search-bar,
@@ -183,6 +189,13 @@ select:focus {
     outline: none;
     border-color: #93C5FD !important;
     box-shadow: 0 0 0 3px rgba(46, 139, 255, .15) !important;
+}
+
+.rl-field input:focus,
+.rl-field select:focus,
+.rl-field textarea:focus {
+    border: none !important;
+    box-shadow: none !important;
 }
 
 /* ── Chips, pills, filters ──────────────────────────────── */
