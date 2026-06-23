@@ -142,9 +142,14 @@ public class RealtorRegistrationController(
         ViewBag.DocumentSlots = await registration.GetDocumentSlotsAsync();
         ViewBag.LicenseNumber = state.LicenseNumber;
 
+        var realtor = await registration.GetRealtorForCurrentUserAsync();
+        var backUrl = realtor != null && registration.IsRegistrationComplete(realtor)
+            ? Url.Action("Profile", "Realtor")
+            : Url.Action(nameof(Profile));
+
         return View(StepVm(3, "Optional Verification",
             "You can do this now or update it later from your profile.",
-            state, Url.Action(nameof(Profile)),
+            state, backUrl,
             registration.GetLicenseStates()));
     }
 

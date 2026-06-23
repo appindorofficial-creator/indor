@@ -1,5 +1,15 @@
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
 <header class="rl-reg-header">
+    @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
+    {
+        <a href="@Model.BackUrl" class="ob-back" aria-label="Back">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+    }
+    else
+    {
+        <span class="rl-reg-header-spacer" aria-hidden="true"></span>
+    }
     <a asp-controller="Account" asp-action="Welcome" class="rl-reg-logo">
         <i class="fas fa-house"></i> INDOR
     </a>
