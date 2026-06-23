@@ -33,8 +33,9 @@ public static partial class NearbyNetworkImageResolver
         // for sale, so don't keep them for property cards; fall back to a house photo.
         var storedUsable = !string.IsNullOrWhiteSpace(stored)
             && !IsGenericPlaceholder(stored)
+            && !IsPropertyPhoto(stored)
             && !(isProperty && IsInspectionPhoto(stored));
-        if (storedUsable)
+        if (storedUsable && isProperty)
         {
             return stored;
         }
@@ -42,11 +43,44 @@ public static partial class NearbyNetworkImageResolver
         return item.CardType switch
         {
             NearbyNetworkCardTypes.Listing or NearbyNetworkCardTypes.OpenHouse
-                => PickStableListingImage(item.Id),
+                => storedUsable ? stored : PickStableListingImage(item.Id),
             NearbyNetworkCardTypes.Provider or NearbyNetworkCardTypes.Promotion
-                => ResolveServiceImage(item.Title, item.ProviderName, item.Subtitle),
+                => ResolveProviderPromotionImage(item, stored, storedUsable),
             _ => null
         };
+    }
+
+    public static string? ResolveIconClass(IndorNearbyNetworkItem item, string? imageUrl)
+    {
+        if (!string.IsNullOrWhiteSpace(imageUrl))
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(item.IconClass))
+        {
+            return item.IconClass;
+        }
+
+        return item.CardType switch
+        {
+            NearbyNetworkCardTypes.Lead => "fa-users",
+            NearbyNetworkCardTypes.Emergency => "fa-bell",
+            _ => null
+        };
+    }
+
+    private static string ResolveProviderPromotionImage(
+        IndorNearbyNetworkItem item,
+        string? stored,
+        bool storedUsable)
+    {
+        if (storedUsable)
+        {
+            return stored!;
+        }
+
+        return ResolveServiceImage(item.Title, item.ProviderName, item.Subtitle);
     }
 
     public static string? ResolveServiceImage(string? title, string? providerName, string? subtitle)
@@ -104,6 +138,14 @@ public static partial class NearbyNetworkImageResolver
     {
         var normalized = url.Trim().TrimEnd('/').ToLowerInvariant();
         return GenericPlaceholders.Any(p => normalized.EndsWith(p, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private static bool IsPropertyPhoto(string url)
+    {
+        var normalized = url.Trim().ToLowerInvariant();
+        return normalized.Contains("listing-home", StringComparison.Ordinal)
+            || normalized.Contains("openhouse-home", StringComparison.Ordinal)
+            || normalized.Contains("welcome-house", StringComparison.Ordinal);
     }
 
     private static bool IsInspectionPhoto(string url) =>
