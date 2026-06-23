@@ -40,7 +40,7 @@
                     <label asp-for="Password" class="input-label">Password</label>
                     <div class="input-wrapper password-field">
                         <i class="fas fa-lock input-icon"></i>
-                        <input asp-for="Password" type="password" id="loginPassword" class="form-input" placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢" autocomplete="current-password" />
+                        <input asp-for="Password" type="password" id="loginPassword" class="form-input" placeholder="Enter your password" autocomplete="current-password" />
                         <button type="button" class="password-toggle" id="loginPasswordToggle" aria-label="Show password" aria-pressed="false">
                             <i class="fas fa-eye" aria-hidden="true"></i>
                         </button>
@@ -56,12 +56,8 @@
                     <a href="#" class="forgot-link">Forgot your password?</a>
                 </div>
 
-                <button type="submit" class="btn btn-primary">
-                    <div class="btn-content">
-                        <i class="fas fa-right-to-bracket btn-icon"></i>
-                        <span>Sign In</span>
-                    </div>
-                    <i class="fas fa-chevron-right btn-arrow" aria-hidden="true"></i>
+                <button type="submit" class="btn btn-primary btn-primary--submit">
+                    <span class="btn-label">Sign In</span>
                 </button>
 
                 <div class="signup-link">

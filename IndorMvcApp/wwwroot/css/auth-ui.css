@@ -1009,7 +1009,8 @@
             box-shadow: none;
         }
 
-        .btn-icon {
+        .btn-primary > .btn-icon-left,
+        .btn-primary > .btn-icon-right {
             font-size: 1.1rem;
             position: absolute;
             top: 50%;
@@ -1073,6 +1074,24 @@
 .btn-primary {
     background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC)) !important;
     box-shadow: 0 10px 22px rgba(0, 102, 204, 0.28);
+}
+
+.btn-content .btn-icon {
+    position: static;
+    transform: none;
+}
+
+.btn-primary--submit,
+form .btn-primary[type="submit"] {
+    width: 100%;
+    margin-top: 8px;
+    padding: 16px 22px;
+}
+
+.btn-primary--submit .btn-label,
+form .btn-primary[type="submit"] .btn-label {
+    font-weight: 700;
+    line-height: 1;
 }
 
 .back-btn {
