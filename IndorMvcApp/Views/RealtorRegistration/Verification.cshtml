@@ -1,7 +1,8 @@
 @using IndorMvcApp.Models
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
 @{
-    var slots = ViewBag.DocumentSlots as IReadOnlyList<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel> ?? [];
+    var slots = ViewBag.DocumentSlots as IReadOnlyList<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel>
+        ?? new List<IndorMvcApp.ViewModels.RealtorDocumentSlotViewModel>();
     var licenseNumber = ViewBag.LicenseNumber as string ?? Model.State.LicenseNumber;
     var uploadFields = new (string DocumentType, string InputName, string Label)[]
     {

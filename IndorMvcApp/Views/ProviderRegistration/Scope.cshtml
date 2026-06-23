@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
 @{
-    var allowed = ViewBag.Allowed as IReadOnlyList<string> ?? [];
-    var disallowed = ViewBag.Disallowed as IReadOnlyList<string> ?? [];
+    var allowed = ViewBag.Allowed as IReadOnlyList<string> ?? new List<string>();
+    var disallowed = ViewBag.Disallowed as IReadOnlyList<string> ?? new List<string>();
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>

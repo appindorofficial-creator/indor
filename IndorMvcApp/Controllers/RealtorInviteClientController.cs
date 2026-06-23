@@ -58,7 +58,7 @@ public class RealtorInviteClientController(
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ClientInfo(
-        string fullName, string email, string phone, string clientRole, string quickNote)
+        string fullName, string email, string? phone, string clientRole, string? quickNote)
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {

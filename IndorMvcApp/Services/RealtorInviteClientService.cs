@@ -111,7 +111,7 @@ public class RealtorInviteClientService(
     }
 
     public async Task SaveClientInfoAsync(
-        string fullName, string email, string phone, string clientRole, string quickNote,
+        string fullName, string email, string? phone, string clientRole, string? quickNote,
         CancellationToken cancellationToken = default)
     {
         var draft = await EnsureDraftAsync(cancellationToken);
