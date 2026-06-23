@@ -48,7 +48,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             Stats = stats,
             QuickActions =
             [
-                new() { Label = "Invite client", Icon = "fa-user-plus", Url = "/RealtorInviteClient/ClientInfo" },
+                new() { Label = "Invite client", Icon = "fa-user-plus", Url = "/RealtorInviteClient/New" },
                 new() { Label = "New property file", Icon = "fa-folder-plus", Url = "/RealtorPropertyFile/Details" },
                 new() { Label = "Upload inspection report", Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
                 new() { Label = "Urgent quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
@@ -1812,7 +1812,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
                 Text = $"{pendingInvites} client{(pendingInvites == 1 ? "" : "s")} need invitations",
                 Icon = "fa-user-plus",
                 ColorClass = "blue",
-                Url = "/RealtorInviteClient/ClientInfo"
+                Url = "/RealtorInviteClient/New"
             });
         }
 
