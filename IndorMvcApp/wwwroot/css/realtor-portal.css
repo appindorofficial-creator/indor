@@ -1138,7 +1138,7 @@ button.rl-quick-action {
     display: flex; align-items: center; justify-content: space-between;
     gap: 12px; margin-top: 20px;
 }
-.rl-invite-actions form { margin: 0; }
+.rl-invite-actions form { margin: 0; display: contents; }
 .rl-invite-cancel {
     border: none; background: transparent; color: #64748B;
     font-weight: 700; font-size: .88rem; cursor: pointer; padding: 0;
