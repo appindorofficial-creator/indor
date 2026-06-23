@@ -4,20 +4,35 @@ using System.Text.RegularExpressions;
 namespace IndorMvcApp.Validation;
 
 /// <summary>
-/// Rejects values that are empty of letters, digits-only, or too short to be a street address.
+/// Rejects values that are empty of letters, digits-only, too short, or that lack a
+/// city/state component (so just a bare street line like "9713 Falling Stream Dr" is
+/// rejected as incomplete). A complete address must include a street number, a street
+/// name, and a city/state hint (a comma separator or a 5-digit ZIP code that is not the
+/// leading street number).
 /// </summary>
 [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field)]
 public sealed class ValidStreetAddressAttribute : ValidationAttribute
 {
     private static readonly Regex HasLetterRegex = new(@"\p{L}", RegexOptions.Compiled);
     private static readonly Regex OnlyDigitsAndSeparatorsRegex = new(@"^[\d\s.,#\-]+$", RegexOptions.Compiled);
+    private static readonly Regex ZipTokenRegex = new(@"^\d{5}(-\d{4})?$", RegexOptions.Compiled);
+
+    private const string IncompleteMessage =
+        "Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC).";
+
+    /// <summary>
+    /// When true, the address must include a city/state hint (a comma separator or a
+    /// ZIP code). Use for single, combined address fields (e.g. moving From/To). Leave
+    /// false for street-only fields that have separate City/State/ZIP inputs.
+    /// </summary>
+    public bool RequireCityOrZip { get; set; }
 
     public ValidStreetAddressAttribute()
         : base("Please enter a valid street address (e.g. 123 Main St, Charlotte, NC).")
     {
     }
 
-    public static bool IsValidStreetAddress(string? value, out string? errorMessage)
+    public static bool IsValidStreetAddress(string? value, out string? errorMessage, bool requireCityOrZip = false)
     {
         errorMessage = null;
         if (string.IsNullOrWhiteSpace(value))
@@ -44,15 +59,27 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             return false;
         }
 
+        var tokens = address.Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries);
         var hasDigit = address.Any(char.IsDigit);
-        var wordParts = address
-            .Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries)
-            .Count(part => part.Any(char.IsLetter));
+        var wordParts = tokens.Count(part => part.Any(char.IsLetter));
 
         if (!hasDigit && wordParts < 2)
         {
             errorMessage = "Enter a complete street address (e.g. 123 Main St, Charlotte, NC).";
             return false;
+        }
+
+        if (requireCityOrZip)
+        {
+            // A bare street line ("9713 Falling Stream Dr") lacks any city/state hint.
+            // Require a comma separator or a ZIP code that is not the leading street number.
+            var hasComma = address.Contains(',');
+            var hasZip = tokens.Skip(1).Any(t => ZipTokenRegex.IsMatch(t.Trim(',', '.')));
+            if (!hasComma && !hasZip)
+            {
+                errorMessage = IncompleteMessage;
+                return false;
+            }
         }
 
         return true;
@@ -65,7 +92,7 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        return IsValidStreetAddress(text, out var message)
+        return IsValidStreetAddress(text, out var message, RequireCityOrZip)
             ? ValidationResult.Success
             : new ValidationResult(message ?? ErrorMessage ?? "Please enter a valid street address.");
     }

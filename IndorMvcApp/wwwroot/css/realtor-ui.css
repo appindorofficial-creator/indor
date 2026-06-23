@@ -1,0 +1,122 @@
+/* ============================================================
+   REALTOR UI — INDOR design tokens on realtor-portal.css
+   Sky background, wizard steppers, pill nav, gradient CTAs.
+   ============================================================ */
+
+.rl-dash-page,
+.rl-page.ob-page,
+.rl-listing-wizard-page,
+.rl-edit-profile-page {
+    background: var(--indor-bg-sky, #F0F7FF) !important;
+    background-attachment: fixed;
+    color: var(--indor-navy, #0A2540);
+    font-family: Inter, system-ui, sans-serif;
+}
+
+.rl-listing-wizard-page {
+    padding-bottom: calc(72px + env(safe-area-inset-bottom, 0));
+}
+
+.rl-dash-shell,
+.rl-invite-shell,
+.rl-edit-profile-shell,
+.rl-listing-wizard-shell {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+/* Portal topbar */
+.rl-portal-topbar {
+    padding: 14px 0 10px;
+}
+
+.rl-portal-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .85);
+    box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Wizard back buttons */
+.rl-ep-back,
+.rl-listing-wizard-back,
+.rl-reg-header .ob-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .85);
+    box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--indor-navy, #0A2540);
+    text-decoration: none;
+    border: none;
+}
+
+/* Progress steppers */
+.rl-ep-step-segment.is-active,
+.rl-listing-step-segment.is-active,
+.rl-listing-step-segment.is-done,
+.rl-listing-wizard-page .rl-listing-step-segment.is-active,
+.rl-listing-wizard-page .rl-listing-step-segment.is-done {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+}
+
+.rl-reg-step.is-active {
+    border-color: #0066CC;
+    color: #0066CC;
+    background: rgba(46, 139, 255, .12);
+}
+
+.rl-reg-step.is-done {
+    border-color: transparent;
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    color: #fff;
+}
+
+.rl-reg-step-line.is-done {
+    background: #0066CC;
+}
+
+/* Cards */
+.rl-quick-action,
+.rl-stat-card,
+.rl-home-hero,
+.rl-network-feed-card,
+.rl-profile-section,
+.rl-dash-panel,
+.rl-quote-card,
+.rl-client-card,
+.rl-file-card {
+    border-radius: 20px;
+}
+
+/* Primary actions */
+.rl-btn-primary,
+.ob-btn.rl-btn-primary,
+.rl-listing-wizard-actions .rl-btn-primary {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    border: none;
+}
+
+.rl-btn-primary:hover,
+.ob-btn.rl-btn-primary:hover {
+    filter: brightness(1.03);
+}
+
+/* Bottom nav — frosted over sky */
+.rl-bottom-nav {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--indor-border, #E7EEF7);
+}
+
+.rl-bottom-nav a.is-active {
+    color: #0066CC;
+}

@@ -1,7 +1,7 @@
 /* Neighbor Request — detail screen */
 .nr-detail-page {
-    background: #F4F7FB;
-    color: #0A2540;
+    background: var(--indor-bg-sky, #F0F7FF);
+    color: var(--indor-navy, #0A2540);
     font-family: Inter, system-ui, sans-serif;
     min-height: 100vh;
     min-height: 100dvh;
@@ -35,8 +35,9 @@
     height: 40px;
     border-radius: 50%;
     border: 0;
-    background: transparent;
-    color: #0066CC;
+    background: rgba(255, 255, 255, .9);
+    color: #0A2540;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -207,6 +208,8 @@
     font-size: .82rem;
     line-height: 1.55;
     color: #475569;
+    overflow-wrap: anywhere;
+    word-break: break-word;
 }
 
 .nr-detail-story-preview.is-collapsed {
@@ -564,8 +567,9 @@
     justify-content: center;
     min-height: 44px;
     border-radius: 14px;
-    background: #0066CC;
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
     color: #fff;
+    box-shadow: 0 8px 18px rgba(0, 102, 204, .28);
     font-size: .88rem;
     font-weight: 800;
     text-decoration: none;

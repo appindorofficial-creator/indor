@@ -1,31 +1,13 @@
 @model IndorMvcApp.ViewModels.RemodelingSentViewModel
 @{
     ViewData["Title"] = "Request sent - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "section-services" });
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_RemodelingServicioStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">Request sent</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_RemodelingServicioStepper", 4)
 
-    <div style="text-align:center;margin:24px 0;">
+<div style="text-align:center;margin:24px 0;">
         <div style="width:72px;height:72px;border-radius:50%;background:rgba(0,102,204,0.12);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
             <i class="fas fa-check" style="font-size:2rem;color:#0066CC;"></i>
         </div>
@@ -40,6 +22,3 @@
     </div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="btn-primary" style="display:block;text-align:center;text-decoration:none;">Back to Services</a>
-</div>
-</body>
-</html>

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -40,6 +41,11 @@ public class HvacSetupStepViewModel
     public string PageTitle { get; set; } = "Add HVAC System";
 
     public string BackUrl { get; set; } = "/";
+
+    // When true, the back arrow uses browser history (history.back) so the user
+    // returns to the exact previous page, including the SPA tab they came from
+    // (e.g. #section-schedule), which the server BackUrl cannot know.
+    public bool BackUsesHistory { get; set; }
 }
 
 public class HvacSetupStartViewModel : HvacSetupStepViewModel
@@ -60,16 +66,22 @@ public class AddHvacSystemViewModel : HvacSetupStepViewModel
     [Required(ErrorMessage = "Select a system type.")]
     public string SystemType { get; set; } = "CentralAC";
 
+    [Required(ErrorMessage = "Enter the brand.")]
     [MaxLength(80)]
-    public string? Brand { get; set; }
+    public string Brand { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Enter the model.")]
     [Display(Name = "Model")]
     [MaxLength(80)]
-    public string? EquipmentModel { get; set; }
+    public string EquipmentModel { get; set; } = string.Empty;
 
-    [MaxLength(80)]
-    public string? SerialNumber { get; set; }
+    [Required(ErrorMessage = "Enter the serial number.")]
+    [MaxLength(EquipmentSerialNumberAttribute.MaxLength)]
+    [EquipmentSerialNumber]
+    public string SerialNumber { get; set; } = string.Empty;
 
+    [Required(ErrorMessage = "Select the approximate install year.")]
+    [Display(Name = "Approx. install year")]
     public int? InstallYear { get; set; }
 
     [MaxLength(40)]

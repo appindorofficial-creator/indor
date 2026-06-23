@@ -1,34 +1,15 @@
 @model IndorMvcApp.ViewModels.MovingItemsViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 3;
+    ViewData["WizardBackUrl"] = Url.Action("MovingDetails", "Moving", new { id = Model.SolicitudId });
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_MovingStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="MovingDetails" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_MovingStepper", 2)
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-
-    <form asp-action="MovingItems" method="post" enctype="multipart/form-data">
-        <input type="hidden" asp-for="SolicitudId" />
+<form asp-action="MovingItems" method="post" enctype="multipart/form-data" class="iw-step-form">        <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
         <input type="hidden" asp-for="ItemsMover" id="ItemsMover" />
@@ -120,21 +101,23 @@
             </div>
         </div>
 
-        <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <div class="cl-form-actions">
+            <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        </div>
     </form>
 
-    @foreach (var file in Model.ArchivosExistentes)
-    {
-        <form id="removeMovingPhoto@(file.Id)" asp-action="RemovePhoto" method="post" style="display:none">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="photoId" value="@file.Id" />
-            <input type="hidden" name="solicitudId" value="@Model.SolicitudId" />
-        </form>
-    }
-</div>
-<script>
-    (function () {
+@foreach (var file in Model.ArchivosExistentes)
+{
+    <form id="removeMovingPhoto@(file.Id)" asp-action="RemovePhoto" method="post" style="display:none">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="photoId" value="@file.Id" />
+        <input type="hidden" name="solicitudId" value="@Model.SolicitudId" />
+    </form>
+}
+
+@section Scripts {
+<script>    (function () {
         function initSingleTiles(containerSelector, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
             const container = document.querySelector(containerSelector);
@@ -263,5 +246,4 @@
         });
     })();
 </script>
-</body>
-</html>
+}

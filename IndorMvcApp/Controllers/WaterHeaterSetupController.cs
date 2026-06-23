@@ -345,9 +345,13 @@ public class WaterHeaterSetupController : Controller
             // Water heater record is saved; history is optional.
         }
 
+        var savedEntryMode = draft.EntryMode;
         ClearDraft();
         await HttpContext.Session.CommitAsync();
 
+        // Carry the entry mode so the final screen shows the right step count
+        // (manual flow = 4 steps, scan flow = 5 steps).
+        TempData["WaterHeaterEntryMode"] = savedEntryMode;
         return RedirectToAction(nameof(Saved), new { id = propiedad.Id });
     }
 
@@ -365,10 +369,15 @@ public class WaterHeaterSetupController : Controller
             ? $"{Math.Max(0, DateTime.Today.Year - record.InstallYear.Value)} years"
             : "—";
 
+        // Manual flow has 4 steps, scan flow 5. Fall back to scan when unknown
+        // (e.g. revisiting this screen after the draft is gone).
+        var isManual = string.Equals(TempData["WaterHeaterEntryMode"] as string, "manual", StringComparison.OrdinalIgnoreCase);
+
         return View(new WaterHeaterSavedViewModel
         {
             PropiedadId = propiedad.Id,
-            CurrentStep = 5,
+            CurrentStep = isManual ? 4 : 5,
+            TotalSteps = isManual ? 4 : 5,
             PageTitle = "Water Heater Added",
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
@@ -423,7 +432,9 @@ public class WaterHeaterSetupController : Controller
         PropertyInfoViewModel? info,
         AddWaterHeaterViewModel posted)
     {
-        posted.CurrentStep = 3;
+        // Manual entry skips the scan step, so its flow is 4 steps (1→2→3→4).
+        posted.CurrentStep = 2;
+        posted.TotalSteps = 4;
         posted.PageTitle = "Enter water heater details";
         posted.Address = FormatAddress(propiedad, info);
         posted.ImageUrl = "/welcome-house.png";
@@ -468,11 +479,14 @@ public class WaterHeaterSetupController : Controller
         Propiedad propiedad,
         PropertyInfoViewModel? info,
         WaterHeaterSetupDraft draft,
-        WaterHeaterReviewViewModel? posted = null) =>
-        new()
+        WaterHeaterReviewViewModel? posted = null)
+    {
+        var isManual = !string.Equals(draft.EntryMode, "scan", StringComparison.OrdinalIgnoreCase);
+        return new()
         {
             PropiedadId = propiedad.Id,
-            CurrentStep = 4,
+            CurrentStep = isManual ? 3 : 4,
+            TotalSteps = isManual ? 4 : 5,
             PageTitle = "Review & Save",
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
@@ -493,6 +507,7 @@ public class WaterHeaterSetupController : Controller
             LabelImageUrl = draft.LabelImagePath,
             ConfirmSave = posted?.ConfirmSave ?? false
         };
+    }
 
     private static void ApplyHintsToDraft(WaterHeaterSetupDraft draft, WaterHeaterOpenAiHints hints)
     {

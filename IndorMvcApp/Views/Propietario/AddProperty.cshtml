@@ -46,7 +46,12 @@
                                    name="StreetAddress"
                                    placeholder="Enter house number and street name"
                                    autocomplete="address-line1"
-                                   inputmode="text" />
+                                   inputmode="text"
+                                   data-address-autocomplete
+                                   data-ac-street-only="true"
+                                   data-ac-city="city"
+                                   data-ac-state="state"
+                                   data-ac-zip="zip" />
                         </div>
                         <span asp-validation-for="StreetAddress" class="ob-error"></span>
                     </div>
@@ -116,5 +121,6 @@
     </div>
     @await Html.PartialAsync("_PropertyResearchLoading")
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
 </body>
 </html>

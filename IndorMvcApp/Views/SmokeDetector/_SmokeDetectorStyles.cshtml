@@ -1,5 +1,13 @@
 @await Html.PartialAsync("../HvacMaintenance/_HvacMaintenanceStyles")
 <style>
+    /* iOS ignores user-scalable=no and double-tap-zooms when tapping controls.
+       touch-action: manipulation disables that double-tap zoom (still allows
+       normal scrolling and pinch) so selecting an option no longer zooms in. */
+    .page-container button,
+    .page-container input,
+    .page-container select,
+    .page-container a { touch-action: manipulation; }
+
     .sd-hero-wrap { position: relative; margin-bottom: 14px; }
     .sd-hero-wrap .hero-img { width: 100%; border-radius: 16px; object-fit: cover; max-height: 180px; border: 1px solid #E5E7EB; }
     .sd-hero-icon { position: absolute; bottom: 12px; right: 12px; width: 40px; height: 40px; border-radius: 50%; background: #FFF; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.12); }
@@ -35,7 +43,7 @@
     .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 999px; padding: 10px 14px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; }
     .segment-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
     .year-row { display: flex; gap: 8px; align-items: center; }
-    .year-row input[type=number] { flex: 1; border: 1.5px solid #E5E7EB; border-radius: 14px; padding: 12px 14px; font-size: 0.82rem; }
+    .year-row input[type=number] { flex: 1; border: 1.5px solid #E5E7EB; border-radius: 14px; padding: 12px 14px; font-size: 16px; }
     .year-row .segment-btn { white-space: nowrap; }
     .setup-summary { background: #FFF; border: 1px solid #E5E7EB; border-radius: 16px; padding: 16px; margin-bottom: 14px; }
     .setup-summary .badge { display: inline-flex; background: rgba(0,102,204,0.1); color: #0066CC; font-size: 0.72rem; font-weight: 700; padding: 6px 12px; border-radius: 999px; margin-bottom: 12px; }

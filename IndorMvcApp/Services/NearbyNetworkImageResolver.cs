@@ -1,8 +1,9 @@
+using System.Text.RegularExpressions;
 using IndorMvcApp.Models;
 
 namespace IndorMvcApp.Services;
 
-public static class NearbyNetworkImageResolver
+public static partial class NearbyNetworkImageResolver
 {
     private static readonly string[] GenericPlaceholders =
     [
@@ -10,14 +11,12 @@ public static class NearbyNetworkImageResolver
         "/inspeccion1.jpeg"
     ];
 
+    // Real estate exterior photos used for property cards (listings / open houses).
     private static readonly string[] ListingImages =
     [
-        "/inspeccion3.jpeg",
-        "/inspeccion5.jpeg",
-        "/inspeccion7.jpeg",
-        "/inspeccion9.jpeg",
-        "/inspeccion11.jpeg",
-        "/inspeccion13.jpeg"
+        "/listing-home-1.png",
+        "/listing-home-2.png",
+        "/openhouse-home.png"
     ];
 
     public static string? ResolveFeedImage(IndorNearbyNetworkItem item)
@@ -27,8 +26,15 @@ public static class NearbyNetworkImageResolver
             return null;
         }
 
+        var isProperty = item.CardType is NearbyNetworkCardTypes.Listing or NearbyNetworkCardTypes.OpenHouse;
+
         var stored = item.ImageUrl?.Trim();
-        if (!string.IsNullOrWhiteSpace(stored) && !IsGenericPlaceholder(stored))
+        // Inspection photos (plumbing, interiors, systems) don't represent a home
+        // for sale, so don't keep them for property cards; fall back to a house photo.
+        var storedUsable = !string.IsNullOrWhiteSpace(stored)
+            && !IsGenericPlaceholder(stored)
+            && !(isProperty && IsInspectionPhoto(stored));
+        if (storedUsable)
         {
             return stored;
         }
@@ -99,6 +105,12 @@ public static class NearbyNetworkImageResolver
         var normalized = url.Trim().TrimEnd('/').ToLowerInvariant();
         return GenericPlaceholders.Any(p => normalized.EndsWith(p, StringComparison.OrdinalIgnoreCase));
     }
+
+    private static bool IsInspectionPhoto(string url) =>
+        InspectionPhotoRegex().IsMatch(url.Trim());
+
+    [GeneratedRegex(@"/inspeccion\d+\.jpe?g$", RegexOptions.IgnoreCase)]
+    private static partial Regex InspectionPhotoRegex();
 
     private static string PickStableListingImage(int itemId)
     {

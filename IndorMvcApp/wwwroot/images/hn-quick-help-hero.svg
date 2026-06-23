@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 110" fill="none">
+  <!-- worker 1 - carrying box -->
+  <g>
+    <path d="M8 110 C8 90 18 82 30 82 C42 82 52 90 52 110 Z" fill="#2E8BFF"/>
+    <circle cx="30" cy="68" r="13" fill="#F1C8A6"/>
+    <path d="M20 66 C20 56 40 56 40 66 C40 60 34 52 30 52 C24 52 20 58 20 66 Z" fill="#5B4636"/>
+    <rect x="38" y="58" width="22" height="18" rx="3" fill="#C4A574" stroke="#A8844E" stroke-width="1"/>
+  </g>
+  <!-- worker 2 - rake -->
+  <g>
+    <path d="M54 110 C54 92 64 84 76 84 C88 84 98 92 98 110 Z" fill="#5FC489"/>
+    <circle cx="76" cy="70" r="12" fill="#F1C8A6"/>
+    <path d="M66 68 C66 58 86 58 86 68 C86 62 80 54 76 54 C70 54 66 60 66 68 Z" fill="#3A2E26"/>
+    <line x1="92" y1="56" x2="104" y2="88" stroke="#8B5E3C" stroke-width="3" stroke-linecap="round"/>
+    <path d="M100 86 L112 90 L108 96 L96 92 Z" fill="#94A3B8"/>
+  </g>
+  <!-- worker 3 - trash bag -->
+  <g>
+    <path d="M100 110 C100 90 112 82 124 82 C136 82 148 90 148 110 Z" fill="#A78BFA"/>
+    <circle cx="124" cy="68" r="13" fill="#F1C8A6"/>
+    <path d="M114 66 C114 56 134 56 134 66 C134 60 128 52 124 52 C118 52 114 58 114 66 Z" fill="#5B4636"/>
+    <path d="M118 72 C118 64 130 64 130 72 L128 88 C128 92 120 92 120 88 Z" fill="#334155"/>
+  </g>
+</svg>

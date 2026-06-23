@@ -1,38 +1,20 @@
 @model IndorMvcApp.ViewModels.ExteriorPaintScheduleViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
     string PhotoFor(string category) =>
         Model.ArchivosExistentes.FirstOrDefault(a => string.Equals(a.CategoriaFoto, category, StringComparison.OrdinalIgnoreCase))?.RutaArchivo ?? string.Empty;
     var frontPhoto = PhotoFor("Front");
     var backPhoto = PhotoFor("Back");
     var problemPhoto = PhotoFor("ProblemArea");
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("ExteriorPaintCondition", "ExteriorPaint", new { id = Model.SolicitudId });
+    ViewData["WizardStep"] = 3;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_ExteriorPaintStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <button type="submit" form="ep-schedule-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_ExteriorPaintStepper", 3)
 
-    <div class="ep-title-row">
+<div class="ep-title-row">
         <div class="left">
             <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
@@ -153,6 +135,7 @@
         </button>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         var storiesInput = document.getElementById('NumeroPisos');
@@ -194,6 +177,6 @@
         previewFile('backPhoto');
         previewFile('problemPhoto');
     })();
+
 </script>
-</body>
-</html>
+}

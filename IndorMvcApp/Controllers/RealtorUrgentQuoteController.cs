@@ -56,18 +56,21 @@ public class RealtorUrgentQuoteController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Property(int propertyFileId, string requestCategory, string serviceType, string urgencyLevel)
+    public async Task<IActionResult> Property(int propertyFileId, string requestCategory, string serviceType, string urgencyLevel, string? newPropertyAddress)
     {
         try
         {
-            await wizard.SavePropertyAsync(propertyFileId, requestCategory, serviceType, urgencyLevel);
+            await wizard.SavePropertyAsync(propertyFileId, requestCategory, serviceType, urgencyLevel, newPropertyAddress);
             return RedirectToAction(nameof(Issue));
         }
         catch
         {
             ModelState.AddModelError(string.Empty, "Select a property and what you need to continue.");
-            var vm = await wizard.BuildPropertyAsync(null);
+            var vm = await wizard.BuildPropertyAsync(newPropertyAddress);
             vm.SelectedPropertyFileId = propertyFileId;
+            vm.RequestCategory = requestCategory ?? "";
+            vm.ServiceType = serviceType ?? "";
+            vm.UrgencyLevel = urgencyLevel ?? "";
             return View(vm);
         }
     }

@@ -1,33 +1,14 @@
 @model IndorMvcApp.ViewModels.GutterCleaningSetupViewModel
 @{
     ViewData["Title"] = "Tell us about your home - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("GutterCleaningService", "GutterCleaning", new { id = Model.HomeCarePriorityId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_GutterCleaningStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <button type="submit" form="gc-setup-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_GutterCleaningStepper", 2)
 
-    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
     <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Tell us about your home</span></p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
@@ -84,7 +65,7 @@
             <p style="font-size:0.74rem;color:#64748B;margin-bottom:10px;">Help us estimate the scope of the job.</p>
             <div class="stepper-control">
                 <button type="button" id="downMinus">−</button>
-                <span class="value" id="downValue">@(Model.CantidadBajantes ?? 4)</span>
+                <span class="value" id="downValue">@(Model.CantidadBajantes ?? 0)</span>
                 <button type="button" id="downPlus">+</button>
             </div>
         </div>
@@ -93,7 +74,8 @@
             Continue <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
+
+@section Scripts {
 <script>
     (function () {
         function bindSingle(groupSelector, attr, input) {
@@ -112,8 +94,33 @@
         bindSingle('[data-guard]', 'data-guard', document.getElementById('ProtectorCanaletas'));
         bindSingle('[data-last]', 'data-last', document.getElementById('UltimaLimpieza'));
 
+        var form = document.getElementById('gc-setup-form');
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') return;
+
+            var stories = document.getElementById('NumeroPisos');
+            var gutter = document.getElementById('TipoCanaletas');
+            var guard = document.getElementById('ProtectorCanaletas');
+            var last = document.getElementById('UltimaLimpieza');
+            var checks = [
+                { input: stories, message: 'Select your home size.' },
+                { input: gutter, message: 'Select your gutter type.' },
+                { input: guard, message: 'Select whether you have gutter guards.' },
+                { input: last, message: 'Select when gutters were last cleaned.' }
+            ];
+
+            for (var i = 0; i < checks.length; i++) {
+                if (!checks[i].input.value || !checks[i].input.value.trim()) {
+                    e.preventDefault();
+                    alert(checks[i].message);
+                    return;
+                }
+            }
+        });
+
         var downInput = document.getElementById('CantidadBajantes');
         var downValue = document.getElementById('downValue');
+        if (!downInput.value) downInput.value = '0';
         function syncDown() { downValue.textContent = downInput.value; }
         document.getElementById('downMinus').addEventListener('click', function () {
             var v = parseInt(downInput.value || '0', 10);
@@ -127,6 +134,6 @@
         });
         syncDown();
     })();
+
 </script>
-</body>
-</html>
+}

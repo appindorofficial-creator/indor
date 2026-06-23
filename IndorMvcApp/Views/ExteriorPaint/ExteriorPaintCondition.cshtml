@@ -1,33 +1,15 @@
 @model IndorMvcApp.ViewModels.ExteriorPaintConditionViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("ExteriorPaintReview", "ExteriorPaint", new { id = Model.HomeCarePriorityId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_ExteriorPaintStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <button type="submit" form="ep-condition-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_ExteriorPaintStepper", 2)
 
-    <div class="ep-title-row">
+<div class="ep-title-row">
         <div class="left">
             <h1 class="page-heading" style="margin-bottom:4px;font-size:1.05rem;">@Model.PageTitle</h1>
             @if (!string.IsNullOrWhiteSpace(Model.LandingSubtitulo))
@@ -107,6 +89,7 @@
         </button>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         var issuesInput = document.getElementById('ProblemasSeleccionados');
@@ -172,7 +155,23 @@
             });
             if (btn.getAttribute('data-wash') === washInput.value) btn.classList.add('active');
         });
+
+        var form = document.getElementById('ep-condition-form');
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') return;
+
+            var missing = [];
+            if (!getValues(issuesInput).length) missing.push('Select at least one issue you\'ve noticed.');
+            if (!getValues(areasInput).length) missing.push('Select at least one area that needs attention.');
+            if (!colorInput.value || !colorInput.value.trim()) missing.push('Select whether you want a color update.');
+            if (!washInput.value || !washInput.value.trim()) missing.push('Select whether the exterior was power washed recently.');
+
+            if (missing.length) {
+                e.preventDefault();
+                alert(missing[0]);
+            }
+        });
     })();
+
 </script>
-</body>
-</html>
+}

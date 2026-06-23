@@ -31,20 +31,20 @@ public class GutterCleaningSetupViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Gutter Cleaning";
 
-    [Required]
-    public string NumeroPisos { get; set; } = "Two";
+    [Required(ErrorMessage = "Select your home size.")]
+    public string NumeroPisos { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoCanaletas { get; set; } = "Aluminum";
+    [Required(ErrorMessage = "Select your gutter type.")]
+    public string TipoCanaletas { get; set; } = string.Empty;
 
-    [Required]
-    public string ProtectorCanaletas { get; set; } = "No";
+    [Required(ErrorMessage = "Select whether you have gutter guards.")]
+    public string ProtectorCanaletas { get; set; } = string.Empty;
 
-    [Required]
-    public string UltimaLimpieza { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Select when gutters were last cleaned.")]
+    public string UltimaLimpieza { get; set; } = string.Empty;
 
     [Range(0, 50)]
-    public int? CantidadBajantes { get; set; } = 4;
+    public int? CantidadBajantes { get; set; }
 }
 
 public class ExistingGutterCleaningFileViewModel

@@ -34,10 +34,24 @@
             </div>
 
             <div class="rl-network-card-actions">
-                <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                @if (string.IsNullOrWhiteSpace(Model.PrimaryActionUrl) || Model.PrimaryActionUrl == "#")
+                {
+                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.PrimaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                }
+                else
+                {
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
-                    <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                    if (string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) || Model.SecondaryActionUrl == "#")
+                    {
+                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.SecondaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                    }
+                    else
+                    {
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                    }
                 }
             </div>
         </div>
@@ -103,13 +117,27 @@ else
             </div>
         </div>
 
-        <div class="rl-network-card-actions">
-            <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
-            @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
-            {
-                <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
-            }
-        </div>
+            <div class="rl-network-card-actions">
+                @if (string.IsNullOrWhiteSpace(Model.PrimaryActionUrl) || Model.PrimaryActionUrl == "#")
+                {
+                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.PrimaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                }
+                else
+                {
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
+                {
+                    if (string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) || Model.SecondaryActionUrl == "#")
+                    {
+                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.SecondaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                    }
+                    else
+                    {
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                    }
+                }
+            </div>
     </div>
 </article>
 }

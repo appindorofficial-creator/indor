@@ -258,33 +258,21 @@ public class OpenAiMaintenanceRecommendationService(
 
 
 
-                var icon = node["icon"]?.GetValue<string>()?.Trim() ?? "screwdriver-wrench";
-
-                if (!icon.StartsWith("fa-", StringComparison.OrdinalIgnoreCase))
-
-                {
-
-                    icon = $"fa-{icon.TrimStart('f', 'a', '-')}";
-
-                }
-
-
+                var category = NormalizeCategory(node["category"]?.GetValue<string>());
+                var normalizedTitle = title.Length > 120 ? title[..120] : title;
+                var resolvedIcon = PropertyMaintenanceIconResolver.Resolve(
+                    node["icon"]?.GetValue<string>()?.Trim(),
+                    category,
+                    normalizedTitle);
 
                 plan.Items.Add(new PropertyMaintenanceItemViewModel
-
                 {
-
-                    Title = title.Length > 120 ? title[..120] : title,
-
+                    Title = normalizedTitle,
                     Description = node["description"]?.GetValue<string>()?.Trim() ?? "",
-
-                    Category = NormalizeCategory(node["category"]?.GetValue<string>()),
-
+                    Category = category,
                     Priority = NormalizePriority(node["priority"]?.GetValue<string>()),
-
                     Frequency = node["frequency"]?.GetValue<string>()?.Trim() ?? "As needed",
-
-                    Icon = icon,
+                    Icon = resolvedIcon,
 
                     Reason = node["reason"]?.GetValue<string>()?.Trim(),
 

@@ -24,6 +24,10 @@ public class HomeownerNearbyNetworkViewModel
     public int MapNearbyCount { get; set; }
     public List<HomeownerMapCarouselItemViewModel> MapCarouselItems { get; set; } = [];
     public string? PropertyAddress { get; set; }
+    public string PostQuickJobUrl { get; set; } = "#";
+    public string BrowseHelpersUrl { get; set; } = "#";
+    public string MyQuickJobsUrl { get; set; } = "#";
+    public string MyRequestsUrl { get; set; } = "#";
 }
 
 public class HomeownerMapCarouselItemViewModel

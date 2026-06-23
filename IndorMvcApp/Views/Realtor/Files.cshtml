@@ -24,7 +24,22 @@
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, client, or file ID..." />
             </div>
-            <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
+            <div class="rl-filter-wrap">
+                <button type="button" class="rl-filter-btn" id="rlFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> Filter</button>
+                <div class="rl-filter-menu" id="rlFilterMenu" role="menu" hidden>
+                    @foreach (var chip in Model.Filters)
+                    {
+                        <a asp-action="Files" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                           class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
+                            <span>@chip</span>
+                            @if (Model.ActiveFilter == chip)
+                            {
+                                <i class="fas fa-check"></i>
+                            }
+                        </a>
+                    }
+                </div>
+            </div>
         </div>
         <div class="rl-filter-chips">
             @foreach (var chip in Model.Filters)
@@ -57,7 +72,11 @@
                                     <span class="rl-premium-muted">@file.CityRegion</span>
                                 }
                             </div>
-                            <button type="button" class="rl-card-menu" aria-label="Options"><i class="fas fa-ellipsis-vertical"></i></button>
+                            <button type="button" class="rl-card-menu" aria-label="Options" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i></button>
+                            <div class="rl-card-menu-dropdown" role="menu" hidden>
+                                <a href="@file.ActionUrl" class="rl-card-menu-item" role="menuitem"><i class="fas fa-folder-open"></i> Open file</a>
+                                <button type="button" class="rl-card-menu-item" data-copy="@file.FileCode" role="menuitem"><i class="fas fa-copy"></i> Copy File ID</button>
+                            </div>
                             <span class="rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusBadge</span>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(file.ClientName))
@@ -96,4 +115,82 @@
             </div>
         </section>
     }
+
+    <div class="rl-toast" id="rlFilesToast" role="status" aria-live="polite" hidden></div>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        function closeAllMenus(except) {
+            document.querySelectorAll('.rl-card-menu-dropdown:not([hidden]), #rlFilterMenu:not([hidden])').forEach(function (menu) {
+                if (menu === except) { return; }
+                menu.hidden = true;
+                var btn = menu.previousElementSibling;
+                if (btn && btn.hasAttribute('aria-expanded')) {
+                    btn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        }
+
+        function toggleMenu(btn, menu) {
+            var willOpen = menu.hidden;
+            closeAllMenus(willOpen ? menu : null);
+            menu.hidden = !willOpen;
+            btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        }
+
+        var filterBtn = document.getElementById('rlFilterBtn');
+        var filterMenu = document.getElementById('rlFilterMenu');
+        if (filterBtn && filterMenu) {
+            filterBtn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleMenu(filterBtn, filterMenu);
+            });
+        }
+
+        document.querySelectorAll('.rl-card-menu').forEach(function (btn) {
+            var menu = btn.nextElementSibling;
+            if (!menu || !menu.classList.contains('rl-card-menu-dropdown')) { return; }
+            btn.addEventListener('click', function (e) {
+                e.stopPropagation();
+                toggleMenu(btn, menu);
+            });
+        });
+
+        var toast = document.getElementById('rlFilesToast');
+        var toastTimer = null;
+        function showToast(message) {
+            if (!toast) { return; }
+            toast.textContent = message;
+            toast.hidden = false;
+            toast.classList.add('is-visible');
+            if (toastTimer) { clearTimeout(toastTimer); }
+            toastTimer = setTimeout(function () {
+                toast.classList.remove('is-visible');
+                toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
+            }, 2200);
+        }
+
+        document.querySelectorAll('.rl-card-menu-item[data-copy]').forEach(function (item) {
+            item.addEventListener('click', async function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                var value = item.getAttribute('data-copy') || '';
+                try {
+                    await navigator.clipboard.writeText(value);
+                    showToast('File ID copied: ' + value);
+                } catch (_) {
+                    window.prompt('Copy File ID:', value);
+                }
+                closeAllMenus(null);
+            });
+        });
+
+        document.addEventListener('click', function () { closeAllMenus(null); });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') { closeAllMenus(null); }
+        });
+    })();
+</script>
+}

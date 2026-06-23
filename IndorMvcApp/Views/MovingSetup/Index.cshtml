@@ -1,29 +1,14 @@
 @model IndorMvcApp.ViewModels.MovingSetupSectionViewModel
 @{
     ViewData["Title"] = Model.Titulo;
-    Layout = null;
+    ViewData["WizardTitle"] = Model.Titulo;
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "section-services" });
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@Model.Titulo - INDOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/moving-setup-page.css" asp-append-version="true" />
-</head>
-<body>
+
+
 <div class="ms-page">
-    <div class="ms-top">
-        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="ms-back" aria-label="Back">
-            <i class="fas fa-chevron-left"></i>
-        </a>
-        <h1 class="ms-title">@Model.Titulo</h1>
-    </div>
-    @if (!string.IsNullOrWhiteSpace(Model.Subtitulo))
+@if (!string.IsNullOrWhiteSpace(Model.Subtitulo))
     {
         <p class="ms-sub">@Model.Subtitulo</p>
     }
@@ -35,7 +20,7 @@
                 var href = !string.IsNullOrWhiteSpace(item.Url) ? item.Url : "#";
                 <a href="@href" class="moving-setup-grid-item">
                     <span class="moving-setup-grid-order">@item.Orden</span>
-                    <span class="moving-setup-grid-icon"><i class="fas @item.IconoClase"></i></span>
+                    <span class="moving-setup-grid-icon"><i class="fas @(string.IsNullOrWhiteSpace(item.IconoClase) ? "fa-cube" : item.IconoClase)"></i></span>
                     <span class="moving-setup-grid-label">@item.Nombre</span>
                 </a>
             }
@@ -83,7 +68,7 @@
                 {
                     var href = !string.IsNullOrWhiteSpace(link.Url) ? link.Url : "#";
                     <a href="@href" class="moving-setup-quick-link">
-                        <i class="fas @link.IconoClase"></i>
+                        <i class="fas @(string.IsNullOrWhiteSpace(link.IconoClase) ? "fa-link" : link.IconoClase)"></i>
                         <span>@link.Nombre</span>
                     </a>
                 }
@@ -91,5 +76,3 @@
         }
     </div>
 </div>
-</body>
-</html>

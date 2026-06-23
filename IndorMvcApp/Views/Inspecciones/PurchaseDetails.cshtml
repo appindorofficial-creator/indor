@@ -1,107 +1,18 @@
-@model IndorMvcApp.ViewModels.PurchaseDetailsViewModel
+﻿@model IndorMvcApp.ViewModels.PurchaseDetailsViewModel
 @using System.Globalization
 @{
     ViewData["Title"] = "Purchase Details - INDOR";
-    Layout = null;
-    var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
+    ViewData["WizardTitle"] = "Purchase Details";
+var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                            ?? DateTime.Today.AddDays(21).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "inspections" });
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-        .back-btn, .icon-btn {
-            width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB;
-            display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none;
-        }
-        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .field-card {
-            background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px;
-            border: 1px solid rgba(229, 231, 235, 0.9); box-shadow: 0 8px 24px rgba(10, 37, 64, 0.04);
-        }
-        .field-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-        .field-icon {
-            width: 36px; height: 36px; border-radius: 10px; background: rgba(0, 102, 204, 0.1);
-            color: #0066CC; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-        }
-        .field-label { font-size: 0.92rem; font-weight: 700; color: #0A2540; }
-        .form-input {
-            width: 100%; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px;
-            font-family: 'Inter', sans-serif; font-size: 0.95rem; background: #F9FAFB; color: #0A2540;
-        }
-        .form-input:focus { outline: none; border-color: #0066CC; background: #FFF; box-shadow: 0 0 0 4px rgba(0,102,204,0.1); }
-        .segmented { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .segment-btn {
-            border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 14px;
-            font-weight: 600; font-size: 0.92rem; color: #64748B; cursor: pointer; display: flex;
-            align-items: center; justify-content: center; gap: 8px; transition: all 0.2s ease;
-        }
-        .segment-btn.active {
-            background: linear-gradient(135deg, #0066CC, #004FA3); border-color: transparent; color: #FFF;
-            box-shadow: 0 8px 20px rgba(0, 102, 204, 0.22);
-        }
-        .chip-group { display: flex; flex-wrap: wrap; gap: 10px; }
-        .chip-btn {
-            flex: 1 1 calc(33.333% - 10px); min-width: 90px; border: 1.5px solid #E5E7EB; background: #F9FAFB;
-            border-radius: 12px; padding: 12px 10px; font-weight: 600; font-size: 0.88rem; color: #64748B;
-            cursor: pointer; text-align: center; transition: all 0.2s ease;
-        }
-        .chip-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-        .goal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .goal-btn {
-            border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 14px; padding: 14px 12px;
-            text-align: left; cursor: pointer; position: relative; min-height: 92px; transition: all 0.2s ease;
-        }
-        .goal-btn.active { border-color: #0066CC; background: rgba(0,102,204,0.06); box-shadow: 0 0 0 1px rgba(0,102,204,0.15); }
-        .goal-btn i { color: #0066CC; font-size: 1rem; margin-bottom: 8px; display: block; }
-        .goal-btn span { display: block; font-size: 0.84rem; font-weight: 700; color: #0A2540; line-height: 1.35; }
-        .goal-btn .check {
-            position: absolute; top: 10px; right: 10px; width: 22px; height: 22px; border-radius: 50%;
-            background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.7rem;
-        }
-        .goal-btn.active .check { display: flex; }
-        .validation-summary {
-            background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; border-radius: 12px;
-            padding: 12px 14px; font-size: 0.85rem; margin-bottom: 14px;
-        }
-        .btn-primary, .btn-secondary {
-            width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem;
-            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .btn-primary {
-            border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF;
-            box-shadow: 0 8px 24px rgba(0, 102, 204, 0.25); margin-top: 8px;
-        }
-        .btn-secondary {
-            margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC;
-        }
-        .hidden-input { display: none; }
-    </style>
-</head>
-<body>
-    <div class="page-container">
-        <div class="top-bar">
-            <a asp-controller="Home" asp-action="Index" asp-fragment="inspections" class="back-btn" aria-label="Back">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <strong>Purchase Details</strong>
-            <div style="width:44px;"></div>
-        </div>
+
+</div>
 
         <h1 class="page-heading">Tell us about this home purchase</h1>
-        <p class="page-lead">We’ll use this information to prepare the right inspection flow.</p>
+        <p class="page-lead">Weâ€™ll use this information to prepare the right inspection flow.</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -249,6 +160,6 @@
                 setSingle(group, '.goal-btn', value);
             }
         });
-    </script>
-</body>
-</html>
+    
+</script>
+}

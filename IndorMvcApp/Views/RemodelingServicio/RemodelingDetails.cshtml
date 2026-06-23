@@ -1,36 +1,20 @@
 @model IndorMvcApp.ViewModels.RemodelingDetailsViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("RemodelingService", "RemodelingServicio", new { id = Model.ServicioId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_RemodelingServicioStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="RemodelingService" asp-route-id="@Model.ServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_RemodelingServicioStepper", 2)
 
-    <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">Project details</h2>
+<h2 class="page-heading" style="font-size:1.1rem;text-align:center;">Project details</h2>
     <p class="page-lead" style="margin-top:-8px;text-align:center;">Help us prepare an accurate quote for your home.</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-    <form asp-action="RemodelingDetails" method="post" enctype="multipart/form-data">
+    <form id="remodeling-details-form" asp-action="RemodelingDetails" method="post" enctype="multipart/form-data">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioId" />
         <input type="hidden" asp-for="AlcanceProyecto" id="AlcanceProyecto" />
@@ -104,27 +88,55 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">Continue to review</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="back" class="btn-outline" formnovalidate>Back</button>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         function initSingle(groupId, hiddenId, initial) {
             const hidden = document.getElementById(hiddenId);
+            const seed = (initial && String(initial).trim()) || '';
+            if (!seed) {
+                hidden.value = '';
+            }
+
             document.querySelectorAll('#' + groupId + ' .help-tile, #' + groupId + ' .chip-option').forEach(btn => {
-                if (btn.dataset.value === (initial || hidden.value)) btn.classList.add('active');
+                if (seed && btn.dataset.value === seed) btn.classList.add('active');
                 btn.addEventListener('click', () => {
                     document.querySelectorAll('#' + groupId + ' .help-tile, #' + groupId + ' .chip-option').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     hidden.value = btn.dataset.value;
                 });
             });
+            if (seed) hidden.value = seed;
         }
         initSingle('scopeGroup', 'AlcanceProyecto', '@Model.AlcanceProyecto');
         initSingle('timingGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
         initSingle('budgetGroup', 'PresupuestoEstimado', '@Model.PresupuestoEstimado');
         initSingle('contactGroup', 'ContactoPreferido', '@Model.ContactoPreferido');
+
+        const form = document.getElementById('remodeling-details-form');
+        form?.addEventListener('submit', function (e) {
+            if (e.submitter && e.submitter.value === 'back') return;
+
+            const checks = [
+                { id: 'AlcanceProyecto', message: 'Select a project scope.' },
+                { id: 'VentanaTiempo', message: 'Select when you want to start.' },
+                { id: 'PresupuestoEstimado', message: 'Select an estimated budget.' },
+                { id: 'ContactoPreferido', message: 'Select a preferred contact method.' }
+            ];
+
+            for (const check of checks) {
+                const input = document.getElementById(check.id);
+                if (!input || !input.value || !input.value.trim()) {
+                    e.preventDefault();
+                    alert(check.message);
+                    return;
+                }
+            }
+        });
     })();
+
 </script>
-</body>
-</html>
+}

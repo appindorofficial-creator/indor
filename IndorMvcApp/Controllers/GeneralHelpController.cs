@@ -46,14 +46,16 @@ public class GeneralHelpController : Controller
             await _db.SaveChangesAsync();
         }
 
+        var detailsEntered = string.Equals(solicitud.Estado, "RequestCompleted", StringComparison.OrdinalIgnoreCase);
+
         return View(new GeneralHelpRequestViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = id,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            TipoAyuda = solicitud.TipoAyuda ?? "ExtraHands",
-            VentanaTiempo = solicitud.VentanaTiempo ?? "Tomorrow",
-            Urgencia = solicitud.Urgencia ?? "Normal"
+            TipoAyuda = detailsEntered ? (solicitud.TipoAyuda ?? "") : "",
+            VentanaTiempo = detailsEntered ? (solicitud.VentanaTiempo ?? "") : "",
+            Urgencia = detailsEntered ? (solicitud.Urgencia ?? "") : ""
         });
     }
 
@@ -322,9 +324,6 @@ public class GeneralHelpController : Controller
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
-                TipoAyuda = "ExtraHands",
-                VentanaTiempo = "Tomorrow",
-                Urgencia = "Normal",
                 ContactoPreferido = "Text"
             };
             _db.SolicitudesGeneralHelp.Add(solicitud);

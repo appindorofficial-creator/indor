@@ -15,6 +15,7 @@ public class NeighborRequestWizardService(
     IWebHostEnvironment webHostEnvironment)
 {
     public const string DraftSessionKey = "NeighborRequestDraft";
+    public const string FreshStartSessionKey = "NeighborRequestFreshStart";
     private static readonly string[] AllowedPhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const int MaxPhotoBytes = 10_000_000;
     private const int MaxPhotos = 5;
@@ -26,6 +27,9 @@ public class NeighborRequestWizardService(
         ("late-afternoon", "3:00 PM – 6:00 PM", new TimeOnly(15, 0), new TimeOnly(18, 0)),
         ("evening", "6:00 PM – 9:00 PM", new TimeOnly(18, 0), new TimeOnly(21, 0))
     ];
+
+    public static IReadOnlyList<(string Value, string Label)> GetTimeWindowOptions() =>
+        TimeWindowPresets.Select(p => (p.Value, p.Label)).ToList();
 
     public NeighborRequestDraftState? LoadDraft(ISession session)
     {
@@ -49,6 +53,33 @@ public class NeighborRequestWizardService(
         session.SetString(DraftSessionKey, JsonSerializer.Serialize(draft));
 
     public void ClearDraft(ISession session) => session.Remove(DraftSessionKey);
+
+    public void MarkFreshStart(ISession session) =>
+        session.SetString(FreshStartSessionKey, "1");
+
+    public bool IsFreshStart(ISession session) =>
+        session.GetString(FreshStartSessionKey) == "1";
+
+    public void ClearFreshStart(ISession session) => session.Remove(FreshStartSessionKey);
+
+    public async Task<NeighborRequestDraftState> CreateNewDraftAsync(
+        ISession session,
+        Propiedad propiedad,
+        int categoryId,
+        CancellationToken ct)
+    {
+        var draft = new NeighborRequestDraftState
+        {
+            PropiedadId = propiedad.Id,
+            CategoryId = categoryId,
+            LocationAddress = await ResolveDefaultAddressAsync(propiedad, ct),
+            TimelineCode = NeighborRequestTimelineCodes.Today,
+            AudienceCode = NeighborRequestAudienceCodes.Neighbors
+        };
+        SaveDraft(session, draft);
+        ClearFreshStart(session);
+        return draft;
+    }
 
     public async Task<Propiedad?> ValidatePropiedadAsync(string userId, int propiedadId, CancellationToken ct) =>
         await db.Propiedades
@@ -74,22 +105,44 @@ public class NeighborRequestWizardService(
 
     public async Task<NeighborRequestCategoryStepViewModel> BuildCategoryStepAsync(
         int propiedadId,
+        NeighborRequestDraftState? draft,
         IUrlHelper url,
         CancellationToken ct)
     {
         var categories = await LoadCategoriesAsync(ct);
+        var defaultAddress = draft?.LocationAddress;
+        if (string.IsNullOrWhiteSpace(defaultAddress))
+        {
+            var propiedad = await db.Propiedades.AsNoTracking()
+                .FirstOrDefaultAsync(p => p.Id == propiedadId, ct);
+            if (propiedad != null)
+            {
+                defaultAddress = await ResolveDefaultAddressAsync(propiedad, ct);
+            }
+        }
+
         return new NeighborRequestCategoryStepViewModel
         {
             PropiedadId = propiedadId,
+            PageTitle = "Post Quick Job",
             DisplayStep = 1,
+            TotalSteps = 4,
+            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
             BackUrl = url.Action("Index", "Home"),
             CloseUrl = url.Action("Index", "Home")!,
+            CategoryId = draft?.CategoryId ?? 0,
+            SelectedCategoryId = draft?.CategoryId,
+            Title = draft?.Title ?? string.Empty,
+            Description = draft?.Description,
+            LocationAddress = defaultAddress ?? string.Empty,
+            UseHomeAddress = draft?.UseHomeAddress ?? true,
             Categories = categories.Select(c => new NeighborRequestCategoryOptionViewModel
             {
                 Id = c.Id,
-                Label = ResolveCategoryLabel(c.Code, c.LabelEn),
+                Label = ResolveQuickJobCategoryLabel(c.Code, c.LabelEn),
                 Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
-                IconClass = ResolveCategoryIcon(c.Code, c.IconClass)
+                IconClass = ResolveCategoryIcon(c.Code, c.IconClass),
+                IllustrationClass = ResolveCategoryIllustration(c.Code)
             }).ToList()
         };
     }
@@ -110,16 +163,32 @@ public class NeighborRequestWizardService(
         return new NeighborRequestDescribeStepViewModel
         {
             PropiedadId = draft.PropiedadId,
-            DisplayStep = 2,
-            CategoryLabel = category.LabelEn,
-            Title = draft.Title,
-            Description = draft.Description,
-            LocationAddress = draft.LocationAddress,
-            NeededByDate = draft.NeededByDate,
+            PageTitle = "Post Quick Job",
+            DisplayStep = 3,
+            TotalSteps = 4,
+            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
+            CategoryLabel = ResolveQuickJobCategoryLabel(category.Code, category.LabelEn),
             ExistingPhotoUrls = draft.PhotoPaths.ToList(),
-            BackUrl = $"/NeighborRequest/Category?propiedadId={draft.PropiedadId}"
+            SelectedTools = draft.ToolsNeeded.ToList(),
+            SpecialNotes = draft.SpecialNotes,
+            PetsOnProperty = draft.PetsOnProperty ?? "No",
+            HasStairs = draft.HasStairs ?? "No",
+            GateCode = draft.GateCode,
+            ParkingAvailable = draft.ParkingAvailable ?? "Yes",
+            ToolOptions = GetToolOptions(),
+            BackUrl = $"/NeighborRequest/Preferences?propiedadId={draft.PropiedadId}",
+            CloseUrl = "/Home/Index"
         };
     }
+
+    public static IReadOnlyList<(string Value, string Label, string IconClass)> GetToolOptions() =>
+    [
+        ("gloves", "Gloves", "fa-mitten"),
+        ("dolly", "Dolly", "fa-dolly"),
+        ("tools", "Basic tools", "fa-screwdriver-wrench"),
+        ("truck", "Pickup truck", "fa-truck-pickup"),
+        ("none", "No tools needed", "fa-ban")
+    ];
 
     public NeighborRequestPreferencesStepViewModel BuildPreferencesStep(NeighborRequestDraftState draft)
     {
@@ -129,22 +198,58 @@ public class NeighborRequestWizardService(
             PropiedadId = draft.PropiedadId,
             RequestId = draft.EditingRequestId,
             IsEditMode = isEdit,
-            PageTitle = isEdit ? "Edit request" : "Post a Request",
-            DisplayStep = isEdit ? 2 : 3,
-            TotalSteps = isEdit ? 3 : 5,
+            PageTitle = isEdit ? "Edit request" : "Post Quick Job",
+            DisplayStep = isEdit ? 2 : 2,
+            TotalSteps = isEdit ? 3 : 4,
             StepLabels = isEdit
                 ? ["Details", "Preferences", "Review"]
-                : ["Category", "Describe", "Preferences", "Review", "Done"],
+                : ["Details", "Schedule", "Extras", "Helpers"],
+            WhenCode = draft.TimelineCode,
+            PreferredTimeCode = draft.PreferredTimeCode,
+            HelperCount = draft.HelperCount is > 0 ? draft.HelperCount : 1,
+            DurationCode = string.IsNullOrWhiteSpace(draft.DurationCode)
+                ? NeighborRequestDurationCodes.TwoHours
+                : draft.DurationCode,
+            PayTypeCode = string.IsNullOrWhiteSpace(draft.PayTypeCode)
+                ? NeighborRequestPayTypeCodes.Hourly
+                : draft.PayTypeCode,
             TimelineCode = draft.TimelineCode,
             AudienceCode = draft.AudienceCode,
             SelectedAudiences = ExpandAudienceCode(draft.AudienceCode),
             BudgetAmount = draft.BudgetAmount,
+            NeededByDate = draft.NeededByDate,
             BackUrl = isEdit && draft.EditingRequestId is > 0
                 ? $"/NeighborRequest/Edit/{draft.EditingRequestId}"
-                : $"/NeighborRequest/Describe?propiedadId={draft.PropiedadId}",
+                : $"/NeighborRequest/Category?propiedadId={draft.PropiedadId}",
             CloseUrl = isEdit && draft.EditingRequestId is > 0
                 ? $"/NeighborRequest/Detail/{draft.EditingRequestId}"
                 : "/Home/Index",
+            WhenOptions =
+            [
+                (NeighborRequestTimelineCodes.Today, "Today", "fa-calendar-day"),
+                (NeighborRequestTimelineCodes.Tomorrow, "Tomorrow", "fa-sun"),
+                (NeighborRequestTimelineCodes.PickDate, "Pick a date", "fa-calendar")
+            ],
+            PreferredTimeOptions =
+            [
+                (NeighborRequestPreferredTimeCodes.Morning, "Morning", "fa-sun"),
+                (NeighborRequestPreferredTimeCodes.Afternoon, "Afternoon", "fa-cloud-sun"),
+                (NeighborRequestPreferredTimeCodes.Evening, "Evening", "fa-moon"),
+                (NeighborRequestPreferredTimeCodes.Flexible, "Flexible", "fa-clock")
+            ],
+            HelperCountOptions =
+            [
+                (1, "1", "fa-user"),
+                (2, "2", "fa-user-group"),
+                (3, "3+", "fa-users")
+            ],
+            DurationOptions =
+            [
+                (NeighborRequestDurationCodes.OneHour, "1 hour", "fa-clock"),
+                (NeighborRequestDurationCodes.TwoHours, "2 hours", "fa-clock"),
+                (NeighborRequestDurationCodes.HalfDay, "Half day", "fa-sun"),
+                (NeighborRequestDurationCodes.FullDay, "Full day", "fa-calendar-day")
+            ],
             TimelineOptions =
             [
                 (NeighborRequestTimelineCodes.Asap, "As soon as possible"),
@@ -277,7 +382,7 @@ public class NeighborRequestWizardService(
                 Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
                 IconClass = ResolveCategoryIcon(c.Code, c.IconClass)
             }).ToList(),
-            TimeWindowOptions = TimeWindowPresets.Select(p => (p.Value, p.Label)).ToList()
+            TimeWindowOptions = GetTimeWindowOptions()
         };
     }
 
@@ -406,6 +511,7 @@ public class NeighborRequestWizardService(
         var (lat, lng) = await ResolveCoordinatesAsync(propiedad, info, draft.LocationAddress, ct);
 
         var now = DateTime.UtcNow;
+        FinalizeDraftBeforePublish(draft);
 
         if (draft.EditingRequestId is > 0)
         {
@@ -895,6 +1001,300 @@ public class NeighborRequestWizardService(
         };
     }
 
+    public async Task<NeighborRequestHelpersStepViewModel?> BuildHelpersStepAsync(
+        string userId,
+        int requestId,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
+        IndorNeighborRequest? request;
+        try
+        {
+            request = await db.IndorNeighborRequests
+                .AsNoTracking()
+                .Include(r => r.Category)
+                .FirstOrDefaultAsync(r => r.Id == requestId && r.UserId == userId, ct);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return null;
+        }
+
+        if (request == null)
+        {
+            return null;
+        }
+
+        var suggested = await LoadSuggestedProviderOffersAsync(request, url, ct);
+        var helpers = suggested.Select((offer, index) => new NeighborRequestHelperCardViewModel
+        {
+            ProviderId = offer.ProviderId ?? index + 1,
+            Name = offer.OffererName,
+            PhotoUrl = offer.OffererPhotoUrl,
+            AvatarIconClass = offer.AvatarIconClass,
+            RatingLabel = offer.RatingLabel ?? "4.9",
+            ReviewCount = 80 + (offer.ProviderId ?? index) * 17,
+            DistanceLabel = $"{0.4m + (index * 0.3m):0.#} mi away",
+            PriceLabel = offer.PriceLabel?.Contains("/hr", StringComparison.OrdinalIgnoreCase) == true
+                ? offer.PriceLabel
+                : $"{offer.PriceLabel}/hr",
+            MinHoursLabel = "Min. 2 hrs",
+            SkillTags = ["Moving", "Furniture", "Heavy Lifting"],
+            IsVerified = offer.IsVerified,
+            MessageUrl = offer.MessageUrl
+        }).ToList();
+
+        if (helpers.Count == 0)
+        {
+            helpers =
+            [
+                new NeighborRequestHelperCardViewModel
+                {
+                    ProviderId = 1,
+                    Name = "Miguel",
+                    RatingLabel = "4.9",
+                    ReviewCount = 128,
+                    DistanceLabel = "0.4 mi away",
+                    PriceLabel = FormatPayLabel(request.BudgetAmount, NeighborRequestPayTypeCodes.Hourly),
+                    MinHoursLabel = "Min. 2 hrs",
+                    SkillTags = ["Moving", "Furniture", "Heavy Lifting", "+1"],
+                    IsVerified = true
+                },
+                new NeighborRequestHelperCardViewModel
+                {
+                    ProviderId = 2,
+                    Name = "Ana",
+                    RatingLabel = "4.8",
+                    ReviewCount = 96,
+                    DistanceLabel = "0.7 mi away",
+                    PriceLabel = FormatPayLabel(request.BudgetAmount, NeighborRequestPayTypeCodes.Hourly),
+                    MinHoursLabel = "Min. 2 hrs",
+                    SkillTags = ["Moving", "Furniture"],
+                    IsVerified = true
+                }
+            ];
+        }
+
+        return new NeighborRequestHelpersStepViewModel
+        {
+            PropiedadId = request.PropiedadId,
+            RequestId = requestId,
+            PageTitle = "Helpers Nearby",
+            DisplayStep = 4,
+            TotalSteps = 4,
+            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
+            JobTitle = request.Title,
+            WhenLabel = FormatWhenLabel(request),
+            TimeLabel = FormatPreferredTimeLabel(request),
+            HelpersLabel = $"{ExtractHelperCount(request.DetailsSummary)} helpers",
+            PayLabel = FormatPayLabel(request.BudgetAmount, request.DetailsSummary?.Contains("Pay:", StringComparison.OrdinalIgnoreCase) == true && request.DetailsSummary.Contains("/hr", StringComparison.OrdinalIgnoreCase) ? NeighborRequestPayTypeCodes.Hourly : NeighborRequestPayTypeCodes.Hourly),
+            LocationAddress = request.LocationAddress ?? string.Empty,
+            CategoryIllustrationClass = ResolveCategoryIllustration(request.Category?.Code ?? string.Empty),
+            Helpers = helpers,
+            DetailUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }) ?? "#",
+            BackUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }),
+            CloseUrl = url.Action("Index", "Home")!
+        };
+    }
+
+    public void ApplyScheduleToDraft(NeighborRequestDraftState draft, NeighborRequestPreferencesStepViewModel model)
+    {
+        draft.TimelineCode = NormalizeWhenCode(model.WhenCode);
+        draft.PreferredTimeCode = NormalizePreferredTimeCode(model.PreferredTimeCode);
+        draft.HelperCount = model.HelperCount is > 0 ? model.HelperCount : 1;
+        draft.DurationCode = NormalizeDurationCode(model.DurationCode);
+        draft.PayTypeCode = NormalizePayTypeCode(model.PayTypeCode);
+        draft.BudgetAmount = model.BudgetAmount is > 0 ? model.BudgetAmount : null;
+
+        var today = DateTime.UtcNow.Date;
+        draft.NeededByDate = draft.TimelineCode switch
+        {
+            NeighborRequestTimelineCodes.Today => today,
+            NeighborRequestTimelineCodes.Tomorrow => today.AddDays(1),
+            NeighborRequestTimelineCodes.PickDate => model.NeededByDate?.Date ?? today.AddDays(2),
+            _ => model.NeededByDate?.Date ?? today
+        };
+
+        var (start, end) = ResolvePreferredTimeWindow(draft.PreferredTimeCode);
+        draft.TimeWindowStart = start;
+        draft.TimeWindowEnd = end;
+
+        if (!model.IsEditMode)
+        {
+            draft.AudienceCode = NeighborRequestAudienceCodes.Both;
+        }
+    }
+
+    public void ApplyExtrasToDraft(NeighborRequestDraftState draft, NeighborRequestDescribeStepViewModel model)
+    {
+        draft.SpecialNotes = model.SpecialNotes?.Trim();
+        draft.PetsOnProperty = model.PetsOnProperty;
+        draft.HasStairs = model.HasStairs;
+        draft.GateCode = model.GateCode?.Trim();
+        draft.ParkingAvailable = model.ParkingAvailable;
+        draft.ToolsNeeded = model.SelectedTools?.Where(t => !string.IsNullOrWhiteSpace(t)).Distinct().ToList() ?? [];
+    }
+
+    private static void FinalizeDraftBeforePublish(NeighborRequestDraftState draft)
+    {
+        var parts = new List<string>();
+
+        if (draft.ToolsNeeded.Count > 0)
+        {
+            var labels = draft.ToolsNeeded
+                .Select(t => GetToolOptions().FirstOrDefault(o => o.Value == t).Label ?? t)
+                .Where(l => !string.IsNullOrWhiteSpace(l));
+            parts.Add($"Bring: {string.Join(", ", labels)}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(draft.SpecialNotes))
+        {
+            parts.Add(draft.SpecialNotes.Trim());
+        }
+
+        var safety = new List<string>();
+        if (!string.IsNullOrWhiteSpace(draft.PetsOnProperty))
+        {
+            safety.Add($"Pets: {draft.PetsOnProperty}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(draft.HasStairs))
+        {
+            safety.Add($"Stairs: {draft.HasStairs}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(draft.GateCode))
+        {
+            safety.Add($"Gate code: {draft.GateCode}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(draft.ParkingAvailable))
+        {
+            safety.Add($"Parking: {draft.ParkingAvailable}");
+        }
+
+        if (safety.Count > 0)
+        {
+            parts.Add(string.Join(" | ", safety));
+        }
+
+        parts.Add($"Helpers: {Math.Max(1, draft.HelperCount)}");
+        parts.Add($"Duration: {FormatDurationLabel(draft.DurationCode)}");
+        parts.Add($"Pay: {FormatPayLabel(draft.BudgetAmount, draft.PayTypeCode)}");
+
+        draft.DetailsSummary = string.Join(" · ", parts.Where(p => !string.IsNullOrWhiteSpace(p)));
+    }
+
+    private static int ExtractHelperCount(string? detailsSummary)
+    {
+        if (string.IsNullOrWhiteSpace(detailsSummary))
+        {
+            return 1;
+        }
+
+        var match = Regex.Match(detailsSummary, @"Helpers:\s*(\d+)", RegexOptions.IgnoreCase);
+        return match.Success && int.TryParse(match.Groups[1].Value, out var count) ? count : 1;
+    }
+
+    private static string FormatPayLabel(decimal? amount, string? payTypeCode)
+    {
+        if (amount is not > 0)
+        {
+            return "$25/hr";
+        }
+
+        var formatted = string.Format(CultureInfo.GetCultureInfo("en-US"), "${0:0}", amount.Value);
+        return string.Equals(payTypeCode, NeighborRequestPayTypeCodes.Fixed, StringComparison.OrdinalIgnoreCase)
+            ? formatted
+            : $"{formatted}/hr";
+    }
+
+    private static string FormatDurationLabel(string? code) =>
+        code?.Trim().ToLowerInvariant() switch
+        {
+            NeighborRequestDurationCodes.OneHour => "1 hour",
+            NeighborRequestDurationCodes.HalfDay => "Half day",
+            NeighborRequestDurationCodes.FullDay => "Full day",
+            _ => "2 hours"
+        };
+
+    private static string FormatWhenLabel(IndorNeighborRequest request)
+    {
+        if (request.NeededByDate is { } date)
+        {
+            var today = DateTime.UtcNow.Date;
+            if (date.Date == today)
+            {
+                return "Today";
+            }
+
+            if (date.Date == today.AddDays(1))
+            {
+                return "Tomorrow";
+            }
+
+            return date.ToString("MMM d", CultureInfo.GetCultureInfo("en-US"));
+        }
+
+        return FormatTimelineLabel(request.TimelineCode);
+    }
+
+    private static string FormatPreferredTimeLabel(IndorNeighborRequest request)
+    {
+        if (request.TimeWindowStart is { } start)
+        {
+            return start.Hour < 12 ? "Morning"
+                : start.Hour < 17 ? "Afternoon"
+                : "Evening";
+        }
+
+        return "Flexible";
+    }
+
+    private static (TimeOnly? Start, TimeOnly? End) ResolvePreferredTimeWindow(string? code) =>
+        code?.Trim().ToLowerInvariant() switch
+        {
+            NeighborRequestPreferredTimeCodes.Morning => (new TimeOnly(9, 0), new TimeOnly(12, 0)),
+            NeighborRequestPreferredTimeCodes.Afternoon => (new TimeOnly(12, 0), new TimeOnly(17, 0)),
+            NeighborRequestPreferredTimeCodes.Evening => (new TimeOnly(17, 0), new TimeOnly(21, 0)),
+            _ => (null, null)
+        };
+
+    private static string NormalizeWhenCode(string? code) =>
+        code?.Trim() switch
+        {
+            NeighborRequestTimelineCodes.Tomorrow => NeighborRequestTimelineCodes.Tomorrow,
+            NeighborRequestTimelineCodes.PickDate => NeighborRequestTimelineCodes.PickDate,
+            NeighborRequestTimelineCodes.Asap => NeighborRequestTimelineCodes.Asap,
+            NeighborRequestTimelineCodes.ThisWeek => NeighborRequestTimelineCodes.ThisWeek,
+            NeighborRequestTimelineCodes.ThisMonth => NeighborRequestTimelineCodes.ThisMonth,
+            NeighborRequestTimelineCodes.Flexible => NeighborRequestTimelineCodes.Flexible,
+            _ => NeighborRequestTimelineCodes.Today
+        };
+
+    private static string NormalizePreferredTimeCode(string? code) =>
+        code?.Trim().ToLowerInvariant() switch
+        {
+            NeighborRequestPreferredTimeCodes.Morning => NeighborRequestPreferredTimeCodes.Morning,
+            NeighborRequestPreferredTimeCodes.Afternoon => NeighborRequestPreferredTimeCodes.Afternoon,
+            NeighborRequestPreferredTimeCodes.Evening => NeighborRequestPreferredTimeCodes.Evening,
+            _ => NeighborRequestPreferredTimeCodes.Flexible
+        };
+
+    private static string NormalizeDurationCode(string? code) =>
+        code?.Trim().ToLowerInvariant() switch
+        {
+            NeighborRequestDurationCodes.OneHour => NeighborRequestDurationCodes.OneHour,
+            NeighborRequestDurationCodes.HalfDay => NeighborRequestDurationCodes.HalfDay,
+            NeighborRequestDurationCodes.FullDay => NeighborRequestDurationCodes.FullDay,
+            _ => NeighborRequestDurationCodes.TwoHours
+        };
+
+    private static string NormalizePayTypeCode(string? code) =>
+        string.Equals(code, NeighborRequestPayTypeCodes.Fixed, StringComparison.OrdinalIgnoreCase)
+            ? NeighborRequestPayTypeCodes.Fixed
+            : NeighborRequestPayTypeCodes.Hourly;
+
     private async Task<List<NeighborRequestOfferItemViewModel>> LoadSuggestedProviderOffersAsync(
         IndorNeighborRequest request,
         IUrlHelper url,
@@ -1115,7 +1515,34 @@ public class NeighborRequestWizardService(
             NeighborRequestTimelineCodes.Asap => "As soon as possible",
             NeighborRequestTimelineCodes.ThisMonth => "This month",
             NeighborRequestTimelineCodes.Flexible => "Flexible",
+            NeighborRequestTimelineCodes.Today => "Today",
+            NeighborRequestTimelineCodes.Tomorrow => "Tomorrow",
+            NeighborRequestTimelineCodes.PickDate => "Pick a date",
             _ => "This week"
+        };
+
+    private static string ResolveQuickJobCategoryLabel(string code, string? labelEn) =>
+        code.Trim().ToLowerInvariant() switch
+        {
+            "moving-hauling" => "Moving furniture",
+            "yard-patio" => "Yard work",
+            "cleaning" => "Cleaning help",
+            "home-improvements" => "General labor",
+            "tech-internet" => "Carry boxes",
+            "other" => "Junk removal",
+            _ => ResolveCategoryLabel(code, labelEn)
+        };
+
+    private static string ResolveCategoryIllustration(string code) =>
+        code.Trim().ToLowerInvariant() switch
+        {
+            "moving-hauling" => "nr-cat-ill--moving",
+            "yard-patio" => "nr-cat-ill--yard",
+            "cleaning" => "nr-cat-ill--cleaning",
+            "home-improvements" => "nr-cat-ill--labor",
+            "tech-internet" => "nr-cat-ill--boxes",
+            "other" => "nr-cat-ill--junk",
+            _ => "nr-cat-ill--other"
         };
 
     private static string FormatAudienceLabel(string code) =>

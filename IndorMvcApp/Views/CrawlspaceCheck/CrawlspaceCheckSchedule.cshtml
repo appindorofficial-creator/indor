@@ -1,34 +1,16 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckScheduleViewModel
 @{
     ViewData["Title"] = "Schedule crawlspace check - INDOR";
-    Layout = null;
-    var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
+var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckSetup", "CrawlspaceCheck", new { id = Model.SolicitudId });
+    ViewData["WizardStep"] = 3;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_CrawlspaceCheckStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <button type="submit" form="csc-schedule-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_CrawlspaceCheckStepper", 3)
 
-    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">What should we look for?</h1>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">What should we look for?</h1>
     <p class="page-lead" style="margin-bottom:16px;">Select any concerns and tell us when you'd like the check.</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
@@ -105,6 +87,7 @@
         </button>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         var concernsInput = document.getElementById('PreocupacionesSeleccionadas');
@@ -143,6 +126,6 @@
             if (btn.getAttribute('data-timing') === timingInput.value) btn.classList.add('active');
         });
     })();
+
 </script>
-</body>
-</html>
+}

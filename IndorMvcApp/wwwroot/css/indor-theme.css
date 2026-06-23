@@ -10,13 +10,20 @@
     --indor-blue-bright: #2E8BFF;
     --indor-blue: #0066CC;
     --indor-blue-dark: #004FA3;
+    --indor-blue-light: #E8F1FB;
     --indor-navy: #0A2540;
+    --indor-text-muted: #64748B;
+    --indor-text-subtle: #94A3B8;
+
+    /* Typography */
+    --indor-font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 
     /* Gradients */
     --indor-grad-primary: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
     --indor-grad-primary-hover: linear-gradient(135deg, #1E7AF0 0%, #0056B3 100%);
     --indor-grad-danger: linear-gradient(135deg, #FB6A6A 0%, #DC2626 100%);
     --indor-grad-purple: linear-gradient(135deg, #7C6BF0 0%, #4F46E5 100%);
+    --indor-grad-surface: linear-gradient(180deg, #FFFFFF 0%, #F8FBFF 100%);
 
     /* Sky page background */
     --indor-bg-sky:
@@ -26,6 +33,8 @@
 
     /* Surfaces */
     --indor-border: #E7EEF7;
+    --indor-radius-sm: 12px;
+    --indor-radius-md: 16px;
     --indor-radius-card: 20px;
     --indor-radius-pill: 999px;
 
@@ -33,6 +42,13 @@
     --indor-shadow-card: 0 10px 28px rgba(20, 66, 124, .08);
     --indor-shadow-soft: 0 6px 18px rgba(20, 66, 124, .06);
     --indor-shadow-primary: 0 8px 18px rgba(0, 102, 204, .28);
+
+    /* Legacy aliases (site.css / bootstrap pages) */
+    --primary-color: var(--indor-navy);
+    --secondary-color: var(--indor-blue);
+    --accent: var(--indor-blue);
+    --text-light: var(--indor-navy);
+    --card-bg: #ffffff;
 }
 
 /* Opt-in utility classes (use when adding new markup) */

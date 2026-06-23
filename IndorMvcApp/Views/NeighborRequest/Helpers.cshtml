@@ -1,0 +1,101 @@
+@model IndorMvcApp.ViewModels.NeighborRequestHelpersStepViewModel
+@{
+    ViewData["Title"] = "Helpers Nearby";
+}
+
+<div class="nr-helpers-top-badge"><i class="fas fa-check"></i> Job posted</div>
+
+<section class="nr-job-summary">
+    <div class="nr-job-summary-copy">
+        <span class="nr-job-summary-icon"><i class="fas fa-clipboard-check"></i></span>
+        <h2>@Model.JobTitle</h2>
+        <div class="nr-job-chips">
+            <span><i class="fas fa-calendar-day"></i> @Model.WhenLabel</span>
+            <span><i class="fas fa-clock"></i> @Model.TimeLabel</span>
+            <span><i class="fas fa-user-group"></i> @Model.HelpersLabel</span>
+            <span><i class="fas fa-dollar-sign"></i> @Model.PayLabel</span>
+        </div>
+        <p class="nr-job-location"><i class="fas fa-location-dot"></i> @Model.LocationAddress</p>
+    </div>
+    <div class="nr-job-summary-art @Model.CategoryIllustrationClass" aria-hidden="true"></div>
+</section>
+
+<div class="nr-helpers-toolbar">
+    <div class="nr-helpers-view-toggle">
+        <button type="button" class="is-active"><i class="fas fa-list"></i> List</button>
+        <button type="button" disabled><i class="fas fa-map"></i> Map</button>
+    </div>
+</div>
+
+<header class="nr-helpers-head">
+    <h3>Available helpers near you</h3>
+    <p>Based on your location and job details.</p>
+</header>
+
+<div class="nr-helper-list">
+    @for (var i = 0; i < Model.Helpers.Count; i++)
+    {
+        var card = Model.Helpers[i];
+        <article class="nr-helper-card">
+            <label class="nr-helper-select">
+                <input type="checkbox" name="SelectedHelpers" value="@card.ProviderId" @(i == 0 ? "checked" : null) />
+                <span class="nr-helper-check"></span>
+            </label>
+            <div class="nr-helper-avatar">
+                @if (!string.IsNullOrWhiteSpace(card.PhotoUrl))
+                {
+                    <img src="@Url.Content("~" + card.PhotoUrl)" alt="" />
+                }
+                else
+                {
+                    <span class="nr-helper-avatar-fallback"><i class="fas @card.AvatarIconClass"></i></span>
+                }
+                @if (card.IsOnline)
+                {
+                    <span class="nr-helper-online" aria-label="Online"></span>
+                }
+            </div>
+            <div class="nr-helper-body">
+                <div class="nr-helper-title-row">
+                    <strong>@card.Name</strong>
+                    @if (card.IsVerified)
+                    {
+                        <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                    }
+                </div>
+                <div class="nr-helper-meta">
+                    <span><i class="fas fa-star"></i> @card.RatingLabel (@card.ReviewCount)</span>
+                    <span><i class="fas fa-location-dot"></i> @card.DistanceLabel</span>
+                </div>
+                <div class="nr-helper-tags">
+                    @foreach (var tag in card.SkillTags)
+                    {
+                        <span>@tag</span>
+                    }
+                </div>
+            </div>
+            <div class="nr-helper-side">
+                <strong>@card.PriceLabel</strong>
+                <small>@card.MinHoursLabel</small>
+                <div class="nr-helper-actions">
+                    <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
+                    <button type="button" class="nr-btn-primary nr-btn-primary--sm">Invite</button>
+                </div>
+            </div>
+        </article>
+    }
+</div>
+
+<div class="nr-trust-banner">
+    <i class="fas fa-shield-halved"></i>
+    <div>
+        <strong>Background checked helpers</strong>
+        <p>All helpers are ID verified and background checked for your safety.</p>
+    </div>
+    <a href="#">Learn more</a>
+</div>
+
+<a href="@Model.DetailUrl" class="nr-btn-primary nr-btn-primary--sticky">
+    <i class="fas fa-user-group"></i> Invite selected helpers (1)
+</a>
+<p class="nr-helpers-footnote"><i class="fas fa-lock"></i> Helpers will be notified and can accept your job.</p>

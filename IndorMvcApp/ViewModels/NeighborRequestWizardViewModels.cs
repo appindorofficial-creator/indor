@@ -9,17 +9,31 @@ public class NeighborRequestWizardShellViewModel
     public int PropiedadId { get; set; }
     public int? RequestId { get; set; }
     public bool IsEditMode { get; set; }
-    public string PageTitle { get; set; } = "Post a Request";
+    public string PageTitle { get; set; } = "Post Quick Job";
     public int DisplayStep { get; set; } = 1;
-    public int TotalSteps { get; set; } = 5;
+    public int TotalSteps { get; set; } = 4;
     public string? BackUrl { get; set; }
     public string CloseUrl { get; set; } = "/Home/Index";
-    public IReadOnlyList<string> StepLabels { get; set; } = ["Category", "Describe", "Preferences", "Review", "Done"];
+    public IReadOnlyList<string> StepLabels { get; set; } = ["Details", "Schedule", "Extras", "Helpers"];
 }
 
 public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellViewModel
 {
     public int? SelectedCategoryId { get; set; }
+
+    [Required]
+    public int CategoryId { get; set; }
+
+    [Required, MaxLength(60)]
+    public string Title { get; set; } = string.Empty;
+
+    [MaxLength(300)]
+    public string? Description { get; set; }
+
+    [Required, MaxLength(500)]
+    public string LocationAddress { get; set; } = string.Empty;
+
+    public bool UseHomeAddress { get; set; } = true;
 
     public List<NeighborRequestCategoryOptionViewModel> Categories { get; set; } = [];
 }
@@ -30,35 +44,49 @@ public class NeighborRequestCategoryOptionViewModel
     public string Label { get; set; } = string.Empty;
     public string? Description { get; set; }
     public string IconClass { get; set; } = "fa-circle";
+    public string IllustrationClass { get; set; } = "nr-cat-ill--other";
 }
 
 public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellViewModel
 {
     public string CategoryLabel { get; set; } = string.Empty;
 
-    [Required, MaxLength(200)]
-    public string Title { get; set; } = string.Empty;
-
-    [MaxLength(500)]
-    public string? Description { get; set; }
-
-    [Required, MaxLength(500)]
-    public string LocationAddress { get; set; } = string.Empty;
-
-    [DataType(DataType.Date)]
-    public DateTime? NeededByDate { get; set; }
-
     public List<string> ExistingPhotoUrls { get; set; } = [];
 
     public List<IFormFile>? PhotoFiles { get; set; }
+
+    public List<string> SelectedTools { get; set; } = [];
+
+    [MaxLength(250)]
+    public string? SpecialNotes { get; set; }
+
+    public string? PetsOnProperty { get; set; }
+    public string? HasStairs { get; set; }
+    public string? GateCode { get; set; }
+    public string? ParkingAvailable { get; set; }
+
+    public IReadOnlyList<(string Value, string Label, string IconClass)> ToolOptions { get; set; } = [];
 }
 
 public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShellViewModel
 {
-    public string TimelineCode { get; set; } = "ThisWeek";
-    public string AudienceCode { get; set; } = "Neighbors";
+    public string WhenCode { get; set; } = NeighborRequestTimelineCodes.Today;
+    public string PreferredTimeCode { get; set; } = NeighborRequestPreferredTimeCodes.Flexible;
+    public int HelperCount { get; set; } = 1;
+    public string DurationCode { get; set; } = NeighborRequestDurationCodes.TwoHours;
+    public string PayTypeCode { get; set; } = NeighborRequestPayTypeCodes.Hourly;
+    public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.Today;
+    public string AudienceCode { get; set; } = NeighborRequestAudienceCodes.Neighbors;
     public List<string> SelectedAudiences { get; set; } = [];
     public decimal? BudgetAmount { get; set; }
+
+    [DataType(DataType.Date)]
+    public DateTime? NeededByDate { get; set; }
+
+    public IReadOnlyList<(string Value, string Label, string IconClass)> WhenOptions { get; set; } = [];
+    public IReadOnlyList<(string Value, string Label, string IconClass)> PreferredTimeOptions { get; set; } = [];
+    public IReadOnlyList<(int Value, string Label, string IconClass)> HelperCountOptions { get; set; } = [];
+    public IReadOnlyList<(string Value, string Label, string IconClass)> DurationOptions { get; set; } = [];
     public IReadOnlyList<(string Value, string Label)> TimelineOptions { get; set; } = [];
     public IReadOnlyList<(string Value, string Label, string Subtitle, string IconClass)> AudienceOptions { get; set; } = [];
 }
@@ -109,6 +137,36 @@ public class NeighborRequestSuccessViewModel
 {
     public int RequestId { get; set; }
     public int PropiedadId { get; set; }
+}
+
+public class NeighborRequestHelpersStepViewModel : NeighborRequestWizardShellViewModel
+{
+    public string JobTitle { get; set; } = string.Empty;
+    public string WhenLabel { get; set; } = string.Empty;
+    public string TimeLabel { get; set; } = string.Empty;
+    public string HelpersLabel { get; set; } = string.Empty;
+    public string PayLabel { get; set; } = string.Empty;
+    public string LocationAddress { get; set; } = string.Empty;
+    public string CategoryIllustrationClass { get; set; } = "nr-cat-ill--other";
+    public List<NeighborRequestHelperCardViewModel> Helpers { get; set; } = [];
+    public string DetailUrl { get; set; } = "#";
+}
+
+public class NeighborRequestHelperCardViewModel
+{
+    public int ProviderId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string? PhotoUrl { get; set; }
+    public string AvatarIconClass { get; set; } = "fa-user";
+    public string RatingLabel { get; set; } = "4.9";
+    public int ReviewCount { get; set; }
+    public string DistanceLabel { get; set; } = string.Empty;
+    public string PriceLabel { get; set; } = string.Empty;
+    public string MinHoursLabel { get; set; } = string.Empty;
+    public List<string> SkillTags { get; set; } = [];
+    public bool IsVerified { get; set; }
+    public bool IsOnline { get; set; } = true;
+    public string MessageUrl { get; set; } = "#";
 }
 
 public class NeighborRequestListViewModel

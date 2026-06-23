@@ -107,6 +107,9 @@
             <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
             <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
         </div>
+        <button type="button" id="rlFileRemove" class="rl-file-drop-remove" hidden aria-label="Remove selected file">
+            <i class="fas fa-xmark"></i>
+        </button>
     </label>
 
     <div class="rl-info-box rl-info-box--ai">
@@ -133,12 +136,14 @@
         const fileInput = document.getElementById('reportFileInput');
         const fileNameEl = document.getElementById('rlFileDropName');
         const fileHintEl = document.getElementById('rlFileDropHint');
+        const fileRemoveBtn = document.getElementById('rlFileRemove');
         const clientError = document.getElementById('inspClientError');
         const continueBtn = document.getElementById('inspContinueBtn');
         const cancelBtn = document.getElementById('inspCancelBtn');
         const cancelForm = document.getElementById('inspCancelForm');
         const propertyRadios = form.querySelectorAll('input[name="propertyFileId"]');
         const newAddressInput = form.querySelector('input[name="newPropertyAddress"]');
+        const searchInput = document.querySelector('.rl-search-form input[name="q"]');
         const methodRadios = form.querySelectorAll('.rl-upload-method--picker input[type=radio]');
         const maxFileBytes = @maxFileBytes;
         const maxFileLabel = '@maxFileLabel';
@@ -159,28 +164,47 @@
             if (method === 'Pdf') {
                 fileInput.accept = '.pdf,application/pdf';
                 fileInput.removeAttribute('multiple');
-            } else {
+                fileInput.removeAttribute('capture');
+            } else if (method === 'Scan') {
+                // Open the device camera directly so the user can scan report pages.
                 fileInput.accept = 'image/*';
-                if (method === 'Photos') {
-                    fileInput.setAttribute('multiple', 'multiple');
-                } else {
-                    fileInput.removeAttribute('multiple');
-                }
+                fileInput.removeAttribute('multiple');
+                fileInput.setAttribute('capture', 'environment');
+            } else {
+                // Photos: let the user pick one or more images from the gallery/camera.
+                fileInput.accept = 'image/*';
+                fileInput.setAttribute('multiple', 'multiple');
+                fileInput.removeAttribute('capture');
             }
         }
 
         function updateFileLabel() {
-            const file = fileInput.files?.[0];
+            const files = fileInput.files;
+            const file = files?.[0];
             if (file) {
-                fileNameEl.textContent = file.name;
+                if (files.length > 1) {
+                    fileNameEl.textContent = `${files.length} files selected`;
+                    const totalBytes = Array.from(files).reduce((sum, f) => sum + f.size, 0);
+                    fileHintEl.textContent = `${(totalBytes / (1024 * 1024)).toFixed(1)} MB selected`;
+                } else {
+                    fileNameEl.textContent = file.name;
+                    fileHintEl.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB selected`;
+                }
                 fileNameEl.hidden = false;
-                fileHintEl.textContent = `${(file.size / (1024 * 1024)).toFixed(1)} MB selected`;
                 document.getElementById('rlFileDrop')?.classList.add('has-file');
+                if (fileRemoveBtn) fileRemoveBtn.hidden = false;
             } else {
                 fileNameEl.hidden = true;
                 fileHintEl.textContent = `PDF recommended • Up to ${maxFileLabel}`;
                 document.getElementById('rlFileDrop')?.classList.remove('has-file');
+                if (fileRemoveBtn) fileRemoveBtn.hidden = true;
             }
+        }
+
+        function clearSelectedFile() {
+            fileInput.value = '';
+            updateFileLabel();
+            clearClientError();
         }
 
         propertyRadios.forEach(r => {
@@ -206,8 +230,8 @@
             r.addEventListener('change', () => {
                 document.querySelectorAll('.rl-upload-method').forEach(p => p.classList.remove('is-selected'));
                 r.closest('.rl-upload-method')?.classList.add('is-selected');
+                clearSelectedFile();
                 updateFileAccept();
-                clearClientError();
             });
         });
 
@@ -216,13 +240,27 @@
             clearClientError();
         });
 
+        fileRemoveBtn?.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            clearSelectedFile();
+        });
+
         cancelBtn?.addEventListener('click', () => cancelForm?.submit());
 
         form.addEventListener('submit', (e) => {
             clearClientError();
 
             const hasProperty = Array.from(propertyRadios).some(r => r.checked);
-            const hasNewAddress = (newAddressInput?.value?.trim().length ?? 0) > 0;
+            let hasNewAddress = (newAddressInput?.value?.trim().length ?? 0) > 0;
+
+            // If the user typed an address in the search box (and didn't select a
+            // saved property or fill the address field), use it as the new property address.
+            if (!hasProperty && !hasNewAddress && newAddressInput && (searchInput?.value?.trim().length ?? 0) > 0) {
+                newAddressInput.value = searchInput.value.trim();
+                hasNewAddress = true;
+            }
+
             const hasFile = (fileInput.files?.length ?? 0) > 0;
 
             if (!hasProperty && !hasNewAddress) {

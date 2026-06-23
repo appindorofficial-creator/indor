@@ -1,23 +1,14 @@
 @model IndorMvcApp.ViewModels.HvacSetupStartViewModel
 @{
     ViewData["Title"] = "Add HVAC System";
-    Layout = null;
-}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"] - INDOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
-</head>
-<body>
-<div class="hvac-page">
-    @await Html.PartialAsync("_HvacSetupHeader", Model)
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Model.BackUrl;
+    ViewData["WizardStep"] = Model.CurrentStep;
+    ViewData["WizardTotalSteps"] = 5;
 
-    <div class="hvac-content">
+}
+
+
         <div class="hvac-prop-card">
             <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
             <p>@Model.Address</p>
@@ -39,21 +30,21 @@
 
         <div class="hvac-benefit-list">
             <div class="hvac-benefit-item">
-                <span class="hvac-benefit-icon"><i class="fas fa-clipboard-list"></i></span>
+                <div class="hvac-benefit-icon" aria-hidden="true"><i class="fas fa-clipboard-list"></i></div>
                 <div>
                     <strong>Auto-fill system info</strong>
                     <span>We'll capture serial number, model, and more.</span>
                 </div>
             </div>
             <div class="hvac-benefit-item">
-                <span class="hvac-benefit-icon"><i class="fas fa-clock"></i></span>
+                <div class="hvac-benefit-icon" aria-hidden="true"><i class="fas fa-clock"></i></div>
                 <div>
                     <strong>Estimate unit age</strong>
                     <span>Get an estimated install year in seconds.</span>
                 </div>
             </div>
             <div class="hvac-benefit-item">
-                <span class="hvac-benefit-icon"><i class="fas fa-chart-line"></i></span>
+                <div class="hvac-benefit-icon" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
                 <div>
                     <strong>Find maintenance insights</strong>
                     <span>See past service and recommended care.</span>
@@ -64,5 +55,3 @@
 
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
-</body>
-</html>

@@ -197,6 +197,31 @@ public static class NeighborRequestTimelineCodes
     public const string ThisWeek = "ThisWeek";
     public const string ThisMonth = "ThisMonth";
     public const string Flexible = "Flexible";
+    public const string Today = "Today";
+    public const string Tomorrow = "Tomorrow";
+    public const string PickDate = "PickDate";
+}
+
+public static class NeighborRequestDurationCodes
+{
+    public const string OneHour = "1hour";
+    public const string TwoHours = "2hours";
+    public const string HalfDay = "halfday";
+    public const string FullDay = "fullday";
+}
+
+public static class NeighborRequestPayTypeCodes
+{
+    public const string Hourly = "Hourly";
+    public const string Fixed = "Fixed";
+}
+
+public static class NeighborRequestPreferredTimeCodes
+{
+    public const string Morning = "morning";
+    public const string Afternoon = "afternoon";
+    public const string Evening = "evening";
+    public const string Flexible = "flexible";
 }
 
 public static class NeighborRequestAudienceCodes
@@ -237,12 +262,23 @@ public class NeighborRequestDraftState
     public string Description { get; set; } = string.Empty;
     public string DetailsSummary { get; set; } = string.Empty;
     public string LocationAddress { get; set; } = string.Empty;
+    public bool UseHomeAddress { get; set; } = true;
     public DateTime? NeededByDate { get; set; }
     public TimeOnly? TimeWindowStart { get; set; }
     public TimeOnly? TimeWindowEnd { get; set; }
-    public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.ThisWeek;
+    public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.Today;
+    public string PreferredTimeCode { get; set; } = NeighborRequestPreferredTimeCodes.Flexible;
+    public int HelperCount { get; set; } = 1;
+    public string DurationCode { get; set; } = NeighborRequestDurationCodes.TwoHours;
+    public string PayTypeCode { get; set; } = NeighborRequestPayTypeCodes.Hourly;
     public string AudienceCode { get; set; } = NeighborRequestAudienceCodes.Neighbors;
     public decimal? BudgetAmount { get; set; }
     public List<string> PhotoPaths { get; set; } = [];
+    public List<string> ToolsNeeded { get; set; } = [];
+    public string? SpecialNotes { get; set; }
+    public string? PetsOnProperty { get; set; }
+    public string? HasStairs { get; set; }
+    public string? GateCode { get; set; }
+    public string? ParkingAvailable { get; set; }
     public int? EditingRequestId { get; set; }
 }

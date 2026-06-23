@@ -6,17 +6,18 @@
     align-items: center;
     justify-content: center;
     padding: 20px;
-    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    background: var(--indor-bg-sky, linear-gradient(180deg, #E9F2FE 0%, #F7FBFF 48%, #FFFFFF 100%));
+    background-attachment: fixed;
 }
 
 .auth-card {
     width: 100%;
     max-width: 450px;
-    background: var(--card-bg);
+    background: #fff;
     border-radius: 24px;
     padding: 40px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: var(--indor-shadow-card, 0 20px 60px rgba(20, 66, 124, 0.12));
+    border: 1px solid var(--indor-border, #E7EEF7);
 }
 
 .auth-card.register-card {
@@ -32,22 +33,22 @@
     width: 80px;
     height: 80px;
     margin: 0 auto 20px;
-    background: linear-gradient(135deg, var(--primary-color), #c23616);
+    background: linear-gradient(135deg, #2E8BFF, #0066CC);
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 10px 30px rgba(232, 65, 24, 0.3);
+    box-shadow: 0 10px 30px rgba(0, 102, 204, 0.28);
 }
 
 .auth-icon.register {
-    background: linear-gradient(135deg, var(--success), #079874);
-    box-shadow: 0 10px 30px rgba(16, 172, 132, 0.3);
+    background: linear-gradient(135deg, #22C55E, #16A34A);
+    box-shadow: 0 10px 30px rgba(22, 163, 74, 0.28);
 }
 
 .auth-icon i {
     font-size: 32px;
-    color: var(--text-light);
+    color: #fff;
 }
 
 .auth-header h2 {

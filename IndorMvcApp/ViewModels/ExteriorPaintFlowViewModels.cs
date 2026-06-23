@@ -37,14 +37,17 @@ public class ExteriorPaintConditionViewModel
     public string? LandingSubtitulo { get; set; }
     public string? ImagenUrl { get; set; }
 
+    [Required(ErrorMessage = "Select at least one issue you've noticed.")]
     public string ProblemasSeleccionados { get; set; } = string.Empty;
+
+    [Required(ErrorMessage = "Select at least one area that needs attention.")]
     public string AreasSeleccionadas { get; set; } = string.Empty;
 
-    [Required]
-    public string ActualizacionColor { get; set; } = "Yes";
+    [Required(ErrorMessage = "Select whether you want a color update.")]
+    public string ActualizacionColor { get; set; } = string.Empty;
 
-    [Required]
-    public string LavadoPresionReciente { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Select whether the exterior was power washed recently.")]
+    public string LavadoPresionReciente { get; set; } = string.Empty;
 }
 
 public class ExistingExteriorPaintFileViewModel

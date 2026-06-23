@@ -104,7 +104,7 @@
 .pa-summary-error{background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
 
 /* Multi-property owner portal */
-.pa-portal-page{font-family:'Inter',sans-serif;background:#F8FAFC;min-height:100vh;min-height:100dvh;padding-bottom:88px}
+.pa-portal-page{font-family:'Inter',sans-serif;background:var(--indor-bg-sky,#E9F2FE);background-attachment:fixed;min-height:100vh;min-height:100dvh;padding-bottom:88px}
 .pa-portal-shell{max-width:480px;margin:0 auto;padding:16px}
 .pa-portal-shell--tasks{padding-bottom:88px}
 .pa-portal-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px}

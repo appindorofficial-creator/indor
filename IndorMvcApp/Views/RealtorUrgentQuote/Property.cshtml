@@ -75,7 +75,8 @@
 
     <div asp-validation-summary="All" class="ob-summary"></div>
 
-
+    @* Lets the realtor continue using the address typed in the search box when no saved property matches. *@
+    <input type="hidden" name="newPropertyAddress" id="uqNewPropertyAddress" value="" />
 
     <h2 class="rl-invite-section-title">Select a saved property</h2>
 
@@ -88,7 +89,7 @@
 
         <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
 
-            <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) required />
+            <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
 
             <img src="@(prop.PhotoUrl ?? "/welcome-house.png")" alt="" class="rl-property-pick-thumb" />
 
@@ -233,6 +234,22 @@
         toggle?.addEventListener('click', function () {
             const open = card.classList.toggle('is-open');
             toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+        });
+    })();
+
+    (function () {
+        const form = document.getElementById('urgentPropertyForm');
+        const searchInput = document.querySelector('.rl-search-form input[name="q"]');
+        const newAddressInput = document.getElementById('uqNewPropertyAddress');
+        if (!form || !newAddressInput) return;
+
+        form.addEventListener('submit', function () {
+            const hasProperty = !!form.querySelector('input[name="propertyFileId"]:checked');
+            // If the realtor typed an address in the search box but didn't pick a
+            // saved property, use that text to create/match a property and continue.
+            if (!hasProperty && (searchInput?.value?.trim().length ?? 0) > 0) {
+                newAddressInput.value = searchInput.value.trim();
+            }
         });
     })();
 

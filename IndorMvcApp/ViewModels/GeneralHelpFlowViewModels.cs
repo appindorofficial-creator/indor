@@ -11,14 +11,14 @@ public class GeneralHelpRequestViewModel
     [Required, MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoAyuda { get; set; } = "ExtraHands";
+    [Required(ErrorMessage = "Select what you need help with.")]
+    public string TipoAyuda { get; set; } = "";
 
-    [Required]
-    public string VentanaTiempo { get; set; } = "Tomorrow";
+    [Required(ErrorMessage = "Select when you need help.")]
+    public string VentanaTiempo { get; set; } = "";
 
-    [Required]
-    public string Urgencia { get; set; } = "Normal";
+    [Required(ErrorMessage = "Select how urgent it is.")]
+    public string Urgencia { get; set; } = "";
 }
 
 public class GeneralHelpDetailsViewModel

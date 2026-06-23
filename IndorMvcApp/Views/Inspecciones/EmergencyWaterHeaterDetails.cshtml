@@ -1,45 +1,14 @@
-@model IndorMvcApp.ViewModels.EmergencyWaterHeaterDetailsViewModel
+﻿@model IndorMvcApp.ViewModels.EmergencyWaterHeaterDetailsViewModel
 @{
     ViewData["Title"] = "Emergency Water Heater - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = "Emergency Water Heater";
+    ViewData["WizardBackUrl"] = Url.Action("EmergencyWaterHeaterIssue", "Inspecciones", new { id = Model.ServicioEmergenciaId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 12px; }
-        .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-        .title-row h1 { font-size: 1.2rem; font-weight: 800; }
-        .badge-247 { background: rgba(220,38,38,0.1); color: #DC2626; font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; }
-        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; }
-        .address-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: #FFF; border-radius: 14px; border: 1px solid #E5E7EB; margin-bottom: 16px; font-size: 0.92rem; }
-        .address-row i { color: #0066CC; margin-right: 8px; }
-        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
-        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
-        .chip-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-        .chip-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 999px; padding: 10px 14px; font-weight: 600; font-size: 0.82rem; color: #64748B; cursor: pointer; }
-        .chip-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-        .form-textarea { width: 100%; min-height: 100px; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; resize: vertical; background: #F9FAFB; }
-        .char-count { text-align: right; font-size: 0.78rem; color: #94A3B8; margin-top: 6px; }
-        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
-        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <a asp-action="EmergencyWaterHeaterIssue" asp-route-id="@Model.ServicioEmergenciaId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+
+<a asp-action="EmergencyWaterHeaterIssue" asp-route-id="@Model.ServicioEmergenciaId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
 
     <div class="title-row">
         <h1>Emergency Water Heater</h1>
@@ -47,9 +16,8 @@
     </div>
     <p class="page-lead">Fast help for leaks, no hot water, or unsafe units.</p>
 
-    @await Html.PartialAsync("_EmergencyWaterHeaterStepper", 2)
-
-    <h2 class="page-heading">Add a few details</h2>
+    
+<h2 class="page-heading">Add a few details</h2>
     <p class="page-lead" style="margin-top:-4px;">A quick summary helps the provider arrive prepared.</p>
 
     <div class="address-row">
@@ -113,6 +81,7 @@
         <button type="submit" class="btn-outline" name="action" value="back">Back</button>
     </form>
 </div>
+@section Scripts {
 <script>
     function setSingle(groupId, hiddenId, value) {
         document.getElementById(hiddenId).value = value;
@@ -145,6 +114,6 @@
     function updateCount() { charCount.textContent = (notes.value || '').length; }
     notes.addEventListener('input', updateCount);
     updateCount();
+
 </script>
-</body>
-</html>
+}

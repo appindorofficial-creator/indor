@@ -23,20 +23,20 @@ public class RemodelingDetailsViewModel
     [Required, MaxLength(300)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
-    [Required]
-    public string AlcanceProyecto { get; set; } = "FullRemodel";
+    [Required(ErrorMessage = "Select a project scope.")]
+    public string AlcanceProyecto { get; set; } = string.Empty;
 
-    [Required]
-    public string VentanaTiempo { get; set; } = "Flexible";
+    [Required(ErrorMessage = "Select when you want to start.")]
+    public string VentanaTiempo { get; set; } = string.Empty;
 
-    [Required]
-    public string PresupuestoEstimado { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Select an estimated budget.")]
+    public string PresupuestoEstimado { get; set; } = string.Empty;
 
-    [Required, MaxLength(500)]
+    [Required(ErrorMessage = "Describe your project."), MaxLength(500)]
     public string Descripcion { get; set; } = string.Empty;
 
-    [Required]
-    public string ContactoPreferido { get; set; } = "Text";
+    [Required(ErrorMessage = "Select a preferred contact method.")]
+    public string ContactoPreferido { get; set; } = string.Empty;
 
     public List<ExistingRemodelingFileViewModel> ArchivosExistentes { get; set; } = new();
 }

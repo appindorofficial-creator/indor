@@ -1,48 +1,14 @@
-@model IndorMvcApp.ViewModels.EmergencyFloodSafetyViewModel
+﻿@model IndorMvcApp.ViewModels.EmergencyFloodSafetyViewModel
 @{
     ViewData["Title"] = "Flood Details - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = "Flood Details";
+    ViewData["WizardBackUrl"] = Url.Action("EmergencyFloodDetails", "Inspecciones", new { id = Model.ServicioEmergenciaId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 12px; }
-        .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-        .title-row h1 { font-size: 1.2rem; font-weight: 800; }
-        .badge-247 { background: rgba(220,38,38,0.1); color: #DC2626; font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; }
-        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; }
-        .property-card { display: flex; gap: 12px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 12px; margin-bottom: 16px; align-items: center; }
-        .property-card .thumb { width: 56px; height: 56px; border-radius: 10px; background: linear-gradient(135deg, #0066CC22, #0066CC44); display: flex; align-items: center; justify-content: center; color: #0066CC; font-size: 1.4rem; flex-shrink: 0; }
-        .property-card strong { display: block; font-size: 0.88rem; margin-bottom: 2px; }
-        .property-card span { font-size: 0.82rem; color: #64748B; }
-        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
-        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .field-label i { color: #0066CC; width: 18px; text-align: center; }
-        .segmented-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.82rem; color: #64748B; cursor: pointer; text-align: center; }
-        .segment-btn.active { background: rgba(0,102,204,0.08); border-color: #0066CC; color: #0066CC; }
-        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
-        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
-        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
-        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <a asp-action="EmergencyFloodDetails" asp-route-id="@Model.ServicioEmergenciaId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+
+<a asp-action="EmergencyFloodDetails" asp-route-id="@Model.ServicioEmergenciaId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
 
     <div class="title-row">
         <h1>Flood Details</h1>
@@ -50,9 +16,8 @@
     </div>
     <p class="page-lead">This helps us guide you while help is on the way.</p>
 
-    @await Html.PartialAsync("_EmergencyFloodStepper", 2)
-
-    <h2 class="page-heading">Can you stop the water safely?</h2>
+    
+<h2 class="page-heading">Can you stop the water safely?</h2>
 
     <div class="property-card">
         <div class="thumb"><i class="fas fa-water"></i></div>
@@ -118,6 +83,7 @@
         <button type="submit" class="btn-outline" name="action" value="back">Back</button>
     </form>
 </div>
+@section Scripts {
 <script>
     function setSingle(group, value) {
         document.getElementById(group.dataset.target).value = value;
@@ -127,6 +93,6 @@
         group.querySelectorAll('.segment-btn').forEach(btn => btn.addEventListener('click', () => setSingle(group, btn.dataset.value)));
         setSingle(group, document.getElementById(group.dataset.target).value);
     });
+
 </script>
-</body>
-</html>
+}

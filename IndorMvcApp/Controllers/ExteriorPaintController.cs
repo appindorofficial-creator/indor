@@ -92,6 +92,9 @@ public class ExteriorPaintController : Controller
         if (solicitud == null) return NotFound();
 
         var landing = await GetLandingAsync(solicitud.HomeCarePriorityId);
+        var conditionEntered = string.Equals(solicitud.Estado, "ConditionCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
         return View(new ExteriorPaintConditionViewModel
         {
             SolicitudId = solicitud.Id,
@@ -99,10 +102,10 @@ public class ExteriorPaintController : Controller
             PageTitle = landing?.LandingTitulo ?? "Exterior Paint Review",
             LandingSubtitulo = landing?.LandingSubtitulo ?? "Help us understand the current condition.",
             ImagenUrl = ResolveImageUrl(landing?.ImagenUrl ?? solicitud.HomeCarePriority?.ImagenUrl),
-            ProblemasSeleccionados = solicitud.ProblemasSeleccionados ?? string.Empty,
-            AreasSeleccionadas = solicitud.AreasSeleccionadas ?? string.Empty,
-            ActualizacionColor = solicitud.ActualizacionColor ?? solicitud.MantenerMismoColor ?? "Yes",
-            LavadoPresionReciente = solicitud.LavadoPresionReciente ?? "NotSure"
+            ProblemasSeleccionados = conditionEntered ? (solicitud.ProblemasSeleccionados ?? string.Empty) : string.Empty,
+            AreasSeleccionadas = conditionEntered ? (solicitud.AreasSeleccionadas ?? string.Empty) : string.Empty,
+            ActualizacionColor = conditionEntered ? (solicitud.ActualizacionColor ?? string.Empty) : string.Empty,
+            LavadoPresionReciente = conditionEntered ? (solicitud.LavadoPresionReciente ?? string.Empty) : string.Empty
         });
     }
 
@@ -118,8 +121,22 @@ public class ExteriorPaintController : Controller
             return RedirectToAction(nameof(ExteriorPaintReview), new { id = solicitud.HomeCarePriorityId });
         }
 
+        if (string.IsNullOrWhiteSpace(model.ProblemasSeleccionados))
+        {
+            ModelState.AddModelError(nameof(model.ProblemasSeleccionados), "Select at least one issue you've noticed.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.AreasSeleccionadas))
+        {
+            ModelState.AddModelError(nameof(model.AreasSeleccionadas), "Select at least one area that needs attention.");
+        }
+
         if (!ModelState.IsValid)
         {
+            var landing = await GetLandingAsync(solicitud.HomeCarePriorityId);
+            model.PageTitle = landing?.LandingTitulo ?? "Exterior Paint Review";
+            model.LandingSubtitulo = landing?.LandingSubtitulo ?? "Help us understand the current condition.";
+            model.ImagenUrl = ResolveImageUrl(landing?.ImagenUrl ?? solicitud.HomeCarePriority?.ImagenUrl);
             return View(model);
         }
 

@@ -1,50 +1,38 @@
 @model IndorMvcApp.ViewModels.MovingConfirmedViewModel
 @{
     ViewData["Title"] = "Booking Confirmed - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = "Booking Confirmed";
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_MovingStyles")
-</head>
-<body>
-<div class="page-container">
+
+<div class="cl-success-wrap">
     <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading" style="text-align:center;">Booking Confirmed</h1>
-    <p class="page-lead" style="text-align:center;">Your moving service has been requested. We'll take it from here!</p>
+    <h1 class="page-heading">Booking Confirmed</h1>
+    <p class="page-lead">Your moving service has been requested. We'll take it from here!</p>
+</div>
 
-    <div class="summary-card">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-            <div style="display:flex;align-items:center;gap:10px;font-weight:800;">
-                <i class="fas fa-truck-ramp-box" style="color:#0066CC;"></i>
-                @Model.NombreServicio
-            </div>
-            <span class="status-badge">@Model.EstadoLabel</span>
+<div class="summary-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;gap:10px;font-weight:800;">
+            <i class="fas fa-truck-ramp-box" style="color:#0066CC;"></i>
+            @Model.NombreServicio
         </div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Move type</div><div class="summary-value">@Model.TipoMovimientoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaMovimientoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Time window</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">From</div><div class="summary-value">@Model.DireccionOrigen</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">To</div><div class="summary-value">@Model.DireccionDestino</div></div></div>
-        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">Status</div><div class="summary-value" style="color:#16A34A;">@Model.EstadoLabel</div></div></div>
+        <span class="status-badge">@Model.EstadoLabel</span>
     </div>
+    <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Move type</div><div class="summary-value">@Model.TipoMovimientoLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaMovimientoLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Time window</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">From</div><div class="summary-value">@Model.DireccionOrigen</div></div></div>
+    <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">To</div><div class="summary-value">@Model.DireccionDestino</div></div></div>
+    <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">Status</div><div class="summary-value" style="color:#16A34A;">@Model.EstadoLabel</div></div></div>
+</div>
 
-    <div class="info-banner">
-        <i class="fas fa-circle-info"></i>
-        <span>Your provider will review the move details and contact you before arrival.</span>
-    </div>
+<div class="info-banner">
+    <i class="fas fa-circle-info"></i>
+    <span>Your provider will review the move details and contact you before arrival.</span>
+</div>
 
+<div class="cl-form-actions">
     <a asp-action="MovingReview" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-file-lines"></i> View request <i class="fas fa-chevron-right"></i></a>
     <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-calendar"></i> Go to Schedule <i class="fas fa-chevron-right"></i></a>
     <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Back to Home <i class="fas fa-chevron-right"></i></a>
 </div>
-</body>
-</html>

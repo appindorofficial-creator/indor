@@ -12,7 +12,7 @@ public interface IRealtorUrgentQuoteWizardService
     string ResolveResumeAction(int currentStep);
 
     Task<RealtorUrgentQuotePropertyViewModel> BuildPropertyAsync(string? search, CancellationToken cancellationToken = default);
-    Task SavePropertyAsync(int propertyFileId, string requestCategory, string serviceType, string urgencyLevel, CancellationToken cancellationToken = default);
+    Task SavePropertyAsync(int propertyFileId, string requestCategory, string serviceType, string urgencyLevel, string? newPropertyAddress = null, CancellationToken cancellationToken = default);
     Task<int> QuickAddPropertyAsync(string address, string city, string state, string zip, bool useForQuote, CancellationToken cancellationToken = default);
 
     Task<RealtorUrgentQuoteIssueViewModel> BuildIssueAsync(CancellationToken cancellationToken = default);

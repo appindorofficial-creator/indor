@@ -59,6 +59,7 @@
            asp-route-view="map"
            asp-route-filter="@Model.ActiveFilter"
            asp-route-q="@Model.SearchQuery"
+           asp-fragment="section-home"
            class="hn-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
             <i class="fas fa-map"></i> Map
         </a>
@@ -67,6 +68,7 @@
            asp-route-view="feed"
            asp-route-filter="@Model.ActiveFilter"
            asp-route-q="@Model.SearchQuery"
+           asp-fragment="section-home"
            class="hn-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
             <i class="fas fa-list"></i> Feed
         </a>
@@ -90,6 +92,7 @@
                    asp-route-filter="@chip.Value"
                    asp-route-view="map"
                    asp-route-q="@Model.SearchQuery"
+                   asp-fragment="section-home"
                    class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
                     <i class="fas @chip.Icon"></i> @chip.Label
                 </a>
@@ -140,7 +143,7 @@
     }
     else
     {
-        <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form">
+        <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form" asp-fragment="section-home">
             <div class="hn-search-row">
                 <div class="hn-search-bar">
                     <i class="fas fa-magnifying-glass"></i>
@@ -159,43 +162,50 @@
                    asp-route-filter="@chip.Value"
                    asp-route-view="@Model.ActiveView"
                    asp-route-q="@Model.SearchQuery"
+                   asp-fragment="section-home"
                    class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
                     <i class="fas @chip.Icon"></i> @chip.Label
                 </a>
             }
         </div>
 
-        <section class="hn-quick-actions">
-            @foreach (var action in Model.QuickActions)
-            {
-                var isHash = action.Url.Contains('#');
-                if (isHash)
-                {
-                    var hash = action.Url[(action.Url.IndexOf('#') + 1)..];
-                    <button type="button" class="hn-quick-action nav-jump" data-target="@hash">
-                        <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                        <span class="hn-quick-action-label">@action.Label</span>
-                        @if (!string.IsNullOrWhiteSpace(action.Subtitle))
-                        {
-                            <span class="hn-quick-action-sub">@action.Subtitle</span>
-                        }
-                    </button>
-                }
-                else
-                {
-                    <a href="@action.Url" class="hn-quick-action">
-                        <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                        <span class="hn-quick-action-label">@action.Label</span>
-                        @if (!string.IsNullOrWhiteSpace(action.Subtitle))
-                        {
-                            <span class="hn-quick-action-sub">@action.Subtitle</span>
-                        }
+        <section class="hn-quick-help-hero" aria-label="Quick Help Nearby">
+            <span class="hn-quick-help-badge">NEW</span>
+            <div class="hn-quick-help-copy">
+                <h2 class="hn-quick-help-title">Quick Help Nearby</h2>
+                <p class="hn-quick-help-sub">Post a quick job and get help from neighbors or local helpers in your area.</p>
+                <div class="hn-quick-help-actions">
+                    <a href="@Model.PostQuickJobUrl" class="hn-quick-help-btn hn-quick-help-btn--primary">
+                        <i class="fas fa-plus"></i> Post Quick Job
                     </a>
-                }
-            }
+                    <a href="@Model.BrowseHelpersUrl" class="hn-quick-help-btn hn-quick-help-btn--secondary">
+                        <i class="fas fa-users"></i> Browse Helpers
+                    </a>
+                </div>
+            </div>
+            <div class="hn-quick-help-art" aria-hidden="true">
+                <img src="@Url.Content("~/images/hn-quick-help-hero.svg")" alt="" width="120" height="96" />
+            </div>
         </section>
 
-        <section class="hn-network-feed">
+        <section class="hn-mgmt-cards" aria-label="Manage quick help">
+            <a href="@Model.MyQuickJobsUrl" class="hn-mgmt-card hn-mgmt-card--jobs">
+                <span class="hn-mgmt-card-icon"><i class="fas fa-clipboard-list"></i></span>
+                <span class="hn-mgmt-card-copy">
+                    <span class="hn-mgmt-card-title">My Quick Jobs</span>
+                    <span class="hn-mgmt-card-sub">Track jobs you posted</span>
+                </span>
+            </a>
+            <a href="@Model.MyRequestsUrl" class="hn-mgmt-card hn-mgmt-card--requests">
+                <span class="hn-mgmt-card-icon"><i class="fas fa-comments"></i></span>
+                <span class="hn-mgmt-card-copy">
+                    <span class="hn-mgmt-card-title">My Requests</span>
+                    <span class="hn-mgmt-card-sub">Offers &amp; messages</span>
+                </span>
+            </a>
+        </section>
+
+        <section class="hn-network-feed" id="hn-network-feed">
             @if (Model.FeedCards.Count == 0)
             {
                 <div class="hn-feed-empty">No nearby items match your filters yet.</div>
@@ -213,10 +223,10 @@
             <span class="hn-emergency-banner-icon"><i class="fas fa-bell"></i></span>
             <span class="hn-emergency-banner-copy">
                 <span class="hn-emergency-banner-badge">EMERGENCY</span>
-                <span class="hn-emergency-banner-title">Do you need urgent help?</span>
-                <span class="hn-emergency-banner-sub">Send an alert to certified providers in your area.</span>
+                <span class="hn-emergency-banner-title">Emergency Help Nearby</span>
+                <span class="hn-emergency-banner-sub">Certified plumbers, electricians &amp; more — often arriving within 60 minutes.</span>
             </span>
-            <span class="hn-emergency-banner-arrow"><i class="fas fa-chevron-right"></i></span>
+            <span class="hn-emergency-banner-distance"><i class="fas fa-location-dot"></i> Nearby</span>
         </a>
 
         <div class="hn-privacy-banner">

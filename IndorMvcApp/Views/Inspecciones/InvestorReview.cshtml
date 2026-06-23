@@ -1,56 +1,15 @@
-@model IndorMvcApp.ViewModels.InvestorReviewViewModel
+﻿@model IndorMvcApp.ViewModels.InvestorReviewViewModel
 @{
     ViewData["Title"] = "Review & Confirm - INDOR";
-    Layout = null;
-    var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.OrdinalIgnoreCase) ? "Starting at" : Model.PrecioPrefijo;
+    ViewData["WizardTitle"] = "Review & Confirm";
+var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.OrdinalIgnoreCase) ? "Starting at" : Model.PrecioPrefijo;
+    ViewData["WizardBackUrl"] = Url.Action("InvestorUpload", "Inspecciones", new { id = Model.SolicitudId });
+    ViewData["WizardStep"] = 4;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
-        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .service-card, .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
-        .service-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
-        .service-name { font-size: 1rem; font-weight: 800; }
-        .service-subtitle { font-size: 0.85rem; color: #64748B; margin-top: 4px; font-style: italic; color: #0066CC; }
-        .service-price { font-size: 1.05rem; font-weight: 800; color: #0066CC; white-space: nowrap; text-align: right; }
-        .freq-badge { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; padding: 6px 10px; border-radius: 999px; background: rgba(0,102,204,0.08); color: #0066CC; font-size: 0.75rem; font-weight: 600; }
-        .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5E7EB; }
-        .summary-row:last-child { border-bottom: none; }
-        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
-        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600; }
-        .summary-value { font-size: 0.9rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
-        .disclaimer-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.84rem; line-height: 1.45; color: #334155; }
-        .disclaimer-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
-        .btn-primary, .btn-secondary { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
-        .btn-secondary { margin-top: 10px; border: none; background: transparent; color: #0066CC; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="InvestorUpload" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <strong>Review &amp; Confirm</strong>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_InvestorStepper", 4)
-
-    <h1 class="page-heading">Review your inspection request</h1>
+<h1 class="page-heading">Review your inspection request</h1>
     <p class="page-lead">Confirm the details before scheduling your investor inspection.</p>
 
     <form asp-controller="Inspecciones" asp-action="InvestorReview" method="post">
@@ -133,6 +92,3 @@
         <button type="submit" class="btn-primary" name="action" value="confirm"><i class="far fa-calendar-check"></i> Confirm &amp; Schedule</button>
         <button type="submit" class="btn-secondary" name="action" value="back">Back</button>
     </form>
-</div>
-</body>
-</html>

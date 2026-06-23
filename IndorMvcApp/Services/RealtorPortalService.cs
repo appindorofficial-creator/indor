@@ -1638,9 +1638,9 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
 
         return
         [
-            new() { Label = "Active Files", Count = active, Icon = "fa-folder-open", ColorClass = "blue" },
-            new() { Label = "Inspection Uploaded", Count = inspection, Icon = "fa-cloud-arrow-up", ColorClass = "teal" },
-            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange" }
+            new() { Label = "Active Files", Count = active, Icon = "fa-folder-open", ColorClass = "blue", DetailUrl = "/Realtor/Files?filter=Active" },
+            new() { Label = "Inspection Uploaded", Count = inspection, Icon = "fa-cloud-arrow-up", ColorClass = "teal", DetailUrl = "/Realtor/Files?filter=Inspection" },
+            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange", DetailUrl = "/Realtor/Files?filter=Quotes" }
         ];
     }
 

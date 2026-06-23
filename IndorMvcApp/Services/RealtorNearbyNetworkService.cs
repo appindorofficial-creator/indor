@@ -542,6 +542,14 @@ public class RealtorNearbyNetworkService(
             secondaryUrl = $"/Realtor/EditNetworkListing/{item.Id}";
         }
 
+        var primaryUrl = item.PrimaryActionUrl;
+        if (cardType == "lead")
+        {
+            // No lead detail screen exists yet; show the action as unavailable
+            // instead of routing to the generic Clients page.
+            primaryUrl = "#";
+        }
+
         var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
 
         return new RealtorNetworkFeedCardViewModel
@@ -568,7 +576,7 @@ public class RealtorNearbyNetworkService(
             StatusBadge = item.StatusBadge,
             StatusCss = item.StatusCss ?? "active",
             PrimaryActionLabel = item.PrimaryActionLabel,
-            PrimaryActionUrl = item.PrimaryActionUrl,
+            PrimaryActionUrl = primaryUrl,
             SecondaryActionLabel = item.SecondaryActionLabel,
             SecondaryActionUrl = secondaryUrl
         };

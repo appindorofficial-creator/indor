@@ -5,7 +5,6 @@
     var totalSteps = ViewData["MembershipTotalSteps"] as int? ?? 6;
     var progressPct = step.HasValue ? (int)Math.Round(step.Value / (double)totalSteps * 100) : 0;
 }
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 <link rel="stylesheet" href="~/css/profile-more.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/app-back-button.css" asp-append-version="true" />
 
@@ -24,7 +23,7 @@
                 <i class="fas fa-chevron-left"></i>
             </a>
         }
-        <div class="perfil-top-title" style="flex:1;">
+        <div class="perfil-top-title perfil-top-title--grow">
             @if (step.HasValue)
             {
                 <div class="mem-progress">

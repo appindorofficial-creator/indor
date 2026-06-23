@@ -104,19 +104,25 @@ public class CleaningController : Controller
                 .FirstOrDefaultAsync();
         }
 
+        // Only pre-select options once the user has actually filled in this step
+        // (Estado becomes "DetailsCompleted" after submitting). On the first visit we
+        // leave everything blank so nothing comes pre-selected, while still preserving
+        // the user's choices when they navigate back to this step.
+        var detailsEntered = string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase);
+
         return View(new CleaningDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = defaultAddress ?? string.Empty,
-            TipoLimpieza = solicitud.TipoLimpieza,
-            TipoPropiedad = solicitud.TipoPropiedad ?? "Apartment",
-            NumeroHabitaciones = solicitud.NumeroHabitaciones ?? "Two",
-            NumeroBanos = solicitud.NumeroBanos ?? "Two",
-            CondicionActual = solicitud.CondicionActual ?? "Empty",
-            FechaServicio = solicitud.FechaServicio ?? DateTime.Today.AddDays(30),
-            VentanaHorario = solicitud.VentanaHorario ?? "Morning"
+            TipoLimpieza = detailsEntered ? solicitud.TipoLimpieza : "",
+            TipoPropiedad = detailsEntered ? (solicitud.TipoPropiedad ?? "") : "",
+            NumeroHabitaciones = detailsEntered ? (solicitud.NumeroHabitaciones ?? "") : "",
+            NumeroBanos = detailsEntered ? (solicitud.NumeroBanos ?? "") : "",
+            CondicionActual = detailsEntered ? (solicitud.CondicionActual ?? "") : "",
+            FechaServicio = detailsEntered ? solicitud.FechaServicio : null,
+            VentanaHorario = detailsEntered ? solicitud.VentanaHorario : null
         });
     }
 
@@ -133,15 +139,13 @@ public class CleaningController : Controller
         }
 
         var skipDate = string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase);
-        if (!skipDate && !ModelState.IsValid)
+
+        // "Skip date for now" only omits the date/time window; the address and the
+        // remaining required selections must still be valid.
+        if (!ModelState.IsValid)
         {
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
             return View(model);
-        }
-
-        if (skipDate)
-        {
-            ModelState.Clear();
         }
 
         try

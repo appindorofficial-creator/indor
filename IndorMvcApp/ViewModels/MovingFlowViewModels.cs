@@ -57,11 +57,11 @@ public class MovingDetailsViewModel
     public string TamanoHogar { get; set; } = "OneTwoBedrooms";
 
     [Required(ErrorMessage = "Please enter the pick-up address."), MaxLength(300)]
-    [ValidStreetAddress]
+    [ValidStreetAddress(RequireCityOrZip = true)]
     public string DireccionOrigen { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Please enter the drop-off address."), MaxLength(300)]
-    [ValidStreetAddress]
+    [ValidStreetAddress(RequireCityOrZip = true)]
     public string DireccionDestino { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Please select a move date.")]

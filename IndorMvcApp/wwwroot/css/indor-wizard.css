@@ -1,0 +1,303 @@
+/* ============================================================
+   INDOR WIZARD — shared shell for all multi-step flows
+   Post Quick Job, service wizards, onboarding steps.
+   Load via app-background.css or _IndorDesignHead.
+   ============================================================ */
+
+/* ── Page shell ─────────────────────────────────────────── */
+.iw-wizard-page,
+.nr-wizard-page {
+    background: var(--indor-bg-sky) !important;
+    color: var(--indor-navy, #0A2540);
+    font-family: Inter, system-ui, sans-serif;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+.iw-wizard-shell,
+.nr-wizard-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding: 0 16px 32px;
+}
+
+/* ── Header ─────────────────────────────────────────────── */
+.iw-wizard-top,
+.nr-wizard-top {
+    display: grid;
+    grid-template-columns: 40px 1fr 40px;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 0 10px;
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    margin-bottom: 0;
+}
+
+.iw-wizard-top-center,
+.nr-wizard-top-center {
+    text-align: center;
+    min-width: 0;
+}
+
+.iw-wizard-top-title,
+.nr-wizard-top-title {
+    text-align: center;
+    font-size: .95rem;
+    font-weight: 700;
+    color: var(--indor-navy, #0A2540);
+}
+
+.iw-wizard-top-sub,
+.nr-wizard-top-sub {
+    display: block;
+    font-size: .72rem;
+    color: #64748B;
+    font-weight: 600;
+    margin-top: 2px;
+}
+
+.iw-wizard-nav-btn,
+.nr-wizard-nav-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 0;
+    background: rgba(255, 255, 255, .85);
+    color: #0A2540;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 1rem;
+    box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
+}
+
+.iw-wizard-nav-btn--spacer,
+.nr-wizard-nav-btn--spacer {
+    visibility: hidden;
+}
+
+/* ── Progress stepper ───────────────────────────────────── */
+.iw-progress-track,
+.nr-progress-track {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 16px;
+}
+
+.iw-progress-track[data-steps="2"],
+.nr-progress-track[data-steps="2"] { grid-template-columns: repeat(2, 1fr); }
+.iw-progress-track[data-steps="3"],
+.nr-progress-track[data-steps="3"] { grid-template-columns: repeat(3, 1fr); }
+.iw-progress-track[data-steps="4"],
+.nr-progress-track[data-steps="4"] { grid-template-columns: repeat(4, 1fr); }
+.iw-progress-track[data-steps="5"],
+.nr-progress-track[data-steps="5"] { grid-template-columns: repeat(5, 1fr); }
+.iw-progress-track[data-steps="6"],
+.nr-progress-track[data-steps="6"] { grid-template-columns: repeat(6, 1fr); }
+
+.iw-progress-track:not([data-steps]),
+.nr-progress-track:not([data-steps]) {
+    grid-template-columns: repeat(4, 1fr);
+}
+
+.iw-progress-seg,
+.nr-progress-seg {
+    height: 4px;
+    border-radius: 999px;
+    background: #E2E8F0;
+}
+
+.iw-progress-seg.is-complete,
+.iw-progress-seg.is-active,
+.nr-progress-seg.is-complete,
+.nr-progress-seg.is-active {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+}
+
+/* ── Cards & form layout ────────────────────────────────── */
+.iw-card,
+.nr-card {
+    background: #fff;
+    border: 1px solid var(--indor-border, #E7EEF7);
+    border-radius: 18px;
+    padding: 16px;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .05);
+}
+
+.iw-step-form,
+.nr-step-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 88px;
+}
+
+.iw-wizard-heading,
+.nr-wizard-heading {
+    margin: 8px 0 18px;
+}
+
+.iw-wizard-heading h1,
+.nr-wizard-heading h1 {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    color: var(--indor-navy, #0A2540);
+}
+
+.iw-wizard-heading p,
+.nr-wizard-heading p {
+    margin: 8px 0 0;
+    color: #64748B;
+    font-size: .875rem;
+    line-height: 1.45;
+}
+
+/* ── Sticky footer CTA ──────────────────────────────────── */
+.iw-wizard-footer,
+.nr-wizard-footer {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 40;
+    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
+    background: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, rgba(240, 247, 255, .92) 28%, rgba(240, 247, 255, .98) 100%);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.iw-wizard-footer-inner,
+.nr-wizard-footer-inner {
+    max-width: 448px;
+    margin: 0 auto;
+}
+
+.iw-btn-primary,
+.nr-btn-primary {
+    width: 100%;
+    min-height: 52px;
+    border: none;
+    border-radius: 14px;
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    color: #fff;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: var(--indor-shadow-primary, 0 8px 18px rgba(0, 102, 204, .28));
+    text-decoration: none;
+}
+
+/* ── Legacy service wizard pages (Moving/Cleaning/etc.) ─── */
+.page-container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 0 4px 24px;
+}
+
+.page-container .top-bar {
+    display: grid;
+    grid-template-columns: 44px 1fr auto;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 12px;
+    margin-bottom: 8px;
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
+
+.page-container .back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .9);
+    border: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #0A2540;
+    text-decoration: none;
+    box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
+}
+
+.page-container .page-title {
+    font-size: .95rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.page-container .step-count {
+    font-size: .72rem;
+    color: #64748B;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.page-container .page-heading {
+    font-size: 1.45rem !important;
+    font-weight: 800 !important;
+    letter-spacing: -0.03em;
+    color: var(--indor-navy, #0A2540);
+}
+
+.page-container .page-lead {
+    color: #64748B !important;
+    line-height: 1.45 !important;
+}
+
+.page-container .field-card,
+.page-container .summary-card {
+    border-radius: 18px !important;
+    border-color: var(--indor-border, #E7EEF7) !important;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .05);
+}
+
+.page-container .btn-primary {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC)) !important;
+    border: none !important;
+    border-radius: 14px !important;
+    box-shadow: var(--indor-shadow-primary, 0 8px 18px rgba(0, 102, 204, .28)) !important;
+}
+
+.page-container .btn-outline {
+    border-radius: 14px !important;
+    font-weight: 700 !important;
+}
+
+/* Legacy segmented stepper bars */
+.stepper,
+.wizard-stepper,
+.ob-stepper {
+    display: grid;
+    gap: 6px;
+    margin: 0 0 16px;
+}
+
+.stepper .step,
+.wizard-stepper .step,
+.ob-stepper .step {
+    height: 4px;
+    border-radius: 999px;
+    background: #E2E8F0;
+}
+
+.stepper .step.active,
+.stepper .step.done,
+.wizard-stepper .step.active,
+.wizard-stepper .step.done,
+.ob-stepper .step.active,
+.ob-stepper .step.done {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+}

@@ -669,6 +669,41 @@ public class MyHomeController : Controller
         return RedirectToAction(nameof(Documents), new { id = model.PropiedadId });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DocumentDelete(int id, int propiedadId, string category)
+    {
+        if (!await UserOwnsPropertyAsync(propiedadId)) return NotFound();
+
+        category = string.IsNullOrWhiteSpace(category) ? "Other" : category;
+
+        var doc = await _db.PropiedadDocumentos
+            .FirstOrDefaultAsync(d => d.Id == id && d.PropiedadId == propiedadId);
+        if (doc == null)
+        {
+            return RedirectToAction(nameof(DocumentList), new { id = propiedadId, category });
+        }
+
+        if (!string.IsNullOrWhiteSpace(doc.StoragePath))
+        {
+            var relative = doc.StoragePath.TrimStart('/').Replace('/', Path.DirectorySeparatorChar);
+            var physical = Path.Combine(_env.WebRootPath, relative);
+            try
+            {
+                if (System.IO.File.Exists(physical)) System.IO.File.Delete(physical);
+            }
+            catch
+            {
+                // Ignore file-system errors; still remove the database record.
+            }
+        }
+
+        _db.PropiedadDocumentos.Remove(doc);
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(DocumentList), new { id = propiedadId, category });
+    }
+
     private async Task<Propiedad?> LoadPropertyAsync(int? id)
     {
         var userId = _userManager.GetUserId(User);

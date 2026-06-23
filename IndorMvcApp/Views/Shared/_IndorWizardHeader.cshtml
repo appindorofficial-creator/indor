@@ -1,0 +1,30 @@
+@model IndorMvcApp.ViewModels.IndorWizardShellViewModel
+<header class="iw-wizard-top">
+    @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
+    {
+        <a href="@Model.BackUrl" class="iw-wizard-nav-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+    }
+    else
+    {
+        <span class="iw-wizard-nav-btn iw-wizard-nav-btn--spacer"></span>
+    }
+    <div class="iw-wizard-top-center">
+        <strong class="iw-wizard-top-title">@Model.PageTitle</strong>
+        @if (Model.DisplayStep > 0 && Model.TotalSteps > 0)
+        {
+            <span class="iw-wizard-top-sub">Step @Model.DisplayStep of @Model.TotalSteps</span>
+        }
+    </div>
+    @if (Model.ShowClose && !string.IsNullOrWhiteSpace(Model.CloseUrl))
+    {
+        <a href="@Model.CloseUrl" class="iw-wizard-nav-btn" aria-label="Close"><i class="fas fa-xmark"></i></a>
+    }
+    else
+    {
+        <span class="iw-wizard-nav-btn iw-wizard-nav-btn--spacer"></span>
+    }
+</header>
+@if (!Model.HideStepper && Model.DisplayStep > 0 && Model.TotalSteps > 0)
+{
+    @await Html.PartialAsync("_IndorWizardStepper", Model)
+}

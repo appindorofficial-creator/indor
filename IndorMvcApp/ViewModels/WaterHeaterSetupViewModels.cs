@@ -34,6 +34,9 @@ public class WaterHeaterSetupStepViewModel
 
     public int CurrentStep { get; set; } = 1;
 
+    // Scan flow has 5 steps; manual entry skips the scan step, so it has 4.
+    public int TotalSteps { get; set; } = 5;
+
     public string Address { get; set; } = string.Empty;
 
     public string ImageUrl { get; set; } = "/welcome-house.png";

@@ -1,0 +1,14 @@
+@model IndorMvcApp.ViewModels.IndorWizardShellViewModel
+@{
+    var label = string.IsNullOrWhiteSpace(Model.ContinueLabel) ? "Continue" : Model.ContinueLabel;
+}
+@if (!string.IsNullOrWhiteSpace(Model.ContinueFormId))
+{
+    <div class="iw-wizard-footer">
+        <div class="iw-wizard-footer-inner">
+            <button type="submit" form="@Model.ContinueFormId" class="iw-btn-primary">
+                @label <i class="fas fa-chevron-right"></i>
+            </button>
+        </div>
+    </div>
+}

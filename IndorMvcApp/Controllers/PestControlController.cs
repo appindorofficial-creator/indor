@@ -81,16 +81,19 @@ public class PestControlController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id);
         if (solicitud == null) return NotFound();
 
+        var setupEntered = string.Equals(solicitud.Estado, "SetupCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
         return View(new PestControlSetupViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Pest Control Check",
-            UltimoServicio = solicitud.UltimoServicio ?? "DontKnow",
-            SignosSeleccionados = solicitud.SignosSeleccionados ?? string.Empty,
-            AreasPreocupacion = solicitud.AreasPreocupacion ?? string.Empty,
-            MascotasONinos = solicitud.MascotasONinos ?? "No",
-            Notas = solicitud.Notas
+            UltimoServicio = setupEntered ? (solicitud.UltimoServicio ?? string.Empty) : string.Empty,
+            SignosSeleccionados = setupEntered ? (solicitud.SignosSeleccionados ?? string.Empty) : string.Empty,
+            AreasPreocupacion = setupEntered ? (solicitud.AreasPreocupacion ?? string.Empty) : string.Empty,
+            MascotasONinos = setupEntered ? (solicitud.MascotasONinos ?? string.Empty) : string.Empty,
+            Notas = setupEntered ? solicitud.Notas : null
         });
     }
 
@@ -347,9 +350,7 @@ public class PestControlController : Controller
                 FechaCreacion = DateTime.Now,
                 TipoAccionInicial = "Reminder",
                 TipoServicio = "ReminderOnly",
-                TimingPreferido = "ThisMonth",
-                MascotasONinos = "No",
-                UltimoServicio = "DontKnow"
+                TimingPreferido = "ThisMonth"
             };
             _db.SolicitudesPestControl.Add(solicitud);
             await _db.SaveChangesAsync();

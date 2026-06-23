@@ -1,29 +1,17 @@
 @model IndorMvcApp.ViewModels.GeneralHelpRequestViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
-}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_GeneralHelpStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
+    ViewData["WizardStep"] = 1;
+    ViewData["WizardTotalSteps"] = 4;
 
-    @await Html.PartialAsync("_GeneralHelpStepper", 1)
+}
+
+
+<div class="gh-hero-wrap">
+        <img src="@Url.Content("~/general-help-hero.png")" alt="Moving help" class="gh-hero-img" loading="lazy" />
+    </div>
 
     <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
     <p class="page-lead" style="margin-top:-8px;text-align:center;">Tell us what kind of moving help you need.</p>
@@ -83,6 +71,7 @@
         <button type="submit" name="action" value="back" class="btn-outline">Back to Moving Setup</button>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         function initSingle(groupId, hiddenId, initial) {
@@ -101,6 +90,6 @@
         initSingle('timingGroup', 'VentanaTiempo', '@Model.VentanaTiempo');
         initSingle('urgencyGroup', 'Urgencia', '@Model.Urgencia');
     })();
+
 </script>
-</body>
-</html>
+}

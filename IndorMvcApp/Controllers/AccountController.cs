@@ -119,25 +119,40 @@ public class AccountController : Controller
     }
 
     [HttpGet]
-    public IActionResult Terms(string? from = null)
+    public IActionResult Terms(string? from = null, int? propiedadId = null)
     {
         ViewBag.OnboardingTitle = "Terms & Conditions";
-        ViewBag.OnboardingBackUrl = from == "register"
-            ? Url.Action(nameof(Register))
-            : Url.Action(nameof(Welcome));
+        ViewBag.OnboardingBackUrl = ResolveLegalBackUrl(from, propiedadId);
         ViewBag.OnboardingShowBack = true;
+        ViewBag.LegalFrom = from;
+        ViewBag.LegalPropiedadId = propiedadId;
         return View();
     }
 
     [HttpGet]
-    public IActionResult Privacy(string? from = null)
+    public IActionResult Privacy(string? from = null, int? propiedadId = null)
     {
         ViewBag.OnboardingTitle = "Privacy Policy";
-        ViewBag.OnboardingBackUrl = from == "register"
-            ? Url.Action(nameof(Register))
-            : Url.Action(nameof(Welcome));
+        ViewBag.OnboardingBackUrl = ResolveLegalBackUrl(from, propiedadId);
         ViewBag.OnboardingShowBack = true;
+        ViewBag.LegalFrom = from;
+        ViewBag.LegalPropiedadId = propiedadId;
         return View();
+    }
+
+    private string? ResolveLegalBackUrl(string? from, int? propiedadId)
+    {
+        if (from == "register")
+        {
+            return Url.Action(nameof(Register));
+        }
+
+        if (from == "hvac-setup" && propiedadId is > 0)
+        {
+            return Url.Action("Review", "HvacSetup", new { propiedadId });
+        }
+
+        return Url.Action(nameof(Welcome));
     }
 
     [HttpGet]

@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.HomeDashboardViewModel
+@using IndorMvcApp.Services
 
 <div class="hd-greeting">
     <h1>@Model.Greeting, @Model.UserFirstName</h1>
@@ -80,7 +81,7 @@ else
                 if (isHash)
                 {
                     <button type="button" class="hd-task nav-jump" data-target="@todayTask.Url.TrimStart('#')" style="width:100%;border:none;background:transparent;text-align:left;cursor:pointer;">
-                        <span class="hd-task-icon"><i class="fas @todayTask.Icon"></i></span>
+                        <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, title: todayTask.Title)"></i></span>
                         <span class="hd-task-body">
                             <span class="hd-task-title">@todayTask.Title</span>
                             <span class="hd-task-sub">
@@ -101,7 +102,7 @@ else
                 else
                 {
                     <a href="@todayTask.Url" class="hd-task">
-                        <span class="hd-task-icon"><i class="fas @todayTask.Icon"></i></span>
+                        <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, title: todayTask.Title)"></i></span>
                         <span class="hd-task-body">
                             <span class="hd-task-title">@todayTask.Title</span>
                             <span class="hd-task-sub">

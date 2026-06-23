@@ -1,0 +1,28 @@
+@{
+    var wizardModel = Model as IndorMvcApp.ViewModels.IndorWizardShellViewModel;
+    var pageTitle = wizardModel?.PageTitle ?? ViewData["Title"] as string ?? "INDOR";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0066CC" />
+    <title>@pageTitle - INDOR</title>
+    @await Html.PartialAsync("_AppVersionHead")
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    @await Html.PartialAsync("_TabletResponsiveHead")
+    @RenderSection("Head", required: false)
+</head>
+<body class="iw-wizard-page">
+    <div class="iw-wizard-shell">
+        @if (wizardModel != null)
+        {
+            @await Html.PartialAsync("_IndorWizardHeader", wizardModel)
+        }
+        @RenderBody()
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

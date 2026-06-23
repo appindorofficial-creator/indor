@@ -8,8 +8,14 @@
     {
         <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
     }
-    <strong class="nr-wizard-top-title">@Model.PageTitle</strong>
-    @if (Model.IsEditMode)
+    <div class="nr-wizard-top-center">
+        <strong class="nr-wizard-top-title">@Model.PageTitle</strong>
+        @if (Model.DisplayStep > 0 && Model.TotalSteps > 0)
+        {
+            <span class="nr-wizard-top-sub">Step @Model.DisplayStep of @Model.TotalSteps</span>
+        }
+    </div>
+    @if (Model.IsEditMode || Model.DisplayStep >= Model.TotalSteps)
     {
         <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer"></span>
     }

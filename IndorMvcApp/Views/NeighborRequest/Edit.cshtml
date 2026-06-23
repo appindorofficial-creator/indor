@@ -2,9 +2,13 @@
 @model IndorMvcApp.ViewModels.NeighborRequestEditDetailsStepViewModel
 @{
     ViewData["Title"] = "Edit request";
-    var selectedCategory = Model.Categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? Model.Categories.FirstOrDefault();
-    var timeWindowLabel = Model.TimeWindowOptions.FirstOrDefault(o => o.Value == Model.TimeWindowPreset).Label
-        ?? Model.TimeWindowOptions.FirstOrDefault().Label;
+    var categories = Model.Categories ?? [];
+    var timeWindowOptions = Model.TimeWindowOptions ?? IndorMvcApp.Services.NeighborRequestWizardService.GetTimeWindowOptions();
+    var selectedCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? categories.FirstOrDefault();
+    var matchedTimeWindow = timeWindowOptions.FirstOrDefault(o => o.Value == Model.TimeWindowPreset);
+    var timeWindowLabel = !string.IsNullOrWhiteSpace(matchedTimeWindow.Label)
+        ? matchedTimeWindow.Label
+        : timeWindowOptions.FirstOrDefault().Label ?? "Select a time";
 }
 
 <form asp-action="Edit" method="post" class="nr-edit-form">
@@ -19,7 +23,7 @@
             <h2 class="nr-edit-section-title">What do you need help with?</h2>
             <div class="nr-edit-picker" id="nrCategoryPicker">
                 <select asp-for="CategoryId" class="nr-edit-picker-native" aria-label="Category">
-                    @foreach (var category in Model.Categories)
+                    @foreach (var category in categories)
                     {
                         <option value="@category.Id"
                                 data-icon="@category.IconClass"
@@ -60,7 +64,12 @@
         <section class="nr-edit-section">
             <h2 class="nr-edit-section-title">Time window</h2>
             <div class="nr-edit-picker">
-                <select asp-for="TimeWindowPreset" class="nr-edit-picker-native" asp-items="@(new SelectList(Model.TimeWindowOptions, "Value", "Label", Model.TimeWindowPreset))" aria-label="Time window"></select>
+                <select asp-for="TimeWindowPreset" class="nr-edit-picker-native" aria-label="Time window">
+                    @foreach (var option in timeWindowOptions)
+                    {
+                        <option value="@option.Value" selected="@(option.Value == Model.TimeWindowPreset)">@option.Label</option>
+                    }
+                </select>
                 <div class="nr-edit-picker-face">
                     <span class="nr-edit-picker-icon"><i class="far fa-clock"></i></span>
                     <span class="nr-edit-picker-label" id="nrTimeWindowLabel">@timeWindowLabel</span>

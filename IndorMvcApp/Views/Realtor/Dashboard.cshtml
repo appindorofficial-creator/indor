@@ -50,7 +50,7 @@
         <div>
             <strong>Grow with INDOR's Provider Network</strong>
             <p>Connect with trusted inspectors, contractors and more.</p>
-            <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-network-btn">Browse Network <i class="fas fa-chevron-right"></i></a>
+            <button type="button" class="rl-network-btn rl-soon" disabled aria-disabled="true" title="Coming soon">Browse Network <i class="fas fa-lock rl-soon-lock"></i></button>
         </div>
         <span class="rl-network-icon"><i class="fas fa-people-group"></i></span>
     </section>
@@ -144,7 +144,7 @@
     <section class="rl-dash-section" id="shared-packages">
         <div class="rl-dash-section-head">
             <h2>Shared Packages</h2>
-            <a href="#">View all <i class="fas fa-chevron-right"></i></a>
+            <button type="button" class="rl-dash-viewall rl-soon" disabled aria-disabled="true" title="Coming soon">View all <i class="fas fa-lock rl-soon-lock"></i></button>
         </div>
         @if (Model.SharedPackages.Count == 0)
         {
@@ -185,7 +185,6 @@
                     <li>
                         <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
                         <span>@insight.Text</span>
-                        <i class="fas fa-chevron-right"></i>
                     </li>
                 }
             </ul>

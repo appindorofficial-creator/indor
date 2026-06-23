@@ -1,0 +1,474 @@
+/* ============================================================
+   INDOR UI — global component layer (DESIGN REFRESH v2)
+   Applies the bright sky / pill / gradient visual language from
+   the Nearby Network & Post Quick Job mockups across the app.
+   Load after indor-theme.css. Safe to load on every page.
+   ============================================================ */
+
+/* ── Foundation ─────────────────────────────────────────── */
+html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+}
+
+body,
+.auth-futuristic-container,
+.welcome-container,
+.page-container,
+.login-container,
+.rl-dash-page,
+.prv-pro-body,
+.pa-portal-page,
+.nr-wizard-page,
+.ob-page {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    color: var(--indor-navy, #0A2540);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Primary buttons (all patterns) ─────────────────────── */
+.btn-book,
+.hn-btn-primary,
+.hd-house-facts-btn,
+.nr-btn-primary:not(.nr-btn-outline):not(.nr-btn-primary--sm),
+.hf-btn-primary,
+.more-btn-primary,
+.ob-btn-primary,
+.ob-btn,
+.rl-btn-primary,
+.pa-btn-primary,
+.prv-btn-primary,
+.indor-btn-primary,
+button[type="submit"].btn-primary,
+a.btn-primary:not(.btn-outline) {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%)) !important;
+    color: #fff !important;
+    border: none !important;
+    border-radius: 14px !important;
+    font-weight: 700 !important;
+    box-shadow: var(--indor-shadow-primary, 0 8px 18px rgba(0, 102, 204, .28)) !important;
+    transition: transform .15s ease, box-shadow .15s ease, filter .15s ease !important;
+}
+
+.btn-book:hover,
+.hn-btn-primary:hover,
+.nr-btn-primary:hover,
+.hf-btn-primary:hover,
+.ob-btn-primary:hover,
+.ob-btn:hover,
+.rl-btn-primary:hover,
+.indor-btn-primary:hover {
+    filter: brightness(1.03);
+    transform: translateY(-1px);
+}
+
+/* Outline / secondary */
+.nr-btn-outline,
+.hf-btn,
+.rl-btn-outline,
+.ob-btn-secondary,
+.more-btn-outline,
+.prv-btn-outline {
+    border-radius: 12px !important;
+    font-weight: 700 !important;
+}
+
+.nr-btn-outline,
+.rl-btn-outline,
+.hf-btn {
+    border: 1.5px solid var(--indor-blue, #0066CC) !important;
+    color: var(--indor-blue, #0066CC) !important;
+    background: #fff !important;
+}
+
+/* Sticky CTA (wizards) */
+.nr-btn-primary--sticky {
+    border-radius: 999px !important;
+    min-height: 52px;
+    font-size: .92rem !important;
+}
+
+/* ── Cards & surfaces ───────────────────────────────────── */
+.info-card,
+.service-card,
+.verified,
+.hf-card,
+.hf-stat,
+.hf-action,
+.hf-timeline-card,
+.hf-quick-link,
+.hd-property-card,
+.hd-start-item,
+.hd-task,
+.more-profile-card,
+.more-menu-card,
+.more-settings-card,
+.offering-card,
+.category-block,
+.prop-hero,
+.prop-card,
+.catalog-section,
+.emergency-card,
+.schedule-card,
+.ob-card,
+.ob-surface,
+.rl-network-card,
+.rl-stat-card,
+.rl-quick-card,
+.pa-stat-card,
+.pa-property-card,
+.prv-card,
+.prv-stat,
+.nr-card,
+.nr-review-card,
+.nr-pref-card,
+.nr-helper-card,
+.nr-job-summary,
+.hn-quick-help-hero,
+.hn-mgmt-card,
+.hn-emergency-banner,
+.indor-card {
+    border: 1px solid var(--indor-border, #E7EEF7) !important;
+    border-radius: var(--indor-radius-card, 20px) !important;
+    box-shadow: var(--indor-shadow-soft, 0 6px 18px rgba(20, 66, 124, .06)) !important;
+    background: #fff;
+}
+
+.prop-hero,
+.hn-quick-help-hero,
+.nr-job-summary {
+    background: linear-gradient(135deg, #E8F4FF 0%, #F0F7FF 55%, #FFFFFF 100%) !important;
+    border-color: #BBD7F5 !important;
+    box-shadow: var(--indor-shadow-card, 0 10px 28px rgba(20, 66, 124, .08)) !important;
+}
+
+/* ── Form controls ──────────────────────────────────────── */
+.nr-input,
+.nr-textarea,
+.hf-input,
+.hf-textarea,
+.hf-select,
+.ob-input,
+.ob-textarea,
+.rl-field,
+.rl-field input,
+.rl-field select,
+.more-field input,
+.more-field textarea,
+input.form-control,
+textarea.form-control,
+select.form-control,
+.search-bar,
+.hn-search-bar {
+    border: 1px solid var(--indor-border, #E7EEF7) !important;
+    border-radius: 14px !important;
+    font-family: inherit;
+}
+
+.search-bar,
+.hn-search-bar {
+    background: #fff !important;
+    box-shadow: var(--indor-shadow-soft) !important;
+}
+
+.nr-input:focus,
+.nr-textarea:focus,
+.hf-input:focus,
+.hf-textarea:focus,
+.ob-input:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    outline: none;
+    border-color: #93C5FD !important;
+    box-shadow: 0 0 0 3px rgba(46, 139, 255, .15) !important;
+}
+
+/* ── Chips, pills, filters ──────────────────────────────── */
+.hn-filter-chip,
+.hf-chip,
+.more-chip,
+.rl-filter-chip,
+.ob-chip,
+.pill-green,
+.pill-blue,
+.pill-yellow,
+.nr-chip,
+.nr-job-chips span,
+.nr-helper-tags span {
+    border-radius: var(--indor-radius-pill, 999px) !important;
+    font-weight: 700;
+}
+
+.hn-filter-chip.is-active,
+.hf-chip.active,
+.rl-filter-chip.is-active,
+.ob-chip.is-active,
+.nr-chip.is-selected {
+    background: var(--indor-grad-primary) !important;
+    border-color: transparent !important;
+    color: #fff !important;
+    box-shadow: var(--indor-shadow-primary) !important;
+}
+
+.hn-filter-chip.is-active i,
+.hf-chip.active i { color: #fff !important; }
+
+.pill-green { background: #DCFCE7 !important; color: #15803D !important; }
+.pill-blue { background: #DBEAFE !important; color: #004FA3 !important; }
+.pill-yellow { background: #FEF3C7 !important; color: #B45309 !important; }
+
+/* ── Top bars & headers ─────────────────────────────────── */
+.top-bar,
+.hf-top,
+.more-top,
+.rl-dash-top,
+.pa-top,
+.prv-pro-topbar,
+.nr-wizard-top {
+    background: rgba(255, 255, 255, .92) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--indor-border, #E7EEF7) !important;
+    box-shadow: 0 4px 16px rgba(20, 66, 124, .04) !important;
+}
+
+.hd-brand,
+.rl-reg-logo,
+.hf-brand,
+.more-brand {
+    font-weight: 800 !important;
+    letter-spacing: -0.03em;
+    color: var(--indor-navy, #0A2540) !important;
+}
+
+.hd-brand-house,
+.hf-brand i,
+.more-brand i { color: var(--indor-blue-bright, #2E8BFF) !important; }
+
+.bell {
+    background: #fff !important;
+    border: 1px solid var(--indor-border) !important;
+    box-shadow: var(--indor-shadow-soft) !important;
+}
+
+/* ── Section titles ─────────────────────────────────────── */
+.section-title,
+.hd-section-title,
+.more-section-title,
+.rl-section-title,
+.category-block h4,
+.catalog-section h4 {
+    font-weight: 800 !important;
+    letter-spacing: -0.02em;
+    color: var(--indor-navy) !important;
+}
+
+.section-title a,
+.hd-section-title a { color: var(--indor-blue) !important; font-weight: 700 !important; }
+
+/* ── View switchers / segmented controls ────────────────── */
+.hn-network-view-toggle,
+.hn-network-view-btn,
+.hv-view-card,
+.nr-pay-toggle,
+.nr-helpers-view-toggle,
+.rl-segment,
+.ob-segment {
+    border-radius: var(--indor-radius-pill, 999px) !important;
+}
+
+.hn-network-view-toggle,
+.nr-pay-toggle,
+.nr-helpers-view-toggle {
+    background: #fff !important;
+    border: 1px solid var(--indor-border) !important;
+    box-shadow: var(--indor-shadow-soft) !important;
+}
+
+.hn-network-view-btn.is-active,
+.hv-view-card.is-active,
+.nr-pay-toggle-btn.is-active,
+.nr-helpers-view-toggle button.is-active,
+.ob-segment.is-active {
+    background: var(--indor-grad-primary) !important;
+    color: #fff !important;
+    border-color: transparent !important;
+    box-shadow: var(--indor-shadow-primary) !important;
+}
+
+.hv-view-card.is-active {
+    border-color: transparent !important;
+    background: linear-gradient(180deg, #F0F7FF 0%, #fff 100%) !important;
+    box-shadow: 0 0 0 2px var(--indor-blue) !important;
+}
+
+/* ── Bottom navigation ────────────────────────────────────── */
+.bottom-nav {
+    background: rgba(255, 255, 255, .94) !important;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid var(--indor-border) !important;
+    box-shadow: 0 -8px 28px rgba(20, 66, 124, .08) !important;
+}
+
+.bottom-nav .nav-item.active,
+.bottom-nav a.nav-item.active {
+    color: var(--indor-blue, #0066CC) !important;
+    font-weight: 700 !important;
+}
+
+.bottom-nav .nav-item.active::after {
+    background: var(--indor-grad-primary) !important;
+    width: 24px !important;
+    height: 3px !important;
+}
+
+/* ── Offering / service carousel cards ──────────────────── */
+.offering-card {
+    overflow: hidden;
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+.offering-card:active {
+    transform: scale(.98);
+}
+
+.offering-card-media {
+    border-radius: 14px 14px 0 0;
+}
+
+.category-icon,
+.hv-view-icon,
+.hn-quick-action-icon,
+.more-menu-icon {
+    border-radius: 12px !important;
+}
+
+.category-icon-priorities,
+.hn-quick-action-icon,
+.more-avatar {
+    background: var(--indor-grad-primary) !important;
+    color: #fff !important;
+    box-shadow: var(--indor-shadow-primary) !important;
+}
+
+/* ── Emergency / alert banners ────────────────────────────── */
+.hn-emergency-banner,
+.emergency-banner,
+.rl-network-card--emergency {
+    border-radius: var(--indor-radius-card) !important;
+}
+
+.hn-emergency-banner-badge,
+.emergency-badge {
+    border-radius: 6px !important;
+    font-weight: 800 !important;
+    letter-spacing: .05em;
+}
+
+/* ── Wizard pages ─────────────────────────────────────────── */
+.nr-wizard-page {
+    background: var(--indor-bg-sky) !important;
+}
+
+.nr-wizard-nav-btn {
+    background: #fff !important;
+    border: 1px solid var(--indor-border) !important;
+    box-shadow: var(--indor-shadow-soft) !important;
+}
+
+.nr-option-tile.is-selected .nr-option-tile-body,
+.nr-cat-tile.is-selected {
+    border-color: var(--indor-blue) !important;
+    background: linear-gradient(180deg, #F0F7FF 0%, #fff 100%) !important;
+    box-shadow: 0 0 0 1px var(--indor-blue) !important;
+}
+
+/* ── Realtor / Provider / Admin portals ─────────────────── */
+.rl-dash-page,
+.prv-pro-body,
+.pa-portal-page {
+    background: var(--indor-bg-sky) !important;
+    background-attachment: fixed;
+}
+
+.rl-reg-step.is-active {
+    border-color: var(--indor-blue) !important;
+    background: #E8F1FB !important;
+    color: var(--indor-blue) !important;
+}
+
+.rl-reg-step.is-done {
+    background: var(--indor-grad-primary) !important;
+    border-color: transparent !important;
+}
+
+/* ── Auth (light sky theme override) ────────────────────── */
+.auth-container {
+    background: var(--indor-bg-sky) !important;
+    background-attachment: fixed;
+}
+
+.auth-card {
+    border-radius: var(--indor-radius-card) !important;
+    border: 1px solid var(--indor-border) !important;
+    box-shadow: var(--indor-shadow-card) !important;
+    background: #fff !important;
+}
+
+.auth-icon {
+    background: var(--indor-grad-primary) !important;
+    box-shadow: var(--indor-shadow-primary) !important;
+}
+
+.auth-icon i { color: #fff !important; }
+
+.auth-header h2 { color: var(--indor-navy) !important; }
+
+.auth-form .btn-primary,
+.auth-form button[type="submit"] {
+    background: var(--indor-grad-primary) !important;
+    border: none !important;
+    border-radius: 14px !important;
+    box-shadow: var(--indor-shadow-primary) !important;
+}
+
+/* ── Privacy / trust banners ────────────────────────────── */
+.hn-privacy-banner,
+.nr-trust-banner,
+.rl-privacy-banner,
+.more-trust-banner {
+    background: linear-gradient(135deg, #E8F4FF 0%, #F0F7FF 100%) !important;
+    border: 1px solid #BBD7F5 !important;
+    border-radius: 14px !important;
+    color: var(--indor-blue-dark, #004FA3) !important;
+}
+
+/* ── Empty states ───────────────────────────────────────── */
+.hn-feed-empty,
+.hn-network-empty,
+.hd-empty,
+.more-empty,
+.rl-empty {
+    border-radius: var(--indor-radius-card) !important;
+    background: linear-gradient(180deg, #F8FAFC 0%, #fff 100%) !important;
+    border: 1px dashed var(--indor-border) !important;
+}
+
+/* ── Scrollbar (webkit) ─────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb {
+    background: #CBD5E1;
+    border-radius: 999px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ── Motion respect ─────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+    }
+}

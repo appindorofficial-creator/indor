@@ -105,16 +105,19 @@ public class GutterCleaningController : Controller
             return RedirectToAction(nameof(GutterCleaningConfirmed), new { id = solicitud.Id });
         }
 
+        var setupEntered = string.Equals(solicitud.Estado, "SetupCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
         return View(new GutterCleaningSetupViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Gutter Cleaning",
-            NumeroPisos = solicitud.NumeroPisos ?? "Two",
-            TipoCanaletas = solicitud.TipoCanaletas ?? "Aluminum",
-            ProtectorCanaletas = solicitud.ProtectorCanaletas ?? "No",
-            UltimaLimpieza = solicitud.UltimaLimpieza ?? "NotSure",
-            CantidadBajantes = solicitud.CantidadBajantes ?? 4
+            NumeroPisos = setupEntered ? (solicitud.NumeroPisos ?? string.Empty) : string.Empty,
+            TipoCanaletas = setupEntered ? (solicitud.TipoCanaletas ?? string.Empty) : string.Empty,
+            ProtectorCanaletas = setupEntered ? (solicitud.ProtectorCanaletas ?? string.Empty) : string.Empty,
+            UltimaLimpieza = setupEntered ? (solicitud.UltimaLimpieza ?? string.Empty) : string.Empty,
+            CantidadBajantes = setupEntered ? solicitud.CantidadBajantes : null
         });
     }
 
@@ -535,11 +538,6 @@ public class GutterCleaningController : Controller
                 Estado = "InProgress",
                 FechaCreacion = DateTime.Now,
                 TipoAccionInicial = "Reminder",
-                NumeroPisos = "Two",
-                TipoCanaletas = "Aluminum",
-                ProtectorCanaletas = "No",
-                UltimaLimpieza = "NotSure",
-                CantidadBajantes = 4,
                 PreferenciaRecordatorio = "SpringFall",
                 RecordatorioPrimaveraOtono = true
             };

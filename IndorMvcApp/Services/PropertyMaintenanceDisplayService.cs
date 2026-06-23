@@ -101,7 +101,7 @@ public static class PropertyMaintenanceDisplayService
             DataSource = plan.DataSource,
             IsAiGenerated = true,
             IsUnavailable = false,
-            Items = items,
+            Items = items.Select(NormalizeItemIcon).ToList(),
             UrgentCount = plan.Items.Count(i => i.Priority == "Urgent"),
             HighCount = plan.Items.Count(i => i.Priority == "High"),
             ShowAlerts = plan.Items.Any(i => i.Priority is "Urgent" or "High")
@@ -122,7 +122,7 @@ public static class PropertyMaintenanceDisplayService
             .Take(3)
             .Select(i => new HomeTodayTaskViewModel
             {
-                Icon = i.Icon.StartsWith("fa-") ? i.Icon : $"fa-{i.Icon}",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass(i.Icon, i.Category, i.Title),
                 Title = i.Title,
                 Subtitle = string.IsNullOrWhiteSpace(i.Frequency) ? i.Description : $"{i.Frequency} · {i.Category}",
                 Badge = i.Priority == "Urgent" ? "AI · Urgent" : "AI · Recommended",
@@ -137,4 +137,17 @@ public static class PropertyMaintenanceDisplayService
         "High" => 1,
         _ => 2
     };
+
+    private static PropertyMaintenanceItemViewModel NormalizeItemIcon(PropertyMaintenanceItemViewModel item) =>
+        new()
+        {
+            Title = item.Title,
+            Description = item.Description,
+            Category = item.Category,
+            Priority = item.Priority,
+            Frequency = item.Frequency,
+            Icon = PropertyMaintenanceIconResolver.ToCssClass(item.Icon, item.Category, item.Title),
+            Reason = item.Reason,
+            SortOrder = item.SortOrder
+        };
 }

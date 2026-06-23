@@ -61,13 +61,13 @@
             <span class="rl-quick-action-icon"><i class="fas fa-globe"></i></span>
             <span>Public Profile</span>
         </a>
-        <button type="button" class="rl-quick-action">
+        <button type="button" class="rl-quick-action" id="rlShareBtn">
             <span class="rl-quick-action-icon"><i class="fas fa-share-from-square"></i></span>
             <span>Share</span>
         </button>
-        <button type="button" class="rl-quick-action">
+        <button type="button" class="rl-quick-action rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-quick-action-icon"><i class="fas fa-gear"></i></span>
-            <span>Settings</span>
+            <span>Settings <i class="fas fa-lock rl-soon-lock"></i></span>
         </button>
     </section>
 
@@ -80,29 +80,29 @@
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
-        <button type="button" class="rl-profile-nav-item">
+        <button type="button" class="rl-profile-nav-item rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-profile-nav-icon"><i class="fas fa-location-dot"></i></span>
             <div>
                 <strong>Service Area / Market Area</strong>
                 <span class="rl-profile-nav-desc">Define the areas and neighborhoods you serve.</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-lock rl-soon-lock"></i>
         </button>
-        <button type="button" class="rl-profile-nav-item">
+        <button type="button" class="rl-profile-nav-item rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-profile-nav-icon"><i class="fas fa-tags"></i></span>
             <div>
                 <strong>Branding &amp; Shared Packages</strong>
                 <span class="rl-profile-nav-desc">Customize your brand and manage shared packages.</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-lock rl-soon-lock"></i>
         </button>
-        <button type="button" class="rl-profile-nav-item">
+        <button type="button" class="rl-profile-nav-item rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-profile-nav-icon"><i class="fas fa-shield-halved"></i></span>
             <div>
                 <strong>Account Settings</strong>
                 <span class="rl-profile-nav-desc">Update your preferences and security settings.</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-lock rl-soon-lock"></i>
         </button>
     </nav>
 
@@ -149,7 +149,7 @@
                     <span class="rl-toggle" aria-hidden="true"></span>
                 </span>
             </label>
-            <button type="button" class="rl-premium-link">Manage all notifications <i class="fas fa-chevron-right"></i></button>
+            <button type="button" class="rl-premium-link rl-soon" disabled aria-disabled="true" title="Coming soon">Manage all notifications <i class="fas fa-lock rl-soon-lock"></i></button>
         </form>
         <div class="rl-settings-card">
             <div class="rl-settings-head">
@@ -204,29 +204,29 @@
     </section>
 
     <nav class="rl-profile-nav">
-        <a asp-controller="Realtor" asp-action="Network" class="rl-profile-nav-item">
+        <button type="button" class="rl-profile-nav-item rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-profile-nav-icon"><i class="fas fa-map-location-dot"></i></span>
             <div>
                 <strong>Nearby Network</strong>
                 <span class="rl-profile-nav-desc">See listings, leads, providers and open houses within 3 miles.</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-profile-nav-item">
+            <i class="fas fa-lock rl-soon-lock"></i>
+        </button>
+        <button type="button" class="rl-profile-nav-item rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-profile-nav-icon"><i class="fas fa-people-group"></i></span>
             <div>
                 <strong>Connected Provider Network</strong>
                 <span class="rl-profile-nav-desc">Manage and connect with trusted inspectors and providers.</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <button type="button" class="rl-profile-nav-item">
+            <i class="fas fa-lock rl-soon-lock"></i>
+        </button>
+        <button type="button" class="rl-profile-nav-item rl-soon" disabled aria-disabled="true" title="Coming soon">
             <span class="rl-profile-nav-icon"><i class="fas fa-headset"></i></span>
             <div>
                 <strong>Support &amp; Account</strong>
                 <span class="rl-profile-nav-desc">Get help, manage your subscription and account.</span>
             </div>
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-lock rl-soon-lock"></i>
         </button>
     </nav>
 
@@ -249,11 +249,52 @@
             <i class="fas fa-chevron-right"></i>
         </button>
     </form>
+
+    <div class="rl-toast" id="rlToast" role="status" aria-live="polite" hidden></div>
 </div>
 
 @section Scripts {
 <script>
     (function () {
+        var toast = document.getElementById('rlToast');
+        var toastTimer = null;
+        function showToast(message) {
+            if (!toast) {
+                return;
+            }
+            toast.textContent = message;
+            toast.hidden = false;
+            toast.classList.add('is-visible');
+            if (toastTimer) {
+                clearTimeout(toastTimer);
+            }
+            toastTimer = setTimeout(function () {
+                toast.classList.remove('is-visible');
+                toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
+            }, 2400);
+        }
+
+        var shareBtn = document.getElementById('rlShareBtn');
+        if (shareBtn) {
+            var shareUrl = window.location.origin + '@Url.Action("PublicProfile", "Realtor")';
+            shareBtn.addEventListener('click', async function () {
+                var payload = {
+                    title: '@Model.FullName - INDOR',
+                    text: 'View my realtor profile on INDOR',
+                    url: shareUrl
+                };
+                if (navigator.share) {
+                    try { await navigator.share(payload); return; } catch (_) { }
+                }
+                try {
+                    await navigator.clipboard.writeText(shareUrl);
+                    showToast('Profile link copied to clipboard.');
+                } catch (_) {
+                    window.prompt('Copy profile link:', shareUrl);
+                }
+            });
+        }
+
         var toggle = document.getElementById('rlInsightsToggle');
         var details = document.getElementById('rlPerfDetails');
         if (toggle && details) {
@@ -287,11 +328,53 @@
 
         syncNotifyToggles();
 
+        var savedTimer = null;
+        function showNotifySaved() {
+            var msg = notifyForm.querySelector('.rl-notify-saved');
+            if (!msg) {
+                msg = document.createElement('div');
+                msg.className = 'rl-notify-saved';
+                msg.setAttribute('role', 'status');
+                var head = notifyForm.querySelector('.rl-settings-head');
+                if (head) {
+                    head.insertAdjacentElement('afterend', msg);
+                } else {
+                    notifyForm.prepend(msg);
+                }
+            }
+            msg.textContent = 'Notification preferences saved.';
+            msg.hidden = false;
+            if (savedTimer) {
+                clearTimeout(savedTimer);
+            }
+            savedTimer = setTimeout(function () { msg.hidden = true; }, 2000);
+        }
+
+        function saveNotifyPreferences() {
+            // Save in the background so the page doesn't reload and jump to the top.
+            fetch(notifyForm.action, {
+                method: 'POST',
+                body: new FormData(notifyForm),
+                headers: { 'X-Requested-With': 'XMLHttpRequest' },
+                credentials: 'same-origin'
+            }).then(function (res) {
+                if (res.ok) {
+                    showNotifySaved();
+                }
+            }).catch(function () { /* ignore network errors; toggle state is kept */ });
+        }
+
         notifyForm.querySelectorAll('.rl-notify-checkbox').forEach(function (checkbox) {
             checkbox.addEventListener('change', function () {
                 syncNotifyToggles();
-                notifyForm.requestSubmit();
+                saveNotifyPreferences();
             });
+        });
+
+        // Prevent any accidental full-page submit (e.g. Enter key) from scrolling to top.
+        notifyForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            saveNotifyPreferences();
         });
     })();
 </script>

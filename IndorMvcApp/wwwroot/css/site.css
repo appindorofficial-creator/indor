@@ -29,10 +29,11 @@ html, body {
 }
 
 body {
-  background: #FFFFFF;
-  color: #0D1B3D;
+  background: var(--indor-bg-sky, linear-gradient(180deg, #E9F2FE 0%, #F7FBFF 48%, #FFFFFF 100%));
+  background-attachment: fixed;
+  color: var(--indor-navy, #0A2540);
   line-height: 1.6;
-  font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: var(--indor-font, 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif);
 }
 
 .container {

@@ -1,28 +1,129 @@
 @model IndorMvcApp.ViewModels.NeighborRequestPreferencesStepViewModel
 @{
-    ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Post a Request";
+    ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Post Quick Job";
 }
 
-@if (!Model.IsEditMode)
-{
-    <div class="nr-wizard-heading">
-        <h1>Preferences</h1>
-        <p>Tell us how you'd like help</p>
-    </div>
-}
-
-<form asp-action="Preferences" method="post">
+<form asp-action="Preferences" method="post" class="nr-step-form">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="IsEditMode" />
     <input type="hidden" asp-for="RequestId" />
 
+  @if (!Model.IsEditMode)
+  {
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-calendar-day"></i></span>
+            <h2>When do you need help?</h2>
+        </header>
+        <div class="nr-option-grid nr-option-grid--3">
+            @foreach (var option in Model.WhenOptions)
+            {
+                <label class="nr-option-tile">
+                    <input type="radio" name="WhenCode" value="@option.Value" @(Model.WhenCode == option.Value ? "checked" : null) />
+                    <span class="nr-option-tile-body">
+                        <i class="fas @option.IconClass"></i>
+                        <span>@option.Label</span>
+                    </span>
+                </label>
+            }
+        </div>
+        <div class="nr-pick-date" id="nrPickDateWrap" hidden>
+            <label asp-for="NeededByDate">Pick a date</label>
+            <input asp-for="NeededByDate" type="date" class="nr-input" />
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-clock"></i></span>
+            <h2>Preferred time</h2>
+        </header>
+        <div class="nr-option-grid nr-option-grid--4">
+            @foreach (var option in Model.PreferredTimeOptions)
+            {
+                <label class="nr-option-tile">
+                    <input type="radio" name="PreferredTimeCode" value="@option.Value" @(Model.PreferredTimeCode == option.Value ? "checked" : null) />
+                    <span class="nr-option-tile-body">
+                        <i class="fas @option.IconClass"></i>
+                        <span>@option.Label</span>
+                    </span>
+                </label>
+            }
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-user-group"></i></span>
+            <h2>How many helpers?</h2>
+        </header>
+        <div class="nr-option-grid nr-option-grid--3">
+            @foreach (var option in Model.HelperCountOptions)
+            {
+                <label class="nr-option-tile">
+                    <input type="radio" name="HelperCount" value="@option.Value" @(Model.HelperCount == option.Value ? "checked" : null) />
+                    <span class="nr-option-tile-body">
+                        <i class="fas @option.IconClass"></i>
+                        <span>@option.Label</span>
+                    </span>
+                </label>
+            }
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-hourglass-half"></i></span>
+            <h2>Estimated time</h2>
+        </header>
+        <div class="nr-option-grid nr-option-grid--4">
+            @foreach (var option in Model.DurationOptions)
+            {
+                <label class="nr-option-tile">
+                    <input type="radio" name="DurationCode" value="@option.Value" @(Model.DurationCode == option.Value ? "checked" : null) />
+                    <span class="nr-option-tile-body">
+                        <i class="fas @option.IconClass"></i>
+                        <span>@option.Label</span>
+                    </span>
+                </label>
+            }
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-dollar-sign"></i></span>
+            <h2>Pay</h2>
+        </header>
+        <div class="nr-pay-toggle" role="tablist">
+            <label class="nr-pay-toggle-btn @(Model.PayTypeCode == "Hourly" ? "is-active" : null)">
+                <input type="radio" name="PayTypeCode" value="Hourly" @(Model.PayTypeCode == "Hourly" ? "checked" : null) />
+                Hourly
+            </label>
+            <label class="nr-pay-toggle-btn @(Model.PayTypeCode == "Fixed" ? "is-active" : null)">
+                <input type="radio" name="PayTypeCode" value="Fixed" @(Model.PayTypeCode == "Fixed" ? "checked" : null) />
+                Fixed price
+            </label>
+        </div>
+        <div class="nr-budget-card">
+            <label asp-for="BudgetAmount">Your budget</label>
+            <div class="nr-budget-display">
+                <input asp-for="BudgetAmount" type="number" min="0" step="1" class="nr-budget-input" placeholder="25" />
+                <span class="nr-budget-suffix" id="nrBudgetSuffix">/hr</span>
+                <span class="nr-budget-icon"><i class="fas fa-dollar-sign"></i></span>
+            </div>
+            <p class="nr-budget-hint">This is the amount helpers will see in your job post.</p>
+        </div>
+    </section>
+  }
+  else
+  {
     <div class="nr-pref-card">
         <div class="nr-section-title">
             <span class="nr-section-icon"><i class="fas fa-clock"></i></span>
             <span>Estimated time<br /><small class="nr-section-sub">When do you need help?</small></span>
         </div>
-
         <div class="nr-pref-options">
             @foreach (var option in Model.TimelineOptions)
             {
@@ -36,53 +137,58 @@
             }
         </div>
     </div>
+  }
 
-    @if (!Model.IsEditMode)
-    {
-    <div class="nr-pref-card">
-        <div class="nr-section-title">
-            <span class="nr-section-icon"><i class="fas fa-users"></i></span>
-            <span>Who can help?<br /><small class="nr-section-sub">You can select one or both</small></span>
-        </div>
-
-        <div class="nr-pref-options">
-            @foreach (var option in Model.AudienceOptions)
-            {
-                <label class="nr-pref-option nr-pref-option--audience">
-                    <input type="checkbox" name="SelectedAudiences" value="@option.Value" @(Model.SelectedAudiences.Contains(option.Value) ? "checked" : null) />
-                    <span class="nr-pref-option-body">
-                        <span class="nr-audience-icon"><i class="fas @option.IconClass"></i></span>
-                        <span class="nr-pref-option-copy">
-                            <strong>@option.Label</strong>
-                            <small>@option.Subtitle</small>
-                        </span>
-                        <span class="nr-option-check" aria-hidden="true"><i class="fas fa-check"></i></span>
-                    </span>
-                </label>
-            }
-        </div>
-    </div>
-    }
-
-    <button type="button" class="nr-budget-row" id="nrBudgetToggle">
-        <span class="nr-audience-icon"><i class="fas fa-dollar-sign"></i></span>
-        <span class="nr-budget-row-label">Add budget (optional)</span>
-        <i class="fas fa-chevron-right nr-budget-row-chevron"></i>
+    <button type="submit" class="nr-btn-primary nr-btn-primary--sticky">
+        Continue <i class="fas fa-arrow-right"></i>
     </button>
-    <div class="nr-budget-panel" id="nrBudgetPanel">
-        <div class="nr-field">
-            <label asp-for="BudgetAmount">Budget amount</label>
-            <input asp-for="BudgetAmount" type="number" min="0" step="1" class="nr-input" placeholder="150" />
-        </div>
-    </div>
-
-    <button type="submit" class="nr-btn-primary">@(Model.IsEditMode ? "Continue" : "Next")</button>
 </form>
 
 @section Scripts {
     <script>
-        document.getElementById('nrBudgetToggle')?.addEventListener('click', function () {
-            document.getElementById('nrBudgetPanel')?.classList.toggle('is-open');
-        });
+        (function () {
+            var pickDateWrap = document.getElementById('nrPickDateWrap');
+            document.querySelectorAll('[name="WhenCode"]').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    if (pickDateWrap) {
+                        pickDateWrap.hidden = input.value !== 'PickDate' || !input.checked;
+                    }
+                    document.querySelectorAll('.nr-option-tile').forEach(function (tile) {
+                        var radio = tile.querySelector('input[type="radio"]');
+                        if (radio && radio.name === 'WhenCode') {
+                            tile.classList.toggle('is-selected', radio.checked);
+                        }
+                    });
+                });
+                if (input.checked && input.value === 'PickDate' && pickDateWrap) {
+                    pickDateWrap.hidden = false;
+                }
+            });
+
+            document.querySelectorAll('.nr-option-tile input, .nr-pay-toggle-btn input').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    var tile = input.closest('.nr-option-tile, .nr-pay-toggle-btn');
+                    if (tile && tile.classList.contains('nr-option-tile')) {
+                        var group = input.name;
+                        document.querySelectorAll('.nr-option-tile input[name="' + group + '"]').forEach(function (r) {
+                            r.closest('.nr-option-tile')?.classList.toggle('is-selected', r.checked);
+                        });
+                    }
+                    if (input.name === 'PayTypeCode') {
+                        document.querySelectorAll('.nr-pay-toggle-btn').forEach(function (btn) {
+                            btn.classList.toggle('is-active', btn.querySelector('input')?.checked);
+                        });
+                        var suffix = document.getElementById('nrBudgetSuffix');
+                        if (suffix) {
+                            suffix.textContent = input.value === 'Fixed' ? '' : '/hr';
+                        }
+                    }
+                });
+            });
+
+            document.querySelectorAll('.nr-option-tile input:checked').forEach(function (input) {
+                input.closest('.nr-option-tile')?.classList.add('is-selected');
+            });
+        })();
     </script>
 }

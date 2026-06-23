@@ -1,101 +1,127 @@
 @model IndorMvcApp.ViewModels.NeighborRequestDescribeStepViewModel
 @{
-    ViewData["Title"] = "Post a Request";
+    ViewData["Title"] = "Post Quick Job";
 }
 
-<div class="nr-wizard-heading">
-    <h1>Describe your request</h1>
-    <p>@Model.CategoryLabel</p>
-</div>
-
-<form asp-action="Describe" method="post" enctype="multipart/form-data">
+<form asp-action="Describe" method="post" enctype="multipart/form-data" class="nr-step-form">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <section class="nr-card">
+        <header class="nr-card-head nr-card-head--stack">
+            <h2>Add photos</h2>
+            <p>Show helpers what the job looks like. Photos are optional but recommended.</p>
+        </header>
 
-    <div class="nr-field">
-        <label asp-for="Title">Title</label>
-        <input asp-for="Title" class="nr-input" placeholder="Need lawn cleanup this week" maxlength="200" />
-        <span asp-validation-for="Title" class="field-validation-error"></span>
-    </div>
-
-    <div class="nr-field">
-        <label asp-for="Description">Description</label>
-        <textarea asp-for="Description" class="nr-textarea" maxlength="500" placeholder="Share timing, scope, or anything helpful for neighbors."></textarea>
-        <div class="nr-char-count"><span id="nrDescCount">0</span>/500</div>
-    </div>
-
-    <div class="nr-field">
-        <label>Add photos (optional)</label>
-        <label class="nr-photo-btn" id="nrPhotoDrop" style="display:block;margin-bottom:10px;">
-            <i class="fas fa-image"></i>
-            Add photos
-            <input type="file" asp-for="PhotoFiles" id="nrPhotoInput" accept="image/jpeg,image/png,image/webp" multiple hidden />
-        </label>
-
-        <div class="nr-photo-card" id="nrPhotoCard" hidden>
-            <div class="nr-photo-card-head">
-                <span class="nr-photo-card-status">
-                    <i class="fas fa-circle-check"></i>
-                    <span id="nrPhotoCount">0 photos uploaded</span>
-                </span>
-                <button type="button" class="nr-photo-add-more" id="nrPhotoAddMore">
-                    <i class="fas fa-plus"></i> Add more
-                </button>
-            </div>
-            <div class="nr-photo-grid" id="nrPhotoGrid"></div>
-        </div>
-
-        @if (Model.ExistingPhotoUrls.Count > 0)
-        {
-            <div class="nr-photo-preview">
+        <div class="nr-photo-strip">
+            <div class="nr-photo-grid" id="nrPhotoGrid">
                 @foreach (var photo in Model.ExistingPhotoUrls)
                 {
-                    <img src="@Url.Content("~" + photo)" alt="" />
+                    <div class="nr-photo-thumb nr-photo-thumb--existing">
+                        <img src="@Url.Content("~" + photo)" alt="" />
+                    </div>
                 }
             </div>
-        }
-    </div>
-
-    <div class="nr-field">
-        <label asp-for="LocationAddress">Location</label>
-        <div class="nr-location-row">
-            <input asp-for="LocationAddress" class="nr-input" />
-            <i class="fas fa-pen" style="color:#0066CC;"></i>
+            <label class="nr-photo-add" id="nrPhotoDrop">
+                <i class="fas fa-plus"></i>
+                <span>Add more</span>
+                <input type="file" asp-for="PhotoFiles" id="nrPhotoInput" accept="image/jpeg,image/png,image/webp" multiple hidden />
+            </label>
         </div>
-        <span asp-validation-for="LocationAddress" class="field-validation-error"></span>
-    </div>
+    </section>
 
-    <div class="nr-field">
-        <label asp-for="NeededByDate">When do you need it?</label>
-        <input asp-for="NeededByDate" type="date" class="nr-input" />
-    </div>
+    <section class="nr-card">
+        <header class="nr-card-head nr-card-head--stack">
+            <h2>What should the helper bring?</h2>
+            <p>Select all that apply.</p>
+        </header>
+        <div class="nr-chip-grid">
+            @foreach (var tool in Model.ToolOptions)
+            {
+                var isSelected = Model.SelectedTools.Contains(tool.Value);
+                <label class="nr-chip @(isSelected ? "is-selected" : null)">
+                    <input type="checkbox" name="SelectedTools" value="@tool.Value" @(isSelected ? "checked" : null) />
+                    <i class="fas @tool.IconClass"></i>
+                    <span>@tool.Label</span>
+                </label>
+            }
+        </div>
+    </section>
 
-    <button type="submit" class="nr-btn-primary">Next</button>
+    <section class="nr-card">
+        <header class="nr-card-head nr-card-head--stack">
+            <h2>Special notes</h2>
+            <p>Anything else helpers should know before they arrive?</p>
+        </header>
+        <div class="nr-field nr-field--count">
+            <textarea asp-for="SpecialNotes" class="nr-textarea" maxlength="250" placeholder="Please be careful with the wooden floors..."></textarea>
+            <span class="nr-char-count"><span id="nrNotesCount">0</span>/250</span>
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head nr-card-head--stack">
+            <h2>Safety &amp; access</h2>
+            <p>Help helpers arrive prepared and stay safe on your property.</p>
+        </header>
+        <div class="nr-safety-grid">
+            <label class="nr-safety-item">
+                <span class="nr-safety-icon"><i class="fas fa-paw"></i></span>
+                <span class="nr-safety-label">Pets on property</span>
+                <select asp-for="PetsOnProperty" class="nr-safety-select">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </label>
+            <label class="nr-safety-item">
+                <span class="nr-safety-icon"><i class="fas fa-stairs"></i></span>
+                <span class="nr-safety-label">Stairs</span>
+                <select asp-for="HasStairs" class="nr-safety-select">
+                    <option value="No">No</option>
+                    <option value="Yes">Yes</option>
+                </select>
+            </label>
+            <label class="nr-safety-item">
+                <span class="nr-safety-icon"><i class="fas fa-lock"></i></span>
+                <span class="nr-safety-label">Gate code</span>
+                <input asp-for="GateCode" class="nr-safety-input" placeholder="Optional" />
+            </label>
+            <label class="nr-safety-item">
+                <span class="nr-safety-icon"><i class="fas fa-car"></i></span>
+                <span class="nr-safety-label">Parking available</span>
+                <select asp-for="ParkingAvailable" class="nr-safety-select">
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </label>
+        </div>
+    </section>
+
+    <button type="submit" class="nr-btn-primary nr-btn-primary--sticky">
+        Review job <i class="fas fa-arrow-right"></i>
+    </button>
 </form>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
     <script>
         (function () {
-            var textarea = document.querySelector('[name="Description"]');
-            var counter = document.getElementById('nrDescCount');
+            var textarea = document.querySelector('[name="SpecialNotes"]');
+            var counter = document.getElementById('nrNotesCount');
             if (textarea && counter) {
                 var update = function () { counter.textContent = String(textarea.value.length); };
                 textarea.addEventListener('input', update);
                 update();
             }
-        })();
 
-        (function () {
+            document.querySelectorAll('.nr-chip input').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    input.closest('.nr-chip')?.classList.toggle('is-selected', input.checked);
+                });
+            });
+
             var input = document.getElementById('nrPhotoInput');
-            var drop = document.getElementById('nrPhotoDrop');
-            var card = document.getElementById('nrPhotoCard');
             var grid = document.getElementById('nrPhotoGrid');
-            var count = document.getElementById('nrPhotoCount');
-            var addMore = document.getElementById('nrPhotoAddMore');
-            if (!input || !drop || !card || !grid || !count) return;
+            if (!input || !grid) return;
 
             var selected = [];
             var urls = [];
@@ -112,71 +138,32 @@
                 urls = [];
             }
 
-            function render() {
+            function renderNew() {
+                grid.querySelectorAll('.nr-photo-thumb--new').forEach(function (el) { el.remove(); });
                 clearUrls();
-                grid.innerHTML = '';
-
-                if (selected.length === 0) {
-                    drop.hidden = false;
-                    card.hidden = true;
-                    return;
-                }
-
-                drop.hidden = true;
-                card.hidden = false;
-                count.textContent = selected.length === 1
-                    ? '1 photo uploaded'
-                    : selected.length + ' photos uploaded';
-
                 selected.forEach(function (file, index) {
                     var url = URL.createObjectURL(file);
                     urls.push(url);
-
                     var item = document.createElement('div');
-                    item.className = 'nr-photo-thumb';
-
-                    var img = document.createElement('img');
-                    img.src = url;
-                    img.alt = file.name || 'photo';
-                    item.appendChild(img);
-
-                    var remove = document.createElement('button');
-                    remove.type = 'button';
-                    remove.className = 'nr-photo-remove';
-                    remove.setAttribute('aria-label', 'Remove photo');
-                    remove.innerHTML = '<i class="fas fa-xmark"></i>';
-                    remove.addEventListener('click', function () {
+                    item.className = 'nr-photo-thumb nr-photo-thumb--new';
+                    item.innerHTML = '<img src="' + url + '" alt="" /><button type="button" class="nr-photo-remove" aria-label="Remove"><i class="fas fa-xmark"></i></button>';
+                    item.querySelector('button').addEventListener('click', function () {
                         selected.splice(index, 1);
                         syncInput();
-                        render();
+                        renderNew();
                     });
-                    item.appendChild(remove);
-
                     grid.appendChild(item);
                 });
             }
 
-            function addFiles(fileList) {
-                Array.prototype.forEach.call(fileList, function (file) {
-                    if (!file.type || file.type.indexOf('image/') !== 0) return;
-                    var dup = selected.some(function (f) {
-                        return f.name === file.name && f.size === file.size && f.lastModified === file.lastModified;
-                    });
-                    if (!dup) selected.push(file);
+            input.addEventListener('change', function () {
+                if (!input.files) return;
+                Array.prototype.forEach.call(input.files, function (file) {
+                    if (file.type && file.type.indexOf('image/') === 0) selected.push(file);
                 });
                 syncInput();
-                render();
-            }
-
-            input.addEventListener('change', function () {
-                if (input.files && input.files.length) {
-                    addFiles(input.files);
-                }
+                renderNew();
             });
-
-            if (addMore) {
-                addMore.addEventListener('click', function () { input.click(); });
-            }
         })();
     </script>
 }

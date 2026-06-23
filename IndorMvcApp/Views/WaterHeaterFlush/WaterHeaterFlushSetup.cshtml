@@ -1,33 +1,15 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushSetupViewModel
+@using IndorMvcApp.Validation
 @{
     ViewData["Title"] = "Tell us about your water heater - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("WaterHeaterFlushService", "WaterHeaterFlush", new { id = Model.HomeCarePriorityId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_WaterHeaterFlushStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <button type="submit" form="whf-setup-form" name="action" value="back" class="back-btn" style="border:none;background:transparent;">
-            <i class="fas fa-chevron-left"></i>
-        </button>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_WaterHeaterFlushStepper", 2)
 
-    <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your water heater</h1>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your water heater</h1>
     <p class="page-lead" style="margin-bottom:16px;">A few details help us bring the right maintenance plan.</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
@@ -57,7 +39,8 @@
 
         <div class="field-card">
             <div class="field-head"><i class="fas fa-barcode"></i><span>Serial number</span></div>
-            <input asp-for="NumeroSerie" placeholder="Enter serial number" id="serialInput" />
+            <input asp-for="NumeroSerie" placeholder="Enter serial number" id="serialInput" maxlength="@EquipmentSerialNumberAttribute.MaxLength" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <div class="field-hint" style="margin-top:6px;font-size:0.75rem;color:#64748B;">@EquipmentSerialNumberAttribute.HintText</div>
             <div class="toggle-row" style="margin-top:12px;">
                 <span>I don't know</span>
                 <label class="toggle-switch">
@@ -117,7 +100,8 @@
             Continue <i class="fas fa-chevron-right"></i>
         </button>
     </form>
-</div>
+
+@section Scripts {
 <script>
     (function () {
         var heaterInput = document.getElementById('TipoCalentador');
@@ -153,13 +137,36 @@
             if (btn.getAttribute('data-location') === locationInput.value) btn.classList.add('active');
         });
 
+        var serialMin = @EquipmentSerialNumberAttribute.MinLength;
+        var serialMax = @EquipmentSerialNumberAttribute.MaxLength;
+
+        function serialErrorMessage(value) {
+            var serial = String(value || '').trim();
+            if (!serial) return '';
+            if (serial.length < serialMin) return 'Serial number must be at least ' + serialMin + ' characters.';
+            if (serial.length > serialMax) return 'Serial number cannot exceed ' + serialMax + ' characters.';
+            if (!/^[A-Za-z0-9\-]+$/.test(serial)) return 'Use only letters, numbers, and hyphens.';
+            if (!/[A-Za-z]/.test(serial) || !/\d/.test(serial)) return 'Serial number must include at least one letter and one number.';
+            return '';
+        }
+
+        function validateSerialField() {
+            if (!serialInput) return true;
+            if (serialToggle.checked) { serialInput.setCustomValidity(''); return true; }
+            serialInput.setCustomValidity(serialErrorMessage(serialInput.value));
+            return serialInput.validity.valid;
+        }
+
         function syncSerial() {
             var disabled = serialToggle.checked;
             serialInput.disabled = disabled;
             if (disabled) serialInput.value = '';
+            validateSerialField();
         }
 
         serialToggle.addEventListener('change', syncSerial);
+        serialInput.addEventListener('input', validateSerialField);
+        serialInput.addEventListener('blur', validateSerialField);
         syncSerial();
 
         var photoInput = document.getElementById('photoInput');
@@ -248,6 +255,6 @@
             this.value = '';
         });
     })();
+
 </script>
-</body>
-</html>
+}

@@ -1,32 +1,14 @@
 @model IndorMvcApp.ViewModels.CleaningProConfirmedViewModel
 @{
     ViewData["Title"] = "Cleaning Confirmed - INDOR";
-    Layout = null;
-    var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
+var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
+    ViewData["WizardTitle"] = Model.NombreServicio;
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_CleaningProStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.NombreServicio</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_CleaningProStepper", 4)
 
-    <div class="success-wrap" style="text-align:center;margin-bottom:16px;">
+<div class="success-wrap" style="text-align:center;margin-bottom:16px;">
         <div class="success-icon"><i class="fas fa-check"></i></div>
         <h1 class="page-heading" style="font-size:1.1rem;margin-bottom:6px;">Cleaning request confirmed!</h1>
         <p class="page-lead" style="text-align:center;">Your @Model.NombreServicio service is all set.</p>
@@ -60,6 +42,3 @@
         View booking <i class="fas fa-chevron-right"></i>
     </a>
     <a asp-action="CleaningProSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> Edit booking</a>
-</div>
-</body>
-</html>

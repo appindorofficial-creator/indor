@@ -78,6 +78,13 @@ public class RemodelingServicioController : Controller
                 solicitud.DireccionPropiedad ??= propiedad.Direccion;
             }
 
+            var resumeCompleted = string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+                || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+            if (!resumeCompleted)
+            {
+                ClearProjectDetailFields(solicitud);
+            }
+
             solicitud.Estado = "ServiceStarted";
             solicitud.FechaActualizacion = DateTime.Now;
             await _db.SaveChangesAsync();
@@ -98,17 +105,20 @@ public class RemodelingServicioController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
+        var detailsEntered = string.Equals(solicitud.Estado, "DetailsCompleted", StringComparison.OrdinalIgnoreCase)
+            || string.Equals(solicitud.Estado, "Submitted", StringComparison.OrdinalIgnoreCase);
+
         return View(new RemodelingDetailsViewModel
         {
             SolicitudId = solicitud.Id,
             ServicioId = solicitud.ServicioId,
             PageTitle = solicitud.Servicio?.Nombre ?? "Project details",
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            AlcanceProyecto = solicitud.AlcanceProyecto ?? "FullRemodel",
-            VentanaTiempo = solicitud.VentanaTiempo ?? "Flexible",
-            PresupuestoEstimado = solicitud.PresupuestoEstimado ?? "NotSure",
-            Descripcion = solicitud.Descripcion ?? string.Empty,
-            ContactoPreferido = solicitud.ContactoPreferido ?? "Text",
+            AlcanceProyecto = detailsEntered ? (solicitud.AlcanceProyecto ?? string.Empty) : string.Empty,
+            VentanaTiempo = detailsEntered ? (solicitud.VentanaTiempo ?? string.Empty) : string.Empty,
+            PresupuestoEstimado = detailsEntered ? (solicitud.PresupuestoEstimado ?? string.Empty) : string.Empty,
+            Descripcion = detailsEntered ? (solicitud.Descripcion ?? string.Empty) : string.Empty,
+            ContactoPreferido = detailsEntered ? (solicitud.ContactoPreferido ?? string.Empty) : string.Empty,
             ArchivosExistentes = MapExistingFiles(solicitud)
         });
     }
@@ -300,17 +310,22 @@ public class RemodelingServicioController : Controller
                 ServicioId = servicioId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                AlcanceProyecto = "FullRemodel",
-                VentanaTiempo = "Flexible",
-                PresupuestoEstimado = "NotSure",
-                ContactoPreferido = "Text"
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesRemodelingServicio.Add(solicitud);
             await _db.SaveChangesAsync();
         }
 
         return solicitud;
+    }
+
+    private static void ClearProjectDetailFields(SolicitudRemodelingServicio solicitud)
+    {
+        solicitud.AlcanceProyecto = null;
+        solicitud.VentanaTiempo = null;
+        solicitud.PresupuestoEstimado = null;
+        solicitud.Descripcion = null;
+        solicitud.ContactoPreferido = null;
     }
 
     private async Task<SolicitudRemodelingServicio?> LoadSolicitudForUserAsync(int id, bool includeArchivos = false)

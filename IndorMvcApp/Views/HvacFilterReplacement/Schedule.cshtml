@@ -1,32 +1,17 @@
 @model IndorMvcApp.ViewModels.HvacFilterScheduleViewModel
 @{
     ViewData["Title"] = "Customize Schedule";
-    Layout = null;
-    var recommended = Model.HasPets ? "Every2Months" : "Every3Months";
+var recommended = Model.HasPets ? "Every2Months" : "Every3Months";
+    ViewData["WizardTitle"] = "Filter Reminders";
+    ViewData["WizardBackUrl"] = Url.Action("Pets", "HvacFilterReplacement", new { id = Model.PropiedadId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"] - INDOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/hvac-filter-replacement.css" asp-append-version="true" />
-</head>
-<body>
-<div class="hvac-page">
-    <div class="hfr-header">
-        <a asp-action="Pets" asp-route-id="@Model.PropiedadId" class="hvac-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
-        <span class="hfr-logo">IND<span class="o">O</span>R</span>
-        <a asp-controller="Home" asp-action="Index" class="hfr-bell" aria-label="Notifications"><i class="far fa-bell"></i><span class="dot"></span></a>
-    </div>
 
-    <div class="hvac-content hfr-content">
-        @await Html.PartialAsync("_HvacFilterStepper", Model.Step)
 
-        <h1 class="hfr-title">Customize Schedule</h1>
+        
+<h1 class="hfr-title">Customize Schedule</h1>
         <p class="hfr-subtitle">Choose the schedule that works best for your home.</p>
 
         <div class="hfr-pet-badge">
@@ -88,6 +73,7 @@
 
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
+@section Scripts {
 <script>
     document.querySelectorAll('.hfr-schedule-option input').forEach(function (radio) {
         radio.addEventListener('change', function () {
@@ -95,6 +81,6 @@
             radio.closest('.hfr-schedule-option').classList.add('selected');
         });
     });
+
 </script>
-</body>
-</html>
+}

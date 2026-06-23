@@ -24,7 +24,7 @@ IF @FurnitureId IS NOT NULL AND EXISTS (SELECT 1 FROM dbo.FurnitureAssemblyServi
     UPDATE dbo.FurnitureAssemblyServicioLanding SET ImagenUrl = N'/servicio1.jpeg' WHERE MovingSetupServicioId = @FurnitureId;
 
 IF @TvId IS NOT NULL AND EXISTS (SELECT 1 FROM dbo.TvWallMountingServicioLanding WHERE MovingSetupServicioId = @TvId)
-    UPDATE dbo.TvWallMountingServicioLanding SET ImagenUrl = N'/servicio13.jpeg' WHERE MovingSetupServicioId = @TvId;
+    UPDATE dbo.TvWallMountingServicioLanding SET ImagenUrl = N'/tv-wall-mounting-hero.png' WHERE MovingSetupServicioId = @TvId;
 
 IF EXISTS (SELECT 1 FROM dbo.MovingSetupConfig)
     UPDATE dbo.MovingSetupConfig SET FeaturedImagenUrl = N'/inspeccion2.jpeg' WHERE Activo = 1;

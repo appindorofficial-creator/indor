@@ -1,31 +1,15 @@
 @model IndorMvcApp.ViewModels.FurnitureAssemblyItemsViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("FurnitureAssemblyService", "FurnitureAssembly", new { id = Model.MovingSetupServicioId });
+    ViewData["WizardStep"] = 1;
+    ViewData["WizardTotalSteps"] = 3;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_FurnitureAssemblyStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="FurnitureAssemblyService" asp-route-id="@Model.MovingSetupServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_FurnitureAssemblyStepper", 1)
 
-    <h2 class="page-heading" style="font-size:1.1rem;">Tell us what needs assembly</h2>
+<h2 class="page-heading" style="font-size:1.1rem;">Tell us what needs assembly</h2>
     <p class="page-lead" style="margin-top:-8px;">Help us prepare the right team and tools.</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
@@ -43,10 +27,12 @@
             <div class="left">
                 <i class="fas fa-location-dot" style="color:#0066CC;"></i>
                 <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
-                       placeholder="123 Riverside Dr, Mount Holly, NC 28120" required readonly />
+                       placeholder="123 Riverside Dr, Mount Holly, NC 28120" required readonly
+                       data-address-autocomplete autocomplete="off" />
             </div>
             <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
         </div>
+        <span asp-validation-for="DireccionPropiedad" class="field-error"></span>
 
         <div class="field-card">
             <span class="field-label">What are you assembling?</span>
@@ -96,6 +82,7 @@
         <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> Upload photos</button>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         function initMulti(groupId, hiddenId, initial) {
@@ -150,6 +137,9 @@
         initSegments('[data-target="AnclajePared"]', 'AnclajePared', '@Model.AnclajePared');
 
         const form = document.getElementById('fa-items-form');
+        const addressInput = document.getElementById('DireccionPropiedad');
+        const addressCard = document.getElementById('addressCard');
+        const editAddressBtn = document.getElementById('editAddressBtn');
         const requiredFields = [
             { id: 'TiposMueble', message: 'Select at least one item to assemble.' },
             { id: 'CantidadItems', message: 'Select how many items need assembly.' },
@@ -157,7 +147,45 @@
             { id: 'AnclajePared', message: 'Select whether any item needs wall anchoring.' }
         ];
 
+        const addressMessage = 'Please enter a complete street address (e.g. 123 Main St, Charlotte, NC).';
+
+        function isValidStreetAddress(value) {
+            const address = String(value || '').trim();
+            if (address.length < 5) return false;
+            if (!/\p{L}/u.test(address)) return false;
+            if (/^[\d\s.,#-]+$/.test(address)) return false;
+            const tokens = address.split(/\s+/).filter(Boolean);
+            const hasDigit = /\d/.test(address);
+            const wordParts = tokens.filter(part => /\p{L}/u.test(part)).length;
+            if (!hasDigit || wordParts < 2) return false;
+            const hasComma = address.includes(',');
+            const hasZip = tokens.slice(1).some(t => /^\d{5}(-\d{4})?$/.test(t.replace(/[.,]+$/, '')));
+            return hasComma || hasZip;
+        }
+
+        function addressValidity() {
+            if (!addressInput) return '';
+            const empty = !addressInput.value || !addressInput.value.trim();
+            if (empty) return 'Please enter the property address.';
+            if (!isValidStreetAddress(addressInput.value)) return addressMessage;
+            return '';
+        }
+
+        addressInput?.addEventListener('input', function () {
+            addressInput.setCustomValidity(addressValidity());
+        });
+
         form?.addEventListener('submit', function (e) {
+            const addressError = addressValidity();
+            addressInput?.setCustomValidity(addressError);
+            if (addressError) {
+                e.preventDefault();
+                addressInput.removeAttribute('readonly');
+                addressCard?.classList.add('editing');
+                addressInput.reportValidity();
+                return;
+            }
+
             let firstMissing = null;
             requiredFields.forEach(function (field) {
                 const input = document.getElementById(field.id);
@@ -173,10 +201,6 @@
                 alert(firstMissing.message);
             }
         });
-
-        const addressInput = document.getElementById('DireccionPropiedad');
-        const addressCard = document.getElementById('addressCard');
-        const editAddressBtn = document.getElementById('editAddressBtn');
 
         function enableAddressEdit() {
             if (!addressInput) return;
@@ -194,6 +218,7 @@
             addressCard?.classList.add('editing');
         });
     })();
+
 </script>
-</body>
-</html>
+@await Html.PartialAsync("_AddressAutocompleteScripts")
+}

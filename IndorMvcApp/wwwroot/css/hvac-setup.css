@@ -680,13 +680,23 @@ a.hvac-save-btn {
 .hvac-benefit-icon {
     width: 36px;
     height: 36px;
+    min-width: 36px;
     border-radius: 50%;
     background: rgba(24, 103, 242, 0.1);
     color: #1867F2;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+    font-size: 0.9375rem;
+    line-height: 1;
+}
+
+.hvac-benefit-icon i {
+    display: block;
+    line-height: 1;
+    font-size: inherit;
+    text-align: center;
 }
 
 .hvac-benefit-item strong {
@@ -694,7 +704,7 @@ a.hvac-save-btn {
     font-size: 0.875rem;
 }
 
-.hvac-benefit-item span {
+.hvac-benefit-item div span {
     display: block;
     margin-top: 2px;
     font-size: 0.75rem;

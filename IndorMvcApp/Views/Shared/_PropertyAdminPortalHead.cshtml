@@ -1,0 +1,18 @@
+@* Property Administrator — sky tokens + portal chrome + wizard alignment *@
+@await Html.PartialAsync("_IndorDesignHead")
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+<link rel="stylesheet" href="~/css/indor-wizard.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/property-admin-portal.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/property-admin-ui.css" asp-append-version="true" />
+@{
+    var extraCss = ViewData["PropertyAdminExtraCss"] as string;
+    if (!string.IsNullOrWhiteSpace(extraCss))
+    {
+        foreach (var sheet in extraCss.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+        {
+            <link rel="stylesheet" href="~/css/@sheet" asp-append-version="true" />
+        }
+    }
+}
+@await Html.PartialAsync("_TabletResponsiveHead")

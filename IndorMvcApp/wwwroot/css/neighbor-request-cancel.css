@@ -1,7 +1,7 @@
 /* Neighbor Request — cancel confirmation */
 .nr-cancel-page {
-    background: #F4F7FB;
-    color: #0A2540;
+    background: var(--indor-bg-sky, #F0F7FF);
+    color: var(--indor-navy, #0A2540);
     font-family: Inter, system-ui, sans-serif;
     min-height: 100vh;
     min-height: 100dvh;
@@ -35,8 +35,9 @@
     height: 40px;
     border-radius: 50%;
     border: 0;
-    background: transparent;
-    color: #0066CC;
+    background: rgba(255, 255, 255, .9);
+    color: #0A2540;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, .06);
     display: inline-flex;
     align-items: center;
     justify-content: center;

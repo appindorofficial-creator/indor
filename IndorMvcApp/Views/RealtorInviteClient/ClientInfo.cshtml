@@ -62,15 +62,11 @@
         <p>The client will receive an invitation by email or text and can securely access shared property information.</p>
     </div>
 
+    <div class="rl-invite-actions">
+        <button type="submit" formaction="@Url.Action("Cancel")" formnovalidate class="rl-invite-cancel">Cancel</button>
+        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
+    </div>
 </form>
-
-<div class="rl-invite-actions">
-    <form asp-action="Cancel" method="post">
-        @Html.AntiForgeryToken()
-        <button type="submit" class="rl-invite-cancel">Cancel</button>
-    </form>
-    <button type="submit" form="inviteClientForm" class="ob-btn ob-btn-primary">Next</button>
-</div>
 
 @section Scripts {
 <script>

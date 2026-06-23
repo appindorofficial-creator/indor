@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -31,13 +32,14 @@ public class WaterHeaterFlushSetupViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Water Heater Flush";
 
-    [Required]
-    public string TipoCalentador { get; set; } = "Tank";
+    [Required(ErrorMessage = "Select a heater type.")]
+    public string TipoCalentador { get; set; } = "";
 
-    [Required]
-    public string FuenteEnergia { get; set; } = "Electric";
+    [Required(ErrorMessage = "Select a power source.")]
+    public string FuenteEnergia { get; set; } = "";
 
     [MaxLength(80)]
+    [EquipmentSerialNumber]
     public string? NumeroSerie { get; set; }
 
     public bool SerialDesconocido { get; set; }
@@ -45,8 +47,8 @@ public class WaterHeaterFlushSetupViewModel
     [MaxLength(80)]
     public string? MarcaModelo { get; set; }
 
-    [Required]
-    public string Ubicacion { get; set; } = "Garage";
+    [Required(ErrorMessage = "Select a location.")]
+    public string Ubicacion { get; set; } = "";
 
     public List<ExistingWaterHeaterFlushFileViewModel> ArchivosExistentes { get; set; } = new();
 }
@@ -64,16 +66,16 @@ public class WaterHeaterFlushDetailsViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Water Heater Flush";
 
-    [Required]
-    public string UltimoFlush { get; set; } = "NotSure";
+    [Required(ErrorMessage = "Select when the last flush was.")]
+    public string UltimoFlush { get; set; } = "";
 
-    public string SintomasSeleccionados { get; set; } = "NoIssues";
+    public string SintomasSeleccionados { get; set; } = "";
 
-    [Required]
-    public string TipoServicio { get; set; } = "OneTime";
+    [Required(ErrorMessage = "Select a service preference.")]
+    public string TipoServicio { get; set; } = "";
 
-    [Required]
-    public string PreferenciaTiempo { get; set; } = "NextAvailable";
+    [Required(ErrorMessage = "Select when works best for you.")]
+    public string PreferenciaTiempo { get; set; } = "";
 
     public DateTime? FechaVisita { get; set; }
 

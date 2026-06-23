@@ -1,29 +1,18 @@
 @model IndorMvcApp.ViewModels.UtilitiesSetupCompletedViewModel
 @{
     ViewData["Title"] = "Utilities Setup Completed - INDOR";
-    Layout = null;
     string PhoneHref(string? phone)
     {
         if (string.IsNullOrWhiteSpace(phone)) return "#";
         var digits = new string(phone.Where(char.IsDigit).ToArray());
         return string.IsNullOrEmpty(digits) ? "#" : $"tel:{digits}";
     }
+    ViewData["WizardTitle"] = "Utilities Setup";
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_UtilitiesSetupStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="success-icon"><i class="fas fa-check"></i></div>
+
+<div class="success-icon"><i class="fas fa-check"></i></div>
     <h1 class="page-heading" style="text-align:center;font-size:1.2rem;">Utilities Setup Completed</h1>
     <p class="page-lead" style="text-align:center;color:#0066CC;font-weight:600;">Congratulations! Your home setup is ready.</p>
     <p class="page-lead" style="text-align:center;margin-top:-10px;">We organized your utility and internet information for this property.</p>
@@ -73,5 +62,3 @@
     <a asp-action="UtilitiesSetupReview" asp-route-id="@Model.SolicitudId" class="btn-outline">View setup details</a>
     <a asp-controller="Home" asp-action="Index" class="btn-outline">Done</a>
 </div>
-</body>
-</html>

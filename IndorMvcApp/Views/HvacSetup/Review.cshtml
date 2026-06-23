@@ -1,23 +1,14 @@
 @model IndorMvcApp.ViewModels.HvacReviewViewModel
 @{
     ViewData["Title"] = "Review & consent";
-    Layout = null;
-}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"] - INDOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/hvac-setup.css" asp-append-version="true" />
-</head>
-<body>
-<div class="hvac-page">
-    @await Html.PartialAsync("_HvacSetupHeader", Model)
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Model.BackUrl;
+    ViewData["WizardStep"] = Model.CurrentStep;
+    ViewData["WizardTotalSteps"] = 5;
 
-    <div class="hvac-content">
+}
+
+
         <form asp-action="Review" method="post">
             <input type="hidden" asp-for="PropiedadId" />
             <input type="hidden" asp-for="SystemType" />
@@ -67,7 +58,11 @@
                 </label>
                 <span asp-validation-for="AuthorizeStorage" class="text-danger"></span>
 
-                <a href="#" class="hvac-terms-link" onclick="return false;">
+                <a asp-controller="Account"
+                   asp-action="Terms"
+                   asp-route-from="hvac-setup"
+                   asp-route-propiedadId="@Model.PropiedadId"
+                   class="hvac-terms-link">
                     <i class="fas fa-file-lines"></i>
                     View full terms &amp; privacy
                     <i class="fas fa-chevron-right"></i>
@@ -80,5 +75,3 @@
 
     @await Html.PartialAsync("_AppBottomNav", "home")
 </div>
-</body>
-</html>

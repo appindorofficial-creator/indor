@@ -1,21 +1,11 @@
-@model IndorMvcApp.ViewModels.RegisterViewModel
+﻿@model IndorMvcApp.ViewModels.RegisterViewModel
 @{
     ViewData["Title"] = "Create Account - INDOR";
-    Layout = null;
+    Layout = "_LayoutAuthOnboarding";
     ViewBag.OnboardingStep = 1;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
-</head>
-<body class="ob-page ob-page--white">
-    <div class="ob-shell">
+
+<div class="ob-shell">
         <div class="ob-shell-inner">
             @await Html.PartialAsync("_OnboardingNav")
             @await Html.PartialAsync("_OnboardingStepper")
@@ -52,12 +42,12 @@
                     <div class="ob-field">
                         <label asp-for="Telefono" class="ob-label">Phone <span style="font-weight:400;color:#94A3B8;">(Optional)</span></label>
                         <div class="ob-phone-row">
-                            <div class="ob-phone-code"><span>🇺🇸</span> +1</div>
+                            <div class="ob-phone-code"><span>ðŸ‡ºðŸ‡¸</span> +1</div>
                             <input asp-for="Telefono" type="tel" class="ob-control" placeholder="5551234567" autocomplete="tel"
                                    inputmode="numeric" maxlength="10" pattern="[0-9]{10}" id="Telefono" />
                         </div>
                         <span class="ob-error" style="color:#64748B;font-size:.75rem;margin-top:4px;display:block">
-                            Optional — if entered, use 10 digits (US).
+                            Optional â€” if entered, use 10 digits (US).
                         </span>
                         <span asp-validation-for="Telefono" class="ob-error"></span>
                     </div>
@@ -186,5 +176,3 @@
         })();
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-</body>
-</html>

@@ -79,6 +79,8 @@ public class PropertyDetailsInfo
 
     // Dimensiones
     public int? LivingArea { get; set; } // Área construida en pies cuadrados
+
+    [Range(typeof(decimal), "0", "10000", ErrorMessage = "Lot size must be between 0 and 10,000 acres.")]
     public decimal? LotSize { get; set; } // Tamaño del terreno en acres
     public int? LotSizeSqFt { get; set; } // Tamaño del terreno en pies cuadrados
 

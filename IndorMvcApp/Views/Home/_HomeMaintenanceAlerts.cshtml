@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.PropertyMaintenanceSectionViewModel
+@using IndorMvcApp.Services
 
 @if (Model.IsAiGenerated && Model.Items.Count > 0)
 {
@@ -24,7 +25,6 @@
         <div class="hd-maint-list">
             @foreach (var item in Model.Items)
             {
-                var icon = item.Icon.StartsWith("fa-") ? item.Icon : $"fa-{item.Icon}";
                 var tone = item.Priority switch
                 {
                     "Urgent" => "urgent",
@@ -32,7 +32,7 @@
                     _ => "routine"
                 };
                 <article class="hd-maint-item hd-maint-item--@tone">
-                    <span class="hd-maint-icon"><i class="fas @icon"></i></span>
+                    <span class="hd-maint-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title)"></i></span>
                     <div class="hd-maint-body">
                         <div class="hd-maint-row">
                             <strong>@item.Title</strong>

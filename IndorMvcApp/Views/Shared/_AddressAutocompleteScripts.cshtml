@@ -1,0 +1,11 @@
+@inject Microsoft.Extensions.Options.IOptions<IndorMvcApp.Services.GoogleMapsOptions> GoogleMapsOptionsAccessor
+@{
+    var browserApiKey = GoogleMapsOptionsAccessor.Value.BrowserApiKey;
+    var hasBrowserKey = !string.IsNullOrWhiteSpace(browserApiKey)
+        && browserApiKey != "YOUR_GOOGLE_MAPS_BROWSER_API_KEY";
+}
+<script src="~/js/address-autocomplete.js" asp-append-version="true"></script>
+@if (hasBrowserKey)
+{
+    <script async src="https://maps.googleapis.com/maps/api/js?key=@browserApiKey&amp;libraries=places&amp;loading=async&amp;callback=indorInitAddressAutocomplete"></script>
+}

@@ -1,26 +1,17 @@
-@{
+﻿@{
     ViewData["Title"] = "Terms & Conditions - INDOR";
-    Layout = null;
+    Layout = "_LayoutAuthOnboarding";
     ViewBag.OnboardingShowBack = true;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
-</head>
-<body class="ob-page ob-page--white">
-    <div class="ob-shell">
+
+<div class="ob-shell">
         <div class="ob-shell-inner">
             @await Html.PartialAsync("_OnboardingNav")
 
             <article class="ob-legal-doc">
                 <h1>Terms &amp; Conditions</h1>
                 <p class="ob-legal-updated">Last updated: May 2026</p>
+                <p class="ob-legal-related">Also read our <a asp-controller="Account" asp-action="Privacy" asp-route-from="@ViewBag.LegalFrom" asp-route-propiedadId="@ViewBag.LegalPropiedadId">Privacy Policy</a>.</p>
 
                 <p>Welcome to INDOR. These Terms &amp; Conditions govern your use of the INDOR platform operated by Home Indor Technology Inc. By creating an account or using our services, you agree to these terms.</p>
 
@@ -50,5 +41,3 @@
             </article>
         </div>
     </div>
-</body>
-</html>

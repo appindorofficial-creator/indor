@@ -125,9 +125,11 @@ public class RealtorUrgentQuoteWizardService(
             Subtitle = "For urgent closing needs, fill only the essentials: property, issue, urgency, and photos.",
             SearchQuery = search,
             SelectedPropertyFileId = draft.PropertyFileId,
-            RequestCategory = draft.RequestCategory,
-            ServiceType = draft.ServiceType,
-            UrgencyLevel = draft.UrgencyLevel,
+            // Don't pre-select issue/service/urgency on a fresh request; only echo
+            // the realtor's own choices once they've confirmed step 1 (step advances past 1).
+            RequestCategory = draft.CurrentStep > 1 ? draft.RequestCategory : "",
+            ServiceType = draft.CurrentStep > 1 ? draft.ServiceType : "",
+            UrgencyLevel = draft.CurrentStep > 1 ? draft.UrgencyLevel : "",
             Properties = properties.Select(p => new RealtorUrgentQuotePropertyOptionViewModel
             {
                 Id = p.Id,
@@ -207,15 +209,40 @@ public class RealtorUrgentQuoteWizardService(
 
     public async Task SavePropertyAsync(
         int propertyFileId, string requestCategory, string serviceType, string urgencyLevel,
+        string? newPropertyAddress = null,
         CancellationToken cancellationToken = default)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
             ?? throw new InvalidOperationException("Realtor profile not found.");
         var draft = await EnsureDraftAsync(cancellationToken);
 
+        // Require the realtor to actively choose issue, service type and urgency
+        // (nothing is pre-selected, so don't silently fall back to defaults here).
+        // Validate before touching properties so a failed submit can't leave orphans.
+        if (!RealtorUrgentQuoteCategories.Options.Any(o => o.Value == requestCategory))
+        {
+            throw new InvalidOperationException("Select what you need.");
+        }
+        if (!RealtorUrgentQuoteServiceTypes.All.Contains(serviceType))
+        {
+            throw new InvalidOperationException("Select a service type.");
+        }
+        if (!RealtorUrgentQuoteUrgencyLevels.Options.Any(o => o.Value == urgencyLevel))
+        {
+            throw new InvalidOperationException("Select an urgency level.");
+        }
+
+        var resolvedPropertyId = propertyFileId;
+        if (resolvedPropertyId <= 0)
+        {
+            // No saved property selected: fall back to the address the realtor typed
+            // in the search box (mirrors the inspection upload flow).
+            resolvedPropertyId = await ResolveOrCreatePropertyFileAsync(realtor.Id, newPropertyAddress, cancellationToken);
+        }
+
         var property = await db.IndorRealtorPropertyFiles.AsNoTracking()
-            .FirstOrDefaultAsync(p => p.Id == propertyFileId && p.RealtorId == realtor.Id, cancellationToken)
-            ?? throw new InvalidOperationException("Property not found.");
+            .FirstOrDefaultAsync(p => p.Id == resolvedPropertyId && p.RealtorId == realtor.Id, cancellationToken)
+            ?? throw new InvalidOperationException("Select a property or enter the property address to continue.");
 
         draft.PropertyFileId = property.Id;
         draft.Address = property.Address;
@@ -225,9 +252,9 @@ public class RealtorUrgentQuoteWizardService(
         draft.Beds = property.Beds;
         draft.Baths = property.Baths;
         draft.SqFt = property.SqFt;
-        draft.RequestCategory = ValidateCategory(requestCategory);
-        draft.ServiceType = ValidateServiceType(serviceType);
-        draft.UrgencyLevel = ValidateUrgency(urgencyLevel);
+        draft.RequestCategory = requestCategory;
+        draft.ServiceType = serviceType;
+        draft.UrgencyLevel = urgencyLevel;
         draft.CurrentStep = 2;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
@@ -584,10 +611,41 @@ public class RealtorUrgentQuoteWizardService(
         return msg.Length > 500 ? msg[..500] : msg;
     }
 
-    private static string ValidateCategory(string value) =>
-        RealtorUrgentQuoteCategories.Options.Any(o => o.Value == value)
-            ? value
-            : RealtorUrgentQuoteCategories.NeedQuoteToday;
+    private async Task<int> ResolveOrCreatePropertyFileAsync(
+        int realtorId, string? address, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            throw new InvalidOperationException("Select a property or enter the property address to continue.");
+        }
+
+        var normalizedAddress = address.Trim();
+        var existing = await db.IndorRealtorPropertyFiles
+            .FirstOrDefaultAsync(
+                p => p.RealtorId == realtorId &&
+                     p.Status == "Active" &&
+                     p.Address == normalizedAddress,
+                cancellationToken);
+        if (existing != null)
+        {
+            return existing.Id;
+        }
+
+        var file = new IndorRealtorPropertyFile
+        {
+            RealtorId = realtorId,
+            Title = normalizedAddress,
+            Address = normalizedAddress,
+            PhotoUrl = "/welcome-house.png",
+            Status = "Active",
+            FilePhase = RealtorPropertyFilePhases.General,
+            UpdatedUtc = DateTime.UtcNow,
+            FechaCreacion = DateTime.UtcNow
+        };
+        db.IndorRealtorPropertyFiles.Add(file);
+        await db.SaveChangesAsync(cancellationToken);
+        return file.Id;
+    }
 
     private static string ValidateServiceType(string value) =>
         RealtorUrgentQuoteServiceTypes.All.Contains(value) ? value : "HVAC";

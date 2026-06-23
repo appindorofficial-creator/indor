@@ -1,66 +1,14 @@
-@model IndorMvcApp.ViewModels.EmergencyHvacDetailsViewModel
+﻿@model IndorMvcApp.ViewModels.EmergencyHvacDetailsViewModel
 @{
     ViewData["Title"] = "Emergency HVAC - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = "Emergency HVAC";
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
+    ViewData["WizardStep"] = 1;
+    ViewData["WizardTotalSteps"] = 3;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
-        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .field-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
-        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 12px; display: block; }
-        .address-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; background: rgba(0,102,204,0.06); font-size: 0.92rem; }
-        .address-display .left { display: flex; align-items: center; gap: 10px; flex: 1; }
-        .address-display i { color: #0066CC; }
-        .address-display input { border: none; background: transparent; font-weight: 600; width: 100%; font-family: inherit; font-size: 0.92rem; }
-        .issue-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .issue-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 14px 10px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; position: relative; line-height: 1.3; }
-        .issue-btn i.issue-icon { display: block; font-size: 1.2rem; margin-bottom: 6px; color: #94A3B8; }
-        .issue-btn.active { border-color: #0066CC; color: #0066CC; background: rgba(0,102,204,0.08); }
-        .issue-btn.active i.issue-icon { color: #0066CC; }
-        .issue-btn .check { position: absolute; top: 8px; right: 8px; width: 18px; height: 18px; border-radius: 50%; background: #0066CC; color: #FFF; display: none; align-items: center; justify-content: center; font-size: 0.6rem; }
-        .issue-btn.active .check { display: flex; }
-        .segmented-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .segment-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.84rem; color: #64748B; cursor: pointer; text-align: center; }
-        .segment-btn.active { background: rgba(0,102,204,0.08); border-color: #0066CC; color: #0066CC; }
-        .urgency-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-        .urgency-btn { border: 1.5px solid #E5E7EB; background: #F9FAFB; border-radius: 12px; padding: 12px 8px; font-weight: 600; font-size: 0.78rem; color: #64748B; cursor: pointer; text-align: center; }
-        .urgency-btn i { display: block; font-size: 1rem; margin-bottom: 6px; }
-        .urgency-btn.active[data-value="Emergency"] { border-color: #DC2626; color: #DC2626; background: rgba(220,38,38,0.08); }
-        .urgency-btn.active[data-value="Priority"] { border-color: #EA580C; color: #EA580C; background: rgba(234,88,12,0.08); }
-        .urgency-btn.active[data-value="Today"] { border-color: #16A34A; color: #16A34A; background: rgba(22,163,74,0.08); }
-        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
-        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
-        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
-        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <strong>Emergency HVAC</strong>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_EmergencyHvacStepper", 1)
-
-    <h1 class="page-heading">What's happening with your system?</h1>
+<h1 class="page-heading">What's happening with your system?</h1>
     <p class="page-lead">Tell us what's going on so we can send the right pro.</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyHvacDetails" method="post">
@@ -123,6 +71,7 @@
         <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> Upload photos first</button>
     </form>
 </div>
+@section Scripts {
 <script>
     function setSingle(group, selector, value) {
         document.getElementById(group.dataset.target).value = value;
@@ -140,6 +89,6 @@
         group.querySelectorAll(selector).forEach(btn => btn.addEventListener('click', () => setSingle(group, selector, btn.dataset.value)));
         setSingle(group, selector, document.getElementById(group.dataset.target).value);
     });
+
 </script>
-</body>
-</html>
+}

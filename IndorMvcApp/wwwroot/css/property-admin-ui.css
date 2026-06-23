@@ -1,0 +1,70 @@
+/* ============================================================
+   PROPERTY ADMIN UI — INDOR tokens on property-admin-portal.css
+   Registration sky, wizard steppers, pill nav, gradient CTAs.
+   ============================================================ */
+
+.ob-page.pa-page {
+    background: var(--indor-bg-sky, #F0F7FF) !important;
+    background-attachment: fixed;
+    color: var(--indor-navy, #0A2540);
+    font-family: Inter, system-ui, sans-serif;
+}
+
+.pa-portal-page {
+    color: var(--indor-navy, #0A2540);
+    font-family: Inter, system-ui, sans-serif;
+}
+
+/* Registration stepper */
+.pa-reg-step.is-active,
+.pa-reg-step.is-done {
+    border-color: transparent;
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    color: #fff;
+}
+
+.pa-reg-step-line.is-done {
+    background: #0066CC;
+}
+
+/* Flow header back */
+.pa-back-inline,
+.pa-page .ob-nav-back {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .85);
+    box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
+}
+
+/* Cards — 20px where not yet in portal v2 */
+.pa-stat-card,
+.pa-property-card,
+.pa-choice-card,
+.pa-tool-card,
+.pa-action-row,
+.pa-field,
+.pa-review-card,
+.pa-flow-card,
+.pa-wizard-card {
+    border-radius: 20px;
+}
+
+/* Primary actions */
+.pa-btn-primary,
+.pa-page .ob-btn:not(.ob-btn-outline):not(.ob-btn-ghost) {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    border: none;
+}
+
+.pa-btn-primary:hover,
+.pa-page .ob-btn:not(.ob-btn-outline):not(.ob-btn-ghost):hover {
+    filter: brightness(1.03);
+}
+
+/* Bottom nav — frosted over sky */
+.pa-bottom-nav {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}

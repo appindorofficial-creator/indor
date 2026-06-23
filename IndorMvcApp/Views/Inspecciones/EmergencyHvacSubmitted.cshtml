@@ -1,58 +1,13 @@
-@model IndorMvcApp.ViewModels.EmergencyHvacSubmittedViewModel
+﻿@model IndorMvcApp.ViewModels.EmergencyHvacSubmittedViewModel
 @{
     ViewData["Title"] = "Request Submitted - INDOR";
-    Layout = null;
-}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; text-align: center; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; }
-        .success-icon {
-            width: 88px; height: 88px; border-radius: 50%; margin: 0 auto 18px;
-            background: linear-gradient(135deg, #22C55E, #16A34A); color: #FFF;
-            display: flex; align-items: center; justify-content: center; font-size: 2.4rem;
-        }
-        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; text-align: center; }
-        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 22px; text-align: center; }
-        .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid rgba(229,231,235,0.9); text-align: left; }
-        .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid #E5E7EB; }
-        .summary-row:last-child { border-bottom: none; }
-        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
-        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600; }
-        .summary-value { font-size: 0.9rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
-        .status-pill {
-            display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px; border-radius: 999px;
-            background: rgba(34,197,94,0.12); color: #15803D; font-size: 0.82rem; font-weight: 700;
-        }
-        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #22C55E; }
-        .arrival-green { color: #16A34A; }
-        .info-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 18px; font-size: 0.86rem; line-height: 1.45; text-align: left; }
-        .info-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
-        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; text-decoration: none; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-bottom: 10px; }
-        .btn-outline { margin-bottom: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <div style="width:44px;"></div>
-        <strong>Request Submitted</strong>
-        <div style="width:44px;"></div>
-    </div>
+    ViewData["WizardTitle"] = "Request Submitted";
+    ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
-    <div class="success-icon"><i class="fas fa-check"></i></div>
+}
+
+<strong>Request Submitted</strong>
+        <div class="success-icon"><i class="fas fa-check"></i></div>
     <h1 class="page-heading">Your HVAC emergency request is on the way</h1>
     <p class="page-lead">We've sent your request and a provider is reviewing it now.</p>
 
@@ -109,6 +64,3 @@
     <a asp-action="EmergencyHvacSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-paper-plane"></i> Track request</a>
     <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> Call support</a>
     <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to Home</a>
-</div>
-</body>
-</html>

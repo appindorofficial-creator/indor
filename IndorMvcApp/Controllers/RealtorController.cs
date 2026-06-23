@@ -456,18 +456,28 @@ public class RealtorController(
         RealtorNotificationPreferencesInput input,
         CancellationToken cancellationToken)
     {
+        var isAjax = string.Equals(Request.Headers["X-Requested-With"], "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
         if (realtor == null)
         {
-            return RedirectToAction("Profile", "RealtorRegistration");
+            return isAjax ? Unauthorized() : RedirectToAction("Profile", "RealtorRegistration");
         }
 
         if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
         {
-            return RedirectToAction("Profile", "RealtorRegistration");
+            return isAjax ? Unauthorized() : RedirectToAction("Profile", "RealtorRegistration");
         }
 
         await portalService.SaveNotificationPreferencesAsync(realtor, input, cancellationToken);
+
+        // For toggle clicks we save in the background (fetch) so the page doesn't
+        // reload and jump back to the top; keep the redirect as a no-JS fallback.
+        if (isAjax)
+        {
+            return Ok(new { saved = true });
+        }
+
         return RedirectToAction(nameof(Profile), new { saved = true });
     }
 

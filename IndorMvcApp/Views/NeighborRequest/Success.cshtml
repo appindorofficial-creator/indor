@@ -9,8 +9,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>Request published - INDOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
 </head>
 <body class="nr-wizard-page">
@@ -19,8 +18,10 @@
             <div class="nr-success-icon"><i class="fas fa-check"></i></div>
             <h1>Your request is live!</h1>
             <p>Neighbors and providers in your area can now see it and send you offers.</p>
-            <a asp-action="Detail" asp-route-id="@Model.RequestId" class="nr-btn-primary">View my request</a>
-            <a asp-controller="Home" asp-action="Index" class="nr-btn-outline">Go to Home</a>
+            <div class="nr-success-actions">
+                <a asp-action="Detail" asp-route-id="@Model.RequestId" class="nr-btn-primary">View my request</a>
+                <a asp-controller="Home" asp-action="Index" class="nr-btn-outline">Go to Home</a>
+            </div>
         </div>
     </div>
 </body>

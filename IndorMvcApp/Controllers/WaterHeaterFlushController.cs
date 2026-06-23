@@ -83,17 +83,19 @@ public class WaterHeaterFlushController : Controller
         var solicitud = await LoadSolicitudForUserAsync(id, includeArchivos: true);
         if (solicitud == null) return NotFound();
 
+        var detailsEntered = string.Equals(solicitud.Estado, "SetupCompleted", StringComparison.OrdinalIgnoreCase);
+
         return View(new WaterHeaterFlushSetupViewModel
         {
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = solicitud.HomeCarePriority?.Nombre ?? "Water Heater Flush",
-            TipoCalentador = solicitud.TipoCalentador ?? "Tank",
-            FuenteEnergia = solicitud.FuenteEnergia ?? "Electric",
-            NumeroSerie = solicitud.NumeroSerie,
-            SerialDesconocido = solicitud.SerialDesconocido,
-            MarcaModelo = solicitud.MarcaModelo,
-            Ubicacion = solicitud.Ubicacion ?? "Garage",
+            TipoCalentador = detailsEntered ? (solicitud.TipoCalentador ?? "") : "",
+            FuenteEnergia = detailsEntered ? (solicitud.FuenteEnergia ?? "") : "",
+            NumeroSerie = detailsEntered ? solicitud.NumeroSerie : null,
+            SerialDesconocido = detailsEntered && solicitud.SerialDesconocido,
+            MarcaModelo = detailsEntered ? solicitud.MarcaModelo : null,
+            Ubicacion = detailsEntered ? (solicitud.Ubicacion ?? "") : "",
             ArchivosExistentes = MapExistingFiles(solicitud)
         });
     }
@@ -326,10 +328,10 @@ public class WaterHeaterFlushController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "Maintenance details",
-            UltimoFlush = solicitud.UltimoFlush ?? "NotSure",
-            SintomasSeleccionados = solicitud.SintomasSeleccionados ?? "NoIssues",
-            TipoServicio = solicitud.TipoServicio ?? "OneTime",
-            PreferenciaTiempo = solicitud.PreferenciaTiempo ?? "NextAvailable",
+            UltimoFlush = solicitud.UltimoFlush ?? "",
+            SintomasSeleccionados = solicitud.SintomasSeleccionados ?? "",
+            TipoServicio = solicitud.TipoServicio ?? "",
+            PreferenciaTiempo = solicitud.PreferenciaTiempo ?? "",
             FechaVisita = solicitud.FechaVisita ?? GetNextAvailableDate(),
             NotasAdicionales = solicitud.NotasAdicionales,
             ResumenServicioTexto = landing?.ResumenServicioTexto ?? "Annual flush + basic visual check",
@@ -444,14 +446,7 @@ public class WaterHeaterFlushController : Controller
                 HomeCarePriorityId = priorityId,
                 PropiedadId = propiedadId,
                 Estado = "InProgress",
-                FechaCreacion = DateTime.Now,
-                TipoCalentador = "Tank",
-                FuenteEnergia = "Electric",
-                Ubicacion = "Garage",
-                PreferenciaTiempo = "NextAvailable",
-                TipoServicio = "OneTime",
-                SintomasSeleccionados = "NoIssues",
-                UltimoFlush = "NotSure"
+                FechaCreacion = DateTime.Now
             };
             _db.SolicitudesWaterHeaterFlush.Add(solicitud);
             await _db.SaveChangesAsync();

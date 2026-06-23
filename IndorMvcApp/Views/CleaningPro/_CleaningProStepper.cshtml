@@ -1,18 +1,1 @@
-@model int
-@{
-    var current = Model;
-}
-<div style="display:flex;justify-content:flex-end;align-items:center;margin-bottom:8px;">
-    <div class="step-count">Step @current of 4</div>
-</div>
-<div class="cp-stepper">
-    @for (var i = 1; i <= 4; i++)
-    {
-        var css = i < current ? "cp-step-dot done" : i == current ? "cp-step-dot active" : "cp-step-dot";
-        <div class="@css"></div>
-        @if (i < 4)
-        {
-            <div class="line @(i < current ? "done" : "")"></div>
-        }
-    }
-</div>
+@* Progress rendered by _ServiceWizardChrome *@

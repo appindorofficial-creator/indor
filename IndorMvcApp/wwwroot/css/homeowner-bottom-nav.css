@@ -57,17 +57,18 @@
 }
 
 .bottom-nav .nav-item.active {
-    color: #1867F2;
+    color: #0066CC;
 }
 
 .bottom-nav .nav-item.active::after {
     content: '';
     display: block;
-    width: 22px;
+    width: 24px;
     height: 3px;
     margin-top: 4px;
     border-radius: 999px;
-    background: #1867F2;
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    box-shadow: 0 4px 10px rgba(0, 102, 204, 0.35);
 }
 
 @media (min-width: 768px) {

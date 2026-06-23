@@ -1,121 +1,108 @@
 @model IndorMvcApp.ViewModels.CleaningDetailsViewModel
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardStep"] = 1;
+    ViewData["WizardTotalSteps"] = 3;
+    ViewData["WizardBackUrl"] = Url.Action("CleaningService", "Cleaning", new { id = Model.MovingSetupServicioId });
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_CleaningStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="CleaningService" asp-route-id="@Model.MovingSetupServicioId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.PageTitle</div>
-        <span class="step-count">1 of 3</span>
+
+<div class="cl-wizard-heading">
+    <h2>Tell us about your cleaning request</h2>
+    <p>Help INDOR send the right cleaning crew for your move.</p>
+</div>
+
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+<form asp-action="CleaningDetails" method="post" id="cleaningDetailsForm" class="iw-step-form">
+    <input type="hidden" asp-for="SolicitudId" />
+    <input type="hidden" asp-for="MovingSetupServicioId" />
+    <input type="hidden" asp-for="NombreServicio" />
+    <input type="hidden" asp-for="TipoLimpieza" id="TipoLimpieza" />
+    <input type="hidden" asp-for="TipoPropiedad" id="TipoPropiedad" />
+    <input type="hidden" asp-for="NumeroHabitaciones" id="NumeroHabitaciones" />
+    <input type="hidden" asp-for="NumeroBanos" id="NumeroBanos" />
+    <input type="hidden" asp-for="CondicionActual" id="CondicionActual" />
+    <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
+
+    <div class="address-card" id="addressCard">
+        <div class="left">
+            <i class="fas fa-location-dot" style="color:#0066CC;"></i>
+            <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
+                   placeholder="123 Main St, Charlotte, NC 28202" required readonly
+                   data-address-autocomplete autocomplete="off" />
+        </div>
+        <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
+    </div>
+    <span asp-validation-for="DireccionPropiedad" class="field-error"></span>
+
+    <div class="field-card">
+        <span class="field-label">Cleaning type</span>
+        <div class="tile-grid" data-target="TipoLimpieza">
+            <button type="button" class="type-card" data-value="MoveIn"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house-circle-check"></i>Move-In Cleaning</button>
+            <button type="button" class="type-card" data-value="MoveOut"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house-circle-xmark"></i>Move-Out Cleaning</button>
+            <button type="button" class="type-card" data-value="Both"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-arrows-rotate"></i>Both</button>
+        </div>
     </div>
 
-    @await Html.PartialAsync("_CleaningStepper", 1)
-
-    <h2 class="page-heading" style="font-size:1.15rem;">Tell us about your cleaning request</h2>
-    <p class="page-lead" style="margin-top:-8px;">Help INDOR send the right cleaning crew for your move.</p>
-
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
-
-    <form asp-action="CleaningDetails" method="post">
-        <input type="hidden" asp-for="SolicitudId" />
-        <input type="hidden" asp-for="MovingSetupServicioId" />
-        <input type="hidden" asp-for="NombreServicio" />
-        <input type="hidden" asp-for="TipoLimpieza" id="TipoLimpieza" />
-        <input type="hidden" asp-for="TipoPropiedad" id="TipoPropiedad" />
-        <input type="hidden" asp-for="NumeroHabitaciones" id="NumeroHabitaciones" />
-        <input type="hidden" asp-for="NumeroBanos" id="NumeroBanos" />
-        <input type="hidden" asp-for="CondicionActual" id="CondicionActual" />
-        <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
-
-        <div class="address-card" id="addressCard">
-            <div class="left">
-                <i class="fas fa-location-dot" style="color:#0066CC;"></i>
-                <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
-                       placeholder="123 Main St, Charlotte, NC 28202" required readonly />
-            </div>
-            <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
+    <div class="field-card">
+        <span class="field-label">Property type</span>
+        <div class="segment-row" data-target="TipoPropiedad">
+            <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> House</button>
+            <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> Apartment</button>
+            <button type="button" class="segment-btn" data-value="Condo"><i class="fas fa-city"></i> Condo</button>
+            <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> Townhome</button>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">Cleaning type</span>
-            <div class="tile-grid" data-target="TipoLimpieza">
-                <button type="button" class="type-card" data-value="MoveIn"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house-circle-check"></i>Move-In Cleaning</button>
-                <button type="button" class="type-card" data-value="MoveOut"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house-circle-xmark"></i>Move-Out Cleaning</button>
-                <button type="button" class="type-card" data-value="Both"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-arrows-rotate"></i>Both</button>
-            </div>
+    <div class="field-card">
+        <span class="field-label">Home size</span>
+        <div style="margin-bottom:10px;font-size:0.78rem;font-weight:600;color:#64748B;">Bedrooms</div>
+        <div class="segment-row" data-target="NumeroHabitaciones" style="margin-bottom:14px;">
+            <button type="button" class="segment-btn" data-value="One">1 bed</button>
+            <button type="button" class="segment-btn" data-value="Two">2 bed</button>
+            <button type="button" class="segment-btn" data-value="Three">3 bed</button>
+            <button type="button" class="segment-btn" data-value="FourPlus">4+ bed</button>
         </div>
+        <div style="margin-bottom:10px;font-size:0.78rem;font-weight:600;color:#64748B;">Bathrooms</div>
+        <div class="segment-row" data-target="NumeroBanos">
+            <button type="button" class="segment-btn" data-value="One">1 bath</button>
+            <button type="button" class="segment-btn" data-value="Two">2 bath</button>
+            <button type="button" class="segment-btn" data-value="ThreePlus">3+ bath</button>
+        </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">Property type</span>
-            <div class="segment-row" data-target="TipoPropiedad">
-                <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> House</button>
-                <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> Apartment</button>
-                <button type="button" class="segment-btn" data-value="Condo"><i class="fas fa-city"></i> Condo</button>
-                <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> Townhome</button>
-            </div>
+    <div class="field-card">
+        <span class="field-label">Current condition</span>
+        <div class="tile-grid" data-target="CondicionActual">
+            <button type="button" class="type-card" data-value="Empty"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>Empty property</button>
+            <button type="button" class="type-card" data-value="LightlyFurnished"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-couch"></i>Lightly furnished</button>
+            <button type="button" class="type-card" data-value="Occupied"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-users"></i>Occupied</button>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">Home size</span>
-            <div style="margin-bottom:10px;font-size:0.78rem;font-weight:600;color:#64748B;">Bedrooms</div>
-            <div class="segment-row" data-target="NumeroHabitaciones" style="margin-bottom:14px;">
-                <button type="button" class="segment-btn" data-value="One">1 bed</button>
-                <button type="button" class="segment-btn" data-value="Two">2 bed</button>
-                <button type="button" class="segment-btn" data-value="Three">3 bed</button>
-                <button type="button" class="segment-btn" data-value="FourPlus">4+ bed</button>
-            </div>
-            <div style="margin-bottom:10px;font-size:0.78rem;font-weight:600;color:#64748B;">Bathrooms</div>
-            <div class="segment-row" data-target="NumeroBanos">
-                <button type="button" class="segment-btn" data-value="One">1 bath</button>
-                <button type="button" class="segment-btn" data-value="Two">2 bath</button>
-                <button type="button" class="segment-btn" data-value="ThreePlus">3+ bath</button>
-            </div>
+    <div class="picker-row">
+        <div class="left"><i class="fas fa-calendar" style="color:#0066CC;"></i><input asp-for="FechaServicio" type="date" /></div>
+    </div>
+    <div class="picker-row">
+        <div class="left">
+            <i class="fas fa-clock" style="color:#0066CC;"></i>
+            <select id="VentanaHorarioSelect">
+                <option value="Morning">10:00 AM – 12:00 PM</option>
+                <option value="MidMorning">12:00 PM – 2:00 PM</option>
+                <option value="Afternoon">2:00 PM – 4:00 PM</option>
+                <option value="Evening">4:00 PM – 6:00 PM</option>
+            </select>
         </div>
+    </div>
 
-        <div class="field-card">
-            <span class="field-label">Current condition</span>
-            <div class="tile-grid" data-target="CondicionActual">
-                <button type="button" class="type-card" data-value="Empty"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>Empty property</button>
-                <button type="button" class="type-card" data-value="LightlyFurnished"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-couch"></i>Lightly furnished</button>
-                <button type="button" class="type-card" data-value="Occupied"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-users"></i>Occupied</button>
-            </div>
-        </div>
-
-        <div class="picker-row">
-            <div class="left"><i class="fas fa-calendar" style="color:#0066CC;"></i><input asp-for="FechaServicio" type="date" /></div>
-            <i class="fas fa-chevron-right" style="color:#94A3B8;"></i>
-        </div>
-        <div class="picker-row">
-            <div class="left">
-                <i class="fas fa-clock" style="color:#0066CC;"></i>
-                <select id="VentanaHorarioSelect">
-                    <option value="Morning">10:00 AM – 12:00 PM</option>
-                    <option value="MidMorning">12:00 PM – 2:00 PM</option>
-                    <option value="Afternoon">2:00 PM – 4:00 PM</option>
-                    <option value="Evening">4:00 PM – 6:00 PM</option>
-                </select>
-            </div>
-            <i class="fas fa-chevron-right" style="color:#94A3B8;"></i>
-        </div>
-
+    <div class="cl-form-actions">
         <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
         <button type="submit" name="action" value="skip" class="btn-outline">Skip date for now</button>
-    </form>
-</div>
+    </div>
+</form>
+
+@section Scripts {
 <script>
     (function () {
         function initCards(containerSelector, hiddenId, initial, cardClass) {
@@ -128,7 +115,7 @@
                 buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            setActive(initial || hidden.value || '');
         }
 
         function initSegments(containerSelector, hiddenId, initial) {
@@ -141,7 +128,7 @@
                 buttons.forEach(b => b.classList.toggle('active', b.dataset.value === value));
             }
             buttons.forEach(btn => btn.addEventListener('click', () => setActive(btn.dataset.value)));
-            setActive(initial || hidden.value || buttons[0]?.dataset.value);
+            setActive(initial || hidden.value || '');
         }
 
         initCards('[data-target="TipoLimpieza"]', 'TipoLimpieza', '@Model.TipoLimpieza', 'type-card');
@@ -166,7 +153,7 @@
             addressInput.focus();
             try {
                 addressInput.setSelectionRange(0, addressInput.value.length);
-            } catch (_) { /* iOS may not support selection on focus */ }
+            } catch (_) { }
         }
 
         editAddressBtn?.addEventListener('click', enableAddressEdit);
@@ -174,7 +161,47 @@
             addressInput.removeAttribute('readonly');
             addressCard?.classList.add('editing');
         });
+
+        const addressMessage = 'Please enter a complete street address (e.g. 123 Main St, Charlotte, NC).';
+
+        function isValidStreetAddress(value) {
+            const address = String(value || '').trim();
+            if (address.length < 5) return false;
+            if (!/\p{L}/u.test(address)) return false;
+            if (/^[\d\s.,#-]+$/.test(address)) return false;
+            const tokens = address.split(/\s+/).filter(Boolean);
+            const hasDigit = /\d/.test(address);
+            const wordParts = tokens.filter(part => /\p{L}/u.test(part)).length;
+            if (!hasDigit || wordParts < 2) return false;
+            const hasComma = address.includes(',');
+            const hasZip = tokens.slice(1).some(t => /^\d{5}(-\d{4})?$/.test(t.replace(/[.,]+$/, '')));
+            return hasComma || hasZip;
+        }
+
+        function addressValidity() {
+            if (!addressInput) return '';
+            const empty = !addressInput.value || !addressInput.value.trim();
+            if (empty) return 'Please enter the property address.';
+            if (!isValidStreetAddress(addressInput.value)) return addressMessage;
+            return '';
+        }
+
+        addressInput?.addEventListener('input', function () {
+            addressInput.setCustomValidity(addressValidity());
+        });
+
+        const cleaningForm = document.getElementById('cleaningDetailsForm');
+        cleaningForm?.addEventListener('submit', function (e) {
+            const message = addressValidity();
+            addressInput.setCustomValidity(message);
+            if (message) {
+                e.preventDefault();
+                addressInput.removeAttribute('readonly');
+                addressCard?.classList.add('editing');
+                addressInput.reportValidity();
+            }
+        });
     })();
 </script>
-</body>
-</html>
+@await Html.PartialAsync("_AddressAutocompleteScripts")
+}

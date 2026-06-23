@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -44,6 +45,7 @@ public class FurnitureAssemblyItemsViewModel
     public string PageTitle { get; set; } = "Furniture & Assembly Details";
 
     [Required, MaxLength(300)]
+    [ValidStreetAddress(RequireCityOrZip = true)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
     public string TiposMueble { get; set; } = string.Empty;

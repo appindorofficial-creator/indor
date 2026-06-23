@@ -2,33 +2,17 @@
 @using IndorMvcApp.Services
 @{
     ViewData["Title"] = Model.PageTitle + " - INDOR";
-    Layout = null;
-    var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
     var selectedAddons = (Model.AddonsSeleccionados ?? string.Empty).Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
+    ViewData["WizardTitle"] = Model.PageTitle;
+    ViewData["WizardBackUrl"] = Url.Action("CleaningProSetup", "CleaningPro", new { id = Model.SolicitudId });
+    ViewData["WizardStep"] = 2;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    @await Html.PartialAsync("_CleaningProStyles")
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="CleaningProSetup" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-chevron-left"></i></a>
-        <div class="page-title">@Model.PageTitle</div>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_CleaningProStepper", 2)
 
-    <p class="page-lead" style="margin-top:-8px;">Tell us what you need so we can match you with the right cleaner.</p>
+<p class="page-lead" style="margin-top:-8px;">Tell us what you need so we can match you with the right cleaner.</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     <span asp-validation-for="AreasLimpieza" class="text-danger" style="font-size:0.75rem;display:block;margin-bottom:8px;"></span>
@@ -128,6 +112,7 @@
         </div>
     </form>
 </div>
+@section Scripts {
 <script>
     (function () {
         const rates = { One: 35, Two: 70, Three: 105 };
@@ -272,6 +257,6 @@
         syncAddons();
         updateSummary();
     })();
+
 </script>
-</body>
-</html>
+}

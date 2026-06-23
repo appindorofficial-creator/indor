@@ -1,0 +1,94 @@
+/* ============================================================
+   PROVIDER PRO UI — INDOR tokens on proveedor-dashboard.css
+   Sky background, segmented steppers, pill nav, gradient CTAs.
+   ============================================================ */
+
+.prv-pro-body,
+.ob-page.prv-page {
+    background: var(--indor-bg-sky, #F0F7FF) !important;
+    background-attachment: fixed;
+    color: var(--indor-navy, #0A2540);
+    font-family: Inter, system-ui, sans-serif;
+}
+
+/* Topbar */
+.prv-pro-profile-btn {
+    box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
+}
+
+/* Segmented progress (registration + flows) */
+.prv-progress-seg {
+    height: 5px;
+}
+
+.prv-progress-seg.is-done,
+.prv-progress-seg.is-active {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    box-shadow: 0 2px 8px rgba(0, 102, 204, .18);
+}
+
+/* Wizard stepper — done steps use brand gradient */
+.prv-pro-wizard-step.is-done > i {
+    border-color: transparent;
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+}
+
+.prv-pro-wizard-step-line.is-done {
+    background: #0066CC;
+}
+
+/* Cards & panels */
+.prv-pro-hero,
+.prv-pro-panel,
+.prv-pro-wizard-card,
+.prv-pro-stat-card,
+.prv-pro-job-card,
+.prv-pro-lead-card,
+.prv-pro-customer-card,
+.prv-pro-invoice-card,
+.prv-pro-message-card,
+.prv-pro-report-card,
+.prv-pro-profile-card,
+.prv-wiz-card,
+.prv-review-card {
+    border-radius: 20px;
+}
+
+/* Primary actions */
+.prv-pro-btn--primary,
+.prv-pro-activation-link,
+.prv-success-icon {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    border: none;
+}
+
+.prv-pro-btn--primary:hover {
+    filter: brightness(1.03);
+}
+
+/* Registration onboarding buttons */
+.prv-page .ob-btn:not(.ob-btn-outline):not(.ob-btn-ghost) {
+    background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+    border: none;
+}
+
+/* Bottom nav — frosted over sky */
+.prv-pro-bottom-nav {
+    background: rgba(255, 255, 255, .92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--indor-border, #E7EEF7);
+}
+
+.prv-pro-bottom-nav a.is-active {
+    color: #0066CC;
+}
+
+/* Flow breadcrumb */
+.prv-pro-flow-path a {
+    color: #0066CC;
+}
+
+.prv-pro-flow-path strong {
+    color: var(--indor-navy, #0A2540);
+}

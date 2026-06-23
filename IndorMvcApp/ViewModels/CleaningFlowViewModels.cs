@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -46,22 +47,23 @@ public class CleaningDetailsViewModel
     public string PageTitle { get; set; } = "Cleaning Details";
 
     [Required, MaxLength(300)]
+    [ValidStreetAddress(RequireCityOrZip = true)]
     public string DireccionPropiedad { get; set; } = string.Empty;
 
-    [Required]
-    public string TipoLimpieza { get; set; } = "MoveIn";
+    [Required(ErrorMessage = "Select a cleaning type.")]
+    public string TipoLimpieza { get; set; } = "";
 
-    [Required]
-    public string TipoPropiedad { get; set; } = "Apartment";
+    [Required(ErrorMessage = "Select a property type.")]
+    public string TipoPropiedad { get; set; } = "";
 
-    [Required]
-    public string NumeroHabitaciones { get; set; } = "Two";
+    [Required(ErrorMessage = "Select the number of bedrooms.")]
+    public string NumeroHabitaciones { get; set; } = "";
 
-    [Required]
-    public string NumeroBanos { get; set; } = "Two";
+    [Required(ErrorMessage = "Select the number of bathrooms.")]
+    public string NumeroBanos { get; set; } = "";
 
-    [Required]
-    public string CondicionActual { get; set; } = "Empty";
+    [Required(ErrorMessage = "Select the current condition.")]
+    public string CondicionActual { get; set; } = "";
 
     public DateTime? FechaServicio { get; set; }
 

@@ -1,60 +1,15 @@
-@model IndorMvcApp.ViewModels.EmergencyHvacReviewViewModel
+﻿@model IndorMvcApp.ViewModels.EmergencyHvacReviewViewModel
 @{
     ViewData["Title"] = "Review - INDOR";
-    Layout = null;
-    var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
+    ViewData["WizardTitle"] = "Review";
+var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
+    ViewData["WizardBackUrl"] = Url.Action("EmergencyHvacContact", "Inspecciones", new { id = Model.SolicitudId });
+    ViewData["WizardStep"] = 3;
+    ViewData["WizardTotalSteps"] = 3;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .top-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; }
-        .page-heading { font-size: 1.45rem; font-weight: 800; line-height: 1.25; margin-bottom: 8px; }
-        .page-lead { font-size: 0.9rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .summary-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); }
-        .summary-row { display: flex; align-items: flex-start; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E5E7EB; }
-        .summary-row:last-child { border-bottom: none; }
-        .summary-row i { color: #0066CC; width: 18px; margin-top: 2px; text-align: center; }
-        .summary-label { font-size: 0.78rem; color: #94A3B8; margin-bottom: 4px; font-weight: 600; }
-        .summary-value { font-size: 0.9rem; font-weight: 600; color: #0A2540; line-height: 1.4; }
-        .summary-value.emergency { color: #DC2626; }
-        .next-card { background: #FFF; border-radius: 16px; padding: 16px; margin-bottom: 12px; border: 1px solid rgba(229,231,235,0.9); display: grid; grid-template-columns: 1fr auto; gap: 14px; align-items: center; }
-        .next-list { display: grid; gap: 10px; }
-        .next-item { display: flex; align-items: center; gap: 10px; font-size: 0.84rem; color: #334155; }
-        .next-item i { color: #0066CC; width: 16px; text-align: center; }
-        .arrival-box { background: #F8FAFC; border-radius: 12px; padding: 12px 14px; text-align: center; min-width: 110px; }
-        .arrival-box i { color: #16A34A; font-size: 1.1rem; margin-bottom: 6px; }
-        .arrival-label { font-size: 0.72rem; color: #94A3B8; font-weight: 600; }
-        .arrival-value { font-size: 1.15rem; font-weight: 800; color: #16A34A; }
-        .disclaimer-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; display: flex; gap: 10px; margin-bottom: 16px; font-size: 0.84rem; line-height: 1.45; color: #334155; }
-        .disclaimer-box i { color: #0066CC; margin-top: 2px; flex-shrink: 0; }
-        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; margin-top: 8px; }
-        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <div class="top-bar">
-        <a asp-action="EmergencyHvacContact" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-        <strong>Emergency HVAC</strong>
-        <div style="width:44px;"></div>
-    </div>
 
-    @await Html.PartialAsync("_EmergencyHvacStepper", 3)
-
-    <h1 class="page-heading">Review your request</h1>
+<h1 class="page-heading">Review your request</h1>
     <p class="page-lead">Please confirm the details below before requesting help.</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyHvacReview" method="post">
@@ -136,6 +91,3 @@
         <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-arrow-right"></i> Request emergency help</button>
         <button type="submit" class="btn-outline" name="action" value="edit"><i class="fas fa-pen"></i> Edit request</button>
     </form>
-</div>
-</body>
-</html>

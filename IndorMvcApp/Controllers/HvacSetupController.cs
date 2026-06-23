@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Controllers;
@@ -199,6 +200,12 @@ public class HvacSetupController : Controller
             return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
+        if (string.Equals(draft.EntryMode, "manual", StringComparison.OrdinalIgnoreCase) && !IsManualDraftComplete(draft))
+        {
+            TempData["HvacSetupError"] = "Please complete all required system details before continuing.";
+            return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
+        }
+
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
         return View(BuildReviewModel(propiedad, info, draft));
     }
@@ -349,7 +356,8 @@ public class HvacSetupController : Controller
             PageTitle = "Add HVAC System",
             Address = FormatAddress(propiedad, info),
             ImageUrl = ResolvePropertyImage(propiedad, info),
-            BackUrl = Url.Action("Index", "Home") ?? "/"
+            BackUrl = Url.Action("Index", "Home") ?? "/",
+            BackUsesHistory = true
         };
 
     private AddHvacSystemViewModel BuildManualModel(
@@ -428,6 +436,14 @@ public class HvacSetupController : Controller
         || !string.IsNullOrWhiteSpace(draft.EquipmentModel)
         || !string.IsNullOrWhiteSpace(draft.SerialNumber)
         || draft.InstallYear.HasValue;
+
+    private static bool IsManualDraftComplete(HvacSetupDraft draft) =>
+        !string.IsNullOrWhiteSpace(draft.SystemType)
+        && !string.IsNullOrWhiteSpace(draft.Brand)
+        && !string.IsNullOrWhiteSpace(draft.EquipmentModel)
+        && !string.IsNullOrWhiteSpace(draft.SerialNumber)
+        && EquipmentSerialNumberAttribute.IsValidEquipmentSerial(draft.SerialNumber, out _)
+        && draft.InstallYear is > 0;
 
     private HvacSetupDraft? GetDraft()
     {

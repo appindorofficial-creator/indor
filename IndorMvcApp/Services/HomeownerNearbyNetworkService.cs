@@ -16,15 +16,15 @@ public class HomeownerNearbyNetworkService(
 {
     private readonly GoogleMapsOptions _googleMaps = googleMapsOptions.Value;
     private const decimal DefaultRadiusMiles = 3m;
+    private const double NeighborRequestRadiusMiles = 15d;
 
     private static readonly IReadOnlyList<RealtorNetworkFilterChipViewModel> FilterChips =
     [
         new() { Label = "All", Value = NearbyNetworkHomeownerFilters.All, Icon = "fa-border-all" },
         new() { Label = "Listings", Value = NearbyNetworkHomeownerFilters.Homes, Icon = "fa-house" },
         new() { Label = "Services", Value = NearbyNetworkHomeownerFilters.Providers, Icon = "fa-screwdriver-wrench" },
-        new() { Label = "Promotions", Value = NearbyNetworkHomeownerFilters.Promotions, Icon = "fa-tags" },
-        new() { Label = "Emergency", Value = NearbyNetworkHomeownerFilters.Emergency, Icon = "fa-shield-halved" },
-        new() { Label = "Neighbor Requests", Value = NearbyNetworkHomeownerFilters.NeighborRequests, Icon = "fa-users" }
+        new() { Label = "Quick Help", Value = NearbyNetworkHomeownerFilters.NeighborRequests, Icon = "fa-people-carry-box" },
+        new() { Label = "Promotions", Value = NearbyNetworkHomeownerFilters.Promotions, Icon = "fa-tags" }
     ];
 
     public async Task<HomeownerNearbyNetworkViewModel> BuildAsync(
@@ -52,7 +52,7 @@ public class HomeownerNearbyNetworkService(
                 Filters = FilterChips,
                 NotificationCount = notificationCount,
                 GoogleMapsApiKey = _googleMaps.BrowserApiKey,
-                QuickActions = BuildQuickActions(null, url)
+                QuickActions = BuildQuickActions(null, activeFilter, search, url)
             };
         }
 
@@ -71,10 +71,11 @@ public class HomeownerNearbyNetworkService(
             ct);
 
         var neighborCards = await LoadNeighborRequestCardsAsync(
-            propiedad.Id,
+            userId,
+            propiedad,
+            propertyInfo,
             centerLat,
             centerLng,
-            radiusMiles,
             activeFilter,
             search,
             url,
@@ -118,6 +119,8 @@ public class HomeownerNearbyNetworkService(
             ? propertyInfo!.FormattedAddress
             : propiedad.Direccion;
 
+        var quickHelpUrls = BuildQuickHelpUrls(propiedad.Id, url);
+
         return new HomeownerNearbyNetworkViewModel
         {
             HasProperty = true,
@@ -129,7 +132,11 @@ public class HomeownerNearbyNetworkService(
             Filters = FilterChips,
             RadiusLabel = radiusLabel,
             PropertyAddress = propertyAddress,
-            QuickActions = BuildQuickActions(propiedad.Id, url),
+            PostQuickJobUrl = quickHelpUrls.PostQuickJobUrl,
+            BrowseHelpersUrl = quickHelpUrls.BrowseHelpersUrl,
+            MyQuickJobsUrl = quickHelpUrls.MyQuickJobsUrl,
+            MyRequestsUrl = quickHelpUrls.MyRequestsUrl,
+            QuickActions = BuildQuickActions(propiedad.Id, activeFilter, search, url),
             FeedCards = feedCards,
             MapPins = mapPins,
             MapProviders = mapProviders,
@@ -400,10 +407,11 @@ public class HomeownerNearbyNetworkService(
     }
 
     private async Task<List<FeedCardSortable>> LoadNeighborRequestCardsAsync(
-        int currentPropiedadId,
+        string? currentUserId,
+        Propiedad viewerPropiedad,
+        PropertyInfoViewModel? viewerPropertyInfo,
         double centerLat,
         double centerLng,
-        double radiusMiles,
         string activeFilter,
         string? search,
         IUrlHelper url,
@@ -414,17 +422,28 @@ public class HomeownerNearbyNetworkService(
             return [];
         }
 
+        var viewerCity = ResolveViewerCity(viewerPropertyInfo, viewerPropiedad);
+        var viewerState = ResolveViewerState(viewerPropertyInfo, viewerPropiedad);
+
         List<IndorNeighborRequest> requests;
         try
         {
-            requests = await db.IndorNeighborRequests
+            var query = db.IndorNeighborRequests
                 .AsNoTracking()
                 .Include(r => r.Category)
                 .Where(r => r.IsActive
                     && r.Status == NeighborRequestStatuses.Active
-                    && r.PropiedadId != currentPropiedadId)
+                    && (r.AudienceCode == NeighborRequestAudienceCodes.Neighbors
+                        || r.AudienceCode == NeighborRequestAudienceCodes.Both));
+
+            if (!string.IsNullOrWhiteSpace(currentUserId))
+            {
+                query = query.Where(r => r.UserId != currentUserId);
+            }
+
+            requests = await query
                 .OrderByDescending(r => r.PublishedUtc ?? r.CreatedUtc)
-                .Take(40)
+                .Take(60)
                 .ToListAsync(ct);
         }
         catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
@@ -442,22 +461,113 @@ public class HomeownerNearbyNetworkService(
                 .ToList();
         }
 
-        return requests
-            .Select(r =>
+        var cards = new List<FeedCardSortable>();
+        foreach (var request in requests)
+        {
+            var (requestLat, requestLng) = await ResolveRequestCoordinatesAsync(request, ct);
+            var distance = requestLat is not null && requestLng is not null
+                ? CalculateDistanceMiles(centerLat, centerLng, requestLat.Value, requestLng.Value)
+                : null;
+
+            if (!IsNeighborRequestVisible(
+                    distance,
+                    request.LocationAddress,
+                    viewerCity,
+                    viewerState))
             {
-                var distance = r.Latitude is not null && r.Longitude is not null
-                    ? CalculateDistanceMiles(centerLat, centerLng, (double)r.Latitude.Value, (double)r.Longitude.Value)
-                    : null;
-                return new { Request = r, Distance = distance };
-            })
-            .Where(x => x.Distance is null || x.Distance <= (decimal)radiusMiles)
-            .Select(x => new FeedCardSortable
+                continue;
+            }
+
+            cards.Add(new FeedCardSortable
             {
                 SortOrder = 1000,
-                CreatedUtc = x.Request.CreatedUtc,
-                Card = MapNeighborRequestToCard(x.Request, x.Distance, url)
-            })
-            .ToList();
+                CreatedUtc = request.PublishedUtc ?? request.CreatedUtc,
+                Card = MapNeighborRequestToCard(request, distance, url)
+            });
+        }
+
+        return cards;
+    }
+
+    private async Task<(double? Lat, double? Lng)> ResolveRequestCoordinatesAsync(
+        IndorNeighborRequest request,
+        CancellationToken ct)
+    {
+        if (request.Latitude is not null && request.Longitude is not null)
+        {
+            return ((double)request.Latitude.Value, (double)request.Longitude.Value);
+        }
+
+        if (string.IsNullOrWhiteSpace(request.LocationAddress))
+        {
+            return (null, null);
+        }
+
+        var coords = await addressLookup.GeocodeAddressAsync(request.LocationAddress.Trim(), ct);
+        if (coords is not { } resolved)
+        {
+            return (null, null);
+        }
+
+        return ((double)resolved.Latitude, (double)resolved.Longitude);
+    }
+
+    private static bool IsNeighborRequestVisible(
+        decimal? distanceMiles,
+        string? requestAddress,
+        string? viewerCity,
+        string? viewerState)
+    {
+        if (distanceMiles is <= (decimal)NeighborRequestRadiusMiles)
+        {
+            return true;
+        }
+
+        return IsSameCityAndState(requestAddress, viewerCity, viewerState);
+    }
+
+    private static string? ResolveViewerCity(PropertyInfoViewModel? info, Propiedad propiedad) =>
+        !string.IsNullOrWhiteSpace(info?.City) ? info!.City.Trim() : ExtractAddressPart(propiedad.Direccion, part: "city");
+
+    private static string? ResolveViewerState(PropertyInfoViewModel? info, Propiedad propiedad) =>
+        !string.IsNullOrWhiteSpace(info?.State) ? info!.State.Trim() : ExtractAddressPart(propiedad.Direccion, part: "state");
+
+    private static bool IsSameCityAndState(
+        string? requestAddress,
+        string? viewerCity,
+        string? viewerState)
+    {
+        if (string.IsNullOrWhiteSpace(requestAddress)
+            || string.IsNullOrWhiteSpace(viewerCity)
+            || string.IsNullOrWhiteSpace(viewerState))
+        {
+            return false;
+        }
+
+        var normalized = requestAddress.Trim();
+        return normalized.Contains(viewerCity, StringComparison.OrdinalIgnoreCase)
+            && normalized.Contains(viewerState, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string? ExtractAddressPart(string? address, string part)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return null;
+        }
+
+        var segments = address.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (segments.Length < 2)
+        {
+            return null;
+        }
+
+        return part switch
+        {
+            "city" when segments.Length >= 2 => segments[^2],
+            "state" => segments[^1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault(),
+            _ => null
+        };
     }
 
     private async Task<List<FeedCardSortable>> LoadProviderCardsAsync(
@@ -887,27 +997,156 @@ public class HomeownerNearbyNetworkService(
             .ToList();
     }
 
-    private static List<RealtorQuickActionViewModel> BuildQuickActions(int? propiedadId, IUrlHelper url) =>
-    [
-        new()
+    private static (string PostQuickJobUrl, string BrowseHelpersUrl, string MyQuickJobsUrl, string MyRequestsUrl) BuildQuickHelpUrls(
+        int propiedadId,
+        IUrlHelper url)
+    {
+        var postUrl = url.Action("Create", "NeighborRequest", new { propiedadId }) ?? "#";
+        var mineUrl = url.Action("Mine", "NeighborRequest", new { propiedadId }) ?? "#";
+        var browseUrl = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.NeighborRequests, null);
+        return (postUrl, browseUrl, mineUrl, mineUrl);
+    }
+
+    private static List<RealtorQuickActionViewModel> BuildQuickActions(
+        int? propiedadId,
+        string activeFilter,
+        string? searchQuery,
+        IUrlHelper url)
+    {
+        var postUrl = propiedadId is > 0
+            ? url.Action("Create", "NeighborRequest", new { propiedadId }) ?? "#"
+            : url.Action("EditarPerfil", "Perfil") + "#home";
+        var mineUrl = propiedadId is > 0
+            ? url.Action("Mine", "NeighborRequest", new { propiedadId }) ?? "#"
+            : url.Action("EditarPerfil", "Perfil") + "#home";
+        var servicesUrl = (url.Action("Index", "Home") ?? "/") + "#section-services";
+
+        return activeFilter switch
         {
-            Label = "Post a Request",
-            Subtitle = "Ask neighbors for help",
-            Icon = "fa-plus",
-            Url = propiedadId is > 0
-                ? url.Action("Create", "NeighborRequest", new { propiedadId })
-                : url.Action("EditarPerfil", "Perfil") + "#home"
-        },
-        new()
-        {
-            Label = "My Requests",
-            Subtitle = "Track & manage your requests",
-            Icon = "fa-comment-dots",
-            Url = propiedadId is > 0
-                ? url.Action("Mine", "NeighborRequest", new { propiedadId })
-                : url.Action("EditarPerfil", "Perfil") + "#home"
-        }
-    ];
+            NearbyNetworkHomeownerFilters.Homes =>
+            [
+                new()
+                {
+                    Label = "Post a Request",
+                    Subtitle = "Ask neighbors for help",
+                    Icon = "fa-plus",
+                    Url = postUrl
+                },
+                new()
+                {
+                    Label = "Certified Providers",
+                    Subtitle = "Verified professionals nearby",
+                    Icon = "fa-shield-halved",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
+                }
+            ],
+            NearbyNetworkHomeownerFilters.Providers =>
+            [
+                new()
+                {
+                    Label = "Request a Service",
+                    Subtitle = "Browse all home services",
+                    Icon = "fa-screwdriver-wrench",
+                    Url = servicesUrl
+                },
+                new()
+                {
+                    Label = "Post a Request",
+                    Subtitle = "Ask neighbors for help",
+                    Icon = "fa-plus",
+                    Url = postUrl
+                }
+            ],
+            NearbyNetworkHomeownerFilters.Promotions =>
+            [
+                new()
+                {
+                    Label = "View all nearby",
+                    Subtitle = "Listings, services, and more",
+                    Icon = "fa-border-all",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.All, searchQuery)
+                },
+                new()
+                {
+                    Label = "Post a Request",
+                    Subtitle = "Ask neighbors for help",
+                    Icon = "fa-plus",
+                    Url = postUrl
+                }
+            ],
+            NearbyNetworkHomeownerFilters.Emergency =>
+            [
+                new()
+                {
+                    Label = "Emergency Help",
+                    Subtitle = "24/7 urgent home problems",
+                    Icon = "fa-triangle-exclamation",
+                    Url = servicesUrl
+                },
+                new()
+                {
+                    Label = "View all nearby",
+                    Subtitle = "See everything in your area",
+                    Icon = "fa-border-all",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.All, searchQuery)
+                }
+            ],
+            NearbyNetworkHomeownerFilters.NeighborRequests =>
+            [
+                new()
+                {
+                    Label = "Post a Request",
+                    Subtitle = "Ask neighbors for help",
+                    Icon = "fa-plus",
+                    Url = postUrl
+                },
+                new()
+                {
+                    Label = "My Requests",
+                    Subtitle = "Track & manage your requests",
+                    Icon = "fa-comment-dots",
+                    Url = mineUrl
+                }
+            ],
+            _ =>
+            [
+                new()
+                {
+                    Label = "Certified Providers",
+                    Subtitle = "Verified professionals in your area",
+                    Icon = "fa-shield-halved",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
+                },
+                new()
+                {
+                    Label = "Homes for sale",
+                    Subtitle = "Listings near you",
+                    Icon = "fa-house",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Homes, searchQuery)
+                },
+                new()
+                {
+                    Label = "Post a Request",
+                    Subtitle = "Ask neighbors for help",
+                    Icon = "fa-plus",
+                    Url = postUrl
+                },
+                new()
+                {
+                    Label = "My Requests",
+                    Subtitle = "Track & manage your requests",
+                    Icon = "fa-comment-dots",
+                    Url = mineUrl
+                }
+            ]
+        };
+    }
+
+    private static string BuildNetworkFeedUrl(IUrlHelper url, string filter, string? searchQuery)
+    {
+        var path = url.Action("Index", "Home", new { filter, view = "feed", q = searchQuery }) ?? "/";
+        return path + "#section-home";
+    }
 
     private static string NormalizeActionUrl(string? actionUrl, IUrlHelper url)
     {
@@ -997,8 +1236,8 @@ public class HomeownerNearbyNetworkService(
     private static string NormalizeFilter(string? filter) =>
         filter?.Trim() switch
         {
-            NearbyNetworkHomeownerFilters.Homes => NearbyNetworkHomeownerFilters.Homes,
-            NearbyNetworkHomeownerFilters.Providers => NearbyNetworkHomeownerFilters.Providers,
+            NearbyNetworkHomeownerFilters.Homes or "Listings" => NearbyNetworkHomeownerFilters.Homes,
+            NearbyNetworkHomeownerFilters.Providers or "Services" => NearbyNetworkHomeownerFilters.Providers,
             NearbyNetworkHomeownerFilters.Promotions => NearbyNetworkHomeownerFilters.Promotions,
             NearbyNetworkHomeownerFilters.Emergency => NearbyNetworkHomeownerFilters.Emergency,
             "NeighborRequests" or "Neighbor Requests" => NearbyNetworkHomeownerFilters.NeighborRequests,

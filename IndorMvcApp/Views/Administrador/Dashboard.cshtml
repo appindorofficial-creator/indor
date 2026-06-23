@@ -1,80 +1,66 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorDashboardViewModel
 @{
     ViewData["Title"] = "Portfolio Dashboard";
-    Layout = null;
+    Layout = "_PropertyAdminLayout";
+    ViewBag.HideBottomNav = true;
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"] - INDOR</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/onboarding.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/property-admin-portal.css" asp-append-version="true" />
-</head>
-<body class="ob-page pa-page">
-    <div class="ob-shell">
-        <div class="ob-shell-inner">
-            <header class="pa-reg-header">
-                <a asp-controller="Home" asp-action="Index" class="ob-nav-back"><i class="fas fa-arrow-left"></i></a>
-                <a asp-controller="Home" asp-action="Index" class="pa-reg-logo"><img src="~/logoindor.png" alt="INDOR" /></a>
-                <span class="pa-reg-step-label">Dashboard</span>
-            </header>
 
-            <div class="pa-dashboard-hero">
-                <h1>Welcome, @Model.DisplayName</h1>
-                <p>@Model.PortfolioTypeLabel · @Model.PrimaryMarket</p>
-            </div>
+<div class="pa-portal-shell">
+    <header class="pa-reg-header">
+        <a asp-controller="Home" asp-action="Index" class="ob-nav-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Home" asp-action="Index" class="pa-reg-logo"><img src="~/logoindor.png" alt="INDOR" /></a>
+        <span class="pa-reg-step-label">Dashboard</span>
+    </header>
 
-            <div class="pa-stat-row">
-                <div class="pa-stat-card"><strong>@Model.PropertyCount</strong><span>Properties</span></div>
-                <div class="pa-stat-card"><strong>@Model.EnabledTools.Count</strong><span>Tools active</span></div>
-                <div class="pa-stat-card"><strong>1</strong><span>Portfolio</span></div>
-            </div>
-
-            <div class="ob-head-block">
-                <h1 style="font-size:1.1rem;">Your properties</h1>
-                <p>@Model.ManagementStyleLabel</p>
-            </div>
-
-            @if (Model.Properties.Count == 0)
-            {
-                <div class="pa-review-card">No properties yet. Add properties from your registration wizard.</div>
-            }
-            else
-            {
-                @foreach (var property in Model.Properties)
-                {
-                    <div class="pa-property-card">
-                        <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-property-thumb" />
-                        <div class="pa-property-body">
-                            <strong>@property.PropertyName</strong>
-                            <small>@property.Location</small>
-                            <div class="pa-badge-row">
-                                <span class="pa-badge pa-badge-type">@property.PropertyTypeLabel</span>
-                            </div>
-                        </div>
-                    </div>
-                }
-            }
-
-            @if (Model.EnabledTools.Count > 0)
-            {
-                <div class="ob-head-block" style="margin-top:20px;">
-                    <h1 style="font-size:1.1rem;">Operations tools</h1>
-                </div>
-                <div class="pa-review-card">
-                    @foreach (var tool in Model.EnabledTools)
-                    {
-                        <div class="pa-check-item"><i class="fas fa-circle-check"></i> @tool</div>
-                    }
-                </div>
-            }
-
-            <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-primary" style="margin-top:16px;">Open INDOR Home <i class="fas fa-chevron-right"></i></a>
-        </div>
+    <div class="pa-dashboard-hero">
+        <h1>Welcome, @Model.DisplayName</h1>
+        <p>@Model.PortfolioTypeLabel · @Model.PrimaryMarket</p>
     </div>
-</body>
-</html>
+
+    <div class="pa-stat-row">
+        <div class="pa-stat-card"><strong>@Model.PropertyCount</strong><span>Properties</span></div>
+        <div class="pa-stat-card"><strong>@Model.EnabledTools.Count</strong><span>Tools active</span></div>
+        <div class="pa-stat-card"><strong>1</strong><span>Portfolio</span></div>
+    </div>
+
+    <div class="ob-head-block">
+        <h1 style="font-size:1.1rem;">Your properties</h1>
+        <p>@Model.ManagementStyleLabel</p>
+    </div>
+
+    @if (Model.Properties.Count == 0)
+    {
+        <div class="pa-review-card">No properties yet. Add properties from your registration wizard.</div>
+    }
+    else
+    {
+        @foreach (var property in Model.Properties)
+        {
+            <div class="pa-property-card">
+                <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-property-thumb" />
+                <div class="pa-property-body">
+                    <strong>@property.PropertyName</strong>
+                    <small>@property.Location</small>
+                    <div class="pa-badge-row">
+                        <span class="pa-badge pa-badge-type">@property.PropertyTypeLabel</span>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+    @if (Model.EnabledTools.Count > 0)
+    {
+        <div class="ob-head-block" style="margin-top:20px;">
+            <h1 style="font-size:1.1rem;">Operations tools</h1>
+        </div>
+        <div class="pa-review-card">
+            @foreach (var tool in Model.EnabledTools)
+            {
+                <div class="pa-check-item"><i class="fas fa-circle-check"></i> @tool</div>
+            }
+        </div>
+    }
+
+    <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-primary" style="margin-top:16px;">Open INDOR Home <i class="fas fa-chevron-right"></i></a>
+</div>

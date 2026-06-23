@@ -23,9 +23,9 @@ public class RealtorUrgentQuotePropertyViewModel : RealtorUrgentQuoteStepViewMod
 {
     public string? SearchQuery { get; set; }
     public int? SelectedPropertyFileId { get; set; }
-    public string RequestCategory { get; set; } = RealtorUrgentQuoteCategories.NeedQuoteToday;
-    public string ServiceType { get; set; } = "HVAC";
-    public string UrgencyLevel { get; set; } = RealtorUrgentQuoteUrgencyLevels.Today;
+    public string RequestCategory { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public string UrgencyLevel { get; set; } = "";
     public List<RealtorUrgentQuotePropertyOptionViewModel> Properties { get; set; } = [];
     public IReadOnlyList<(string Value, string Label, string Icon)> CategoryOptions { get; set; } = [];
     public IReadOnlyList<string> ServiceTypes { get; set; } = [];

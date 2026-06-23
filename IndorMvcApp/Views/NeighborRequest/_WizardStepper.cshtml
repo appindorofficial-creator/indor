@@ -1,20 +1,9 @@
 @model IndorMvcApp.ViewModels.NeighborRequestWizardShellViewModel
-@if (Model.TotalSteps <= 3)
-{
-    <nav class="nr-stepper" aria-label="Progress">
-        @for (var step = 1; step <= Model.TotalSteps; step++)
-        {
-            var label = Model.StepLabels.Count >= step ? Model.StepLabels[step - 1] : $"Step {step}";
-            var isActive = step == Model.DisplayStep;
-            var isComplete = step < Model.DisplayStep;
-            <div class="nr-stepper-item@(isActive ? " is-active" : string.Empty)@(isComplete ? " is-complete" : string.Empty)">
-                <span class="nr-stepper-dot">@step</span>
-                <span class="nr-stepper-label">@label</span>
-            </div>
-            @if (step < Model.TotalSteps)
-            {
-                <span class="nr-stepper-line@(isComplete ? " is-complete" : string.Empty)" aria-hidden="true"></span>
-            }
-        }
-    </nav>
-}
+<div class="nr-progress-track" data-steps="@Model.TotalSteps" aria-hidden="true">
+    @for (var step = 1; step <= Model.TotalSteps; step++)
+    {
+        var isComplete = step < Model.DisplayStep;
+        var isActive = step == Model.DisplayStep;
+        <span class="nr-progress-seg@(isComplete ? " is-complete" : string.Empty)@(isActive ? " is-active" : string.Empty)"></span>
+    }
+</div>

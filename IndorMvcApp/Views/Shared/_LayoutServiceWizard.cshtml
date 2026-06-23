@@ -1,0 +1,28 @@
+@{
+    var pageTitle = ViewData["Title"] as string ?? "INDOR";
+    var stylesPartial = ViewData["ServiceStylesPartial"] as string ?? "_MovingStyles";
+    var extraCss = ViewData["ServiceWizardCss"] as string;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#0066CC" />
+    <title>@pageTitle</title>
+    @await Html.PartialAsync("_IndorStandalonePageHead")
+    @await Html.PartialAsync(stylesPartial)
+    @if (!string.IsNullOrWhiteSpace(extraCss))
+    {
+        <link rel="stylesheet" href="~/css/@extraCss" asp-append-version="true" />
+    }
+    @RenderSection("Head", required: false)
+</head>
+<body class="iw-wizard-page">
+    <div class="iw-wizard-shell">
+        @await Html.PartialAsync("_ServiceWizardChrome")
+        @RenderBody()
+    </div>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

@@ -1,55 +1,14 @@
-@model IndorMvcApp.ViewModels.EmergencyFloodUploadViewModel
+﻿@model IndorMvcApp.ViewModels.EmergencyFloodUploadViewModel
 @{
     ViewData["Title"] = "Flood Details - INDOR";
-    Layout = null;
+    ViewData["WizardTitle"] = "Flood Details";
+    ViewData["WizardBackUrl"] = Url.Action("EmergencyFloodSafety", "Inspecciones", new { id = Model.SolicitudId });
+    ViewData["WizardStep"] = 3;
+    ViewData["WizardTotalSteps"] = 4;
+
 }
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>@ViewData["Title"]</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; min-height: 100vh; padding: 20px 16px 32px; color: #0A2540; }
-        .page-container { max-width: 520px; margin: 0 auto; }
-        .back-btn { width: 44px; height: 44px; border-radius: 50%; background: #FFF; border: 1.5px solid #E5E7EB; display: inline-flex; align-items: center; justify-content: center; color: #0A2540; text-decoration: none; margin-bottom: 12px; }
-        .title-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
-        .title-row h1 { font-size: 1.2rem; font-weight: 800; }
-        .badge-247 { background: rgba(220,38,38,0.1); color: #DC2626; font-size: 0.68rem; font-weight: 700; padding: 4px 8px; border-radius: 999px; }
-        .page-lead { font-size: 0.88rem; color: #64748B; line-height: 1.5; margin-bottom: 18px; }
-        .page-heading { font-size: 1.35rem; font-weight: 800; margin-bottom: 8px; }
-        .address-display { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; border: 1.5px solid #E5E7EB; border-radius: 12px; background: rgba(0,102,204,0.06); font-size: 0.92rem; margin-bottom: 14px; }
-        .address-display i { color: #0066CC; margin-right: 8px; }
-        .dropzone { border: 2px dashed #0066CC; border-radius: 18px; background: rgba(0,102,204,0.04); padding: 28px 18px; text-align: center; margin-bottom: 14px; cursor: pointer; }
-        .dropzone.dragover { background: rgba(0,102,204,0.08); }
-        .dropzone i { font-size: 2rem; color: #0066CC; margin-bottom: 10px; }
-        .action-list { display: grid; gap: 10px; margin-bottom: 16px; }
-        .action-item { display: flex; align-items: center; gap: 12px; background: #FFF; border: 1px solid #E5E7EB; border-radius: 14px; padding: 14px 16px; cursor: pointer; }
-        .action-item i.icon { color: #0066CC; width: 20px; text-align: center; font-size: 1.1rem; }
-        .action-item .action-text { flex: 1; }
-        .action-item .action-text strong { display: block; font-size: 0.92rem; font-weight: 600; }
-        .action-item .chevron { color: #CBD5E1; }
-        .form-textarea { width: 100%; min-height: 100px; padding: 14px; border: 1.5px solid #E5E7EB; border-radius: 12px; font-family: 'Inter', sans-serif; font-size: 0.92rem; resize: vertical; background: #F9FAFB; }
-        .field-label { font-size: 0.92rem; font-weight: 700; margin-bottom: 10px; display: block; }
-        .tip-box { background: rgba(0,102,204,0.08); border: 1px solid rgba(0,102,204,0.15); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; font-size: 0.86rem; line-height: 1.45; }
-        .tip-box i { color: #0066CC; margin-right: 8px; }
-        .file-list { display: grid; gap: 8px; margin-bottom: 14px; }
-        .file-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #F8FAFC; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; }
-        .validation-summary { background: #FEF2F2; border: 1px solid #FECACA; color: #B91C1C; border-radius: 12px; padding: 12px 14px; font-size: 0.85rem; margin-bottom: 14px; }
-        .btn-primary, .btn-outline { width: 100%; padding: 15px 22px; border-radius: 14px; font-weight: 700; font-size: 1rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { border: none; background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; }
-        .btn-outline { margin-top: 10px; border: 1.5px solid #0066CC; background: #FFF; color: #0066CC; }
-        .hidden-input { display: none; }
-    </style>
-</head>
-<body>
-<div class="page-container">
-    <a asp-action="EmergencyFloodSafety" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+
+<a asp-action="EmergencyFloodSafety" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
 
     <div class="title-row">
         <h1>Flood Details</h1>
@@ -57,9 +16,8 @@
     </div>
     <p class="page-lead">Photos help the provider understand the situation before arrival.</p>
 
-    @await Html.PartialAsync("_EmergencyFloodStepper", 3)
-
-    <h2 class="page-heading">Add photos and a quick note</h2>
+    
+<h2 class="page-heading">Add photos and a quick note</h2>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -131,6 +89,7 @@
         <button type="submit" class="btn-outline" name="action" value="skip">Skip for now</button>
     </form>
 </div>
+@section Scripts {
 <script>
     const fileInput = document.getElementById('fileInput');
     const fileInputCamera = document.getElementById('fileInputCamera');
@@ -158,6 +117,6 @@
     dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
     dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
     dropzone.addEventListener('drop', e => { e.preventDefault(); dropzone.classList.remove('dragover'); mergeFiles(e.dataTransfer.files); });
+
 </script>
-</body>
-</html>
+}

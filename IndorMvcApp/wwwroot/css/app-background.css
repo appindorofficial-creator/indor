@@ -1,13 +1,22 @@
 /* ===== INDOR APP BACKGROUND =====
-   Solid white background across the app. */
+   Sky gradient foundation used on every screen.
+   Also pulls in the global UI layer for standalone wizard pages
+   that only reference this file. */
+
+@import url('indor-theme.css');
+@import url('indor-ui.css');
+@import url('indor-sections.css');
+@import url('indor-wizard.css');
 
 html {
-    background: #FFFFFF !important;
+    background: var(--indor-bg-sky) !important;
+    background-attachment: fixed !important;
     min-height: 100%;
 }
 
 body {
-    background-color: #FFFFFF !important;
+    background: var(--indor-bg-sky) !important;
+    background-attachment: fixed !important;
     background-image: none !important;
     position: relative !important;
     min-height: 100vh !important;
@@ -42,5 +51,5 @@ body > * {
 }
 
 .auth-futuristic-container {
-    background: #FFFFFF !important;
+    background: transparent !important;
 }

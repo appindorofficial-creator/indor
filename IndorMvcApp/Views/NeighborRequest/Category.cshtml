@@ -1,86 +1,126 @@
 @model IndorMvcApp.ViewModels.NeighborRequestCategoryStepViewModel
 @{
-    ViewData["Title"] = "Post a Request";
+    ViewData["Title"] = "Post Quick Job";
 }
 
-<div class="nr-category-hero">
-    <div class="nr-category-hero-copy">
-        <h1>What do you need help with?</h1>
-        <p>Choose a category to continue</p>
-    </div>
-    <div class="nr-category-hero-art" aria-hidden="true">
-        <img src="@Url.Content("~/images/nr-category-hero.svg")" alt="" width="108" height="86" />
-    </div>
-</div>
+<form asp-action="Category" method="post" class="nr-step-form" id="nrStep1Form">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="PropiedadId" />
 
-@if (Model.Categories.Count == 0)
-{
-    <div class="nr-empty">
-        <p>Request categories are not available yet. Run the database script and try again.</p>
-    </div>
-}
-else
-{
-    <div class="nr-category-search">
-        <i class="fas fa-magnifying-glass" aria-hidden="true"></i>
-        <input type="search"
-               id="nrCategorySearch"
-               placeholder="Search categories"
-               autocomplete="off"
-               aria-label="Search categories" />
-    </div>
+    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
-    <div class="nr-category-list" id="nrCategoryList">
-        @foreach (var category in Model.Categories)
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-briefcase"></i></span>
+            <h2>What do you need help with?</h2>
+        </header>
+
+        @if (Model.Categories.Count == 0)
         {
-            var searchText = $"{category.Label} {category.Description}".Trim().ToLowerInvariant();
-            var isSelected = Model.SelectedCategoryId == category.Id;
-            <form asp-action="Category" method="post" class="nr-category-form" data-category-search="@searchText">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
-                <input type="hidden" name="categoryId" value="@category.Id" />
-                <button type="submit" class="nr-category-btn @(isSelected ? "is-selected" : null)">
-                    <span class="nr-category-icon"><i class="fas @category.IconClass" aria-hidden="true"></i></span>
-                    <span class="nr-category-copy">
-                        <span class="nr-category-title">@category.Label</span>
-                        @if (!string.IsNullOrWhiteSpace(category.Description))
-                        {
-                            <span class="nr-category-desc">@category.Description</span>
-                        }
-                    </span>
-                    <i class="fas fa-chevron-right nr-category-chevron" aria-hidden="true"></i>
-                </button>
-            </form>
+            <div class="nr-empty">
+                <p>Categories are not available yet. Run the database script and try again.</p>
+            </div>
         }
-    </div>
+        else
+        {
+            <div class="nr-cat-grid" role="radiogroup" aria-label="Job category">
+                @foreach (var category in Model.Categories)
+                {
+                    var isSelected = Model.CategoryId == category.Id || Model.SelectedCategoryId == category.Id;
+                    <label class="nr-cat-tile @(isSelected ? "is-selected" : null)">
+                        <input type="radio" name="CategoryId" value="@category.Id" @(isSelected ? "checked" : null) required />
+                        <span class="nr-cat-tile-ill @category.IllustrationClass" aria-hidden="true"></span>
+                        <span class="nr-cat-tile-label">@category.Label</span>
+                        @if (isSelected)
+                        {
+                            <span class="nr-cat-tile-check"><i class="fas fa-check"></i></span>
+                        }
+                    </label>
+                }
+            </div>
+            <span asp-validation-for="CategoryId" class="field-validation-error"></span>
+        }
+    </section>
 
-    <p class="nr-category-empty-search hidden" id="nrCategoryEmptySearch">No categories match your search.</p>
-}
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-users"></i></span>
+            <h2>Job title</h2>
+        </header>
+        <div class="nr-field nr-field--count">
+            <input asp-for="Title" class="nr-input" placeholder="Need help moving a sofa" maxlength="60" />
+            <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
+            <span asp-validation-for="Title" class="field-validation-error"></span>
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-comment-dots"></i></span>
+            <h2>Describe the job</h2>
+        </header>
+        <div class="nr-field nr-field--count">
+            <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="Share timing, scope, or anything helpful for helpers."></textarea>
+            <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
+        </div>
+    </section>
+
+    <section class="nr-card">
+        <header class="nr-card-head">
+            <span class="nr-card-icon"><i class="fas fa-location-dot"></i></span>
+            <h2>Location</h2>
+        </header>
+        <label class="nr-location-picker">
+            <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
+            <input asp-for="LocationAddress" class="nr-location-picker-input" />
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </label>
+        <span asp-validation-for="LocationAddress" class="field-validation-error"></span>
+
+        <label class="nr-home-toggle">
+            <input type="checkbox" asp-for="UseHomeAddress" />
+            <span class="nr-home-toggle-copy">
+                <strong>Use my home address</strong>
+                <small>Helpers will see your approximate location.</small>
+            </span>
+            <i class="fas fa-circle-info" aria-hidden="true"></i>
+        </label>
+    </section>
+
+    <button type="submit" class="nr-btn-primary nr-btn-primary--sticky">Continue</button>
+</form>
 
 @section Scripts {
+    <partial name="_ValidationScriptsPartial" />
     <script>
         (function () {
-            var input = document.getElementById('nrCategorySearch');
-            var list = document.getElementById('nrCategoryList');
-            var empty = document.getElementById('nrCategoryEmptySearch');
-            if (!input || !list) return;
+            function bindCounter(selector, counterId, max) {
+                var field = document.querySelector(selector);
+                var counter = document.getElementById(counterId);
+                if (!field || !counter) return;
+                var update = function () { counter.textContent = String(field.value.length); };
+                field.addEventListener('input', update);
+                update();
+            }
+            bindCounter('[name="Title"]', 'nrTitleCount', 60);
+            bindCounter('[name="Description"]', 'nrDescCount', 300);
 
-            input.addEventListener('input', function () {
-                var term = (input.value || '').trim().toLowerCase();
-                var forms = list.querySelectorAll('.nr-category-form');
-                var visible = 0;
-
-                forms.forEach(function (form) {
-                    var haystack = form.getAttribute('data-category-search') || '';
-                    var show = !term || haystack.indexOf(term) !== -1;
-                    form.classList.toggle('is-hidden', !show);
-                    if (show) visible++;
+            document.querySelectorAll('.nr-cat-tile input').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    document.querySelectorAll('.nr-cat-tile').forEach(function (tile) {
+                        tile.classList.toggle('is-selected', tile.querySelector('input')?.checked);
+                    });
                 });
-
-                if (empty) {
-                    empty.classList.toggle('hidden', visible > 0 || !term);
-                }
             });
+
+            var homeToggle = document.querySelector('[name="UseHomeAddress"]');
+            var addressInput = document.querySelector('[name="LocationAddress"]');
+            if (homeToggle && addressInput) {
+                homeToggle.addEventListener('change', function () {
+                    addressInput.readOnly = homeToggle.checked;
+                });
+                addressInput.readOnly = homeToggle.checked;
+            }
         })();
     </script>
 }

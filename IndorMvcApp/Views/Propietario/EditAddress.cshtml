@@ -14,10 +14,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>@ViewData["Title"]</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+    @await Html.PartialAsync("_IndorStandalonePageHead")
+
     <link rel="stylesheet" href="~/css/app-back-button.css" asp-append-version="true" />
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -136,13 +134,15 @@
             display: grid;
             grid-template-columns: 1fr;
             gap: 0 14px;
+            width: 100%;
+            min-width: 0;
         }
 
         @@media (min-width: 560px) {
             .field-grid.two-col { grid-template-columns: 1fr 1fr; }
         }
 
-        .field-group { margin-bottom: 14px; }
+        .field-group { margin-bottom: 14px; min-width: 0; }
         .field-group.full { grid-column: 1 / -1; }
 
         .input-label {
@@ -153,7 +153,7 @@
             margin-bottom: 7px;
         }
 
-        .input-wrapper { position: relative; }
+        .input-wrapper { position: relative; width: 100%; min-width: 0; max-width: 100%; }
 
         .input-icon {
             position: absolute;
@@ -167,6 +167,8 @@
 
         .form-input {
             width: 100%;
+            max-width: 100%;
+            min-width: 0;
             padding: 13px 14px 13px 42px;
             border: 1.5px solid #E5E7EB;
             border-radius: 12px;
@@ -176,6 +178,17 @@
             background: #F9FAFB;
             transition: all 0.25s ease;
             outline: none;
+        }
+
+        .form-input[type="date"] {
+            display: block;
+            padding-right: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .form-input[type="date"]::-webkit-date-and-time-value {
+            text-align: left;
         }
 
         .form-input.no-icon { padding-left: 14px; }
@@ -194,6 +207,8 @@
             border-radius: 14px;
             padding: 14px;
             margin-bottom: 12px;
+            overflow: hidden;
+            max-width: 100%;
         }
 
         .device-saved-card {
@@ -397,7 +412,8 @@
                         <label class="input-label">Year built</label>
                         <div class="input-wrapper">
                             <i class="fas fa-calendar input-icon"></i>
-                            <input name="PropertyDetails.YearBuilt" class="form-input" type="number" min="1800" max="2100"
+                            <input name="PropertyDetails.YearBuilt" class="form-input property-number" type="number" min="1800" max="2100"
+                                   data-range-message="Enter a year between 1800 and 2100."
                                    placeholder="1998"
                                    value="@(Model.PropertyDetails?.YearBuilt)" />
                         </div>
@@ -406,7 +422,8 @@
                         <label class="input-label">Living area (sq ft)</label>
                         <div class="input-wrapper">
                             <i class="fas fa-ruler-combined input-icon"></i>
-                            <input name="PropertyDetails.LivingArea" class="form-input" type="number" min="0"
+                            <input name="PropertyDetails.LivingArea" class="form-input property-number" type="number" min="0"
+                                   data-range-message="Living area must be 0 or greater."
                                    placeholder="1800"
                                    value="@(Model.PropertyDetails?.LivingArea)" />
                         </div>
@@ -415,7 +432,8 @@
                         <label class="input-label">Lot size (acres)</label>
                         <div class="input-wrapper">
                             <i class="fas fa-tree input-icon"></i>
-                            <input name="PropertyDetails.LotSize" class="form-input" type="number" min="0" step="0.01"
+                            <input name="PropertyDetails.LotSize" class="form-input property-number" type="number" min="0" max="10000" step="0.01"
+                                   data-range-message="Lot size must be between 0 and 10,000 acres."
                                    placeholder="0.25"
                                    value="@(Model.PropertyDetails?.LotSize)" />
                         </div>
@@ -424,7 +442,8 @@
                         <label class="input-label">Lot size (sq ft)</label>
                         <div class="input-wrapper">
                             <i class="fas fa-draw-polygon input-icon"></i>
-                            <input name="PropertyDetails.LotSizeSqFt" class="form-input" type="number" min="0"
+                            <input name="PropertyDetails.LotSizeSqFt" class="form-input property-number" type="number" min="0"
+                                   data-range-message="Lot size must be 0 or greater."
                                    placeholder="10890"
                                    value="@(Model.PropertyDetails?.LotSizeSqFt)" />
                         </div>
@@ -528,6 +547,40 @@
 
     <script>
         let deviceIndex = @devices.Count;
+
+        function bindEnglishNumberValidation(input) {
+            const rangeMessage = input.getAttribute('data-range-message') || 'Enter a valid value.';
+            const max = input.max !== '' ? Number(input.max) : null;
+            const min = input.min !== '' ? Number(input.min) : null;
+
+            function validateRange() {
+                input.setCustomValidity('');
+                const raw = input.value.trim();
+                if (!raw) return;
+
+                const val = Number(raw);
+                if (Number.isNaN(val)) {
+                    input.setCustomValidity('Enter a valid number.');
+                    return;
+                }
+                if (min !== null && val < min) {
+                    input.setCustomValidity(rangeMessage);
+                } else if (max !== null && val > max) {
+                    input.setCustomValidity(rangeMessage);
+                }
+            }
+
+            input.addEventListener('input', validateRange);
+            input.addEventListener('invalid', () => {
+                if (input.validity.rangeUnderflow || input.validity.rangeOverflow) {
+                    input.setCustomValidity(rangeMessage);
+                } else if (input.validity.badInput || input.validity.stepMismatch) {
+                    input.setCustomValidity('Enter a valid number.');
+                }
+            });
+        }
+
+        document.querySelectorAll('.property-number').forEach(bindEnglishNumberValidation);
 
         function hideDevicesEmpty() {
             const empty = document.getElementById('devicesEmpty');

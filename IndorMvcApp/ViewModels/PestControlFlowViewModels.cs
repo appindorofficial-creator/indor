@@ -30,14 +30,14 @@ public class PestControlSetupViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Pest Control Check";
 
-    [Required]
-    public string UltimoServicio { get; set; } = "DontKnow";
+    [Required(ErrorMessage = "Select when your last pest service was.")]
+    public string UltimoServicio { get; set; } = string.Empty;
 
     public string SignosSeleccionados { get; set; } = string.Empty;
     public string AreasPreocupacion { get; set; } = string.Empty;
 
-    [Required]
-    public string MascotasONinos { get; set; } = "No";
+    [Required(ErrorMessage = "Select whether you have pets or children at home.")]
+    public string MascotasONinos { get; set; } = string.Empty;
 
     [MaxLength(300)]
     public string? Notas { get; set; }
