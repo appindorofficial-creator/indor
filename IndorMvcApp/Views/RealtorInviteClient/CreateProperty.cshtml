@@ -108,11 +108,12 @@
         </div>
     </div>
 
-    <div class="rl-invite-actions">
-        <a asp-action="Property" class="rl-invite-cancel">Back</a>
-        <button type="submit" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
-    </div>
 </form>
+
+<div class="rl-invite-actions">
+    <a asp-action="Property" class="rl-invite-cancel">Back</a>
+    <button type="submit" form="createPropertyForm" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
+</div>
 
 @section Scripts {
 <script>

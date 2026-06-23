@@ -1139,11 +1139,30 @@ button.rl-quick-action {
     gap: 12px; margin-top: 20px;
 }
 .rl-invite-actions form { margin: 0; display: contents; }
-.rl-invite-cancel {
-    border: none; background: transparent; color: #64748B;
-    font-weight: 700; font-size: .88rem; cursor: pointer; padding: 0;
+.rl-invite-cancel,
+button.rl-invite-cancel,
+a.rl-invite-cancel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex: 1;
+    max-width: 220px;
+    padding: 15px 20px;
+    border: 1.5px solid #0066CC;
+    border-radius: 14px;
+    background: #fff;
+    color: #0066CC;
+    font-weight: 700;
+    font-size: .95rem;
+    cursor: pointer;
+    text-decoration: none;
+    font-family: inherit;
+    transition: transform .12s, box-shadow .12s, background .12s;
 }
-.rl-invite-actions .ob-btn-primary { flex: 1; max-width: 220px; margin-left: auto; }
+.rl-invite-cancel:hover { background: #F0F7FF; }
+.rl-invite-cancel:active { transform: scale(.98); }
+.rl-invite-actions .ob-btn-primary { flex: 1; max-width: 220px; }
 
 /* Create New Property (invite wizard) */
 .rl-cp-card {
