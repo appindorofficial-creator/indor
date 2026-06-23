@@ -9,8 +9,15 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <section class="rl-profile-hero">
-        <h1 class="rl-profile-hero-title">Profile</h1>
-        <p class="rl-profile-hero-subtitle">Manage your realtor account, branding, and settings.</p>
+        <div class="rl-profile-hero-inner">
+            <div class="rl-profile-hero-copy">
+                <h1 class="rl-profile-hero-title">Profile</h1>
+                <p class="rl-profile-hero-subtitle">Manage your realtor account, branding, and settings.</p>
+            </div>
+            <div class="rl-profile-hero-visual" aria-hidden="true">
+                <i class="fas fa-user rl-profile-hero-icon"></i>
+            </div>
+        </div>
     </section>
 
     <section class="rl-profile-card-v2 rl-profile-card-v2--overlap">

@@ -3420,22 +3420,45 @@ button.rl-premium-link {
     pointer-events: none;
 }
 
-.rl-profile-hero-title {
+.rl-profile-hero-inner {
     position: relative;
     z-index: 1;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: center;
+}
+
+.rl-profile-hero-copy {
+    min-width: 0;
+}
+
+.rl-profile-hero-visual {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.rl-profile-hero-icon {
+    font-size: 2.75rem;
+    color: #fff;
+    opacity: 0.95;
+    line-height: 1;
+}
+
+.rl-profile-hero-title {
     margin: 0 0 8px;
-    font-size: 1.5rem;
+    font-size: 1.45rem;
     font-weight: 800;
     color: #fff;
 }
 
 .rl-profile-hero-subtitle {
-    position: relative;
-    z-index: 1;
     margin: 0;
-    font-size: .88rem;
+    font-size: .82rem;
     color: rgba(255, 255, 255, 0.95);
-    line-height: 1.45;
+    line-height: 1.4;
 }
 
 /* Profile v2 */
