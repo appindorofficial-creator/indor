@@ -3407,6 +3407,7 @@ button.rl-premium-link {
     margin: 0 -16px 0;
     padding: 20px 16px 48px;
     background: linear-gradient(155deg, #003D7A 0%, #0066CC 48%, #2563EB 100%);
+    border-radius: 28px;
     overflow: hidden;
 }
 
