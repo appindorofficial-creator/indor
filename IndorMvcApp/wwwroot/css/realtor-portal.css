@@ -1020,8 +1020,6 @@ button.rl-network-btn {
 .rl-profile-card-v2 .rl-profile-photo-badge {
     background: #0066CC;
 }
-.rl-profile-hero h1 { font-size: 1.1rem; margin: 0 0 4px; }
-.rl-profile-hero p { font-size: .78rem; color: #64748B; margin: 0 0 6px; }
 .rl-edit-profile {
     font-size: .72rem;
     font-weight: 700;
@@ -3381,9 +3379,8 @@ button.rl-premium-link {
     position: relative;
     display: block;
     margin: 0 -16px 0;
-    padding: 18px 16px 52px;
-    background:
-        linear-gradient(135deg, #0052A3 0%, #0066CC 55%, #1D7FE8 100%);
+    padding: 20px 16px 48px;
+    background: linear-gradient(155deg, #003D7A 0%, #0066CC 48%, #2563EB 100%);
     overflow: hidden;
 }
 
@@ -3392,17 +3389,16 @@ button.rl-premium-link {
     position: absolute;
     inset: 0;
     background:
-        url('/welcome-house.png') right -8px bottom -16px / 200px auto no-repeat,
-        radial-gradient(circle at 18% 85%, rgba(255, 255, 255, 0.14) 0%, transparent 42%);
-    opacity: 0.92;
+        radial-gradient(circle at 88% 16%, rgba(255, 255, 255, 0.16) 0%, transparent 44%),
+        radial-gradient(circle at 10% 92%, rgba(255, 255, 255, 0.1) 0%, transparent 38%);
     pointer-events: none;
 }
 
 .rl-profile-hero-title {
     position: relative;
     z-index: 1;
-    margin: 0 0 6px;
-    font-size: 1.35rem;
+    margin: 0 0 8px;
+    font-size: 1.5rem;
     font-weight: 800;
     color: #fff;
 }
@@ -3411,10 +3407,9 @@ button.rl-premium-link {
     position: relative;
     z-index: 1;
     margin: 0;
-    font-size: .82rem;
-    color: rgba(255, 255, 255, 0.88);
-    line-height: 1.4;
-    max-width: 280px;
+    font-size: .88rem;
+    color: rgba(255, 255, 255, 0.95);
+    line-height: 1.45;
 }
 
 /* Profile v2 */
