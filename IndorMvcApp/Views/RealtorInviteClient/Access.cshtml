@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorInviteAccessViewModel
 
-<form asp-action="Access" method="post" class="rl-invite-form">
+<form asp-action="Access" method="post" class="rl-invite-form" id="inviteAccessForm">
     @Html.AntiForgeryToken()
 
     <h2 class="rl-invite-section-title">Access &amp; Permissions</h2>
@@ -74,11 +74,12 @@
         <p>You can update permissions later from the client profile.</p>
     </div>
 
-    <div class="rl-invite-actions">
-        <a asp-action="Property" class="rl-invite-cancel">Back</a>
-        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
-    </div>
 </form>
+
+<div class="rl-invite-actions">
+    <a asp-action="Property" class="rl-invite-cancel">Back</a>
+    <button type="submit" form="inviteAccessForm" class="ob-btn ob-btn-primary">Next</button>
+</div>
 
 @section Scripts {
 <script>

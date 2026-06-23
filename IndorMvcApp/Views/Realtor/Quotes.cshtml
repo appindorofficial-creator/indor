@@ -72,7 +72,16 @@
 
 
 
-    @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
+    @{
+        IReadOnlyList<IndorMvcApp.ViewModels.RealtorStatItemViewModel> visibleQuoteStats =
+            Model.ActiveFilter == "All"
+                ? Model.Stats
+                : Model.Stats
+                    .Where(s => string.Equals(s.Label, Model.ActiveFilter, StringComparison.OrdinalIgnoreCase))
+                    .ToList();
+    }
+
+    @await Html.PartialAsync("_RealtorStatsRow", visibleQuoteStats)
 
 
 

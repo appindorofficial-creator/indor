@@ -64,7 +64,7 @@
 
     <div class="rl-invite-actions">
         <button type="submit" formaction="@Url.Action("Cancel")" formnovalidate class="rl-invite-cancel">Cancel</button>
-        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
+        <button type="submit" id="inviteNextBtn" class="ob-btn ob-btn-primary">Next</button>
     </div>
 </form>
 
@@ -73,6 +73,21 @@
     const note = document.querySelector('textarea[name="quickNote"]');
     const count = document.getElementById('noteCount');
     note?.addEventListener('input', () => { count.textContent = note.value.length; });
+
+    // Some browsers (notably iOS Safari) don't reliably submit a button that
+    // targets a form via the `form` attribute when the button lives outside it.
+    // Submit explicitly so "Next" always advances the wizard.
+    const inviteForm = document.getElementById('inviteClientForm');
+    const nextBtn = document.getElementById('inviteNextBtn');
+    nextBtn?.addEventListener('click', (e) => {
+        if (!inviteForm) { return; }
+        e.preventDefault();
+        if (typeof inviteForm.requestSubmit === 'function') {
+            inviteForm.requestSubmit();
+        } else {
+            inviteForm.submit();
+        }
+    });
     document.querySelectorAll('.rl-role-pill input').forEach(r => {
         r.addEventListener('change', () => {
             document.querySelectorAll('.rl-role-pill').forEach(p => p.classList.remove('is-selected'));

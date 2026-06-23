@@ -48,7 +48,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             Stats = stats,
             QuickActions =
             [
-                new() { Label = "Invite client", Icon = "fa-user-plus", Url = "/RealtorInviteClient/ClientInfo" },
+                new() { Label = "Invite client", Icon = "fa-user-plus", Url = "/RealtorInviteClient/New" },
                 new() { Label = "New property file", Icon = "fa-folder-plus", Url = "/RealtorPropertyFile/Details" },
                 new() { Label = "Upload inspection report", Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
                 new() { Label = "Urgent quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
@@ -152,6 +152,9 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         var shell = await BuildShellCoreAsync(realtor, ct);
         var activeFilter = NormalizeFileFilter(filter);
 
+        var hasAnyFiles = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .AnyAsync(p => p.RealtorId == realtor.Id, ct);
+
         var query = db.IndorRealtorPropertyFiles.AsNoTracking()
             .Where(p => p.RealtorId == realtor.Id);
 
@@ -200,7 +203,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             Stats = await BuildFileStatsAsync(realtor.Id, ct),
             ActiveFiles = files.Select(MapFile).ToList(),
             RecentActivity = activities.Select(MapActivity).ToList(),
-            Insights = await BuildFileInsightsAsync(realtor.Id, ct)
+            Insights = await BuildFileInsightsAsync(realtor.Id, ct),
+            HasAnyFiles = hasAnyFiles
         };
     }
 
@@ -1635,12 +1639,18 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             .CountAsync(p => p.RealtorId == realtorId && (p.FilePhase == "Repair Review" || p.RepairItemsCount > 0), ct);
         var quotes = await db.IndorRealtorPropertyFiles.AsNoTracking()
             .CountAsync(p => p.RealtorId == realtorId && p.QuotesReceivedCount > 0, ct);
+        var shared = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.FilePhase == "Transfer", ct);
+        var closed = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtorId && p.Status == "Archived", ct);
 
         return
         [
             new() { Label = "Active Files", Count = active, Icon = "fa-folder-open", ColorClass = "blue", DetailUrl = "/Realtor/Files?filter=Active" },
             new() { Label = "Inspection Uploaded", Count = inspection, Icon = "fa-cloud-arrow-up", ColorClass = "teal", DetailUrl = "/Realtor/Files?filter=Inspection" },
-            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange", DetailUrl = "/Realtor/Files?filter=Quotes" }
+            new() { Label = "Quotes In Progress", Count = quotes, Icon = "fa-file-invoice-dollar", ColorClass = "orange", DetailUrl = "/Realtor/Files?filter=Quotes" },
+            new() { Label = "Shared Packages", Count = shared, Icon = "fa-share-nodes", ColorClass = "purple", DetailUrl = "/Realtor/Files?filter=Shared" },
+            new() { Label = "Closed Files", Count = closed, Icon = "fa-box-archive", ColorClass = "red", DetailUrl = "/Realtor/Files?filter=Closed" }
         ];
     }
 
@@ -1720,7 +1730,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             {
                 Text = $"{inspectionReady} inspection report{(inspectionReady == 1 ? "" : "s")} ready for review",
                 Icon = "fa-file-circle-check",
-                ColorClass = "teal"
+                ColorClass = "teal",
+                TargetUrl = "/Realtor/Files?filter=Inspection"
             });
         }
 
@@ -1730,7 +1741,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             {
                 Text = $"{followUp} file{(followUp == 1 ? "" : "s")} need client follow-up",
                 Icon = "fa-user-clock",
-                ColorClass = "blue"
+                ColorClass = "blue",
+                TargetUrl = "/Realtor/Clients"
             });
         }
 
@@ -1740,7 +1752,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             {
                 Text = $"{needsSelection} quote request{(needsSelection == 1 ? "" : "s")} need provider selection",
                 Icon = "fa-hand-pointer",
-                ColorClass = "orange"
+                ColorClass = "orange",
+                TargetUrl = "/Realtor/Quotes?filter=Compare"
             });
         }
 
@@ -1799,7 +1812,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
                 Text = $"{pendingInvites} client{(pendingInvites == 1 ? "" : "s")} need invitations",
                 Icon = "fa-user-plus",
                 ColorClass = "blue",
-                Url = "/RealtorInviteClient/ClientInfo"
+                Url = "/RealtorInviteClient/New"
             });
         }
 

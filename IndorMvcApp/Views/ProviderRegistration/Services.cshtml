@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
 @{
-    var offerings = ViewBag.Offerings as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? [];
+    var offerings = ViewBag.Offerings as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? new List<IndorMvcApp.Models.OnboardingOption>();
     var selected = ViewBag.SelectedIds as IList<string> ?? new List<string>();
     var isHvac = ViewBag.IsHvac as bool? == true;
     var isHandyman = ViewBag.IsHandyman as bool? == true;

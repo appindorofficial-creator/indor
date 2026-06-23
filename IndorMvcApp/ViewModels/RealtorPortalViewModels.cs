@@ -24,6 +24,7 @@ public class RealtorInsightViewModel
     public string Text { get; set; } = "";
     public string Icon { get; set; } = "fa-lightbulb";
     public string ColorClass { get; set; } = "teal";
+    public string? TargetUrl { get; set; }
 }
 
 public class RealtorNextStepViewModel
@@ -100,6 +101,7 @@ public class RealtorFilesViewModel : RealtorPortalShellViewModel
     public List<RealtorFileCardViewModel> ActiveFiles { get; set; } = [];
     public List<RealtorActivityItemViewModel> RecentActivity { get; set; } = [];
     public List<RealtorInsightViewModel> Insights { get; set; } = [];
+    public bool HasAnyFiles { get; set; }
 }
 
 public class RealtorFileCardViewModel

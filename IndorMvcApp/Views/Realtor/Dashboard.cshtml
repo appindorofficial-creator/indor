@@ -144,7 +144,7 @@
     <section class="rl-dash-section" id="shared-packages">
         <div class="rl-dash-section-head">
             <h2>Shared Packages</h2>
-            <button type="button" class="rl-dash-viewall rl-soon" disabled aria-disabled="true" title="Coming soon">View all <i class="fas fa-lock rl-soon-lock"></i></button>
+            <a asp-controller="Realtor" asp-action="Files" asp-route-filter="Shared">View all <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.SharedPackages.Count == 0)
         {
@@ -183,8 +183,19 @@
                 @foreach (var insight in Model.Insights)
                 {
                     <li>
-                        <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
-                        <span>@insight.Text</span>
+                        @if (!string.IsNullOrWhiteSpace(insight.TargetUrl))
+                        {
+                            <a href="@insight.TargetUrl" class="rl-insight-link">
+                                <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
+                                <span>@insight.Text</span>
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        }
+                        else
+                        {
+                            <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
+                            <span>@insight.Text</span>
+                        }
                     </li>
                 }
             </ul>

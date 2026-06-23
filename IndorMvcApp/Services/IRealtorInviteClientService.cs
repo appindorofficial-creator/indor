@@ -11,7 +11,7 @@ public interface IRealtorInviteClientService
     string ResolveResumeAction(int currentStep);
 
     Task<RealtorInviteClientInfoViewModel> BuildClientInfoAsync(CancellationToken cancellationToken = default);
-    Task SaveClientInfoAsync(string fullName, string email, string phone, string clientRole, string quickNote, CancellationToken cancellationToken = default);
+    Task SaveClientInfoAsync(string fullName, string email, string? phone, string clientRole, string? quickNote, CancellationToken cancellationToken = default);
 
     Task<RealtorInvitePropertyViewModel> BuildPropertyAsync(string? search, CancellationToken cancellationToken = default);
     Task SavePropertyAsync(int? propertyFileId, CancellationToken cancellationToken = default);

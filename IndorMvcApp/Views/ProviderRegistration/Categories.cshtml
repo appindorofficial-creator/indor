@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
 @{
-    var categories = ViewBag.Categories as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? [];
+    var categories = ViewBag.Categories as IReadOnlyList<IndorMvcApp.Models.OnboardingOption> ?? new List<IndorMvcApp.Models.OnboardingOption>();
     var selected = ViewBag.SelectedIds as IList<string> ?? new List<string>();
     var selectedId = selected.FirstOrDefault() ?? "";
 }

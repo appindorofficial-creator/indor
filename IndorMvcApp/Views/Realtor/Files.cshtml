@@ -50,12 +50,48 @@
         </div>
     </form>
 
-    @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
+    @{
+        var statFilterMap = new Dictionary<string, string>
+        {
+            ["Active Files"] = "Active",
+            ["Inspection Uploaded"] = "Inspection",
+            ["Quotes In Progress"] = "Quotes",
+            ["Shared Packages"] = "Shared",
+            ["Closed Files"] = "Closed"
+        };
+        IReadOnlyList<IndorMvcApp.ViewModels.RealtorStatItemViewModel> visibleStats =
+            Model.ActiveFilter == "All"
+                ? Model.Stats
+                : Model.Stats
+                    .Where(s => statFilterMap.TryGetValue(s.Label, out var f) && f == Model.ActiveFilter)
+                    .ToList();
+    }
+    @await Html.PartialAsync("_RealtorStatsRow", visibleStats)
 
     <section class="rl-dash-section">
         @if (Model.ActiveFiles.Count == 0)
         {
-            <div class="rl-dash-empty">No files match your filters.</div>
+            if (!Model.HasAnyFiles)
+            {
+                <div class="rl-dash-empty">No files match your filters.</div>
+            }
+            else if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+            {
+                <div class="rl-dash-empty">No files match &ldquo;@Model.SearchQuery&rdquo;.</div>
+            }
+            else
+            {
+                var emptyMessage = Model.ActiveFilter switch
+                {
+                    "Active" => "No active files right now. Files in progress will show up here.",
+                    "Inspection" => "No files in the inspection stage yet.",
+                    "Quotes" => "No files with quotes in progress.",
+                    "Shared" => "No shared packages yet. Share a file to see it here.",
+                    "Closed" => "No closed files yet.",
+                    _ => "No files match your filters."
+                };
+                <div class="rl-dash-empty">@emptyMessage</div>
+            }
         }
         else
         {

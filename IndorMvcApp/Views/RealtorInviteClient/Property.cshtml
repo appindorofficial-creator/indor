@@ -9,7 +9,7 @@
     </div>
 </form>
 
-<form asp-action="Property" method="post" class="rl-invite-form">
+<form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -53,11 +53,12 @@
         <p>You can invite the client to an existing property or create a new shared property record.</p>
     </div>
 
-    <div class="rl-invite-actions">
-        <a asp-action="ClientInfo" class="rl-invite-cancel">Back</a>
-        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
-    </div>
 </form>
+
+<div class="rl-invite-actions">
+    <a asp-action="ClientInfo" asp-route-edit="true" class="rl-invite-cancel">Back</a>
+    <button type="submit" form="invitePropertyForm" class="ob-btn ob-btn-primary">Next</button>
+</div>
 
 @section Scripts {
 <script>

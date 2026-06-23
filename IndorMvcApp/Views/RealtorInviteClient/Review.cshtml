@@ -48,16 +48,16 @@
         <li><span>3</span> You can track activity in Clients</li>
     </ol>
 
-    <form asp-action="Send" method="post">
+    <form asp-action="Send" method="post" id="inviteSendForm">
         @Html.AntiForgeryToken()
         <label class="rl-check-row">
             <input type="checkbox" name="sendReminder48h" value="true" @(Model.SendReminder48h ? "checked" : null) />
             <span>Send a reminder if not accepted in 48 hours</span>
         </label>
-
-        <div class="rl-invite-actions">
-            <a asp-action="Access" class="rl-invite-cancel">Back</a>
-            <button type="submit" class="ob-btn ob-btn-primary">Send Invitation</button>
-        </div>
     </form>
+
+    <div class="rl-invite-actions">
+        <a asp-action="Access" class="rl-invite-cancel">Back</a>
+        <button type="submit" form="inviteSendForm" class="ob-btn ob-btn-primary">Send Invitation</button>
+    </div>
 </div>

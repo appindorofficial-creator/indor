@@ -41,13 +41,20 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public IActionResult Index() => RedirectToAction(nameof(ClientInfo));
+    public IActionResult Index() => RedirectToAction(nameof(New));
 
     [HttpGet]
-    public async Task<IActionResult> ClientInfo()
+    public async Task<IActionResult> New()
+    {
+        await inviteService.CancelDraftAsync();
+        return RedirectToAction(nameof(ClientInfo), new { edit = true });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ClientInfo(bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
-        if (draft != null && draft.CurrentStep > 1)
+        if (!edit && draft != null && draft.CurrentStep > 1)
         {
             return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
         }
@@ -58,7 +65,7 @@ public class RealtorInviteClientController(
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ClientInfo(
-        string fullName, string email, string phone, string clientRole, string quickNote)
+        string fullName, string email, string? phone, string clientRole, string? quickNote)
     {
         if (string.IsNullOrWhiteSpace(fullName))
         {

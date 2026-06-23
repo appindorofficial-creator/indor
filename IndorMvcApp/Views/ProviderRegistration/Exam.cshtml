@@ -3,7 +3,7 @@
     var examPage = (int)(ViewBag.ExamPage ?? 1);
     var totalPages = (int)(ViewBag.ExamTotalPages ?? 1);
     var questionCount = (int)(ViewBag.ExamQuestionCount ?? 20);
-    var questions = ViewBag.Questions as IReadOnlyList<IndorMvcApp.Models.ExamQuestion> ?? [];
+    var questions = ViewBag.Questions as IReadOnlyList<IndorMvcApp.Models.ExamQuestion> ?? new List<IndorMvcApp.Models.ExamQuestion>();
     var answers = ViewBag.Answers as IDictionary<int, string> ?? new Dictionary<int, string>();
     var failedScore = ViewBag.ExamFailedScore as int?;
     var passing = (int)(ViewBag.PassingPercent ?? 80);
