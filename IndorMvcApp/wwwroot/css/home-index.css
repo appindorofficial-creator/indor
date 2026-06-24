@@ -14,9 +14,9 @@
 
         /* === Top bar === */
         .top-bar {
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            background: transparent !important;
+            backdrop-filter: none !important;
+            -webkit-backdrop-filter: none !important;
             padding: 14px 16px;
             display: flex;
             align-items: center;
@@ -24,8 +24,8 @@
             position: sticky;
             top: 0;
             z-index: 50;
-            box-shadow: 0 4px 16px rgba(20, 66, 124, 0.06);
-            border-bottom: 1px solid #E7EEF7;
+            box-shadow: none !important;
+            border-bottom: none !important;
         }
 
         .hd-brand {
@@ -1718,3 +1718,12 @@
         .chat-form { display: flex; gap: 6px; }
         .chat-form input { flex: 1; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; font-family: inherit; }
         .chat-form button { background: #0066CC; color: #FFF; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
+
+/* Override global indor-ui.css top bar on Home (loads after app-background) */
+body > header.top-bar {
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+}
