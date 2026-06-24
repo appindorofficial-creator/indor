@@ -1,20 +1,53 @@
 /* Homeowner Nearby Network (Home tab) */
+:root {
+    /* Match top-bar flex row: brand + gap, bell + gap (same edges as .search-bar) */
+    --home-search-offset-brand-gap: calc(3.784rem + 4px);
+    --home-search-offset-bell-gap: calc(38px + 4px);
+}
+
 #section-home.hn-map-active {
     padding: 0 !important;
 }
 
+#section-home.hn-map-active .hv-view-switcher {
+    margin: 12px 16px 14px;
+}
+
 #section-home .hv-view-switcher {
-    margin: 12px 16px 6px;
+    margin: 12px 0 14px;
 }
 
 #section-home .hv-view-switcher-hint {
-    margin: 0 16px 12px;
+    margin: 0 0 12px;
 }
 
 #section-home .hn-network:not(.hn-network--map) {
-    max-width: 480px;
-    margin: 0 auto;
+    margin: 0;
     padding-bottom: 24px;
+}
+
+/* Align Map/Feed toggle + empty state with top search bar (logo ↔ bell) */
+#section-home:not(.hn-map-active) .hn-network-view-toggle,
+#section-home:not(.hn-map-active) .hn-network-empty,
+#section-home:not(.hn-map-active) .hn-feed-empty {
+    margin-left: var(--home-search-offset-brand-gap);
+    margin-right: var(--home-search-offset-bell-gap);
+}
+
+#section-home:not(.hn-map-active) .hn-network-view-toggle {
+    margin-top: 8px;
+}
+
+#section-home.hn-map-active .hn-network-view-toggle {
+    margin-left: calc(16px + var(--home-search-offset-brand-gap));
+    margin-right: calc(16px + var(--home-search-offset-bell-gap));
+}
+
+@media (min-width: 768px) {
+    #section-home.hn-map-active .hn-network-view-toggle {
+        margin-left: calc(24px + var(--home-search-offset-brand-gap));
+        margin-right: calc(24px + var(--home-search-offset-bell-gap));
+    }
 }
 
 .hn-network-head {
@@ -60,7 +93,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
-    margin: 0 16px 14px;
+    margin: 0 0 14px;
     padding: 4px;
     background: #F1F5F9;
     border-radius: 14px;
@@ -203,7 +236,7 @@ button.hn-quick-action { width: 100%; font: inherit; }
 
 .hn-feed-empty,
 .hn-network-empty {
-    margin: 16px;
+    margin: 0 0 16px;
     padding: 28px 16px;
     text-align: center;
     border-radius: 16px;
@@ -253,7 +286,8 @@ button.hn-quick-action { width: 100%; font: inherit; }
 }
 
 .hn-network-view-toggle--map {
-    margin: 10px 16px 8px;
+    margin-top: 10px;
+    margin-bottom: 8px;
 }
 
 .hn-filter-chips--map {

@@ -592,7 +592,7 @@
         .home-banner img { width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto; }
 
         /* === Home & Services â€” modern light layout === */
-        #section-home { padding: 16px; }
+        #section-home { padding: 0 16px 24px; }
         .home-content { display: flex; flex-direction: column; gap: 14px; }
 
         .prop-hero {

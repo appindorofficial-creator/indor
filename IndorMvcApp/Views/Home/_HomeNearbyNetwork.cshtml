@@ -36,11 +36,6 @@
 }
 
 <div class="hn-network @(isMapView ? "hn-network--map" : "")">
-    @{
-        ViewData["HomeViewSwitcherActive"] = "network";
-    }
-    @await Html.PartialAsync("_HomeViewSwitcher")
-
     @if (isMapView)
     {
         <div class="hn-network-head hn-network-head--map">
