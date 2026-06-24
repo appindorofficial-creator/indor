@@ -14,7 +14,7 @@
     <div class="rl-cp-card">
         <div class="rl-cp-field @(addressError.Length > 0 ? "is-error" : null)">
             <label>Property address <span class="rl-cp-req">*</span></label>
-            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" name="Address" value="@Model.Address" placeholder="Enter street address" autocomplete="street-address" /></div>
+            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="Enter street address" autocomplete="street-address" data-address-autocomplete data-ac-street-only="true" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" /></div>
             @if (addressError.Length > 0)
             {
                 <span class="rl-field-error">@addressError</span>
@@ -29,7 +29,7 @@
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(cityError.Length > 0 ? "is-error" : null)">
                 <label>City <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" name="City" value="@Model.City" placeholder="Enter city" autocomplete="address-level2" /></div>
+                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="Enter city" autocomplete="address-level2" data-city-autocomplete data-ac-state="cp-state" data-ac-zip="cp-postal-code" /></div>
                 @if (cityError.Length > 0)
                 {
                     <span class="rl-field-error">@cityError</span>
@@ -38,7 +38,7 @@
             <div class="rl-cp-field @(stateError.Length > 0 ? "is-error" : null)">
                 <label>State <span class="rl-cp-req">*</span></label>
                 <div class="rl-cp-input rl-cp-input--select">
-                    <select name="StateCode">
+                    <select id="cp-state" name="StateCode">
                         <option value="">Select state</option>
                         @foreach (var state in Model.States)
                         {
@@ -56,7 +56,7 @@
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(zipError.Length > 0 ? "is-error" : null)">
                 <label>ZIP code <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" name="PostalCode" value="@Model.PostalCode" placeholder="Enter ZIP code" inputmode="numeric" autocomplete="postal-code" /></div>
+                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter ZIP code" inputmode="numeric" autocomplete="postal-code" /></div>
                 @if (zipError.Length > 0)
                 {
                     <span class="rl-field-error">@zipError</span>
@@ -116,6 +116,7 @@
 </div>
 
 @section Scripts {
+@await Html.PartialAsync("_AddressAutocompleteScripts")
 <script>
     document.querySelectorAll('.rl-cp-type input').forEach(r => {
         r.addEventListener('change', () => {

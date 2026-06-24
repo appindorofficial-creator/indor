@@ -29,36 +29,103 @@
     }
 
     var geocodeTimers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+    var stateSelectSnapshots = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
 
-    function tryGeocodeLinkedZip(streetInput) {
-        if (!(window.google && google.maps && google.maps.Geocoder)) return;
+    function ensureStateSelectSnapshot(select) {
+        if (!stateSelectSnapshots || stateSelectSnapshots.has(select)) {
+            return;
+        }
 
-        var zipEl = getLinkedElement(streetInput, 'Zip');
-        var stateEl = getLinkedElement(streetInput, 'State');
-        var cityEl = getLinkedElement(streetInput, 'City');
-        if (!zipEl || !stateEl) return;
-        if (zipEl.value.trim()) return;
+        var snapshot = Array.from(select.options).map(function (opt) {
+            return { value: opt.value, label: opt.textContent };
+        });
+        stateSelectSnapshots.set(select, snapshot);
+    }
 
-        var street = streetInput.value.trim();
-        var state = stateEl.value.trim();
-        if (!street || !state) return;
+    function filterStateSelect(select, stateCode) {
+        ensureStateSelectSnapshot(select);
+        var snapshot = stateSelectSnapshots.get(select);
+        if (!snapshot) {
+            return;
+        }
 
-        var city = cityEl ? cityEl.value.trim() : '';
-        var address = street;
-        if (city) address += ', ' + city;
-        address += ', ' + state + ', USA';
+        var selected = stateCode || select.value;
+        select.innerHTML = '';
 
+        snapshot.forEach(function (item) {
+            if (!stateCode || !item.value || item.value === stateCode) {
+                var opt = document.createElement('option');
+                opt.value = item.value;
+                opt.textContent = item.label;
+                if (item.value === selected) {
+                    opt.selected = true;
+                }
+                select.appendChild(opt);
+            }
+        });
+    }
+
+    function restoreStateSelect(select) {
+        ensureStateSelectSnapshot(select);
+        var snapshot = stateSelectSnapshots.get(select);
+        if (!snapshot) {
+            return;
+        }
+
+        var current = select.value;
+        select.innerHTML = '';
+        snapshot.forEach(function (item) {
+            var opt = document.createElement('option');
+            opt.value = item.value;
+            opt.textContent = item.label;
+            if (item.value === current) {
+                opt.selected = true;
+            }
+            select.appendChild(opt);
+        });
+    }
+
+    function scheduleGeocode(sourceInput, address, zipEl) {
         if (geocodeTimers) {
-            clearTimeout(geocodeTimers.get(streetInput));
-            geocodeTimers.set(streetInput, setTimeout(function () {
-                runGeocode(streetInput, address, zipEl);
+            clearTimeout(geocodeTimers.get(sourceInput));
+            geocodeTimers.set(sourceInput, setTimeout(function () {
+                runGeocode(sourceInput, address, zipEl);
             }, 400));
         } else {
-            runGeocode(streetInput, address, zipEl);
+            runGeocode(sourceInput, address, zipEl);
         }
     }
 
-    function runGeocode(streetInput, address, zipEl) {
+    function tryGeocodeLinkedZip(sourceInput) {
+        if (!(window.google && google.maps && google.maps.Geocoder)) return;
+
+        var zipEl = getLinkedElement(sourceInput, 'Zip');
+        var stateEl = getLinkedElement(sourceInput, 'State');
+        if (!zipEl || !stateEl) return;
+        if (zipEl.value.trim()) return;
+
+        var state = stateEl.value.trim();
+        if (!state) return;
+
+        var isCitySource = sourceInput.hasAttribute('data-city-autocomplete');
+        var cityEl = isCitySource ? sourceInput : getLinkedElement(sourceInput, 'City');
+        var city = cityEl ? cityEl.value.trim() : '';
+        var street = isCitySource ? '' : sourceInput.value.trim();
+        if (!city && !street) return;
+
+        var address;
+        if (street && city) {
+            address = street + ', ' + city + ', ' + state + ', USA';
+        } else if (city) {
+            address = city + ', ' + state + ', USA';
+        } else {
+            address = street + ', ' + state + ', USA';
+        }
+
+        scheduleGeocode(sourceInput, address, zipEl);
+    }
+
+    function runGeocode(sourceInput, address, zipEl) {
         if (zipEl.value.trim()) return;
 
         var geocoder = new google.maps.Geocoder();
@@ -77,12 +144,22 @@
             zipEl.dispatchEvent(new Event('input', { bubbles: true }));
             zipEl.dispatchEvent(new Event('change', { bubbles: true }));
 
-            var cityEl = getLinkedElement(streetInput, 'City');
+            var cityEl = sourceInput.hasAttribute('data-city-autocomplete')
+                ? sourceInput
+                : getLinkedElement(sourceInput, 'City');
             if (cityEl && !cityEl.value.trim()) {
                 var city = getComponent(components, 'locality', false)
                     || getComponent(components, 'sublocality', false)
                     || getComponent(components, 'postal_town', false);
-                if (city) fillLinkedField(streetInput, 'City', city);
+                if (city) {
+                    if (sourceInput.hasAttribute('data-city-autocomplete')) {
+                        cityEl.value = city;
+                        cityEl.dispatchEvent(new Event('input', { bubbles: true }));
+                        cityEl.dispatchEvent(new Event('change', { bubbles: true }));
+                    } else {
+                        fillLinkedField(sourceInput, 'City', city);
+                    }
+                }
             }
         });
     }
@@ -97,6 +174,85 @@
             cityEl.addEventListener('change', function () { tryGeocodeLinkedZip(streetInput); });
             cityEl.addEventListener('blur', function () { tryGeocodeLinkedZip(streetInput); });
         }
+    }
+
+    function applyCityPlace(cityInput, place) {
+        if (!place) return;
+        var components = place.address_components || null;
+
+        var city = getComponent(components, 'locality', false)
+            || getComponent(components, 'sublocality', false)
+            || getComponent(components, 'postal_town', false)
+            || place.name
+            || '';
+        if (city) {
+            cityInput.value = city;
+        }
+
+        var state = getComponent(components, 'administrative_area_level_1', true);
+        var stateEl = getLinkedElement(cityInput, 'State');
+        if (stateEl && state) {
+            filterStateSelect(stateEl, state);
+            stateEl.value = state;
+            stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+
+        var zip = getComponent(components, 'postal_code', false);
+        if (zip) {
+            fillLinkedField(cityInput, 'Zip', zip);
+        } else {
+            tryGeocodeLinkedZip(cityInput);
+        }
+
+        cityInput.dispatchEvent(new Event('input', { bubbles: true }));
+        cityInput.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    function initCityAutocomplete() {
+        if (!(window.google && google.maps && google.maps.places && google.maps.places.Autocomplete)) {
+            return;
+        }
+
+        document.querySelectorAll('input[data-city-autocomplete]').forEach(function (input) {
+            if (input.dataset.cityAcInitialized === 'true') return;
+            input.dataset.cityAcInitialized = 'true';
+
+            var stateEl = getLinkedElement(input, 'State');
+            if (stateEl) {
+                ensureStateSelectSnapshot(stateEl);
+            }
+
+            var ac = new google.maps.places.Autocomplete(input, {
+                types: ['(cities)'],
+                componentRestrictions: { country: ['us'] },
+                fields: ['address_components', 'formatted_address', 'name']
+            });
+
+            ac.addListener('place_changed', function () {
+                applyCityPlace(input, ac.getPlace());
+            });
+
+            input.addEventListener('input', function () {
+                if (!input.value.trim() && stateEl) {
+                    restoreStateSelect(stateEl);
+                }
+            });
+
+            input.addEventListener('change', function () { tryGeocodeLinkedZip(input); });
+            input.addEventListener('blur', function () { tryGeocodeLinkedZip(input); });
+
+            if (stateEl) {
+                stateEl.addEventListener('change', function () { tryGeocodeLinkedZip(input); });
+            }
+
+            input.addEventListener('keydown', function (e) {
+                if (e.key !== 'Enter') return;
+                var open = document.querySelector('.pac-container');
+                if (open && open.offsetParent !== null) {
+                    e.preventDefault();
+                }
+            });
+        });
     }
 
     function applyPlace(input, place) {
@@ -117,8 +273,16 @@
                 || getComponent(components, 'sublocality', false)
                 || getComponent(components, 'postal_town', false);
             fillLinkedField(input, 'City', city);
-            fillLinkedField(input, 'State', getComponent(components, 'administrative_area_level_1', true));
+            var stateCode = getComponent(components, 'administrative_area_level_1', true);
+            fillLinkedField(input, 'State', stateCode);
             fillLinkedField(input, 'Zip', getComponent(components, 'postal_code', false));
+
+            var stateEl = getLinkedElement(input, 'State');
+            if (stateEl && stateCode) {
+                ensureStateSelectSnapshot(stateEl);
+                filterStateSelect(stateEl, stateCode);
+                stateEl.value = stateCode;
+            }
         }
 
         input.dispatchEvent(new Event('input', { bubbles: true }));
@@ -155,6 +319,8 @@
                 }
             });
         });
+
+        initCityAutocomplete();
     }
 
     // Google Maps JS calls this global callback once it finishes loading.
