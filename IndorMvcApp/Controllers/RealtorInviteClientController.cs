@@ -104,7 +104,7 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Property(string? q)
+    public async Task<IActionResult> Property(string? q, bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 2)
@@ -112,7 +112,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(ClientInfo));
         }
 
-        if (draft.CurrentStep > 2)
+        if (!edit && draft.CurrentStep > 2)
         {
             return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
         }
@@ -137,7 +137,7 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateProperty()
+    public async Task<IActionResult> CreateProperty(bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 2)
@@ -145,7 +145,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(ClientInfo));
         }
 
-        if (draft.CurrentStep > 2)
+        if (!edit && draft.CurrentStep > 2)
         {
             return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
         }
@@ -208,7 +208,7 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Access()
+    public async Task<IActionResult> Access(bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 3)
@@ -216,7 +216,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(Property));
         }
 
-        if (draft.CurrentStep > 3)
+        if (!edit && draft.CurrentStep > 3)
         {
             return RedirectToAction(nameof(Review));
         }
