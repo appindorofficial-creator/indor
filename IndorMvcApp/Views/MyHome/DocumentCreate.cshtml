@@ -5,22 +5,37 @@
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "documents";
 }
+@section Head {
+    <style>
+        .hf-validation-summary { background:#FEF2F2; border:1px solid #FECACA; color:#B91C1C; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.86rem; line-height:1.45; }
+        .hf-validation-summary ul { margin:0; padding-left:18px; }
+        .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
+    </style>
+}
 <div class="hf-title-row">
     <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">Upload document</h1>
 </div>
 <form asp-action="DocumentCreate" method="post" enctype="multipart/form-data">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
+    <div asp-validation-summary="All" class="hf-validation-summary"></div>
     <label asp-for="Category" class="hf-label">Category</label>
-    <select asp-for="Category" class="hf-select">
+    <select asp-for="Category" class="hf-select" required>
         @foreach (var cat in IndorMvcApp.Services.MyHomeDisplayService.DocumentCategories)
         {
             <option value="@cat">@cat</option>
         }
     </select>
+    <span asp-validation-for="Category" class="hf-field-error"></span>
     <label asp-for="Title" class="hf-label">Title</label>
-    <input asp-for="Title" class="hf-input" />
-    <label class="hf-label">File</label>
-    <input type="file" name="file" class="hf-input" />
+    <input asp-for="Title" class="hf-input" required maxlength="200" placeholder="Document title" />
+    <span asp-validation-for="Title" class="hf-field-error"></span>
+    <label for="documentFile" class="hf-label">File</label>
+    <input type="file" name="file" id="documentFile" class="hf-input" accept="image/*,.pdf,.doc,.docx,.heic,.heif" required />
+    @if (ViewData.ModelState["file"]?.Errors.Count > 0)
+    {
+        <span class="hf-field-error">@ViewData.ModelState["file"]!.Errors[0].ErrorMessage</span>
+    }
     <button type="submit" class="hf-btn hf-btn-primary">Save document</button>
 </form>
