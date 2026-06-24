@@ -89,7 +89,11 @@
 .rl-field select:focus,
 .rl-field textarea:focus,
 .rl-search-bar input:focus,
-.rl-search-bar input:focus-visible {
+.rl-search-bar input:focus-visible,
+.rl-cp-input input:focus,
+.rl-cp-input input:focus-visible,
+.rl-cp-input select:focus,
+.rl-cp-input select:focus-visible {
     border: none !important;
     box-shadow: none !important;
     outline: none;
@@ -1258,13 +1262,23 @@ a.rl-invite-cancel {
 .rl-cp-input select {
     flex: 1;
     min-width: 0;
-    border: 0;
+    border: 0 !important;
     outline: none;
     background: transparent;
     padding: 12px 0;
     font-size: .88rem;
     font-family: inherit;
     color: #0A2540;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+.rl-cp-input input:focus,
+.rl-cp-input input:focus-visible,
+.rl-cp-input select:focus,
+.rl-cp-input select:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 .rl-cp-input input::placeholder { color: #94A3B8; }
 .rl-cp-input--select select { cursor: pointer; color: #0A2540; }

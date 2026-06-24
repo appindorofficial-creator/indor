@@ -167,7 +167,9 @@ select.form-control,
 .rl-field input,
 .rl-field select,
 .rl-field textarea,
-.rl-search-bar input {
+.rl-search-bar input,
+.rl-cp-input input,
+.rl-cp-input select {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -196,7 +198,11 @@ select:focus {
 .rl-field select:focus,
 .rl-field textarea:focus,
 .rl-search-bar input:focus,
-.rl-search-bar input:focus-visible {
+.rl-search-bar input:focus-visible,
+.rl-cp-input input:focus,
+.rl-cp-input input:focus-visible,
+.rl-cp-input select:focus,
+.rl-cp-input select:focus-visible {
     border: none !important;
     box-shadow: none !important;
     outline: none !important;
