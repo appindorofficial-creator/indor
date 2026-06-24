@@ -784,29 +784,27 @@
         }
         else if (!hasProperties && !houseFactPreviewMode)
         {
-            <div class="empty-state">
-                <i class="fas fa-house-circle-exclamation"></i>
+            <div class="hn-network-empty">
+                <i class="fas fa-house"></i>
                 <p>You have no registered properties yet.</p>
-                <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="btn-primary-link">
-                    <i class="fas fa-plus"></i> Add property
-                </a>
+                <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">Add property</a>
             </div>
         }
         else
         {
-            <div class="empty-state">
+            <div class="hn-network-empty">
                 <i class="fas fa-file-circle-question"></i>
                 <p>No House Fact data is available yet for this property.</p>
                 @if (hasProperties && primaryProp != null)
                 {
-                    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@primaryProp.Id" asp-route-tab="attom" class="btn-primary-link">
-                        <i class="fas fa-rotate"></i> Refresh property data
+                    <a asp-controller="MyHome" asp-action="Details" asp-route-id="@primaryProp.Id" asp-route-tab="attom" class="hn-btn-primary">
+                        Refresh property data
                     </a>
                 }
                 else
                 {
-                    <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="btn-primary-link">
-                        <i class="fas fa-magnifying-glass"></i> Search an address
+                    <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">
+                        Search an address
                     </a>
                 }
             </div>
