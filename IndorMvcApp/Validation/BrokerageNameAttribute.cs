@@ -16,41 +16,41 @@ public sealed class BrokerageNameAttribute : ValidationAttribute
     private static readonly Regex OnlyDigitsAndSpacesRegex = new(@"^[\d\s]+$", RegexOptions.Compiled);
 
     public BrokerageNameAttribute()
-        : base("Enter a valid brokerage or broker name using letters.")
+        : base("{0} must include letters (e.g. Keller Williams, RE/MAX).")
     {
     }
 
-    public static bool IsValidBrokerageName(string? value, out string? errorMessage)
+    public static bool IsValidBrokerageName(string? value, out string? errorMessage, string fieldLabel = "Brokerage Name")
     {
         errorMessage = null;
         if (string.IsNullOrWhiteSpace(value))
         {
-            errorMessage = "Brokerage name is required.";
+            errorMessage = $"{fieldLabel} is required.";
             return false;
         }
 
         var name = value.Trim();
         if (name.Length < MinLength)
         {
-            errorMessage = $"Brokerage name must be at least {MinLength} characters.";
+            errorMessage = $"{fieldLabel} must be at least {MinLength} characters.";
             return false;
         }
 
         if (name.Length > MaxLength)
         {
-            errorMessage = $"Brokerage name cannot exceed {MaxLength} characters.";
+            errorMessage = $"{fieldLabel} cannot exceed {MaxLength} characters.";
             return false;
         }
 
         if (!HasLetterRegex.IsMatch(name))
         {
-            errorMessage = "Brokerage name must include letters (e.g. Keller Williams, RE/MAX).";
+            errorMessage = $"{fieldLabel} must include letters (e.g. Keller Williams, RE/MAX).";
             return false;
         }
 
         if (OnlyDigitsAndSpacesRegex.IsMatch(name))
         {
-            errorMessage = "Brokerage name cannot contain only numbers.";
+            errorMessage = $"{fieldLabel} cannot contain only numbers.";
             return false;
         }
 
@@ -59,13 +59,17 @@ public sealed class BrokerageNameAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
+        var fieldLabel = validationContext.DisplayName ?? "Brokerage Name";
         if (value is not string text || string.IsNullOrWhiteSpace(text))
         {
-            return new ValidationResult("Brokerage name is required.");
+            return new ValidationResult($"{fieldLabel} is required.");
         }
 
-        return IsValidBrokerageName(text, out var message)
+        return IsValidBrokerageName(text, out var message, fieldLabel)
             ? ValidationResult.Success
-            : new ValidationResult(message ?? ErrorMessage ?? "Enter a valid brokerage name.");
+            : new ValidationResult(message ?? string.Format(ErrorMessageString, fieldLabel));
     }
+
+    public override string FormatErrorMessage(string name) =>
+        string.Format(ErrorMessageString, name);
 }

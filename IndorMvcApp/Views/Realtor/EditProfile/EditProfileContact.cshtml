@@ -5,7 +5,7 @@
 
 <form asp-action="EditProfileContact" method="post" class="rl-ep-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary"></div>
 
     <div class="rl-ep-form-card">
         <div class="rl-ep-field-row">
@@ -49,6 +49,7 @@
                 <input asp-for="Email" type="email" placeholder="Email" autocomplete="email" />
             </label>
         </div>
+        <span asp-validation-for="Email" class="rl-field-error"></span>
 
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-globe"></i></span>
