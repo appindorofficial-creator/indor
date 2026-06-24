@@ -120,7 +120,7 @@ public class RealtorPropertyFileWizardService(
         return new RealtorPropertyFileDetailsViewModel
         {
             DisplayStep = 1,
-            Subtitle = "Start a file for pre-closing, repair review, transfer, or homeowner records.",
+            Subtitle = "Search and select a property from your account, then choose a file type.",
             SearchQuery = search,
             SelectedPropertyId = draft.SourcePropertyId,
             FilePhase = draft.FilePhase ?? RealtorPropertyFilePhases.PreClosing,

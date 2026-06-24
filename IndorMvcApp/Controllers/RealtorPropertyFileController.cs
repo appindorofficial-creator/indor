@@ -70,7 +70,7 @@ public class RealtorPropertyFileController(
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Please select a property and file type.");
+            ModelState.AddModelError(string.Empty, "Select a property from the list below to continue.");
             var vm = await wizard.BuildDetailsAsync(null);
             vm.SelectedPropertyId = sourcePropertyId;
             vm.FilePhase = filePhase;

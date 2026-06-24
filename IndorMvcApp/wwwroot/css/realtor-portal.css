@@ -1562,6 +1562,23 @@ a.rl-invite-cancel {
 .rl-done-btn { width: 100%; margin-top: 8px; }
 
 /* Create Property File wizard */
+.rl-prop-file-empty {
+    text-align: center;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px dashed #CBD5E1;
+    border-radius: 14px;
+    color: #475569;
+    font-size: .84rem;
+}
+.rl-prop-file-empty p { margin: 0 0 8px; }
+.rl-prop-file-empty-hint {
+    font-size: .78rem;
+    color: #64748B;
+    line-height: 1.45;
+    margin-bottom: 14px !important;
+}
 .rl-property-pick--card { align-items: center; }
 .rl-property-pick-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; }
 .rl-file-type-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }

@@ -5,7 +5,7 @@
 <form asp-action="Details" method="get" class="rl-search-form">
     <div class="rl-search-bar">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search for a property" />
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search existing properties by address" />
     </div>
 </form>
 
@@ -13,21 +13,43 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
-    @foreach (var prop in Model.Properties)
+    @if (Model.Properties.Count == 0)
     {
-        var selected = Model.SelectedPropertyId == prop.Id;
-        <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
-            <input type="radio" name="sourcePropertyId" value="@prop.Id" @(selected ? "checked" : null) />
-            <img src="@prop.PhotoUrl" alt="" class="rl-property-pick-thumb" />
-            <span class="rl-property-pick-body">
-                <strong>@prop.DisplayAddress</strong>
-                @if (!string.IsNullOrWhiteSpace(prop.ClientName))
-                {
-                    <span><i class="fas fa-user"></i> @prop.ClientName</span>
-                }
-            </span>
-            <i class="fas fa-chevron-right rl-card-chevron"></i>
-        </label>
+        if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+        {
+            <div class="rl-prop-file-empty">
+                <p><strong>No property found for &ldquo;@Model.SearchQuery&rdquo;.</strong></p>
+                <p class="rl-prop-file-empty-hint">This step links a file to a property already in your account. Add the property first, then search again here.</p>
+                <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">Add property</a>
+            </div>
+        }
+        else
+        {
+            <div class="rl-prop-file-empty">
+                <p><strong>No properties in your account yet.</strong></p>
+                <p class="rl-prop-file-empty-hint">Add a property first, then return here to create a file for it.</p>
+                <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">Add property</a>
+            </div>
+        }
+    }
+    else
+    {
+        @foreach (var prop in Model.Properties)
+        {
+            var selected = Model.SelectedPropertyId == prop.Id;
+            <label class="rl-property-pick rl-property-pick--card @(selected ? "is-selected" : "")">
+                <input type="radio" name="sourcePropertyId" value="@prop.Id" @(selected ? "checked" : null) />
+                <img src="@prop.PhotoUrl" alt="" class="rl-property-pick-thumb" />
+                <span class="rl-property-pick-body">
+                    <strong>@prop.DisplayAddress</strong>
+                    @if (!string.IsNullOrWhiteSpace(prop.ClientName))
+                    {
+                        <span><i class="fas fa-user"></i> @prop.ClientName</span>
+                    }
+                </span>
+                <i class="fas fa-chevron-right rl-card-chevron"></i>
+            </label>
+        }
     }
 
     <h2 class="rl-invite-section-title">File Type</h2>
