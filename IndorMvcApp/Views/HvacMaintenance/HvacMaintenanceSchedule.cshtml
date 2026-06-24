@@ -22,7 +22,7 @@
 
         <div class="field-card">
             <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
-            <input asp-for="FechaVisita" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <input asp-for="FechaVisita" type="date" id="visitDateInput" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
             <span asp-validation-for="FechaVisita" class="text-danger"></span>
         </div>
 
@@ -123,6 +123,22 @@
             });
             if (btn.getAttribute('data-type') === typeInput.value) btn.classList.add('active');
         });
+
+        var visitDateInput = document.getElementById('visitDateInput');
+        function syncVisitDateValidity() {
+            if (!visitDateInput) return;
+            // Browsers show the native min-date message in the device locale (e.g. Spanish).
+            if (visitDateInput.validity.rangeUnderflow) {
+                visitDateInput.setCustomValidity('Please select today or a future date.');
+            } else {
+                visitDateInput.setCustomValidity('');
+            }
+        }
+        if (visitDateInput) {
+            visitDateInput.addEventListener('input', syncVisitDateValidity);
+            visitDateInput.addEventListener('change', syncVisitDateValidity);
+            visitDateInput.addEventListener('invalid', syncVisitDateValidity);
+        }
     })();
 
 </script>
