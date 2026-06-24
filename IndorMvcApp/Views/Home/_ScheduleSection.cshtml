@@ -5,8 +5,6 @@
     {
         <div class="sch-alert-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
     }
-    <p class="sch-intro">Free reminders for your home tasks and maintenance.</p>
-
     <header class="sch-page-head sch-header">
         <div>
             <h2 class="sch-title">Schedule</h2>
@@ -29,8 +27,15 @@
                 <div class="sch-quick-card">
                     <a href="@quick.Url" class="sch-quick-tap" aria-label="Add @quick.Label reminder">
                         <span class="sch-quick-visual">
-                            <span class="sch-quick-icon @quick.ToneClass">
-                                <i class="fas @quick.IconClass"></i>
+                            <span class="sch-quick-icon @quick.ToneClass @(string.IsNullOrWhiteSpace(quick.ImageUrl) ? "" : "has-image")">
+                                @if (!string.IsNullOrWhiteSpace(quick.ImageUrl))
+                                {
+                                    <img src="@Url.Content($"~{quick.ImageUrl}")" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                                }
+                                else
+                                {
+                                    <i class="fas @quick.IconClass"></i>
+                                }
                             </span>
                             <span class="sch-quick-plus" aria-hidden="true"><i class="fas fa-plus"></i></span>
                         </span>
@@ -57,7 +62,7 @@
         <div class="sch-empty">
             <i class="fas fa-calendar-days"></i>
             <p>No reminders yet.</p>
-            <small>Add trash, lawn, HVAC filter, or water heater reminders using Quick add above.</small>
+            <small>Add trash, lawn, AC, filter, or gutter reminders using Quick add above.</small>
         </div>
     }
     else
@@ -87,24 +92,4 @@
             }
         </div>
     }
-
-    <a href="@Model.CreateReminderUrl" class="sch-create-card">
-        <span class="sch-create-icon"><i class="fas fa-plus"></i></span>
-        <span class="sch-create-text">
-            <strong>Create custom reminder</strong>
-            <small>Add any task or maintenance to your schedule.</small>
-        </span>
-        <i class="fas fa-chevron-right sch-create-chevron"></i>
-    </a>
-
-    <div class="sch-pro-card">
-        <span class="sch-pro-icon"><i class="fas fa-screwdriver-wrench"></i></span>
-        <div class="sch-pro-text">
-            <strong>Need a pro?</strong>
-            <p>Book a vetted service provider for bigger jobs.</p>
-        </div>
-        <button type="button" class="sch-pro-btn nav-jump" data-target="section-services">
-            Book service
-        </button>
-    </div>
 </section>

@@ -115,7 +115,7 @@
             font-weight: 600;
         }
 
-        /* Indicadores de pÃ¡gina (dots) */
+        /* Indicadores de pagina (dots) */
         .page-indicators {
             display: flex;
             gap: 10px;
@@ -223,7 +223,7 @@
             transform: scale(0.98);
         }
 
-        /* Iconos de caracterÃ­sticas */
+        /* Iconos de caracteristicas */
         .features-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
@@ -265,7 +265,7 @@
             text-align: center;
         }
 
-        /* VersiÃ³n */
+        /* Version */
         .version-text {
             font-size: 0.85rem;
             color: #9CA3AF;
@@ -564,7 +564,7 @@
             color: #0066CC;
         }
 
-        /* BotÃ³n principal estilo home */
+        /* Boton principal estilo home */
         .btn {
             width: 100%;
             padding: 16px 22px;
@@ -750,7 +750,7 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* Primary â€” Personal Profile */
+        /* Primary - Personal Profile */
         .role-card-primary {
             position: relative;
             background: #FFFFFF;
@@ -888,7 +888,7 @@
             font-size: 0.85rem;
         }
 
-        /* Secondary roles â€” 3 columns */
+        /* Secondary roles - 3 columns */
         .roles-secondary {
             display: grid;
             grid-template-columns: repeat(3, 1fr);

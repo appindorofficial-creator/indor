@@ -61,8 +61,9 @@ public static class HouseFactDisplayService
                     _ => s.Fields.Count
                 });
 
-            HouseFactOverviewBuilder.Apply(profile);
-            HouseFactOverviewBuilder.EnsureNearbyPlaceCards(profile);
+            var reconciledDetails = ReconcileDetailsForDisplay(rawJson);
+            HouseFactOverviewBuilder.Apply(profile, reconciledDetails);
+            HouseFactOverviewBuilder.EnsureNearbyPlaceCards(profile, reconciledDetails);
 
             return profile;
         }
@@ -70,9 +71,30 @@ public static class HouseFactDisplayService
         {
             profile.Sections = AttomFieldExtractor.ExtractGroups(rawJson);
             profile.FieldCount = profile.Sections.Sum(s => s.Fields.Count);
-            HouseFactOverviewBuilder.Apply(profile);
-            HouseFactOverviewBuilder.EnsureNearbyPlaceCards(profile);
+            var reconciledDetails = ReconcileDetailsForDisplay(rawJson);
+            HouseFactOverviewBuilder.Apply(profile, reconciledDetails);
+            HouseFactOverviewBuilder.EnsureNearbyPlaceCards(profile, reconciledDetails);
             return profile;
+        }
+    }
+
+    private static PropertyDetailsInfo? ReconcileDetailsForDisplay(string rawJson)
+    {
+        try
+        {
+            var info = new PropertyInfoViewModel { PropertyDetails = new PropertyDetailsInfo() };
+            if (PropertyEnrichmentMapper.ApplyPayload(info, rawJson))
+            {
+                return info.PropertyDetails;
+            }
+
+            return PropertyEnrichmentMapper.HasMeaningfulDetails(info.PropertyDetails!)
+                ? info.PropertyDetails
+                : null;
+        }
+        catch
+        {
+            return null;
         }
     }
 

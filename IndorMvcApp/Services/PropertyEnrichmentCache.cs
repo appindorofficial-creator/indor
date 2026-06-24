@@ -53,10 +53,14 @@ public sealed class PropertyEnrichmentCache
         return string.Join(
             ':',
             CacheKeyPrefix,
+            "hf-v14",
             normalized,
+            _options.UseQuickEnrichmentFirst ? "quick" : "full",
+            _options.DeferFullHouseFactResearch ? "defer-full" : "inline-full",
+            _options.UseChatGptSearchModelForResearch ? "chatgpt-search" : "mixed",
             _options.EnableWebSearch ? "web" : "chat",
             _options.UseTwoStepPipeline ? "2step" : "1step",
-            _options.Model.Trim().ToLowerInvariant());
+            (_options.ResearchModel ?? _options.Model).Trim().ToLowerInvariant());
     }
 
     internal static string NormalizeAddress(string address)

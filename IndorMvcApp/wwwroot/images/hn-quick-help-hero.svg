@@ -1,24 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 110" fill="none">
-  <!-- worker 1 - carrying box -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 156 108" fill="none" aria-hidden="true">
+  <!-- Neighbor 1 — blue shirt, short brown hair -->
   <g>
-    <path d="M8 110 C8 90 18 82 30 82 C42 82 52 90 52 110 Z" fill="#2E8BFF"/>
-    <circle cx="30" cy="68" r="13" fill="#F1C8A6"/>
-    <path d="M20 66 C20 56 40 56 40 66 C40 60 34 52 30 52 C24 52 20 58 20 66 Z" fill="#5B4636"/>
-    <rect x="38" y="58" width="22" height="18" rx="3" fill="#C4A574" stroke="#A8844E" stroke-width="1"/>
+    <path d="M2 108 C2 90 14 80 30 80 C46 80 58 90 58 108 Z" fill="#2E8BFF"/>
+    <circle cx="30" cy="62" r="15" fill="#F5C9A8"/>
+    <path d="M16 62 C16 46 44 46 44 62 C44 54 37 44 30 44 C22 44 16 52 16 62 Z" fill="#6B4E3D"/>
+    <circle cx="24.5" cy="61" r="2" fill="#1E293B"/>
+    <circle cx="35.5" cy="61" r="2" fill="#1E293B"/>
+    <path d="M24 68 Q30 73 36 68" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
   </g>
-  <!-- worker 2 - rake -->
+  <!-- Neighbor 2 — green shirt, long brown hair -->
   <g>
-    <path d="M54 110 C54 92 64 84 76 84 C88 84 98 92 98 110 Z" fill="#5FC489"/>
-    <circle cx="76" cy="70" r="12" fill="#F1C8A6"/>
-    <path d="M66 68 C66 58 86 58 86 68 C86 62 80 54 76 54 C70 54 66 60 66 68 Z" fill="#3A2E26"/>
-    <line x1="92" y1="56" x2="104" y2="88" stroke="#8B5E3C" stroke-width="3" stroke-linecap="round"/>
-    <path d="M100 86 L112 90 L108 96 L96 92 Z" fill="#94A3B8"/>
+    <path d="M48 108 C48 90 60 80 76 80 C92 80 104 90 104 108 Z" fill="#5FC489"/>
+    <circle cx="76" cy="62" r="15" fill="#F5C9A8"/>
+    <path d="M62 64 C62 44 90 44 90 64 L88 82 C88 86 64 86 64 82 Z" fill="#6B4E3D"/>
+    <path d="M62 58 C62 46 90 46 90 58 C90 50 84 42 76 42 C68 42 62 50 62 58 Z" fill="#6B4E3D"/>
+    <circle cx="70.5" cy="61" r="2" fill="#1E293B"/>
+    <circle cx="81.5" cy="61" r="2" fill="#1E293B"/>
+    <path d="M70 68 Q76 73 82 68" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
   </g>
-  <!-- worker 3 - trash bag -->
+  <!-- Neighbor 3 — purple shirt, dark hair -->
   <g>
-    <path d="M100 110 C100 90 112 82 124 82 C136 82 148 90 148 110 Z" fill="#A78BFA"/>
-    <circle cx="124" cy="68" r="13" fill="#F1C8A6"/>
-    <path d="M114 66 C114 56 134 56 134 66 C134 60 128 52 124 52 C118 52 114 58 114 66 Z" fill="#5B4636"/>
-    <path d="M118 72 C118 64 130 64 130 72 L128 88 C128 92 120 92 120 88 Z" fill="#334155"/>
+    <path d="M94 108 C94 90 106 80 122 80 C138 80 150 90 150 108 Z" fill="#A78BFA"/>
+    <circle cx="122" cy="62" r="15" fill="#F5C9A8"/>
+    <path d="M108 64 C108 44 136 44 136 64 L134 82 C134 86 110 86 110 82 Z" fill="#2D3748"/>
+    <path d="M108 58 C108 46 136 46 136 58 C136 50 130 42 122 42 C114 42 108 50 108 58 Z" fill="#2D3748"/>
+    <circle cx="116.5" cy="61" r="2" fill="#1E293B"/>
+    <circle cx="127.5" cy="61" r="2" fill="#1E293B"/>
+    <path d="M116 68 Q122 73 128 68" stroke="#1E293B" stroke-width="1.8" stroke-linecap="round" fill="none"/>
   </g>
 </svg>

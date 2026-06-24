@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace IndorMvcApp.ViewModels;
 
@@ -45,6 +46,13 @@ public class PropertyInfoViewModel
     public long? AttomPropertyId { get; set; }
     public string? AttomRawJson { get; set; }
     public string? DataSource { get; set; }
+
+    [JsonIgnore]
+    public string? EnrichmentError { get; set; }
+
+    /// <summary>When true, runs the full 13-section House Fact web research (used by background jobs).</summary>
+    [JsonIgnore]
+    public bool RequestFullHouseFactResearch { get; set; }
 
     public PropertyMaintenancePlanViewModel? MaintenanceRecommendations { get; set; }
 }

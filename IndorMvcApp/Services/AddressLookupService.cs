@@ -32,17 +32,28 @@ public partial class AddressLookupService : IAddressLookupService
 
     public async Task<PropertyInfoViewModel?> GetPropertyInfoAsync(string address)
     {
+        var propertyInfo = await GetGeocodedPropertyAsync(address);
+        if (propertyInfo == null)
+        {
+            return null;
+        }
+
+        await TryEnrichPropertyAsync(propertyInfo);
+        return propertyInfo;
+    }
+
+    public async Task<PropertyInfoViewModel?> GetGeocodedPropertyAsync(
+        string address,
+        CancellationToken cancellationToken = default)
+    {
         try
         {
-            var propertyInfo = await BuildGeocodedPropertyAsync(address);
-
+            var propertyInfo = await BuildGeocodedPropertyAsync(address, cancellationToken);
             if (propertyInfo == null)
             {
                 _logger.LogWarning("No geocoder results for address: {Address}", address);
-                return null;
             }
 
-            await TryEnrichPropertyAsync(propertyInfo);
             return propertyInfo;
         }
         catch (JsonException jsonEx)
@@ -84,24 +95,61 @@ public partial class AddressLookupService : IAddressLookupService
         string address,
         CancellationToken cancellationToken = default)
     {
-        PropertyInfoViewModel? propertyInfo = null;
-
-        if (LooksLikeUsAddress(address))
+        foreach (var attempt in BuildGeocodeAttempts(address))
         {
-            propertyInfo = await TryBuildFromCensusAsync(address, cancellationToken);
+            PropertyInfoViewModel? propertyInfo = null;
+
+            if (LooksLikeUsAddress(attempt))
+            {
+                propertyInfo = await TryBuildFromCensusAsync(attempt, cancellationToken);
+            }
+
+            if (propertyInfo == null)
+            {
+                propertyInfo = await TryBuildFromNominatimAsync(attempt, cancellationToken);
+            }
+
+            if (propertyInfo == null && !LooksLikeUsAddress(attempt))
+            {
+                propertyInfo = await TryBuildFromCensusAsync(attempt, cancellationToken);
+            }
+
+            if (propertyInfo != null)
+            {
+                return propertyInfo;
+            }
         }
 
-        if (propertyInfo == null)
+        return null;
+    }
+
+    private static IEnumerable<string> BuildGeocodeAttempts(string address)
+    {
+        var trimmed = address.Trim();
+        if (string.IsNullOrWhiteSpace(trimmed))
         {
-            propertyInfo = await TryBuildFromNominatimAsync(address, cancellationToken);
+            yield break;
         }
 
-        if (propertyInfo == null && !LooksLikeUsAddress(address))
+        yield return trimmed;
+
+        var normalized = Regex.Replace(trimmed, @"\s+", " ", RegexOptions.CultureInvariant);
+        if (!string.Equals(normalized, trimmed, StringComparison.Ordinal))
         {
-            propertyInfo = await TryBuildFromCensusAsync(address, cancellationToken);
+            yield return normalized;
         }
 
-        return propertyInfo;
+        // "123 Main St, City, ST 12345" -> "123 Main St, City, ST"
+        var withoutZip = Regex.Replace(
+            normalized,
+            @",?\s*\d{5}(?:-\d{4})?\s*$",
+            string.Empty,
+            RegexOptions.CultureInvariant).Trim().TrimEnd(',');
+        if (!string.IsNullOrWhiteSpace(withoutZip)
+            && !string.Equals(withoutZip, normalized, StringComparison.OrdinalIgnoreCase))
+        {
+            yield return withoutZip;
+        }
     }
 
     private async Task<PropertyInfoViewModel?> TryBuildFromCensusAsync(string address, CancellationToken cancellationToken = default)
@@ -163,7 +211,8 @@ public partial class AddressLookupService : IAddressLookupService
         }
 
         var type = result.Type?.ToLowerInvariant();
-        return type is "house" or "residential" or "building" or "apartments" or "terrace" or "address";
+        return type is "house" or "residential" or "building" or "apartments" or "terrace" or "address"
+            or "place" or "suburb" or "neighbourhood" or "neighborhood" or "road";
     }
 
     [GeneratedRegex(@"\b[A-Z]{2}\s+\d{5}(?:-\d{4})?\b", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
@@ -265,6 +314,7 @@ public partial class AddressLookupService : IAddressLookupService
         var city = ToTitleCase(components?.City);
         var state = components?.State;
         var postalCode = components?.Zip;
+        var county = ResolveCounty(city, state, postalCode);
 
         var propertyInfo = new PropertyInfoViewModel
         {
@@ -274,6 +324,7 @@ public partial class AddressLookupService : IAddressLookupService
             Street = street,
             HouseNumber = houseNumber,
             City = city,
+            County = county,
             State = state,
             PostalCode = postalCode,
             Country = "United States",
@@ -282,7 +333,7 @@ public partial class AddressLookupService : IAddressLookupService
             UtilityProviders = await GetAssignedUtilityProvidersAsync(
                 formattedAddress,
                 city,
-                county: null,
+                county,
                 state,
                 postalCode,
                 latitude,
@@ -341,29 +392,57 @@ public partial class AddressLookupService : IAddressLookupService
         return 0;
     }
 
+    private static string? ResolveCounty(string? city, string? state, string? postalCode)
+    {
+        if (!string.Equals(state?.Trim(), "NC", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(state?.Trim(), "North Carolina", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var cityNorm = city?.Trim().ToLowerInvariant() ?? string.Empty;
+        var zip = postalCode?.Trim() ?? string.Empty;
+
+        if (cityNorm.Contains("charlotte", StringComparison.Ordinal)
+            || cityNorm.Contains("mint hill", StringComparison.Ordinal)
+            || zip.StartsWith("282", StringComparison.Ordinal)
+            || zip.StartsWith("28105", StringComparison.Ordinal))
+        {
+            return "Mecklenburg";
+        }
+
+        return null;
+    }
+
+    public async Task EnrichPropertyInfoAsync(PropertyInfoViewModel propertyInfo) =>
+        await TryEnrichPropertyAsync(propertyInfo);
+
     private async Task TryEnrichPropertyAsync(PropertyInfoViewModel propertyInfo)
     {
         try
         {
             var result = await _propertyEnrichmentService.EnrichPropertyAsync(propertyInfo);
+            propertyInfo.EnrichmentError = result.ErrorMessage;
+
             if (!string.IsNullOrWhiteSpace(result.RawJson))
             {
                 propertyInfo.AttomRawJson = result.RawJson;
             }
 
-            if (result.Success)
+            if (result.Success || !string.IsNullOrWhiteSpace(propertyInfo.AttomRawJson))
             {
-                propertyInfo.DataSource = result.DataSource;
+                propertyInfo.DataSource = result.DataSource ?? propertyInfo.DataSource ?? "AI-estimated";
                 propertyInfo.AttomPropertyId = result.ExternalPropertyId ?? propertyInfo.AttomPropertyId;
                 _logger.LogInformation(
-                    "Property enrichment succeeded for {Address} (Source={Source})",
+                    "Property enrichment succeeded for {Address} (Source={Source}, Partial={Partial})",
                     propertyInfo.FormattedAddress,
-                    result.DataSource);
+                    propertyInfo.DataSource,
+                    !result.Success);
                 return;
             }
 
             propertyInfo.DataSource ??= "Estimated";
-            _logger.LogInformation(
+            _logger.LogWarning(
                 "Property enrichment skipped for {Address}: {Reason}",
                 propertyInfo.FormattedAddress,
                 result.ErrorMessage ?? "Unknown");

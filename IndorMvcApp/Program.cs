@@ -2,12 +2,15 @@ using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using IndorMvcApp;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Configuration.ApplyOpenAiFromAppsettingsJson(builder.Environment);
 
 // Add services to the container.
 var mvcBuilder = builder.Services.AddControllersWithViews()
@@ -24,7 +27,7 @@ builder.Services.AddSingleton<PropertyEnrichmentCache>();
 
 builder.Services.AddRequestTimeouts(options =>
 {
-    options.AddPolicy("OnboardingAddressLookup", TimeSpan.FromMinutes(3));
+    options.AddPolicy("OnboardingAddressLookup", TimeSpan.FromMinutes(6));
     options.AddPolicy("OnboardingPropertyDetails", TimeSpan.FromMinutes(2));
 });
 
@@ -81,13 +84,14 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 // Register HttpClient and property services
 builder.Services.Configure<OpenAiPropertyOptions>(builder.Configuration.GetSection(OpenAiPropertyOptions.SectionName));
+builder.Services.AddSingleton<IPostConfigureOptions<OpenAiPropertyOptions>, OpenAiPropertyOptionsPostConfigure>();
 builder.Services.Configure<GoogleMapsOptions>(builder.Configuration.GetSection(GoogleMapsOptions.SectionName));
 builder.Services.Configure<AttomOptions>(builder.Configuration.GetSection(AttomOptions.SectionName));
 builder.Services.AddHttpClient<OpenAiPropertyEnrichmentService>((sp, client) =>
 {
     var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<OpenAiPropertyOptions>>().Value;
     client.BaseAddress = new Uri(options.BaseUrl.TrimEnd('/') + "/");
-    client.Timeout = TimeSpan.FromSeconds(180);
+    client.Timeout = TimeSpan.FromMinutes(5);
 });
 builder.Services.AddHttpClient<IAttomPropertyService, AttomPropertyService>((sp, client) =>
 {
@@ -96,7 +100,10 @@ builder.Services.AddHttpClient<IAttomPropertyService, AttomPropertyService>((sp,
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 builder.Services.AddScoped<IPropertyEnrichmentService, CompositePropertyEnrichmentService>();
-builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>();
+builder.Services.AddHttpClient<IAddressLookupService, AddressLookupService>(client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(60);
+});
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProviderRegistrationService, ProviderRegistrationService>();
 builder.Services.AddScoped<IProviderProDataService, ProviderProDataService>();
@@ -172,6 +179,16 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
+
+var openAiStartup = app.Configuration.GetSection(OpenAiPropertyOptions.SectionName);
+var openAiEnabled = openAiStartup.GetValue<bool>("Enabled");
+var openAiKeyPresent = !string.IsNullOrWhiteSpace(openAiStartup["ApiKey"]);
+app.Logger.LogInformation(
+    "OpenAI property enrichment: Enabled={Enabled}, ApiKeyConfigured={KeyConfigured}, ResearchModel={Model}, QuickFirst={QuickFirst}",
+    openAiEnabled,
+    openAiKeyPresent,
+    openAiStartup["ResearchModel"] ?? openAiStartup["Model"] ?? "default",
+    openAiStartup.GetValue("UseQuickEnrichmentFirst", true));
 
 var showDetailedErrors = builder.Configuration.GetValue("Diagnostics:ShowDetailedErrors", true);
 

@@ -12,10 +12,6 @@
 {
     <div class="pf-alert pf-alert--success"><i class="fas fa-circle-check"></i> @okMessage</div>
 }
-@if (TempData["PerfilError"] is string errorMessage)
-{
-    <div class="pf-alert pf-alert--error"><i class="fas fa-circle-exclamation"></i> @errorMessage</div>
-}
 
 <form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form">
     @Html.AntiForgeryToken()

@@ -154,11 +154,13 @@ public class OpenAiMaintenanceRecommendationService(
 
         {
 
-            model = options.Value.Model,
+            model = string.IsNullOrWhiteSpace(options.Value.FastModel)
+                ? options.Value.Model
+                : options.Value.FastModel,
 
             temperature = 0.35,
 
-            max_tokens = 4096,
+            max_tokens = options.Value.MaintenanceMaxTokens,
 
             response_format = new { type = "json_object" },
 

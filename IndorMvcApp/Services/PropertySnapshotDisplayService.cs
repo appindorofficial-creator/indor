@@ -123,43 +123,43 @@ public static class PropertySnapshotDisplayService
     {
         var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-        foreach (var section in profile.Sections.Where(s => s.CategoryKey == "snapshot" || IsSnapshotSection(s)))
-        {
-            foreach (var field in section.Fields)
-            {
-                AddField(map, field.Label, field.Value);
-            }
-        }
-
         if (info != null)
         {
-            AddField(map, "Address", info.FormattedAddress);
-            AddField(map, "City / State / ZIP", BuildCityStateZip(info));
-            AddField(map, "County", info.County ?? info.PropertyDetails?.CountyName);
-            AddField(map, "Latitude", info.Latitude != 0 ? info.Latitude.ToString(CultureInfo.InvariantCulture) : null);
-            AddField(map, "Longitude", info.Longitude != 0 ? info.Longitude.ToString(CultureInfo.InvariantCulture) : null);
+            UpsertField(map, "Address", info.FormattedAddress);
+            UpsertField(map, "City / State / ZIP", BuildCityStateZip(info));
+            UpsertField(map, "County", info.County ?? info.PropertyDetails?.CountyName);
+            UpsertField(map, "Latitude", info.Latitude != 0 ? info.Latitude.ToString(CultureInfo.InvariantCulture) : null);
+            UpsertField(map, "Longitude", info.Longitude != 0 ? info.Longitude.ToString(CultureInfo.InvariantCulture) : null);
         }
 
         var d = info?.PropertyDetails;
         if (d != null)
         {
-            AddField(map, "Property Type", d.PropertyType);
-            AddField(map, "Year Built", d.YearBuilt?.ToString());
-            AddField(map, "Bedrooms", d.Bedrooms?.ToString());
-            AddField(map, "Bathrooms", d.Bathrooms?.ToString("0.#"));
-            AddField(map, "Interior Living Area", d.LivingArea.HasValue ? $"{d.LivingArea:N0} sq ft" : null);
-            AddField(map, "Lot Size", FormatLot(d.LotSize, d.LotSizeSqFt));
-            AddField(map, "Stories", d.Floors?.ToString());
-            AddField(map, "Parcel ID / APN", d.ParcelNumber);
-            AddField(map, "Zoning", d.Zoning);
-            AddField(map, "Subdivision", d.Subdivision);
-            AddField(map, "Neighborhood", d.Subdivision);
-            AddField(map, "Garage / Parking", d.GarageType ?? d.ParkingType);
-            AddField(map, "Exterior Material", d.WallType);
-            AddField(map, "Foundation", d.BasementSqFt.HasValue ? $"Basement {d.BasementSqFt:N0} sq ft" : null);
+            UpsertField(map, "Property Type", d.PropertyType);
+            UpsertField(map, "Year Built", d.YearBuilt?.ToString());
+            UpsertField(map, "Bedrooms", d.Bedrooms?.ToString());
+            UpsertField(map, "Bathrooms", d.Bathrooms?.ToString("0.#"));
+            UpsertField(map, "Interior Living Area", d.LivingArea.HasValue ? $"{d.LivingArea:N0} sq ft" : null);
+            UpsertField(map, "Lot Size", FormatLot(d.LotSize, d.LotSizeSqFt));
+            UpsertField(map, "Stories", d.Floors?.ToString());
+            UpsertField(map, "Parcel ID / APN", d.ParcelNumber);
+            UpsertField(map, "Zoning", d.Zoning);
+            UpsertField(map, "Subdivision", d.Subdivision);
+            UpsertField(map, "Neighborhood", d.Subdivision);
+            UpsertField(map, "Garage / Parking", d.GarageType ?? d.ParkingType);
+            UpsertField(map, "Exterior Material", d.WallType);
+            UpsertField(map, "Foundation", d.BasementSqFt.HasValue ? $"Basement {d.BasementSqFt:N0} sq ft" : null);
         }
 
-        AddField(map, "Address", propiedad.Direccion);
+        foreach (var section in profile.Sections.Where(s => s.CategoryKey == "snapshot" || IsSnapshotSection(s)))
+        {
+            foreach (var field in section.Fields)
+            {
+                MergeSectionField(map, field.Label, field.Value);
+            }
+        }
+
+        UpsertField(map, "Address", propiedad.Direccion);
         return map;
     }
 
@@ -308,7 +308,7 @@ public static class PropertySnapshotDisplayService
         foreach (var key in keys)
         {
             var match = map.FirstOrDefault(kv => kv.Key.Contains(key, StringComparison.OrdinalIgnoreCase));
-            if (!string.IsNullOrWhiteSpace(match.Value) && !IsEmptyValue(match.Value))
+            if (!string.IsNullOrWhiteSpace(match.Value) && !IsPlaceholderValue(match.Value))
             {
                 return match.Value.Trim();
             }
@@ -317,10 +317,24 @@ public static class PropertySnapshotDisplayService
         return null;
     }
 
-    private static void AddField(Dictionary<string, string> map, string label, string? value)
+    private static void AddField(Dictionary<string, string> map, string label, string? value) =>
+        UpsertField(map, label, value);
+
+    private static void UpsertField(Dictionary<string, string> map, string label, string? value)
     {
-        if (string.IsNullOrWhiteSpace(value) || IsEmptyValue(value)) return;
-        map[label] = value.Trim();
+        if (IsPlaceholderValue(value)) return;
+        map[label] = value!.Trim();
+    }
+
+    private static void MergeSectionField(Dictionary<string, string> map, string label, string? value)
+    {
+        if (IsPlaceholderValue(value)) return;
+        if (map.TryGetValue(label, out var existing) && !IsPlaceholderValue(existing))
+        {
+            return;
+        }
+
+        map[label] = value!.Trim();
     }
 
     private static bool IsSnapshotSection(AttomFieldGroupViewModel section)
@@ -374,11 +388,11 @@ public static class PropertySnapshotDisplayService
     }
 
     private static int CountPopulatedFields(Dictionary<string, string> map) =>
-        map.Count(kv => !IsEstimatedValue(kv.Value) && !IsEmptyValue(kv.Value));
+        map.Count(kv => !IsEstimatedValue(kv.Value) && !IsPlaceholderValue(kv.Value));
 
     private static string FormatDisplayValue(string? raw, string label)
     {
-        if (string.IsNullOrWhiteSpace(raw) || IsEmptyValue(raw))
+        if (IsPlaceholderValue(raw))
         {
             return label.Contains("Year", StringComparison.OrdinalIgnoreCase) ? "Not confirmed" : "—";
         }
@@ -463,6 +477,19 @@ public static class PropertySnapshotDisplayService
             || value.Contains("verification", StringComparison.OrdinalIgnoreCase)
             || value.Contains("not publicly confirmed", StringComparison.OrdinalIgnoreCase)
             || value.Contains("not confirmed", StringComparison.OrdinalIgnoreCase));
+
+    private static bool IsPlaceholderValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || IsEmptyValue(value))
+        {
+            return true;
+        }
+
+        return value.Contains("not publicly confirmed", StringComparison.OrdinalIgnoreCase)
+            || value.Contains("needs verification", StringComparison.OrdinalIgnoreCase)
+            || value.Contains("not confirmed", StringComparison.OrdinalIgnoreCase)
+            || value.Contains("unknown", StringComparison.OrdinalIgnoreCase);
+    }
 
     private static bool IsEmptyValue(string value) =>
         value.Trim() is "—" or "-" or "N/A" or "n/a";

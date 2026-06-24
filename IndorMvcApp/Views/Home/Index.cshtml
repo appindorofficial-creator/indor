@@ -60,12 +60,12 @@
         : IsInvestorInspection(name) ? "InvestorDetails"
         : "PurchaseDetails";
 
-    string Money(decimal? v) => v.HasValue ? string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C0}", v.Value) : "â€”";
-    string Num(decimal? v) => v.HasValue ? v.Value.ToString("0.##") : "â€”";
-    string Date(DateTime? d) => d.HasValue ? d.Value.ToString("dd/MM/yyyy") : "â€”";
+    string Money(decimal? v) => v.HasValue ? string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "{0:C0}", v.Value) : "\u2014";
+    string Num(decimal? v) => v.HasValue ? v.Value.ToString("0.##") : "\u2014";
+    string Date(DateTime? d) => d.HasValue ? d.Value.ToString("dd/MM/yyyy") : "\u2014";
     string PricePerSqft(decimal? value, int? sqft)
     {
-        if (!value.HasValue || !sqft.HasValue || sqft.Value <= 0) return "â€”";
+        if (!value.HasValue || !sqft.HasValue || sqft.Value <= 0) return "\u2014";
         return string.Format(System.Globalization.CultureInfo.GetCultureInfo("en-US"), "${0:N0}/sqft", value.Value / sqft.Value);
     }
     string[] SplitIncludes(string? incluye) => string.IsNullOrWhiteSpace(incluye)
@@ -218,7 +218,7 @@
     {
         var groups = new List<(string Title, string Icon, List<(string Label, string Value)> Items)>();
 
-        // 1. DirecciÃ³n
+        // 1. Direccion
         var dir = new List<(string, string)>();
         if (!string.IsNullOrWhiteSpace(info.FormattedAddress)) dir.Add(("Full address", info.FormattedAddress));
         if (!string.IsNullOrWhiteSpace(info.HouseNumber)) dir.Add(("House number", info.HouseNumber!));
@@ -274,7 +274,7 @@
         return groups;
     }
 
-    // === Servicios pÃºblicos como tarjetas ricas ===
+    // === Servicios publicos como tarjetas ricas ===
     List<UtilityCard> BuildUtilities(UtilityProvidersInfo? u)
     {
         var list = new List<UtilityCard>();
@@ -293,7 +293,7 @@
         return list;
     }
 
-    // === GarantÃ­as / seguros como tarjetas ricas ===
+    // === Garantias / seguros como tarjetas ricas ===
     List<WarrantyCard> BuildWarranties(HomeWarrantiesInfo? w)
     {
         var list = new List<WarrantyCard>();
@@ -333,7 +333,7 @@
 
         if (info != null)
         {
-            // Slides agrupados de informaciÃ³n bÃ¡sica
+            // Slides agrupados de informacion basica
             foreach (var g in BuildGroupsFor(info))
             {
                 slides.Add(new SlideEntry
@@ -345,7 +345,7 @@
                 });
             }
 
-            // Slide de servicios pÃºblicos (asociados a esta direcciÃ³n)
+            // Slide de servicios publicos (asociados a esta direccion)
             var utils = BuildUtilities(info.UtilityProviders);
             if (utils.Count > 0)
             {
@@ -358,7 +358,7 @@
                 });
             }
 
-            // Slide de seguros / garantÃ­as (asociados a esta direcciÃ³n)
+            // Slide de seguros / garantias (asociados a esta direccion)
             var warrs = BuildWarranties(info.HomeWarranties);
             if (warrs.Count > 0)
             {
@@ -379,7 +379,7 @@
                 Kind = "group",
                 Title = "Address",
                 Icon = "fa-map-marker-alt",
-                Items = new List<(string, string)> { ("Address", p.Direccion ?? "â€”") }
+                Items = new List<(string, string)> { ("Address", p.Direccion ?? "\u2014") }
             });
         }
 
@@ -387,7 +387,7 @@
     }
     var hasProperties = propertiesGrouped.Count > 0;
 
-    // === InformaciÃ³n bÃ¡sica de la propiedad principal (la mÃ¡s reciente) ===
+    // === Informacion basica de la propiedad principal (la mas reciente) ===
     PropertyInfoViewModel? primaryInfo = null;
     IndorMvcApp.Models.Propiedad? primaryProp = null;
     if (hasProperties)
@@ -400,7 +400,7 @@
         }
     }
 
-    // === Notificaciones derivadas de las garantÃ­as guardadas ===
+    // === Notificaciones derivadas de las garantias guardadas ===
     var notificaciones = new List<NotificationItem>();
     foreach (var entry in propertiesGrouped)
     {
@@ -447,7 +447,7 @@
                 Icon = icon,
                 Severity = severity,
                 Title = title,
-                Subtitle = $"{(string.IsNullOrWhiteSpace(w.WarrantyProvider) ? "Warranty" : w.WarrantyProvider)} Â· {p.Direccion}",
+                Subtitle = $"{(string.IsNullOrWhiteSpace(w.WarrantyProvider) ? "Warranty" : w.WarrantyProvider)} \u00B7 {p.Direccion}",
                 Date = end,
                 DaysRemaining = days
             });
@@ -1322,7 +1322,7 @@
             });
         });
 
-        // === Si llegamos con ?section=more, abrir directamente esa secciÃ³n ===
+        // === Si llegamos con ?section=more, abrir directamente esa seccion ===
         (function () {
             const params = new URLSearchParams(window.location.search);
             const sec = params.get('section');

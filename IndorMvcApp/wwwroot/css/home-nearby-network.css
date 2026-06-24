@@ -954,16 +954,19 @@ button.hn-quick-action { width: 100%; font: inherit; }
 }
 
 .hn-quick-help-art {
-    width: 100px;
+    width: 112px;
     flex-shrink: 0;
     align-self: flex-end;
-    margin-bottom: -4px;
+    margin-right: -2px;
+    margin-bottom: -6px;
+    pointer-events: none;
 }
 
 .hn-quick-help-art img {
     width: 100%;
     height: auto;
     display: block;
+    object-fit: contain;
 }
 
 .hn-mgmt-cards {

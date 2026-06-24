@@ -29,8 +29,20 @@ public class CompositePropertyEnrichmentService : IPropertyEnrichmentService
         if (_openAiOptions.Enabled && !string.IsNullOrWhiteSpace(_openAiOptions.ApiKey))
         {
             var aiResult = await _openAiService.EnrichPropertyAsync(propertyInfo);
-            if (aiResult.Success)
+            if (aiResult.Success
+                || !string.IsNullOrWhiteSpace(aiResult.RawJson)
+                || PropertyEnrichmentMapper.HasMeaningfulDetails(propertyInfo.PropertyDetails ?? new PropertyDetailsInfo()))
             {
+                if (!aiResult.Success)
+                {
+                    _logger.LogInformation(
+                        "OpenAI enrichment partial for {Address}: {Reason}",
+                        propertyInfo.FormattedAddress,
+                        aiResult.ErrorMessage ?? "Unknown");
+                    aiResult.Success = true;
+                    aiResult.ErrorMessage = null;
+                }
+
                 return aiResult;
             }
 

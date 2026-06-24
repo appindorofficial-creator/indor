@@ -52,6 +52,7 @@
 .ob-pw-toggle{position:absolute;right:12px;top:50%;transform:translateY(-50%);border:none;background:none;color:#94A3B8;cursor:pointer;padding:6px;font-size:1rem}
 .ob-phone-row{display:flex;gap:10px}
 .ob-phone-code{display:flex;align-items:center;gap:6px;padding:0 12px;border:1.5px solid #E2E8F0;border-radius:12px;background:#fff;font-size:.88rem;font-weight:600;color:#334155;white-space:nowrap;min-width:72px;justify-content:center}
+.ob-phone-code-label{font-size:.72rem;font-weight:800;letter-spacing:.04em;color:#0066CC}
 .ob-phone-row .ob-control{flex:1}
 
 .ob-pw-rules{margin:10px 0 4px;padding:0;list-style:none;display:flex;flex-direction:column;gap:6px}

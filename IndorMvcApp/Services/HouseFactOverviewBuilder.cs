@@ -54,20 +54,22 @@ public static class HouseFactOverviewBuilder
         ("more", "More", "fa-ellipsis")
     ];
 
-    public static void Apply(HouseFactProfileViewModel profile)
+    public static void Apply(HouseFactProfileViewModel profile, PropertyDetailsInfo? reconciledDetails = null)
     {
         if (!profile.HasData || profile.Sections.Count == 0)
         {
-            EnsureNearbyPlaceCards(profile);
+            EnsureNearbyPlaceCards(profile, reconciledDetails);
             return;
         }
 
         AssignCategories(profile.Sections);
 
-        var location = BuildLocationSummary(profile);
-        var yearBuilt = FormatStat(FindFieldValue(profile.Sections, "year built", "yearbuilt", "year built (public)"));
-        var livingArea = FormatStat(FindFieldValue(profile.Sections, "sq ft", "living area", "square feet", "sqft", "living sq"));
-        var confidence = FormatConfidence(profile.Confidence);
+        var location = BuildLocationSummary(profile, reconciledDetails);
+        var yearBuilt = FormatStat(FindFieldValue(profile.Sections, "year built", "yearbuilt", "year built (public)"))
+            ?? FormatYearBuilt(reconciledDetails?.YearBuilt);
+        var livingArea = FormatStat(FindFieldValue(profile.Sections, "sq ft", "living area", "square feet", "sqft", "living sq"))
+            ?? FormatLivingArea(reconciledDetails?.LivingArea);
+        var confidence = FormatConfidence(profile.Confidence, reconciledDetails);
 
         profile.Overview = new HouseFactOverviewViewModel
         {
@@ -94,7 +96,7 @@ public static class HouseFactOverviewBuilder
         AppendNearbyPlaceCards(profile.Overview.CategoryCards, profile);
     }
 
-    public static void EnsureNearbyPlaceCards(HouseFactProfileViewModel profile)
+    public static void EnsureNearbyPlaceCards(HouseFactProfileViewModel profile, PropertyDetailsInfo? reconciledDetails = null)
     {
         profile.Overview ??= new HouseFactOverviewViewModel();
 
@@ -110,10 +112,12 @@ public static class HouseFactOverviewBuilder
 
         if (profile.Overview.HeroStats.Count == 0 && profile.Sections.Count > 0)
         {
-            var location = BuildLocationSummary(profile);
-            var yearBuilt = FormatStat(FindFieldValue(profile.Sections, "year built", "yearbuilt", "year built (public)"));
-            var livingArea = FormatStat(FindFieldValue(profile.Sections, "sq ft", "living area", "square feet", "sqft", "living sq"));
-            var confidence = FormatConfidence(profile.Confidence);
+            var location = BuildLocationSummary(profile, reconciledDetails);
+            var yearBuilt = FormatStat(FindFieldValue(profile.Sections, "year built", "yearbuilt", "year built (public)"))
+                ?? FormatYearBuilt(reconciledDetails?.YearBuilt);
+            var livingArea = FormatStat(FindFieldValue(profile.Sections, "sq ft", "living area", "square feet", "sqft", "living sq"))
+                ?? FormatLivingArea(reconciledDetails?.LivingArea);
+            var confidence = FormatConfidence(profile.Confidence, reconciledDetails);
 
             profile.Overview.LocationSummary = location;
             profile.Overview.YearBuiltDisplay = yearBuilt;
@@ -130,12 +134,14 @@ public static class HouseFactOverviewBuilder
         else if (profile.Overview.HeroStats.Count == 0)
         {
             var location = ExtractCityCountyFromAddress(profile.FormattedAddress) ?? "— Not confirmed";
+            var yearBuilt = FormatYearBuilt(reconciledDetails?.YearBuilt) ?? "— Not confirmed";
+            var livingArea = FormatLivingArea(reconciledDetails?.LivingArea) ?? "— Not confirmed";
             profile.Overview.HeroStats =
             [
                 new HouseFactHeroStatViewModel { Label = "Location", Value = location, Icon = "fa-location-dot" },
-                new HouseFactHeroStatViewModel { Label = "Year built", Value = "— Not confirmed", Icon = "fa-calendar" },
-                new HouseFactHeroStatViewModel { Label = "Living area", Value = "— Not confirmed", Icon = "fa-ruler-combined" },
-                new HouseFactHeroStatViewModel { Label = "Confidence", Value = "Needs verification", Icon = "fa-shield-check" }
+                new HouseFactHeroStatViewModel { Label = "Year built", Value = yearBuilt, Icon = "fa-calendar" },
+                new HouseFactHeroStatViewModel { Label = "Living area", Value = livingArea, Icon = "fa-ruler-combined" },
+                new HouseFactHeroStatViewModel { Label = "Confidence", Value = FormatConfidence(profile.Confidence, reconciledDetails), Icon = "fa-shield-check" }
             ];
         }
 
@@ -349,10 +355,11 @@ public static class HouseFactOverviewBuilder
         return null;
     }
 
-    private static string? BuildLocationSummary(HouseFactProfileViewModel profile)
+    private static string? BuildLocationSummary(HouseFactProfileViewModel profile, PropertyDetailsInfo? reconciledDetails = null)
     {
         var city = FindFieldValue(profile.Sections, "city", "citystatezip", "city / state");
-        var county = FindFieldValue(profile.Sections, "county", "jurisdiction");
+        var county = FindFieldValue(profile.Sections, "county", "jurisdiction")
+            ?? reconciledDetails?.CountyName;
 
         if (!string.IsNullOrWhiteSpace(city) && !string.IsNullOrWhiteSpace(county))
         {
@@ -422,6 +429,22 @@ public static class HouseFactOverviewBuilder
 
     private static string FormatStat(string? value) =>
         string.IsNullOrWhiteSpace(value) || IsUnconfirmed(value) ? "— Not confirmed" : value;
+
+    private static string? FormatYearBuilt(int? yearBuilt) =>
+        yearBuilt is > 1800 and < 2100 ? yearBuilt.Value.ToString() : null;
+
+    private static string? FormatLivingArea(int? livingArea) =>
+        livingArea is > 0 ? $"{livingArea:N0} sq ft" : null;
+
+    private static string FormatConfidence(string? confidence, PropertyDetailsInfo? reconciledDetails)
+    {
+        if (reconciledDetails?.LivingArea is > 0 && reconciledDetails.YearBuilt is > 0)
+        {
+            return "Confirmed from listing data";
+        }
+
+        return FormatConfidence(confidence);
+    }
 
     private static string FormatConfidence(string? confidence)
     {

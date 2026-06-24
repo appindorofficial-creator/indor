@@ -41,13 +41,24 @@ public static class HouseFactPrompt
         * Quote the source (e.g. "Zillow", "Redfin", "Mecklenburg County assessor") next to each numeric fact in its section.
         Do NOT fabricate parcel IDs, MLS numbers, or sale dates — only include values found in search results.
         ALWAYS populate propertyDetails with every beds, baths, sq ft, lot size, year built, tax, and value figure CONFIRMED in search results — mirror them verbatim from listing/assessor pages into propertyDetails.
+        Listing sites (Zillow, Redfin, Realtor.com) are valid sources for beds, baths, sq ft, year built, and list price — include those numbers in propertyDetails when found.
         If Zillow/Redfin/county records disagree on value, include the primary source value in propertyDetails and note the conflict in sources.
+
+        SOURCE PRIORITY — when sources disagree on numeric facts:
+        1. Redfin or Zillow (highest priority for livingArea — interior/living/habitable sq ft, NOT total built or gross sq ft)
+        2. Realtor.com, Homes.com
+        3. County assessor / tax records (lowest priority for livingArea — assessor "heated sq ft" is often partial)
+        4. For livingArea: copy interior/living sq ft from the Redfin or Zillow listing for this exact address.
+        5. When listing living sq ft differs from assessor/tax-record sq ft, use the listing value in propertyDetails.livingArea and set livingAreaSource to that site name.
+        6. Use ONLY living/interior sq ft, not total built area, "finished above grade", or assessor heated sqft.
+        7. Add livingAreaSource, bedroomsSource, bathroomsSource, estimatedValueSource strings in propertyDetails when known.
         """;
 
     public const string WebSearchUserPrefix = """
         Use web search NOW for this exact property address before answering.
 
-        Search these sources (at minimum): Zillow, Redfin, Realtor.com, Mecklenburg County assessor/GIS, Canopy MLS references.
+        Search these sources (at minimum): Redfin, Zillow, Realtor.com, county assessor/GIS, MLS references.
+        REQUIRED: Find the Redfin or Zillow listing for this exact street address. Copy beds, baths, interior/living sq ft, year built, and estimate exactly as displayed into propertyDetails.
 
         PROPERTY ADDRESS:
 
@@ -304,7 +315,7 @@ public static class HouseFactPrompt
         - sources (array of objects with sourceName, link, informationFound, conflicts for section 13)
         - formattedAddress (string)
         - confidence ("confirmed", "estimated", or "needs verification" — use "estimated" when most fields are inferred from address/market knowledge)
-        - propertyDetails (object — REQUIRED summary for the app; include ALL numeric fields found in research: yearBuilt, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, floors, roomsTotal, lastSalePrice, lastSaleDate, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces, plus string fields propertyType, parcelNumber, zoning, subdivision, countyName, heatingType, coolingType, wallType, parkingType, garageType, architecturalStyle, assignedSchool)
+        - propertyDetails (object — REQUIRED summary for the app; include ALL numeric fields found in research: yearBuilt, livingArea, lotSizeAcres, lotSizeSqFt, bedrooms, bathrooms, bathsFull, floors, roomsTotal, lastSalePrice, lastSaleDate, estimatedValue, estimatedValueYear, annualTaxAmount, taxYear, basementSqFt, fireplaces, plus string fields propertyType, parcelNumber, zoning, subdivision, countyName, heatingType, coolingType, wallType, parkingType, garageType, architecturalStyle, assignedSchool, livingAreaSource, bedroomsSource, bathroomsSource, estimatedValueSource — use Zillow values when available)
         - utilityProviders (object with electric, water, gas, sewer, internet[], cableTv[] — each provider: name, serviceType, phone, website, coverage, notes)
         """;
 

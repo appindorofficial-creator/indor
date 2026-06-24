@@ -158,6 +158,9 @@
 #section-schedule .sch-quick-plus {
     background: var(--indor-grad-primary) !important;
     box-shadow: var(--indor-shadow-primary) !important;
+    top: -7px !important;
+    left: -7px !important;
+    right: auto !important;
 }
 
 #section-schedule .sch-reminder-card,
@@ -191,7 +194,8 @@
 
 #section-schedule .sch-empty {
     border-radius: var(--indor-radius-card) !important;
-    background: linear-gradient(180deg, #F8FAFC 0%, #fff 100%) !important;
+    background: #F8FAFC !important;
+    border: 1.5px dashed #CBD5E1 !important;
 }
 
 /* ── MY HOME DASHBOARD (tab) ─────────────────────────────── */

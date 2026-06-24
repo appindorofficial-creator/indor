@@ -198,6 +198,7 @@ public static class ScheduleDisplayService
         {
             Label = "Trash",
             IconClass = "fa-trash-can",
+            ImageUrl = ResolveQuickAddImage(trashMicro?.ImagenUrl, "/trash-bin-trash.png"),
             ToneClass = "sch-tone-trash",
             Url = trashMicro != null
                 ? url.Action("TrashService", "Trash", new { id = trashMicro.Id }) ?? servicesUrl
@@ -208,6 +209,7 @@ public static class ScheduleDisplayService
         {
             Label = "Lawn",
             IconClass = "fa-seedling",
+            ImageUrl = ResolveQuickAddImage(lawnMicro?.ImagenUrl),
             ToneClass = "sch-tone-lawn",
             Url = lawnMicro != null
                 ? url.Action("LawnService", "Lawn", new { id = lawnMicro.Id }) ?? servicesUrl
@@ -226,6 +228,7 @@ public static class ScheduleDisplayService
         {
             Label = "Filter",
             IconClass = "fa-filter",
+            ImageUrl = ResolveQuickAddImage(safeAirMicro?.ImagenUrl, "/images/filter-plan-icon.svg"),
             ToneClass = "sch-tone-filter",
             Url = propiedadId.HasValue
                 ? ResolveFilterQuickAddUrl(propiedadId.Value, hvacRecords, url)
@@ -253,6 +256,18 @@ public static class ScheduleDisplayService
         });
 
         return items;
+    }
+
+    private static string? ResolveQuickAddImage(string? primary, string? fallback = null)
+    {
+        if (!string.IsNullOrWhiteSpace(primary))
+        {
+            return primary.StartsWith('/') || primary.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                ? primary
+                : $"/{primary.TrimStart('/')}";
+        }
+
+        return fallback;
     }
 
     private static string ResolveMaintenanceQuickAddUrl(

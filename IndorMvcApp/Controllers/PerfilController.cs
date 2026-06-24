@@ -20,7 +20,7 @@ public class PerfilController : Controller
     private const string MembershipSessionKey = "MembershipSignup";
     private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxProfilePhotoBytes = 10_000_000;
-    private static readonly TimeSpan AddressLookupTimeout = TimeSpan.FromMinutes(3);
+    private static readonly TimeSpan AddressLookupTimeout = TimeSpan.FromMinutes(6);
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
@@ -152,7 +152,7 @@ public class PerfilController : Controller
         try
         {
             var propertyInfo = await _homeownerPropertyService
-                .EnrichAddressAsync(model)
+                .EnrichAddressAsync(model, requestFullHouseFactResearch: existing?.Id > 0)
                 .WaitAsync(AddressLookupTimeout, HttpContext.RequestAborted);
 
             if (propertyInfo == null)
@@ -167,8 +167,32 @@ public class PerfilController : Controller
                 existing?.Id,
                 HttpContext.RequestAborted);
 
-            TempData["PerfilOk"] = "Your home profile is ready — House Facts and maintenance insights are now available.";
-            TempData["HomeEnriched"] = true;
+            var hasAiData = !string.IsNullOrWhiteSpace(propertyInfo.AttomRawJson)
+                && (PropertyEnrichmentMapper.HasMeaningfulDetails(propertyInfo.PropertyDetails ?? new PropertyDetailsInfo())
+                    || HouseFactDisplayService.BuildProfile(propertyInfo.AttomRawJson).FieldCount > 0);
+
+            if (hasAiData)
+            {
+                TempData["PerfilOk"] = "Your home profile is ready — House Facts and maintenance insights are now available.";
+                TempData["HomeEnriched"] = true;
+            }
+            else if (!string.IsNullOrWhiteSpace(propertyInfo.AttomRawJson))
+            {
+                TempData["PerfilOk"] =
+                    "Address saved with basic property details. Full House Facts are loading — refresh in about 1 minute.";
+            }
+            else
+            {
+                _logger.LogWarning(
+                    "Home enrichment incomplete for {Address}. RawJson={HasJson}, Error={Error}",
+                    model.BuildLookupAddress(),
+                    !string.IsNullOrWhiteSpace(propertyInfo.AttomRawJson),
+                    propertyInfo.EnrichmentError ?? "none");
+
+                TempData["PerfilOk"] =
+                    "Address saved! AI is researching your home now — refresh this page in about 1 minute to see House Facts.";
+            }
+
             return Redirect(Url.Action(nameof(EditarPerfil), new { id = propiedadId }) + "#home");
         }
         catch (TimeoutException)
@@ -696,11 +720,8 @@ public class PerfilController : Controller
             model.HomeAddress);
         model.HouseFactFieldCount = model.HouseFactPreview.FieldCount;
         model.HasEnrichedData = !string.IsNullOrWhiteSpace(propiedad.AttomRawJson)
-            && (info?.PropertyDetails?.YearBuilt is > 0
-                || info?.PropertyDetails?.Bedrooms is > 0
-                || info?.PropertyDetails?.LivingArea is > 0
-                || info?.PropertyDetails?.Bathrooms is > 0
-                || model.HouseFactFieldCount > 5);
+            && (PropertyEnrichmentMapper.HasMeaningfulDetails(info?.PropertyDetails ?? new PropertyDetailsInfo())
+                || model.HouseFactFieldCount > 3);
 
         model.AddressForm = new AddPropertyViewModel
         {

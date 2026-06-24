@@ -210,7 +210,9 @@ public class OpenAiInspectionAnalysisService(
 
     {
 
-        var chunks = InspectionReportTextExtractor.BuildPageChunks(pages);
+        var chunks = InspectionReportTextExtractor.BuildPageChunks(
+            pages,
+            Math.Max(5, options.Value.InspectionPagesPerChunk));
 
         if (chunks.Count == 0)
 
@@ -224,113 +226,159 @@ public class OpenAiInspectionAnalysisService(
 
         var mergedFindings = new List<InspectionAnalysisFinding>();
 
+        var findingTitles = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
         string? summary = null;
 
         string? lastError = null;
 
         var successfulChunks = 0;
 
+        var mergeLock = new object();
+
+        var parallelism = Math.Clamp(options.Value.InspectionParallelChunks, 1, 6);
+
+        using var gate = new SemaphoreSlim(parallelism);
 
 
-        for (var i = 0; i < chunks.Count; i++)
+
+        var tasks = chunks.Select(async (chunk, i) =>
 
         {
 
-            cancellationToken.ThrowIfCancellationRequested();
+            await gate.WaitAsync(cancellationToken);
 
-
-
-            var userPrompt = InspectionAnalysisPrompt.BuildChunkUserPrompt(
-
-                propertyAddress,
-
-                pageCount,
-
-                chunks[i],
-
-                i + 1,
-
-                chunks.Count);
-
-
-
-            var (json, apiError) = await CallChatJsonAsync(
-
-                InspectionAnalysisPrompt.SystemMessage, userPrompt, cancellationToken);
-
-
-
-            if (string.IsNullOrWhiteSpace(json))
+            try
 
             {
 
-                lastError = apiError;
+                cancellationToken.ThrowIfCancellationRequested();
 
-                logger.LogWarning(
 
-                    "OpenAI chunk {Chunk}/{Total} failed for {Address}: {Error}",
 
-                    i + 1,
-
-                    chunks.Count,
+                var userPrompt = InspectionAnalysisPrompt.BuildChunkUserPrompt(
 
                     propertyAddress,
 
-                    apiError);
+                    pageCount,
 
-                continue;
+                    chunk,
 
-            }
+                    i + 1,
 
-
-
-            var partial = ParseAnalysisJson(json, pageCount, requireFindings: false);
-
-            if (partial.Findings.Count == 0)
-
-            {
-
-                lastError = partial.ErrorMessage ?? apiError;
-
-                continue;
-
-            }
+                    chunks.Count);
 
 
 
-            successfulChunks++;
+                var (json, apiError) = await CallChatJsonAsync(
 
-            if (summary == null && !string.IsNullOrWhiteSpace(partial.Summary))
-
-            {
-
-                summary = partial.Summary;
-
-            }
+                    InspectionAnalysisPrompt.SystemMessage, userPrompt, cancellationToken);
 
 
 
-            foreach (var finding in partial.Findings)
-
-            {
-
-                if (mergedFindings.Any(existing =>
-
-                        string.Equals(existing.Title, finding.Title, StringComparison.OrdinalIgnoreCase)))
+                if (string.IsNullOrWhiteSpace(json))
 
                 {
 
-                    continue;
+                    lock (mergeLock)
+
+                    {
+
+                        lastError = apiError;
+
+                    }
+
+
+
+                    logger.LogWarning(
+
+                        "OpenAI chunk {Chunk}/{Total} failed for {Address}: {Error}",
+
+                        i + 1,
+
+                        chunks.Count,
+
+                        propertyAddress,
+
+                        apiError);
+
+                    return;
 
                 }
 
 
 
-                mergedFindings.Add(finding);
+                var partial = ParseAnalysisJson(json, pageCount, requireFindings: false);
+
+                if (partial.Findings.Count == 0)
+
+                {
+
+                    lock (mergeLock)
+
+                    {
+
+                        lastError = partial.ErrorMessage ?? apiError;
+
+                    }
+
+                    return;
+
+                }
+
+
+
+                lock (mergeLock)
+
+                {
+
+                    successfulChunks++;
+
+                    if (summary == null && !string.IsNullOrWhiteSpace(partial.Summary))
+
+                    {
+
+                        summary = partial.Summary;
+
+                    }
+
+
+
+                    foreach (var finding in partial.Findings)
+
+                    {
+
+                        if (!findingTitles.Add(finding.Title))
+
+                        {
+
+                            continue;
+
+                        }
+
+
+
+                        mergedFindings.Add(finding);
+
+                    }
+
+                }
 
             }
 
-        }
+            finally
+
+            {
+
+                gate.Release();
+
+            }
+
+        });
+
+
+
+        await Task.WhenAll(tasks);
 
 
 
@@ -402,7 +450,7 @@ public class OpenAiInspectionAnalysisService(
 
             temperature = 0.2,
 
-            max_tokens = 16384,
+            max_tokens = options.Value.InspectionMaxTokens,
 
             response_format = new { type = "json_object" },
 
