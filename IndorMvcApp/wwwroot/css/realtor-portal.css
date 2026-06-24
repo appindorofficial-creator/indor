@@ -2688,6 +2688,7 @@ a.rl-invite-cancel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     border: 1.5px solid #0066CC;
     color: #0066CC;
     background: #fff;
@@ -2696,6 +2697,7 @@ a.rl-invite-cancel {
     padding: 8px 14px;
     border-radius: 10px;
     text-decoration: none;
+    white-space: nowrap;
 }
 .rl-btn-outline--sm { padding: 6px 12px; font-size: .72rem; }
 
@@ -3593,6 +3595,12 @@ button.rl-profile-nav-item {
 .rl-soon-lock {
     color: #94A3B8;
     font-size: .72rem;
+    flex-shrink: 0;
+}
+
+.rl-btn-outline.rl-soon .rl-soon-lock,
+.rl-btn-primary.rl-soon .rl-soon-lock {
+    margin-left: 2px;
 }
 
 .rl-profile-nav-item.rl-soon > .rl-soon-lock {
@@ -4864,7 +4872,13 @@ button.rl-profile-nav-item {
     gap: 8px;
 }
 .rl-network-card-actions .rl-btn-outline,
-.rl-network-card-actions .rl-btn-primary { flex: 1; justify-content: center; }
+.rl-network-card-actions .rl-btn-primary {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .rl-network-map-panel {
     background: #fff;
     border: 1px solid #E2E8F0;
