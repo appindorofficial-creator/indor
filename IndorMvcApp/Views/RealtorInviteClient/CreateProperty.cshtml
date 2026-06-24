@@ -56,7 +56,7 @@
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(zipError.Length > 0 ? "is-error" : null)">
                 <label>ZIP code <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter ZIP code" inputmode="numeric" autocomplete="postal-code" /></div>
+                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter ZIP code" inputmode="numeric" autocomplete="postal-code" maxlength="10" pattern="\d{5}(-\d{4})?" title="Enter a 5-digit ZIP code or ZIP+4 (e.g. 28269 or 28269-1234)" /></div>
                 @if (zipError.Length > 0)
                 {
                     <span class="rl-field-error">@zipError</span>
