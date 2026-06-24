@@ -166,7 +166,8 @@ select.form-control,
 
 .rl-field input,
 .rl-field select,
-.rl-field textarea {
+.rl-field textarea,
+.rl-search-bar input {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -193,9 +194,12 @@ select:focus {
 
 .rl-field input:focus,
 .rl-field select:focus,
-.rl-field textarea:focus {
+.rl-field textarea:focus,
+.rl-search-bar input:focus,
+.rl-search-bar input:focus-visible {
     border: none !important;
     box-shadow: none !important;
+    outline: none !important;
 }
 
 /* ── Chips, pills, filters ──────────────────────────────── */

@@ -87,7 +87,9 @@
 }
 .rl-field input:focus,
 .rl-field select:focus,
-.rl-field textarea:focus {
+.rl-field textarea:focus,
+.rl-search-bar input:focus,
+.rl-search-bar input:focus-visible {
     border: none !important;
     box-shadow: none !important;
     outline: none;
@@ -558,7 +560,7 @@
 }
 .rl-search-bar i { color: #94A3B8; }
 .rl-search-bar input {
-    border: none;
+    border: none !important;
     outline: none;
     flex: 1;
     font-size: .88rem;
@@ -567,6 +569,14 @@
     -webkit-appearance: none;
     appearance: none;
     color: #334155;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+.rl-search-bar input:focus,
+.rl-search-bar input:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 .rl-search-bar input::placeholder { color: #94A3B8; }
 .rl-search-bar input::-webkit-search-decoration,
