@@ -808,7 +808,7 @@ public class HomeownerNearbyNetworkService(
             BadgeLabel = item.BadgeLabel,
             BadgeCss = item.BadgeCss,
             ImageUrl = imageUrl,
-            IconClass = string.IsNullOrWhiteSpace(imageUrl) ? item.IconClass : null,
+            IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
             Title = item.Title,
             PriceLabel = item.Price is > 0 && !item.Title.StartsWith('$')
                 ? FormatCurrency(item.Price.Value)

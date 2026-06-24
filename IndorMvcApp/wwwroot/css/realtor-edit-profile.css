@@ -144,6 +144,14 @@
     background: transparent; width: 100%;
 }
 .rl-ep-field input:focus, .rl-ep-field select:focus { outline: none; }
+.rl-ep-field input.input-validation-error,
+.rl-ep-field select.input-validation-error {
+    color: #DC2626;
+}
+.rl-ep-field-row:has(.input-validation-error) .rl-ep-field-icon {
+    background: #FEF2F2;
+    color: #DC2626;
+}
 .rl-ep-field--stacked { margin-bottom: 12px; }
 .rl-ep-field--stacked span { font-size: .74rem; color: #475569; font-weight: 600; }
 .rl-ep-field--stacked input, .rl-ep-field--stacked select {

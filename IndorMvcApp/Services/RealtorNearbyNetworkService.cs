@@ -551,6 +551,10 @@ public class RealtorNearbyNetworkService(
         }
 
         var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
+        if (cardType is "lead" or "emergency")
+        {
+            imageUrl = null;
+        }
 
         return new RealtorNetworkFeedCardViewModel
         {
@@ -559,7 +563,7 @@ public class RealtorNearbyNetworkService(
             BadgeLabel = item.BadgeLabel,
             BadgeCss = item.BadgeCss,
             ImageUrl = imageUrl,
-            IconClass = string.IsNullOrWhiteSpace(imageUrl) ? item.IconClass : null,
+            IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
             Title = item.CardType == NearbyNetworkCardTypes.Listing && item.Price is > 0 && item.Title.StartsWith('$')
                 ? item.Title
                 : item.Title,

@@ -52,6 +52,32 @@
         });
     }
 
+    function scrollToFirstValidationError() {
+        const firstError = document.querySelector(
+            '.validation-summary-errors li, .rl-field-error:not(:empty), span.field-validation-error:not(:empty)'
+        );
+        if (!firstError) {
+            return;
+        }
+
+        const target = firstError.closest('.rl-ep-field-row')
+            || firstError.closest('label.rl-ep-field')
+            || firstError;
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    const contactForm = document.querySelector('.rl-ep-form');
+    if (contactForm) {
+        contactForm.addEventListener('invalid', scrollToFirstValidationError, true);
+        contactForm.addEventListener('submit', function () {
+            window.setTimeout(scrollToFirstValidationError, 50);
+        });
+
+        if (document.querySelector('.validation-summary-errors, .field-validation-error, .rl-field-error:not(:empty)')) {
+            window.setTimeout(scrollToFirstValidationError, 100);
+        }
+    }
+
     document.querySelectorAll('.rl-ep-specialty-input').forEach(input => {
         input.addEventListener('change', () => {
             const checked = document.querySelectorAll('.rl-ep-specialty-input:checked');

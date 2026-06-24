@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using System.Text.RegularExpressions;
 
 namespace IndorMvcApp.Controllers;
 
@@ -14,6 +15,7 @@ public class RealtorInviteClientController(
     IRealtorRegistrationService registration,
     UserManager<ApplicationUser> userManager) : Controller
 {
+    private static readonly Regex UsZipRegex = new(@"^\d{5}(-\d{4})?$", RegexOptions.Compiled);
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -102,7 +104,7 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Property(string? q)
+    public async Task<IActionResult> Property(string? q, bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 2)
@@ -110,7 +112,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(ClientInfo));
         }
 
-        if (draft.CurrentStep > 2)
+        if (!edit && draft.CurrentStep > 2)
         {
             return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
         }
@@ -135,7 +137,7 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateProperty()
+    public async Task<IActionResult> CreateProperty(bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 2)
@@ -143,7 +145,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(ClientInfo));
         }
 
-        if (draft.CurrentStep > 2)
+        if (!edit && draft.CurrentStep > 2)
         {
             return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
         }
@@ -174,6 +176,10 @@ public class RealtorInviteClientController(
         {
             ModelState.AddModelError(nameof(model.PostalCode), "ZIP code is required.");
         }
+        else if (!UsZipRegex.IsMatch(model.PostalCode.Trim()))
+        {
+            ModelState.AddModelError(nameof(model.PostalCode), "Enter a valid ZIP code.");
+        }
 
         if (ModelState.IsValid)
         {
@@ -202,7 +208,7 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> Access()
+    public async Task<IActionResult> Access(bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 3)
@@ -210,7 +216,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(Property));
         }
 
-        if (draft.CurrentStep > 3)
+        if (!edit && draft.CurrentStep > 3)
         {
             return RedirectToAction(nameof(Review));
         }

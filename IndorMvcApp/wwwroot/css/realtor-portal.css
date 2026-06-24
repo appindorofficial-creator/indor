@@ -87,7 +87,13 @@
 }
 .rl-field input:focus,
 .rl-field select:focus,
-.rl-field textarea:focus {
+.rl-field textarea:focus,
+.rl-search-bar input:focus,
+.rl-search-bar input:focus-visible,
+.rl-cp-input input:focus,
+.rl-cp-input input:focus-visible,
+.rl-cp-input select:focus,
+.rl-cp-input select:focus-visible {
     border: none !important;
     box-shadow: none !important;
     outline: none;
@@ -558,7 +564,7 @@
 }
 .rl-search-bar i { color: #94A3B8; }
 .rl-search-bar input {
-    border: none;
+    border: none !important;
     outline: none;
     flex: 1;
     font-size: .88rem;
@@ -567,6 +573,14 @@
     -webkit-appearance: none;
     appearance: none;
     color: #334155;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+.rl-search-bar input:focus,
+.rl-search-bar input:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 .rl-search-bar input::placeholder { color: #94A3B8; }
 .rl-search-bar input::-webkit-search-decoration,
@@ -1248,13 +1262,23 @@ a.rl-invite-cancel {
 .rl-cp-input select {
     flex: 1;
     min-width: 0;
-    border: 0;
+    border: 0 !important;
     outline: none;
     background: transparent;
     padding: 12px 0;
     font-size: .88rem;
     font-family: inherit;
     color: #0A2540;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+.rl-cp-input input:focus,
+.rl-cp-input input:focus-visible,
+.rl-cp-input select:focus,
+.rl-cp-input select:focus-visible {
+    border: none !important;
+    outline: none !important;
+    box-shadow: none !important;
 }
 .rl-cp-input input::placeholder { color: #94A3B8; }
 .rl-cp-input--select select { cursor: pointer; color: #0A2540; }
@@ -1552,6 +1576,23 @@ a.rl-invite-cancel {
 .rl-done-btn { width: 100%; margin-top: 8px; }
 
 /* Create Property File wizard */
+.rl-prop-file-empty {
+    text-align: center;
+    padding: 20px 16px;
+    margin-bottom: 16px;
+    background: #fff;
+    border: 1px dashed #CBD5E1;
+    border-radius: 14px;
+    color: #475569;
+    font-size: .84rem;
+}
+.rl-prop-file-empty p { margin: 0 0 8px; }
+.rl-prop-file-empty-hint {
+    font-size: .78rem;
+    color: #64748B;
+    line-height: 1.45;
+    margin-bottom: 14px !important;
+}
 .rl-property-pick--card { align-items: center; }
 .rl-property-pick-thumb { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; }
 .rl-file-type-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
@@ -2688,6 +2729,7 @@ a.rl-invite-cancel {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: 6px;
     border: 1.5px solid #0066CC;
     color: #0066CC;
     background: #fff;
@@ -2696,6 +2738,7 @@ a.rl-invite-cancel {
     padding: 8px 14px;
     border-radius: 10px;
     text-decoration: none;
+    white-space: nowrap;
 }
 .rl-btn-outline--sm { padding: 6px 12px; font-size: .72rem; }
 
@@ -3407,6 +3450,7 @@ button.rl-premium-link {
     margin: 0 -16px 0;
     padding: 20px 16px 48px;
     background: linear-gradient(155deg, #003D7A 0%, #0066CC 48%, #2563EB 100%);
+    border-radius: 28px;
     overflow: hidden;
 }
 
@@ -3592,6 +3636,12 @@ button.rl-profile-nav-item {
 .rl-soon-lock {
     color: #94A3B8;
     font-size: .72rem;
+    flex-shrink: 0;
+}
+
+.rl-btn-outline.rl-soon .rl-soon-lock,
+.rl-btn-primary.rl-soon .rl-soon-lock {
+    margin-left: 2px;
 }
 
 .rl-profile-nav-item.rl-soon > .rl-soon-lock {
@@ -4863,7 +4913,13 @@ button.rl-profile-nav-item {
     gap: 8px;
 }
 .rl-network-card-actions .rl-btn-outline,
-.rl-network-card-actions .rl-btn-primary { flex: 1; justify-content: center; }
+.rl-network-card-actions .rl-btn-primary {
+    flex: 1;
+    justify-content: center;
+    min-width: 0;
+    padding-left: 10px;
+    padding-right: 10px;
+}
 .rl-network-map-panel {
     background: #fff;
     border: 1px solid #E2E8F0;

@@ -152,7 +152,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             ActiveClients = clients.Select(c => MapClient(c, fileCounts, quoteCounts)).ToList(),
             PendingInvitations = invitations.Select(MapInvitation).ToList(),
             RecentActivity = activities.Select(MapActivity).ToList(),
-            NextSteps = BuildClientNextSteps(pendingInviteCount, clients, quoteCounts)
+            NextSteps = BuildClientNextSteps(pendingInviteCount, clients, quoteCounts, activeFilter)
         };
     }
 
@@ -1065,16 +1065,16 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
 
         entity.DisplayName = input.BusinessName.Trim();
-        entity.PublicDisplayName = input.PublicDisplayName.Trim();
+        entity.PublicDisplayName = input.PublicDisplayName?.Trim() ?? "";
         entity.BrokerageName = input.BrokerageName.Trim();
-        entity.RealtorTitle = input.RealtorTitle.Trim();
+        entity.RealtorTitle = input.RealtorTitle?.Trim() ?? "";
         entity.Email = input.Email.Trim();
-        entity.Website = input.Website.Trim();
-        entity.OfficeAddress = input.OfficeAddress.Trim();
-        entity.OfficeCity = input.OfficeCity.Trim();
-        entity.OfficeState = input.OfficeState.Trim();
-        entity.OfficeZip = input.OfficeZip.Trim();
-        entity.LanguagesJson = SerializeStringList(ParseLanguagesCsv(input.LanguagesCsv));
+        entity.Website = input.Website?.Trim() ?? "";
+        entity.OfficeAddress = input.OfficeAddress?.Trim() ?? "";
+        entity.OfficeCity = input.OfficeCity?.Trim() ?? "";
+        entity.OfficeState = input.OfficeState?.Trim() ?? "";
+        entity.OfficeZip = input.OfficeZip?.Trim() ?? "";
+        entity.LanguagesJson = SerializeStringList(ParseLanguagesCsv(input.LanguagesCsv ?? ""));
         entity.FechaActualizacion = DateTime.UtcNow;
 
         await db.SaveChangesAsync(ct);
@@ -1847,10 +1847,10 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
     }
 
     private static List<RealtorNextStepViewModel> BuildClientNextSteps(
-        int pendingInvites, List<IndorRealtorClient> clients, Dictionary<string, int> quoteCounts)
+        int pendingInvites, List<IndorRealtorClient> clients, Dictionary<string, int> quoteCounts, string activeFilter)
     {
         var steps = new List<RealtorNextStepViewModel>();
-        if (pendingInvites > 0)
+        if (pendingInvites > 0 && activeFilter is "All" or "Invited")
         {
             steps.Add(new()
             {

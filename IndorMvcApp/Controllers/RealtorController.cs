@@ -538,16 +538,6 @@ public class RealtorController(
             return RedirectToAction("Profile", "RealtorRegistration");
         }
 
-        if (!BrokerageNameAttribute.IsValidBrokerageName(model.BrokerageName, out var brokerageError))
-        {
-            ModelState.AddModelError(nameof(model.BrokerageName), brokerageError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.BusinessName))
-        {
-            ModelState.AddModelError(nameof(model.BusinessName), "Business name is required.");
-        }
-
         if (!ModelState.IsValid)
         {
             await ApplyEditProfileShellAsync(realtor, model, cancellationToken);

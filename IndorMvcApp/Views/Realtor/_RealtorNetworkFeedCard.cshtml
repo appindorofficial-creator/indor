@@ -36,7 +36,7 @@
             <div class="rl-network-card-actions">
                 @if (string.IsNullOrWhiteSpace(Model.PrimaryActionUrl) || Model.PrimaryActionUrl == "#")
                 {
-                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.PrimaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Coming soon"><span>@Model.PrimaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                 }
                 else
                 {
@@ -46,7 +46,7 @@
                 {
                     if (string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) || Model.SecondaryActionUrl == "#")
                     {
-                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.SecondaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Coming soon"><span>@Model.SecondaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                     }
                     else
                     {
@@ -120,7 +120,7 @@ else
             <div class="rl-network-card-actions">
                 @if (string.IsNullOrWhiteSpace(Model.PrimaryActionUrl) || Model.PrimaryActionUrl == "#")
                 {
-                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.PrimaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Coming soon"><span>@Model.PrimaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                 }
                 else
                 {
@@ -130,7 +130,7 @@ else
                 {
                     if (string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) || Model.SecondaryActionUrl == "#")
                     {
-                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Coming soon">@Model.SecondaryActionLabel <i class="fas fa-lock rl-soon-lock"></i></span>
+                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Coming soon"><span>@Model.SecondaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                     }
                     else
                     {

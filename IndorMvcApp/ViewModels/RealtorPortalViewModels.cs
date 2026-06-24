@@ -1,3 +1,6 @@
+using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
+
 namespace IndorMvcApp.ViewModels;
 
 public class RealtorPortalShellViewModel
@@ -321,18 +324,44 @@ public class RealtorEditProfileWizardViewModel : RealtorPortalShellViewModel
 
 public class RealtorEditProfileContactViewModel : RealtorEditProfileWizardViewModel
 {
+    [Display(Name = "Business Name")]
+    [Required(ErrorMessage = "{0} is required.")]
     public string BusinessName { get; set; } = "";
-    public string PublicDisplayName { get; set; } = "";
+
+    [Display(Name = "Display Name (Public)")]
+    public string? PublicDisplayName { get; set; }
+
+    [Display(Name = "Brokerage Name")]
+    [BrokerageName]
     public string BrokerageName { get; set; } = "";
-    public string RealtorTitle { get; set; } = "";
+
+    [Display(Name = "Realtor Title")]
+    public string? RealtorTitle { get; set; }
+
+    [Display(Name = "Email")]
+    [Required(ErrorMessage = "{0} is required.")]
+    [EmailAddress(ErrorMessage = "Enter a valid {0} address.")]
     public string Email { get; set; } = "";
-    public string Website { get; set; } = "";
-    public string OfficeAddress { get; set; } = "";
-    public string OfficeCity { get; set; } = "";
-    public string OfficeState { get; set; } = "";
-    public string OfficeZip { get; set; } = "";
+
+    [Display(Name = "Website")]
+    public string? Website { get; set; }
+
+    [Display(Name = "Office Address")]
+    public string? OfficeAddress { get; set; }
+
+    [Display(Name = "City")]
+    public string? OfficeCity { get; set; }
+
+    [Display(Name = "State")]
+    public string? OfficeState { get; set; }
+
+    [Display(Name = "ZIP")]
+    public string? OfficeZip { get; set; }
+
     public List<string> Languages { get; set; } = [];
-    public string LanguagesCsv { get; set; } = "";
+
+    [Display(Name = "Languages Spoken")]
+    public string? LanguagesCsv { get; set; }
     public IReadOnlyList<string> LicenseStates { get; set; } = [];
 }
 
