@@ -145,18 +145,34 @@
             <span>Street address</span>
             <div class="pf-home-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input asp-for="AddressForm.StreetAddress" placeholder="House number and street name" autocomplete="address-line1" />
+                <input asp-for="AddressForm.StreetAddress"
+                       id="ep-street"
+                       placeholder="House number and street name"
+                       autocomplete="address-line1"
+                       data-address-autocomplete
+                       data-ac-street-only="true"
+                       data-ac-city="ep-city"
+                       data-ac-state="ep-state"
+                       data-ac-zip="ep-zip" />
             </div>
         </label>
 
         <div class="pf-row">
             <label class="pf-field">
                 <span>City</span>
-                <input asp-for="AddressForm.City" placeholder="City" autocomplete="address-level2" />
+                <input asp-for="AddressForm.City"
+                       id="ep-city"
+                       placeholder="City"
+                       autocomplete="address-level2"
+                       data-city-autocomplete
+                       data-ac-state="ep-state"
+                       data-ac-zip="ep-zip" />
             </label>
             <label class="pf-field">
                 <span>State</span>
-                <select asp-for="AddressForm.State" autocomplete="address-level1">
+                <select asp-for="AddressForm.State"
+                        id="ep-state"
+                        autocomplete="address-level1">
                     <option value="">State</option>
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
@@ -169,7 +185,14 @@
         <div class="pf-row">
             <label class="pf-field">
                 <span>ZIP code</span>
-                <input asp-for="AddressForm.ZipCode" placeholder="ZIP" autocomplete="postal-code" inputmode="numeric" maxlength="10" />
+                <input asp-for="AddressForm.ZipCode"
+                       id="ep-zip"
+                       placeholder="ZIP"
+                       autocomplete="postal-code"
+                       inputmode="numeric"
+                       maxlength="10"
+                       pattern="\d{5}(-\d{4})?"
+                       title="Enter a 5-digit ZIP code or ZIP+4 (e.g. 28269 or 28269-1234)" />
             </label>
             <label class="pf-field">
                 <span>Unit <small class="pf-optional">(optional)</small></span>
@@ -179,7 +202,7 @@
 
         <p class="pf-home-hint">
             <i class="fas fa-circle-info"></i>
-            OpenAI searches public records and listing sites. This can take up to 90 seconds — keep this screen open.
+            As you type your address, we'll auto-fill city, state, and ZIP when available. OpenAI searches public records — this can take up to 90 seconds; keep this screen open.
         </p>
 
         <button type="submit" class="pf-home-ai-btn">
@@ -223,4 +246,5 @@
             }
         })();
     </script>
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
 }
