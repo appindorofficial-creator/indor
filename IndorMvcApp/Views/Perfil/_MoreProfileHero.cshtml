@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.MoreProfileViewModel
+@using IndorMvcApp.Services
 @{
     var showChevron = ViewData["ShowChevron"] as bool? ?? false;
     var linkUrl = ViewData["HeroLink"] as string;
@@ -66,7 +67,10 @@
     {
         <div class="more-actions">
             <a asp-controller="Perfil" asp-action="EditarPerfil"><i class="far fa-user"></i> Edit Profile</a>
-            <a asp-controller="Perfil" asp-action="Suscripciones" class="btn-upgrade"><i class="fas fa-star"></i> Upgrade</a>
+            @if (ProfileDisplayService.PaidMembershipEnabled)
+            {
+                <a asp-controller="Perfil" asp-action="Suscripciones" class="btn-upgrade"><i class="fas fa-star"></i> Upgrade</a>
+            }
             <a asp-controller="Perfil" asp-action="Soporte"><i class="fas fa-headset"></i> Support</a>
         </div>
     }

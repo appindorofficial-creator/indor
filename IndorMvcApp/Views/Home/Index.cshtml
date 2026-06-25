@@ -844,11 +844,14 @@
             @await Html.PartialAsync("~/Views/Perfil/_MoreProfileHero.cshtml", moreProfile)
 
             <div class="more-stats">
-                <div class="more-stat">
-                    <i class="fas fa-shield-alt"></i>
-                    <div class="ms-label">Membership status</div>
-                    <div class="ms-value">@moreProfile.MembershipLabel</div>
-                </div>
+                @if (ProfileDisplayService.PaidMembershipEnabled)
+                {
+                    <div class="more-stat">
+                        <i class="fas fa-shield-alt"></i>
+                        <div class="ms-label">Membership status</div>
+                        <div class="ms-value">@moreProfile.MembershipLabel</div>
+                    </div>
+                }
                 <div class="more-stat">
                     <i class="fas fa-house"></i>
                     <div class="ms-label">Home Added</div>
@@ -866,7 +869,7 @@
                 </div>
             </div>
 
-            <p class="more-section-title">Account &amp; Membership</p>
+            <p class="more-section-title">Account</p>
             <div class="more-menu-card">
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Opciones">
                     <span class="mm-icon"><i class="fas fa-user"></i></span>
@@ -884,14 +887,17 @@
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
-                <a class="more-menu-item" asp-controller="Perfil" asp-action="Suscripciones">
-                    <span class="mm-icon"><i class="fas fa-crown"></i></span>
-                    <span class="mm-body">
-                        <strong>Subscriptions</strong>
-                        <small>Manage plans, add-ons and renewals</small>
-                    </span>
-                    <i class="fas fa-chevron-right mm-chevron"></i>
-                </a>
+                @if (ProfileDisplayService.PaidMembershipEnabled)
+                {
+                    <a class="more-menu-item" asp-controller="Perfil" asp-action="Suscripciones">
+                        <span class="mm-icon"><i class="fas fa-crown"></i></span>
+                        <span class="mm-body">
+                            <strong>Subscriptions</strong>
+                            <small>Manage plans, add-ons and renewals</small>
+                        </span>
+                        <i class="fas fa-chevron-right mm-chevron"></i>
+                    </a>
+                }
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Historial">
                     <span class="mm-icon"><i class="fas fa-clock-rotate-left"></i></span>
                     <span class="mm-body">

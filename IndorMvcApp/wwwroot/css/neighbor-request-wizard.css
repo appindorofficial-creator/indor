@@ -1111,7 +1111,7 @@
 .nr-progress-seg.is-complete,
 .nr-progress-seg.is-active { background: linear-gradient(135deg, #2E8BFF, #0066CC); }
 
-.nr-step-form { display: flex; flex-direction: column; gap: 12px; padding-bottom: 88px; }
+.nr-step-form { display: flex; flex-direction: column; gap: 12px; padding-bottom: calc(96px + env(safe-area-inset-bottom, 0)); }
 
 .nr-card {
     background: #fff;
@@ -1242,10 +1242,10 @@
 }
 .nr-budget-hint { margin: 8px 0 0; font-size: .7rem; color: #94A3B8; }
 
+/* Legacy: prefer .nr-wizard-footer (indor-wizard.css) for fixed bottom CTA */
 .nr-btn-primary--sticky {
-    position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
-    width: min(448px, calc(100% - 32px)); z-index: 20;
-    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    width: 100%;
+    margin-top: 0;
 }
 
 .nr-photo-strip { display: flex; gap: 10px; overflow-x: auto; padding-bottom: 4px; }

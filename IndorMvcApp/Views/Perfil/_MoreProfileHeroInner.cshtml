@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.MoreProfileViewModel
+@using IndorMvcApp.Services
 
 <div class="more-avatar">
     @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
@@ -14,17 +15,20 @@
     <p class="mp-name">@Model.FullName</p>
     <div class="mp-row"><i class="far fa-envelope"></i><span>@Model.Email</span></div>
     <div class="mp-row"><i class="fas fa-phone"></i><span>@Model.Phone</span></div>
-    <div class="mp-row membership">
-        <i class="fas fa-shield-alt"></i>
-        <span>
-            @if (Model.HasActiveMembership)
-            {
-                <strong>@Model.MembershipLabel</strong>
-            }
-            else
-            {
-                <span>No active membership</span>
-            }
-        </span>
-    </div>
+    @if (ProfileDisplayService.PaidMembershipEnabled)
+    {
+        <div class="mp-row membership">
+            <i class="fas fa-shield-alt"></i>
+            <span>
+                @if (Model.HasActiveMembership)
+                {
+                    <strong>@Model.MembershipLabel</strong>
+                }
+                else
+                {
+                    <span>No active membership</span>
+                }
+            </span>
+        </div>
+    }
 </div>

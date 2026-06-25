@@ -60,7 +60,11 @@ a.btn-primary:not(.btn-outline) {
 .rl-btn-primary:hover,
 .indor-btn-primary:hover {
     filter: brightness(1.03);
-    transform: translateY(-1px);
+}
+
+.nr-wizard-footer .nr-btn-primary:hover,
+.iw-wizard-footer .iw-btn-primary:hover {
+    transform: none;
 }
 
 /* Outline / secondary */
@@ -82,11 +86,13 @@ a.btn-primary:not(.btn-outline) {
     background: #fff !important;
 }
 
-/* Sticky CTA (wizards) */
+/* Sticky CTA (wizards) — footer bar uses .nr-wizard-footer; keep pill shape if legacy class remains */
+.nr-wizard-footer .nr-btn-primary,
 .nr-btn-primary--sticky {
     border-radius: 999px !important;
     min-height: 52px;
     font-size: .92rem !important;
+    margin-top: 0 !important;
 }
 
 /* ── Cards & surfaces ───────────────────────────────────── */

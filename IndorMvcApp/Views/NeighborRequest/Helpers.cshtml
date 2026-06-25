@@ -95,7 +95,14 @@
     <a href="#">Learn more</a>
 </div>
 
-<a href="@Model.DetailUrl" class="nr-btn-primary nr-btn-primary--sticky">
-    <i class="fas fa-user-group"></i> Invite selected helpers (1)
-</a>
+@section WizardFooter {
+    @{
+        ViewData["NrWizardContinueHref"] = Model.DetailUrl;
+        ViewData["NrWizardContinueLabel"] = "Invite selected helpers (1)";
+        ViewData["NrWizardContinueIconBefore"] = "fa-user-group";
+        ViewData["NrWizardContinueIconAfter"] = null;
+    }
+    @await Html.PartialAsync("_NrWizardFooter")
+}
+
 <p class="nr-helpers-footnote"><i class="fas fa-lock"></i> Helpers will be notified and can accept your job.</p>

@@ -86,9 +86,12 @@
             <i class="fas fa-circle-info" aria-hidden="true"></i>
         </label>
     </section>
-
-    <button type="submit" class="nr-btn-primary nr-btn-primary--sticky">Continue</button>
 </form>
+
+@section WizardFooter {
+    @{ ViewData["NrWizardFormId"] = "nrStep1Form"; ViewData["NrWizardContinueLabel"] = "Continue"; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @await Html.PartialAsync("_NrWizardFooter")
+}
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

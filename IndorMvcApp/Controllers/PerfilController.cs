@@ -99,6 +99,16 @@ public class PerfilController : Controller
     private void ClearMembershipSignup() =>
         HttpContext.Session.Remove(MembershipSessionKey);
 
+    private IActionResult? RedirectIfPaidMembershipDisabled()
+    {
+        if (ProfileDisplayService.PaidMembershipEnabled)
+        {
+            return null;
+        }
+
+        return RedirectToAction("Index", "Home", new { section = "more" });
+    }
+
     private async Task<PlanMembresia?> GetSignupPlanAsync()
     {
         var state = GetMembershipSignup();
@@ -267,6 +277,11 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> Suscripciones(int? planId)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled)
+        {
+            return disabled;
+        }
+
         await CargarUsuarioYMembresiaAsync();
         ViewBag.Planes = await _db.PlanesMembresia
             .Where(p => p.Activo)
@@ -285,6 +300,11 @@ public class PerfilController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> SeleccionarPlan(int planId)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled)
+        {
+            return disabled;
+        }
+
         var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == planId && p.Activo);
         if (plan == null)
         {
@@ -305,6 +325,11 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> PlanDetalle(int id)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled)
+        {
+            return disabled;
+        }
+
         var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == id && p.Activo);
         if (plan == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -368,6 +393,8 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> MembresiaFiltro()
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var plan = await GetSignupPlanAsync();
         if (plan == null) return RedirectToAction(nameof(Suscripciones));
         if (!ProfileDisplayService.IsFilterPlan(plan.Nombre))
@@ -394,6 +421,8 @@ public class PerfilController : Controller
         string? propertyAddress, string? hvacNickname, string? filterSize,
         string? filterType, bool petsAtHome = false, IFormFile? filterPhoto = null)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var state = GetMembershipSignup();
         if (state == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -426,6 +455,8 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> MembresiaEntregaHogar()
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var plan = await GetSignupPlanAsync();
         if (plan == null) return RedirectToAction(nameof(Suscripciones));
         var kind = ProfileDisplayService.GetPlanKind(plan);
@@ -459,6 +490,8 @@ public class PerfilController : Controller
         string? deliveryCycle, DateTime? firstDeliveryDate,
         int filterQuantity, bool petsAtHome = false)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var state = GetMembershipSignup();
         if (state == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -476,6 +509,8 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> MembresiaBeneficios()
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var plan = await GetSignupPlanAsync();
         if (plan == null) return RedirectToAction(nameof(Suscripciones));
         var kind = ProfileDisplayService.GetPlanKind(plan);
@@ -501,6 +536,8 @@ public class PerfilController : Controller
         bool reminderAirFilter = true, bool reminderHvac = true,
         bool reminderSmokeDetector = true, bool reminderSeasonal = true)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var state = GetMembershipSignup();
         if (state == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -515,6 +552,8 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> MembresiaEntrega()
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var plan = await GetSignupPlanAsync();
         if (plan == null) return RedirectToAction(nameof(Suscripciones));
         if (!ProfileDisplayService.IsFilterPlan(plan.Nombre))
@@ -544,6 +583,8 @@ public class PerfilController : Controller
         string? shippingAddress, string? deliveryCycle, DateTime? firstDeliveryDate,
         bool shipmentReminder = true, bool replaceFilterReminder = true, bool lowInventoryReminder = true)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var state = GetMembershipSignup();
         if (state == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -560,6 +601,8 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> MembresiaRevision()
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var plan = await GetSignupPlanAsync();
         if (plan == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -601,6 +644,8 @@ public class PerfilController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ConfirmarMembresia(bool agreeBilling = false)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var state = GetMembershipSignup();
         if (state == null) return RedirectToAction(nameof(Suscripciones));
 
@@ -625,6 +670,8 @@ public class PerfilController : Controller
     [HttpGet]
     public async Task<IActionResult> MembresiaExito()
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var plan = await GetSignupPlanAsync();
         if (plan == null)
         {
@@ -960,6 +1007,8 @@ public class PerfilController : Controller
 
     private async Task<IActionResult> ActivarPlanInternal(int planId)
     {
+        if (RedirectIfPaidMembershipDisabled() is { } disabled) return disabled;
+
         var userId = _userManager.GetUserId(User);
         if (string.IsNullOrEmpty(userId)) return RedirectToAction("Login", "Account");
 

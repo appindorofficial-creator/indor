@@ -35,6 +35,12 @@ body > * {
     z-index: 1;
 }
 
+/* Fixed wizard footers must anchor to the viewport, not the shell. */
+body.nr-wizard-page > .nr-wizard-shell {
+    position: static;
+    z-index: auto;
+}
+
 .auth-futuristic-container,
 .tech-background,
 .grid-overlay,

@@ -16,6 +16,9 @@ public enum MembershipPlanKind
 
 public static class ProfileDisplayService
 {
+    /// <summary>Paid membership signup is disabled (e.g. iOS App Store — no in-app subscriptions).</summary>
+    public const bool PaidMembershipEnabled = false;
+
     public static MoreProfileViewModel Build(
         ApplicationUser? user,
         MembresiaUsuario? membresia,
@@ -71,12 +74,15 @@ public static class ProfileDisplayService
                 IsComplete = hasHome,
                 ActionUrl = url.Action("EditarPerfil", "Perfil") + "#home"
             });
-            items.Add(new ProfileCompletionItemViewModel
+            if (PaidMembershipEnabled)
             {
-                Label = "Choose a membership plan",
-                IsComplete = hasMembership,
-                ActionUrl = url.Action("Suscripciones", "Perfil")
-            });
+                items.Add(new ProfileCompletionItemViewModel
+                {
+                    Label = "Choose a membership plan",
+                    IsComplete = hasMembership,
+                    ActionUrl = url.Action("Suscripciones", "Perfil")
+                });
+            }
         }
 
         return new MoreProfileViewModel

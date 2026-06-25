@@ -3,7 +3,7 @@
     ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Post Quick Job";
 }
 
-<form asp-action="Preferences" method="post" class="nr-step-form">
+<form asp-action="Preferences" method="post" class="nr-step-form" id="nrPreferencesForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="IsEditMode" />
@@ -139,10 +139,12 @@
     </div>
   }
 
-    <button type="submit" class="nr-btn-primary nr-btn-primary--sticky">
-        Continue <i class="fas fa-arrow-right"></i>
-    </button>
 </form>
+
+@section WizardFooter {
+    @{ ViewData["NrWizardFormId"] = "nrPreferencesForm"; ViewData["NrWizardContinueLabel"] = "Continue"; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @await Html.PartialAsync("_NrWizardFooter")
+}
 
 @section Scripts {
     <script>

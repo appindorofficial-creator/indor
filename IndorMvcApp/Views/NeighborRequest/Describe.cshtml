@@ -3,7 +3,7 @@
     ViewData["Title"] = "Post Quick Job";
 }
 
-<form asp-action="Describe" method="post" enctype="multipart/form-data" class="nr-step-form">
+<form asp-action="Describe" method="post" enctype="multipart/form-data" class="nr-step-form" id="nrDescribeForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
 
@@ -96,11 +96,12 @@
             </label>
         </div>
     </section>
-
-    <button type="submit" class="nr-btn-primary nr-btn-primary--sticky">
-        Review job <i class="fas fa-arrow-right"></i>
-    </button>
 </form>
+
+@section WizardFooter {
+    @{ ViewData["NrWizardFormId"] = "nrDescribeForm"; ViewData["NrWizardContinueLabel"] = "Review job"; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @await Html.PartialAsync("_NrWizardFooter")
+}
 
 @section Scripts {
     <script>

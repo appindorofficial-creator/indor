@@ -1,0 +1,44 @@
+@{
+    var formId = ViewData["NrWizardFormId"] as string;
+    var href = ViewData["NrWizardContinueHref"] as string;
+    var label = ViewData["NrWizardContinueLabel"] as string ?? "Continue";
+    var iconBefore = ViewData["NrWizardContinueIconBefore"] as string;
+    var iconAfter = ViewData["NrWizardContinueIconAfter"] as string;
+    if (iconAfter == null && iconBefore == null && string.IsNullOrWhiteSpace(href))
+    {
+        iconAfter = "fa-arrow-right";
+    }
+}
+
+<div class="nr-wizard-footer">
+    <div class="nr-wizard-footer-inner">
+        @if (!string.IsNullOrWhiteSpace(href))
+        {
+            <a href="@href" class="nr-btn-primary">
+                @if (!string.IsNullOrWhiteSpace(iconBefore))
+                {
+                    <i class="fas @iconBefore"></i>
+                }
+                @label
+                @if (!string.IsNullOrWhiteSpace(iconAfter))
+                {
+                    <i class="fas @iconAfter"></i>
+                }
+            </a>
+        }
+        else
+        {
+            <button type="submit" form="@formId" class="nr-btn-primary">
+                @if (!string.IsNullOrWhiteSpace(iconBefore))
+                {
+                    <i class="fas @iconBefore"></i>
+                }
+                @label
+                @if (!string.IsNullOrWhiteSpace(iconAfter))
+                {
+                    <i class="fas @iconAfter"></i>
+                }
+            </button>
+        }
+    </div>
+</div>
