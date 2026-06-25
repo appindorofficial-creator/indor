@@ -346,6 +346,16 @@ body {
     box-sizing: border-box;
 }
 
+/* Service wizard shell uses 32px bottom padding; fixed bottom nav (~80px) covers CTAs */
+.iw-wizard-page:has(.bottom-nav) .iw-wizard-shell {
+    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0));
+}
+
+.iw-wizard-page:has(.bottom-nav) .hvac-save-btn,
+.iw-wizard-page:has(.bottom-nav) .hvac-outline-btn {
+    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom, 0));
+}
+
 a.hvac-save-btn {
     display: flex;
     align-items: center;
