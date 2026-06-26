@@ -20,6 +20,8 @@
         @RenderBody()
     </div>
     @await Html.PartialAsync("~/Views/Realtor/_RealtorBottomNav.cshtml")
+    <script src="~/js/phone-input.js" asp-append-version="true"></script>
+    <script src="~/js/realtor-invite-client.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
 </html>
