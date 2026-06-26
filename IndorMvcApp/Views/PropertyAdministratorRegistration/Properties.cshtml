@@ -63,13 +63,20 @@ else if (TempData["PropertyAdminError"] is string err)
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
     </summary>
-    <form asp-action="AddProperty" method="post" class="pa-add-property-form" novalidate>
+    <form asp-action="AddProperty" method="post" class="pa-add-property-form">
         @Html.AntiForgeryToken()
 
         <div class="pa-field-row pa-field-row--2">
             <label class="pa-field">
                 <i class="fas fa-hashtag"></i>
-                <input type="text" name="houseNumber" value="@formHouseNumber" placeholder="House number" inputmode="numeric" />
+                <input type="text"
+                       id="pa-prop-house"
+                       name="houseNumber"
+                       value="@formHouseNumber"
+                       placeholder="House number"
+                       inputmode="numeric"
+                       required
+                       autocomplete="address-line2" />
             </label>
             <label class="pa-field">
                 <i class="fas fa-road"></i>
@@ -79,8 +86,10 @@ else if (TempData["PropertyAdminError"] is string err)
                        value="@formStreetName"
                        placeholder="Street name"
                        autocomplete="address-line1"
+                       required
                        data-address-autocomplete
                        data-ac-street-only="true"
+                       data-ac-house-number="pa-prop-house"
                        data-ac-city="pa-prop-city"
                        data-ac-state="pa-prop-state"
                        data-ac-zip="pa-prop-zip" />
@@ -96,14 +105,22 @@ else if (TempData["PropertyAdminError"] is string err)
                        value="@formCity"
                        placeholder="City"
                        autocomplete="address-level2"
+                       required
                        data-city-autocomplete
                        data-ac-state="pa-prop-state"
                        data-ac-zip="pa-prop-zip" />
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-map"></i>
-                <select id="pa-prop-state" name="state">
-                    <option value="">State</option>
+                <select id="pa-prop-state" name="state" required>
+                    @if (string.IsNullOrWhiteSpace(formState))
+                    {
+                        <option value="" disabled selected>State</option>
+                    }
+                    else
+                    {
+                        <option value="" disabled>State</option>
+                    }
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
                         if (formState == stateCode)
@@ -126,14 +143,22 @@ else if (TempData["PropertyAdminError"] is string err)
                        placeholder="ZIP"
                        inputmode="numeric"
                        autocomplete="postal-code"
-                       maxlength="10" />
+                       maxlength="10"
+                       required />
             </label>
         </div>
 
         <label class="pa-field">
             <i class="fas fa-tag"></i>
-            <select name="propertyType">
-                <option value="">Property type</option>
+            <select id="pa-prop-type" name="propertyType" required>
+                @if (string.IsNullOrWhiteSpace(formPropertyType))
+                {
+                    <option value="" disabled selected hidden>Property type</option>
+                }
+                else
+                {
+                    <option value="" disabled hidden>Property type</option>
+                }
                 @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
                 {
                     if (formPropertyType == item.Value)
@@ -179,3 +204,48 @@ else if (TempData["PropertyAdminError"] is string err)
 @await Html.PartialAsync("_PropertyAdminStepActions")
 
 @await Html.PartialAsync("_AddressAutocompleteScripts")
+
+<script>
+(function () {
+    var form = document.querySelector('.pa-add-property-form');
+    if (!form) return;
+
+    var fields = [
+        { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
+        { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
+        { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
+        { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
+        { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
+        { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
+    ];
+
+    function syncValidity(field) {
+        if (!field.el) return;
+        var empty = !field.el.value || !String(field.el.value).trim();
+        field.el.setCustomValidity(empty ? field.message : '');
+    }
+
+    fields.forEach(function (field) {
+        if (!field.el) return;
+        field.el.addEventListener('input', function () { syncValidity(field); });
+        field.el.addEventListener('change', function () { syncValidity(field); });
+        field.el.addEventListener('invalid', function () { syncValidity(field); });
+    });
+
+    form.addEventListener('submit', function (e) {
+        var firstInvalid = null;
+        fields.forEach(function (field) {
+            syncValidity(field);
+            if (!field.el || firstInvalid) return;
+            if (!field.el.checkValidity()) {
+                firstInvalid = field.el;
+            }
+        });
+
+        if (firstInvalid) {
+            e.preventDefault();
+            firstInvalid.reportValidity();
+        }
+    });
+})();
+</script>

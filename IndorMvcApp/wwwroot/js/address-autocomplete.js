@@ -320,8 +320,11 @@
         if (input.dataset.acStreetOnly === 'true' && components) {
             var num = getComponent(components, 'street_number', false);
             var route = getComponent(components, 'route', false);
-            var street = (num + ' ' + route).trim();
-            input.value = street || place.formatted_address || input.value;
+            if (num) {
+                fillLinkedField(input, 'HouseNumber', num);
+            }
+            var street = route || (num ? '' : (place.formatted_address || input.value));
+            input.value = street.trim() || input.value;
         } else if (place.formatted_address) {
             input.value = place.formatted_address;
         }

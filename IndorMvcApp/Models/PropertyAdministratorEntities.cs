@@ -368,6 +368,10 @@ public static class PropertyAdministratorCatalog
     public static string LabelPropertyType(string? value) =>
         PropertyTypes.FirstOrDefault(p => p.Value == value).Label ?? value ?? "—";
 
+    public static bool IsValidPropertyType(string? value) =>
+        !string.IsNullOrWhiteSpace(value) &&
+        PropertyTypes.Any(p => p.Value == value);
+
     public static readonly string[] UsStateCodes =
     [
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",

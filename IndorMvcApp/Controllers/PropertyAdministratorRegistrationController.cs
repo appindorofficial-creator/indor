@@ -204,6 +204,11 @@ public class PropertyAdministratorRegistrationController(
         };
 
         var missingFields = new List<string>();
+        if (string.IsNullOrWhiteSpace(houseNumber))
+        {
+            missingFields.Add("house number");
+        }
+
         if (string.IsNullOrWhiteSpace(streetName))
         {
             missingFields.Add("street name");
@@ -219,7 +224,12 @@ public class PropertyAdministratorRegistrationController(
             missingFields.Add("state");
         }
 
-        if (string.IsNullOrWhiteSpace(propertyType))
+        if (string.IsNullOrWhiteSpace(zipCode))
+        {
+            missingFields.Add("ZIP");
+        }
+
+        if (string.IsNullOrWhiteSpace(propertyType) || !PropertyAdministratorCatalog.IsValidPropertyType(propertyType))
         {
             missingFields.Add("property type");
         }
