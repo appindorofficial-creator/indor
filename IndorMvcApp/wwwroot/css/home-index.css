@@ -248,8 +248,19 @@
         .verified .text small { color: #6B7280; font-size: 0.75rem; }
 
         /* === MyHome (slider con datos del JSON) === */
+        #section-myhome {
+            overflow-x: hidden;
+            max-width: 100%;
+        }
         #section-myhome .hf-app { margin-bottom: 8px; }
-        #section-myhome .hf-json-panel-app { margin-bottom: 80px; }
+        #section-myhome .hf-property-management {
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+            scroll-margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+        }
+        #section-myhome .hf-json-panel-app {
+            margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 24px);
+            scroll-margin-bottom: calc(env(safe-area-inset-bottom, 0px) + 96px);
+        }
         .hf-quick-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .hf-quick-link { background: #FFF; border: 1px solid #E5E7EB; border-radius: 12px; padding: 12px; text-decoration: none; color: #0A2540; font-weight: 700; font-size: 0.82rem; display: flex; align-items: center; gap: 8px; }
         .hf-quick-link i { color: #0066CC; }
