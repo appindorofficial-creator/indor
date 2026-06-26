@@ -1,0 +1,98 @@
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+@{
+    var result = ViewBag.ExamResult as IndorMvcApp.ViewModels.ProviderExamResultViewModel
+        ?? new IndorMvcApp.ViewModels.ProviderExamResultViewModel();
+    var retryUrl = ViewBag.RetryUrl as string ?? Url.Action("Exam", new { page = 1 });
+    var continueUrl = ViewBag.ContinueUrl as string ?? Url.Action("Documents");
+    var statusClass = result.Passed ? "is-pass" : "is-fail";
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+<div class="prv-result-hero @statusClass">
+    <div class="prv-result-score">
+        <span class="prv-result-score-value">@result.ScorePercent<span class="prv-result-score-pct">%</span></span>
+        <span class="prv-result-score-label">Your score</span>
+    </div>
+    <div class="prv-result-badge @statusClass">
+        <i class="fas @(result.Passed ? "fa-circle-check" : "fa-circle-xmark")"></i>
+        <span>@(result.Passed ? "Passed" : "Not passed")</span>
+    </div>
+</div>
+
+<div class="prv-exam-stats">
+    <div class="prv-exam-stat">
+        <i class="fas fa-check-double"></i>
+        <span>Correct answers</span>
+        <strong>@result.CorrectCount / @result.TotalCount</strong>
+    </div>
+    <div class="prv-exam-stat">
+        <i class="fas fa-bullseye"></i>
+        <span>Passing score</span>
+        <strong>@result.PassingPercent%</strong>
+    </div>
+</div>
+
+<h2 class="prv-result-section-title">Answer breakdown</h2>
+
+<div class="prv-result-list">
+    @foreach (var item in result.Items)
+    {
+        <div class="prv-result-item @(item.IsCorrect ? "is-correct" : "is-incorrect")">
+            <div class="prv-result-q-head">
+                <span class="prv-q-num">@item.Number</span>
+                <p class="prv-result-q-text">@item.Text</p>
+                <span class="prv-result-q-flag @(item.IsCorrect ? "is-correct" : "is-incorrect")">
+                    <i class="fas @(item.IsCorrect ? "fa-check" : "fa-xmark")"></i>
+                    @(item.IsCorrect ? "Correct" : "Incorrect")
+                </span>
+            </div>
+            <div class="prv-result-opts">
+                @for (var i = 0; i < item.Options.Count; i++)
+                {
+                    var isCorrectOpt = i == item.CorrectIndex;
+                    var isSelectedOpt = item.SelectedIndex.HasValue && i == item.SelectedIndex.Value;
+                    var optClass = isCorrectOpt ? "is-correct-opt" : (isSelectedOpt ? "is-wrong-opt" : "");
+                    <div class="prv-result-opt @optClass">
+                        <span class="prv-result-opt-mark">
+                            @if (isCorrectOpt)
+                            {
+                                <i class="fas fa-check"></i>
+                            }
+                            else if (isSelectedOpt)
+                            {
+                                <i class="fas fa-xmark"></i>
+                            }
+                        </span>
+                        <span class="prv-result-opt-text">@item.Options[i]</span>
+                        @if (isCorrectOpt)
+                        {
+                            <span class="prv-result-opt-tag">Correct answer</span>
+                        }
+                        else if (isSelectedOpt)
+                        {
+                            <span class="prv-result-opt-tag is-wrong">Your answer</span>
+                        }
+                    </div>
+                }
+                @if (!item.WasAnswered)
+                {
+                    <p class="prv-result-skipped">You did not answer this question.</p>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+<div class="prv-exam-nav prv-result-actions">
+    @if (result.Passed)
+    {
+        <a href="@continueUrl" class="ob-btn ob-btn-primary">Continue</a>
+    }
+    else
+    {
+        <a href="@retryUrl" class="ob-btn ob-btn-primary">Retry exam</a>
+    }
+</div>

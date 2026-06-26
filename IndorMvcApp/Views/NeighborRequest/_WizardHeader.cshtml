@@ -2,7 +2,7 @@
 <header class="nr-wizard-top">
     @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
     {
-        <a href="@Model.BackUrl" class="nr-wizard-nav-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <a href="@Model.BackUrl" class="nr-wizard-nav-btn" aria-label="Back" @(Model.IsEditMode ? null : Html.Raw("data-nr-history-back"))><i class="fas fa-arrow-left"></i></a>
     }
     else
     {

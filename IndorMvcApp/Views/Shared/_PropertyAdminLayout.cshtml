@@ -1,20 +1,40 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#0066CC" />
-    <title>@(ViewData["Title"] ?? "Portfolio") - INDOR</title>
-    @await Html.PartialAsync("_AppVersionHead")
-    @await Html.PartialAsync("_PropertyAdminPortalHead")
-    @RenderSection("Head", required: false)
-</head>
-<body class="pa-portal-page">
-    @RenderBody()
-    @if (ViewBag.HideBottomNav != true)
-    {
-        @await Html.PartialAsync("~/Views/Administrador/_PropertyAdminBottomNav.cshtml")
-    }
-    @RenderSection("Scripts", required: false)
-</body>
-</html>
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <meta name="theme-color" content="#0066CC" />
+
+    <title>@(ViewData["Title"] ?? "Portfolio") - INDOR</title>
+
+    @await Html.PartialAsync("_AppVersionHead")
+
+    @await Html.PartialAsync("_PropertyAdminPortalHead")
+
+    @RenderSection("Head", required: false)
+
+</head>
+
+<body class="pa-portal-page">
+
+    @RenderBody()
+
+    @if (ViewBag.HideBottomNav != true)
+
+    {
+
+        @await Html.PartialAsync("~/Views/Administrador/_PropertyAdminBottomNav.cshtml")
+
+    }
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>
+

@@ -51,12 +51,12 @@ public partial class ProviderRegistrationController(
             ? state.ExamIsMandatory && state.ExamPassed != true
             : await registration.RequiresTradeExamAsync(state) && state.ExamPassed != true;
 
-    private IActionResult RedirectAfterExamPass(ProviderRegistrationState state) =>
-        state.UsesNewWizard
-            ? RedirectToAction(nameof(ActivationCall))
+    private string ExamPassNextUrl(ProviderRegistrationState state) =>
+        (state.UsesNewWizard
+            ? Url.Action(nameof(ActivationCall))
             : state.IsElectricianOnly
-                ? RedirectToAction(nameof(Scope))
-                : RedirectToAction(nameof(Documents));
+                ? Url.Action(nameof(Scope))
+                : Url.Action(nameof(Documents)))!;
 
     [HttpGet]
     public async Task<IActionResult> Categories()
@@ -786,13 +786,36 @@ public partial class ProviderRegistrationController(
         state.ExamPassed = passed;
         await registration.SaveAsync(state, 4);
 
-        if (!passed)
+        return RedirectToAction(nameof(Result));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Result()
+    {
+        var state = await registration.GetAsync();
+        if (!await registration.RequiresTradeExamAsync(state))
         {
-            TempData["ExamFailedScore"] = score;
+            return RedirectToAction(nameof(Documents));
+        }
+
+        if (state.ExamPassed is null)
+        {
             return RedirectToAction(nameof(Exam), new { page = 1 });
         }
 
-        return RedirectAfterExamPass(state);
+        var tradeCode = await registration.ResolveTradeCodeAsync(state);
+        var result = await registration.GetExamResultAsync(tradeCode);
+
+        ViewBag.ExamResult = result;
+        ViewBag.RetryUrl = Url.Action(nameof(Exam), new { page = 1 });
+        ViewBag.ContinueUrl = ExamPassNextUrl(state);
+
+        var title = result.Passed ? "You passed the exam" : "You did not pass";
+        var subtitle = result.Passed
+            ? $"You scored {result.ScorePercent}%. Here is the breakdown of every question."
+            : $"You scored {result.ScorePercent}%. You need {result.PassingPercent}% to pass. Review every question and try again.";
+
+        return View(StepVm(4, title, subtitle, state, null));
     }
 
     [HttpGet]

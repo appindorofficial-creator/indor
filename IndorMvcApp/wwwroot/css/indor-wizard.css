@@ -20,7 +20,7 @@
     margin: 0 auto;
     min-height: 100vh;
     min-height: 100dvh;
-    padding: 0 16px calc(96px + env(safe-area-inset-bottom, 0));
+    padding: 0 16px var(--indor-page-footer-scroll, calc(96px + env(safe-area-inset-bottom, 0)));
 }
 
 /* ── Header ─────────────────────────────────────────────── */
@@ -134,7 +134,7 @@
     display: flex;
     flex-direction: column;
     gap: 12px;
-    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0));
+    padding-bottom: var(--indor-page-footer-scroll, calc(96px + env(safe-area-inset-bottom, 0)));
 }
 
 .iw-wizard-heading,
@@ -168,8 +168,8 @@
     right: 0;
     bottom: 0;
     z-index: 40;
-    padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0));
-    background: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, rgba(240, 247, 255, .92) 28%, rgba(240, 247, 255, .98) 100%);
+    padding: var(--indor-footer-pad-y, 12px) 16px var(--indor-page-footer-bottom, calc(12px + env(safe-area-inset-bottom, 0)));
+    background: var(--indor-page-footer-bg, linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, rgba(240, 247, 255, .92) 28%, rgba(240, 247, 255, .98) 100%));
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
 }
@@ -307,4 +307,190 @@
 .ob-stepper .step.active,
 .ob-stepper .step.done {
     background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC));
+}
+
+/* ============================================================
+   INDOR PAGE FOOTERS — unified fixed bottom actions
+   Service wizards, property-admin flows, onboarding steps.
+   ============================================================ */
+
+:root {
+    --indor-action-h: 52px;
+    --indor-action-gap: 10px;
+    --indor-footer-pad-y: 12px;
+    --indor-bottom-nav-h: 56px;
+    --indor-bottom-nav-offset: 0px;
+    --indor-page-footer-bottom: calc(var(--indor-footer-pad-y) + env(safe-area-inset-bottom, 0px));
+    --indor-page-footer-scroll: calc(96px + env(safe-area-inset-bottom, 0px));
+    --indor-page-footer-bg: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, rgba(240, 247, 255, .92) 28%, rgba(240, 247, 255, .98) 100%);
+}
+
+body:has(.bottom-nav),
+body:has(.pa-bottom-nav),
+body:has(.rl-bottom-nav),
+body:has(.prv-pro-bottom-nav) {
+    --indor-bottom-nav-offset: var(--indor-bottom-nav-h);
+    --indor-page-footer-bottom: calc(var(--indor-footer-pad-y) + var(--indor-bottom-nav-offset) + env(safe-area-inset-bottom, 0px));
+    --indor-page-footer-scroll: calc(96px + var(--indor-bottom-nav-offset) + env(safe-area-inset-bottom, 0px));
+}
+
+/* Shared fixed footer bar (containers) */
+.iw-wizard-page .sticky-footer,
+.iw-wizard-page .sticky-total {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0 !important;
+    z-index: 41;
+    margin-top: 0 !important;
+    padding: var(--indor-footer-pad-y) 16px var(--indor-page-footer-bottom) !important;
+    background: var(--indor-page-footer-bg) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: none !important;
+    display: flex;
+    flex-direction: column;
+    gap: var(--indor-action-gap);
+    box-sizing: border-box;
+}
+
+.iw-wizard-page .sticky-footer .btn-primary,
+.iw-wizard-page .sticky-footer .btn-outline,
+.iw-wizard-page .sticky-total .btn-primary,
+.iw-wizard-page .sticky-total .btn-outline {
+    margin-top: 0 !important;
+}
+
+/* Pin standalone submit buttons in service wizards */
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions),
+.iw-wizard-page form.cl-form-actions {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"],
+.iw-wizard-page form.cl-form-actions > button[type="submit"],
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > button.hvac-save-btn[type="submit"],
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > a.hvac-save-btn.indor-page-cta {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: 448px;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    z-index: 41;
+    margin-top: 0 !important;
+    box-sizing: border-box;
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"]:last-child,
+.iw-wizard-page form.cl-form-actions > button[type="submit"]:last-child,
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > button.hvac-save-btn[type="submit"]:last-child {
+    bottom: var(--indor-page-footer-bottom);
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"]:nth-last-child(2),
+.iw-wizard-page form.cl-form-actions > button[type="submit"]:nth-last-child(2) {
+    bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
+/* Property administrator service flows */
+.pa-portal-page .pa-portal-shell--flow,
+.pa-portal-page .pa-portal-shell--flow form {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+.pa-portal-page .pa-flow-submit,
+.pa-portal-page a.pa-flow-submit.ob-btn {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    width: auto;
+    max-width: 448px;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 41;
+    margin-bottom: 0 !important;
+    box-sizing: border-box;
+}
+
+.pa-portal-page .pa-flow-submit:only-of-type,
+.pa-portal-page a.pa-flow-submit.ob-btn:only-of-type,
+.pa-portal-page .pa-portal-shell--flow > .pa-flow-submit,
+.pa-portal-page .pa-portal-shell--flow > a.pa-flow-submit {
+    bottom: var(--indor-page-footer-bottom);
+}
+
+.pa-portal-page .pa-flow-submit:not(:only-of-type),
+.pa-portal-page form:has(.pa-flow-back-link) .pa-flow-submit {
+    bottom: calc(var(--indor-page-footer-bottom) + 28px);
+}
+
+.pa-portal-page .pa-flow-back-link {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    z-index: 41;
+    bottom: var(--indor-page-footer-bottom);
+    text-align: center;
+    margin-top: 0 !important;
+}
+
+/* Onboarding / provider registration steps */
+.ob-page:not(.ob-welcome) .ob-shell-inner {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+.ob-page .ob-form-card > button[type="submit"],
+.ob-page .ob-shell-inner > form > button[type="submit"].ob-btn-primary {
+    position: fixed;
+    left: 20px;
+    right: 20px;
+    width: auto;
+    max-width: 390px;
+    margin-left: auto;
+    margin-right: auto;
+    z-index: 41;
+    box-sizing: border-box;
+}
+
+.ob-page .ob-form-card > button[type="submit"]:last-of-type,
+.ob-page .ob-shell-inner > form > button[type="submit"].ob-btn-primary:last-of-type {
+    bottom: var(--indor-page-footer-bottom);
+}
+
+.ob-page .ob-form-card > button[type="submit"]:nth-last-of-type(2) {
+    bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
+/* Property administrator registration (same ob-page shell) */
+.pa-page.ob-page .ob-shell-inner {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+/* Provider Pro workflow footers — flush above bottom nav */
+.prv-pro-body .prv-pro-workflow-footer,
+.prv-pro-body .prv-pro-job-footer,
+.prv-pro-body .prv-pro-report-footer,
+.prv-pro-body .prv-pro-estimate-footer,
+.prv-pro-body .prv-pro-lead-footer,
+.prv-pro-body .prv-pro-invoice-details-footer {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0 !important;
+    z-index: 41;
+    margin-top: 0 !important;
+    padding: var(--indor-footer-pad-y) 16px var(--indor-page-footer-bottom) !important;
+    background: rgba(248, 250, 252, .97) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: 1px solid #E2E8F0 !important;
+    box-sizing: border-box;
+}
+
+.prv-pro-body:has(.prv-pro-bottom-nav) .prv-pro-shell--workflow,
+.prv-pro-body:has(.prv-pro-bottom-nav) .prv-pro-shell--lead-details,
+.prv-pro-body .prv-pro-shell--workflow {
+    padding-bottom: var(--indor-page-footer-scroll, 120px);
 }

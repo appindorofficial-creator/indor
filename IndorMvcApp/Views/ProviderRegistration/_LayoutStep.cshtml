@@ -1,24 +1,48 @@
-@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#0066CC" />
-    <title>@Model.Title - INDOR</title>
-    @await Html.PartialAsync("_AppVersionHead")
-    @await Html.PartialAsync("_ProviderProPortalHead")
-    @RenderSection("Head", required: false)
-</head>
-<body class="ob-page prv-page">
-    <div class="ob-shell">
-        <div class="ob-shell-inner">
-            @await Html.PartialAsync("_ProviderNav", Model)
-            @await Html.PartialAsync("_ProviderStepper", Model)
-            @RenderBody()
-        </div>
-    </div>
-    <script src="~/js/provider-registration.js" asp-append-version="true"></script>
-    @RenderSection("Scripts", required: false)
-</body>
-</html>
+@model IndorMvcApp.ViewModels.ProviderRegistrationStepViewModel
+
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+    <meta name="theme-color" content="#0066CC" />
+
+    <title>@Model.Title - INDOR</title>
+
+    @await Html.PartialAsync("_AppVersionHead")
+
+    @await Html.PartialAsync("_ProviderProPortalHead")
+
+    @RenderSection("Head", required: false)
+
+</head>
+
+<body class="ob-page prv-page">
+
+    <div class="ob-shell">
+
+        <div class="ob-shell-inner">
+
+            @await Html.PartialAsync("_ProviderNav", Model)
+
+            @await Html.PartialAsync("_ProviderStepper", Model)
+
+            @RenderBody()
+
+        </div>
+
+    </div>
+
+    <script src="~/js/provider-registration.js" asp-append-version="true"></script>
+
+    @RenderSection("Scripts", required: false)
+
+</body>
+
+</html>
+

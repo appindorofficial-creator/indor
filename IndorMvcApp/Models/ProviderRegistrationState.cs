@@ -17,7 +17,7 @@ public class ProviderRegistrationState
     public const string LandscapingCategoryId = "landscaping";
     public const string PestCategoryId = "pest";
     public const string ApplianceCategoryId = "appliance";
-    public const int ExamPassingPercent = 80;
+    public const int ExamPassingPercent = 70;
 
     public List<string> SelectedCategoryIds { get; set; } = [];
     public List<string> SelectedServiceIds { get; set; } = [];

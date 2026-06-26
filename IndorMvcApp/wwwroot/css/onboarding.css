@@ -24,7 +24,7 @@
 
 /* Shared layout */
 .ob-shell{min-height:100vh;min-height:100dvh;padding:0 0 40px;background:var(--indor-bg-sky, #E9F2FE)}
-.ob-shell-inner{max-width:430px;margin:0 auto;padding:0 20px 24px}
+.ob-shell-inner{max-width:430px;margin:0 auto;padding:0 20px var(--indor-page-footer-scroll, 24px)}
 .ob-nav{display:flex;align-items:center;justify-content:space-between;padding:14px 0 8px;min-height:52px}
 .ob-nav-back{width:40px;height:40px;border:none;background:transparent;color:#0F172A;font-size:1.1rem;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:10px}
 .ob-nav-back:hover{background:rgba(15,23,42,.06)}

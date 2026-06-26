@@ -14,6 +14,7 @@ public interface IProviderRegistrationService
     Task<IReadOnlyList<ExamQuestion>> GetExamPageQuestionsAsync(int page, string tradeCode = "electrical", CancellationToken cancellationToken = default);
     Task SaveExamPageAnswersAsync(int page, IReadOnlyDictionary<int, string> pageAnswers, string tradeCode = "electrical", CancellationToken cancellationToken = default);
     Task<(bool Passed, int ScorePercent)> FinalizeExamAsync(string tradeCode = "electrical", CancellationToken cancellationToken = default);
+    Task<ViewModels.ProviderExamResultViewModel> GetExamResultAsync(string tradeCode = "electrical", CancellationToken cancellationToken = default);
     Task<IReadOnlyList<string>> GetScopeAllowedAsync(string tradeCode = "electrical", CancellationToken cancellationToken = default);
     Task<IReadOnlyList<string>> GetScopeDisallowedAsync(string tradeCode = "electrical", CancellationToken cancellationToken = default);
     Task CompleteRegistrationAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default);

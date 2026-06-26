@@ -103,7 +103,15 @@ public class NeighborRequestWizardService(
         }
     }
 
+    public Task<NeighborRequestCategoryStepViewModel> BuildCategoryStepAsync(
+        int propiedadId,
+        NeighborRequestDraftState? draft,
+        IUrlHelper url,
+        CancellationToken ct) =>
+        BuildCategoryStepAsync(null, propiedadId, draft, url, ct);
+
     public async Task<NeighborRequestCategoryStepViewModel> BuildCategoryStepAsync(
+        Propiedad? propiedad,
         int propiedadId,
         NeighborRequestDraftState? draft,
         IUrlHelper url,
@@ -113,7 +121,7 @@ public class NeighborRequestWizardService(
         var defaultAddress = draft?.LocationAddress;
         if (string.IsNullOrWhiteSpace(defaultAddress))
         {
-            var propiedad = await db.Propiedades.AsNoTracking()
+            propiedad ??= await db.Propiedades.AsNoTracking()
                 .FirstOrDefaultAsync(p => p.Id == propiedadId, ct);
             if (propiedad != null)
             {

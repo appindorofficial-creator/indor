@@ -36,7 +36,8 @@ body > * {
 }
 
 /* Fixed wizard footers must anchor to the viewport, not the shell. */
-body.nr-wizard-page > .nr-wizard-shell {
+body.nr-wizard-page > .nr-wizard-shell,
+body.iw-wizard-page > .iw-wizard-shell {
     position: static;
     z-index: auto;
 }

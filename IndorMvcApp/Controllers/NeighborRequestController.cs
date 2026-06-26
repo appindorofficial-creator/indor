@@ -49,7 +49,7 @@ public class NeighborRequestController(
 
         await wizardService.EnsureDraftAsync(HttpContext.Session, propiedad, cancellationToken);
         var draft = wizardService.LoadDraft(HttpContext.Session);
-        var model = await wizardService.BuildCategoryStepAsync(propiedadId, draft, Url, cancellationToken);
+        var model = await wizardService.BuildCategoryStepAsync(propiedad, propiedad.Id, draft, Url, cancellationToken);
         if (!wizardService.IsFreshStart(HttpContext.Session) && draft?.CategoryId > 0)
         {
             model.SelectedCategoryId = draft.CategoryId;

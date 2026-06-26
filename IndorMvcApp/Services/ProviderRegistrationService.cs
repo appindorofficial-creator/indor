@@ -1,6 +1,7 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,7 @@ public class ProviderRegistrationService(
     IAddressLookupService addressLookup) : IProviderRegistrationService
 {
     private const string ProveedorIdSessionKey = "ProveedorRegistroId";
-    private const int DefaultPassingPercent = 80;
+    private const int DefaultPassingPercent = 70;
     private const int QuestionsPerPage = 4;
     private const string ElectricalTrade = "electrical";
 
@@ -603,6 +604,86 @@ public class ProviderRegistrationService(
 
         return (passed, score);
     }
+
+    public async Task<ProviderExamResultViewModel> GetExamResultAsync(string tradeCode = ElectricalTrade, CancellationToken cancellationToken = default)
+    {
+        var proveedorId = await EnsureDraftAsync(cancellationToken);
+
+        var dbQuestions = await db.IndorProveedorExamPreguntas
+            .AsNoTracking()
+            .Where(q => q.TradeCode == tradeCode && q.Activo)
+            .OrderBy(q => q.QuestionNumber)
+            .ToListAsync(cancellationToken);
+
+        IReadOnlyList<ExamQuestion> questions = dbQuestions.Count > 0
+            ? dbQuestions
+                .Select(q => new ExamQuestion(
+                    q.QuestionNumber,
+                    q.TextEn,
+                    JsonSerializer.Deserialize<List<string>>(q.OptionsJson) ?? new List<string>(),
+                    q.CorrectIndex))
+                .ToList()
+            : ResolveFallbackQuestions(tradeCode);
+
+        var answers = await db.IndorProveedorExamRespuestas
+            .AsNoTracking()
+            .Where(r => r.ProveedorId == proveedorId && r.TradeCode == tradeCode)
+            .ToListAsync(cancellationToken);
+
+        var answerByQuestion = answers
+            .GroupBy(r => r.QuestionNumber)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(r => r.AnsweredUtc).First());
+
+        var items = questions
+            .OrderBy(q => q.Number)
+            .Select(q =>
+            {
+                answerByQuestion.TryGetValue(q.Number, out var resp);
+                return new ProviderExamResultItem
+                {
+                    Number = q.Number,
+                    Text = q.Text,
+                    Options = q.Options,
+                    SelectedIndex = resp?.SelectedIndex,
+                    CorrectIndex = q.CorrectIndex,
+                    IsCorrect = resp?.IsCorrect ?? false,
+                };
+            })
+            .ToList();
+
+        var total = items.Count;
+        var correct = items.Count(i => i.IsCorrect);
+        var score = total == 0 ? 0 : (int)Math.Round(100.0 * correct / total);
+
+        return new ProviderExamResultViewModel
+        {
+            ScorePercent = score,
+            Passed = score >= DefaultPassingPercent,
+            PassingPercent = DefaultPassingPercent,
+            CorrectCount = correct,
+            TotalCount = total,
+            TradeLabel = await GetPrimaryTradeLabelAsync(cancellationToken) ?? "trade",
+            Items = items,
+        };
+    }
+
+    private static IReadOnlyList<ExamQuestion> ResolveFallbackQuestions(string tradeCode) => tradeCode switch
+    {
+        _ when tradeCode.Equals(PlumbingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PlumbingExamCatalog.Questions,
+        _ when tradeCode.Equals(HvacExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => HvacExamCatalog.Questions,
+        _ when tradeCode.Equals(HandymanExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => HandymanExamCatalog.Questions,
+        _ when tradeCode.Equals(ConstructionExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => ConstructionExamCatalog.Questions,
+        _ when tradeCode.Equals(BathroomExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => BathroomExamCatalog.Questions,
+        _ when tradeCode.Equals(KitchenExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => KitchenExamCatalog.Questions,
+        _ when tradeCode.Equals(RoofingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => RoofingExamCatalog.Questions,
+        _ when tradeCode.Equals(PaintingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PaintingExamCatalog.Questions,
+        _ when tradeCode.Equals(FlooringExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => FlooringExamCatalog.Questions,
+        _ when tradeCode.Equals(CleaningExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => CleaningExamCatalog.Questions,
+        _ when tradeCode.Equals(LandscapingExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => LandscapingExamCatalog.Questions,
+        _ when tradeCode.Equals(PestControlExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => PestControlExamCatalog.Questions,
+        _ when tradeCode.Equals(ApplianceRepairExamCatalog.TradeCode, StringComparison.OrdinalIgnoreCase) => ApplianceRepairExamCatalog.Questions,
+        _ => ElectricalExamCatalog.Questions,
+    };
 
     public async Task<IReadOnlyList<string>> GetScopeAllowedAsync(string tradeCode = ElectricalTrade, CancellationToken cancellationToken = default)
     {
