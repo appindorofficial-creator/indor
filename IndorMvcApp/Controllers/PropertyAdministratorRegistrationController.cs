@@ -242,8 +242,9 @@ public class PropertyAdministratorRegistrationController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public IActionResult ContinueFromProperties()
+    public async Task<IActionResult> ContinueFromProperties()
     {
+        await registration.AdvanceFromPropertiesAsync();
         return RedirectToAction(nameof(Tools));
     }
 

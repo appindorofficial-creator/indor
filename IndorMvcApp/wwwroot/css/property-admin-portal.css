@@ -104,6 +104,7 @@
 .pa-terms a{color:#0066CC;font-weight:600;text-decoration:none}
 
 .pa-back-link{display:block;text-align:center;margin-top:14px;color:#0066CC;font-weight:600;text-decoration:none;font-size:.9rem}
+.pa-step-hint{margin:-6px 0 0;font-size:.82rem;color:#64748B;line-height:1.45}
 
 .pa-page .pa-reg-actions{
     display:flex;align-items:center;justify-content:space-between;gap:12px;
@@ -221,8 +222,6 @@
 .pa-network-emergency-meta i{color:#94A3B8;margin-right:5px}
 .pa-network-emergency-call{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;background:#fff;border:1.5px solid #DC2626;color:#DC2626;border-radius:999px;padding:9px 16px;font-size:.82rem;font-weight:700}
 .pa-network-emergency-call i{font-size:.7rem}
-.pa-portfolio-chevron{color:#94A3B8;font-size:.75rem}
-
 .pa-stats-row{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px;margin-bottom:18px;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch}
 .pa-stat-tile{flex:0 0 42%;min-width:148px;max-width:168px;scroll-snap-align:start;background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:12px 10px}
 .pa-stat-tile-icon{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:.85rem}

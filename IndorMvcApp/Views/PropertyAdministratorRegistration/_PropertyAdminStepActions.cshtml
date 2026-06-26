@@ -2,11 +2,12 @@
     var formId = ViewData["StepFormId"] as string ?? "paStepForm";
     var backUrl = ViewData["StepBackUrl"] as string;
     var submitLabel = ViewData["StepSubmitLabel"] as string ?? "Next";
+    var submitFormNoValidate = ViewData["StepSubmitFormNoValidate"] as bool? == true;
 }
 <div class="pa-reg-actions">
     @if (!string.IsNullOrWhiteSpace(backUrl))
     {
         <a href="@backUrl" class="pa-reg-action-back">Back</a>
     }
-    <button type="submit" form="@formId" class="ob-btn ob-btn-primary">@submitLabel</button>
+    <button type="submit" form="@formId" class="ob-btn ob-btn-primary" @(submitFormNoValidate ? "formnovalidate" : null)>@submitLabel</button>
 </div>

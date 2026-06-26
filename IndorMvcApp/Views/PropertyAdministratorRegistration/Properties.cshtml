@@ -17,6 +17,7 @@
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
+    <p class="pa-step-hint">You can add properties now or skip and add them later from your dashboard.</p>
 </div>
 
 @if (TempData["PropertyAdminError"] is string err)
@@ -49,7 +50,7 @@
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
     </summary>
-    <form asp-action="AddProperty" method="post" class="pa-add-property-form">
+    <form asp-action="AddProperty" method="post" class="pa-add-property-form" novalidate>
         @Html.AntiForgeryToken()
 
         <div class="pa-field-row pa-field-row--2">
@@ -59,18 +60,18 @@
             </label>
             <label class="pa-field">
                 <i class="fas fa-road"></i>
-                <input type="text" name="streetName" placeholder="Street name" required autocomplete="address-line1" />
+                <input type="text" name="streetName" placeholder="Street name" autocomplete="address-line1" />
             </label>
         </div>
 
         <div class="pa-field-row pa-field-row--3">
             <label class="pa-field">
                 <i class="fas fa-city"></i>
-                <input type="text" name="city" value="@defaultCity" placeholder="City" required autocomplete="address-level2" />
+                <input type="text" name="city" value="@defaultCity" placeholder="City" autocomplete="address-level2" />
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-map"></i>
-                <select name="state" required>
+                <select name="state">
                     <option value="">State</option>
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
@@ -86,7 +87,7 @@
 
         <label class="pa-field">
             <i class="fas fa-tag"></i>
-            <select name="propertyType" required>
+            <select name="propertyType">
                 <option value="">Property type</option>
                 @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
                 {
@@ -121,5 +122,6 @@
     ViewData["StepFormId"] = "paPropertiesContinueForm";
     ViewData["StepBackUrl"] = Model.BackUrl;
     ViewData["StepSubmitLabel"] = "Next";
+    ViewData["StepSubmitFormNoValidate"] = true;
 }
 @await Html.PartialAsync("_PropertyAdminStepActions")
