@@ -175,7 +175,9 @@ select.form-control,
 .rl-field textarea,
 .rl-search-bar input,
 .rl-cp-input input,
-.rl-cp-input select {
+.rl-cp-input select,
+.pa-network-search input,
+.pa-search-bar input {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -208,7 +210,11 @@ select:focus {
 .rl-cp-input input:focus,
 .rl-cp-input input:focus-visible,
 .rl-cp-input select:focus,
-.rl-cp-input select:focus-visible {
+.rl-cp-input select:focus-visible,
+.pa-network-search input:focus,
+.pa-network-search input:focus-visible,
+.pa-search-bar input:focus,
+.pa-search-bar input:focus-visible {
     border: none !important;
     box-shadow: none !important;
     outline: none !important;
