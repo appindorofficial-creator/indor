@@ -60,18 +60,35 @@
             </label>
             <label class="pa-field">
                 <i class="fas fa-road"></i>
-                <input type="text" name="streetName" placeholder="Street name" autocomplete="address-line1" />
+                <input type="text"
+                       id="pa-prop-street"
+                       name="streetName"
+                       placeholder="Street name"
+                       autocomplete="address-line1"
+                       data-address-autocomplete
+                       data-ac-street-only="true"
+                       data-ac-city="pa-prop-city"
+                       data-ac-state="pa-prop-state"
+                       data-ac-zip="pa-prop-zip" />
             </label>
         </div>
 
         <div class="pa-field-row pa-field-row--3">
             <label class="pa-field">
                 <i class="fas fa-city"></i>
-                <input type="text" name="city" value="@defaultCity" placeholder="City" autocomplete="address-level2" />
+                <input type="text"
+                       id="pa-prop-city"
+                       name="city"
+                       value="@defaultCity"
+                       placeholder="City"
+                       autocomplete="address-level2"
+                       data-city-autocomplete
+                       data-ac-state="pa-prop-state"
+                       data-ac-zip="pa-prop-zip" />
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-map"></i>
-                <select name="state">
+                <select id="pa-prop-state" name="state">
                     <option value="">State</option>
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
@@ -81,7 +98,13 @@
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-location-dot"></i>
-                <input type="text" name="zipCode" placeholder="ZIP" inputmode="numeric" autocomplete="postal-code" maxlength="10" />
+                <input type="text"
+                       id="pa-prop-zip"
+                       name="zipCode"
+                       placeholder="ZIP"
+                       inputmode="numeric"
+                       autocomplete="postal-code"
+                       maxlength="10" />
             </label>
         </div>
 
@@ -125,3 +148,5 @@
     ViewData["StepSubmitFormNoValidate"] = true;
 }
 @await Html.PartialAsync("_PropertyAdminStepActions")
+
+@await Html.PartialAsync("_AddressAutocompleteScripts")
