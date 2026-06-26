@@ -5,52 +5,75 @@
     ViewBag.NavActive = "clients";
 }
 
-<div class="rl-dash-shell">
-    @await Html.PartialAsync("_RealtorTopbar", Model)
+<div class="rl-dash-shell rl-clients-shell">
+    <div class="rl-clients-hero">
+        @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <div class="rl-page-header">
-        <div>
-            <h1 class="rl-page-title">Clients</h1>
-            <p class="rl-page-subtitle">Manage buyers, sellers, homeowners, and invitations.</p>
-        </div>
-        <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary rl-btn-primary--sm">
-            <i class="fas fa-plus"></i> Add Client
-        </a>
-    </div>
-
-    <form asp-action="Clients" method="get" class="rl-search-form">
-        <div class="rl-search-row">
-            <div class="rl-search-bar">
-                <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search clients by name, email or phone" />
+        <div class="rl-page-header">
+            <div>
+                <h1 class="rl-page-title">Clients</h1>
+                <p class="rl-page-subtitle">Manage buyers, sellers, homeowners, and invitations.</p>
             </div>
-            <div class="rl-filter-wrap">
-                <button type="button" class="rl-filter-btn" id="rlClientsFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> Filter</button>
-                <div class="rl-filter-menu" id="rlClientsFilterMenu" role="menu" hidden>
-                    @foreach (var chip in Model.Filters)
-                    {
-                        <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                           class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
-                            <span>@chip</span>
-                            @if (Model.ActiveFilter == chip)
-                            {
-                                <i class="fas fa-check"></i>
-                            }
-                        </a>
-                    }
+            <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary rl-btn-primary--sm rl-clients-add">
+                <i class="fas fa-plus"></i> Add Client
+            </a>
+        </div>
+
+        <form asp-action="Clients" method="get" class="rl-search-form">
+            <div class="rl-search-row">
+                <div class="rl-search-bar">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search clients by name, email or phone" />
+                </div>
+                <div class="rl-filter-wrap">
+                    <button type="button" class="rl-filter-btn" id="rlClientsFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> Filter</button>
+                    <div class="rl-filter-menu" id="rlClientsFilterMenu" role="menu" hidden>
+                        @foreach (var chip in Model.Filters)
+                        {
+                            <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                               class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
+                                <span>@chip</span>
+                                @if (Model.ActiveFilter == chip)
+                                {
+                                    <i class="fas fa-check"></i>
+                                }
+                            </a>
+                        }
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="rl-filter-chips">
-            @foreach (var chip in Model.Filters)
-            {
-                <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
-            }
-        </div>
-    </form>
+            <div class="rl-filter-chips">
+                @foreach (var chip in Model.Filters)
+                {
+                    <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+                }
+            </div>
+        </form>
+    </div>
 
     @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
+
+    <section class="rl-dash-section rl-clients-qa-section">
+        <h2 class="rl-clients-qa-title">Quick Actions</h2>
+        <div class="rl-qa-grid">
+            <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-qa-card">
+                <span class="rl-qa-icon rl-qa-icon--blue"><i class="fas fa-user-plus"></i></span>
+                <span class="rl-qa-label">Invite Client</span>
+                <i class="fas fa-chevron-right rl-qa-chevron"></i>
+            </a>
+            <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-qa-card">
+                <span class="rl-qa-icon rl-qa-icon--green"><i class="fas fa-folder-plus"></i></span>
+                <span class="rl-qa-label">Create File</span>
+                <i class="fas fa-chevron-right rl-qa-chevron"></i>
+            </a>
+            <a asp-controller="RealtorUrgentQuote" asp-action="Property" class="rl-qa-card">
+                <span class="rl-qa-icon rl-qa-icon--purple"><i class="fas fa-file-invoice-dollar"></i></span>
+                <span class="rl-qa-label">New Quote</span>
+                <i class="fas fa-chevron-right rl-qa-chevron"></i>
+            </a>
+        </div>
+    </section>
 
     <section class="rl-dash-section">
         @if (Model.ActiveFilter == "Invited")
@@ -97,7 +120,15 @@
             }
             else if (Model.ActiveFilter == "All" && !Model.HasAnyClients)
             {
-                <div class="rl-dash-empty">No clients match your filters.</div>
+                <div class="rl-clients-empty">
+                    <div class="rl-clients-empty-art">
+                        <i class="fas fa-address-card"></i>
+                        <span class="rl-clients-empty-spark"><i class="fas fa-plus"></i></span>
+                    </div>
+                    <h3>No clients yet</h3>
+                    <p>Start by adding your first client or sending an invitation.</p>
+                    <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary">Add First Client</a>
+                </div>
             }
             else
             {
@@ -156,6 +187,17 @@
                 </article>
             }
         }
+    </section>
+
+    <section class="rl-dash-section">
+        <div class="rl-tips-card">
+            <span class="rl-tips-icon"><i class="fas fa-lightbulb"></i></span>
+            <div class="rl-tips-body">
+                <strong>Tips &amp; Insights</strong>
+                <p>Invite clients and create files to keep everything organized in one place.</p>
+            </div>
+            <a asp-controller="Realtor" asp-action="Files" class="rl-tips-link">Learn more <i class="fas fa-chevron-right"></i></a>
+        </div>
     </section>
 
     @if (Model.NextSteps.Count > 0)

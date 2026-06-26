@@ -148,9 +148,10 @@ public class NeighborRequestWizardService(
             {
                 Id = c.Id,
                 Label = ResolveQuickJobCategoryLabel(c.Code, c.LabelEn),
-                Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
+                Description = ResolveQuickJobCategoryDescription(c.Code),
                 IconClass = ResolveCategoryIcon(c.Code, c.IconClass),
-                IllustrationClass = ResolveCategoryIllustration(c.Code)
+                IllustrationClass = ResolveCategoryIllustration(c.Code),
+                ImageUrl = ResolveQuickJobCategoryImage(c.Code)
             }).ToList()
         };
     }
@@ -1538,7 +1539,43 @@ public class NeighborRequestWizardService(
             "home-improvements" => "General labor",
             "tech-internet" => "Carry boxes",
             "other" => "Junk removal",
+            "painting" => "Painting help",
+            "fence" => "Fence help",
+            "assembly" => "Assembly help",
+            "outdoor-cleanup" => "Outdoor cleanup",
             _ => ResolveCategoryLabel(code, labelEn)
+        };
+
+    private static string ResolveQuickJobCategoryDescription(string code) =>
+        code.Trim().ToLowerInvariant() switch
+        {
+            "home-improvements" => "Help with simple tasks around the house",
+            "yard-patio" => "Mowing, trimming, leaves and cleanup",
+            "cleaning" => "Home, patio, garage or deep cleaning",
+            "moving-hauling" => "Move heavy furniture and items",
+            "tech-internet" => "Loading, unloading or lifting boxes",
+            "other" => "Remove trash, clutter and unwanted items",
+            "painting" => "Help painting walls, fences and touch-ups",
+            "fence" => "Fence cleanup, staining or basic repairs",
+            "assembly" => "Assemble shelves, furniture and simple items",
+            "outdoor-cleanup" => "Help with debris, branches and hauling",
+            _ => "Pick the help you need"
+        };
+
+    private static string ResolveQuickJobCategoryImage(string code) =>
+        "/images/quickjob/" + code.Trim().ToLowerInvariant() switch
+        {
+            "home-improvements" => "qj-general-labor.png",
+            "yard-patio" => "qj-yard-work.png",
+            "cleaning" => "qj-cleaning-help.png",
+            "moving-hauling" => "qj-moving-furniture.png",
+            "tech-internet" => "qj-carry-boxes.png",
+            "other" => "qj-junk-removal.png",
+            "painting" => "qj-painting-help.png",
+            "fence" => "qj-fence-help.png",
+            "assembly" => "qj-assembly-help.png",
+            "outdoor-cleanup" => "qj-outdoor-cleanup.png",
+            _ => "qj-general-labor.png"
         };
 
     private static string ResolveCategoryIllustration(string code) =>
@@ -1725,6 +1762,10 @@ public class NeighborRequestWizardService(
             "moving-hauling" => "Moving & Hauling",
             "tech-internet" => "Tech & Internet",
             "other" => "Other",
+            "painting" => "Painting Help",
+            "fence" => "Fence Help",
+            "assembly" => "Assembly Help",
+            "outdoor-cleanup" => "Outdoor Cleanup",
             _ => code
         };
 
@@ -1737,6 +1778,10 @@ public class NeighborRequestWizardService(
             "moving-hauling" => "Moving help, junk removal",
             "tech-internet" => "Wi-Fi, devices, smart home",
             "other" => "Something else",
+            "painting" => "Walls, fences and touch-ups",
+            "fence" => "Cleanup, staining or repairs",
+            "assembly" => "Shelves, furniture and items",
+            "outdoor-cleanup" => "Debris, branches and hauling",
             _ => null
         };
 
@@ -1749,6 +1794,10 @@ public class NeighborRequestWizardService(
             "moving-hauling" => "fa-dolly",
             "tech-internet" => "fa-wifi",
             "other" => "fa-ellipsis",
+            "painting" => "fa-roller-coaster",
+            "fence" => "fa-border-all",
+            "assembly" => "fa-screwdriver-wrench",
+            "outdoor-cleanup" => "fa-trowel",
             _ => "fa-circle"
         };
 

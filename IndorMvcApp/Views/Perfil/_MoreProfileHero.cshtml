@@ -7,11 +7,6 @@
 
 <div class="more-profile-card">
     <div class="more-profile-top-wrap">
-        @if (!Model.IsProfileComplete)
-        {
-            <img class="profile-house-art" src="~/images/profile-house.svg" alt="" asp-append-version="true"
-                 onerror="this.style.display='none'" />
-        }
         @if (!string.IsNullOrEmpty(linkUrl))
         {
             <a href="@linkUrl" class="more-profile-top" style="text-decoration:none;color:inherit;">
@@ -45,33 +40,40 @@
         else
         {
             <p class="more-completion-hint">Complete your profile to unlock better recommendations.</p>
-            <ul class="more-completion-list">
-                @foreach (var item in Model.CompletionItems.Where(i => !i.IsComplete).Take(4))
-                {
-                    <li>
-                        @if (!string.IsNullOrEmpty(item.ActionUrl))
-                        {
-                            <a href="@item.ActionUrl">@item.Label</a>
-                        }
-                        else
-                        {
-                            @item.Label
-                        }
-                    </li>
-                }
-            </ul>
+            var nextItem = Model.CompletionItems.FirstOrDefault(i => !i.IsComplete);
+            if (nextItem != null)
+            {
+                var nextIcon = nextItem.Label.Contains("photo", StringComparison.OrdinalIgnoreCase) ? "fa-camera" : "fa-circle-plus";
+                <a class="more-complete-link" href="@(string.IsNullOrEmpty(nextItem.ActionUrl) ? "#" : nextItem.ActionUrl)">
+                    <i class="fas @nextIcon"></i>
+                    <span>@nextItem.Label</span>
+                    <i class="fas fa-chevron-right more-complete-chevron"></i>
+                </a>
+            }
         }
     </div>
 
     @if (ViewData["ShowActions"] as bool? == true)
     {
         <div class="more-actions">
-            <a asp-controller="Perfil" asp-action="EditarPerfil"><i class="far fa-user"></i> Edit Profile</a>
+            <a asp-controller="Perfil" asp-action="EditarPerfil" class="more-action">
+                <span class="more-action-icon"><i class="far fa-user"></i></span>
+                <span class="more-action-body"><strong>Edit Profile</strong><small>Update your details</small></span>
+                <i class="fas fa-chevron-right more-action-chevron"></i>
+            </a>
             @if (ProfileDisplayService.PaidMembershipEnabled)
             {
-                <a asp-controller="Perfil" asp-action="Suscripciones" class="btn-upgrade"><i class="fas fa-star"></i> Upgrade</a>
+                <a asp-controller="Perfil" asp-action="Suscripciones" class="more-action more-action-upgrade">
+                    <span class="more-action-icon"><i class="fas fa-star"></i></span>
+                    <span class="more-action-body"><strong>Upgrade</strong><small>Unlock premium</small></span>
+                    <i class="fas fa-chevron-right more-action-chevron"></i>
+                </a>
             }
-            <a asp-controller="Perfil" asp-action="Soporte"><i class="fas fa-headset"></i> Support</a>
+            <a asp-controller="Perfil" asp-action="Soporte" class="more-action">
+                <span class="more-action-icon"><i class="fas fa-headset"></i></span>
+                <span class="more-action-body"><strong>Support</strong><small>We're here to help</small></span>
+                <i class="fas fa-chevron-right more-action-chevron"></i>
+            </a>
         </div>
     }
 </div>

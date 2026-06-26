@@ -30,9 +30,71 @@
 .more-profile-top {
     display: flex;
     gap: 14px;
-    align-items: flex-start;
-    padding-right: 72px;
+    align-items: center;
     position: relative;
+}
+
+.more-avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.more-avatar-edit {
+    position: absolute;
+    right: -2px;
+    bottom: -2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #0066CC;
+    color: #FFF;
+    border: 2.5px solid #FFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .58rem;
+    text-decoration: none;
+    box-shadow: 0 2px 6px rgba(0, 102, 204, .35);
+}
+
+.more-ring {
+    --pct: 0;
+    position: relative;
+    width: 66px;
+    height: 66px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: conic-gradient(#0066CC calc(var(--pct) * 1%), #E3EAF3 0);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.more-ring::before {
+    content: "";
+    position: absolute;
+    inset: 6px;
+    background: #FFF;
+    border-radius: 50%;
+}
+
+.more-ring-pct {
+    position: relative;
+    z-index: 1;
+    font-size: .82rem;
+    font-weight: 800;
+    color: #0A2540;
+    line-height: 1;
+}
+
+.more-ring-label {
+    position: relative;
+    z-index: 1;
+    font-size: .54rem;
+    font-weight: 600;
+    color: #64748B;
+    margin-top: 2px;
 }
 
 .more-completion {
@@ -148,82 +210,116 @@
     font-size: .62rem;
 }
 
-.more-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-top: 14px;
+.more-complete-link {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    font-size: .85rem;
+    font-weight: 700;
+    color: #0066CC;
+    text-decoration: none;
 }
 
-.more-actions a, .more-actions button {
-    display: inline-flex;
-    flex-direction: column;
+.more-complete-link > i:first-child { font-size: .95rem; }
+.more-complete-link span { flex: 1; min-width: 0; }
+.more-complete-link .more-complete-chevron { font-size: .72rem; color: #9CA3AF; font-weight: 900; }
+
+.more-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #EEF2F7;
+}
+
+.more-action {
+    display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 4px;
-    padding: 10px 6px;
-    border-radius: 12px;
-    font-size: .68rem;
-    font-weight: 700;
-    text-decoration: none;
-    cursor: pointer;
-    font-family: inherit;
+    gap: 10px;
+    padding: 11px 12px;
+    border-radius: 14px;
     border: 1px solid #E5E9F0;
     background: #FFF;
     color: #0A2540;
+    text-decoration: none;
     transition: box-shadow .15s ease, transform .15s ease;
 }
 
-.more-actions a:hover, .more-actions button:hover {
+.more-action:hover {
     box-shadow: 0 4px 12px rgba(10, 37, 64, .08);
     transform: translateY(-1px);
     text-decoration: none;
     color: #0A2540;
 }
 
-.more-actions .btn-upgrade {
-    background: linear-gradient(135deg, #0066CC, #004FA3);
-    color: #FFF;
-    border: none;
+.more-action-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #EBF3FF;
+    color: #0066CC;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .95rem;
+    flex-shrink: 0;
 }
 
-.more-actions .btn-upgrade i { color: #FFF; }
-.more-actions i { font-size: 1rem; color: #0066CC; }
+.more-action-body { flex: 1; min-width: 0; }
+.more-action-body strong { display: block; font-size: .84rem; font-weight: 700; line-height: 1.15; }
+.more-action-body small { font-size: .66rem; color: #6B7280; line-height: 1.2; }
+.more-action-chevron { color: #C2CBD6; font-size: .72rem; }
+
+.more-action-upgrade .more-action-icon { background: linear-gradient(135deg, #0066CC, #004FA3); color: #FFF; }
 
 .more-stats {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
     margin-bottom: 16px;
 }
 
 .more-stat {
+    position: relative;
+    overflow: hidden;
     background: #FFF;
     border: 1px solid #EEF2F7;
-    border-radius: 14px;
-    padding: 12px 8px;
-    text-align: center;
+    border-radius: 16px;
+    padding: 14px 12px;
+    text-align: left;
     box-shadow: 0 4px 12px rgba(10, 37, 64, .04);
 }
 
-.more-stat i {
-    font-size: 1rem;
+.more-stat .more-stat-ic {
+    font-size: 1.05rem;
     color: #0066CC;
-    margin-bottom: 6px;
+    margin-bottom: 10px;
     display: block;
 }
 
 .more-stat .ms-label {
-    font-size: .62rem;
+    font-size: .66rem;
     color: #6B7280;
     line-height: 1.2;
     margin-bottom: 4px;
 }
 
 .more-stat .ms-value {
-    font-size: .78rem;
+    font-size: .82rem;
     font-weight: 800;
     color: #0A2540;
+}
+
+.more-stat .more-stat-art {
+    position: absolute;
+    right: -8px;
+    bottom: -10px;
+    font-size: 2.9rem;
+    color: #0066CC;
+    opacity: .07;
+    pointer-events: none;
 }
 
 .more-section-title {
@@ -1557,8 +1653,8 @@
 .mem-delivery-setup-form .mem-info-banner { margin-bottom: 16px; }
 
 @media (max-width: 480px) {
-    .more-stats { grid-template-columns: repeat(2, 1fr); }
-    .more-actions { grid-template-columns: 1fr 1fr 1fr; }
+    .more-stats { grid-template-columns: repeat(3, 1fr); }
+    .more-actions { grid-template-columns: 1fr 1fr; }
     .pay-summary-grid { grid-template-columns: 1fr; }
     .pf-row { grid-template-columns: 1fr; }
     .more-profile-top { padding-right: 0; }

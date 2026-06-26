@@ -1,256 +1,354 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel
 @{
-    ViewData["Title"] = Model.IsEdit ? "Edit Listing" : "Create Your Listing";
+    ViewData["Title"] = Model.IsEdit ? "Edit Listing" : "Post Listing with INDOR";
+    ViewBag.ListingHideChrome = true;
+    var startStep = Model.IsEdit ? 2 : 1;
+    var feedUrl = Url.Action("Network", "Realtor", new { filter = "Homes", scope = "mine" });
+    var steps = new[] { "Why INDOR", "Listing Basics", "Property Details", "Review & Publish" };
 }
 
-<form asp-action="@(Model.IsEdit ? "EditNetworkListing" : "CreateNetworkListing")"
-      method="post"
-      enctype="multipart/form-data"
-      class="rl-listing-details-form"
-      id="rlListingDetailsForm">
-    @Html.AntiForgeryToken()
-    @if (Model.IsEdit)
-    {
-        <input type="hidden" asp-for="ItemId" />
-    }
-    <input type="hidden" asp-for="AddressLatitude" id="AddressLatitude" />
-    <input type="hidden" asp-for="AddressLongitude" id="AddressLongitude" />
-    <input type="hidden" asp-for="ImageUrl" id="ImageUrl" />
-    <input type="hidden" asp-for="AdditionalPhotoUrls" id="AdditionalPhotoUrls" />
-    <input type="hidden" asp-for="PhotoPdfUrl" id="PhotoPdfUrl" />
-    <input type="hidden" asp-for="PhotoPdfFileName" id="PhotoPdfFileName" />
-    <input type="hidden" asp-for="Title" id="Title" />
-
-    <section class="rl-listing-section">
-        <div class="rl-listing-section-head">
-            <h2>Property Photos</h2>
-            <span class="rl-listing-photo-count" id="rlPhotoCount">0/20</span>
+<div class="rl-lw" id="rlListingWizard" data-start-step="@startStep" data-feed-url="@feedUrl">
+    <div class="rl-lw-topnav">
+        <button type="button" class="rl-lw-back" id="rlLwBack" aria-label="Back"><i class="fas fa-chevron-left"></i></button>
+        <div class="rl-lw-topnav-title">
+            <h1 class="rl-lw-title" id="rlLwTitle">Post Listing with INDOR</h1>
+            <p class="rl-lw-sub" id="rlLwSub"></p>
         </div>
-        <p class="rl-listing-photo-lead">Add up to 20 photos. First photo will be the cover.</p>
-
-        <div class="rl-listing-photo-grid" id="rlListingPhotoGrid">
-            <button type="button" class="rl-listing-photo-add" id="rlListingPhotoAdd" aria-label="Add photo">
-                <i class="fas fa-plus"></i>
-                <span>Add Photos</span>
-            </button>
-        </div>
-
-        <details class="rl-listing-photo-more">
-            <summary>More photo options (gallery link or PDF)</summary>
-            <div class="rl-listing-photo-sources">
-            <div class="rl-listing-photo-source-card">
-                <div class="rl-listing-photo-source-head">
-                    <i class="fas fa-link"></i>
-                    <div>
-                        <strong>Photo gallery link</strong>
-                        <span>Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)</span>
-                    </div>
-                </div>
-                <input asp-for="PhotoGalleryLink"
-                       class="rl-form-input"
-                       id="PhotoGalleryLink"
-                       type="url"
-                       placeholder="https://drive.google.com/..." />
-                <span asp-validation-for="PhotoGalleryLink" class="text-danger"></span>
-            </div>
-
-            <div class="rl-listing-photo-source-card">
-                <div class="rl-listing-photo-source-head">
-                    <i class="fas fa-file-pdf"></i>
-                    <div>
-                        <strong>Upload photos as PDF</strong>
-                        <span>Upload a PDF brochure with property photos (max 15 MB)</span>
-                    </div>
-                </div>
-                <label class="rl-listing-pdf-drop" id="rlPdfDropZone">
-                    <input type="file"
-                           name="photoPdfFile"
-                           id="photoPdfFile"
-                           accept=".pdf,application/pdf"
-                           class="rl-listing-pdf-input" />
-                    <i class="fas fa-cloud-arrow-up"></i>
-                    <span class="rl-listing-pdf-label">Choose PDF or drag here</span>
-                </label>
-                <div class="rl-listing-pdf-current @(string.IsNullOrWhiteSpace(Model.PhotoPdfUrl) ? "is-hidden" : "")" id="rlPdfCurrent">
-                    <i class="fas fa-file-pdf"></i>
-                    <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" id="rlPdfCurrentLink">
-                        @(Model.PhotoPdfFileName ?? "Property photos.pdf")
-                    </a>
-                    <button type="button" class="rl-listing-pdf-remove" id="rlPdfRemove" aria-label="Remove PDF">&times;</button>
-                </div>
-            </div>
-            </div>
-        </details>
-    </section>
-
-    <section class="rl-listing-section">
-        <div class="rl-form-field">
-            <label asp-for="Address" class="rl-form-label">Address</label>
-            <div class="rl-listing-address-row rl-listing-address-row--inline">
-                <div class="rl-listing-address-field">
-                    <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
-                    <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
-                </div>
-                <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation" aria-label="Use my location">
-                    <i class="fas fa-crosshairs"></i>
-                    <span>Use My Location</span>
-                </button>
-            </div>
-            <span asp-validation-for="Address" class="text-danger"></span>
-            <p class="rl-listing-field-hint" id="rlLocationHint" hidden>GPS coordinates captured. Your listing will appear on the Nearby map around this location.</p>
-        </div>
-    </section>
-
-    <section class="rl-listing-section">
-        <h2 class="rl-listing-section-title">Property Type</h2>
-        <div class="rl-listing-toggle-pair">
-            <label class="rl-listing-toggle-btn @(Model.ListingType == "sale" ? "is-active" : "")">
-                <input type="radio" asp-for="ListingType" value="sale" />
-                For Sale
-            </label>
-            <label class="rl-listing-toggle-btn @(Model.ListingType == "rent" ? "is-active" : "")">
-                <input type="radio" asp-for="ListingType" value="rent" />
-                For Rent
-            </label>
-        </div>
-
-        <div class="rl-form-field">
-            <label asp-for="Price" class="rl-form-label">Price</label>
-            <div class="rl-listing-price-input">
-                <span class="rl-listing-input-prefix">$</span>
-                <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="Enter price" />
-            </div>
-            <span asp-validation-for="Price" class="text-danger"></span>
-        </div>
-
-        <div class="rl-form-field">
-            <label asp-for="PropertySubtype" class="rl-form-label">Property Subtype</label>
-            <select asp-for="PropertySubtype" class="rl-form-input">
-                <option value="">Select subtype</option>
-                @foreach (var subtype in Model.PropertySubtypes)
-                {
-                    if (Model.PropertySubtype == subtype.Value)
-                    {
-                        <option value="@subtype.Value" selected="selected">@subtype.Label</option>
-                    }
-                    else
-                    {
-                        <option value="@subtype.Value">@subtype.Label</option>
-                    }
-                }
-            </select>
-        </div>
-
-        <div class="rl-form-grid rl-form-grid--4">
-            <div class="rl-form-field">
-                <label asp-for="Bedrooms" class="rl-form-label"><i class="fas fa-bed rl-field-icon"></i> Beds</label>
-                <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" placeholder="Beds" />
-            </div>
-            <div class="rl-form-field">
-                <label asp-for="Bathrooms" class="rl-form-label"><i class="fas fa-bath rl-field-icon"></i> Baths</label>
-                <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" placeholder="Baths" />
-            </div>
-            <div class="rl-form-field">
-                <label asp-for="SquareFeet" class="rl-form-label"><i class="fas fa-ruler-combined rl-field-icon"></i> Sq Ft</label>
-                <input asp-for="SquareFeet" class="rl-form-input" type="number" placeholder="Square feet" />
-            </div>
-            <div class="rl-form-field">
-                <label asp-for="YearBuilt" class="rl-form-label"><i class="fas fa-calendar rl-field-icon"></i> Year Built</label>
-                <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" placeholder="Year built" />
-            </div>
-        </div>
-
-        <div class="rl-form-field">
-            <div class="rl-listing-section-head">
-                <label asp-for="Description" class="rl-form-label">Short Description</label>
-                <span class="rl-listing-photo-count" id="rlDescriptionCount">0/500</span>
-            </div>
-            <textarea asp-for="Description"
-                      class="rl-form-input rl-form-textarea"
-                      id="ListingDescription"
-                      maxlength="500"
-                      rows="4"
-                      placeholder="Highlight key features, upgrades, and what makes this home special..."></textarea>
-        </div>
-    </section>
-
-    <section class="rl-listing-section">
-        <div class="rl-listing-toggle-row">
-            <span class="rl-listing-row-icon"><i class="fas fa-calendar-days"></i></span>
-            <div class="rl-listing-toggle-row-copy">
-                <strong>Open House</strong>
-                <span>Allow visitors to discover your open house</span>
-            </div>
-            <label class="rl-toggle-row rl-toggle-row--compact">
-                <span class="visually-hidden">Open house</span>
-                <input asp-for="IsOpenHouse" type="checkbox" id="IsOpenHouse" />
-                <span class="rl-toggle"></span>
-            </label>
-        </div>
-        <div class="rl-form-field" id="OpenHouseMetaWrap" style="@(Model.IsOpenHouse ? null : "display:none")">
-            <label asp-for="OpenHouseMeta" class="rl-form-label">Open house date/time</label>
-            <input asp-for="OpenHouseMeta" class="rl-form-input" placeholder="Sat, May 17 · 12:00–3:00 PM" />
-        </div>
-    </section>
-
-    <section class="rl-listing-section">
-        <div class="rl-listing-toggle-row">
-            <span class="rl-listing-row-icon"><i class="fas fa-location-dot"></i></span>
-            <div class="rl-listing-toggle-row-copy">
-                <strong>Visibility Radius</strong>
-                <span>Show this listing within</span>
-            </div>
-            <select asp-for="VisibilityRadiusMiles" class="rl-form-input rl-form-input--compact">
-                @foreach (var option in Model.VisibilityRadiusOptions)
-                {
-                    <option value="@option.Value.ToString("0.#", System.Globalization.CultureInfo.InvariantCulture)">@option.Label</option>
-                }
-            </select>
-        </div>
-    </section>
-
-    <section class="rl-listing-section">
-        <h2 class="rl-listing-section-title">Programs <small>(optional)</small></h2>
-        <p class="rl-listing-programs-lead">Choose programs to maximize your listing's reach and visibility.</p>
-        <div class="rl-listing-program-select rl-listing-program-select--3">
-            <label class="rl-listing-program-select-card @(Model.PromoteInNearbyFeed ? "is-selected" : "")">
-                <input asp-for="PromoteInNearbyFeed" type="checkbox" />
-                <i class="fas fa-bullhorn rl-program-icon rl-program-icon--blue"></i>
-                <strong>Promote in Nearby Feed</strong>
-                <span>Increase visibility in the local feed.</span>
-                <i class="fas fa-circle-check rl-listing-program-check"></i>
-            </label>
-            <label class="rl-listing-program-select-card @(Model.PromoteOpenHouseProgram ? "is-selected" : "")">
-                <input asp-for="PromoteOpenHouseProgram" type="checkbox" />
-                <i class="fas fa-house rl-program-icon rl-program-icon--green"></i>
-                <strong>Open House</strong>
-                <span>Highlight an open house event.</span>
-                <i class="fas fa-circle-check rl-listing-program-check"></i>
-            </label>
-            <label class="rl-listing-program-select-card @(Model.FeaturedListing ? "is-selected" : "")">
-                <input asp-for="FeaturedListing" type="checkbox" />
-                <i class="fas fa-star rl-program-icon rl-program-icon--purple"></i>
-                <strong>Featured Listing</strong>
-                <span>Top placement in the Nearby feed.</span>
-                <i class="fas fa-circle-check rl-listing-program-check"></i>
-            </label>
-        </div>
-    </section>
-
-    <div class="rl-info-box rl-info-box--muted">
-        <i class="fas fa-comment-dots"></i>
-        <p>All inquiries from this listing will come through INDOR messages. You'll be notified and can respond directly in the app.</p>
     </div>
 
-    <footer class="rl-listing-details-footer @(Model.IsEdit ? "" : "rl-listing-details-footer--dual")">
+    <ol class="rl-lw-stepper" id="rlLwStepper">
+        @for (var i = 0; i < steps.Length; i++)
+        {
+            <li class="rl-lw-stepper-item" data-step="@(i + 1)">
+                <span class="rl-lw-dot">@(i + 1)</span>
+                <span class="rl-lw-step-label">@steps[i]</span>
+            </li>
+        }
+    </ol>
+
+    <form asp-action="@(Model.IsEdit ? "EditNetworkListing" : "CreateNetworkListing")"
+          method="post"
+          enctype="multipart/form-data"
+          class="rl-listing-details-form"
+          id="rlListingDetailsForm">
+        @Html.AntiForgeryToken()
         @if (Model.IsEdit)
         {
-            <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-listing-btn-secondary">Cancel</a>
+            <input type="hidden" asp-for="ItemId" />
         }
-        <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-secondary">Save Draft</button>
-        <button type="submit" class="rl-listing-btn-primary">@(Model.IsEdit ? "Save Listing" : "Publish Listing")</button>
-    </footer>
-</form>
+        <input type="hidden" asp-for="AddressLatitude" id="AddressLatitude" />
+        <input type="hidden" asp-for="AddressLongitude" id="AddressLongitude" />
+        <input type="hidden" asp-for="ImageUrl" id="ImageUrl" />
+        <input type="hidden" asp-for="AdditionalPhotoUrls" id="AdditionalPhotoUrls" />
+        <input type="hidden" asp-for="PhotoPdfUrl" id="PhotoPdfUrl" />
+        <input type="hidden" asp-for="PhotoPdfFileName" id="PhotoPdfFileName" />
+        <input type="hidden" asp-for="Title" id="Title" />
+        <input type="hidden" asp-for="Highlights" id="Highlights" />
+        <input type="hidden" asp-for="VisibilityRadiusMiles" />
+        <input type="hidden" name="IsOpenHouse" value="false" />
+        <input type="hidden" name="PromoteOpenHouseProgram" value="false" />
+        <input type="hidden" name="FeaturedListing" value="@(Model.FeaturedListing ? "true" : "false")" />
+
+        <div asp-validation-summary="ModelOnly" class="rl-lw-validation"></div>
+
+        @* ---------- STEP 1 — Why INDOR ---------- *@
+        <section class="rl-lw-step" data-step="1">
+            <div class="rl-lw-hero">
+                <div class="rl-lw-hero-copy">
+                    <h2 class="rl-lw-hero-title">List smarter.<br /><span class="rl-lw-hero-accent">Reach closer.</span></h2>
+                    <p>Connect your property with nearby buyers, renters, and realtors who are ready to act.</p>
+                </div>
+                <div class="rl-lw-hero-visual">
+                    <img src="~/welcome-house.png" alt="" />
+                    <span class="rl-lw-hero-pin"><i class="fas fa-location-dot"></i></span>
+                </div>
+            </div>
+
+            <div class="rl-lw-why-grid">
+                <article class="rl-lw-why-card">
+                    <span class="rl-lw-why-icon"><i class="fas fa-location-dot"></i></span>
+                    <strong>Local exposure</strong>
+                    <span>Your listing is seen by people actively searching in your area.</span>
+                </article>
+                <article class="rl-lw-why-card">
+                    <span class="rl-lw-why-icon"><i class="fas fa-user-check"></i></span>
+                    <strong>Qualified leads</strong>
+                    <span>Connect with serious buyers and renters ready to act.</span>
+                </article>
+                <article class="rl-lw-why-card">
+                    <span class="rl-lw-why-icon"><i class="fas fa-users"></i></span>
+                    <strong>Nearby network visibility</strong>
+                    <span>Realtors and local professionals see and share your listing.</span>
+                </article>
+            </div>
+
+            <div class="rl-lw-actions rl-lw-actions--stack">
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">
+                    <i class="fas fa-sparkles"></i> Get Started <i class="fas fa-arrow-right rl-lw-next-arrow"></i>
+                </button>
+                <a asp-action="PostListingBenefits" class="rl-lw-learn-more">Learn More</a>
+            </div>
+        </section>
+
+        @* ---------- STEP 2 — Listing Basics ---------- *@
+        <section class="rl-lw-step" data-step="2">
+            <section class="rl-listing-section rl-lw-card">
+                <div class="rl-listing-section-head">
+                    <h2><span class="rl-lw-card-icon"><i class="fas fa-images"></i></span> Property Photos</h2>
+                    <span class="rl-listing-photo-count" id="rlPhotoCount">0/20</span>
+                </div>
+                <p class="rl-listing-photo-lead">Add up to 20 photos. First photo will be the cover.</p>
+
+                <div class="rl-listing-photo-grid" id="rlListingPhotoGrid">
+                    <button type="button" class="rl-listing-photo-add" id="rlListingPhotoAdd" aria-label="Add photo">
+                        <i class="fas fa-plus"></i>
+                        <span>Add Photo</span>
+                    </button>
+                </div>
+
+                <details class="rl-listing-photo-more">
+                    <summary>More photo options (gallery link or PDF)</summary>
+                    <div class="rl-listing-photo-sources">
+                        <div class="rl-listing-photo-source-card">
+                            <div class="rl-listing-photo-source-head">
+                                <i class="fas fa-link"></i>
+                                <div>
+                                    <strong>Photo gallery link</strong>
+                                    <span>Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)</span>
+                                </div>
+                            </div>
+                            <input asp-for="PhotoGalleryLink" class="rl-form-input" id="PhotoGalleryLink" type="url" placeholder="https://drive.google.com/..." />
+                            <span asp-validation-for="PhotoGalleryLink" class="text-danger"></span>
+                        </div>
+
+                        <div class="rl-listing-photo-source-card">
+                            <div class="rl-listing-photo-source-head">
+                                <i class="fas fa-file-pdf"></i>
+                                <div>
+                                    <strong>Upload photos as PDF</strong>
+                                    <span>Upload a PDF brochure with property photos (max 15 MB)</span>
+                                </div>
+                            </div>
+                            <label class="rl-listing-pdf-drop" id="rlPdfDropZone">
+                                <input type="file" name="photoPdfFile" id="photoPdfFile" accept=".pdf,application/pdf" class="rl-listing-pdf-input" />
+                                <i class="fas fa-cloud-arrow-up"></i>
+                                <span class="rl-listing-pdf-label">Choose PDF or drag here</span>
+                            </label>
+                            <div class="rl-listing-pdf-current @(string.IsNullOrWhiteSpace(Model.PhotoPdfUrl) ? "is-hidden" : "")" id="rlPdfCurrent">
+                                <i class="fas fa-file-pdf"></i>
+                                <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" id="rlPdfCurrentLink">@(Model.PhotoPdfFileName ?? "Property photos.pdf")</a>
+                                <button type="button" class="rl-listing-pdf-remove" id="rlPdfRemove" aria-label="Remove PDF">&times;</button>
+                            </div>
+                        </div>
+                    </div>
+                </details>
+            </section>
+
+            <section class="rl-listing-section rl-lw-card">
+                <div class="rl-form-field">
+                    <label asp-for="Address" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-location-dot"></i></span> Address</label>
+                    <div class="rl-listing-address-row rl-listing-address-row--inline">
+                        <div class="rl-listing-address-field">
+                            <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
+                            <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
+                        </div>
+                        <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation" aria-label="Use my location">
+                            <i class="fas fa-crosshairs"></i>
+                            <span>Use My Location</span>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Address" class="text-danger" data-step-error="2"></span>
+                    <p class="rl-lw-inline-error" id="rlAddressError" hidden>Please enter the property address.</p>
+                    <p class="rl-listing-field-hint" id="rlLocationHint" hidden>GPS coordinates captured. Your listing will appear on the Nearby map around this location.</p>
+                </div>
+            </section>
+
+            <section class="rl-listing-section rl-lw-card">
+                <h2 class="rl-listing-section-title"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> Property Type</h2>
+                <div class="rl-listing-toggle-pair">
+                    <label class="rl-listing-toggle-btn @(Model.ListingType == "sale" ? "is-active" : "")">
+                        <input type="radio" asp-for="ListingType" value="sale" />
+                        <i class="fas fa-house"></i> For Sale
+                    </label>
+                    <label class="rl-listing-toggle-btn @(Model.ListingType == "rent" ? "is-active" : "")">
+                        <input type="radio" asp-for="ListingType" value="rent" />
+                        <i class="fas fa-key"></i> For Rent
+                    </label>
+                </div>
+
+                <div class="rl-form-field">
+                    <label asp-for="Price" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-dollar-sign"></i></span> Price</label>
+                    <div class="rl-listing-price-input">
+                        <span class="rl-listing-input-prefix">$</span>
+                        <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="Enter price" />
+                    </div>
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                    <p class="rl-lw-inline-error" id="rlPriceError" hidden>Please enter a price.</p>
+                </div>
+            </section>
+
+            <div class="rl-info-box rl-info-box--muted rl-lw-secure">
+                <i class="fas fa-lock"></i>
+                <p>Your information is secure and never shared.</p>
+            </div>
+
+            <div class="rl-lw-actions">
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue <i class="fas fa-arrow-right rl-lw-next-arrow"></i></button>
+            </div>
+        </section>
+
+        @* ---------- STEP 3 — Property Details ---------- *@
+        <section class="rl-lw-step" data-step="3">
+            <section class="rl-listing-section rl-lw-card">
+                <div class="rl-form-field">
+                    <label asp-for="PropertySubtype" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> Property Subtype</label>
+                    <select asp-for="PropertySubtype" class="rl-form-input">
+                        <option value="">Select subtype</option>
+                        @foreach (var subtype in Model.PropertySubtypes)
+                        {
+                            if (Model.PropertySubtype == subtype.Value)
+                            {
+                                <option value="@subtype.Value" selected="selected">@subtype.Label</option>
+                            }
+                            else
+                            {
+                                <option value="@subtype.Value">@subtype.Label</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </section>
+
+            <section class="rl-listing-section rl-lw-card">
+                <h2 class="rl-listing-section-title">Property Stats</h2>
+                <div class="rl-lw-stat-grid">
+                    <div class="rl-lw-stat">
+                        <span class="rl-lw-stat-icon"><i class="fas fa-bed"></i></span>
+                        <label asp-for="Bedrooms">Beds</label>
+                        <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" placeholder="Enter" />
+                    </div>
+                    <div class="rl-lw-stat">
+                        <span class="rl-lw-stat-icon"><i class="fas fa-bath"></i></span>
+                        <label asp-for="Bathrooms">Baths</label>
+                        <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" placeholder="Enter" />
+                    </div>
+                    <div class="rl-lw-stat">
+                        <span class="rl-lw-stat-icon"><i class="fas fa-ruler-combined"></i></span>
+                        <label asp-for="SquareFeet">Sq Ft</label>
+                        <input asp-for="SquareFeet" class="rl-form-input" type="number" placeholder="Enter" />
+                    </div>
+                    <div class="rl-lw-stat">
+                        <span class="rl-lw-stat-icon"><i class="fas fa-calendar"></i></span>
+                        <label asp-for="YearBuilt">Year Built</label>
+                        <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" placeholder="Enter" />
+                    </div>
+                </div>
+            </section>
+
+            <section class="rl-listing-section rl-lw-card">
+                <div class="rl-listing-section-head">
+                    <label asp-for="Description" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-file-lines"></i></span> Short Description</label>
+                    <span class="rl-listing-photo-count" id="rlDescriptionCount">0/500</span>
+                </div>
+                <textarea asp-for="Description" class="rl-form-input rl-form-textarea" id="ListingDescription" maxlength="500" rows="4" placeholder="Describe your property in a few sentences..."></textarea>
+            </section>
+
+            <section class="rl-listing-section rl-lw-card">
+                <h2 class="rl-listing-section-title">Key Highlights</h2>
+                <p class="rl-lw-card-sub">Select all that apply</p>
+                <div class="rl-lw-highlights" id="rlHighlights">
+                    @foreach (var h in Model.HighlightOptions)
+                    {
+                        var selected = Model.SelectedHighlights.Contains(h.Value);
+                        <button type="button"
+                                class="rl-lw-highlight @(selected ? "is-selected" : "")"
+                                data-value="@h.Value"
+                                aria-pressed="@(selected ? "true" : "false")">
+                            <i class="fas @h.Icon"></i>
+                            <span>@h.Label</span>
+                            <i class="fas fa-circle-check rl-lw-highlight-check"></i>
+                        </button>
+                    }
+                </div>
+            </section>
+
+            <div class="rl-lw-actions">
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue <i class="fas fa-arrow-right rl-lw-next-arrow"></i></button>
+            </div>
+        </section>
+
+        @* ---------- STEP 4 — Review & Publish ---------- *@
+        <section class="rl-lw-step" data-step="4">
+            <section class="rl-listing-section rl-lw-card">
+                <div class="rl-lw-summary-head">
+                    <h2 class="rl-listing-section-title">Listing Summary</h2>
+                    <button type="button" class="rl-lw-edit-btn rl-lw-goto" data-goto="2"><i class="fas fa-pen"></i> Edit</button>
+                </div>
+                <div class="rl-lw-summary">
+                    <img src="~/inspeccion2.jpeg" alt="" class="rl-lw-summary-photo" id="rlRvPhoto" />
+                    <div class="rl-lw-summary-body">
+                        <span class="rl-lw-summary-type" id="rlRvType">For Sale</span>
+                        <strong class="rl-lw-summary-price" id="rlRvPrice">$0</strong>
+                        <span class="rl-lw-summary-address" id="rlRvAddress">Address not set</span>
+                    </div>
+                </div>
+                <div class="rl-lw-summary-stats">
+                    <div><span id="rlRvBeds">—</span><small>Beds</small></div>
+                    <div><span id="rlRvBaths">—</span><small>Baths</small></div>
+                    <div><span id="rlRvSqft">—</span><small>Sq Ft</small></div>
+                    <div><span id="rlRvYear">—</span><small>Year Built</small></div>
+                </div>
+            </section>
+
+            <section class="rl-listing-section rl-lw-card">
+                <h2 class="rl-listing-section-title">INDOR Boost</h2>
+                <div class="rl-lw-boost-grid">
+                    <article class="rl-lw-boost-card">
+                        <span class="rl-lw-boost-icon"><i class="fas fa-location-dot"></i></span>
+                        <strong>Shown nearby</strong>
+                        <span>Your listing is shown to nearby active buyers and renters.</span>
+                    </article>
+                    <article class="rl-lw-boost-card">
+                        <span class="rl-lw-boost-icon"><i class="fas fa-comment-dots"></i></span>
+                        <strong>Buyer inquiries</strong>
+                        <span>Receive serious inquiries from motivated buyers.</span>
+                    </article>
+                    <article class="rl-lw-boost-card">
+                        <span class="rl-lw-boost-icon"><i class="fas fa-users"></i></span>
+                        <strong>Realtor visibility</strong>
+                        <span>Seen by INDOR realtors and shared across the network.</span>
+                    </article>
+                </div>
+            </section>
+
+            <div class="rl-lw-promote">
+                <span class="rl-lw-promote-icon"><i class="fas fa-bullhorn"></i></span>
+                <div class="rl-lw-promote-copy">
+                    <strong>Promote Your Listing <span class="rl-lw-optional">Optional</span></strong>
+                    <span>Increase visibility with open houses and neighborhood features.</span>
+                </div>
+                <label class="rl-toggle-row rl-toggle-row--compact">
+                    <span class="visually-hidden">Promote your listing</span>
+                    <input asp-for="PromoteInNearbyFeed" type="checkbox" />
+                    <span class="rl-toggle"></span>
+                </label>
+            </div>
+
+            <div class="rl-lw-actions rl-lw-actions--stack">
+                <button type="submit" class="rl-listing-btn-primary rl-lw-publish">
+                    <i class="fas fa-rocket"></i> @(Model.IsEdit ? "Save Listing" : "Publish Listing")
+                </button>
+                <button type="submit" name="SaveAsDraft" value="true" class="rl-listing-btn-secondary">
+                    <i class="fas fa-floppy-disk"></i> Save Draft
+                </button>
+                @if (Model.IsEdit)
+                {
+                    <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-lw-learn-more">Cancel</a>
+                }
+            </div>
+        </section>
+    </form>
+</div>
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />

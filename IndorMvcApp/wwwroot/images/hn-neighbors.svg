@@ -12,12 +12,18 @@
     <path d="M18 120 C18 96 30 86 44 86 C58 86 70 96 70 120 Z" fill="#2E8BFF"/>
     <circle cx="44" cy="70" r="16" fill="#F1C8A6"/>
     <path d="M28 66 C28 54 60 54 60 66 C60 60 52 50 44 50 C36 50 28 56 28 66 Z" fill="#5B4636"/>
+    <circle cx="39.2" cy="71" r="1.7" fill="#3A2E26"/>
+    <circle cx="48.8" cy="71" r="1.7" fill="#3A2E26"/>
+    <path d="M40 76 Q44 79.5 48 76" stroke="#3A2E26" stroke-width="1.6" fill="none" stroke-linecap="round"/>
   </g>
   <!-- right person (teal) -->
   <g>
     <path d="M80 120 C80 98 92 88 106 88 C120 88 132 98 132 120 Z" fill="#2DD4BF"/>
     <circle cx="106" cy="74" r="15" fill="#F1C8A6"/>
     <path d="M92 72 C90 58 122 58 120 72 C122 62 112 54 106 54 C98 54 92 60 92 72 Z" fill="#3A2E26"/>
+    <circle cx="101.5" cy="75" r="1.6" fill="#3A2E26"/>
+    <circle cx="110.5" cy="75" r="1.6" fill="#3A2E26"/>
+    <path d="M102 79.5 Q106 82.5 110 79.5" stroke="#3A2E26" stroke-width="1.5" fill="none" stroke-linecap="round"/>
   </g>
   <!-- plant -->
   <g>

@@ -258,15 +258,15 @@ public class RealtorController(
             return RedirectToAction("Profile", "RealtorRegistration");
         }
 
-        var model = await nearbyNetworkService.BuildListingWizardShellAsync(
-            realtor,
-            displayStep: 0,
-            title: "Post Listing with INDOR",
-            subtitle: null,
-            showStepper: false,
-            cancellationToken);
-        ViewBag.ListingWizardPage = "intro";
-        return View("NetworkListing/Intro", model);
+        var model = await nearbyNetworkService.BuildListingFormAsync(realtor, null, cancellationToken);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        model.WizardStep = 1;
+        ViewBag.ListingWizardPage = "details";
+        return View("NetworkListing/Details", model);
     }
 
     [HttpGet]

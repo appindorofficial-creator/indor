@@ -1700,3 +1700,392 @@
     color: #64748B;
     margin: -4px 0 12px;
 }
+
+/* ============================================================
+   4-step Post Listing wizard (.rl-lw)
+   ============================================================ */
+.rl-lw { padding-top: 10px; }
+.rl-lw-topnav {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+.rl-lw-back {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .08);
+    color: #0F172A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+.rl-lw-topnav-title { flex: 1; min-width: 0; text-align: center; padding-right: 36px; }
+.rl-lw-title { font-size: 1.15rem; font-weight: 800; color: #0F172A; margin: 0; }
+.rl-lw-sub { font-size: .8rem; color: #64748B; margin: 3px 0 0; }
+
+/* Stepper */
+.rl-lw-stepper {
+    display: flex;
+    list-style: none;
+    margin: 0 0 20px;
+    padding: 0;
+}
+.rl-lw-stepper-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    position: relative;
+    text-align: center;
+}
+.rl-lw-stepper-item::before {
+    content: "";
+    position: absolute;
+    top: 13px;
+    right: 50%;
+    width: 100%;
+    height: 2px;
+    background: #E2E8F0;
+    z-index: 0;
+}
+.rl-lw-stepper-item:first-child::before { display: none; }
+.rl-lw-stepper-item.is-active::before,
+.rl-lw-stepper-item.is-done::before { background: #0066CC; }
+.rl-lw-dot {
+    position: relative;
+    z-index: 1;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #CBD5E1;
+    color: #94A3B8;
+    font-size: .78rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.rl-lw-stepper-item.is-active .rl-lw-dot,
+.rl-lw-stepper-item.is-done .rl-lw-dot {
+    background: #0066CC;
+    border-color: #0066CC;
+    color: #fff;
+}
+.rl-lw-step-label {
+    font-size: .6rem;
+    font-weight: 700;
+    color: #94A3B8;
+    line-height: 1.2;
+}
+.rl-lw-stepper-item.is-active .rl-lw-step-label { color: #0066CC; }
+.rl-lw-stepper-item.is-done .rl-lw-step-label { color: #334155; }
+
+/* Step panels */
+.rl-lw-step { display: none; }
+.rl-lw-step.is-active { display: block; }
+
+/* Cards */
+.rl-listing-wizard-page--details .rl-lw-card {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+}
+.rl-lw-card-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: #E8F1FB;
+    color: #0066CC;
+    font-size: .78rem;
+    margin-right: 6px;
+    vertical-align: middle;
+}
+.rl-lw-card-sub { font-size: .76rem; color: #64748B; margin: -6px 0 12px; }
+
+/* Validation / inline errors */
+.rl-lw-validation { margin-bottom: 12px; }
+.rl-lw-validation ul { margin: 0; padding-left: 18px; color: #B91C1C; font-size: .8rem; }
+.rl-lw-inline-error { color: #DC2626; font-size: .76rem; margin: 6px 0 0; font-weight: 600; }
+.rl-lw-secure {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    font-size: .74rem;
+    color: #94A3B8;
+    margin: 4px 0 0;
+}
+.rl-lw-secure p { margin: 0; }
+
+/* Actions */
+.rl-lw-actions { margin-top: 18px; }
+.rl-lw-actions--stack { display: flex; flex-direction: column; gap: 12px; }
+.rl-lw-actions .rl-listing-btn-primary,
+.rl-lw-actions .rl-listing-btn-secondary { width: 100%; }
+.rl-lw-next-arrow { margin-left: 6px; }
+.rl-lw-learn-more {
+    display: block;
+    text-align: center;
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0066CC;
+    text-decoration: none;
+    padding: 6px;
+}
+
+/* Step 1 — Why INDOR hero */
+.rl-lw-hero {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 4px 0 20px;
+}
+.rl-lw-hero-copy { flex: 1; min-width: 0; }
+.rl-lw-hero-title { font-size: 1.7rem; font-weight: 800; line-height: 1.1; color: #0F172A; margin: 0 0 10px; }
+.rl-lw-hero-accent { color: #0066CC; }
+.rl-lw-hero-copy p { font-size: .84rem; color: #475569; line-height: 1.5; margin: 0; }
+.rl-lw-hero-visual {
+    position: relative;
+    width: 140px;
+    flex-shrink: 0;
+}
+.rl-lw-hero-visual img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 16px;
+}
+.rl-lw-hero-pin {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #0066CC;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 6px 16px rgba(0, 102, 204, .35);
+}
+.rl-lw-why-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.rl-lw-why-card {
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 14px;
+    padding: 14px 10px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+}
+.rl-lw-why-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #E8F1FB;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    margin-bottom: 8px;
+}
+.rl-lw-why-card strong { display: block; font-size: .78rem; color: #0F172A; margin-bottom: 5px; }
+.rl-lw-why-card span { display: block; font-size: .68rem; color: #64748B; line-height: 1.4; }
+
+/* Step 3 — Property stats + highlights */
+.rl-lw-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+}
+.rl-lw-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #EEF2F7;
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+}
+.rl-lw-stat-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #E8F1FB;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+}
+.rl-lw-stat label { font-size: .66rem; font-weight: 700; color: #475569; }
+.rl-listing-wizard-page--details .rl-lw-stat .rl-form-input {
+    width: 100%;
+    text-align: center;
+    padding: 8px 4px;
+    font-size: .8rem;
+}
+.rl-lw-highlights {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+.rl-lw-highlight {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    background: #fff;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #334155;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color .15s ease, background .15s ease;
+}
+.rl-lw-highlight > i:first-child { color: #0066CC; width: 18px; text-align: center; }
+.rl-lw-highlight span { flex: 1; min-width: 0; }
+.rl-lw-highlight-check { color: #CBD5E1; }
+.rl-lw-highlight.is-selected { border-color: #0066CC; background: #EEF6FF; }
+.rl-lw-highlight.is-selected .rl-lw-highlight-check { color: #0066CC; }
+
+/* Step 4 — Review */
+.rl-lw-summary-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+}
+.rl-lw-edit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 1px solid #D6E4F5;
+    background: #fff;
+    color: #0066CC;
+    font-size: .74rem;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 999px;
+    cursor: pointer;
+}
+.rl-lw-summary { display: flex; gap: 12px; }
+.rl-lw-summary-photo {
+    width: 110px;
+    height: 90px;
+    border-radius: 12px;
+    object-fit: cover;
+    background: #E2E8F0;
+    flex-shrink: 0;
+}
+.rl-lw-summary-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+.rl-lw-summary-type {
+    align-self: flex-start;
+    font-size: .64rem;
+    font-weight: 800;
+    color: #0066CC;
+    background: #E8F1FB;
+    padding: 3px 9px;
+    border-radius: 999px;
+}
+.rl-lw-summary-price { font-size: 1.4rem; font-weight: 800; color: #0F172A; }
+.rl-lw-summary-address { font-size: .78rem; color: #64748B; line-height: 1.4; }
+.rl-lw-summary-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #F1F5F9;
+}
+.rl-lw-summary-stats div { text-align: center; }
+.rl-lw-summary-stats span { display: block; font-size: .95rem; font-weight: 800; color: #0F172A; }
+.rl-lw-summary-stats small { display: block; font-size: .64rem; color: #94A3B8; margin-top: 2px; }
+
+.rl-lw-boost-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+.rl-lw-boost-card {
+    border: 1px solid #EEF2F7;
+    border-radius: 12px;
+    padding: 12px 8px;
+    text-align: center;
+}
+.rl-lw-boost-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #E8F1FB;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 8px;
+}
+.rl-lw-boost-card strong { display: block; font-size: .72rem; color: #0F172A; margin-bottom: 4px; }
+.rl-lw-boost-card span { display: block; font-size: .64rem; color: #64748B; line-height: 1.4; }
+
+.rl-lw-promote {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: #fff;
+    border: 1px solid #EEF2F7;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .04);
+}
+.rl-lw-promote-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #E8F1FB;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.rl-lw-promote-copy { flex: 1; min-width: 0; }
+.rl-lw-promote-copy strong { display: block; font-size: .82rem; color: #0F172A; }
+.rl-lw-promote-copy span { display: block; font-size: .72rem; color: #64748B; margin-top: 2px; line-height: 1.4; }
+.rl-lw-optional {
+    font-size: .6rem;
+    font-weight: 700;
+    color: #7C3AED;
+    background: #EDE9FE;
+    padding: 2px 7px;
+    border-radius: 999px;
+    margin-left: 4px;
+    vertical-align: middle;
+}
+
+@media (max-width: 380px) {
+    .rl-lw-stat-grid { grid-template-columns: repeat(2, 1fr); }
+    .rl-lw-step-label { font-size: .54rem; }
+}

@@ -296,5 +296,172 @@ window.rlListingWizardInit = function (config) {
         });
     }
 
+    // ---------- Multi-step wizard navigation ----------
+    var wizard = document.getElementById('rlListingWizard');
+    if (wizard) {
+        var stepSections = Array.prototype.slice.call(wizard.querySelectorAll('.rl-lw-step'));
+        var stepperItems = Array.prototype.slice.call(wizard.querySelectorAll('.rl-lw-stepper-item'));
+        var titleEl = document.getElementById('rlLwTitle');
+        var subEl = document.getElementById('rlLwSub');
+        var backBtn = document.getElementById('rlLwBack');
+        var feedUrl = wizard.getAttribute('data-feed-url') || '/Realtor/Network';
+        var minStep = parseInt(wizard.getAttribute('data-start-step'), 10) || 1;
+        var totalSteps = stepSections.length || 4;
+        var currentStep = minStep;
+
+        var stepMeta = {
+            1: { title: 'Post Listing with INDOR', sub: '' },
+            2: { title: 'Create Your Listing', sub: 'Add key details to showcase your property.' },
+            3: { title: 'Property Details', sub: '' },
+            4: { title: 'Review & Publish', sub: '' }
+        };
+
+        function formatMoney(value) {
+            var n = Number(value);
+            if (!value || isNaN(n)) {
+                return '$0';
+            }
+            return '$' + n.toLocaleString('en-US');
+        }
+
+        function setText(id, value) {
+            var el = document.getElementById(id);
+            if (el) {
+                el.textContent = value;
+            }
+        }
+
+        function populateReview() {
+            var photoEl = document.getElementById('rlRvPhoto');
+            if (photoEl) {
+                photoEl.src = photos[0] || defaultPlaceholder;
+            }
+            var typeRadio = document.querySelector('[name="ListingType"]:checked');
+            setText('rlRvType', typeRadio && typeRadio.value === 'rent' ? 'For Rent' : 'For Sale');
+            setText('rlRvPrice', formatMoney(priceInput && priceInput.value));
+            setText('rlRvAddress', (addressInput && addressInput.value.trim()) || 'Address not set');
+
+            function statValue(name) {
+                var el = document.querySelector('[name="' + name + '"]');
+                return el && el.value !== '' ? el.value : '—';
+            }
+            var sqft = document.querySelector('[name="SquareFeet"]');
+            setText('rlRvBeds', statValue('Bedrooms'));
+            setText('rlRvBaths', statValue('Bathrooms'));
+            setText('rlRvSqft', sqft && sqft.value !== '' ? Number(sqft.value).toLocaleString('en-US') : '—');
+            setText('rlRvYear', statValue('YearBuilt'));
+        }
+
+        function clearStepErrors() {
+            ['rlAddressError', 'rlPriceError'].forEach(function (id) {
+                var el = document.getElementById(id);
+                if (el) {
+                    el.hidden = true;
+                }
+            });
+        }
+
+        function validateStep(step) {
+            if (step !== 2) {
+                return true;
+            }
+            var ok = true;
+            clearStepErrors();
+            if (addressInput && !addressInput.value.trim()) {
+                var ae = document.getElementById('rlAddressError');
+                if (ae) { ae.hidden = false; }
+                ok = false;
+            }
+            if (priceInput && !priceInput.value) {
+                var pe = document.getElementById('rlPriceError');
+                if (pe) { pe.hidden = false; }
+                ok = false;
+            }
+            return ok;
+        }
+
+        function setStep(step, skipValidation) {
+            step = Math.max(minStep, Math.min(totalSteps, step));
+            if (step > currentStep && !skipValidation) {
+                for (var s = currentStep; s < step; s++) {
+                    if (!validateStep(s)) {
+                        return;
+                    }
+                }
+            }
+            currentStep = step;
+
+            stepSections.forEach(function (section) {
+                var sStep = parseInt(section.getAttribute('data-step'), 10);
+                section.classList.toggle('is-active', sStep === step);
+            });
+            stepperItems.forEach(function (item) {
+                var iStep = parseInt(item.getAttribute('data-step'), 10);
+                item.classList.toggle('is-done', iStep < step);
+                item.classList.toggle('is-active', iStep === step);
+            });
+
+            var meta = stepMeta[step] || { title: '', sub: '' };
+            if (titleEl) { titleEl.textContent = meta.title; }
+            if (subEl) {
+                subEl.textContent = meta.sub;
+                subEl.style.display = meta.sub ? '' : 'none';
+            }
+
+            if (step === 4) {
+                populateReview();
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        wizard.querySelectorAll('.rl-lw-next').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                setStep(currentStep + 1);
+            });
+        });
+
+        wizard.querySelectorAll('.rl-lw-goto').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var target = parseInt(btn.getAttribute('data-goto'), 10);
+                if (!isNaN(target)) {
+                    setStep(target, true);
+                }
+            });
+        });
+
+        if (backBtn) {
+            backBtn.addEventListener('click', function () {
+                if (currentStep > minStep) {
+                    setStep(currentStep - 1, true);
+                } else {
+                    window.location.href = feedUrl;
+                }
+            });
+        }
+
+        // Key highlights chips
+        var highlightsInput = document.getElementById('Highlights');
+        var highlightBtns = Array.prototype.slice.call(wizard.querySelectorAll('.rl-lw-highlight'));
+        function syncHighlights() {
+            if (!highlightsInput) {
+                return;
+            }
+            highlightsInput.value = highlightBtns
+                .filter(function (b) { return b.classList.contains('is-selected'); })
+                .map(function (b) { return b.getAttribute('data-value'); })
+                .join(',');
+        }
+        highlightBtns.forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                var on = btn.classList.toggle('is-selected');
+                btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+                syncHighlights();
+            });
+        });
+        syncHighlights();
+
+        setStep(minStep, true);
+    }
+
     renderPhotos();
 };

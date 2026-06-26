@@ -847,25 +847,29 @@
                 @if (ProfileDisplayService.PaidMembershipEnabled)
                 {
                     <div class="more-stat">
-                        <i class="fas fa-shield-alt"></i>
+                        <i class="fas fa-shield-alt more-stat-ic"></i>
                         <div class="ms-label">Membership status</div>
                         <div class="ms-value">@moreProfile.MembershipLabel</div>
+                        <i class="fas fa-shield-alt more-stat-art" aria-hidden="true"></i>
                     </div>
                 }
                 <div class="more-stat">
-                    <i class="fas fa-house"></i>
+                    <i class="fas fa-house more-stat-ic"></i>
                     <div class="ms-label">Home Added</div>
                     <div class="ms-value">@homeLabel</div>
+                    <i class="fas fa-house more-stat-art" aria-hidden="true"></i>
                 </div>
                 <div class="more-stat">
-                    <i class="far fa-file-alt"></i>
+                    <i class="fas fa-file-lines more-stat-ic"></i>
                     <div class="ms-label">Documents</div>
                     <div class="ms-value">@docLabel</div>
+                    <i class="fas fa-book-open more-stat-art" aria-hidden="true"></i>
                 </div>
                 <div class="more-stat">
-                    <i class="far fa-clock"></i>
+                    <i class="fas fa-screwdriver-wrench more-stat-ic"></i>
                     <div class="ms-label">Services</div>
                     <div class="ms-value">@svcLabel</div>
+                    <i class="fas fa-toolbox more-stat-art" aria-hidden="true"></i>
                 </div>
             </div>
 

@@ -1,15 +1,20 @@
 @model IndorMvcApp.ViewModels.MoreProfileViewModel
 @using IndorMvcApp.Services
 
-<div class="more-avatar">
-    @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
-    {
-        <img src="@Url.Content("~" + Model.PhotoUrl)" alt="Profile photo" />
-    }
-    else
-    {
-        <i class="fas fa-user"></i>
-    }
+<div class="more-avatar-wrap">
+    <div class="more-avatar">
+        @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+        {
+            <img src="@Url.Content("~" + Model.PhotoUrl)" alt="Profile photo" />
+        }
+        else
+        {
+            <i class="fas fa-user"></i>
+        }
+    </div>
+    <a class="more-avatar-edit" asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="photo" aria-label="Edit profile photo">
+        <i class="fas fa-pen"></i>
+    </a>
 </div>
 <div class="more-profile-meta">
     <p class="mp-name">@Model.FullName</p>
@@ -31,4 +36,8 @@
             </span>
         </div>
     }
+</div>
+<div class="more-ring" style="--pct:@Model.ProfileCompletionPercent" aria-hidden="true">
+    <span class="more-ring-pct">@Model.ProfileCompletionPercent%</span>
+    <span class="more-ring-label">Complete</span>
 </div>

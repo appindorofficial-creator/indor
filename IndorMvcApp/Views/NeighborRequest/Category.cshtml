@@ -12,7 +12,10 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-briefcase"></i></span>
-            <h2>What do you need help with?</h2>
+            <span class="nr-card-head-text">
+                <h2>What do you need help with?</h2>
+                <p class="nr-card-sub">Choose the kind of help you need.</p>
+            </span>
         </header>
 
         @if (Model.Categories.Count == 0)
@@ -29,8 +32,19 @@
                     var isSelected = Model.CategoryId == category.Id || Model.SelectedCategoryId == category.Id;
                     <label class="nr-cat-tile @(isSelected ? "is-selected" : null)">
                         <input type="radio" name="CategoryId" value="@category.Id" @(isSelected ? "checked" : null) required />
-                        <span class="nr-cat-tile-ill @category.IllustrationClass" aria-hidden="true"></span>
-                        <span class="nr-cat-tile-label">@category.Label</span>
+                        <span class="nr-cat-tile-ill @(string.IsNullOrWhiteSpace(category.ImageUrl) ? category.IllustrationClass : "has-image")" aria-hidden="true">
+                            @if (!string.IsNullOrWhiteSpace(category.ImageUrl))
+                            {
+                                <img src="@Url.Content("~" + category.ImageUrl)" alt="" loading="lazy" decoding="async" asp-append-version="true" />
+                            }
+                        </span>
+                        <span class="nr-cat-tile-body">
+                            <span class="nr-cat-tile-label">@category.Label</span>
+                            @if (!string.IsNullOrWhiteSpace(category.Description))
+                            {
+                                <span class="nr-cat-tile-desc">@category.Description</span>
+                            }
+                        </span>
                         @if (isSelected)
                         {
                             <span class="nr-cat-tile-check"><i class="fas fa-check"></i></span>
@@ -39,6 +53,11 @@
                 }
             </div>
             <span asp-validation-for="CategoryId" class="field-validation-error"></span>
+
+            <div class="nr-cat-tip">
+                <span class="nr-cat-tip-icon"><i class="fas fa-lightbulb"></i></span>
+                <span><strong>Tip:</strong> Pick the option that best matches the type of labor help you need.</span>
+            </div>
         }
     </section>
 

@@ -1,13 +1,12 @@
-/* INDOR Welcome — mockup: house hero visible, card pinned above sheet */
+/* INDOR Welcome — landing screen (mockup-exact) */
 :root {
     --wl-blue: #1867F2;
     --wl-blue-bright: #3B82F6;
     --wl-blue-dark: #0F52D4;
     --wl-navy: #0A2540;
-    --wl-sky: #EAF3FC;
-    --wl-sheet: #FFFFFF;
-    --wl-sheet-h: clamp(118px, 17.5vh, 148px);
-    --wl-card-overlap: 22px;
+    --wl-ink: #0F2C5C;
+    --wl-muted: #64748B;
+    --wl-line: #E2E8F0;
 }
 
 *,
@@ -21,84 +20,48 @@
     min-height: 100vh;
     min-height: 100dvh;
     font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: var(--wl-sky);
-    -webkit-font-smoothing: antialiased;
     color: var(--wl-navy);
+    -webkit-font-smoothing: antialiased;
+    background:
+        radial-gradient(135% 48% at 50% 0%, #E5F0FD 0%, rgba(229, 240, 253, 0) 46%),
+        linear-gradient(180deg, #F4F9FF 0%, #FFFFFF 38%, #FFFFFF 100%);
+    background-attachment: fixed;
 }
 
 .wl-screen {
     width: 100%;
     max-width: 430px;
-    min-height: 100vh;
-    min-height: 100dvh;
     margin: 0 auto;
-    overflow: hidden;
+    padding: 0 20px calc(env(safe-area-inset-bottom, 0px) + 22px);
 }
 
-.wl-hero {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-    min-height: 100dvh;
-    isolation: isolate;
-}
-
-/* House photo — roof + full facade above card */
-.wl-hero-bg {
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    background-color: #3d5a7a;
-    background-image: url('/welcome-house.png');
-    background-repeat: no-repeat;
-    background-position: center 12%;
-    background-size: cover;
-}
-
-.wl-hero-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-    pointer-events: none;
-    background:
-        linear-gradient(180deg,
-            var(--wl-sky) 0%,
-            var(--wl-sky) 7%,
-            rgba(234, 243, 252, 0.94) 11%,
-            rgba(234, 243, 252, 0.55) 15%,
-            rgba(234, 243, 252, 0.12) 20%,
-            transparent 24%,
-            transparent 74%,
-            rgba(10, 37, 64, 0.04) 84%,
-            rgba(255, 255, 255, 0.28) 93%,
-            #FFFFFF 99%);
-}
-
-.wl-hero-content {
-    position: relative;
-    z-index: 2;
-    flex: 1 1 auto;
-    display: flex;
-    flex-direction: column;
-    min-height: 0;
-}
-
-.wl-hero-spacer {
-    flex: 1 1 auto;
-    min-height: clamp(80px, 19vh, 210px);
-}
-
-/* Compact header */
+/* Header — sits on the light page background, above the house photo */
 .wl-top {
     position: relative;
+    z-index: 1;
     text-align: center;
-    padding: calc(env(safe-area-inset-top, 0px) + 10px) 20px 0;
-    flex-shrink: 0;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 24px 0;
+}
+
+/* Hero — house photo block placed BELOW the header text, curved bottom */
+.wl-hero {
+    position: relative;
+    margin: 14px -20px 0;
+    min-height: clamp(300px, 46vh, 430px);
+    overflow: hidden;
+    border-radius: 0 0 46% 46% / 0 0 13% 13%;
+    background:
+        linear-gradient(180deg,
+            rgba(244, 249, 255, 0.55) 0%,
+            rgba(244, 249, 255, 0) 12%,
+            rgba(244, 249, 255, 0) 70%,
+            rgba(244, 249, 255, 0.62) 90%,
+            #F4F9FF 100%),
+        url('/welcome-hero-house.png') center top / cover no-repeat;
 }
 
 .wl-brand {
-    width: min(100%, 224px);
+    width: min(100%, 240px);
     margin: 0 auto;
 }
 
@@ -111,24 +74,25 @@
 }
 
 .wl-logo-ind {
-    font-size: 1.8125rem;
+    font-size: 2.2rem;
     font-weight: 800;
     letter-spacing: -0.04em;
     color: var(--wl-navy);
 }
 
 .wl-logo-house {
-    width: 1.6rem;
-    height: 1.6rem;
-    margin: 0 1px;
+    width: 2rem;
+    height: 2rem;
+    margin: 0 2px;
     color: var(--wl-blue);
     flex-shrink: 0;
 }
 
 .wl-logo-sub {
-    margin: 5px 0 0;
-    font-size: 0.875rem;
+    margin: 4px 0 0;
+    font-size: 1rem;
     font-weight: 600;
+    letter-spacing: 0.01em;
 }
 
 .wl-logo-sub-home { color: var(--wl-blue); }
@@ -138,259 +102,251 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: min(100%, 200px);
-    margin: 8px auto 7px;
+    width: min(100%, 210px);
+    margin: 10px auto 12px;
 }
 
 .wl-rule-line {
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, var(--wl-blue) 20%, var(--wl-blue) 80%, transparent);
+    background: linear-gradient(90deg, transparent, var(--wl-blue) 22%, var(--wl-blue) 78%, transparent);
 }
 
 .wl-rule-diamond {
-    width: 6px;
-    height: 6px;
-    margin: 0 8px;
+    width: 7px;
+    height: 7px;
+    margin: 0 9px;
     flex-shrink: 0;
     background: var(--wl-blue);
     transform: rotate(45deg);
 }
 
-.wl-tagline {
-    margin: 0 auto 6px;
-    max-width: 292px;
+.wl-title {
+    margin: 0 auto 8px;
     font-family: 'Lora', Georgia, 'Times New Roman', serif;
-    font-size: 0.76rem;
-    line-height: 1.46;
-    font-weight: 500;
-    font-style: italic;
-    color: var(--wl-blue-dark);
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: var(--wl-blue);
 }
 
-.wl-tagline-accent {
-    font-weight: 600;
-}
-
-/* Feature card — sibling above sheet so z-index works */
-.wl-feature-anchor {
-    position: relative;
-    z-index: 5;
-    flex-shrink: 0;
-    padding: 0 14px;
-    margin-bottom: calc(-1 * var(--wl-card-overlap));
-    pointer-events: none;
-}
-
-.wl-feature-card {
-    pointer-events: auto;
+.wl-subtitle {
     margin: 0 auto;
-    max-width: min(340px, calc(100% - 12px));
-    padding: 12px 14px 11px;
+    max-width: 320px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+    font-weight: 600;
+    color: #2B4A6B;
+}
+
+/* Badge */
+.wl-badge-row {
+    display: flex;
+    justify-content: center;
+    margin: 18px 0 14px;
+}
+
+.wl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 8px 16px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid var(--wl-line);
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--wl-ink);
+}
+
+.wl-badge svg {
+    width: 16px;
+    height: 16px;
+    color: var(--wl-blue);
+    flex-shrink: 0;
+}
+
+/* Feature cards */
+.wl-cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+}
+
+.wl-card {
+    background: #fff;
+    border: 1px solid #EEF2F7;
     border-radius: 16px;
-    background: linear-gradient(
-        180deg,
-        rgba(10, 37, 64, 0.58) 0%,
-        rgba(10, 37, 64, 0.78) 100%
-    );
-    backdrop-filter: blur(14px) saturate(1.15);
-    -webkit-backdrop-filter: blur(14px) saturate(1.15);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    box-shadow: 0 8px 28px rgba(10, 37, 64, 0.22);
+    padding: 16px 10px 16px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
 }
 
-.wl-feature-badge {
-    width: 36px;
-    height: 40px;
-    margin: 0 auto 7px;
-    color: var(--wl-blue-bright);
-    filter: drop-shadow(0 2px 6px rgba(59, 130, 246, 0.35));
+.wl-card-icon {
+    position: relative;
+    width: 58px;
+    height: 58px;
+    border-radius: 16px;
+    background: #E8F1FB;
+    color: var(--wl-blue);
+    margin: 0 auto 11px;
 }
 
-.wl-feature-badge svg {
-    width: 100%;
-    height: 100%;
+.wl-card-icon svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 32px;
+    height: 32px;
     display: block;
 }
 
-.wl-headline {
-    margin: 0 0 9px;
-    font-family: 'Lora', Georgia, 'Times New Roman', serif;
-    font-size: clamp(0.94rem, 3.4vw, 1.18rem);
-    font-weight: 600;
-    line-height: 1.32;
-    color: #fff;
-    text-align: center;
+.wl-card strong {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--wl-navy);
+    margin-bottom: 6px;
 }
 
-.wl-features {
-    display: flex;
-    align-items: flex-start;
-    justify-content: center;
-    gap: 0;
+.wl-card span {
+    display: block;
+    font-size: 0.68rem;
+    line-height: 1.4;
+    color: var(--wl-muted);
 }
 
-.wl-feature {
-    flex: 1;
+/* Actions */
+.wl-actions {
+    margin-top: 18px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    min-width: 0;
-}
-
-.wl-feature-icon {
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--wl-blue-bright);
-}
-
-.wl-feature-icon svg {
-    width: 22px;
-    height: 22px;
-    display: block;
-}
-
-.wl-feature-label {
-    font-size: 0.625rem;
-    font-weight: 600;
-    line-height: 1.15;
-    color: rgba(255, 255, 255, 0.95);
-    text-align: center;
-}
-
-.wl-feature-divider {
-    width: 1px;
-    align-self: stretch;
-    min-height: 36px;
-    margin: 2px 0;
-    background: rgba(255, 255, 255, 0.28);
-    flex-shrink: 0;
-}
-
-/* Bottom login sheet */
-.wl-sheet {
-    position: relative;
-    z-index: 4;
-    flex-shrink: 0;
-    min-height: var(--wl-sheet-h);
-    padding: calc(var(--wl-card-overlap) + 6px) 24px calc(env(safe-area-inset-bottom, 0px) + 14px);
-    background: var(--wl-sheet);
-    border-radius: 32px 32px 0 0;
-    box-shadow: 0 -4px 20px rgba(10, 37, 64, 0.05);
+    gap: 11px;
 }
 
 .wl-btn {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
     width: 100%;
-    margin: 0;
-    padding: 15px 24px;
-    border: none;
+    padding: 16px 24px;
     border-radius: 999px;
-    background: linear-gradient(90deg, var(--wl-blue-bright) 0%, var(--wl-blue) 50%, var(--wl-blue-dark) 100%);
-    color: #fff;
     font-family: inherit;
     font-size: 1.0625rem;
     font-weight: 700;
     text-decoration: none;
     cursor: pointer;
-    box-shadow: 0 10px 24px rgba(24, 103, 242, 0.28);
     transition: transform 0.18s ease;
     -webkit-tap-highlight-color: transparent;
 }
 
-.wl-btn:active {
-    transform: scale(0.985);
+.wl-btn:active { transform: scale(0.985); }
+
+.wl-btn-main {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
 }
 
-.wl-btn-arrow {
-    width: 1.125rem;
-    height: 1.125rem;
+.wl-btn-spark {
+    width: 1.15rem;
+    height: 1.15rem;
     flex-shrink: 0;
 }
 
-.wl-secondary-cta {
-    margin: 13px 0 0;
-    text-align: center;
-    font-size: 0.875rem;
+.wl-btn-arrow {
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1.15rem;
+    height: 1.15rem;
+    flex-shrink: 0;
+}
+
+.wl-btn--primary {
+    border: none;
+    color: #fff;
+    background: linear-gradient(90deg, var(--wl-blue-bright) 0%, var(--wl-blue) 52%, var(--wl-blue-dark) 100%);
+    box-shadow: 0 12px 26px rgba(24, 103, 242, 0.30);
+}
+
+.wl-btn--outline {
+    background: #fff;
+    color: var(--wl-navy);
+    border: 1.5px solid #D5E3F5;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, 0.05);
+}
+
+.wl-btn--outline .wl-btn-arrow { color: var(--wl-blue); }
+
+/* Footer */
+.wl-foot {
+    margin-top: 18px;
+}
+
+.wl-foot-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #94A3B8;
+    font-size: 0.78rem;
     font-weight: 500;
-    color: #64748B;
+}
+
+.wl-foot-divider::before,
+.wl-foot-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--wl-line);
+}
+
+.wl-secondary-cta {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: #475569;
 }
 
 .wl-secondary-cta a {
     color: var(--wl-blue);
-    font-weight: 700;
+    font-weight: 800;
     text-decoration: none;
 }
 
+/* Reveal animation */
 .wl-reveal {
-    animation: wlReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation: wlReveal 0.6s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .wl-reveal-1 { animation-delay: 0.04s; }
 .wl-reveal-2 { animation-delay: 0.14s; }
-.wl-reveal-3 { animation-delay: 0.26s; }
+.wl-reveal-3 { animation-delay: 0.24s; }
 
 @keyframes wlReveal {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-@media (min-height: 780px) {
-    :root {
-        --wl-sheet-h: clamp(132px, 18vh, 158px);
-        --wl-card-overlap: 24px;
-    }
-
-    .wl-top {
-        padding-top: calc(env(safe-area-inset-top, 0px) + 16px);
-    }
-
-    .wl-hero-bg {
-        background-position: center 8%;
-    }
-
-    .wl-headline {
-        font-size: 1.25rem;
-    }
-}
-
-@media (max-height: 667px) {
-    :root {
-        --wl-sheet-h: clamp(112px, 17vh, 132px);
-        --wl-card-overlap: 18px;
-    }
-
-    .wl-logo-ind { font-size: 1.5625rem; }
-    .wl-logo-house { width: 1.35rem; height: 1.35rem; }
-    .wl-tagline { font-size: 0.7rem; }
-    .wl-hero-spacer { min-height: 72px; }
-
-    .wl-feature-card {
-        padding: 11px 12px 10px;
-    }
-
-    .wl-headline {
-        font-size: 0.9rem;
-        margin-bottom: 8px;
-    }
+@media (max-width: 360px) {
+    .wl-card { padding: 14px 8px; }
+    .wl-card-icon { width: 42px; height: 42px; }
+    .wl-card span { font-size: 0.64rem; }
+    .wl-title { font-size: 1.35rem; }
 }
 
 @media (min-width: 431px) {
     .wl-screen {
-        box-shadow: 0 0 60px rgba(0, 0, 0, 0.14);
+        box-shadow: 0 0 60px rgba(0, 0, 0, 0.10);
+        background: #fff;
+        min-height: 100dvh;
     }
 }
 

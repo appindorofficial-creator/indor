@@ -16,7 +16,11 @@
 </head>
 <body class="rl-dash-page rl-listing-wizard-page @(ViewBag.ListingWizardPage != null ? $"rl-listing-wizard-page--{ViewBag.ListingWizardPage}" : "")">
     <div class="rl-listing-wizard-shell">
-        @if (wizardModel != null)
+        @if (ViewBag.ListingHideChrome == true)
+        {
+            // The view renders its own top nav + stepper (multi-step wizard page).
+        }
+        else if (wizardModel != null)
         {
             @await Html.PartialAsync("~/Views/Realtor/NetworkListing/_ListingWizardHeader.cshtml", wizardModel)
             if (wizardModel.ShowStepper)

@@ -882,6 +882,7 @@ public class RealtorNearbyNetworkService(
         public string? PropertySubtype { get; set; }
         public int? YearBuilt { get; set; }
         public string? Description { get; set; }
+        public string? Highlights { get; set; }
         public bool PromoteInNearbyFeed { get; set; } = true;
         public bool FeaturedListing { get; set; }
         public string? AdditionalPhotoUrls { get; set; }
@@ -913,6 +914,7 @@ public class RealtorNearbyNetworkService(
         model.PropertySubtype = extras.PropertySubtype;
         model.YearBuilt = extras.YearBuilt;
         model.Description = extras.Description;
+        model.Highlights = extras.Highlights;
         model.PromoteInNearbyFeed = extras.PromoteInNearbyFeed;
         model.FeaturedListing = extras.FeaturedListing;
         model.AdditionalPhotoUrls = extras.AdditionalPhotoUrls;
@@ -928,6 +930,7 @@ public class RealtorNearbyNetworkService(
             PropertySubtype = model.PropertySubtype,
             YearBuilt = model.YearBuilt,
             Description = model.Description?.Trim(),
+            Highlights = model.Highlights?.Trim(),
             PromoteInNearbyFeed = model.PromoteInNearbyFeed,
             FeaturedListing = model.FeaturedListing,
             AdditionalPhotoUrls = model.AdditionalPhotoUrls?.Trim(),

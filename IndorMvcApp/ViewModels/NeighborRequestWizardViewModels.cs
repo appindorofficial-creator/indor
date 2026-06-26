@@ -45,6 +45,7 @@ public class NeighborRequestCategoryOptionViewModel
     public string? Description { get; set; }
     public string IconClass { get; set; } = "fa-circle";
     public string IllustrationClass { get; set; } = "nr-cat-ill--other";
+    public string? ImageUrl { get; set; }
 }
 
 public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellViewModel

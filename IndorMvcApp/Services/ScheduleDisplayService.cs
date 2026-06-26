@@ -198,7 +198,7 @@ public static class ScheduleDisplayService
         {
             Label = "Trash",
             IconClass = "fa-trash-can",
-            ImageUrl = ResolveQuickAddImage(trashMicro?.ImagenUrl, "/trash-bin-trash.png"),
+            ImageUrl = "/images/schedule/schedule-trash.png",
             ToneClass = "sch-tone-trash",
             Url = trashMicro != null
                 ? url.Action("TrashService", "Trash", new { id = trashMicro.Id }) ?? servicesUrl
@@ -209,7 +209,7 @@ public static class ScheduleDisplayService
         {
             Label = "Lawn",
             IconClass = "fa-seedling",
-            ImageUrl = ResolveQuickAddImage(lawnMicro?.ImagenUrl),
+            ImageUrl = "/images/schedule/schedule-lawn.png",
             ToneClass = "sch-tone-lawn",
             Url = lawnMicro != null
                 ? url.Action("LawnService", "Lawn", new { id = lawnMicro.Id }) ?? servicesUrl
@@ -220,6 +220,7 @@ public static class ScheduleDisplayService
         {
             Label = "AC",
             IconClass = "fa-snowflake",
+            ImageUrl = "/images/schedule/schedule-ac.png",
             ToneClass = "sch-tone-ac",
             Url = ResolveHvacQuickAddUrl(hvacMaintenancePriorityId, propiedadId, url)
         });
@@ -228,7 +229,7 @@ public static class ScheduleDisplayService
         {
             Label = "Filter",
             IconClass = "fa-filter",
-            ImageUrl = ResolveQuickAddImage(safeAirMicro?.ImagenUrl, "/images/filter-plan-icon.svg"),
+            ImageUrl = "/images/schedule/schedule-filter.png",
             ToneClass = "sch-tone-filter",
             Url = propiedadId.HasValue
                 ? ResolveFilterQuickAddUrl(propiedadId.Value, hvacRecords, url)
@@ -241,6 +242,7 @@ public static class ScheduleDisplayService
         {
             Label = "Gutters",
             IconClass = "fa-water",
+            ImageUrl = "/images/schedule/schedule-gutters.png",
             ToneClass = "sch-tone-gutter",
             Url = gutterCleaningPriorityId.HasValue
                 ? url.Action("GutterCleaningService", "GutterCleaning", new { id = gutterCleaningPriorityId.Value }) ?? servicesUrl
@@ -251,23 +253,12 @@ public static class ScheduleDisplayService
         {
             Label = "Maintenance",
             IconClass = "fa-screwdriver-wrench",
+            ImageUrl = "/images/schedule/schedule-maintenance.png",
             ToneClass = "sch-tone-maintenance",
             Url = ResolveMaintenanceQuickAddUrl(propiedadId, crawlspacePriorityId, url)
         });
 
         return items;
-    }
-
-    private static string? ResolveQuickAddImage(string? primary, string? fallback = null)
-    {
-        if (!string.IsNullOrWhiteSpace(primary))
-        {
-            return primary.StartsWith('/') || primary.StartsWith("http", StringComparison.OrdinalIgnoreCase)
-                ? primary
-                : $"/{primary.TrimStart('/')}";
-        }
-
-        return fallback;
     }
 
     private static string ResolveMaintenanceQuickAddUrl(

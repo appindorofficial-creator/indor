@@ -125,6 +125,9 @@ public class RealtorNetworkListingFormViewModel : RealtorPortalShellViewModel
     [MaxLength(500)]
     public string? Description { get; set; }
 
+    [MaxLength(400)]
+    public string? Highlights { get; set; }
+
     public string? ImageUrl { get; set; }
     public string? AdditionalPhotoUrls { get; set; }
 
@@ -163,4 +166,19 @@ public class RealtorNetworkListingFormViewModel : RealtorPortalShellViewModel
         (5m, "5 miles"),
         (10m, "10 miles")
     ];
+
+    public IReadOnlyList<(string Value, string Label, string Icon)> HighlightOptions { get; set; } =
+    [
+        ("updated-kitchen", "Updated Kitchen", "fa-kitchen-set"),
+        ("big-backyard", "Big Backyard", "fa-tree"),
+        ("new-roof", "New Roof", "fa-house-chimney"),
+        ("move-in-ready", "Move-in Ready", "fa-box-open"),
+        ("corner-lot", "Corner Lot", "fa-vector-square"),
+        ("gated-community", "Gated Community", "fa-shield-halved")
+    ];
+
+    public IReadOnlyList<string> SelectedHighlights =>
+        string.IsNullOrWhiteSpace(Highlights)
+            ? []
+            : Highlights.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 }
