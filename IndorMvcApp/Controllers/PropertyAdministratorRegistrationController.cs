@@ -40,22 +40,26 @@ public class PropertyAdministratorRegistrationController(
     }
 
     [HttpGet]
-    public IActionResult Index() => RedirectToAction(nameof(Profile));
-
-    [HttpGet]
-    public async Task<IActionResult> Profile()
+    public async Task<IActionResult> Index()
     {
-        await registration.LinkCurrentUserAsync();
         var admin = await registration.GetAdministratorForCurrentUserAsync();
         if (admin != null && registration.IsRegistrationComplete(admin))
         {
             return RedirectToAction("Dashboard", "Administrador");
         }
 
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Profile()
+    {
+        await registration.LinkCurrentUserAsync();
         var state = await registration.GetAsync();
+        var userId = userManager.GetUserId(User);
         return View(StepVm(1, "Create your Multi-Property Owner profile",
             "For owners of multiple homes, rentals, and short-term rental properties.",
-            state, Url.Action("SelectRole", "Account")!));
+            state, Url.Action("SelectRole", "Account", new { userId })!));
     }
 
     [HttpPost]
@@ -76,9 +80,10 @@ public class PropertyAdministratorRegistrationController(
             state.PortfolioBusinessName = portfolioBusinessName?.Trim() ?? "";
             state.TermsAccepted = termsAccepted;
             state.MarketingOptIn = marketingOptIn;
+            var userId = userManager.GetUserId(User);
             return View(StepVm(1, "Create your Multi-Property Owner profile",
                 "For owners of multiple homes, rentals, and short-term rental properties.",
-                state, Url.Action("SelectRole", "Account")!));
+                state, Url.Action("SelectRole", "Account", new { userId })!));
         }
 
         await registration.SaveProfileAsync(new PropertyAdministratorProfileInput
@@ -102,7 +107,7 @@ public class PropertyAdministratorRegistrationController(
 
         return View(StepVm(2, "Tell us about your portfolio",
             "Help us tailor INDOR to your properties and rental operations.",
-            state, Url.Action(nameof(Profile))!));
+            state, Url.Action(nameof(Profile), "PropertyAdministratorRegistration")!));
     }
 
     [HttpPost]
