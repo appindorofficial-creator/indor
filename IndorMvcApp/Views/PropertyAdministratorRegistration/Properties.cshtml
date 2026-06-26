@@ -113,9 +113,13 @@
     <i class="fas fa-chevron-right"></i>
 </a>
 
-<form asp-action="ContinueFromProperties" method="post">
+<form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
     @Html.AntiForgeryToken()
-    <button type="submit" class="ob-btn ob-btn-primary" style="margin-top:16px;">Continue <i class="fas fa-chevron-right"></i></button>
 </form>
 
-<a href="@Model.BackUrl" class="pa-back-link">Back</a>
+@{
+    ViewData["StepFormId"] = "paPropertiesContinueForm";
+    ViewData["StepBackUrl"] = Model.BackUrl;
+    ViewData["StepSubmitLabel"] = "Next";
+}
+@await Html.PartialAsync("_PropertyAdminStepActions")

@@ -463,9 +463,18 @@ body:has(.prv-pro-bottom-nav) {
     bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap));
 }
 
-/* Property administrator registration (same ob-page shell) */
+/* Property administrator registration — side-by-side Back / Next footer */
 .pa-page.ob-page .ob-shell-inner {
-    padding-bottom: var(--indor-page-footer-scroll);
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+}
+
+.pa-page.ob-page .ob-shell-inner > form > button[type="submit"].ob-btn-primary {
+    position: static;
+    left: auto;
+    right: auto;
+    width: auto;
+    max-width: none;
+    margin: 0;
 }
 
 /* Provider Pro workflow footers — flush above bottom nav */

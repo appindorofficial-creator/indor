@@ -7,7 +7,7 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Review" method="post">
+<form asp-action="Review" method="post" id="paReviewForm" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
 
@@ -68,19 +68,43 @@
         {
             <div class="pa-check-item"><i class="fas fa-circle-check"></i> Tools selected</div>
         }
+        <div class="pa-check-item pa-check-item--later"><i class="fas fa-user-plus"></i> Invite team members later from your dashboard</div>
     </div>
 
-    <a href="#" class="pa-action-row" onclick="return false;" style="opacity:.7;margin-bottom:14px;">
-        <span><i class="fas fa-user-plus"></i> Invite team members later</span>
-        <i class="fas fa-chevron-right"></i>
-    </a>
-
     <label class="pa-terms">
-        <input type="checkbox" name="platformTermsAccepted" value="true" required />
-        <span>I agree to <a href="#" onclick="return false;">INDOR's platform terms</a></span>
+        <input type="checkbox" id="platformTermsAccepted" name="platformTermsAccepted" value="true" />
+        <span>I agree to <a asp-controller="Account" asp-action="Terms">INDOR's platform terms</a></span>
     </label>
-
-    <button type="submit" class="ob-btn ob-btn-primary">Go to Dashboard <i class="fas fa-chevron-right"></i></button>
 </form>
 
-<a href="@Model.BackUrl" class="pa-back-link">Back</a>
+@{
+    ViewData["StepFormId"] = "paReviewForm";
+    ViewData["StepBackUrl"] = Model.BackUrl;
+    ViewData["StepSubmitLabel"] = "Go to Dashboard";
+}
+@await Html.PartialAsync("_PropertyAdminStepActions")
+
+@section Scripts {
+<script>
+    (function () {
+        var form = document.getElementById('paReviewForm');
+        var terms = document.getElementById('platformTermsAccepted');
+        if (!form || !terms) return;
+
+        terms.addEventListener('change', function () {
+            terms.setCustomValidity('');
+        });
+
+        form.addEventListener('submit', function (e) {
+            if (terms.checked) {
+                terms.setCustomValidity('');
+                return;
+            }
+
+            e.preventDefault();
+            terms.setCustomValidity('Please agree to INDOR\'s platform terms.');
+            terms.reportValidity();
+        });
+    })();
+</script>
+}

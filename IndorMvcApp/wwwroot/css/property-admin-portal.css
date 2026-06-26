@@ -87,6 +87,8 @@
 .pa-checklist{margin-bottom:18px}
 .pa-check-item{display:flex;align-items:center;gap:10px;padding:8px 0;font-size:.88rem;color:#334155}
 .pa-check-item i{color:#0066CC}
+.pa-check-item--later{color:#64748B}
+.pa-check-item--later i{color:#94A3B8}
 
 .pa-dashboard-hero{background:linear-gradient(135deg,#0A2540,#0066CC);color:#fff;border-radius:18px;padding:20px;margin-bottom:18px}
 .pa-dashboard-hero h1{font-size:1.35rem;margin:0 0 6px}
@@ -101,6 +103,24 @@
 .pa-terms a{color:#0066CC;font-weight:600;text-decoration:none}
 
 .pa-back-link{display:block;text-align:center;margin-top:14px;color:#0066CC;font-weight:600;text-decoration:none;font-size:.9rem}
+
+.pa-page .pa-reg-actions{
+    display:flex;align-items:center;justify-content:space-between;gap:12px;
+    position:fixed;left:0;right:0;bottom:0;z-index:60;max-width:480px;margin:0 auto;
+    padding:12px 16px calc(12px + env(safe-area-inset-bottom,0px));
+    background:rgba(255,255,255,.97);backdrop-filter:blur(8px);
+    border-top:1px solid #EEF3FA;box-shadow:0 -10px 26px rgba(20,66,124,.08)
+}
+.pa-reg-action-back{
+    display:flex;align-items:center;justify-content:center;box-sizing:border-box;
+    flex:1;max-width:220px;padding:15px 20px;border:1.5px solid #0066CC;border-radius:14px;
+    background:#fff;color:#0066CC;font-weight:700;font-size:.95rem;cursor:pointer;
+    text-decoration:none;font-family:inherit;transition:transform .12s,background .12s
+}
+.pa-reg-action-back:hover{background:#F0F7FF}
+.pa-reg-action-back:active{transform:scale(.98)}
+.pa-page .pa-reg-actions .ob-btn-primary{flex:1;max-width:220px;margin:0;padding:15px 20px;border-radius:14px;font-size:.95rem;font-weight:700}
+.pa-page.ob-page .ob-shell-inner{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .pa-summary-error{background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
 
 /* Multi-property owner portal */
