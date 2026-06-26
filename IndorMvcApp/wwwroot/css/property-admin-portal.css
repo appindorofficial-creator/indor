@@ -13,8 +13,9 @@
 .pa-reg-step-line.is-done{background:#0066CC}
 
 .pa-field{display:flex;align-items:center;gap:12px;padding:14px 16px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:14px}
+.pa-field:focus-within{border-color:#93C5FD;box-shadow:0 0 0 3px rgba(46,139,255,.15)}
 .pa-field i{color:#94A3B8;width:18px;text-align:center;flex-shrink:0}
-.pa-field input,.pa-field select{flex:1 1 auto;min-width:0;width:100%;border:none;outline:none;font:inherit;font-size:.92rem;color:#0F172A;background:transparent}
+.pa-field input,.pa-field select{flex:1 1 auto;min-width:0;width:100%;border:none!important;outline:none;box-shadow:none!important;font:inherit;font-size:.92rem;color:#0F172A;background:transparent}
 .pa-field-readonly{background:#F8FAFC;color:#64748B}
 .pa-field-readonly span{flex:1;font-size:.92rem}
 
