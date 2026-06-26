@@ -1891,32 +1891,28 @@
     text-decoration: none;
 }
 .pf-home-address-form { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
-.pf-home-search {
+.pf-home-address-form label.pf-field {
     display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    border: 1px solid #CBD5E1;
-    border-radius: 12px;
-    padding: 0 12px;
+    flex-direction: column;
+    gap: 6px;
+    font-size: .78rem;
+    font-weight: 600;
+    color: #374151;
 }
-.pf-home-search i { color: #94A3B8; }
-.pf-home-search input {
-    border: none;
-    background: transparent;
-    flex: 1;
-    min-width: 0;
-    padding: 12px 0;
-    font-size: .88rem;
+
+.pf-home-address-form label.pf-field input,
+.pf-home-address-form label.pf-field select {
+    font-weight: 400;
 }
-.pf-home-search input:focus { outline: none; }
+
 .pf-home-address-form select,
-.pf-home-address-form input:not(.pf-home-search input) {
+.pf-home-address-form input {
     width: 100%;
-    border: 1px solid #CBD5E1;
+    border: 1px solid #E5E7EB;
     border-radius: 12px;
     padding: 11px 12px;
-    font-size: .88rem;
+    font-size: .9rem;
+    font-family: inherit;
     background: #fff;
 }
 .pf-optional { font-weight: 500; color: #94A3B8; }

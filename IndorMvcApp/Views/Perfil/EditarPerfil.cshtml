@@ -139,18 +139,15 @@
 
         <label class="pf-field">
             <span>Street address</span>
-            <div class="pf-home-search">
-                <i class="fas fa-magnifying-glass"></i>
-                <input asp-for="AddressForm.StreetAddress"
-                       id="ep-street"
-                       placeholder="House number and street name"
-                       autocomplete="address-line1"
-                       data-address-autocomplete
-                       data-ac-street-only="true"
-                       data-ac-city="ep-city"
-                       data-ac-state="ep-state"
-                       data-ac-zip="ep-zip" />
-            </div>
+            <input asp-for="AddressForm.StreetAddress"
+                   id="ep-street"
+                   placeholder="House number and street name"
+                   autocomplete="address-line1"
+                   data-address-autocomplete
+                   data-ac-street-only="true"
+                   data-ac-city="ep-city"
+                   data-ac-state="ep-state"
+                   data-ac-zip="ep-zip" />
         </label>
 
         <div class="pf-row">
