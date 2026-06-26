@@ -178,17 +178,7 @@ public class PropertyAdministratorRegistrationController(
             return RedirectToAction(nameof(Portfolio));
         }
 
-        var properties = await registration.GetPortfolioPropertiesAsync();
-        return View(new PropertyAdministratorPropertiesStepViewModel
-        {
-            DisplayStep = 3,
-            TotalSteps = 5,
-            Title = "Add your properties",
-            Subtitle = "Start building your portfolio inside INDOR.",
-            BackUrl = Url.Action(nameof(Portfolio))!,
-            State = state,
-            Properties = properties
-        });
+        return View(await BuildPropertiesViewModelAsync());
     }
 
     [HttpPost]
@@ -202,13 +192,43 @@ public class PropertyAdministratorRegistrationController(
         string propertyType,
         string? propertyNickname)
     {
-        if (string.IsNullOrWhiteSpace(streetName)
-            || string.IsNullOrWhiteSpace(city)
-            || string.IsNullOrWhiteSpace(state)
-            || string.IsNullOrWhiteSpace(propertyType))
+        var draft = new PropertyAdministratorPropertyInput
         {
-            TempData["PropertyAdminError"] = "Please enter street name, city, state, and property type.";
-            return RedirectToAction(nameof(Properties));
+            HouseNumber = houseNumber,
+            StreetName = streetName ?? "",
+            City = city ?? "",
+            State = state ?? "",
+            ZipCode = zipCode,
+            PropertyType = propertyType ?? "",
+            PropertyName = propertyNickname ?? ""
+        };
+
+        var missingFields = new List<string>();
+        if (string.IsNullOrWhiteSpace(streetName))
+        {
+            missingFields.Add("street name");
+        }
+
+        if (string.IsNullOrWhiteSpace(city))
+        {
+            missingFields.Add("city");
+        }
+
+        if (string.IsNullOrWhiteSpace(state))
+        {
+            missingFields.Add("state");
+        }
+
+        if (string.IsNullOrWhiteSpace(propertyType))
+        {
+            missingFields.Add("property type");
+        }
+
+        if (missingFields.Count > 0)
+        {
+            var model = await BuildPropertiesViewModelAsync(draft);
+            model.FormError = "Please enter " + string.Join(", ", missingFields) + ".";
+            return View(nameof(Properties), model);
         }
 
         var streetLine = PropertyAdministratorCatalog.BuildStreetLine(houseNumber, streetName);
@@ -321,6 +341,24 @@ public class PropertyAdministratorRegistrationController(
 
         await registration.CompleteRegistrationAsync(platformTermsAccepted);
         return RedirectToAction("Dashboard", "Administrador");
+    }
+
+    private async Task<PropertyAdministratorPropertiesStepViewModel> BuildPropertiesViewModelAsync(
+        PropertyAdministratorPropertyInput? draft = null)
+    {
+        var state = await registration.GetAsync();
+        var properties = await registration.GetPortfolioPropertiesAsync();
+        return new PropertyAdministratorPropertiesStepViewModel
+        {
+            DisplayStep = 3,
+            TotalSteps = 5,
+            Title = "Add your properties",
+            Subtitle = "Start building your portfolio inside INDOR.",
+            BackUrl = Url.Action(nameof(Portfolio))!,
+            State = state,
+            Properties = properties,
+            DraftProperty = draft
+        };
     }
 
     private static PropertyAdministratorRegistrationStepViewModel StepVm(

@@ -2,6 +2,7 @@
 @using IndorMvcApp.Models
 @{
     var s = Model.State;
+    var draft = Model.DraftProperty;
     var defaultCity = "";
     var defaultState = "";
     if (!string.IsNullOrWhiteSpace(s.PrimaryMarket) && !string.Equals(s.PrimaryMarket, "Other", StringComparison.OrdinalIgnoreCase))
@@ -13,6 +14,14 @@
             defaultState = marketParts[1];
         }
     }
+
+    var formHouseNumber = draft?.HouseNumber ?? "";
+    var formStreetName = draft?.StreetName ?? "";
+    var formCity = !string.IsNullOrWhiteSpace(draft?.City) ? draft!.City : defaultCity;
+    var formState = !string.IsNullOrWhiteSpace(draft?.State) ? draft!.State : defaultState;
+    var formZipCode = draft?.ZipCode ?? "";
+    var formPropertyType = draft?.PropertyType ?? "";
+    var formNickname = draft?.PropertyName ?? "";
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
@@ -20,7 +29,11 @@
     <p class="pa-step-hint">You can add properties now or skip and add them later from your dashboard.</p>
 </div>
 
-@if (TempData["PropertyAdminError"] is string err)
+@if (!string.IsNullOrWhiteSpace(Model.FormError))
+{
+    <div class="pa-summary-error">@Model.FormError</div>
+}
+else if (TempData["PropertyAdminError"] is string err)
 {
     <div class="pa-summary-error">@err</div>
 }
@@ -45,7 +58,7 @@
     </div>
 }
 
-<details class="pa-add-property-panel" @(Model.Properties.Count == 0 ? "open" : null)>
+<details class="pa-add-property-panel" @(Model.Properties.Count == 0 || draft != null ? "open" : null)>
     <summary class="pa-add-property-summary">
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
@@ -56,13 +69,14 @@
         <div class="pa-field-row pa-field-row--2">
             <label class="pa-field">
                 <i class="fas fa-hashtag"></i>
-                <input type="text" name="houseNumber" placeholder="House number" inputmode="numeric" />
+                <input type="text" name="houseNumber" value="@formHouseNumber" placeholder="House number" inputmode="numeric" />
             </label>
             <label class="pa-field">
                 <i class="fas fa-road"></i>
                 <input type="text"
                        id="pa-prop-street"
                        name="streetName"
+                       value="@formStreetName"
                        placeholder="Street name"
                        autocomplete="address-line1"
                        data-address-autocomplete
@@ -79,7 +93,7 @@
                 <input type="text"
                        id="pa-prop-city"
                        name="city"
-                       value="@defaultCity"
+                       value="@formCity"
                        placeholder="City"
                        autocomplete="address-level2"
                        data-city-autocomplete
@@ -92,7 +106,14 @@
                     <option value="">State</option>
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
-                        <option value="@stateCode" selected="@(defaultState == stateCode)">@stateCode</option>
+                        if (formState == stateCode)
+                        {
+                            <option value="@stateCode" selected="selected">@stateCode</option>
+                        }
+                        else
+                        {
+                            <option value="@stateCode">@stateCode</option>
+                        }
                     }
                 </select>
             </label>
@@ -101,6 +122,7 @@
                 <input type="text"
                        id="pa-prop-zip"
                        name="zipCode"
+                       value="@formZipCode"
                        placeholder="ZIP"
                        inputmode="numeric"
                        autocomplete="postal-code"
@@ -114,14 +136,21 @@
                 <option value="">Property type</option>
                 @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
                 {
-                    <option value="@item.Value">@item.Label</option>
+                    if (formPropertyType == item.Value)
+                    {
+                        <option value="@item.Value" selected="selected">@item.Label</option>
+                    }
+                    else
+                    {
+                        <option value="@item.Value">@item.Label</option>
+                    }
                 }
             </select>
         </label>
 
         <label class="pa-field">
             <i class="fas fa-pen"></i>
-            <input type="text" name="propertyNickname" placeholder="Property nickname (optional)" />
+            <input type="text" name="propertyNickname" value="@formNickname" placeholder="Property nickname (optional)" />
         </label>
 
         <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Save property</button>
