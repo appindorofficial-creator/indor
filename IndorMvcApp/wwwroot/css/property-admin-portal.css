@@ -110,7 +110,9 @@
 .pa-portal-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px}
 .pa-portal-logo{display:flex;flex-direction:column;align-items:flex-start;text-decoration:none;line-height:1.1;background:transparent;padding-top:2px}
 .pa-portal-logo-text{font-size:1.2rem;font-weight:800;color:#0A2540;letter-spacing:.02em}
-.pa-portal-logo-sub{font-size:.68rem;font-weight:500;color:#64748B;margin-top:2px}
+.pa-portal-logo-sub{margin-top:3px;font-size:.74rem;font-weight:600;letter-spacing:.01em;line-height:1.2;color:#0066CC}
+.pa-portal-logo-sub-home{color:inherit}
+.pa-portal-logo-sub-brand{color:inherit}
 .pa-portal-account-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
 .pa-portal-account-pill{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #E2E8F0;border-radius:999px;padding:5px 8px 5px 14px;box-shadow:0 6px 18px rgba(15,23,42,.07)}
 .pa-portal-pill-bell{position:relative;width:32px;height:32px;border:none;border-radius:50%;background:transparent;color:#0A2540;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;padding:0}
