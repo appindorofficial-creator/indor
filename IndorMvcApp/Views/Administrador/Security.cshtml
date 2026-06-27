@@ -31,15 +31,15 @@
             @Html.AntiForgeryToken()
             <label class="pa-security-field">
                 <span>Current password</span>
-                <input type="password" name="currentPassword" required autocomplete="current-password" />
+                <input type="password" name="currentPassword" value="@Model.CurrentPassword" required autocomplete="current-password" />
             </label>
             <label class="pa-security-field">
                 <span>New password</span>
-                <input type="password" name="newPassword" required autocomplete="new-password" />
+                <input type="password" name="newPassword" value="@Model.NewPassword" required autocomplete="new-password" />
             </label>
             <label class="pa-security-field">
                 <span>Confirm new password</span>
-                <input type="password" name="confirmPassword" required autocomplete="new-password" />
+                <input type="password" name="confirmPassword" value="@Model.ConfirmPassword" required autocomplete="new-password" />
             </label>
             <button type="submit" class="pa-security-submit">
                 <i class="fas fa-key"></i> Change password

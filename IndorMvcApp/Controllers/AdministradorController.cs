@@ -2110,7 +2110,12 @@ public class AdministradorController(
 
         if (string.IsNullOrWhiteSpace(newPassword) || newPassword != confirmPassword)
         {
-            return RedirectToAction(nameof(Security), new { error = "Passwords do not match." });
+            return View(await portal.GetSecurityAsync(
+                Url,
+                errorMessage: "Passwords do not match.",
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword));
         }
 
         var user = await userManager.GetUserAsync(User);
@@ -2123,7 +2128,12 @@ public class AdministradorController(
         if (!result.Succeeded)
         {
             var message = string.Join(" ", result.Errors.Select(e => e.Description));
-            return RedirectToAction(nameof(Security), new { error = message });
+            return View(await portal.GetSecurityAsync(
+                Url,
+                errorMessage: message,
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword));
         }
 
         await signInManager.SignInAsync(user, isPersistent: true);

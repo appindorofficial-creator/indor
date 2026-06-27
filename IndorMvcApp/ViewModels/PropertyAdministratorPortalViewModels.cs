@@ -259,4 +259,7 @@ public class PropertyAdministratorSecurityViewModel : PropertyAdministratorPorta
     public string PrivacyPolicyUrl { get; set; } = "#";
     public bool PasswordChanged { get; set; }
     public string? ErrorMessage { get; set; }
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
 }

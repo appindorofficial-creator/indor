@@ -19,7 +19,14 @@ public interface IPropertyAdministratorPortalService
     Task<PropertyAdministratorPersonalInformationViewModel> GetPersonalInformationAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorNotificationPreferencesViewModel> GetNotificationPreferencesAsync(IUrlHelper url, bool saved = false, CancellationToken cancellationToken = default);
     Task<bool> SaveNotificationPreferencesAsync(PropertyAdministratorNotificationPreferencesInput input, CancellationToken cancellationToken = default);
-    Task<PropertyAdministratorSecurityViewModel> GetSecurityAsync(IUrlHelper url, bool saved = false, string? errorMessage = null, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorSecurityViewModel> GetSecurityAsync(
+        IUrlHelper url,
+        bool saved = false,
+        string? errorMessage = null,
+        string? currentPassword = null,
+        string? newPassword = null,
+        string? confirmPassword = null,
+        CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
 }
 
@@ -717,6 +724,9 @@ public class PropertyAdministratorPortalService(
         IUrlHelper url,
         bool saved = false,
         string? errorMessage = null,
+        string? currentPassword = null,
+        string? newPassword = null,
+        string? confirmPassword = null,
         CancellationToken cancellationToken = default)
     {
         var admin = await LoadAdminAsync(cancellationToken)
@@ -734,7 +744,10 @@ public class PropertyAdministratorPortalService(
             BackUrl = url.Action("Profile", "Administrador") ?? "#",
             PrivacyPolicyUrl = url.Action("Privacy", "Account") ?? "#",
             PasswordChanged = saved,
-            ErrorMessage = errorMessage
+            ErrorMessage = errorMessage,
+            CurrentPassword = currentPassword ?? string.Empty,
+            NewPassword = newPassword ?? string.Empty,
+            ConfirmPassword = confirmPassword ?? string.Empty
         };
     }
 
