@@ -252,3 +252,11 @@ public class PropertyAdministratorNotificationPreferencesViewModel : PropertyAdm
     public string QuietHoursEnd { get; set; } = "07:00";
     public string QuietHoursLabel { get; set; } = "10:00 PM - 7:00 AM";
 }
+
+public class PropertyAdministratorSecurityViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public string PrivacyPolicyUrl { get; set; } = "#";
+    public bool PasswordChanged { get; set; }
+    public string? ErrorMessage { get; set; }
+}

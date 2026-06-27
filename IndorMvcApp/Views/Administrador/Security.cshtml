@@ -1,0 +1,57 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorSecurityViewModel
+@{
+    ViewData["Title"] = "Security";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--security">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>Security</h1>
+            <p>Manage your password and account security settings.</p>
+        </div>
+    </header>
+
+    @if (Model.PasswordChanged)
+    {
+        <div class="pa-notify-saved" role="status">Password updated successfully.</div>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="pa-security-error" role="alert">@Model.ErrorMessage</div>
+    }
+
+    <section class="pa-personal-section">
+        <h2>Password</h2>
+        <form asp-controller="Administrador" asp-action="Security" method="post" class="pa-security-form">
+            @Html.AntiForgeryToken()
+            <label class="pa-security-field">
+                <span>Current password</span>
+                <input type="password" name="currentPassword" required autocomplete="current-password" />
+            </label>
+            <label class="pa-security-field">
+                <span>New password</span>
+                <input type="password" name="newPassword" required autocomplete="new-password" />
+            </label>
+            <label class="pa-security-field">
+                <span>Confirm new password</span>
+                <input type="password" name="confirmPassword" required autocomplete="new-password" />
+            </label>
+            <button type="submit" class="pa-security-submit">
+                <i class="fas fa-key"></i> Change password
+            </button>
+        </form>
+    </section>
+
+    <section class="pa-personal-info-card">
+        <div>
+            <strong>Account protection</strong>
+            <p>We never share your credentials. Learn more in our <a href="@Model.PrivacyPolicyUrl">Privacy Policy</a>.</p>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </section>
+</div>

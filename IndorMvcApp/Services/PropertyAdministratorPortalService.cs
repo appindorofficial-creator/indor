@@ -19,6 +19,7 @@ public interface IPropertyAdministratorPortalService
     Task<PropertyAdministratorPersonalInformationViewModel> GetPersonalInformationAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorNotificationPreferencesViewModel> GetNotificationPreferencesAsync(IUrlHelper url, bool saved = false, CancellationToken cancellationToken = default);
     Task<bool> SaveNotificationPreferencesAsync(PropertyAdministratorNotificationPreferencesInput input, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorSecurityViewModel> GetSecurityAsync(IUrlHelper url, bool saved = false, string? errorMessage = null, CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
 }
 
@@ -654,7 +655,7 @@ public class PropertyAdministratorPortalService(
                 {
                     Label = "Security",
                     IconClass = "fa-lock",
-                    Url = url.Action("Profile", "PropertyAdministratorRegistration") ?? "#"
+                    Url = url.Action("Security", "Administrador") ?? "#"
                 },
                 new()
                 {
@@ -707,7 +708,33 @@ public class PropertyAdministratorPortalService(
             Address = location,
             MarketingEmailsEnabled = admin.MarketingOptIn,
             BackUrl = url.Action("Profile", "Administrador") ?? "#",
-            PrivacyPolicyUrl = url.Action("Privacy", "Account") ?? "#"
+            PrivacyPolicyUrl = url.Action("Privacy", "Account") ?? "#",
+            ChangePasswordUrl = url.Action("Security", "Administrador") ?? "#"
+        };
+    }
+
+    public async Task<PropertyAdministratorSecurityViewModel> GetSecurityAsync(
+        IUrlHelper url,
+        bool saved = false,
+        string? errorMessage = null,
+        CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+
+        return new PropertyAdministratorSecurityViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            PrivacyPolicyUrl = url.Action("Privacy", "Account") ?? "#",
+            PasswordChanged = saved,
+            ErrorMessage = errorMessage
         };
     }
 
