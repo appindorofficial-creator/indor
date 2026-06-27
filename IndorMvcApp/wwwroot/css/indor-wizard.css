@@ -394,6 +394,18 @@ body:has(.prv-pro-bottom-nav) {
     bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap));
 }
 
+/* Three stacked submit buttons (e.g. Continue / Skip / Back) */
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"]:nth-last-child(3),
+.iw-wizard-page form.cl-form-actions > button[type="submit"]:nth-last-child(3) {
+    bottom: calc(var(--indor-page-footer-bottom) + 2 * (var(--indor-action-h) + var(--indor-action-gap)));
+}
+
+/* Reserve extra scroll space when a third action button is stacked */
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions):has(> button[type="submit"]:nth-last-child(3)),
+.iw-wizard-page form.cl-form-actions:has(> button[type="submit"]:nth-last-child(3)) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
 /* Property administrator service flows */
 .pa-portal-page .pa-portal-shell--flow,
 .pa-portal-page .pa-portal-shell--flow form {
@@ -436,13 +448,14 @@ body:has(.prv-pro-bottom-nav) {
     margin-top: 0 !important;
 }
 
-/* Onboarding / provider registration steps */
-.ob-page:not(.ob-welcome) .ob-shell-inner {
+/* Onboarding steps (consumer). Provider registration (.prv-page) is excluded
+   here because it uses its own .prv-wiz-footer fixed footer (see below). */
+.ob-page:not(.ob-welcome):not(.prv-page) .ob-shell-inner {
     padding-bottom: var(--indor-page-footer-scroll);
 }
 
-.ob-page .ob-form-card > button[type="submit"],
-.ob-page .ob-shell-inner > form > button[type="submit"].ob-btn-primary {
+.ob-page:not(.prv-page) .ob-form-card > button[type="submit"],
+.ob-page:not(.prv-page) .ob-shell-inner > form > button[type="submit"].ob-btn-primary {
     position: fixed;
     left: 20px;
     right: 20px;
@@ -454,18 +467,59 @@ body:has(.prv-pro-bottom-nav) {
     box-sizing: border-box;
 }
 
-.ob-page .ob-form-card > button[type="submit"]:last-of-type,
-.ob-page .ob-shell-inner > form > button[type="submit"].ob-btn-primary:last-of-type {
+.ob-page:not(.prv-page) .ob-form-card > button[type="submit"]:last-of-type,
+.ob-page:not(.prv-page) .ob-shell-inner > form > button[type="submit"].ob-btn-primary:last-of-type {
     bottom: var(--indor-page-footer-bottom);
 }
 
-.ob-page .ob-form-card > button[type="submit"]:nth-last-of-type(2) {
+.ob-page:not(.prv-page) .ob-form-card > button[type="submit"]:nth-last-of-type(2) {
     bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap));
 }
 
 /* Property administrator registration (same ob-page shell) */
 .pa-page.ob-page .ob-shell-inner {
     padding-bottom: var(--indor-page-footer-scroll);
+}
+
+/* Provider registration — unified fixed footer (stacked actions).
+   Action buttons of each step are wrapped in .prv-wiz-footer so any
+   number/mix of buttons + links pin cleanly to the bottom. The
+   .ob-shell-inner reserve is refined at runtime to the footer height. */
+.prv-page .ob-shell-inner {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+.prv-page .prv-wiz-footer,
+.prv-page .prv-exam-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 41;
+    padding: var(--indor-footer-pad-y) 20px var(--indor-page-footer-bottom);
+    background: var(--indor-page-footer-bg);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    box-sizing: border-box;
+}
+
+.prv-page .prv-wiz-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--indor-action-gap);
+}
+
+.prv-page .prv-wiz-footer > .ob-btn,
+.prv-page .prv-wiz-footer > button,
+.prv-page .prv-wiz-footer > a {
+    width: 100%;
+    max-width: 430px;
+    margin: 0;
+}
+
+.prv-page .prv-wiz-footer > .prv-save-later {
+    margin: 2px 0 0;
 }
 
 /* Provider Pro workflow footers — flush above bottom nav */

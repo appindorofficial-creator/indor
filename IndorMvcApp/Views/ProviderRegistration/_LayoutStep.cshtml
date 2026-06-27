@@ -40,6 +40,21 @@
 
     <script src="~/js/provider-registration.js" asp-append-version="true"></script>
 
+    <script>
+        (function () {
+            function fitFooter() {
+                var footer = document.querySelector('.prv-wiz-footer, .prv-exam-nav');
+                var inner = document.querySelector('.ob-shell-inner');
+                if (!footer || !inner) return;
+                inner.style.paddingBottom = (footer.offsetHeight + 24) + 'px';
+            }
+            window.addEventListener('load', fitFooter);
+            window.addEventListener('resize', fitFooter);
+            window.addEventListener('orientationchange', fitFooter);
+            setTimeout(fitFooter, 0);
+        })();
+    </script>
+
     @RenderSection("Scripts", required: false)
 
 </body>

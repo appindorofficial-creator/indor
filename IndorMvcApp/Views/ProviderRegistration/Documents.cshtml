@@ -170,7 +170,9 @@
         <i class="fas @(isHvac ? "fa-shield-halved" : "fa-circle-info")"></i>
         <span>@(isAppliance ? "Your documents are reviewed before your profile goes live." : isPest ? "Your documents are reviewed before your account is approved." : isLandscaping ? "Accepted formats: PDF, JPG, PNG" : isCleaning ? "All documents are reviewed by INDOR before approval." : isFlooring || isPainting ? "Your documents will be reviewed before account activation." : isRoofing ? "Only complete and valid documents allow account approval." : isKitchen || isBathroom ? "INDOR reviews every provider before activation." : isConstruction || isHandyman ? "Your documents are reviewed by INDOR before your account can receive jobs." : isHvac ? "Required documents help protect homeowners and keep the provider network exclusive." : $"Documents help verify that you can only receive {tradeLabel.ToLowerInvariant()} jobs you are licensed or qualified to perform.")</span>
     </div>
-    <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">Save uploads</button>
-    <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">Continue</button>
-    <a href="@Model.BackUrl" class="prv-save-later">Back</a>
+    <div class="prv-wiz-footer">
+        <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">Continue</button>
+        <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">Save uploads</button>
+        <a href="@Model.BackUrl" class="prv-save-later">Back</a>
+    </div>
 </form>

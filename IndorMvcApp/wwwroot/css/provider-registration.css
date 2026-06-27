@@ -44,7 +44,7 @@
 .prv-search-wrap input { border: none; outline: none; flex: 1; font-size: .88rem; font-family: inherit; }
 .prv-rule-banner { display: flex; align-items: flex-start; gap: 10px; background: rgba(0,102,204,0.08); border-radius: 12px; padding: 12px; margin: 14px 0; font-size: .78rem; color: #334155; line-height: 1.4; }
 .prv-rule-banner i { color: #0066CC; margin-top: 2px; }
-.prv-save-later { display: block; text-align: center; margin-top: 12px; color: #0066CC; font-weight: 700; font-size: .86rem; text-decoration: none; }
+.prv-save-later { display: block; width: 100%; text-align: center; margin-top: 12px; padding: 6px; color: #0066CC; font-weight: 700; font-size: .86rem; text-decoration: none; background: none; border: none; cursor: pointer; -webkit-appearance: none; appearance: none; font-family: inherit; }
 .prv-field-icon { display: flex; align-items: center; gap: 10px; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 4px 12px; margin-bottom: 12px; background: #fff; }
 .prv-field-icon i { color: #0066CC; width: 18px; text-align: center; }
 .prv-field-icon .ob-control { border: none; padding: 10px 0; flex: 1; }

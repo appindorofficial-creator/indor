@@ -398,9 +398,10 @@ else
         }
     }
 
-    <button type="submit" class="ob-btn ob-btn-primary">Submit application</button>
-
-    <a asp-action="Documents" class="ob-btn ob-btn-outline prv-review-edit-btn">@(isAppliance ? "Back" : isPest || isLandscaping ? "Edit information" : isRoofing ? "Edit answers" : usesTradeReview ? "Edit information" : "Edit application")</a>
+    <div class="prv-wiz-footer">
+        <button type="submit" class="ob-btn ob-btn-primary">Submit application</button>
+        <a asp-action="Documents" class="ob-btn ob-btn-outline prv-review-edit-btn">@(isAppliance ? "Back" : isPest || isLandscaping ? "Edit information" : isRoofing ? "Edit answers" : usesTradeReview ? "Edit information" : "Edit application")</a>
+    </div>
 
 </form>
 

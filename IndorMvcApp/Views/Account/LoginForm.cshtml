@@ -14,12 +14,13 @@
         </div>
 
         <div class="logo-container">
-            <img src="~/logoindor.png" alt="Indor - The Home Operating System" class="smart-home-logo" />
+            <img src="~/images/indor-logo-transparent.png" alt="Indor - The Home Operating System" class="smart-home-logo smart-home-logo--login" asp-append-version="true" />
         </div>
 
         <div class="brand-section">
+            <h1 class="brand-title brand-title--login">Welcome back</h1>
             <p class="brand-tagline">
-                Welcome back to your <span class="highlight">smart home</span>
+                Sign in to access your <span class="highlight">smart home</span>.
             </p>
         </div>
 
@@ -59,6 +60,8 @@
                 <button type="submit" class="btn btn-primary btn-primary--submit">
                     <span class="btn-label">Sign In</span>
                 </button>
+
+                <div class="auth-or"><span>or</span></div>
 
                 <div class="signup-link">
                     Don't have an account? <a asp-controller="Account" asp-action="Register">Create account</a>

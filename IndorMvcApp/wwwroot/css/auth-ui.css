@@ -1136,3 +1136,59 @@ form .btn-primary[type="submit"] .btn-label {
 .role-card-primary .role-icon {
     background: var(--indor-grad-primary, linear-gradient(135deg, #2E8BFF, #0066CC)) !important;
 }
+
+/* ============================================================
+   Auth background — soft light-blue waves
+   ============================================================ */
+.auth-page {
+    background:
+        linear-gradient(180deg, rgba(244, 249, 255, 0) 60%, #FFFFFF 100%),
+        url('/images/auth-bg-waves.png') center top / cover no-repeat,
+        var(--indor-bg-sky, #EEF6FF) !important;
+    background-attachment: scroll, fixed, fixed;
+}
+
+/* Login heading */
+.brand-title--login {
+    font-size: 1.7rem;
+    font-weight: 800;
+    color: #0A2540;
+    letter-spacing: -0.5px;
+    margin-bottom: 8px;
+}
+
+.brand-section .brand-tagline {
+    font-size: 0.98rem;
+    color: #5B6B80;
+}
+
+/* Transparent logo on login (no white box) */
+.smart-home-logo--login {
+    width: min(100%, 340px);
+    background: transparent;
+    margin-bottom: 0;
+}
+
+.logo-container {
+    background: transparent;
+    box-shadow: none;
+}
+
+/* "or" divider */
+.auth-or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 18px 0 4px;
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    font-weight: 500;
+}
+
+.auth-or::before,
+.auth-or::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #E5E7EB;
+}

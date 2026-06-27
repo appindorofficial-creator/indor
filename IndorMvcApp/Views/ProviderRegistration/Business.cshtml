@@ -824,15 +824,17 @@
         </div>
     }
 
-    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
-    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance)
-    {
-        <a href="@Model.BackUrl" class="prv-save-later">Save and finish later</a>
-    }
-    else
-    {
-        <a asp-action="Categories" class="prv-save-later">Back</a>
-    }
+    <div class="prv-wiz-footer">
+        <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+        @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance)
+        {
+            <a href="@Model.BackUrl" class="prv-save-later">Save and finish later</a>
+        }
+        else
+        {
+            <a asp-action="Categories" class="prv-save-later">Back</a>
+        }
+    </div>
 </form>
 @section Scripts {
 <script>

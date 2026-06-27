@@ -14,9 +14,9 @@
 
         /* === Top bar === */
         .top-bar {
-            background: transparent !important;
-            backdrop-filter: none !important;
-            -webkit-backdrop-filter: none !important;
+            background: rgba(233, 242, 254, 0.94) !important;
+            backdrop-filter: saturate(150%) blur(14px) !important;
+            -webkit-backdrop-filter: saturate(150%) blur(14px) !important;
             padding: 14px 16px;
             display: flex;
             align-items: center;
@@ -1730,11 +1730,15 @@
         .chat-form input { flex: 1; border: 1px solid #E5E7EB; border-radius: 10px; padding: 10px 12px; font-size: 0.85rem; font-family: inherit; }
         .chat-form button { background: #0066CC; color: #FFF; border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; }
 
-/* Override global indor-ui.css top bar on Home (loads after app-background) */
+/* Override global indor-ui.css top bar on Home (loads after app-background).
+   Sky-tinted translucent background (matches --indor-bg-sky top color) so the
+   sticky header blends at the top of the page yet masks content that scrolls
+   underneath it — fixes the "content shows through the header" overlap,
+   especially noticeable on tablet/iPad webview. */
 body > header.top-bar {
-    background: transparent !important;
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
+    background: rgba(233, 242, 254, 0.94) !important;
+    backdrop-filter: saturate(150%) blur(14px) !important;
+    -webkit-backdrop-filter: saturate(150%) blur(14px) !important;
     border-bottom: none !important;
     box-shadow: none !important;
 }
