@@ -247,6 +247,8 @@
 
 .nr-input, .nr-textarea {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 14px;
@@ -255,6 +257,15 @@
 }
 
 .nr-textarea { min-height: 120px; resize: vertical; }
+
+.nr-field--count {
+    min-width: 0;
+}
+
+.nr-field--count .nr-input,
+.nr-field--count .nr-textarea {
+    padding-bottom: 28px;
+}
 
 .nr-char-count {
     text-align: right;
@@ -1124,7 +1135,7 @@
 .nr-progress-seg.is-complete,
 .nr-progress-seg.is-active { background: linear-gradient(135deg, #2E8BFF, #0066CC); }
 
-.nr-step-form { display: flex; flex-direction: column; gap: 12px; padding-bottom: calc(96px + env(safe-area-inset-bottom, 0)); }
+.nr-step-form { display: flex; flex-direction: column; gap: 12px; padding-bottom: calc(96px + env(safe-area-inset-bottom, 0)); min-width: 0; }
 
 .nr-card {
     background: #fff;
@@ -1132,6 +1143,8 @@
     border-radius: 18px;
     padding: 16px;
     box-shadow: 0 6px 18px rgba(20, 66, 124, .05);
+    min-width: 0;
+    overflow: hidden;
 }
 .nr-card-head {
     display: flex;
@@ -1403,5 +1416,20 @@
 .nr-trust-banner a { margin-left: auto; color: #0066CC; font-weight: 700; white-space: nowrap; }
 .nr-helpers-footnote {
     text-align: center; font-size: .68rem; color: #94A3B8; margin: 8px 0 24px;
+}
+
+.nr-helpers-home-link {
+    text-align: center;
+    margin: 0 0 calc(24px + env(safe-area-inset-bottom, 0));
+}
+
+.nr-helpers-home-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0066CC;
+    text-decoration: none;
 }
 

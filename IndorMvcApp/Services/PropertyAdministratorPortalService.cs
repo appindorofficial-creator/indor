@@ -179,6 +179,7 @@ public class PropertyAdministratorPortalService(
             .Select(p => new PropertyAdministratorPropertyItemViewModel
             {
                 Id = p.Id,
+                PropiedadId = p.PropiedadId,
                 PropertyName = p.PropertyName,
                 Location = p.Location,
                 PropertyType = p.PropertyType,
@@ -897,6 +898,7 @@ public class PropertyAdministratorPortalService(
         new()
         {
             Id = property.Id,
+            PropiedadId = property.PropiedadId,
             PropertyName = property.PropertyName,
             Location = property.Location,
             PropertyType = property.PropertyType,

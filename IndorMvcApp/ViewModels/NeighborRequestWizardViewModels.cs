@@ -173,6 +173,7 @@ public class NeighborRequestHelperCardViewModel
 public class NeighborRequestListViewModel
 {
     public int PropiedadId { get; set; }
+    public string HomeUrl { get; set; } = "/";
     public string ActiveTab { get; set; } = "Active";
     public IReadOnlyList<string> Tabs { get; set; } = ["Active", "InProgress", "Completed"];
     public List<NeighborRequestListItemViewModel> Items { get; set; } = [];

@@ -56,6 +56,7 @@ public class NeighborRequestController(
             model.CategoryId = draft.CategoryId;
         }
 
+        await wizardService.ApplyPortalHomeUrlsAsync(model, userId, Url, cancellationToken);
         return View(model);
     }
 
@@ -90,6 +91,7 @@ public class NeighborRequestController(
             invalidVm.Description = model.Description;
             invalidVm.LocationAddress = model.LocationAddress;
             invalidVm.UseHomeAddress = model.UseHomeAddress;
+            await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
             return View(invalidVm);
         }
 
@@ -131,9 +133,14 @@ public class NeighborRequestController(
         }
 
         var vm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
-        return vm == null
-            ? RedirectToAction(nameof(Category), new { propiedadId })
-            : View(vm);
+        if (vm == null)
+        {
+            return RedirectToAction(nameof(Category), new { propiedadId });
+        }
+
+        var userId = userManager.GetUserId(User)!;
+        await wizardService.ApplyPortalHomeUrlsAsync(vm, userId, Url, cancellationToken);
+        return View(vm);
     }
 
     [HttpPost]
@@ -166,6 +173,11 @@ public class NeighborRequestController(
         {
             TempData["NeighborRequestError"] = "We could not publish your job. Please try again.";
             var invalidVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
+            if (invalidVm != null)
+            {
+                await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
+            }
+
             return View(invalidVm);
         }
 
@@ -187,7 +199,10 @@ public class NeighborRequestController(
             return RedirectToAction(nameof(Category), new { propiedadId });
         }
 
-        return View(wizardService.BuildPreferencesStep(draft));
+        var userId = userManager.GetUserId(User)!;
+        var prefVm = wizardService.BuildPreferencesStep(draft);
+        await wizardService.ApplyPortalHomeUrlsAsync(prefVm, userId, Url, cancellationToken);
+        return View(prefVm);
     }
 
     [HttpPost]
@@ -284,7 +299,13 @@ public class NeighborRequestController(
         }
 
         var vm = await wizardService.BuildHelpersStepAsync(userId, id, Url, cancellationToken);
-        return vm == null ? RedirectToAction("Index", "Home") : View(vm);
+        if (vm == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        await wizardService.ApplyPortalHomeUrlsAsync(vm, userId, Url, cancellationToken);
+        return View(vm);
     }
 
     [HttpGet]

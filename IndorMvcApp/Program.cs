@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using IndorMvcApp;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
@@ -47,6 +49,14 @@ builder.Services.AddSession(options =>
         ? CookieSecurePolicy.SameAsRequest
         : CookieSecurePolicy.Always;
     options.Cookie.Name = "Indor.Session";
+});
+
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    var enUs = new CultureInfo("en-US");
+    options.DefaultRequestCulture = new RequestCulture(enUs);
+    options.SupportedCultures = [enUs];
+    options.SupportedUICultures = [enUs];
 });
 
 // Configurar Entity Framework con SQL Server LocalDB
@@ -228,6 +238,7 @@ app.UseStaticFiles(new StaticFileOptions
         }
     }
 });
+app.UseRequestLocalization();
 app.UseMiddleware<PreventWebViewCacheMiddleware>();
 app.UseRouting();
 app.UseSession();

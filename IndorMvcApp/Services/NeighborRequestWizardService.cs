@@ -86,6 +86,55 @@ public class NeighborRequestWizardService(
             .AsNoTracking()
             .FirstOrDefaultAsync(p => p.Id == propiedadId && p.UserId == userId && p.Activo, ct);
 
+    public async Task<string> ResolvePortalHomeUrlAsync(
+        string userId,
+        int propiedadId,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
+        try
+        {
+            var isPropertyAdmin = await db.IndorPropertyAdministrators
+                .AsNoTracking()
+                .AnyAsync(a => a.UserId == userId
+                    && a.RegistrationStatus == PropertyAdministratorRegistrationStatuses.Completed, ct);
+
+            if (!isPropertyAdmin)
+            {
+                return url.Action("Index", "Home") ?? "/";
+            }
+
+            var portfolioPropertyId = await db.IndorPropertyAdminPortfolioProperties
+                .AsNoTracking()
+                .Where(p => p.PropiedadId == propiedadId)
+                .Select(p => (int?)p.Id)
+                .FirstOrDefaultAsync(ct);
+
+            return portfolioPropertyId is > 0
+                ? url.Action("Index", "Administrador", new { propertyId = portfolioPropertyId }) ?? "/Administrador"
+                : url.Action("Index", "Administrador") ?? "/Administrador";
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return url.Action("Index", "Home") ?? "/";
+        }
+    }
+
+    public async Task ApplyPortalHomeUrlsAsync(
+        NeighborRequestWizardShellViewModel model,
+        string userId,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
+        var homeUrl = await ResolvePortalHomeUrlAsync(userId, model.PropiedadId, url, ct);
+        model.CloseUrl = homeUrl;
+
+        if (model.DisplayStep == 1 && !model.IsEditMode)
+        {
+            model.BackUrl = homeUrl;
+        }
+    }
+
     public async Task<List<IndorNeighborRequestCategory>> LoadCategoriesAsync(CancellationToken ct)
     {
         try
@@ -805,6 +854,7 @@ public class NeighborRequestWizardService(
         return new NeighborRequestListViewModel
         {
             PropiedadId = propiedadId,
+            HomeUrl = await ResolvePortalHomeUrlAsync(userId, propiedadId, url, ct),
             ActiveTab = activeTab,
             Items = requests.Select(r =>
             {
@@ -1102,7 +1152,7 @@ public class NeighborRequestWizardService(
             Helpers = helpers,
             DetailUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }) ?? "#",
             BackUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }),
-            CloseUrl = url.Action("Index", "Home")!
+            CloseUrl = await ResolvePortalHomeUrlAsync(userId, request.PropiedadId, url, ct)
         };
     }
 
