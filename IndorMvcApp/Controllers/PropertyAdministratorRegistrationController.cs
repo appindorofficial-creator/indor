@@ -178,7 +178,13 @@ public class PropertyAdministratorRegistrationController(
             return RedirectToAction(nameof(Portfolio));
         }
 
-        return View(await BuildPropertiesViewModelAsync());
+        var model = await BuildPropertiesViewModelAsync();
+        if (TempData["PropertyAdminSuccess"] is string success)
+        {
+            model.FormSuccess = success;
+        }
+
+        return View(model);
     }
 
     [HttpPost]
@@ -229,7 +235,7 @@ public class PropertyAdministratorRegistrationController(
             PropertyType = propertyType
         });
 
-        return RedirectToAction(nameof(Properties));
+        return RedirectAfterPropertyChange("Property saved successfully.");
     }
 
     [HttpPost]
@@ -325,13 +331,18 @@ public class PropertyAdministratorRegistrationController(
     public async Task<IActionResult> RemoveProperty(int id)
     {
         await registration.RemovePortfolioPropertyAsync(id);
-        return RedirectToAction(nameof(Properties));
+        return RedirectAfterPropertyChange("Property removed.");
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ContinueFromProperties()
     {
+        if (await IsRegistrationCompleteAsync())
+        {
+            return RedirectToAction("Properties", "Administrador");
+        }
+
         await registration.AdvanceFromPropertiesAsync();
         return RedirectToAction(nameof(Tools));
     }
@@ -411,21 +422,43 @@ public class PropertyAdministratorRegistrationController(
         return RedirectToAction("Dashboard", "Administrador");
     }
 
+    private async Task<bool> IsRegistrationCompleteAsync()
+    {
+        var admin = await registration.GetAdministratorForCurrentUserAsync();
+        return admin != null && registration.IsRegistrationComplete(admin);
+    }
+
+    private IActionResult RedirectAfterPropertyChange(string? successMessage = null)
+    {
+        if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            TempData["PropertyAdminSuccess"] = successMessage;
+        }
+
+        return RedirectToAction(nameof(Properties));
+    }
+
     private async Task<PropertyAdministratorPropertiesStepViewModel> BuildPropertiesViewModelAsync(
         PropertyAdministratorPropertyInput? draft = null)
     {
         var state = await registration.GetAsync();
         var properties = await registration.GetPortfolioPropertiesAsync();
+        var isComplete = await IsRegistrationCompleteAsync();
+        var doneUrl = Url.Action("Properties", "Administrador") ?? "#";
         return new PropertyAdministratorPropertiesStepViewModel
         {
             DisplayStep = 3,
             TotalSteps = 5,
-            Title = "Add your properties",
-            Subtitle = "Start building your portfolio inside INDOR.",
-            BackUrl = Url.Action(nameof(Portfolio))!,
+            Title = isComplete ? "Add property" : "Add your properties",
+            Subtitle = isComplete
+                ? "Add manually, import a CSV, or upload documents for your portfolio."
+                : "Start building your portfolio inside INDOR.",
+            BackUrl = isComplete ? doneUrl : Url.Action(nameof(Portfolio))!,
             State = state,
             Properties = properties,
-            DraftProperty = draft
+            DraftProperty = draft,
+            IsRegistrationComplete = isComplete,
+            DoneUrl = doneUrl
         };
     }
 

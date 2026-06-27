@@ -88,6 +88,8 @@ public class PropertyAdministratorPropertiesStepViewModel : PropertyAdministrato
     public string? FormSuccess { get; set; }
     public IReadOnlyList<string> ImportErrors { get; set; } = [];
     public bool CanUploadDocuments => Properties.Any(p => p.PropiedadId is > 0);
+    public bool IsRegistrationComplete { get; set; }
+    public string DoneUrl { get; set; } = "#";
 }
 
 public class PropertyAdministratorPortfolioImportResult

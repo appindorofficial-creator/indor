@@ -1,295 +1,56 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPropertiesStepViewModel
-@using IndorMvcApp.Models
 @{
-    var s = Model.State;
-    var draft = Model.DraftProperty;
-    var defaultCity = "";
-    var defaultState = "";
-    if (!string.IsNullOrWhiteSpace(s.PrimaryMarket) && !string.Equals(s.PrimaryMarket, "Other", StringComparison.OrdinalIgnoreCase))
+    if (Model.IsRegistrationComplete)
     {
-        var marketParts = s.PrimaryMarket.Split(',', 2, StringSplitOptions.TrimEntries);
-        if (marketParts.Length == 2)
-        {
-            defaultCity = marketParts[0];
-            defaultState = marketParts[1];
-        }
+        Layout = "_PropertyAdminLayout";
+        ViewData["Title"] = "Add property";
+        ViewBag.NavActive = "properties";
     }
-
-    var formHouseNumber = draft?.HouseNumber ?? "";
-    var formStreetName = draft?.StreetName ?? "";
-    var formCity = !string.IsNullOrWhiteSpace(draft?.City) ? draft!.City : defaultCity;
-    var formState = !string.IsNullOrWhiteSpace(draft?.State) ? draft!.State : defaultState;
-    var formZipCode = draft?.ZipCode ?? "";
-    var formPropertyType = draft?.PropertyType ?? "";
-    var formNickname = draft?.PropertyName ?? "";
-}
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-    <p class="pa-step-hint">You can add properties now or skip and add them later from your dashboard.</p>
-</div>
-
-@if (!string.IsNullOrWhiteSpace(Model.FormError))
-{
-    <div class="pa-summary-error">@Model.FormError</div>
-}
-else if (TempData["PropertyAdminError"] is string err)
-{
-    <div class="pa-summary-error">@err</div>
+    else
+    {
+        ViewData["StepFormId"] = "paPropertiesContinueForm";
+        ViewData["StepBackUrl"] = Model.BackUrl;
+        ViewData["StepSubmitLabel"] = "Next";
+        ViewData["StepSubmitFormNoValidate"] = true;
+    }
 }
 
-@if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
+@if (Model.IsRegistrationComplete)
 {
-    <div class="pa-summary-success">@Model.FormSuccess</div>
-}
-
-@if (Model.ImportErrors.Count > 0)
-{
-    <div class="pa-summary-warning">
-        <strong>Some rows were skipped:</strong>
-        <ul class="pa-summary-warning-list">
-            @foreach (var importError in Model.ImportErrors)
-            {
-                <li>@importError</li>
-            }
-        </ul>
-    </div>
-}
-
-@foreach (var property in Model.Properties)
-{
-    <div class="pa-property-card">
-        <img src="@(property.ImageUrl ?? "/inspeccion2.jpeg")" alt="" class="pa-property-thumb" />
-        <div class="pa-property-body">
-            <strong>@property.PropertyName</strong>
-            <small>@property.Location</small>
-            <div class="pa-badge-row">
-                <span class="pa-badge pa-badge-type"><i class="fas fa-building"></i> @property.PropertyTypeLabel</span>
-                <span class="pa-badge pa-badge-added"><i class="fas fa-check"></i> Added</span>
+    <div class="pa-portal-shell pa-portal-shell--portfolio">
+        <header class="pa-portfolio-page-header">
+            <a href="@Model.DoneUrl" class="pa-profile-back" aria-label="Back">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <div class="pa-portfolio-page-header-text">
+                <h1>@Model.Title</h1>
+                <p>@Model.Subtitle</p>
+            </div>
+        </header>
+        <div class="pa-portfolio-add-content">
+            @await Html.PartialAsync("_PropertyAdminPropertiesBody", Model)
+            <div class="pa-reg-actions">
+                <a href="@Model.DoneUrl" class="ob-btn ob-btn-primary">Done</a>
             </div>
         </div>
-        <form asp-action="RemoveProperty" method="post" style="align-self:flex-start;">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="id" value="@property.Id" />
-            <button type="submit" class="ob-nav-back" aria-label="Remove" style="width:32px;height:32px;font-size:.8rem;"><i class="fas fa-times"></i></button>
-        </form>
     </div>
 }
+else
+{
+    <div class="ob-head-block">
+        <h1>@Model.Title</h1>
+        <p>@Model.Subtitle</p>
+        <p class="pa-step-hint">You can add properties now or skip and add them later from your dashboard.</p>
+    </div>
 
-<details class="pa-add-property-panel" @(Model.Properties.Count == 0 || draft != null ? "open" : null)>
-    <summary class="pa-add-property-summary">
-        <span><i class="fas fa-house"></i> Add property manually</span>
-        <i class="fas fa-chevron-up"></i>
-    </summary>
-    <form asp-action="AddProperty" method="post" id="pa-manual-property-form" class="pa-add-property-form pa-properties-step-form">
+    @await Html.PartialAsync("_PropertyAdminPropertiesBody", Model)
+
+    <form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
         @Html.AntiForgeryToken()
-
-        <div class="pa-field-row pa-field-row--2">
-            <label class="pa-field">
-                <i class="fas fa-hashtag"></i>
-                <input type="text"
-                       id="pa-prop-house"
-                       name="houseNumber"
-                       value="@formHouseNumber"
-                       placeholder="House number"
-                       inputmode="numeric"
-                       required
-                       autocomplete="address-line2" />
-            </label>
-            <label class="pa-field">
-                <i class="fas fa-road"></i>
-                <input type="text"
-                       id="pa-prop-street"
-                       name="streetName"
-                       value="@formStreetName"
-                       placeholder="Street name"
-                       autocomplete="address-line1"
-                       required
-                       data-address-autocomplete
-                       data-ac-street-only="true"
-                       data-ac-house-number="pa-prop-house"
-                       data-ac-city="pa-prop-city"
-                       data-ac-state="pa-prop-state"
-                       data-ac-zip="pa-prop-zip" />
-            </label>
-        </div>
-
-        <div class="pa-field-row pa-field-row--3">
-            <label class="pa-field">
-                <i class="fas fa-city"></i>
-                <input type="text"
-                       id="pa-prop-city"
-                       name="city"
-                       value="@formCity"
-                       placeholder="City"
-                       autocomplete="address-level2"
-                       required
-                       data-city-autocomplete
-                       data-ac-state="pa-prop-state"
-                       data-ac-zip="pa-prop-zip" />
-            </label>
-            <label class="pa-field pa-field--compact">
-                <i class="fas fa-map"></i>
-                <select id="pa-prop-state" name="state" required>
-                    @if (string.IsNullOrWhiteSpace(formState))
-                    {
-                        <option value="" disabled selected>State</option>
-                    }
-                    else
-                    {
-                        <option value="" disabled>State</option>
-                    }
-                    @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
-                    {
-                        if (formState == stateCode)
-                        {
-                            <option value="@stateCode" selected="selected">@stateCode</option>
-                        }
-                        else
-                        {
-                            <option value="@stateCode">@stateCode</option>
-                        }
-                    }
-                </select>
-            </label>
-            <label class="pa-field pa-field--compact">
-                <i class="fas fa-location-dot"></i>
-                <input type="text"
-                       id="pa-prop-zip"
-                       name="zipCode"
-                       value="@formZipCode"
-                       placeholder="ZIP"
-                       inputmode="numeric"
-                       autocomplete="postal-code"
-                       maxlength="10"
-                       required />
-            </label>
-        </div>
-
-        <label class="pa-field">
-            <i class="fas fa-tag"></i>
-            <select id="pa-prop-type" name="propertyType" required>
-                @if (string.IsNullOrWhiteSpace(formPropertyType))
-                {
-                    <option value="" disabled selected hidden>Property type</option>
-                }
-                else
-                {
-                    <option value="" disabled hidden>Property type</option>
-                }
-                @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
-                {
-                    if (formPropertyType == item.Value)
-                    {
-                        <option value="@item.Value" selected="selected">@item.Label</option>
-                    }
-                    else
-                    {
-                        <option value="@item.Value">@item.Label</option>
-                    }
-                }
-            </select>
-        </label>
-
-        <label class="pa-field">
-            <i class="fas fa-pen"></i>
-            <input type="text" name="propertyNickname" value="@formNickname" placeholder="Property nickname (optional)" />
-        </label>
-
-        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Save property</button>
     </form>
-</details>
 
-<details class="pa-add-property-panel">
-    <summary class="pa-add-property-summary">
-        <span><i class="fas fa-file-import"></i> Import portfolio</span>
-        <i class="fas fa-chevron-up"></i>
-    </summary>
-    <form asp-action="ImportPortfolio" method="post" enctype="multipart/form-data" id="pa-import-portfolio-form" class="pa-add-property-form pa-properties-step-form">
-        @Html.AntiForgeryToken()
-        <p class="pa-form-hint">Upload a CSV with one property per row. Required columns: houseNumber, streetName, city, state, zipCode, propertyType. Optional: propertyNickname.</p>
-        <div class="pa-file-picker">
-            <input type="file"
-                   id="pa-csv-file"
-                   class="pa-file-picker-input"
-                   name="csvFile"
-                   accept=".csv,text/csv"
-                   data-empty-label="No file selected" />
-            <label for="pa-csv-file" class="pa-file-picker-btn">Choose file</label>
-            <span class="pa-file-picker-name" data-pa-file-name-for="pa-csv-file">No file selected</span>
-            <button type="button"
-                    class="pa-file-picker-clear"
-                    data-pa-file-clear-for="pa-csv-file"
-                    aria-label="Remove file"
-                    hidden>
-                <i class="fas fa-trash" aria-hidden="true"></i>
-            </button>
-        </div>
-        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Import properties</button>
-    </form>
-</details>
-
-<details class="pa-add-property-panel" @(Model.CanUploadDocuments ? null : "open")>
-    <summary class="pa-add-property-summary">
-        <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
-        <i class="fas fa-chevron-up"></i>
-    </summary>
-    <form asp-action="UploadPropertyDocument" method="post" enctype="multipart/form-data" id="pa-upload-document-form" class="pa-add-property-form pa-properties-step-form">
-        @Html.AntiForgeryToken()
-        @if (!Model.CanUploadDocuments)
-        {
-            <p class="pa-form-hint">Add at least one property before uploading lease files, inspection reports, or other documents.</p>
-        }
-        else
-        {
-            <p class="pa-form-hint">Attach a document to one of your properties. Supported formats: PDF, JPG, PNG, HEIC, DOC, DOCX.</p>
-            <label class="pa-field">
-                <i class="fas fa-building"></i>
-                <select id="pa-doc-property" name="portfolioPropertyId">
-                    <option value="" disabled selected hidden>Property</option>
-                    @foreach (var property in Model.Properties.Where(p => p.PropiedadId is > 0))
-                    {
-                        <option value="@property.Id">@property.PropertyName — @property.Location</option>
-                    }
-                </select>
-            </label>
-            <label class="pa-field">
-                <i class="fas fa-pen"></i>
-                <input type="text" name="documentTitle" placeholder="Document title (optional)" maxlength="200" />
-            </label>
-            <div class="pa-file-picker">
-                <input type="file"
-                       id="pa-document-file"
-                       class="pa-file-picker-input"
-                       name="documentFile"
-                       accept=".pdf,.jpg,.jpeg,.png,.heic,.doc,.docx,application/pdf,image/*"
-                       data-empty-label="No file selected" />
-                <label for="pa-document-file" class="pa-file-picker-btn">Choose file</label>
-                <span class="pa-file-picker-name" data-pa-file-name-for="pa-document-file">No file selected</span>
-                <button type="button"
-                        class="pa-file-picker-clear"
-                        data-pa-file-clear-for="pa-document-file"
-                        aria-label="Remove file"
-                        hidden>
-                    <i class="fas fa-trash" aria-hidden="true"></i>
-                </button>
-            </div>
-            <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Upload document</button>
-        }
-    </form>
-</details>
-
-<form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
-    @Html.AntiForgeryToken()
-</form>
-
-@{
-    ViewData["StepFormId"] = "paPropertiesContinueForm";
-    ViewData["StepBackUrl"] = Model.BackUrl;
-    ViewData["StepSubmitLabel"] = "Next";
-    ViewData["StepSubmitFormNoValidate"] = true;
+    @await Html.PartialAsync("_PropertyAdminStepActions")
 }
-@await Html.PartialAsync("_PropertyAdminStepActions")
 
 @await Html.PartialAsync("_AddressAutocompleteScripts")
 
