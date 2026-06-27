@@ -1,8 +1,9 @@
 @using IndorMvcApp.Models
+@using IndorMvcApp.ViewModels
 @model IndorMvcApp.ViewModels.NeighborRequestEditDetailsStepViewModel
 @{
     ViewData["Title"] = "Edit request";
-    var categories = Model.Categories ?? [];
+    var categories = Model.Categories;
     var timeWindowOptions = Model.TimeWindowOptions ?? IndorMvcApp.Services.NeighborRequestWizardService.GetTimeWindowOptions();
     var selectedCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? categories.FirstOrDefault();
     var matchedTimeWindow = timeWindowOptions.FirstOrDefault(o => o.Value == Model.TimeWindowPreset);
