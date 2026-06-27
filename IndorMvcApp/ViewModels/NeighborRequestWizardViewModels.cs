@@ -153,6 +153,16 @@ public class NeighborRequestHelpersStepViewModel : NeighborRequestWizardShellVie
     public string DetailUrl { get; set; } = "#";
 }
 
+public class NeighborRequestBrowseHelpersViewModel
+{
+    public int PropiedadId { get; set; }
+    public string HomeUrl { get; set; } = "/";
+    public string LocationAddress { get; set; } = string.Empty;
+    public string RadiusLabel { get; set; } = "3 miles around your home";
+    public string PostQuickJobUrl { get; set; } = "#";
+    public List<NeighborRequestHelperCardViewModel> Helpers { get; set; } = [];
+}
+
 public class NeighborRequestHelperCardViewModel
 {
     public int ProviderId { get; set; }

@@ -1003,7 +1003,7 @@ public class HomeownerNearbyNetworkService(
     {
         var postUrl = url.Action("Create", "NeighborRequest", new { propiedadId }) ?? "#";
         var mineUrl = url.Action("Mine", "NeighborRequest", new { propiedadId }) ?? "#";
-        var browseUrl = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.NeighborRequests, null);
+        var browseUrl = url.Action("BrowseHelpers", "NeighborRequest", new { propiedadId }) ?? "#";
         return (postUrl, browseUrl, mineUrl, mineUrl);
     }
 

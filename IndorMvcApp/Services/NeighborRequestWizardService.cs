@@ -1060,6 +1060,36 @@ public class NeighborRequestWizardService(
         };
     }
 
+    public async Task<NeighborRequestBrowseHelpersViewModel?> BuildBrowseHelpersAsync(
+        string userId,
+        int propiedadId,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
+        var propiedad = await ValidatePropiedadAsync(userId, propiedadId, ct);
+        if (propiedad == null)
+        {
+            return null;
+        }
+
+        var locationAddress = await ResolveDefaultAddressAsync(propiedad, ct);
+        var helpers = await LoadNearbyHelperCardsAsync(propiedad, locationAddress, url, ct);
+        if (helpers.Count == 0)
+        {
+            helpers = BuildDemoHelperCards(url);
+        }
+
+        return new NeighborRequestBrowseHelpersViewModel
+        {
+            PropiedadId = propiedadId,
+            HomeUrl = await ResolvePortalHomeUrlAsync(userId, propiedadId, url, ct),
+            LocationAddress = locationAddress,
+            RadiusLabel = "3 miles around your home",
+            PostQuickJobUrl = url.Action("Create", "NeighborRequest", new { propiedadId }) ?? "#",
+            Helpers = helpers
+        };
+    }
+
     public async Task<NeighborRequestHelpersStepViewModel?> BuildHelpersStepAsync(
         string userId,
         int requestId,
@@ -1105,33 +1135,7 @@ public class NeighborRequestWizardService(
 
         if (helpers.Count == 0)
         {
-            helpers =
-            [
-                new NeighborRequestHelperCardViewModel
-                {
-                    ProviderId = 1,
-                    Name = "Miguel",
-                    RatingLabel = "4.9",
-                    ReviewCount = 128,
-                    DistanceLabel = "0.4 mi away",
-                    PriceLabel = FormatPayLabel(request.BudgetAmount, NeighborRequestPayTypeCodes.Hourly),
-                    MinHoursLabel = "Min. 2 hrs",
-                    SkillTags = ["Moving", "Furniture", "Heavy Lifting", "+1"],
-                    IsVerified = true
-                },
-                new NeighborRequestHelperCardViewModel
-                {
-                    ProviderId = 2,
-                    Name = "Ana",
-                    RatingLabel = "4.8",
-                    ReviewCount = 96,
-                    DistanceLabel = "0.7 mi away",
-                    PriceLabel = FormatPayLabel(request.BudgetAmount, NeighborRequestPayTypeCodes.Hourly),
-                    MinHoursLabel = "Min. 2 hrs",
-                    SkillTags = ["Moving", "Furniture"],
-                    IsVerified = true
-                }
-            ];
+            helpers = BuildDemoHelperCards(url, request.BudgetAmount);
         }
 
         return new NeighborRequestHelpersStepViewModel
@@ -2002,5 +2006,192 @@ public class NeighborRequestWizardService(
 
         File.Copy(sourcePath, destPath, overwrite: true);
         return true;
+    }
+
+    private async Task<List<NeighborRequestHelperCardViewModel>> LoadNearbyHelperCardsAsync(
+        Propiedad propiedad,
+        string locationAddress,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
+        const double radiusMiles = 3d;
+        if (string.IsNullOrWhiteSpace(locationAddress))
+        {
+            return [];
+        }
+
+        var coords = await addressLookup.GeocodeAddressAsync(locationAddress.Trim(), ct);
+        if (coords is not { } resolved)
+        {
+            return [];
+        }
+
+        var centerLat = (double)resolved.Latitude;
+        var centerLng = (double)resolved.Longitude;
+
+        var activeStatuses = new[]
+        {
+            ProviderRegistrationStatuses.IndorProActive,
+            ProviderRegistrationStatuses.Approved,
+            ProviderRegistrationStatuses.PendingReview
+        };
+
+        List<IndorProveedor> providers;
+        try
+        {
+            providers = await db.IndorProveedores
+                .AsNoTracking()
+                .Include(p => p.Categorias)
+                .Where(p => activeStatuses.Contains(p.RegistrationStatus))
+                .Where(p => p.BusinessAddress != null || p.PrimaryCity != null)
+                .OrderByDescending(p => p.FechaActualizacion)
+                .Take(80)
+                .ToListAsync(ct);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return [];
+        }
+
+        Dictionary<string, string> categoryLabels;
+        try
+        {
+            categoryLabels = await db.IndorProveedorCategoriasCatalogo
+                .AsNoTracking()
+                .ToDictionaryAsync(c => c.Id, c => c.LabelEn, ct);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            categoryLabels = new Dictionary<string, string>();
+        }
+
+        var icons = new[] { "fa-house", "fa-leaf", "fa-broom", "fa-wrench" };
+        var messageUrl = url.Action("Index", "Home") + "#section-more";
+        var results = new List<(NeighborRequestHelperCardViewModel Card, double Distance)>();
+        var geocodeBudget = 6;
+
+        foreach (var provider in providers)
+        {
+            if (provider.Latitude is null || provider.Longitude is null)
+            {
+                if (geocodeBudget <= 0)
+                {
+                    continue;
+                }
+
+                var tracked = await db.IndorProveedores.FirstOrDefaultAsync(p => p.Id == provider.Id, ct);
+                if (tracked == null)
+                {
+                    continue;
+                }
+
+                await ProviderGeolocationHelper.ApplyGeocodeAsync(tracked, addressLookup, ct);
+                geocodeBudget--;
+                if (tracked.Latitude is null || tracked.Longitude is null)
+                {
+                    continue;
+                }
+
+                await db.SaveChangesAsync(ct);
+                provider.Latitude = tracked.Latitude;
+                provider.Longitude = tracked.Longitude;
+            }
+
+            var lat = (double)provider.Latitude!.Value;
+            var lng = (double)provider.Longitude!.Value;
+            var distance = CalculateDistanceMiles(centerLat, centerLng, lat, lng);
+            if (distance > (decimal)radiusMiles)
+            {
+                continue;
+            }
+
+            var categoryId = provider.Categorias.Select(c => c.CategoriaId).FirstOrDefault();
+            categoryLabels.TryGetValue(categoryId ?? "", out var categoryLabel);
+
+            var name = !string.IsNullOrWhiteSpace(provider.DbaName)
+                ? provider.DbaName.Trim()
+                : provider.BusinessName?.Trim() ?? "INDOR Provider";
+            var isVerified = string.Equals(provider.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(provider.RegistrationStatus, ProviderRegistrationStatuses.Approved, StringComparison.OrdinalIgnoreCase);
+            var basePrice = 120m + (provider.Id % 5) * 5m;
+
+            results.Add((new NeighborRequestHelperCardViewModel
+            {
+                ProviderId = provider.Id,
+                Name = name,
+                AvatarIconClass = icons[provider.Id % icons.Length],
+                RatingLabel = FormatRatingLabel(null, provider.Id) ?? "4.9",
+                ReviewCount = 80 + (provider.Id % 20) * 17,
+                DistanceLabel = $"{distance:0.#} mi away",
+                PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}/hr", basePrice),
+                MinHoursLabel = "Min. 2 hrs",
+                SkillTags = BuildProviderSkillTags(categoryLabel),
+                IsVerified = isVerified,
+                MessageUrl = messageUrl
+            }, (double)distance));
+        }
+
+        return results
+            .OrderBy(r => r.Distance)
+            .Select(r => r.Card)
+            .Take(20)
+            .ToList();
+    }
+
+    private static List<string> BuildProviderSkillTags(string? categoryLabel) =>
+        !string.IsNullOrWhiteSpace(categoryLabel)
+            ? [categoryLabel, "Local help"]
+            : ["General labor", "Home help"];
+
+    private static List<NeighborRequestHelperCardViewModel> BuildDemoHelperCards(IUrlHelper url, decimal? hourlyRate = null)
+    {
+        var payLabel = FormatPayLabel(hourlyRate, NeighborRequestPayTypeCodes.Hourly);
+        if (!payLabel.Contains("/hr", StringComparison.OrdinalIgnoreCase))
+        {
+            payLabel += "/hr";
+        }
+
+        var messageUrl = url.Action("Index", "Home") + "#section-more";
+        return
+        [
+            new NeighborRequestHelperCardViewModel
+            {
+                ProviderId = 1,
+                Name = "Miguel",
+                RatingLabel = "4.9",
+                ReviewCount = 128,
+                DistanceLabel = "0.4 mi away",
+                PriceLabel = payLabel,
+                MinHoursLabel = "Min. 2 hrs",
+                SkillTags = ["Moving", "Furniture", "Heavy Lifting", "+1"],
+                IsVerified = true,
+                MessageUrl = messageUrl
+            },
+            new NeighborRequestHelperCardViewModel
+            {
+                ProviderId = 2,
+                Name = "Ana",
+                RatingLabel = "4.8",
+                ReviewCount = 96,
+                DistanceLabel = "0.7 mi away",
+                PriceLabel = payLabel,
+                MinHoursLabel = "Min. 2 hrs",
+                SkillTags = ["Moving", "Furniture"],
+                IsVerified = true,
+                MessageUrl = messageUrl
+            }
+        ];
+    }
+
+    private static decimal CalculateDistanceMiles(double lat1, double lng1, double lat2, double lng2)
+    {
+        const double earthRadiusMiles = 3958.8;
+        var dLat = (lat2 - lat1) * Math.PI / 180.0;
+        var dLng = (lng2 - lng1) * Math.PI / 180.0;
+        var a = Math.Sin(dLat / 2) * Math.Sin(dLat / 2)
+            + Math.Cos(lat1 * Math.PI / 180.0) * Math.Cos(lat2 * Math.PI / 180.0)
+            * Math.Sin(dLng / 2) * Math.Sin(dLng / 2);
+        var c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+        return (decimal)(earthRadiusMiles * c);
     }
 }

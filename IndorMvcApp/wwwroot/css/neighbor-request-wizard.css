@@ -1433,3 +1433,43 @@
     text-decoration: none;
 }
 
+.nr-browse-helpers-intro {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #F8FAFC;
+    border: 1px solid #E7EEF7;
+}
+
+.nr-browse-helpers-location {
+    margin: 0 0 4px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #0A2540;
+}
+
+.nr-browse-helpers-radius {
+    margin: 0;
+    font-size: .7rem;
+    color: #64748B;
+}
+
+.nr-helper-card--browse {
+    grid-template-columns: auto 1fr auto;
+}
+
+.nr-browse-helpers-actions {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0 8px;
+}
+
+.nr-browse-helpers-actions .nr-btn-primary,
+.nr-browse-helpers-actions .nr-btn-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
+}
+

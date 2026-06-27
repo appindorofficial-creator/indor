@@ -309,6 +309,24 @@ public class NeighborRequestController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> BrowseHelpers(int propiedadId, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var vm = await wizardService.BuildBrowseHelpersAsync(userId, propiedadId, Url, cancellationToken);
+        if (vm == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return View(vm);
+    }
+
+    [HttpGet]
     public IActionResult Success(int id) =>
         RedirectToAction(nameof(Helpers), new { id });
 

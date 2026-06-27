@@ -1,0 +1,119 @@
+@model IndorMvcApp.ViewModels.NeighborRequestBrowseHelpersViewModel
+@{
+    ViewData["Title"] = "Browse Helpers";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Browse Helpers - INDOR</title>
+    @await Html.PartialAsync("_IndorStandalonePageHead")
+    <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
+</head>
+<body class="nr-wizard-page">
+    <div class="nr-wizard-shell">
+        <header class="nr-wizard-top">
+            <a href="@Model.HomeUrl" class="nr-wizard-nav-btn" aria-label="Back to dashboard"><i class="fas fa-arrow-left"></i></a>
+            <strong class="nr-wizard-top-title">Browse Helpers</strong>
+            <a href="@Model.HomeUrl" class="nr-wizard-nav-btn" aria-label="Home"><i class="fas fa-house"></i></a>
+        </header>
+
+        <section class="nr-browse-helpers-intro">
+            <p class="nr-browse-helpers-location"><i class="fas fa-location-dot"></i> @Model.LocationAddress</p>
+            <p class="nr-browse-helpers-radius">@Model.RadiusLabel</p>
+        </section>
+
+        <div class="nr-helpers-toolbar">
+            <div class="nr-helpers-view-toggle">
+                <button type="button" class="is-active"><i class="fas fa-list"></i> List</button>
+                <button type="button" disabled><i class="fas fa-map"></i> Map</button>
+            </div>
+        </div>
+
+        <header class="nr-helpers-head">
+            <h3>Available helpers near you</h3>
+            <p>Verified neighbors and local helpers ready to lend a hand.</p>
+        </header>
+
+        @if (Model.Helpers.Count == 0)
+        {
+            <div class="nr-empty">
+                <p>No helpers found nearby yet.</p>
+            </div>
+        }
+        else
+        {
+            <div class="nr-helper-list">
+                @foreach (var card in Model.Helpers)
+                {
+                    <article class="nr-helper-card nr-helper-card--browse">
+                        <div class="nr-helper-avatar">
+                            @if (!string.IsNullOrWhiteSpace(card.PhotoUrl))
+                            {
+                                <img src="@Url.Content("~" + card.PhotoUrl)" alt="" />
+                            }
+                            else
+                            {
+                                <span class="nr-helper-avatar-fallback"><i class="fas @card.AvatarIconClass"></i></span>
+                            }
+                            @if (card.IsOnline)
+                            {
+                                <span class="nr-helper-online" aria-label="Online"></span>
+                            }
+                        </div>
+                        <div class="nr-helper-body">
+                            <div class="nr-helper-title-row">
+                                <strong>@card.Name</strong>
+                                @if (card.IsVerified)
+                                {
+                                    <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                                }
+                            </div>
+                            <div class="nr-helper-meta">
+                                <span><i class="fas fa-star"></i> @card.RatingLabel (@card.ReviewCount)</span>
+                                <span><i class="fas fa-location-dot"></i> @card.DistanceLabel</span>
+                            </div>
+                            <div class="nr-helper-tags">
+                                @foreach (var tag in card.SkillTags)
+                                {
+                                    <span>@tag</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="nr-helper-side">
+                            <strong>@card.PriceLabel</strong>
+                            <small>@card.MinHoursLabel</small>
+                            <div class="nr-helper-actions">
+                                <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
+                                <a href="@Model.PostQuickJobUrl" class="nr-btn-primary nr-btn-primary--sm">Invite</a>
+                            </div>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+
+        <div class="nr-trust-banner">
+            <i class="fas fa-shield-halved"></i>
+            <div>
+                <strong>Background checked helpers</strong>
+                <p>All helpers are ID verified and background checked for your safety.</p>
+            </div>
+            <a href="#">Learn more</a>
+        </div>
+
+        <div class="nr-browse-helpers-actions">
+            <a href="@Model.PostQuickJobUrl" class="nr-btn-primary">
+                <i class="fas fa-plus"></i>&nbsp; Post a Quick Job
+            </a>
+            <a href="@Model.HomeUrl" class="nr-btn-outline">
+                <i class="fas fa-house"></i>&nbsp; Return to dashboard
+            </a>
+        </div>
+
+        <p class="nr-helpers-footnote"><i class="fas fa-lock"></i> All communication happens in INDOR. No phone numbers shared.</p>
+    </div>
+</body>
+</html>
