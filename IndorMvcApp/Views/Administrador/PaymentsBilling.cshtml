@@ -1,0 +1,69 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorPaymentsBillingViewModel
+@{
+    ViewData["Title"] = "Payments & billing";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--billing">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>Payments &amp; billing</h1>
+            <p>Review invoices, payment methods, and billing activity for your portfolio.</p>
+        </div>
+    </header>
+
+    <div class="pa-billing-stats">
+        <div class="pa-billing-stat">
+            <small>Outstanding</small>
+            <strong>@Model.OutstandingLabel</strong>
+        </div>
+        <div class="pa-billing-stat">
+            <small>Paid this month</small>
+            <strong>@Model.PaidThisMonthLabel</strong>
+        </div>
+    </div>
+
+    <section class="pa-personal-section">
+        <h2>Payment method</h2>
+        <div class="pa-personal-list">
+            <div class="pa-personal-row pa-billing-method">
+                <span class="pa-personal-row-icon"><i class="fas fa-credit-card"></i></span>
+                <div>
+                    <strong>@Model.PaymentMethodLabel</strong>
+                    <small>@Model.PaymentMethodExpiry</small>
+                </div>
+                <i class="fas fa-chevron-right"></i>
+            </div>
+        </div>
+    </section>
+
+    <section class="pa-personal-section">
+        <h2>Recent invoices</h2>
+        <div class="pa-personal-list">
+            @foreach (var invoice in Model.Invoices)
+            {
+                <div class="pa-billing-invoice">
+                    <div class="pa-billing-invoice-main">
+                        <strong>@invoice.Title</strong>
+                        <small>@invoice.PropertyName • @invoice.DateLabel</small>
+                    </div>
+                    <div class="pa-billing-invoice-meta">
+                        <span class="pa-billing-amount">@invoice.AmountLabel</span>
+                        <span class="pa-billing-status is-@invoice.StatusCss">@invoice.StatusLabel</span>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="pa-personal-info-card">
+        <div>
+            <strong>Billing alerts</strong>
+            <p>Manage payment and billing notifications in <a asp-controller="Administrador" asp-action="NotificationPreferences">Notification preferences</a>.</p>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </section>
+</div>

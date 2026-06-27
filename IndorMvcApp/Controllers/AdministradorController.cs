@@ -2139,4 +2139,37 @@ public class AdministradorController(
         await signInManager.SignInAsync(user, isPersistent: true);
         return RedirectToAction(nameof(Security), new { saved = true });
     }
+
+    [HttpGet]
+    public async Task<IActionResult> PaymentsBilling()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetPaymentsBillingAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SavedProviders()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetSavedProvidersAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> HelpSupport()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetHelpSupportAsync(Url));
+    }
 }

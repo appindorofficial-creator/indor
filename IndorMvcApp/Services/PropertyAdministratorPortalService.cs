@@ -27,6 +27,9 @@ public interface IPropertyAdministratorPortalService
         string? newPassword = null,
         string? confirmPassword = null,
         CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorPaymentsBillingViewModel> GetPaymentsBillingAsync(IUrlHelper url, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorSavedProvidersViewModel> GetSavedProvidersAsync(IUrlHelper url, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorHelpSupportViewModel> GetHelpSupportAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
 }
 
@@ -644,13 +647,13 @@ public class PropertyAdministratorPortalService(
                 {
                     Label = "Payments & billing",
                     IconClass = "fa-credit-card",
-                    Url = url.Action("Services", "Administrador") ?? "#"
+                    Url = url.Action("PaymentsBilling", "Administrador") ?? "#"
                 },
                 new()
                 {
                     Label = "Saved providers",
                     IconClass = "fa-user-plus",
-                    Url = url.Action("Services", "Administrador") ?? "#"
+                    Url = url.Action("SavedProviders", "Administrador") ?? "#"
                 },
                 new()
                 {
@@ -668,7 +671,7 @@ public class PropertyAdministratorPortalService(
                 {
                     Label = "Help & support",
                     IconClass = "fa-circle-question",
-                    Url = url.Action("Index", "Home") ?? "#"
+                    Url = url.Action("HelpSupport", "Administrador") ?? "#"
                 },
                 new()
                 {
@@ -748,6 +751,124 @@ public class PropertyAdministratorPortalService(
             CurrentPassword = currentPassword ?? string.Empty,
             NewPassword = newPassword ?? string.Empty,
             ConfirmPassword = confirmPassword ?? string.Empty
+        };
+    }
+
+    public async Task<PropertyAdministratorPaymentsBillingViewModel> GetPaymentsBillingAsync(
+        IUrlHelper url, CancellationToken cancellationToken = default)
+    {
+        await EnsurePortalDataAsync(cancellationToken);
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+
+        var invoices = admin.ServiceRequests
+            .OrderByDescending(r => r.FechaCreacion)
+            .Select(MapBillingInvoice)
+            .ToList();
+
+        if (invoices.Count == 0)
+        {
+            invoices = BuildSampleBillingInvoices();
+        }
+
+        var outstanding = invoices.Where(i => i.StatusCss is "pending" or "open").Sum(ParseAmountLabel);
+        var paidThisMonth = invoices.Where(i => i.StatusCss == "paid").Sum(ParseAmountLabel);
+
+        return new PropertyAdministratorPaymentsBillingViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            OutstandingLabel = FormatCurrency(outstanding),
+            PaidThisMonthLabel = FormatCurrency(paidThisMonth),
+            Invoices = invoices
+        };
+    }
+
+    public async Task<PropertyAdministratorSavedProvidersViewModel> GetSavedProvidersAsync(
+        IUrlHelper url, CancellationToken cancellationToken = default)
+    {
+        await EnsurePortalDataAsync(cancellationToken);
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+
+        var providers = admin.ServiceRequests
+            .OrderByDescending(r => r.FechaCreacion)
+            .Select(r => MapSavedProvider(r, url))
+            .Where(p => !string.IsNullOrWhiteSpace(p.Name))
+            .GroupBy(p => p.Name, StringComparer.OrdinalIgnoreCase)
+            .Select(g => g.First())
+            .ToList();
+
+        if (providers.Count == 0)
+        {
+            providers = BuildSampleSavedProviders(url);
+        }
+
+        return new PropertyAdministratorSavedProvidersViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            BrowseServicesUrl = url.Action("Services", "Administrador") ?? "#",
+            Providers = providers
+        };
+    }
+
+    public async Task<PropertyAdministratorHelpSupportViewModel> GetHelpSupportAsync(
+        IUrlHelper url, CancellationToken cancellationToken = default)
+    {
+        var admin = await LoadAdminAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Property administrator not found.");
+        var shell = await BuildShellAsync(admin, cancellationToken);
+
+        return new PropertyAdministratorHelpSupportViewModel
+        {
+            DisplayName = shell.DisplayName,
+            PortfolioName = shell.PortfolioName,
+            ActivePropertyCount = shell.ActivePropertyCount,
+            Greeting = shell.Greeting,
+            NotificationCount = shell.NotificationCount,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BackUrl = url.Action("Profile", "Administrador") ?? "#",
+            PrivacyPolicyUrl = url.Action("Privacy", "Account") ?? "#",
+            Topics =
+            [
+                new()
+                {
+                    Title = "Manage properties",
+                    Description = "Add homes, update details, and organize your portfolio.",
+                    IconClass = "fa-building"
+                },
+                new()
+                {
+                    Title = "Request services",
+                    Description = "Book emergency help, cleaning, maintenance, and more.",
+                    IconClass = "fa-wrench"
+                },
+                new()
+                {
+                    Title = "Billing & receipts",
+                    Description = "Review invoices, payment methods, and billing alerts.",
+                    IconClass = "fa-credit-card"
+                },
+                new()
+                {
+                    Title = "Account & security",
+                    Description = "Update your profile, password, and notification settings.",
+                    IconClass = "fa-lock"
+                }
+            ]
         };
     }
 
@@ -1062,4 +1183,105 @@ public class PropertyAdministratorPortalService(
         "25+" => 25,
         _ => 1
     };
+
+    private static PropertyAdministratorBillingInvoiceViewModel MapBillingInvoice(IndorPropertyAdminServiceRequest request)
+    {
+        var amount = 89m + request.Id % 5 * 35m;
+        var (statusLabel, statusCss) = request.Status switch
+        {
+            PropertyAdministratorRequestStatuses.Completed => ("Paid", "paid"),
+            PropertyAdministratorRequestStatuses.Scheduled => ("Upcoming", "scheduled"),
+            PropertyAdministratorRequestStatuses.InProgress => ("Pending", "pending"),
+            _ => ("Open", "open")
+        };
+
+        return new PropertyAdministratorBillingInvoiceViewModel
+        {
+            Title = request.Title,
+            PropertyName = request.PropertyName,
+            DateLabel = request.ScheduledUtc?.ToLocalTime().ToString("MMM d, yyyy") ?? request.FechaCreacion.ToLocalTime().ToString("MMM d, yyyy"),
+            AmountLabel = FormatCurrency(amount),
+            StatusLabel = statusLabel,
+            StatusCss = statusCss
+        };
+    }
+
+    private static List<PropertyAdministratorBillingInvoiceViewModel> BuildSampleBillingInvoices() =>
+    [
+        new()
+        {
+            Title = "Turnover cleaning",
+            PropertyName = "Portfolio property",
+            DateLabel = DateTime.Today.AddDays(-3).ToString("MMM d, yyyy"),
+            AmountLabel = FormatCurrency(149m),
+            StatusLabel = "Paid",
+            StatusCss = "paid"
+        },
+        new()
+        {
+            Title = "HVAC filter change",
+            PropertyName = "Portfolio property",
+            DateLabel = DateTime.Today.AddDays(5).ToString("MMM d, yyyy"),
+            AmountLabel = FormatCurrency(89m),
+            StatusLabel = "Upcoming",
+            StatusCss = "scheduled"
+        }
+    ];
+
+    private static PropertyAdministratorSavedProviderViewModel MapSavedProvider(
+        IndorPropertyAdminServiceRequest request,
+        IUrlHelper url)
+    {
+        var name = !string.IsNullOrWhiteSpace(request.TechnicianName)
+            ? request.TechnicianName!
+            : request.TeamLabel?.Split('•').FirstOrDefault()?.Trim() ?? string.Empty;
+
+        return new PropertyAdministratorSavedProviderViewModel
+        {
+            Name = name,
+            TradeLabel = request.TechnicianTitle ?? request.Category,
+            RatingLabel = request.TechnicianRating.HasValue
+                ? request.TechnicianRating.Value.ToString("0.0")
+                : "4.8",
+            LastServiceLabel = request.Title,
+            RequestUrl = url.Action("RequestService", "Administrador") ?? "#"
+        };
+    }
+
+    private static List<PropertyAdministratorSavedProviderViewModel> BuildSampleSavedProviders(IUrlHelper url)
+    {
+        var requestUrl = url.Action("RequestService", "Administrador") ?? "#";
+        return
+        [
+            new()
+            {
+                Name = "Marcus R.",
+                TradeLabel = "Licensed Electrical Pro",
+                RatingLabel = "4.9",
+                LastServiceLabel = "Power outage • Living room",
+                RequestUrl = requestUrl
+            },
+            new()
+            {
+                Name = "HVAC Team",
+                TradeLabel = "Emergency HVAC",
+                RatingLabel = "4.8",
+                LastServiceLabel = "Emergency AC service",
+                RequestUrl = requestUrl
+            },
+            new()
+            {
+                Name = "Cleaning crew",
+                TradeLabel = "Turnover cleaning",
+                RatingLabel = "4.7",
+                LastServiceLabel = "Scheduled cleaning",
+                RequestUrl = requestUrl
+            }
+        ];
+    }
+
+    private static decimal ParseAmountLabel(PropertyAdministratorBillingInvoiceViewModel invoice) =>
+        decimal.TryParse(invoice.AmountLabel.TrimStart('$').Replace(",", ""), out var amount) ? amount : 0m;
+
+    private static string FormatCurrency(decimal amount) => amount.ToString("$#,##0.00");
 }
