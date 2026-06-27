@@ -1,6 +1,9 @@
+using System.Globalization;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,8 +12,13 @@ namespace IndorMvcApp.Services;
 public class PropertyAdministratorRegistrationService(
     AppDbContext db,
     IHttpContextAccessor httpContextAccessor,
-    UserManager<ApplicationUser> userManager) : IPropertyAdministratorRegistrationService
+    UserManager<ApplicationUser> userManager,
+    IWebHostEnvironment webHostEnvironment) : IPropertyAdministratorRegistrationService
 {
+    private static readonly HashSet<string> AllowedDocumentExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".pdf", ".jpg", ".jpeg", ".png", ".heic", ".doc", ".docx"
+    };
     private const string AdminIdSessionKey = "PropertyAdminRegistroId";
 
     public async Task<PropertyAdministratorRegistrationState> GetAsync(CancellationToken cancellationToken = default)
@@ -104,6 +112,7 @@ public class PropertyAdministratorRegistrationService(
             .Select(p => new PropertyAdministratorPropertyItemViewModel
             {
                 Id = p.Id,
+                PropiedadId = p.PropiedadId,
                 PropertyName = p.PropertyName,
                 Location = p.Location,
                 PropertyType = p.PropertyType,
@@ -160,6 +169,110 @@ public class PropertyAdministratorRegistrationService(
 
         var admin = await db.IndorPropertyAdministrators.FirstAsync(a => a.Id == adminId, cancellationToken);
         admin.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task<PropertyAdministratorPortfolioImportResult> ImportPortfolioFromCsvAsync(
+        Stream csvStream,
+        CancellationToken cancellationToken = default)
+    {
+        var parsed = PropertyAdministratorPortfolioCsvImporter.ParseAndValidate(csvStream);
+        if (parsed.Properties.Count == 0)
+        {
+            return parsed;
+        }
+
+        foreach (var property in parsed.Properties)
+        {
+            await AddPortfolioPropertyAsync(property, cancellationToken);
+            parsed.ImportedCount++;
+        }
+
+        return parsed;
+    }
+
+    public async Task UploadPortfolioDocumentAsync(
+        int portfolioPropertyId,
+        IFormFile file,
+        string? title,
+        CancellationToken cancellationToken = default)
+    {
+        if (file.Length <= 0)
+        {
+            throw new InvalidOperationException("Choose a document to upload.");
+        }
+
+        if (file.Length > 10 * 1024 * 1024)
+        {
+            throw new InvalidOperationException("Documents must be 10 MB or smaller.");
+        }
+
+        var extension = Path.GetExtension(file.FileName);
+        if (string.IsNullOrWhiteSpace(extension) || !AllowedDocumentExtensions.Contains(extension))
+        {
+            throw new InvalidOperationException("Upload a PDF, image, or Word document.");
+        }
+
+        var adminId = await ResolveAdministratorIdAsync(cancellationToken);
+        if (adminId is not > 0)
+        {
+            throw new InvalidOperationException("Portfolio not found.");
+        }
+
+        var portfolioProperty = await db.IndorPropertyAdminPortfolioProperties
+            .AsNoTracking()
+            .FirstOrDefaultAsync(p => p.Id == portfolioPropertyId && p.AdministratorId == adminId, cancellationToken)
+            ?? throw new InvalidOperationException("Select a property from your portfolio.");
+
+        if (portfolioProperty.PropiedadId is not > 0)
+        {
+            throw new InvalidOperationException("This property is not ready for document uploads yet.");
+        }
+
+        var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new InvalidOperationException("Sign in to upload documents.");
+        }
+
+        var ownsProperty = await db.Propiedades.AsNoTracking()
+            .AnyAsync(p => p.Id == portfolioProperty.PropiedadId && p.UserId == userId, cancellationToken);
+        if (!ownsProperty)
+        {
+            throw new InvalidOperationException("You do not have access to this property.");
+        }
+
+        var folder = Path.Combine(
+            webHostEnvironment.WebRootPath,
+            "uploads",
+            "my-home",
+            userId,
+            portfolioProperty.PropiedadId.Value.ToString(CultureInfo.InvariantCulture));
+        Directory.CreateDirectory(folder);
+
+        var originalName = Path.GetFileName(file.FileName);
+        var stored = $"{Guid.NewGuid():N}_{originalName}";
+        var physical = Path.Combine(folder, stored);
+        await using (var stream = System.IO.File.Create(physical))
+        {
+            await file.CopyToAsync(stream, cancellationToken);
+        }
+
+        var documentTitle = !string.IsNullOrWhiteSpace(title)
+            ? title.Trim()
+            : Path.GetFileNameWithoutExtension(originalName);
+
+        db.PropiedadDocumentos.Add(new PropiedadDocumento
+        {
+            PropiedadId = portfolioProperty.PropiedadId.Value,
+            Category = "Other",
+            Title = documentTitle,
+            FileName = originalName,
+            StoragePath = $"/uploads/my-home/{userId}/{portfolioProperty.PropiedadId}/{stored}",
+            ContentType = file.ContentType,
+            SizeBytes = file.Length
+        });
+
         await db.SaveChangesAsync(cancellationToken);
     }
 

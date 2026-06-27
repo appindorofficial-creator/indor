@@ -38,6 +38,24 @@ else if (TempData["PropertyAdminError"] is string err)
     <div class="pa-summary-error">@err</div>
 }
 
+@if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
+{
+    <div class="pa-summary-success">@Model.FormSuccess</div>
+}
+
+@if (Model.ImportErrors.Count > 0)
+{
+    <div class="pa-summary-warning">
+        <strong>Some rows were skipped:</strong>
+        <ul class="pa-summary-warning-list">
+            @foreach (var importError in Model.ImportErrors)
+            {
+                <li>@importError</li>
+            }
+        </ul>
+    </div>
+}
+
 @foreach (var property in Model.Properties)
 {
     <div class="pa-property-card">
@@ -63,7 +81,7 @@ else if (TempData["PropertyAdminError"] is string err)
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
     </summary>
-    <form asp-action="AddProperty" method="post" class="pa-add-property-form">
+    <form asp-action="AddProperty" method="post" id="pa-manual-property-form" class="pa-add-property-form pa-properties-step-form">
         @Html.AntiForgeryToken()
 
         <div class="pa-field-row pa-field-row--2">
@@ -182,14 +200,84 @@ else if (TempData["PropertyAdminError"] is string err)
     </form>
 </details>
 
-<a href="#" class="pa-action-row" onclick="return false;" style="opacity:.55;">
-    <span><i class="fas fa-file-import"></i> Import portfolio</span>
-    <i class="fas fa-chevron-right"></i>
-</a>
-<a href="#" class="pa-action-row" onclick="return false;" style="opacity:.55;">
-    <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
-    <i class="fas fa-chevron-right"></i>
-</a>
+<details class="pa-add-property-panel">
+    <summary class="pa-add-property-summary">
+        <span><i class="fas fa-file-import"></i> Import portfolio</span>
+        <i class="fas fa-chevron-up"></i>
+    </summary>
+    <form asp-action="ImportPortfolio" method="post" enctype="multipart/form-data" id="pa-import-portfolio-form" class="pa-add-property-form pa-properties-step-form">
+        @Html.AntiForgeryToken()
+        <p class="pa-form-hint">Upload a CSV with one property per row. Required columns: houseNumber, streetName, city, state, zipCode, propertyType. Optional: propertyNickname.</p>
+        <div class="pa-file-picker">
+            <input type="file"
+                   id="pa-csv-file"
+                   class="pa-file-picker-input"
+                   name="csvFile"
+                   accept=".csv,text/csv"
+                   data-empty-label="No file selected" />
+            <label for="pa-csv-file" class="pa-file-picker-btn">Choose file</label>
+            <span class="pa-file-picker-name" data-pa-file-name-for="pa-csv-file">No file selected</span>
+            <button type="button"
+                    class="pa-file-picker-clear"
+                    data-pa-file-clear-for="pa-csv-file"
+                    aria-label="Remove file"
+                    hidden>
+                <i class="fas fa-trash" aria-hidden="true"></i>
+            </button>
+        </div>
+        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Import properties</button>
+    </form>
+</details>
+
+<details class="pa-add-property-panel" @(Model.CanUploadDocuments ? null : "open")>
+    <summary class="pa-add-property-summary">
+        <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
+        <i class="fas fa-chevron-up"></i>
+    </summary>
+    <form asp-action="UploadPropertyDocument" method="post" enctype="multipart/form-data" id="pa-upload-document-form" class="pa-add-property-form pa-properties-step-form">
+        @Html.AntiForgeryToken()
+        @if (!Model.CanUploadDocuments)
+        {
+            <p class="pa-form-hint">Add at least one property before uploading lease files, inspection reports, or other documents.</p>
+        }
+        else
+        {
+            <p class="pa-form-hint">Attach a document to one of your properties. Supported formats: PDF, JPG, PNG, HEIC, DOC, DOCX.</p>
+            <label class="pa-field">
+                <i class="fas fa-building"></i>
+                <select id="pa-doc-property" name="portfolioPropertyId">
+                    <option value="" disabled selected hidden>Property</option>
+                    @foreach (var property in Model.Properties.Where(p => p.PropiedadId is > 0))
+                    {
+                        <option value="@property.Id">@property.PropertyName — @property.Location</option>
+                    }
+                </select>
+            </label>
+            <label class="pa-field">
+                <i class="fas fa-pen"></i>
+                <input type="text" name="documentTitle" placeholder="Document title (optional)" maxlength="200" />
+            </label>
+            <div class="pa-file-picker">
+                <input type="file"
+                       id="pa-document-file"
+                       class="pa-file-picker-input"
+                       name="documentFile"
+                       accept=".pdf,.jpg,.jpeg,.png,.heic,.doc,.docx,application/pdf,image/*"
+                       data-empty-label="No file selected" />
+                <label for="pa-document-file" class="pa-file-picker-btn">Choose file</label>
+                <span class="pa-file-picker-name" data-pa-file-name-for="pa-document-file">No file selected</span>
+                <button type="button"
+                        class="pa-file-picker-clear"
+                        data-pa-file-clear-for="pa-document-file"
+                        aria-label="Remove file"
+                        hidden>
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                </button>
+            </div>
+            <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Upload document</button>
+        }
+    </form>
+</details>
 
 <form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
     @Html.AntiForgeryToken()
@@ -207,45 +295,120 @@ else if (TempData["PropertyAdminError"] is string err)
 
 <script>
 (function () {
-    var form = document.querySelector('.pa-add-property-form');
-    if (!form) return;
+    function bindFilePickers() {
+        document.querySelectorAll('.pa-file-picker-input').forEach(function (input) {
+            var label = document.querySelector('[data-pa-file-name-for="' + input.id + '"]');
+            var clearBtn = document.querySelector('[data-pa-file-clear-for="' + input.id + '"]');
+            var emptyLabel = input.getAttribute('data-empty-label') || 'No file selected';
 
-    var fields = [
-        { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
-        { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
-        { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
-        { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
-        { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
-        { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
-    ];
+            function syncName() {
+                var file = input.files && input.files[0];
+                if (label) {
+                    label.textContent = file ? file.name : emptyLabel;
+                    label.classList.toggle('is-selected', !!file);
+                }
+                if (clearBtn) {
+                    clearBtn.hidden = !file;
+                }
+            }
 
-    function syncValidity(field) {
-        if (!field.el) return;
-        var empty = !field.el.value || !String(field.el.value).trim();
-        field.el.setCustomValidity(empty ? field.message : '');
+            input.addEventListener('change', syncName);
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function () {
+                    input.value = '';
+                    syncName();
+                    input.dispatchEvent(new Event('change', { bubbles: true }));
+                });
+            }
+            syncName();
+        });
     }
 
-    fields.forEach(function (field) {
-        if (!field.el) return;
-        field.el.addEventListener('input', function () { syncValidity(field); });
-        field.el.addEventListener('change', function () { syncValidity(field); });
-        field.el.addEventListener('invalid', function () { syncValidity(field); });
-    });
+    function disableOtherForms(activeForm) {
+        var disabled = [];
+        document.querySelectorAll('.pa-properties-step-form').forEach(function (other) {
+            if (other === activeForm) return;
+            other.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+                if (!el.disabled) {
+                    el.disabled = true;
+                    disabled.push(el);
+                }
+            });
+        });
+        return disabled;
+    }
 
-    form.addEventListener('submit', function (e) {
-        var firstInvalid = null;
+    function restoreDisabled(disabled) {
+        disabled.forEach(function (el) {
+            el.disabled = false;
+        });
+    }
+
+    function bindRequiredFields(form, fields) {
+        if (!form) return;
+
+        function syncValidity(field) {
+            if (!field.el || field.el.disabled) return;
+            var empty = field.kind === 'file'
+                ? !(field.el.files && field.el.files.length)
+                : !field.el.value || !String(field.el.value).trim();
+            field.el.setCustomValidity(empty ? field.message : '');
+        }
+
         fields.forEach(function (field) {
-            syncValidity(field);
-            if (!field.el || firstInvalid) return;
-            if (!field.el.checkValidity()) {
-                firstInvalid = field.el;
-            }
+            if (!field.el) return;
+            field.el.addEventListener('input', function () { syncValidity(field); });
+            field.el.addEventListener('change', function () { syncValidity(field); });
+            field.el.addEventListener('invalid', function () { syncValidity(field); });
         });
 
-        if (firstInvalid) {
-            e.preventDefault();
-            firstInvalid.reportValidity();
-        }
-    });
+        form.addEventListener('submit', function (e) {
+            var temporarilyDisabled = disableOtherForms(form);
+            var firstInvalid = null;
+
+            fields.forEach(function (field) {
+                syncValidity(field);
+                if (!field.el || field.el.disabled || firstInvalid) return;
+                if (!field.el.checkValidity()) {
+                    firstInvalid = field.el;
+                }
+            });
+
+            if (firstInvalid) {
+                e.preventDefault();
+                restoreDisabled(temporarilyDisabled);
+                firstInvalid.reportValidity();
+            }
+        });
+    }
+
+    bindFilePickers();
+
+    bindRequiredFields(
+        document.getElementById('pa-manual-property-form'),
+        [
+            { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
+            { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
+            { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
+            { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
+            { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
+            { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
+        ]
+    );
+
+    bindRequiredFields(
+        document.getElementById('pa-import-portfolio-form'),
+        [
+            { el: document.getElementById('pa-csv-file'), kind: 'file', message: 'Choose a CSV file.' }
+        ]
+    );
+
+    bindRequiredFields(
+        document.getElementById('pa-upload-document-form'),
+        [
+            { el: document.getElementById('pa-doc-property'), message: 'Select a property.' },
+            { el: document.getElementById('pa-document-file'), kind: 'file', message: 'Choose a document to upload.' }
+        ]
+    );
 })();
 </script>

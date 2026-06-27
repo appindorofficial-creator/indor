@@ -124,6 +124,19 @@
 .pa-page .pa-reg-actions .ob-btn-primary{flex:1;max-width:220px;margin:0;padding:15px 20px;border-radius:14px;font-size:.95rem;font-weight:700}
 .pa-page.ob-page .ob-shell-inner{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .pa-summary-error{background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
+.pa-summary-success{background:#ECFDF5;color:#047857;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
+.pa-summary-warning{background:#FFFBEB;color:#92400E;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
+.pa-summary-warning-list{margin:8px 0 0;padding-left:18px}
+.pa-summary-warning-list li{margin-bottom:4px}
+.pa-file-picker{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1.5px solid #E2E8F0;border-radius:14px;background:#fff;margin-bottom:14px}
+.pa-file-picker-input{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+.pa-file-picker-btn{display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:0 14px;border:1.5px solid #0066CC;border-radius:10px;background:#fff;color:#0066CC;font-size:.82rem;font-weight:600;cursor:pointer;white-space:nowrap}
+.pa-file-picker-name{font-size:.82rem;color:#64748B;min-width:0;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pa-file-picker-name.is-selected{color:#0F172A;font-weight:600}
+.pa-file-picker-clear{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:auto;height:auto;border:none;border-radius:0;background:transparent;padding:4px;color:#94A3B8;cursor:pointer}
+.pa-file-picker-clear[hidden]{display:none!important}
+.pa-file-picker-clear:hover,.pa-file-picker-clear:focus-visible{color:#DC2626;background:transparent}
+.pa-file-picker-clear i{font-size:.9rem}
 
 /* Multi-property owner portal */
 .pa-portal-page{font-family:'Inter',sans-serif;background:var(--indor-bg-sky,#E9F2FE);background-attachment:fixed;min-height:100vh;min-height:100dvh;padding-bottom:88px}

@@ -203,37 +203,7 @@ public class PropertyAdministratorRegistrationController(
             PropertyName = propertyNickname ?? ""
         };
 
-        var missingFields = new List<string>();
-        if (string.IsNullOrWhiteSpace(houseNumber))
-        {
-            missingFields.Add("house number");
-        }
-
-        if (string.IsNullOrWhiteSpace(streetName))
-        {
-            missingFields.Add("street name");
-        }
-
-        if (string.IsNullOrWhiteSpace(city))
-        {
-            missingFields.Add("city");
-        }
-
-        if (string.IsNullOrWhiteSpace(state))
-        {
-            missingFields.Add("state");
-        }
-
-        if (string.IsNullOrWhiteSpace(zipCode))
-        {
-            missingFields.Add("ZIP");
-        }
-
-        if (string.IsNullOrWhiteSpace(propertyType) || !PropertyAdministratorCatalog.IsValidPropertyType(propertyType))
-        {
-            missingFields.Add("property type");
-        }
-
+        var missingFields = PropertyAdministratorPortfolioCsvImporter.ValidatePropertyInput(draft);
         if (missingFields.Count > 0)
         {
             var model = await BuildPropertiesViewModelAsync(draft);
@@ -260,6 +230,94 @@ public class PropertyAdministratorRegistrationController(
         });
 
         return RedirectToAction(nameof(Properties));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportPortfolio(IFormFile? csvFile)
+    {
+        if (csvFile == null || csvFile.Length == 0)
+        {
+            var emptyModel = await BuildPropertiesViewModelAsync();
+            emptyModel.FormError = "Choose a CSV file to import.";
+            return View(nameof(Properties), emptyModel);
+        }
+
+        if (csvFile.Length > 1024 * 1024)
+        {
+            var largeModel = await BuildPropertiesViewModelAsync();
+            largeModel.FormError = "CSV files must be 1 MB or smaller.";
+            return View(nameof(Properties), largeModel);
+        }
+
+        var extension = Path.GetExtension(csvFile.FileName);
+        if (!string.Equals(extension, ".csv", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(csvFile.ContentType, "text/csv", StringComparison.OrdinalIgnoreCase))
+        {
+            var typeModel = await BuildPropertiesViewModelAsync();
+            typeModel.FormError = "Upload a .csv file.";
+            return View(nameof(Properties), typeModel);
+        }
+
+        PropertyAdministratorPortfolioImportResult result;
+        await using (var stream = csvFile.OpenReadStream())
+        {
+            result = await registration.ImportPortfolioFromCsvAsync(stream);
+        }
+
+        var model = await BuildPropertiesViewModelAsync();
+        model.ImportErrors = result.Errors;
+        if (result.ImportedCount > 0)
+        {
+            model.FormSuccess = result.ImportedCount == 1
+                ? "1 property imported from CSV."
+                : $"{result.ImportedCount} properties imported from CSV.";
+        }
+
+        if (result.ImportedCount == 0)
+        {
+            model.FormError = result.Errors.FirstOrDefault() ?? "No properties were imported.";
+        }
+        else if (result.Errors.Count > 0)
+        {
+            model.FormSuccess += $" {result.Errors.Count} row(s) were skipped.";
+        }
+
+        return View(nameof(Properties), model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadPropertyDocument(
+        int portfolioPropertyId,
+        IFormFile? documentFile,
+        string? documentTitle)
+    {
+        var model = await BuildPropertiesViewModelAsync();
+        if (!model.CanUploadDocuments)
+        {
+            model.FormError = "Add at least one property before uploading documents.";
+            return View(nameof(Properties), model);
+        }
+
+        if (documentFile == null || documentFile.Length == 0)
+        {
+            model.FormError = "Choose a document to upload.";
+            return View(nameof(Properties), model);
+        }
+
+        try
+        {
+            await registration.UploadPortfolioDocumentAsync(portfolioPropertyId, documentFile, documentTitle);
+            model = await BuildPropertiesViewModelAsync();
+            model.FormSuccess = "Document uploaded successfully.";
+            return View(nameof(Properties), model);
+        }
+        catch (InvalidOperationException ex)
+        {
+            model.FormError = ex.Message;
+            return View(nameof(Properties), model);
+        }
     }
 
     [HttpPost]
