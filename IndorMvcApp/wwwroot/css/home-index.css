@@ -1742,3 +1742,31 @@ body > header.top-bar {
     border-bottom: none !important;
     box-shadow: none !important;
 }
+
+/* Nearby Network feed search — keep interior white (no blue focus tint) */
+.hn-search-bar,
+.hn-search-bar:focus-within {
+    background: #fff !important;
+    border-color: #E7EEF7 !important;
+    box-shadow: 0 6px 18px rgba(20, 66, 124, .06) !important;
+}
+
+.hn-search-bar input,
+.hn-search-bar input:focus,
+.hn-search-bar input:focus-visible {
+    background: #fff !important;
+    background-color: #fff !important;
+    box-shadow: none !important;
+    outline: none !important;
+    border: none !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
+
+.hn-search-bar input::-webkit-search-decoration,
+.hn-search-bar input::-webkit-search-cancel-button,
+.hn-search-bar input::-webkit-search-results-button,
+.hn-search-bar input::-webkit-search-results-decoration {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+}
