@@ -69,10 +69,14 @@
         }
     </div>
 
-    <button type="submit" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
 </form>
 
-<a href="@Model.BackUrl" class="pa-back-link">Back</a>
+@{
+    ViewData["StepFormId"] = "portfolioForm";
+    ViewData["StepBackUrl"] = Model.BackUrl;
+    ViewData["StepSubmitLabel"] = "Next";
+}
+@await Html.PartialAsync("_PropertyAdminStepActions")
 
 @section Scripts {
 <script>

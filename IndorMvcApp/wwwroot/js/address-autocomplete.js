@@ -96,9 +96,35 @@
         }
     }
 
-    function tryGeocodeLinkedZip(sourceInput) {
-        if (!(window.google && google.maps && google.maps.Geocoder)) return;
+    function runServerZipLookup(sourceInput, city, state, zipEl) {
+        if (!city || !state || !zipEl || zipEl.value.trim()) {
+            return;
+        }
 
+        var url = '/AddressLookup/Zip?city=' + encodeURIComponent(city)
+            + '&state=' + encodeURIComponent(state);
+
+        fetch(url, {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        }).then(function (response) {
+            if (!response.ok || zipEl.value.trim()) {
+                return null;
+            }
+            return response.json();
+        }).then(function (payload) {
+            if (!payload || !payload.zip || zipEl.value.trim()) {
+                return;
+            }
+            zipEl.value = payload.zip;
+            zipEl.dispatchEvent(new Event('input', { bubbles: true }));
+            zipEl.dispatchEvent(new Event('change', { bubbles: true }));
+        }).catch(function () {
+            // Ignore lookup failures; the user can enter ZIP manually.
+        });
+    }
+
+    function tryGeocodeLinkedZip(sourceInput) {
         var zipEl = getLinkedElement(sourceInput, 'Zip');
         var stateEl = getLinkedElement(sourceInput, 'State');
         if (!zipEl || !stateEl) return;
@@ -113,27 +139,31 @@
         var street = isCitySource ? '' : sourceInput.value.trim();
         if (!city && !street) return;
 
-        var address;
-        if (street && city) {
-            address = street + ', ' + city + ', ' + state + ', USA';
-        } else if (city) {
-            address = city + ', ' + state + ', USA';
-        } else {
-            address = street + ', ' + state + ', USA';
+        if (city) {
+            runServerZipLookup(sourceInput, city, state, zipEl);
         }
 
-        scheduleGeocode(sourceInput, address, zipEl);
+        if (window.google && google.maps && google.maps.Geocoder && street && city) {
+            var address = street + ', ' + city + ', ' + state + ', USA';
+            scheduleGeocode(sourceInput, address, zipEl);
+        }
     }
 
     function runGeocode(sourceInput, address, zipEl) {
         if (zipEl.value.trim()) return;
+
+        if (!(window.google && google.maps && google.maps.Geocoder)) {
+            return;
+        }
 
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({
             address: address,
             componentRestrictions: { country: 'US' }
         }, function (results, status) {
-            if (status !== 'OK' || !results || !results.length) return;
+            if (status !== 'OK' || !results || !results.length) {
+                return;
+            }
             if (zipEl.value.trim()) return;
 
             var components = results[0].address_components;
@@ -164,16 +194,51 @@
         });
     }
 
-    function bindLinkedFieldGeocode(streetInput) {
-        var stateEl = getLinkedElement(streetInput, 'State');
-        var cityEl = getLinkedElement(streetInput, 'City');
-        if (stateEl) {
-            stateEl.addEventListener('change', function () { tryGeocodeLinkedZip(streetInput); });
+    function debounceGeocode(sourceInput) {
+        if (geocodeTimers) {
+            clearTimeout(geocodeTimers.get(sourceInput));
+            geocodeTimers.set(sourceInput, setTimeout(function () {
+                tryGeocodeLinkedZip(sourceInput);
+            }, 400));
+        } else {
+            tryGeocodeLinkedZip(sourceInput);
         }
+    }
+
+    function bindCityZipGeocode(sourceInput) {
+        if (sourceInput.dataset.geocodeBound === 'true') {
+            return;
+        }
+        sourceInput.dataset.geocodeBound = 'true';
+
+        var stateEl = getLinkedElement(sourceInput, 'State');
+        var cityEl = sourceInput.hasAttribute('data-city-autocomplete')
+            ? sourceInput
+            : getLinkedElement(sourceInput, 'City');
+
         if (cityEl) {
-            cityEl.addEventListener('change', function () { tryGeocodeLinkedZip(streetInput); });
-            cityEl.addEventListener('blur', function () { tryGeocodeLinkedZip(streetInput); });
+            cityEl.addEventListener('change', function () { tryGeocodeLinkedZip(sourceInput); });
+            cityEl.addEventListener('blur', function () { tryGeocodeLinkedZip(sourceInput); });
+            cityEl.addEventListener('input', function () { debounceGeocode(sourceInput); });
         }
+
+        if (stateEl) {
+            stateEl.addEventListener('change', function () { tryGeocodeLinkedZip(sourceInput); });
+        }
+    }
+
+    function initZipGeocodeLinking() {
+        document.querySelectorAll('input[data-city-autocomplete]').forEach(function (input) {
+            bindCityZipGeocode(input);
+        });
+
+        document.querySelectorAll('input[data-address-autocomplete]').forEach(function (input) {
+            bindCityZipGeocode(input);
+        });
+
+        document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete]').forEach(function (input) {
+            tryGeocodeLinkedZip(input);
+        });
     }
 
     function applyCityPlace(cityInput, place) {
@@ -238,13 +303,6 @@
                 }
             });
 
-            input.addEventListener('change', function () { tryGeocodeLinkedZip(input); });
-            input.addEventListener('blur', function () { tryGeocodeLinkedZip(input); });
-
-            if (stateEl) {
-                stateEl.addEventListener('change', function () { tryGeocodeLinkedZip(input); });
-            }
-
             input.addEventListener('keydown', function (e) {
                 if (e.key !== 'Enter') return;
                 var open = document.querySelector('.pac-container');
@@ -262,8 +320,11 @@
         if (input.dataset.acStreetOnly === 'true' && components) {
             var num = getComponent(components, 'street_number', false);
             var route = getComponent(components, 'route', false);
-            var street = (num + ' ' + route).trim();
-            input.value = street || place.formatted_address || input.value;
+            if (num) {
+                fillLinkedField(input, 'HouseNumber', num);
+            }
+            var street = route || (num ? '' : (place.formatted_address || input.value));
+            input.value = street.trim() || input.value;
         } else if (place.formatted_address) {
             input.value = place.formatted_address;
         }
@@ -290,6 +351,8 @@
     }
 
     function initAddressAutocomplete() {
+        initZipGeocodeLinking();
+
         if (!(window.google && google.maps && google.maps.places && google.maps.places.Autocomplete)) {
             return;
         }
@@ -307,8 +370,6 @@
             ac.addListener('place_changed', function () {
                 applyPlace(input, ac.getPlace());
             });
-
-            bindLinkedFieldGeocode(input);
 
             // Don't let Enter submit the form while a suggestion list is open.
             input.addEventListener('keydown', function (e) {

@@ -2,6 +2,7 @@
 @using IndorMvcApp.Models
 @{
     var s = Model.State;
+    var draft = Model.DraftProperty;
     var defaultCity = "";
     var defaultState = "";
     if (!string.IsNullOrWhiteSpace(s.PrimaryMarket) && !string.Equals(s.PrimaryMarket, "Other", StringComparison.OrdinalIgnoreCase))
@@ -13,13 +14,26 @@
             defaultState = marketParts[1];
         }
     }
+
+    var formHouseNumber = draft?.HouseNumber ?? "";
+    var formStreetName = draft?.StreetName ?? "";
+    var formCity = !string.IsNullOrWhiteSpace(draft?.City) ? draft!.City : defaultCity;
+    var formState = !string.IsNullOrWhiteSpace(draft?.State) ? draft!.State : defaultState;
+    var formZipCode = draft?.ZipCode ?? "";
+    var formPropertyType = draft?.PropertyType ?? "";
+    var formNickname = draft?.PropertyName ?? "";
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
+    <p class="pa-step-hint">You can add properties now or skip and add them later from your dashboard.</p>
 </div>
 
-@if (TempData["PropertyAdminError"] is string err)
+@if (!string.IsNullOrWhiteSpace(Model.FormError))
+{
+    <div class="pa-summary-error">@Model.FormError</div>
+}
+else if (TempData["PropertyAdminError"] is string err)
 {
     <div class="pa-summary-error">@err</div>
 }
@@ -44,7 +58,7 @@
     </div>
 }
 
-<details class="pa-add-property-panel" @(Model.Properties.Count == 0 ? "open" : null)>
+<details class="pa-add-property-panel" @(Model.Properties.Count == 0 || draft != null ? "open" : null)>
     <summary class="pa-add-property-summary">
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
@@ -55,49 +69,113 @@
         <div class="pa-field-row pa-field-row--2">
             <label class="pa-field">
                 <i class="fas fa-hashtag"></i>
-                <input type="text" name="houseNumber" placeholder="House number" inputmode="numeric" />
+                <input type="text"
+                       id="pa-prop-house"
+                       name="houseNumber"
+                       value="@formHouseNumber"
+                       placeholder="House number"
+                       inputmode="numeric"
+                       required
+                       autocomplete="address-line2" />
             </label>
             <label class="pa-field">
                 <i class="fas fa-road"></i>
-                <input type="text" name="streetName" placeholder="Street name" required autocomplete="address-line1" />
+                <input type="text"
+                       id="pa-prop-street"
+                       name="streetName"
+                       value="@formStreetName"
+                       placeholder="Street name"
+                       autocomplete="address-line1"
+                       required
+                       data-address-autocomplete
+                       data-ac-street-only="true"
+                       data-ac-house-number="pa-prop-house"
+                       data-ac-city="pa-prop-city"
+                       data-ac-state="pa-prop-state"
+                       data-ac-zip="pa-prop-zip" />
             </label>
         </div>
 
         <div class="pa-field-row pa-field-row--3">
             <label class="pa-field">
                 <i class="fas fa-city"></i>
-                <input type="text" name="city" value="@defaultCity" placeholder="City" required autocomplete="address-level2" />
+                <input type="text"
+                       id="pa-prop-city"
+                       name="city"
+                       value="@formCity"
+                       placeholder="City"
+                       autocomplete="address-level2"
+                       required
+                       data-city-autocomplete
+                       data-ac-state="pa-prop-state"
+                       data-ac-zip="pa-prop-zip" />
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-map"></i>
-                <select name="state" required>
-                    <option value="">State</option>
+                <select id="pa-prop-state" name="state" required>
+                    @if (string.IsNullOrWhiteSpace(formState))
+                    {
+                        <option value="" disabled selected>State</option>
+                    }
+                    else
+                    {
+                        <option value="" disabled>State</option>
+                    }
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
-                        <option value="@stateCode" selected="@(defaultState == stateCode)">@stateCode</option>
+                        if (formState == stateCode)
+                        {
+                            <option value="@stateCode" selected="selected">@stateCode</option>
+                        }
+                        else
+                        {
+                            <option value="@stateCode">@stateCode</option>
+                        }
                     }
                 </select>
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-location-dot"></i>
-                <input type="text" name="zipCode" placeholder="ZIP" inputmode="numeric" autocomplete="postal-code" maxlength="10" />
+                <input type="text"
+                       id="pa-prop-zip"
+                       name="zipCode"
+                       value="@formZipCode"
+                       placeholder="ZIP"
+                       inputmode="numeric"
+                       autocomplete="postal-code"
+                       maxlength="10"
+                       required />
             </label>
         </div>
 
         <label class="pa-field">
             <i class="fas fa-tag"></i>
-            <select name="propertyType" required>
-                <option value="">Property type</option>
+            <select id="pa-prop-type" name="propertyType" required>
+                @if (string.IsNullOrWhiteSpace(formPropertyType))
+                {
+                    <option value="" disabled selected hidden>Property type</option>
+                }
+                else
+                {
+                    <option value="" disabled hidden>Property type</option>
+                }
                 @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
                 {
-                    <option value="@item.Value">@item.Label</option>
+                    if (formPropertyType == item.Value)
+                    {
+                        <option value="@item.Value" selected="selected">@item.Label</option>
+                    }
+                    else
+                    {
+                        <option value="@item.Value">@item.Label</option>
+                    }
                 }
             </select>
         </label>
 
         <label class="pa-field">
             <i class="fas fa-pen"></i>
-            <input type="text" name="propertyNickname" placeholder="Property nickname (optional)" />
+            <input type="text" name="propertyNickname" value="@formNickname" placeholder="Property nickname (optional)" />
         </label>
 
         <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Save property</button>
@@ -113,9 +191,61 @@
     <i class="fas fa-chevron-right"></i>
 </a>
 
-<form asp-action="ContinueFromProperties" method="post">
+<form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
     @Html.AntiForgeryToken()
-    <button type="submit" class="ob-btn ob-btn-primary" style="margin-top:16px;">Continue <i class="fas fa-chevron-right"></i></button>
 </form>
 
-<a href="@Model.BackUrl" class="pa-back-link">Back</a>
+@{
+    ViewData["StepFormId"] = "paPropertiesContinueForm";
+    ViewData["StepBackUrl"] = Model.BackUrl;
+    ViewData["StepSubmitLabel"] = "Next";
+    ViewData["StepSubmitFormNoValidate"] = true;
+}
+@await Html.PartialAsync("_PropertyAdminStepActions")
+
+@await Html.PartialAsync("_AddressAutocompleteScripts")
+
+<script>
+(function () {
+    var form = document.querySelector('.pa-add-property-form');
+    if (!form) return;
+
+    var fields = [
+        { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
+        { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
+        { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
+        { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
+        { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
+        { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
+    ];
+
+    function syncValidity(field) {
+        if (!field.el) return;
+        var empty = !field.el.value || !String(field.el.value).trim();
+        field.el.setCustomValidity(empty ? field.message : '');
+    }
+
+    fields.forEach(function (field) {
+        if (!field.el) return;
+        field.el.addEventListener('input', function () { syncValidity(field); });
+        field.el.addEventListener('change', function () { syncValidity(field); });
+        field.el.addEventListener('invalid', function () { syncValidity(field); });
+    });
+
+    form.addEventListener('submit', function (e) {
+        var firstInvalid = null;
+        fields.forEach(function (field) {
+            syncValidity(field);
+            if (!field.el || firstInvalid) return;
+            if (!field.el.checkValidity()) {
+                firstInvalid = field.el;
+            }
+        });
+
+        if (firstInvalid) {
+            e.preventDefault();
+            firstInvalid.reportValidity();
+        }
+    });
+})();
+</script>

@@ -1,5 +1,6 @@
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -88,6 +89,11 @@ public class RealtorInviteClientController(
             ModelState.AddModelError(nameof(clientRole), "Please select a client role.");
         }
 
+        if (!UsPhoneOptionalAttribute.IsValidOptional(phone))
+        {
+            ModelState.AddModelError(nameof(phone), "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+        }
+
         if (!ModelState.IsValid)
         {
             var vm = await inviteService.BuildClientInfoAsync();
@@ -99,7 +105,8 @@ public class RealtorInviteClientController(
             return View(vm);
         }
 
-        await inviteService.SaveClientInfoAsync(fullName, email, phone, clientRole, quickNote);
+        var normalizedPhone = UsPhoneOptionalAttribute.NormalizeToStorage(phone);
+        await inviteService.SaveClientInfoAsync(fullName, email, normalizedPhone, clientRole, quickNote);
         return RedirectToAction(nameof(Property));
     }
 

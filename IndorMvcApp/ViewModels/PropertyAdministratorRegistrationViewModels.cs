@@ -82,6 +82,8 @@ public class PropertyAdministratorPropertyItemViewModel
 public class PropertyAdministratorPropertiesStepViewModel : PropertyAdministratorRegistrationStepViewModel
 {
     public IReadOnlyList<PropertyAdministratorPropertyItemViewModel> Properties { get; set; } = [];
+    public PropertyAdministratorPropertyInput? DraftProperty { get; set; }
+    public string? FormError { get; set; }
 }
 
 public class PropertyAdministratorToolsInput

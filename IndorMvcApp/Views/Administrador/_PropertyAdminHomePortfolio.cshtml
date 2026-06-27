@@ -6,7 +6,6 @@
             <strong>@Model.PortfolioName</strong>
             <small>@Model.ActivePropertyCount active @(Model.ActivePropertyCount == 1 ? "property" : "properties")</small>
         </div>
-        <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
     </div>
 
     <div class="pa-portfolio-actions">
@@ -40,7 +39,9 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch">Switch property</a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property">
+                <i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i>
+            </a>
         </div>
     }
 </div>

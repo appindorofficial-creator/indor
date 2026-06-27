@@ -12,6 +12,7 @@ public interface IPropertyAdministratorRegistrationService
     Task<IReadOnlyList<PropertyAdministratorPropertyItemViewModel>> GetPortfolioPropertiesAsync(CancellationToken cancellationToken = default);
     Task AddPortfolioPropertyAsync(PropertyAdministratorPropertyInput input, CancellationToken cancellationToken = default);
     Task RemovePortfolioPropertyAsync(int propertyId, CancellationToken cancellationToken = default);
+    Task AdvanceFromPropertiesAsync(CancellationToken cancellationToken = default);
     Task SaveToolsAsync(PropertyAdministratorToolsInput input, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorReviewViewModel> GetReviewViewModelAsync(CancellationToken cancellationToken = default);
     Task CompleteRegistrationAsync(bool platformTermsAccepted, CancellationToken cancellationToken = default);

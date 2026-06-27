@@ -91,6 +91,58 @@ public partial class AddressLookupService : IAddressLookupService
         }
     }
 
+    public async Task<string?> LookupPrimaryZipForCityAsync(
+        string city,
+        string state,
+        CancellationToken cancellationToken = default)
+    {
+        city = city.Trim();
+        state = state.Trim().ToUpperInvariant();
+
+        if (city.Length == 0 || state.Length != 2)
+        {
+            return null;
+        }
+
+        var url =
+            $"https://api.zippopotam.us/us/{Uri.EscapeDataString(state.ToLowerInvariant())}/{Uri.EscapeDataString(city.ToLowerInvariant())}";
+
+        try
+        {
+            using var response = await _httpClient.GetAsync(url, cancellationToken);
+            if (!response.IsSuccessStatusCode)
+            {
+                return null;
+            }
+
+            await using var stream = await response.Content.ReadAsStreamAsync(cancellationToken);
+            using var document = await JsonDocument.ParseAsync(stream, cancellationToken: cancellationToken);
+            if (!document.RootElement.TryGetProperty("places", out var places)
+                || places.ValueKind != JsonValueKind.Array)
+            {
+                return null;
+            }
+
+            foreach (var place in places.EnumerateArray())
+            {
+                if (place.TryGetProperty("post code", out var zipElement))
+                {
+                    var zip = zipElement.GetString()?.Trim();
+                    if (!string.IsNullOrWhiteSpace(zip))
+                    {
+                        return zip;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogWarning(ex, "City ZIP lookup failed for {City}, {State}", city, state);
+        }
+
+        return null;
+    }
+
     private async Task<PropertyInfoViewModel?> BuildGeocodedPropertyAsync(
         string address,
         CancellationToken cancellationToken = default)

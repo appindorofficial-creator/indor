@@ -3,6 +3,7 @@
     string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
     var fullNameError = FieldError("fullName");
     var emailError = FieldError("email");
+    var phoneError = FieldError("phone");
     var clientRoleError = FieldError("clientRole");
 }
 
@@ -30,10 +31,14 @@
         <span class="rl-field-error">@emailError</span>
     }
 
-    <label class="rl-field">
+    <label class="rl-field @(phoneError.Length > 0 ? "is-error" : null)">
         <i class="fas fa-phone"></i>
-        <input type="tel" name="phone" value="@Model.Phone" placeholder="Enter phone number" autocomplete="tel" inputmode="tel" />
+        <input type="text" id="inviteClientPhone" name="phone" value="@Model.Phone" placeholder="Enter phone number" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" data-phone-input />
     </label>
+    @if (!string.IsNullOrWhiteSpace(phoneError))
+    {
+        <span class="rl-field-error">@phoneError</span>
+    }
 
     <p class="rl-invite-section-title">Client Role</p>
     <div class="rl-role-pills">
@@ -67,32 +72,3 @@
         <button type="submit" id="inviteNextBtn" class="ob-btn ob-btn-primary">Next</button>
     </div>
 </form>
-
-@section Scripts {
-<script>
-    const note = document.querySelector('textarea[name="quickNote"]');
-    const count = document.getElementById('noteCount');
-    note?.addEventListener('input', () => { count.textContent = note.value.length; });
-
-    // Some browsers (notably iOS Safari) don't reliably submit a button that
-    // targets a form via the `form` attribute when the button lives outside it.
-    // Submit explicitly so "Next" always advances the wizard.
-    const inviteForm = document.getElementById('inviteClientForm');
-    const nextBtn = document.getElementById('inviteNextBtn');
-    nextBtn?.addEventListener('click', (e) => {
-        if (!inviteForm) { return; }
-        e.preventDefault();
-        if (typeof inviteForm.requestSubmit === 'function') {
-            inviteForm.requestSubmit();
-        } else {
-            inviteForm.submit();
-        }
-    });
-    document.querySelectorAll('.rl-role-pill input').forEach(r => {
-        r.addEventListener('change', () => {
-            document.querySelectorAll('.rl-role-pill').forEach(p => p.classList.remove('is-selected'));
-            r.closest('.rl-role-pill')?.classList.add('is-selected');
-        });
-    });
-</script>
-}

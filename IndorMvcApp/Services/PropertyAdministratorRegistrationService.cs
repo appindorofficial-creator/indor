@@ -183,6 +183,19 @@ public class PropertyAdministratorRegistrationService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
+    public async Task AdvanceFromPropertiesAsync(CancellationToken cancellationToken = default)
+    {
+        var adminId = await EnsureDraftAsync(cancellationToken);
+        var entity = await db.IndorPropertyAdministrators.FirstAsync(a => a.Id == adminId, cancellationToken);
+
+        if (entity.CurrentStep < 4)
+        {
+            entity.CurrentStep = 4;
+            entity.FechaActualizacion = DateTime.UtcNow;
+            await db.SaveChangesAsync(cancellationToken);
+        }
+    }
+
     public async Task SaveToolsAsync(PropertyAdministratorToolsInput input, CancellationToken cancellationToken = default)
     {
         var adminId = await EnsureDraftAsync(cancellationToken);
