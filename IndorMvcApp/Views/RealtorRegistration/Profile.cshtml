@@ -6,16 +6,28 @@
     var brokerageError = FieldError("brokerageName");
     var licenseError = FieldError("licenseNumber");
     var licenseStateError = FieldError("licenseState");
+    var serviceAreasError = FieldError("serviceAreas");
+    var officeAddressError = FieldError("officeAddress");
+    var languagesError = FieldError("languages");
     var termsError = FieldError("professionalTermsAccepted");
+    var hasFormErrors = !ViewData.ModelState.IsValid && ViewData.ModelState.ErrorCount > 0;
 }
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Profile" method="post" class="rl-reg-form" novalidate>
+@if (hasFormErrors)
+{
+    <div class="rl-error-banner" role="alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>Please complete all required fields before continuing.</span>
+    </div>
+}
+
+<form asp-action="Profile" method="post" class="rl-reg-form" id="rlProfileForm">
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
     <div class="rl-field-block">
         <span class="rl-field-label">Brokerage / Company Name</span>
@@ -25,11 +37,13 @@
                    name="brokerageName"
                    value="@s.BrokerageName"
                    placeholder="Keller Williams Realty"
-                   autocomplete="organization" />
+                   autocomplete="organization"
+                   required
+                   aria-describedby="brokerageNameError" />
         </label>
         @if (brokerageError.Length > 0)
         {
-            <span class="rl-field-error">@brokerageError</span>
+            <span class="rl-field-error" id="brokerageNameError">@brokerageError</span>
         }
     </div>
 
@@ -42,11 +56,13 @@
                    value="@s.LicenseNumber"
                    placeholder="BRE123456"
                    inputmode="text"
-                   autocomplete="off" />
+                   autocomplete="off"
+                   required
+                   aria-describedby="licenseNumberError" />
         </label>
         @if (licenseError.Length > 0)
         {
-            <span class="rl-field-error">@licenseError</span>
+            <span class="rl-field-error" id="licenseNumberError">@licenseError</span>
         }
     </div>
 
@@ -54,7 +70,7 @@
         <span class="rl-field-label">License State</span>
         <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-shield-halved"></i>
-            <select name="licenseState">
+            <select name="licenseState" required aria-describedby="licenseStateError">
                 <option value="">Select state</option>
                 @foreach (var st in Model.LicenseStates)
                 {
@@ -64,42 +80,60 @@
         </label>
         @if (licenseStateError.Length > 0)
         {
-            <span class="rl-field-error">@licenseStateError</span>
+            <span class="rl-field-error" id="licenseStateError">@licenseStateError</span>
         }
     </div>
 
     <div class="rl-field-block">
         <span class="rl-field-label">City / Market Area</span>
-        <label class="rl-field">
+        <label class="rl-field @(serviceAreasError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-map"></i>
             <input type="text"
                    name="serviceAreas"
                    value="@s.ServiceAreas"
-                   placeholder="Charlotte, NC" />
+                   placeholder="Charlotte, NC"
+                   required
+                   aria-describedby="serviceAreasError" />
         </label>
+        @if (serviceAreasError.Length > 0)
+        {
+            <span class="rl-field-error" id="serviceAreasError">@serviceAreasError</span>
+        }
     </div>
 
     <div class="rl-field-block">
         <span class="rl-field-label">Office Address</span>
-        <label class="rl-field">
+        <label class="rl-field @(officeAddressError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-location-dot"></i>
             <input type="text"
                    name="officeAddress"
                    value="@s.OfficeAddress"
                    placeholder="123 Business Ave, Miami, FL 33131"
-                   autocomplete="street-address" />
+                   autocomplete="street-address"
+                   required
+                   aria-describedby="officeAddressError" />
         </label>
+        @if (officeAddressError.Length > 0)
+        {
+            <span class="rl-field-error" id="officeAddressError">@officeAddressError</span>
+        }
     </div>
 
     <div class="rl-field-block">
         <span class="rl-field-label">Languages</span>
-        <label class="rl-field">
+        <label class="rl-field @(languagesError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-globe"></i>
             <input type="text"
                    name="languages"
                    value="@s.Languages"
-                   placeholder="English, Spanish" />
+                   placeholder="English, Spanish"
+                   required
+                   aria-describedby="languagesError" />
         </label>
+        @if (languagesError.Length > 0)
+        {
+            <span class="rl-field-error" id="languagesError">@languagesError</span>
+        }
     </div>
 
     <div class="rl-info-box">
@@ -111,13 +145,56 @@
     </div>
 
     <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
-        <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) />
+        <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) required aria-describedby="termsError" />
         <span>I authorize Home Indor to verify my real estate license using the information provided.</span>
     </label>
     @if (termsError.Length > 0)
     {
-        <span class="rl-field-error">@termsError</span>
+        <span class="rl-field-error" id="termsError">@termsError</span>
     }
 
     <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
 </form>
+
+@section Scripts {
+<script>
+    (function () {
+        var form = document.getElementById('rlProfileForm');
+        if (!form) return;
+
+        var labels = {
+            brokerageName: 'Brokerage / company name',
+            licenseNumber: 'Real estate license number',
+            licenseState: 'License state',
+            serviceAreas: 'City / market area',
+            officeAddress: 'Office address',
+            languages: 'Languages',
+            professionalTermsAccepted: 'License verification authorization'
+        };
+
+        form.querySelectorAll('input, select').forEach(function (field) {
+            field.addEventListener('invalid', function () {
+                var label = labels[field.name] || 'This field';
+                if (field.type === 'checkbox') {
+                    field.setCustomValidity('Please authorize Home Indor to verify your license to continue.');
+                    return;
+                }
+                if (field.tagName === 'SELECT') {
+                    field.setCustomValidity('Please select ' + label.toLowerCase() + '.');
+                    return;
+                }
+                field.setCustomValidity('Please enter ' + label.toLowerCase() + '.');
+            });
+            field.addEventListener('input', function () { field.setCustomValidity(''); });
+            field.addEventListener('change', function () { field.setCustomValidity(''); });
+        });
+
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                form.reportValidity();
+            }
+        });
+    })();
+</script>
+}
