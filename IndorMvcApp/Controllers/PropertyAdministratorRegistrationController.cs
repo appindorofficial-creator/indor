@@ -316,105 +316,6 @@ public class PropertyAdministratorRegistrationController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> ImportPortfolio()
-    {
-        if (!await CanAccessPropertiesStepAsync())
-        {
-            return RedirectToAction(nameof(Portfolio));
-        }
-
-        return View(await BuildImportPortfolioViewModelAsync());
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [RequestSizeLimit(MaxPortfolioImportBytes)]
-    public async Task<IActionResult> ImportPortfolio(IFormFile? portfolioFile)
-    {
-        if (!await CanAccessPropertiesStepAsync())
-        {
-            return RedirectToAction(nameof(Portfolio));
-        }
-
-        if (portfolioFile == null || portfolioFile.Length == 0)
-        {
-            var empty = await BuildImportPortfolioViewModelAsync();
-            empty.FormError = "Please choose a CSV file to import.";
-            return View(empty);
-        }
-
-        if (portfolioFile.Length > MaxPortfolioImportBytes)
-        {
-            var tooLarge = await BuildImportPortfolioViewModelAsync();
-            tooLarge.FormError = "File is too large. Maximum size is 5 MB.";
-            return View(tooLarge);
-        }
-
-        var extension = Path.GetExtension(portfolioFile.FileName).ToLowerInvariant();
-        if (extension is not ".csv" and not ".txt")
-        {
-            var invalidType = await BuildImportPortfolioViewModelAsync();
-            invalidType.FormError = "Please upload a CSV file (.csv).";
-            return View(invalidType);
-        }
-
-        string csvText;
-        using (var reader = new StreamReader(portfolioFile.OpenReadStream(), Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
-        {
-            csvText = await reader.ReadToEndAsync();
-        }
-
-        var rows = ParsePortfolioCsv(csvText);
-        if (rows.Count == 0)
-        {
-            var noRows = await BuildImportPortfolioViewModelAsync();
-            noRows.FormError = "No property rows were found. Use the template and add at least one property.";
-            return View(noRows);
-        }
-
-        var imported = 0;
-        var errors = new List<string>();
-        foreach (var (rowNumber, input) in rows)
-        {
-            var missing = GetMissingPropertyFields(input);
-            if (missing.Count > 0)
-            {
-                errors.Add($"Row {rowNumber}: missing {string.Join(", ", missing)}.");
-                continue;
-            }
-
-            try
-            {
-                await SavePortfolioPropertyAsync(input);
-                imported++;
-            }
-            catch (Exception ex)
-            {
-                errors.Add($"Row {rowNumber}: {ex.Message}");
-            }
-        }
-
-        if (imported == 0)
-        {
-            var failed = await BuildImportPortfolioViewModelAsync();
-            failed.FormError = errors.Count > 0
-                ? string.Join(" ", errors.Take(3))
-                : "No properties could be imported. Check your file and try again.";
-            return View(failed);
-        }
-
-        TempData["PropertyAdminSuccess"] = imported == 1
-            ? "1 property imported successfully."
-            : $"{imported} properties imported successfully.";
-        if (errors.Count > 0)
-        {
-            TempData["PropertyAdminError"] = $"{errors.Count} row(s) were skipped. {errors[0]}";
-        }
-
-        return RedirectToAction(nameof(Properties));
-    }
-
-    [HttpGet]
     public IActionResult DownloadPortfolioTemplate()
     {
         const string csv = """
@@ -712,21 +613,6 @@ public class PropertyAdministratorRegistrationController(
         return !string.IsNullOrWhiteSpace(state.PortfolioType);
     }
 
-    private async Task<PropertyAdministratorImportPortfolioViewModel> BuildImportPortfolioViewModelAsync()
-    {
-        var state = await registration.GetAsync();
-        return new PropertyAdministratorImportPortfolioViewModel
-        {
-            Step = 2,
-            DisplayStep = 3,
-            TotalSteps = 5,
-            Title = "Import portfolio",
-            Subtitle = "Upload a CSV file to add multiple properties at once.",
-            BackUrl = Url.Action(nameof(Properties))!,
-            State = state
-        };
-    }
-
     private async Task<PropertyAdministratorUploadDocumentsViewModel> BuildUploadDocumentsViewModelAsync()
     {
         var state = await registration.GetAsync();
@@ -761,73 +647,6 @@ public class PropertyAdministratorRegistrationController(
         HttpContext.Session.SetString(
             UploadedPropertyDocumentsSessionKey,
             string.Join('\n', files));
-    }
-
-    private static List<(int RowNumber, PropertyAdministratorPropertyInput Input)> ParsePortfolioCsv(string csvText)
-    {
-        var results = new List<(int, PropertyAdministratorPropertyInput)>();
-        var lines = csvText.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-        for (var i = 0; i < lines.Length; i++)
-        {
-            var line = lines[i];
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                continue;
-            }
-
-            var rowNumber = i + 1;
-            var columns = ParseCsvLine(line);
-            if (columns.Count == 0)
-            {
-                continue;
-            }
-
-            if (rowNumber == 1 && columns[0].Equals("HouseNumber", StringComparison.OrdinalIgnoreCase))
-            {
-                continue;
-            }
-
-            var input = new PropertyAdministratorPropertyInput
-            {
-                HouseNumber = GetCsvColumn(columns, 0),
-                StreetName = GetCsvColumn(columns, 1) ?? "",
-                City = GetCsvColumn(columns, 2) ?? "",
-                State = GetCsvColumn(columns, 3) ?? "",
-                ZipCode = GetCsvColumn(columns, 4),
-                PropertyType = NormalizePropertyType(GetCsvColumn(columns, 5) ?? ""),
-                PropertyName = GetCsvColumn(columns, 6) ?? ""
-            };
-
-            if (string.IsNullOrWhiteSpace(input.HouseNumber) &&
-                string.IsNullOrWhiteSpace(input.StreetName) &&
-                string.IsNullOrWhiteSpace(input.City))
-            {
-                continue;
-            }
-
-            results.Add((rowNumber, input));
-        }
-
-        return results;
-    }
-
-    private static List<string> ParseCsvLine(string line) =>
-        line.Split(',').Select(part => part.Trim().Trim('"')).ToList();
-
-    private static string? GetCsvColumn(IReadOnlyList<string> columns, int index) =>
-        index < columns.Count ? columns[index].Trim() : null;
-
-    private static string NormalizePropertyType(string value)
-    {
-        var trimmed = value.Trim();
-        if (PropertyAdministratorCatalog.IsValidPropertyType(trimmed))
-        {
-            return trimmed;
-        }
-
-        var match = PropertyAdministratorCatalog.PropertyTypes
-            .FirstOrDefault(type => type.Label.Equals(trimmed, StringComparison.OrdinalIgnoreCase));
-        return string.IsNullOrWhiteSpace(match.Value) ? trimmed : match.Value;
     }
 
     private static string FormatFileSize(long bytes)
