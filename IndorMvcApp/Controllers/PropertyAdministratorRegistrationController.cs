@@ -183,7 +183,13 @@ public class PropertyAdministratorRegistrationController(
             return RedirectToAction(nameof(Portfolio));
         }
 
-        return View(await BuildPropertiesViewModelAsync());
+        var model = await BuildPropertiesViewModelAsync();
+        if (TempData["PropertyAdminSuccess"] is string success)
+        {
+            model.FormSuccess = success;
+        }
+
+        return View(model);
     }
 
     [HttpPost]
@@ -208,7 +214,7 @@ public class PropertyAdministratorRegistrationController(
             PropertyName = propertyNickname ?? ""
         };
 
-        var missingFields = GetMissingPropertyFields(draft);
+        var missingFields = PropertyAdministratorPortfolioCsvImporter.ValidatePropertyInput(draft);
         if (missingFields.Count > 0)
         {
             var model = await BuildPropertiesViewModelAsync(draft);
@@ -218,7 +224,95 @@ public class PropertyAdministratorRegistrationController(
 
         await SavePortfolioPropertyAsync(draft);
 
-        return RedirectToAction(nameof(Properties));
+        return RedirectAfterPropertyChange("Property saved successfully.");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ImportPortfolio(IFormFile? csvFile)
+    {
+        if (csvFile == null || csvFile.Length == 0)
+        {
+            var emptyModel = await BuildPropertiesViewModelAsync();
+            emptyModel.FormError = "Choose a CSV file to import.";
+            return View(nameof(Properties), emptyModel);
+        }
+
+        if (csvFile.Length > 1024 * 1024)
+        {
+            var largeModel = await BuildPropertiesViewModelAsync();
+            largeModel.FormError = "CSV files must be 1 MB or smaller.";
+            return View(nameof(Properties), largeModel);
+        }
+
+        var extension = Path.GetExtension(csvFile.FileName);
+        if (!string.Equals(extension, ".csv", StringComparison.OrdinalIgnoreCase)
+            && !string.Equals(csvFile.ContentType, "text/csv", StringComparison.OrdinalIgnoreCase))
+        {
+            var typeModel = await BuildPropertiesViewModelAsync();
+            typeModel.FormError = "Upload a .csv file.";
+            return View(nameof(Properties), typeModel);
+        }
+
+        PropertyAdministratorPortfolioImportResult result;
+        await using (var stream = csvFile.OpenReadStream())
+        {
+            result = await registration.ImportPortfolioFromCsvAsync(stream);
+        }
+
+        var model = await BuildPropertiesViewModelAsync();
+        model.ImportErrors = result.Errors;
+        if (result.ImportedCount > 0)
+        {
+            model.FormSuccess = result.ImportedCount == 1
+                ? "1 property imported from CSV."
+                : $"{result.ImportedCount} properties imported from CSV.";
+        }
+
+        if (result.ImportedCount == 0)
+        {
+            model.FormError = result.Errors.FirstOrDefault() ?? "No properties were imported.";
+        }
+        else if (result.Errors.Count > 0)
+        {
+            model.FormSuccess += $" {result.Errors.Count} row(s) were skipped.";
+        }
+
+        return View(nameof(Properties), model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadPropertyDocument(
+        int portfolioPropertyId,
+        IFormFile? documentFile,
+        string? documentTitle)
+    {
+        var model = await BuildPropertiesViewModelAsync();
+        if (!model.CanUploadDocuments)
+        {
+            model.FormError = "Add at least one property before uploading documents.";
+            return View(nameof(Properties), model);
+        }
+
+        if (documentFile == null || documentFile.Length == 0)
+        {
+            model.FormError = "Choose a document to upload.";
+            return View(nameof(Properties), model);
+        }
+
+        try
+        {
+            await registration.UploadPortfolioDocumentAsync(portfolioPropertyId, documentFile, documentTitle);
+            model = await BuildPropertiesViewModelAsync();
+            model.FormSuccess = "Document uploaded successfully.";
+            return View(nameof(Properties), model);
+        }
+        catch (InvalidOperationException ex)
+        {
+            model.FormError = ex.Message;
+            return View(nameof(Properties), model);
+        }
     }
 
     [HttpGet]
@@ -426,7 +520,7 @@ public class PropertyAdministratorRegistrationController(
     public async Task<IActionResult> RemoveProperty(int id)
     {
         await registration.RemovePortfolioPropertyAsync(id);
-        return RedirectToAction(nameof(Properties));
+        return RedirectAfterPropertyChange("Property removed.");
     }
 
     [HttpPost]
@@ -440,6 +534,11 @@ public class PropertyAdministratorRegistrationController(
         string? propertyType,
         string? propertyNickname)
     {
+        if (await IsRegistrationCompleteAsync())
+        {
+            return RedirectToAction("Properties", "Administrador");
+        }
+
         var regState = await registration.GetAsync();
         if (IsPropertyDraftStarted(
                 regState.PrimaryMarket,
@@ -602,6 +701,7 @@ public class PropertyAdministratorRegistrationController(
         await registration.CompleteRegistrationAsync(platformTermsAccepted);
         return RedirectToAction("Dashboard", "Administrador");
     }
+
 
     private const string PendingTeamInvitesSessionKey = "PropertyAdminPendingTeamInvites";
     private const string UploadedPropertyDocumentsSessionKey = "PropertyAdminUploadedDocuments";
@@ -782,21 +882,43 @@ public class PropertyAdministratorRegistrationController(
             string.Join('\n', invites));
     }
 
+    private async Task<bool> IsRegistrationCompleteAsync()
+    {
+        var admin = await registration.GetAdministratorForCurrentUserAsync();
+        return admin != null && registration.IsRegistrationComplete(admin);
+    }
+
+    private IActionResult RedirectAfterPropertyChange(string? successMessage = null)
+    {
+        if (!string.IsNullOrWhiteSpace(successMessage))
+        {
+            TempData["PropertyAdminSuccess"] = successMessage;
+        }
+
+        return RedirectToAction(nameof(Properties));
+    }
+
     private async Task<PropertyAdministratorPropertiesStepViewModel> BuildPropertiesViewModelAsync(
         PropertyAdministratorPropertyInput? draft = null)
     {
         var state = await registration.GetAsync();
         var properties = await registration.GetPortfolioPropertiesAsync();
+        var isComplete = await IsRegistrationCompleteAsync();
+        var doneUrl = Url.Action("Properties", "Administrador") ?? "#";
         return new PropertyAdministratorPropertiesStepViewModel
         {
             DisplayStep = 3,
             TotalSteps = 5,
-            Title = "Add your properties",
-            Subtitle = "Start building your portfolio inside INDOR.",
-            BackUrl = Url.Action(nameof(Portfolio))!,
+            Title = isComplete ? "Add property" : "Add your properties",
+            Subtitle = isComplete
+                ? "Add manually, import a CSV, or upload documents for your portfolio."
+                : "Start building your portfolio inside INDOR.",
+            BackUrl = isComplete ? doneUrl : Url.Action(nameof(Portfolio))!,
             State = state,
             Properties = properties,
-            DraftProperty = draft
+            DraftProperty = draft,
+            IsRegistrationComplete = isComplete,
+            DoneUrl = doneUrl
         };
     }
 

@@ -178,6 +178,7 @@ select.form-control,
 .rl-cp-input select,
 .pa-network-search input,
 .pa-search-bar input,
+.hn-search-bar input,
 .pa-field input,
 .pa-field select {
     border: none !important;
@@ -220,6 +221,8 @@ select:focus {
 .pa-network-search input:focus-visible,
 .pa-search-bar input:focus,
 .pa-search-bar input:focus-visible,
+.hn-search-bar input:focus,
+.hn-search-bar input:focus-visible,
 .pa-field input:focus,
 .pa-field input:focus-visible,
 .pa-field select:focus,

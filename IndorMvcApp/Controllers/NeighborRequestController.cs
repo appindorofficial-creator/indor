@@ -72,13 +72,15 @@ public class NeighborRequestController(
 
         draft = wizardService.LoadDraft(HttpContext.Session);
 
-        return View(await wizardService.BuildCategoryStepAsync(
+        var model = await wizardService.BuildCategoryStepAsync(
             propiedad,
             propiedad.Id,
             draft,
             Url,
             cancellationToken,
-            useDraftFieldValues: resumeDraft));
+            useDraftFieldValues: resumeDraft);
+        await wizardService.ApplyPortalHomeUrlsAsync(model, userId, Url, cancellationToken);
+        return View(model);
     }
 
     [HttpPost]
@@ -113,6 +115,7 @@ public class NeighborRequestController(
             invalidVm.LocationAddress = model.LocationAddress;
             invalidVm.UseHomeAddress = model.UseHomeAddress;
             invalidVm.ResumeDraft = model.ResumeDraft;
+            await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
             return View(invalidVm);
         }
 
@@ -157,9 +160,14 @@ public class NeighborRequestController(
         }
 
         var vm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
-        return vm == null
-            ? RestartWizard(propiedadId)
-            : View(vm);
+        if (vm == null)
+        {
+            return RestartWizard(propiedadId);
+        }
+
+        var userId = userManager.GetUserId(User)!;
+        await wizardService.ApplyPortalHomeUrlsAsync(vm, userId, Url, cancellationToken);
+        return View(vm);
     }
 
     [HttpPost]
@@ -192,6 +200,11 @@ public class NeighborRequestController(
         {
             TempData["NeighborRequestError"] = "We could not publish your job. Please try again.";
             var invalidVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
+            if (invalidVm != null)
+            {
+                await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
+            }
+
             return View(invalidVm);
         }
 
@@ -213,7 +226,10 @@ public class NeighborRequestController(
             return RestartWizard(propiedadId);
         }
 
-        return View(wizardService.BuildPreferencesStep(draft));
+        var userId = userManager.GetUserId(User)!;
+        var prefVm = wizardService.BuildPreferencesStep(draft);
+        await wizardService.ApplyPortalHomeUrlsAsync(prefVm, userId, Url, cancellationToken);
+        return View(prefVm);
     }
 
     [HttpPost]
@@ -341,7 +357,31 @@ public class NeighborRequestController(
         }
 
         var vm = await wizardService.BuildHelpersStepAsync(userId, id, Url, cancellationToken);
-        return vm == null ? RedirectToAction("Index", "Home") : View(vm);
+        if (vm == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        await wizardService.ApplyPortalHomeUrlsAsync(vm, userId, Url, cancellationToken);
+        return View(vm);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BrowseHelpers(int propiedadId, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var vm = await wizardService.BuildBrowseHelpersAsync(userId, propiedadId, Url, cancellationToken);
+        if (vm == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return View(vm);
     }
 
     [HttpGet]

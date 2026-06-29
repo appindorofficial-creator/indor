@@ -250,6 +250,8 @@
 
 .nr-input, .nr-textarea {
     width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
     border: 1px solid #E5E7EB;
     border-radius: 14px;
     padding: 14px;
@@ -258,6 +260,15 @@
 }
 
 .nr-textarea { min-height: 120px; resize: vertical; }
+
+.nr-field--count {
+    min-width: 0;
+}
+
+.nr-field--count .nr-input,
+.nr-field--count .nr-textarea {
+    padding-bottom: 28px;
+}
 
 .nr-char-count {
     text-align: right;
@@ -1178,6 +1189,7 @@
     flex-direction: column;
     gap: 12px;
     padding-bottom: var(--nr-wizard-footer-scroll);
+    min-width: 0;
 }
 
 .nr-step-form .nr-card {
@@ -1205,6 +1217,8 @@
     border-radius: 18px;
     padding: 16px;
     box-shadow: 0 6px 18px rgba(20, 66, 124, .05);
+    min-width: 0;
+    overflow: hidden;
 }
 .nr-card-head {
     display: flex;
@@ -1476,5 +1490,60 @@
 .nr-trust-banner a { margin-left: auto; color: #0066CC; font-weight: 700; white-space: nowrap; }
 .nr-helpers-footnote {
     text-align: center; font-size: .68rem; color: #94A3B8; margin: 8px 0 24px;
+}
+
+.nr-helpers-home-link {
+    text-align: center;
+    margin: 0 0 calc(24px + env(safe-area-inset-bottom, 0));
+}
+
+.nr-helpers-home-link a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0066CC;
+    text-decoration: none;
+}
+
+.nr-browse-helpers-intro {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    background: #F8FAFC;
+    border: 1px solid #E7EEF7;
+}
+
+.nr-browse-helpers-location {
+    margin: 0 0 4px;
+    font-size: .78rem;
+    font-weight: 700;
+    color: #0A2540;
+}
+
+.nr-browse-helpers-radius {
+    margin: 0;
+    font-size: .7rem;
+    color: #64748B;
+}
+
+.nr-helper-card--browse {
+    grid-template-columns: auto 1fr auto;
+}
+
+.nr-browse-helpers-actions {
+    display: grid;
+    gap: 10px;
+    margin: 16px 0 8px;
+}
+
+.nr-browse-helpers-actions .nr-btn-primary,
+.nr-browse-helpers-actions .nr-btn-outline {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    text-decoration: none;
 }
 

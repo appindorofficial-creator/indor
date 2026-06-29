@@ -152,16 +152,36 @@
             </div>
 
             <div class="pa-network-actions">
-                <a asp-controller="Administrador" asp-action="RequestService" class="pa-network-action">
-                    <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
-                    <strong>Post a Request</strong>
-                    <small>Ask your network for help or recommendations</small>
-                </a>
-                <a asp-controller="Administrador" asp-action="Tasks" class="pa-network-action">
-                    <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
-                    <strong>My Requests</strong>
-                    <small>Track &amp; manage your requests and updates</small>
-                </a>
+                @{
+                    var neighborPropiedadId = Model.ViewingProperty?.PropiedadId
+                        ?? Model.Properties.FirstOrDefault(p => p.PropiedadId is > 0)?.PropiedadId;
+                }
+                @if (neighborPropiedadId is > 0)
+                {
+                    <a asp-controller="NeighborRequest" asp-action="Create" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
+                        <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
+                        <strong>Post a Request</strong>
+                        <small>Ask your network for help or recommendations</small>
+                    </a>
+                    <a asp-controller="NeighborRequest" asp-action="Mine" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
+                        <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
+                        <strong>My Requests</strong>
+                        <small>Track &amp; manage your requests and updates</small>
+                    </a>
+                }
+                else
+                {
+                    <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-network-action">
+                        <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
+                        <strong>Post a Request</strong>
+                        <small>Add a property first to post a neighborhood request</small>
+                    </a>
+                    <a asp-controller="Administrador" asp-action="Tasks" class="pa-network-action">
+                        <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
+                        <strong>My Requests</strong>
+                        <small>Track &amp; manage your requests and updates</small>
+                    </a>
+                }
             </div>
 
             <a asp-controller="Administrador" asp-action="EmergencyPlumbingDetails" class="pa-network-emergency">

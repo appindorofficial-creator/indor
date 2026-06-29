@@ -71,11 +71,11 @@ public class RealtorRegistrationController(
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Profile(
-        string brokerageName,
-        string licenseNumber,
-        string licenseState,
-        string serviceAreas,
-        string officeAddress,
+        string? brokerageName,
+        string? licenseNumber,
+        string? licenseState,
+        string? serviceAreas,
+        string? officeAddress,
         string[]? languages,
         bool professionalTermsAccepted)
     {
@@ -106,6 +106,21 @@ public class RealtorRegistrationController(
         if (!RealtorSupportedLanguages.TryNormalize(languagesCsv, out var normalizedLanguages, out var languagesError))
         {
             ModelState.AddModelError(nameof(languages), languagesError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(serviceAreas))
+        {
+            ModelState.AddModelError(nameof(serviceAreas), "City / market area is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(officeAddress))
+        {
+            ModelState.AddModelError(nameof(officeAddress), "Office address is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(languagesCsv))
+        {
+            ModelState.AddModelError(nameof(languages), "Languages is required.");
         }
 
         if (!professionalTermsAccepted)

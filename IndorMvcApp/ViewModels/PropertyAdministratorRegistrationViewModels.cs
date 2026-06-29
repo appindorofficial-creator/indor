@@ -68,6 +68,7 @@ public class PropertyAdministratorPropertyInput
 public class PropertyAdministratorPropertyItemViewModel
 {
     public int Id { get; set; }
+    public int? PropiedadId { get; set; }
     public string PropertyName { get; set; } = "";
     public string Location { get; set; } = "";
     public string PropertyType { get; set; } = "";
@@ -84,6 +85,18 @@ public class PropertyAdministratorPropertiesStepViewModel : PropertyAdministrato
     public IReadOnlyList<PropertyAdministratorPropertyItemViewModel> Properties { get; set; } = [];
     public PropertyAdministratorPropertyInput? DraftProperty { get; set; }
     public string? FormError { get; set; }
+    public string? FormSuccess { get; set; }
+    public IReadOnlyList<string> ImportErrors { get; set; } = [];
+    public bool CanUploadDocuments => Properties.Any(p => p.PropiedadId is > 0);
+    public bool IsRegistrationComplete { get; set; }
+    public string DoneUrl { get; set; } = "#";
+}
+
+public class PropertyAdministratorPortfolioImportResult
+{
+    public int ImportedCount { get; set; }
+    public List<PropertyAdministratorPropertyInput> Properties { get; set; } = [];
+    public List<string> Errors { get; set; } = [];
 }
 
 public class PropertyAdministratorToolsInput

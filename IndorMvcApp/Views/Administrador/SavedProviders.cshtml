@@ -1,0 +1,48 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorSavedProvidersViewModel
+@{
+    ViewData["Title"] = "Saved providers";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--providers">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>Saved providers</h1>
+            <p>Your trusted pros from past service requests. Book them again anytime.</p>
+        </div>
+    </header>
+
+    <section class="pa-personal-section">
+        <h2>Your providers</h2>
+        <div class="pa-personal-list">
+            @foreach (var provider in Model.Providers)
+            {
+                <div class="pa-provider-card">
+                    <span class="pa-provider-avatar"><i class="fas fa-user-check"></i></span>
+                    <div class="pa-provider-copy">
+                        <strong>@provider.Name</strong>
+                        <small>@provider.TradeLabel</small>
+                        <span class="pa-provider-last">Last service: @provider.LastServiceLabel</span>
+                    </div>
+                    <div class="pa-provider-meta">
+                        <span class="pa-provider-rating"><i class="fas fa-star"></i> @provider.RatingLabel</span>
+                        <a href="@provider.RequestUrl" class="pa-provider-request">Request again</a>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="pa-personal-info-card">
+        <div>
+            <strong>Need someone new?</strong>
+            <p>Browse the full service catalog to find more trusted pros for your portfolio.</p>
+        </div>
+        <a href="@Model.BrowseServicesUrl" class="pa-provider-browse" aria-label="Browse services">
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </section>
+</div>

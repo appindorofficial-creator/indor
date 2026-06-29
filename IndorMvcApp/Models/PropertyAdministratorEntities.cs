@@ -372,6 +372,26 @@ public static class PropertyAdministratorCatalog
         !string.IsNullOrWhiteSpace(value) &&
         PropertyTypes.Any(p => p.Value == value);
 
+    public static string? ResolvePropertyType(string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return null;
+        }
+
+        var trimmed = raw.Trim();
+        foreach (var item in PropertyTypes)
+        {
+            if (string.Equals(item.Value, trimmed, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(item.Label, trimmed, StringComparison.OrdinalIgnoreCase))
+            {
+                return item.Value;
+            }
+        }
+
+        return null;
+    }
+
     public static readonly string[] UsStateCodes =
     [
         "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA",

@@ -38,7 +38,8 @@ public class AdministradorController(
     IPropertyAdministratorPestControlService pestControl,
     IPropertyAdministratorPoolHotTubService poolHotTub,
     HomeownerNearbyNetworkService nearbyNetwork,
-    UserManager<ApplicationUser> userManager) : Controller
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager) : Controller
 {
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
@@ -2085,5 +2086,90 @@ public class AdministradorController(
         }
 
         return RedirectToAction(nameof(NotificationPreferences), new { saved = true });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Security(bool? saved, string? error)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetSecurityAsync(Url, saved == true, error));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Security(string currentPassword, string newPassword, string confirmPassword)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        if (string.IsNullOrWhiteSpace(newPassword) || newPassword != confirmPassword)
+        {
+            return View(await portal.GetSecurityAsync(
+                Url,
+                errorMessage: "Passwords do not match.",
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword));
+        }
+
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var result = await userManager.ChangePasswordAsync(user, currentPassword ?? string.Empty, newPassword);
+        if (!result.Succeeded)
+        {
+            var message = string.Join(" ", result.Errors.Select(e => e.Description));
+            return View(await portal.GetSecurityAsync(
+                Url,
+                errorMessage: message,
+                currentPassword: currentPassword,
+                newPassword: newPassword,
+                confirmPassword: confirmPassword));
+        }
+
+        await signInManager.SignInAsync(user, isPersistent: true);
+        return RedirectToAction(nameof(Security), new { saved = true });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> PaymentsBilling()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetPaymentsBillingAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> SavedProviders()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetSavedProvidersAsync(Url));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> HelpSupport()
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        return View(await portal.GetHelpSupportAsync(Url));
     }
 }

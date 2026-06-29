@@ -1,5 +1,6 @@
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
+using Microsoft.AspNetCore.Http;
 
 namespace IndorMvcApp.Services;
 
@@ -11,6 +12,8 @@ public interface IPropertyAdministratorRegistrationService
     Task SavePortfolioAsync(PropertyAdministratorPortfolioInput input, CancellationToken cancellationToken = default);
     Task<IReadOnlyList<PropertyAdministratorPropertyItemViewModel>> GetPortfolioPropertiesAsync(CancellationToken cancellationToken = default);
     Task AddPortfolioPropertyAsync(PropertyAdministratorPropertyInput input, CancellationToken cancellationToken = default);
+    Task<PropertyAdministratorPortfolioImportResult> ImportPortfolioFromCsvAsync(Stream csvStream, CancellationToken cancellationToken = default);
+    Task UploadPortfolioDocumentAsync(int portfolioPropertyId, IFormFile file, string? title, CancellationToken cancellationToken = default);
     Task RemovePortfolioPropertyAsync(int propertyId, CancellationToken cancellationToken = default);
     Task AdvanceFromPropertiesAsync(CancellationToken cancellationToken = default);
     Task SaveToolsAsync(PropertyAdministratorToolsInput input, CancellationToken cancellationToken = default);

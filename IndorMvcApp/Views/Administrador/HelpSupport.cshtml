@@ -1,0 +1,65 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorHelpSupportViewModel
+@{
+    ViewData["Title"] = "Help & support";
+    Layout = "_PropertyAdminLayout";
+}
+
+<div class="pa-portal-shell pa-portal-shell--help">
+    <header class="pa-personal-header">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div class="pa-personal-header-text">
+            <h1>Help &amp; support</h1>
+            <p>Get answers, contact our team, and learn how to get the most from INDOR.</p>
+        </div>
+    </header>
+
+    <section class="pa-personal-section">
+        <h2>Common topics</h2>
+        <div class="pa-personal-list">
+            @foreach (var topic in Model.Topics)
+            {
+                <div class="pa-help-topic">
+                    <span class="pa-personal-row-icon"><i class="fas @topic.IconClass"></i></span>
+                    <div>
+                        <strong>@topic.Title</strong>
+                        <small>@topic.Description</small>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="pa-personal-section">
+        <h2>Contact us</h2>
+        <div class="pa-personal-list">
+            <a href="mailto:@Model.SupportEmail" class="pa-personal-row">
+                <span class="pa-personal-row-icon"><i class="fas fa-envelope"></i></span>
+                <span class="pa-personal-row-label">Email support</span>
+                <span class="pa-personal-row-value is-link">@Model.SupportEmail</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="tel:@Model.SupportPhone.Replace("-", "")" class="pa-personal-row">
+                <span class="pa-personal-row-icon"><i class="fas fa-phone"></i></span>
+                <span class="pa-personal-row-label">Phone support</span>
+                <span class="pa-personal-row-value is-link">@Model.SupportPhone</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a asp-controller="Administrador" asp-action="Services" class="pa-personal-row">
+                <span class="pa-personal-row-icon"><i class="fas fa-headset"></i></span>
+                <span class="pa-personal-row-label">Emergency services</span>
+                <span class="pa-personal-row-value is-link">24/7 help</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </div>
+    </section>
+
+    <section class="pa-personal-info-card">
+        <div>
+            <strong>Privacy &amp; terms</strong>
+            <p>Learn how we protect your data in our <a href="@Model.PrivacyPolicyUrl">Privacy Policy</a>.</p>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </section>
+</div>

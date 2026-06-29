@@ -252,3 +252,66 @@ public class PropertyAdministratorNotificationPreferencesViewModel : PropertyAdm
     public string QuietHoursEnd { get; set; } = "07:00";
     public string QuietHoursLabel { get; set; } = "10:00 PM - 7:00 AM";
 }
+
+public class PropertyAdministratorSecurityViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public string PrivacyPolicyUrl { get; set; } = "#";
+    public bool PasswordChanged { get; set; }
+    public string? ErrorMessage { get; set; }
+    public string CurrentPassword { get; set; } = string.Empty;
+    public string NewPassword { get; set; } = string.Empty;
+    public string ConfirmPassword { get; set; } = string.Empty;
+}
+
+public class PropertyAdministratorBillingInvoiceViewModel
+{
+    public string Title { get; set; } = "";
+    public string PropertyName { get; set; } = "";
+    public string DateLabel { get; set; } = "";
+    public string AmountLabel { get; set; } = "";
+    public string StatusLabel { get; set; } = "";
+    public string StatusCss { get; set; } = "pending";
+}
+
+public class PropertyAdministratorPaymentsBillingViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public string PaymentMethodLabel { get; set; } = "Visa ending in 4242";
+    public string PaymentMethodExpiry { get; set; } = "Expires 08/28";
+    public string OutstandingLabel { get; set; } = "$0.00";
+    public string PaidThisMonthLabel { get; set; } = "$0.00";
+    public IReadOnlyList<PropertyAdministratorBillingInvoiceViewModel> Invoices { get; set; } = [];
+}
+
+public class PropertyAdministratorSavedProviderViewModel
+{
+    public string Name { get; set; } = "";
+    public string TradeLabel { get; set; } = "";
+    public string RatingLabel { get; set; } = "";
+    public string LastServiceLabel { get; set; } = "";
+    public string RequestUrl { get; set; } = "#";
+}
+
+public class PropertyAdministratorSavedProvidersViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public string BrowseServicesUrl { get; set; } = "#";
+    public IReadOnlyList<PropertyAdministratorSavedProviderViewModel> Providers { get; set; } = [];
+}
+
+public class PropertyAdministratorHelpTopicViewModel
+{
+    public string Title { get; set; } = "";
+    public string Description { get; set; } = "";
+    public string IconClass { get; set; } = "fa-circle-question";
+}
+
+public class PropertyAdministratorHelpSupportViewModel : PropertyAdministratorPortalShellViewModel
+{
+    public string BackUrl { get; set; } = "#";
+    public string PrivacyPolicyUrl { get; set; } = "#";
+    public string SupportEmail { get; set; } = "support@indor.com";
+    public string SupportPhone { get; set; } = "1-800-555-INDOR";
+    public IReadOnlyList<PropertyAdministratorHelpTopicViewModel> Topics { get; set; } = [];
+}
