@@ -7,14 +7,14 @@
 }
 <div class="hf-title-row">
     <h1 class="hf-title">Documents</h1>
-    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">+ Upload document</a>
+    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">+ Upload document</a>
 </div>
-<form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" style="margin-bottom:14px;">
+<form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" style="margin-bottom:14px;">
     <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="Search documents" style="margin:0;" />
 </form>
 @foreach (var cat in Model.Categories)
 {
-    <a asp-action="DocumentList" asp-route-id="@Model.PropiedadId" asp-route-category="@cat.Category" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
+    <a asp-action="DocumentList" asp-route-id="@Model.PropiedadId" asp-route-category="@cat.Category" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
         <i class="fas fa-folder icon"></i>
         <div class="meta">
             <div class="value">@cat.Category</div>

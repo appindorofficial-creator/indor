@@ -4,8 +4,8 @@
         <i class="fas fa-house"></i> INDOR
     </a>
     <div class="rl-portal-topbar-actions">
-        <button type="button" class="rl-portal-icon-btn @(Model.HasNotifications ? "has-dot" : "")" aria-label="Notifications">
+        <a asp-controller="Realtor" asp-action="Profile" class="rl-portal-icon-btn @(Model.HasNotifications ? "has-dot" : "")" aria-label="Profile and notifications">
             <i class="fas fa-bell"></i>
-        </button>
+        </a>
     </div>
 </header>

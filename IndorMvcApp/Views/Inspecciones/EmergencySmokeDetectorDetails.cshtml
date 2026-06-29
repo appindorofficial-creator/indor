@@ -2,16 +2,12 @@
 @{
     ViewData["Title"] = "Smoke & CO Details - INDOR";
     ViewData["WizardTitle"] = "Smoke & CO Details";
-    ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
+    ViewData["WizardBackUrl"] = HomeNavigationUrls.ServicesTab(Url, "emergency-services");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<a asp-controller="Home" asp-action="Index" class="back-btn"><i class="fas fa-arrow-left"></i></a>
-    <strong style="display:block;margin-bottom:4px;">Smoke &amp; CO Details</strong>
-
-    
 <h2 class="page-heading">Tell us what's happening</h2>
     <p class="page-lead">Quick answers help us send the right support faster.</p>
 

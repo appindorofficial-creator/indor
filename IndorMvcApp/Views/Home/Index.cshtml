@@ -973,12 +973,22 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
+        function buildSectionHash(target) {
+            const params = new URLSearchParams(window.location.search);
+            const base = window.location.pathname;
+            const qs = params.toString();
+            if (target === 'section-home' && qs) {
+                return base + '?' + qs + '#' + target;
+            }
+            return '#' + target;
+        }
+
         // === Bottom nav ===
         document.querySelectorAll('.bottom-nav .nav-item[data-target]').forEach(btn => {
             btn.addEventListener('click', () => {
                 activateSection(btn.dataset.target);
                 if (btn.dataset.target?.startsWith('section-')) {
-                    history.replaceState(null, '', '#' + btn.dataset.target);
+                    history.replaceState(null, '', buildSectionHash(btn.dataset.target));
                 }
             });
         });
@@ -1144,7 +1154,7 @@
                 const target = el.dataset.target;
                 activateSection(target, el.dataset.scrollTarget || null);
                 if (target === 'section-mydashboard' || target === 'section-home') {
-                    history.replaceState(null, '', '#' + target);
+                    history.replaceState(null, '', buildSectionHash(target));
                 }
             });
         });

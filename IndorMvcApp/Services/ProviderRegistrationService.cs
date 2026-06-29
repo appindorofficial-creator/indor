@@ -834,13 +834,14 @@ public class ProviderRegistrationService(
     public async Task RegisterDocumentUploadAsync(
         string documentType,
         string relativeUrl,
+        int? proveedorId = null,
         CancellationToken cancellationToken = default)
     {
-        var proveedorId = await EnsureDraftAsync(cancellationToken);
+        var resolvedProveedorId = proveedorId ?? await EnsureDraftAsync(cancellationToken);
         await EnsureDocumentSlotsAsync(cancellationToken);
 
         var doc = await db.IndorProveedorDocumentos.FirstOrDefaultAsync(
-            d => d.ProveedorId == proveedorId &&
+            d => d.ProveedorId == resolvedProveedorId &&
                  d.DocumentType == documentType,
             cancellationToken);
 
@@ -848,7 +849,7 @@ public class ProviderRegistrationService(
         {
             doc = new IndorProveedorDocumento
             {
-                ProveedorId = proveedorId,
+                ProveedorId = resolvedProveedorId,
                 DocumentType = documentType,
             };
             db.IndorProveedorDocumentos.Add(doc);
@@ -860,7 +861,7 @@ public class ProviderRegistrationService(
 
         if (documentType.Equals(ProviderDocumentTypes.Logo, StringComparison.OrdinalIgnoreCase))
         {
-            var entity = await db.IndorProveedores.FirstAsync(p => p.Id == proveedorId, cancellationToken);
+            var entity = await db.IndorProveedores.FirstAsync(p => p.Id == resolvedProveedorId, cancellationToken);
             entity.LogoUploaded = true;
             entity.FechaActualizacion = DateTime.UtcNow;
         }

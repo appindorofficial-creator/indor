@@ -1,0 +1,80 @@
+@model IndorMvcApp.ViewModels.ProviderProExportReportViewModel
+@{
+    ViewData["Title"] = "Review Export Report - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "export-report.css";
+    var d = Model.Draft;
+    string Dash(string? v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
+    var dateLabel = DateTime.TryParse(d.ReportDate, out var dt) ? dt.ToString("MMM d, yyyy") : Dash(d.ReportDate);
+    var rows = new (string icon, string label, string value, bool pill)[] {
+        ("fa-file-lines", "Report Type", "Export Report", false),
+        ("fa-calendar", "Report Name", Dash(d.ReportName), false),
+        ("fa-building", "Job", Model.Job.Title, false),
+        ("fa-location-dot", "Property", Model.Job.Address, false),
+        ("fa-user", "Prepared By", Dash(d.PreparedBy), false),
+        ("fa-calendar", "Date", dateLabel, false),
+        ("fa-tag", "Category", Dash(d.Category), false),
+        ("fa-location-dot", "Location", Dash(d.Location), false),
+        ("fa-flag", "Priority", Dash(d.Priority), true),
+        ("fa-image", "Photos Added", d.Photos.Count.ToString(), false)
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--export">
+    @await Html.PartialAsync("_ExportReportHead")
+
+    <section class="exr-head">
+        <h1>Review Export Report</h1>
+        <p>Review the report before saving or sending it.</p>
+    </section>
+
+    <div class="exr-progress">
+        <span class="exr-step">Step 3 of 3</span>
+        <span class="exr-bar"><span class="exr-bar-fill" style="width:100%"></span></span>
+    </div>
+
+    <section class="exr-card">
+        <div class="exr-review">
+            @foreach (var (icon, label, value, pill) in rows)
+            {
+                <div class="exr-review-row">
+                    <span class="exr-review-ico"><i class="fas @icon"></i></span>
+                    <span class="exr-review-label">@label</span>
+                    @if (pill && value != "—")
+                    {
+                        <span class="exr-pill exr-pill--medium">@value</span>
+                    }
+                    else
+                    {
+                        <span class="exr-review-value">@value</span>
+                    }
+                </div>
+            }
+        </div>
+    </section>
+
+    @if (d.Photos.Count > 0)
+    {
+        <section class="exr-card">
+            <h2 class="exr-card-title">Photos</h2>
+            <div class="exr-photos-grid">
+                @foreach (var p in d.Photos)
+                {
+                    <div class="exr-photo"><img src="@p.Url" alt="" /></div>
+                }
+            </div>
+        </section>
+    }
+
+    <form method="post" asp-controller="Proveedor" asp-action="ExportReportComplete" class="exr-actions">
+        @Html.AntiForgeryToken()
+        <div class="exr-card exr-card--notes">
+            <h2 class="exr-card-title">Notes</h2>
+            <textarea class="exr-textarea" name="notes" rows="2" placeholder="Add a closing note...">@d.Notes</textarea>
+        </div>
+        <button type="submit" name="mode" value="save" class="exr-btn exr-btn--primary">Save Report</button>
+        <button type="submit" name="mode" value="send" class="exr-btn exr-btn--outline">Send Report</button>
+        <a asp-controller="Proveedor" asp-action="ExportReportDetails" class="exr-btn-text">Back</a>
+    </form>
+</div>

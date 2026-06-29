@@ -3,9 +3,10 @@
     ViewData["Title"] = "Post Quick Job";
 }
 
-<form asp-action="Category" method="post" class="nr-step-form" id="nrStep1Form">
+<form asp-action="Category" method="post" class="nr-step-form" id="nrStep1Form" autocomplete="off">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
+    <input type="hidden" asp-for="ResumeDraft" />
 
     <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
 
@@ -67,7 +68,7 @@
             <h2>Job title</h2>
         </header>
         <div class="nr-field nr-field--count">
-            <input asp-for="Title" class="nr-input" placeholder="Need help moving a sofa" maxlength="60" />
+            <input asp-for="Title" class="nr-input" placeholder="Need help moving a sofa" maxlength="60" autocomplete="off" />
             <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             <span asp-validation-for="Title" class="field-validation-error"></span>
         </div>
@@ -79,7 +80,7 @@
             <h2>Describe the job</h2>
         </header>
         <div class="nr-field nr-field--count">
-            <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="Share timing, scope, or anything helpful for helpers."></textarea>
+            <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="Share timing, scope, or anything helpful for helpers." autocomplete="off"></textarea>
             <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
         </div>
     </section>

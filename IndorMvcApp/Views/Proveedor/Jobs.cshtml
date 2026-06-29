@@ -44,7 +44,7 @@
     <header class="prv-pro-jobs-head">
         <h1>Jobs</h1>
         <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
-        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-jobs-create-btn">
+        <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn">
             <i class="fas fa-plus"></i> Create Job
         </a>
     </header>
@@ -82,7 +82,13 @@
 
     <div class="prv-pro-jobs-list-head">
         <h2>@listTitle</h2>
-        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@Model.ActiveTab">View all <i class="fas fa-chevron-right"></i></a>
+        @if (Model.ActiveTab == "today")
+        {
+            <a asp-controller="Proveedor" asp-action="DaySchedule"
+               asp-route-date="@DateTime.Today.ToString("yyyy-MM-dd")"
+               asp-route-from="jobs"
+               class="prv-pro-jobs-list-schedule-link">View schedule <i class="fas fa-chevron-right"></i></a>
+        }
     </div>
     <div class="prv-pro-jobs-info">
         <i class="fas fa-circle-info"></i>
@@ -256,5 +262,4 @@
         </section>
     }
 
-    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-fab prv-pro-fab--home" aria-label="Create job"><i class="fas fa-plus"></i></a>
 </div>

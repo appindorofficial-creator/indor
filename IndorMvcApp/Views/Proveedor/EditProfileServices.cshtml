@@ -1,0 +1,56 @@
+@model IndorMvcApp.ViewModels.ProviderProEditProfileServicesViewModel
+@{
+    ViewData["Title"] = "Edit Services - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--edit-profile">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Services Offered</h1>
+            <p>Select the categories and services your business provides.</p>
+        </div>
+    </header>
+
+    @if (TempData["ProfileSectionError"] is string sectionError)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
+            <i class="fas fa-circle-exclamation"></i> @sectionError
+        </div>
+    }
+
+    <form asp-controller="Proveedor" asp-action="EditProfileServices" method="post" class="prv-pro-edit-profile-form" novalidate>
+        @Html.AntiForgeryToken()
+
+        <section class="prv-pro-wizard-card">
+            <h2>What services do you offer?</h2>
+            <p>Select at least one category or service. These appear on your public profile.</p>
+            <div class="prv-pro-profile-tags prv-pro-edit-profile-service-grid">
+                @foreach (var option in Model.Options)
+                {
+                    <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")">
+                        <input type="checkbox" name="serviceIds" value="@option.Id" @(option.IsSelected ? "checked" : "") />
+                        <i class="fas @option.IconClass"></i>
+                        <span>@option.Label</span>
+                        @if (option.IsCategory)
+                        {
+                            <small>Category</small>
+                        }
+                    </label>
+                }
+            </div>
+        </section>
+
+        <footer class="prv-pro-edit-profile-actions">
+            <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
+                <i class="fas fa-floppy-disk"></i> Save services
+            </button>
+        </footer>
+    </form>
+</div>

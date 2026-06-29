@@ -1,0 +1,74 @@
+@model IndorMvcApp.ViewModels.InsuranceSubmittedViewModel
+@{
+    ViewData["Title"] = "You're All Set - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    ViewData["ProviderProExtraCss"] = "insurance-quote.css";
+
+    var benefits = IndorMvcApp.ViewModels.InsuranceCatalog.BenefitsFor(Model.Plan);
+    var nextSteps = new (string Icon, string Text)[]
+    {
+        ("fa-credit-card", "Payment received"),
+        ("fa-user-shield", "Insurance partner reviews your request"),
+        ("fa-shield-halved", "Carrier confirms approval"),
+        ("fa-file-lines", "Policy and COI become available in INDOR")
+    };
+}
+
+<div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
+    <header class="ins-hd ins-hd--center">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-hd-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <span class="ins-done-badge" aria-hidden="true"><i class="fas fa-check"></i></span>
+        <div class="ins-hd-text">
+            <h1>You're All Set</h1>
+            <p>Your payment was received and your insurance request has been submitted.</p>
+        </div>
+    </header>
+
+    @await Html.PartialAsync("_InsuranceStepper", 6)
+
+    <div class="ins-fc ins-success">
+        <span class="ins-status-badge ins-status-badge--corner">@Model.Status</span>
+        <img src="~/images/insurance/ins-success-cert.png" alt="" class="ins-success-img" asp-append-version="true" />
+        <div class="ins-success-body">
+            <h2>@Model.PlanDisplayName</h2>
+            <span class="ins-success-cov"><i class="fas fa-shield-halved"></i> @Model.Coverage</span>
+            <div class="ins-success-price">
+                <div><small>Paid today</small><strong>$@Model.PaidToday.ToString("0")</strong></div>
+                <div><small>Monthly plan</small><strong>$@Model.MonthlyPlan.ToString("0")<span>/month</span></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ins-fc">
+        <h3 class="ins-rv-title">What happens next</h3>
+        <ol class="ins-next">
+            @for (var i = 0; i < nextSteps.Length; i++)
+            {
+                <li>
+                    <span class="ins-next-n">@(i + 1)</span>
+                    <span class="ins-next-ic"><i class="fas @nextSteps[i].Icon"></i></span>
+                    <span class="ins-next-tx">@nextSteps[i].Text</span>
+                </li>
+            }
+        </ol>
+    </div>
+
+    <div class="ins-fc">
+        <h3 class="ins-rv-title">With INDOR @Model.Plan, you get</h3>
+        <div class="ins-benefits">
+            @foreach (var b in benefits)
+            {
+                <div class="ins-benefit">
+                    <span class="ins-benefit-ic"><i class="fas @b.Icon"></i></span>
+                    <span class="ins-benefit-tx">@b.Title</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="ins-success-actions">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--block">View Insurance Status</a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--ghost ins-cta--block">Back to Home</a>
+    </div>
+</div>

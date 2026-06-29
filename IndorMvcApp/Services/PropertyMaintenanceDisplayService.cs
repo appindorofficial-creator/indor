@@ -58,7 +58,10 @@ public static class PropertyMaintenanceDisplayService
     public static PropertyMaintenanceSectionViewModel BuildSection(
         PropertyMaintenancePlanViewModel? plan,
         bool compact = false,
-        int? maxItems = null)
+        int? maxItems = null,
+        IReadOnlyList<HomeCarePriority>? homeCarePriorities = null,
+        IUrlHelper? url = null,
+        int? propiedadId = null)
     {
         if (!IsRealAiPlan(plan))
         {
@@ -101,7 +104,7 @@ public static class PropertyMaintenanceDisplayService
             DataSource = plan.DataSource,
             IsAiGenerated = true,
             IsUnavailable = false,
-            Items = items.Select(NormalizeItemIcon).ToList(),
+            Items = items.Select(i => EnrichItem(i, homeCarePriorities, url, propiedadId)).ToList(),
             UrgentCount = plan.Items.Count(i => i.Priority == "Urgent"),
             HighCount = plan.Items.Count(i => i.Priority == "High"),
             ShowAlerts = plan.Items.Any(i => i.Priority is "Urgent" or "High")
@@ -111,7 +114,8 @@ public static class PropertyMaintenanceDisplayService
     public static List<HomeTodayTaskViewModel> BuildAlertTasks(
         PropertyMaintenancePlanViewModel? plan,
         int propiedadId,
-        IUrlHelper url)
+        IUrlHelper url,
+        IReadOnlyList<HomeCarePriority>? homeCarePriorities = null)
     {
         if (!IsRealAiPlan(plan)) return [];
 
@@ -120,13 +124,32 @@ public static class PropertyMaintenanceDisplayService
             .OrderBy(i => PriorityWeight(i.Priority))
             .ThenBy(i => i.SortOrder)
             .Take(3)
-            .Select(i => new HomeTodayTaskViewModel
+            .Select(i =>
             {
-                Icon = PropertyMaintenanceIconResolver.ToCssClass(i.Icon, i.Category, i.Title),
-                Title = i.Title,
-                Subtitle = string.IsNullOrWhiteSpace(i.Frequency) ? i.Description : $"{i.Frequency} · {i.Category}",
-                Badge = i.Priority == "Urgent" ? "AI · Urgent" : "AI · Recommended",
-                Url = $"{url.Action("Index", "Home")}#hd-maintenance-alerts"
+                var taskUrl = $"{url.Action("Index", "Home")}#hd-maintenance-alerts";
+                if (homeCarePriorities is { Count: > 0 })
+                {
+                    var (scheduleUrl, _) = PropertyMaintenanceBookingLinkResolver.Resolve(
+                        i.Title,
+                        i.Category,
+                        homeCarePriorities,
+                        url,
+                        propiedadId);
+                    if (!string.IsNullOrWhiteSpace(scheduleUrl))
+                    {
+                        taskUrl = scheduleUrl;
+                    }
+                }
+
+                return new HomeTodayTaskViewModel
+                {
+                    Icon = PropertyMaintenanceIconResolver.ToCssClass(i.Icon, i.Category, i.Title),
+                    Category = i.Category,
+                    Title = i.Title,
+                    Subtitle = string.IsNullOrWhiteSpace(i.Frequency) ? i.Description : $"{i.Frequency} · {i.Category}",
+                    Badge = i.Priority == "Urgent" ? "AI · Urgent" : "AI · Recommended",
+                    Url = taskUrl
+                };
             })
             .ToList();
     }
@@ -137,6 +160,28 @@ public static class PropertyMaintenanceDisplayService
         "High" => 1,
         _ => 2
     };
+
+    private static PropertyMaintenanceItemViewModel EnrichItem(
+        PropertyMaintenanceItemViewModel item,
+        IReadOnlyList<HomeCarePriority>? homeCarePriorities,
+        IUrlHelper? url,
+        int? propiedadId)
+    {
+        var enriched = NormalizeItemIcon(item);
+        if (homeCarePriorities is { Count: > 0 } && url != null)
+        {
+            var (scheduleUrl, actionLabel) = PropertyMaintenanceBookingLinkResolver.Resolve(
+                item.Title,
+                item.Category,
+                homeCarePriorities,
+                url,
+                propiedadId);
+            enriched.ScheduleUrl = scheduleUrl;
+            enriched.ScheduleActionLabel = actionLabel;
+        }
+
+        return enriched;
+    }
 
     private static PropertyMaintenanceItemViewModel NormalizeItemIcon(PropertyMaintenanceItemViewModel item) =>
         new()

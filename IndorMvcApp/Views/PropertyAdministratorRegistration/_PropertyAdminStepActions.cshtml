@@ -2,7 +2,7 @@
     var formId = ViewData["StepFormId"] as string ?? "paStepForm";
     var backUrl = ViewData["StepBackUrl"] as string;
     var submitLabel = ViewData["StepSubmitLabel"] as string ?? "Next";
-    var submitFormNoValidate = ViewData["StepSubmitFormNoValidate"] as bool? == true;
+    var submitFormNoValidate = ViewData["StepSubmitFormNoValidate"] as bool? ?? true;
 }
 <div class="pa-reg-actions">
     @if (!string.IsNullOrWhiteSpace(backUrl))

@@ -1,10 +1,11 @@
+@using IndorMvcApp.Helpers
 @{
     var step = ViewData["WizardStep"] as int?;
     var totalSteps = ViewData["WizardTotalSteps"] as int? ?? 3;
     var title = ViewData["WizardTitle"] as string ?? "Service";
-    var backUrl = ViewData["WizardBackUrl"] as string;
+    var backUrl = HomeNavigationUrls.NormalizeWizardBackUrl(ViewData["WizardBackUrl"] as string);
     var showClose = ViewData["WizardShowClose"] as bool? ?? false;
-    var closeUrl = ViewData["WizardCloseUrl"] as string ?? "/Home/Index";
+    var closeUrl = HomeNavigationUrls.NormalizeWizardBackUrl(ViewData["WizardCloseUrl"] as string ?? "/Home/Index");
 }
 
 @if (step is > 0)

@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using System.Text.RegularExpressions;
 
 namespace IndorMvcApp.Controllers;
 
@@ -16,7 +15,6 @@ public class RealtorInviteClientController(
     IRealtorRegistrationService registration,
     UserManager<ApplicationUser> userManager) : Controller
 {
-    private static readonly Regex UsZipRegex = new(@"^\d{5}(-\d{4})?$", RegexOptions.Compiled);
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -70,18 +68,18 @@ public class RealtorInviteClientController(
     public async Task<IActionResult> ClientInfo(
         string fullName, string email, string? phone, string clientRole, string? quickNote)
     {
-        if (string.IsNullOrWhiteSpace(fullName))
+        if (!PersonNameAttribute.IsValidName(fullName, out var nameError))
         {
-            ModelState.AddModelError(nameof(fullName), "Full name is required.");
+            ModelState.AddModelError(nameof(fullName), nameError!);
         }
 
         if (string.IsNullOrWhiteSpace(email))
         {
             ModelState.AddModelError(nameof(email), "Email address is required.");
         }
-        else if (!new System.ComponentModel.DataAnnotations.EmailAddressAttribute().IsValid(email.Trim()))
+        else if (!ValidEmailAttribute.IsValidAddress(email, out var emailError))
         {
-            ModelState.AddModelError(nameof(email), "Please enter a valid email address.");
+            ModelState.AddModelError(nameof(email), emailError!);
         }
 
         if (!RealtorClientRoles.All.Contains(clientRole ?? "", StringComparer.OrdinalIgnoreCase))
@@ -89,9 +87,9 @@ public class RealtorInviteClientController(
             ModelState.AddModelError(nameof(clientRole), "Please select a client role.");
         }
 
-        if (!UsPhoneOptionalAttribute.IsValidOptional(phone))
+        if (!UsPhoneRequiredAttribute.IsValidRequired(phone, out var phoneError))
         {
-            ModelState.AddModelError(nameof(phone), "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+            ModelState.AddModelError(nameof(phone), phoneError!);
         }
 
         if (!ModelState.IsValid)
@@ -129,8 +127,13 @@ public class RealtorInviteClientController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Property(int? propertyFileId)
+    public async Task<IActionResult> Property(int? propertyFileId, string? q)
     {
+        if (propertyFileId is not > 0 && !string.IsNullOrWhiteSpace(q))
+        {
+            return RedirectToAction(nameof(CreateProperty), new { address = q.Trim() });
+        }
+
         try
         {
             await inviteService.SavePropertyAsync(propertyFileId);
@@ -138,13 +141,13 @@ public class RealtorInviteClientController(
         }
         catch
         {
-            ModelState.AddModelError(string.Empty, "Please select a property.");
-            return View(await inviteService.BuildPropertyAsync(null));
+            ModelState.AddModelError(string.Empty, "Please select a property or create a new one.");
+            return View(await inviteService.BuildPropertyAsync(q));
         }
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateProperty(bool edit = false)
+    public async Task<IActionResult> CreateProperty(bool edit = false, string? address = null)
     {
         var draft = await inviteService.GetDraftAsync();
         if (draft == null || draft.CurrentStep < 2)
@@ -157,7 +160,7 @@ public class RealtorInviteClientController(
             return RedirectToAction(inviteService.ResolveResumeAction(draft.CurrentStep));
         }
 
-        return View(await inviteService.BuildCreatePropertyAsync());
+        return View(await inviteService.BuildCreatePropertyAsync(address));
     }
 
     [HttpPost]
@@ -179,13 +182,9 @@ public class RealtorInviteClientController(
             ModelState.AddModelError(nameof(model.StateCode), "State is required.");
         }
 
-        if (string.IsNullOrWhiteSpace(model.PostalCode))
+        if (!UsZipCodeAttribute.IsValidRequired(model.PostalCode, out var zipError))
         {
-            ModelState.AddModelError(nameof(model.PostalCode), "ZIP code is required.");
-        }
-        else if (!UsZipRegex.IsMatch(model.PostalCode.Trim()))
-        {
-            ModelState.AddModelError(nameof(model.PostalCode), "Enter a valid ZIP code.");
+            ModelState.AddModelError(nameof(model.PostalCode), zipError!);
         }
 
         if (ModelState.IsValid)
@@ -193,6 +192,11 @@ public class RealtorInviteClientController(
             try
             {
                 await inviteService.CreatePropertyAsync(model);
+                if (model.SelectForClient)
+                {
+                    return RedirectToAction(nameof(Access));
+                }
+
                 return RedirectToAction(nameof(Property));
             }
             catch (Exception ex)
@@ -202,7 +206,7 @@ public class RealtorInviteClientController(
             }
         }
 
-        var invalidVm = await inviteService.BuildCreatePropertyAsync();
+        var invalidVm = await inviteService.BuildCreatePropertyAsync(model.Address);
         invalidVm.Address = model.Address ?? "";
         invalidVm.Unit = model.Unit ?? "";
         invalidVm.City = model.City ?? "";
@@ -245,6 +249,28 @@ public class RealtorInviteClientController(
                 "Hi! I'd like to invite you to view project details and stay updated in INDOR. Let me know if you have any questions.";
         }
 
+        if (!RealtorInviteClientService.HasAnyAccessPermission(model))
+        {
+            ModelState.AddModelError(string.Empty, "Select at least one access permission.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.CollaborationLevel) ||
+            !RealtorCollaborationLevels.Options.Any(o =>
+                string.Equals(o.Value, model.CollaborationLevel, StringComparison.OrdinalIgnoreCase)))
+        {
+            ModelState.AddModelError(nameof(model.CollaborationLevel), "Select a collaboration level.");
+        }
+
+        if (!model.DeliveryEmail && !model.DeliveryText)
+        {
+            ModelState.AddModelError(string.Empty, "Select at least one invitation delivery method (email or text).");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
         await inviteService.SaveAccessAsync(model);
         return RedirectToAction(nameof(Review));
     }
@@ -265,6 +291,36 @@ public class RealtorInviteClientController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Send(bool sendReminder48h = true)
     {
+        var draft = await inviteService.GetDraftAsync();
+        if (draft == null)
+        {
+            return RedirectToAction(nameof(ClientInfo));
+        }
+
+        if (!PersonNameAttribute.IsValidName(draft.FullName, out var nameError))
+        {
+            ModelState.AddModelError(string.Empty, nameError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(draft.Email))
+        {
+            ModelState.AddModelError(string.Empty, "Email address is required.");
+        }
+        else if (!ValidEmailAttribute.IsValidAddress(draft.Email, out var emailError))
+        {
+            ModelState.AddModelError(string.Empty, emailError!);
+        }
+
+        if (!UsPhoneRequiredAttribute.IsValidRequired(draft.Phone, out var phoneError))
+        {
+            ModelState.AddModelError(string.Empty, phoneError!);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(nameof(Review), await inviteService.BuildReviewAsync());
+        }
+
         var invitationId = await inviteService.SendInvitationAsync(sendReminder48h);
         return RedirectToAction(nameof(Success), new { id = invitationId });
     }

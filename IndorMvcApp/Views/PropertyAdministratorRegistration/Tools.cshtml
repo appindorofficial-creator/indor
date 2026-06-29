@@ -98,10 +98,13 @@
 
 @section Scripts {
 <script>
-    document.querySelectorAll('.pa-tool-card input[type="checkbox"]').forEach(input => {
-        input.addEventListener('change', () => {
-            input.closest('.pa-tool-card')?.classList.toggle('is-selected', input.checked);
-        });
+    document.querySelectorAll('.pa-tool-card').forEach(card => {
+        const input = card.querySelector('input[type="checkbox"]');
+        if (!input) return;
+
+        const sync = () => card.classList.toggle('is-selected', input.checked);
+        sync();
+        input.addEventListener('change', sync);
     });
 </script>
 }

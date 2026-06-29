@@ -2540,7 +2540,10 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
     private static List<string> ParseLanguagesCsv(string? csv) =>
         string.IsNullOrWhiteSpace(csv)
             ? []
-            : csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToList();
+            : csv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Where(l => RealtorEditProfileOptions.SupportedLanguages.Contains(l, StringComparer.OrdinalIgnoreCase))
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
 
     private static string BuildOfficeLocationLabel(IndorRealtor entity)
     {

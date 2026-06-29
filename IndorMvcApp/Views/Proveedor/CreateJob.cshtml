@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "Create Job - INDOR PRO";
     Layout = "_ProviderProLayout";
-    ViewBag.NavActive = "jobs";
+    var createJobCancelAction = (ViewBag.CreateJobCancelAction as string) ?? "Jobs";
     var selectedId = Model.SelectedCategoryId ?? Model.Categories.FirstOrDefault()?.Id;
     var selectedCategory = Model.Categories.FirstOrDefault(c => c.Id == selectedId) ?? Model.Categories.FirstOrDefault();
     var jobTitle = !string.IsNullOrWhiteSpace(Model.JobTitle)
@@ -13,10 +13,10 @@
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
-    <header class="prv-pro-wizard-head">
-        <h1>Create Job</h1>
-        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
-    </header>
+    @{
+        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+    }
+    @await Html.PartialAsync("_CreateJobWizardHead")
 
     <form asp-controller="Proveedor" asp-action="CreateJob" method="post" class="prv-pro-wizard-form" id="createJobStep1Form">
         @Html.AntiForgeryToken()
@@ -54,7 +54,7 @@
         </section>
 
         <div class="prv-pro-wizard-actions">
-            <a asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+            <a asp-controller="Proveedor" asp-action="@createJobCancelAction" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
         </div>
     </form>

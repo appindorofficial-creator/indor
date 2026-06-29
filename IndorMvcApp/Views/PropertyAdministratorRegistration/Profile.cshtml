@@ -7,7 +7,7 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Profile" method="post" id="paProfileForm">
+<form asp-action="Profile" method="post" id="paProfileForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
 
@@ -33,7 +33,7 @@
     </label>
 
     <label class="pa-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="Please agree to the Terms to continue." />
         <span>I agree to the <a asp-controller="Account" asp-action="Terms">Terms</a></span>
     </label>
 
@@ -50,3 +50,7 @@
     ViewData["StepSubmitLabel"] = "Next";
 }
 @await Html.PartialAsync("_PropertyAdminStepActions")
+
+@section Scripts {
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
+}

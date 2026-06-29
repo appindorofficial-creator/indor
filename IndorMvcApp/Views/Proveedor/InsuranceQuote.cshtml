@@ -1,0 +1,80 @@
+@model IndorMvcApp.ViewModels.InsuranceCoverageStepViewModel
+@{
+    ViewData["Title"] = $"{Model.PlanDisplayName} - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    ViewData["ProviderProExtraCss"] = "insurance-quote.css";
+
+    var included = IndorMvcApp.ViewModels.InsuranceCatalog.IncludedFor(Model.Plan);
+    var protects = IndorMvcApp.ViewModels.InsuranceCatalog.Protects;
+}
+
+<div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
+    <header class="ins-hd">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-hd-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <div class="ins-hd-text">
+            <h1>@Model.PlanDisplayName</h1>
+            <p>@Model.PlanSubtitle</p>
+        </div>
+    </header>
+
+    @await Html.PartialAsync("_InsuranceStepper", 1)
+
+    <div class="ins-summary">
+        <span class="ins-summary-icon"><i class="fas fa-shield-halved"></i></span>
+        <div class="ins-summary-body">
+            <span class="ins-summary-lbl">
+                @Model.PlanDisplayName
+                @if (Model.IsPopular)
+                {
+                    <span class="ins-popular">Most Popular</span>
+                }
+            </span>
+            <div class="ins-summary-price">
+                <div><small>Pay today</small><strong>$@Model.PayToday.ToString("0")</strong></div>
+                <div><small>Then</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="ins-block-title">What's included in @Model.PlanDisplayName</h2>
+    <div class="ins-incl-grid">
+        @foreach (var f in included)
+        {
+            <div class="ins-incl">
+                <span class="ins-incl-icon"><i class="fas @f.Icon"></i></span>
+                <div>
+                    <strong>@f.Title</strong>
+                    @if (!string.IsNullOrWhiteSpace(f.Desc))
+                    {
+                        <small>@f.Desc</small>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <hr class="ins-divider" />
+
+    <h2 class="ins-block-title">What this plan helps protect</h2>
+    <div class="ins-protect-grid">
+        @foreach (var f in protects)
+        {
+            <div class="ins-protect">
+                <span class="ins-protect-icon"><i class="fas @f.Icon"></i></span>
+                <strong>@f.Title</strong>
+                <small>@f.Desc</small>
+            </div>
+        }
+    </div>
+
+    <div class="ins-note ins-note--info">
+        <i class="fas fa-circle-info"></i>
+        <span>After you continue, our licensed insurance partner will review your information and confirm coverage before your policy is issued.</span>
+    </div>
+
+    <form asp-controller="Proveedor" asp-action="InsuranceQuote" method="post" class="ins-footer ins-footer--split">
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--ghost">Back</a>
+        <button type="submit" class="ins-cta">Continue</button>
+    </form>
+</div>

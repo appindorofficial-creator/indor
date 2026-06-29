@@ -17,6 +17,13 @@
         </div>
     </header>
 
+    @if (TempData["ProfileSaved"] is true)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+            <i class="fas fa-circle-check"></i> Profile updated successfully.
+        </div>
+    }
+
     @if (TempData["ProfilePhotoError"] is string photoError)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
@@ -24,10 +31,18 @@
         </div>
     }
 
-    <form asp-controller="Proveedor" asp-action="EditProfile" method="post" enctype="multipart/form-data" class="prv-pro-edit-profile-form">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error" role="alert">
+            <i class="fas fa-circle-exclamation"></i>
+            @Html.ValidationSummary(false)
+        </div>
+    }
+
+    <form asp-controller="Proveedor" asp-action="EditProfile" method="post" enctype="multipart/form-data" class="prv-pro-edit-profile-form" novalidate>
         @Html.AntiForgeryToken()
 
-        <section class="prv-pro-wizard-card prv-pro-edit-profile-photo-card">
+        <section class="prv-pro-wizard-card" id="edit-profile-photo">
             <h2>Profile photo</h2>
             <p>Upload a logo or photo. It will appear on your provider profile.</p>
             <div class="prv-pro-edit-profile-photo-row">
@@ -52,7 +67,7 @@
             </div>
         </section>
 
-        <section class="prv-pro-wizard-card">
+        <section class="prv-pro-wizard-card" id="edit-profile-business">
             <h2>Business details</h2>
             <div class="prv-pro-edit-profile-fields">
                 <label>
@@ -80,16 +95,27 @@
                     <input type="text" name="BusinessAddress" value="@Model.BusinessAddress" placeholder="Street address" />
                 </label>
                 <label>
-                    <span>Primary city / service area</span>
-                    <input type="text" name="PrimaryCity" value="@Model.PrimaryCity" placeholder="City, state or ZIPs" />
-                </label>
-                <label>
                     <span>Business hours</span>
                     <input type="text" name="PreferredHours" value="@Model.PreferredHours" placeholder="e.g. Mon–Fri 8am–6pm" />
                 </label>
                 <label class="prv-pro-edit-profile-field--wide">
                     <span>Service description</span>
                     <textarea name="ServiceDescription" rows="3" placeholder="Brief description of your services">@Model.ServiceDescription</textarea>
+                </label>
+            </div>
+        </section>
+
+        <section class="prv-pro-wizard-card" id="edit-profile-areas">
+            <h2>Service areas</h2>
+            <p>Define where you accept jobs and how far you travel.</p>
+            <div class="prv-pro-edit-profile-fields">
+                <label>
+                    <span>Primary city / service area</span>
+                    <input type="text" name="PrimaryCity" value="@Model.PrimaryCity" placeholder="City, state" />
+                </label>
+                <label class="prv-pro-edit-profile-field--wide">
+                    <span>ZIP codes served</span>
+                    <input type="text" name="ServiceZipCodes" value="@Model.ServiceZipCodes" placeholder="28202, 28203, 28205" />
                 </label>
                 <label>
                     <span>Travel radius (miles)</span>
@@ -122,10 +148,19 @@
 @section Scripts {
 <script>
 (function () {
-    const input = document.getElementById('profilePhotoInput');
-    const preview = document.getElementById('photoPreview');
-    const img = document.getElementById('photoPreviewImg');
-    const initial = document.getElementById('photoPreviewInitial');
+    var input = document.getElementById('profilePhotoInput');
+    var preview = document.getElementById('photoPreview');
+    var img = document.getElementById('photoPreviewImg');
+    var initial = document.getElementById('photoPreviewInitial');
+    var activeSection = '@(ViewBag.ActiveSection ?? "business")';
+    var sectionEl = document.getElementById('edit-profile-' + activeSection);
+    if (sectionEl) {
+        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        var focusInput = sectionEl.querySelector('input, textarea, select');
+        if (focusInput) {
+            focusInput.focus({ preventScroll: true });
+        }
+    }
 
     input?.addEventListener('change', function () {
         const file = input.files && input.files[0];

@@ -1,5 +1,10 @@
 /* Homeowner quick access bar — shared across Home, Profile, wizards, My Home */
 
+:root {
+    /* Content height excluding safe-area (safe-area added in indor-wizard footer vars). */
+    --homeowner-bottom-nav-h: 80px;
+}
+
 .bottom-nav {
     position: fixed;
     bottom: 0;

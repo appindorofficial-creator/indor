@@ -265,21 +265,41 @@
 
 
 .pm-card {
-
     flex: 0 0 min(88vw, 320px);
-
     scroll-snap-align: start;
-
     background: #fff;
-
     border: 1px solid #E5E7EB;
-
     border-radius: 18px;
-
     padding: 16px 15px 14px;
-
     box-shadow: 0 8px 24px rgba(10, 37, 64, 0.08);
+}
 
+.pm-card--link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+    transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+
+.pm-card--link:hover,
+.pm-card--link:focus-visible {
+    border-color: #93C5FD;
+    box-shadow: 0 12px 28px rgba(0, 102, 204, 0.14);
+    transform: translateY(-2px);
+}
+
+.pm-card-schedule {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #0066CC;
+}
+
+.pm-card-schedule i {
+    font-size: 0.7rem;
 }
 
 

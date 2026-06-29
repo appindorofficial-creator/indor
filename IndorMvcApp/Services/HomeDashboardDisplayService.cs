@@ -1,4 +1,5 @@
 using System.Globalization;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -17,18 +18,24 @@ public static class HomeDashboardDisplayService
         IReadOnlyList<PropiedadDocumento> documentos,
         IReadOnlyList<PropiedadHistorial> historial,
         int notificationCount,
-        IUrlHelper url)
+        IUrlHelper url,
+        IReadOnlyList<HomeCarePriority>? homeCarePriorities = null)
     {
         var d = info?.PropertyDetails;
         var maintenancePlan = info?.MaintenanceRecommendations
             ?? PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
-        var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(maintenancePlan, maxItems: 6);
+        var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(
+            maintenancePlan,
+            maxItems: 6,
+            homeCarePriorities: homeCarePriorities,
+            url: url,
+            propiedadId: propiedad.Id);
         var aiAlertCount = maintenancePlan?.Items.Count(i => i.Priority is "Urgent" or "High") ?? 0;
 
         var vm = new HomeDashboardViewModel
         {
             UserFirstName = FirstName(user),
-            Greeting = GreetingForHour(DateTime.Now.Hour),
+            Greeting = IndorGreeting.ForNow(),
             HasProperty = true,
             PropiedadId = propiedad.Id,
             Address = !string.IsNullOrWhiteSpace(info?.FormattedAddress)
@@ -56,8 +63,9 @@ public static class HomeDashboardDisplayService
                 waterHeaterRecord,
                 documentos,
                 mantenimiento,
-                url),
-            UpcomingSchedule = BuildSchedule(mantenimiento),
+                url,
+                homeCarePriorities,
+                includeAiTasks: !(maintenanceSection.IsAiGenerated && maintenanceSection.Items.Count > 0)),
             RecentDocuments = BuildDocuments(propiedad.Id, documentos, url),
             RecentActivity = BuildActivity(historial),
             MaintenanceSection = maintenanceSection
@@ -71,7 +79,7 @@ public static class HomeDashboardDisplayService
         return new HomeDashboardViewModel
         {
             UserFirstName = FirstName(user),
-            Greeting = GreetingForHour(DateTime.Now.Hour),
+            Greeting = IndorGreeting.ForNow(),
             HasProperty = false,
             QuickActions = BuildQuickActions(null, null)
         };
@@ -81,17 +89,23 @@ public static class HomeDashboardDisplayService
         ApplicationUser? user,
         Propiedad propiedad,
         PropertyInfoViewModel? info,
-        IUrlHelper url)
+        IUrlHelper url,
+        IReadOnlyList<HomeCarePriority>? homeCarePriorities = null)
     {
         var d = info?.PropertyDetails;
         var maintenancePlan = info?.MaintenanceRecommendations
             ?? PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
-        var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(maintenancePlan, maxItems: 6);
+        var maintenanceSection = PropertyMaintenanceDisplayService.BuildSection(
+            maintenancePlan,
+            maxItems: 6,
+            homeCarePriorities: homeCarePriorities,
+            url: url,
+            propiedadId: propiedad.Id);
 
         return new HomeDashboardViewModel
         {
             UserFirstName = FirstName(user),
-            Greeting = GreetingForHour(DateTime.Now.Hour),
+            Greeting = IndorGreeting.ForNow(),
             HasProperty = true,
             PropiedadId = propiedad.Id,
             Address = !string.IsNullOrWhiteSpace(info?.FormattedAddress)
@@ -114,7 +128,9 @@ public static class HomeDashboardDisplayService
                 null,
                 [],
                 [],
-                url),
+                url,
+                homeCarePriorities,
+                includeAiTasks: !(maintenanceSection.IsAiGenerated && maintenanceSection.Items.Count > 0)),
             MaintenanceSection = maintenanceSection
         };
     }
@@ -126,9 +142,17 @@ public static class HomeDashboardDisplayService
         PropiedadWaterHeaterSistema? waterHeaterRecord,
         IReadOnlyList<PropiedadDocumento> documentos,
         IReadOnlyList<PropiedadMantenimiento> mantenimiento,
-        IUrlHelper url)
+        IUrlHelper url,
+        IReadOnlyList<HomeCarePriority>? homeCarePriorities = null,
+        bool includeAiTasks = true)
     {
-        var aiTasks = PropertyMaintenanceDisplayService.BuildAlertTasks(maintenancePlan, propiedadId, url);
+        var aiTasks = includeAiTasks
+            ? PropertyMaintenanceDisplayService.BuildAlertTasks(
+                maintenancePlan,
+                propiedadId,
+                url,
+                homeCarePriorities)
+            : [];
         var baseTasks = BuildTodayTasks(
             propiedadId,
             hvacRecord,
@@ -153,22 +177,13 @@ public static class HomeDashboardDisplayService
         return "there";
     }
 
-    private static string GreetingForHour(int hour) =>
-        hour switch
-        {
-            >= 5 and < 12 => "Good morning",
-            >= 12 and < 17 => "Good afternoon",
-            >= 17 and < 22 => "Good evening",
-            _ => "Good evening"
-        };
-
     private static List<HomeQuickActionViewModel> BuildQuickActions(int? propiedadId, IUrlHelper? url)
     {
         var maintenanceUrl = propiedadId.HasValue && url != null
             ? url.Action("Maintenance", "MyHome", new { id = propiedadId.Value, from = "home" })
             : null;
         var documentsUrl = propiedadId.HasValue && url != null
-            ? url.Action("Documents", "MyHome", new { id = propiedadId.Value })
+            ? url.Action("Documents", "MyHome", new { id = propiedadId.Value, from = "housefacts" })
             : null;
 
         return
@@ -213,7 +228,7 @@ public static class HomeDashboardDisplayService
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
-                Icon = "fa-fan",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass("fan", "HVAC", "Add your HVAC system details"),
                 Title = "Add your HVAC system details",
                 Subtitle = "Get personalized maintenance tips",
                 Url = url.Action("Add", "HvacSetup", new { propiedadId }) ?? "#"
@@ -223,7 +238,7 @@ public static class HomeDashboardDisplayService
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
-                Icon = "fa-filter",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass("filter", "HVAC", "Set up HVAC filter reminders"),
                 Title = "Set up HVAC filter reminders",
                 Subtitle = "Personalize your replacement schedule",
                 Url = url.Action("Pets", "HvacFilterReplacement", new { id = propiedadId }) ?? "#"
@@ -235,7 +250,7 @@ public static class HomeDashboardDisplayService
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
-                Icon = "fa-file-circle-plus",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass("file-circle-plus", "General", "Upload your inspection report"),
                 Title = "Upload your inspection report",
                 Subtitle = "Keep your home records up to date",
                 Url = url.Action("Upload", "InspectionReportUpload", new { propiedadId }) ?? "#"
@@ -250,7 +265,7 @@ public static class HomeDashboardDisplayService
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
-                Icon = "fa-bell",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass("bell", "General", "Review this month's reminders"),
                 Title = "Review this month's reminders",
                 Subtitle = $"{dueSoon} task{(dueSoon == 1 ? "" : "s")} • Due soon",
                 Badge = "Due soon",
@@ -262,7 +277,7 @@ public static class HomeDashboardDisplayService
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
-                Icon = "fa-fire-burner",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass("fire-burner", "Plumbing", "Add water heater info"),
                 Title = "Add water heater info",
                 Subtitle = "Help us keep track age, model & warranty",
                 Url = url.Action("Add", "WaterHeaterSetup", new { propiedadId }) ?? "#"
@@ -272,7 +287,7 @@ public static class HomeDashboardDisplayService
         {
             tasks.Add(new HomeTodayTaskViewModel
             {
-                Icon = "fa-droplet",
+                Icon = PropertyMaintenanceIconResolver.ToCssClass("droplet", "Plumbing", "Set up annual water heater flush"),
                 Title = "Set up annual water heater flush",
                 Subtitle = "Personalize your flush reminder schedule",
                 Url = url.Action("Intro", "WaterHeaterFlushReminder", new { id = propiedadId }) ?? "#"
@@ -280,43 +295,6 @@ public static class HomeDashboardDisplayService
         }
 
         return tasks;
-    }
-
-    private static List<HomeScheduleItemViewModel> BuildSchedule(IReadOnlyList<PropiedadMantenimiento> mantenimiento)
-    {
-        return mantenimiento
-            .Where(m => m.DueDate.HasValue && m.Status != "Completed")
-            .OrderBy(m => m.DueDate)
-            .Take(3)
-            .Select(m =>
-            {
-                var days = (m.DueDate!.Value.Date - DateTime.Today).Days;
-                var dueLabel = days switch
-                {
-                    < 0 => $"Overdue {Math.Abs(days)} day{(Math.Abs(days) == 1 ? "" : "s")}",
-                    0 => "Due today",
-                    1 => "Due tomorrow",
-                    _ => $"Due in {days} days"
-                };
-
-                return new HomeScheduleItemViewModel
-                {
-                    Icon = m.Title.Contains("filter", StringComparison.OrdinalIgnoreCase) ? "fa-fan"
-                        : m.Title.Contains("water", StringComparison.OrdinalIgnoreCase) ? "fa-fire-burner"
-                        : "fa-calendar-check",
-                    Title = m.Title,
-                    Location = ExtractLocation(m.Notes),
-                    DueLabel = dueLabel
-                };
-            })
-            .ToList();
-    }
-
-    private static string ExtractLocation(string? notes)
-    {
-        if (string.IsNullOrWhiteSpace(notes)) return "Home";
-        var parts = notes.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        return parts.Length > 0 ? parts[0] : "Home";
     }
 
     private static List<HomeDocumentItemViewModel> BuildDocuments(

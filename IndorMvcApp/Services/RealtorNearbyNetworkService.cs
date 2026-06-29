@@ -367,9 +367,7 @@ public class RealtorNearbyNetworkService(
             : string.IsNullOrWhiteSpace(model.StatusBadge) ? "ACTIVE" : model.StatusBadge.Trim().ToUpperInvariant();
         item.StatusCss = model.SaveAsDraft ? "draft" : isOpenHouse ? "openhouse" : "active";
         item.PrimaryActionLabel = isOpenHouse ? "View Details" : "View Home";
-        item.PrimaryActionUrl = "#";
         item.SecondaryActionLabel = isOpenHouse ? "Share" : "Edit Listing";
-        item.SecondaryActionUrl = $"/Realtor/EditNetworkListing/{item.Id}";
         item.IsActive = !model.SaveAsDraft;
 
         var previousExtras = model.ItemId is > 0 ? ParseListingExtras(item.TagsJson) : null;
@@ -420,11 +418,11 @@ public class RealtorNearbyNetworkService(
 
         await db.SaveChangesAsync(ct);
 
-        if (!isOpenHouse)
-        {
-            item.SecondaryActionUrl = $"/Realtor/EditNetworkListing/{item.Id}";
-            await db.SaveChangesAsync(ct);
-        }
+        item.PrimaryActionUrl = $"/Realtor/EditNetworkListing/{item.Id}";
+        item.SecondaryActionUrl = isOpenHouse
+            ? "/Realtor/PublicProfile"
+            : $"/Realtor/EditNetworkListing/{item.Id}";
+        await db.SaveChangesAsync(ct);
 
         return item.Id;
     }
@@ -523,6 +521,124 @@ public class RealtorNearbyNetworkService(
             .ToListAsync(ct);
     }
 
+    private static (string? Primary, string? Secondary) ResolveFeedActionUrls(
+        IndorNearbyNetworkItem item,
+        string cardType,
+        bool isOwned)
+    {
+        var primary = item.PrimaryActionUrl;
+        var secondary = item.SecondaryActionUrl;
+
+        switch (cardType)
+        {
+            case "lead":
+                if (NeedsActionUrl(primary))
+                {
+                    primary = "/Realtor/Clients?filter=Buyers";
+                }
+
+                if (NeedsActionUrl(secondary))
+                {
+                    secondary = "/RealtorInviteClient/New";
+                }
+
+                break;
+
+            case "provider":
+            case "promotion":
+                var providerSearch = !string.IsNullOrWhiteSpace(item.ProviderName)
+                    ? item.ProviderName.Trim()
+                    : item.Subtitle?.Trim();
+                var providerUrl = string.IsNullOrWhiteSpace(providerSearch)
+                    ? "/Realtor/ProviderNetwork"
+                    : $"/Realtor/ProviderNetwork?q={Uri.EscapeDataString(providerSearch)}";
+
+                if (NeedsActionUrl(primary))
+                {
+                    primary = providerUrl;
+                }
+
+                if (NeedsActionUrl(secondary))
+                {
+                    secondary = "/Realtor/Quotes";
+                }
+
+                break;
+
+            case "emergency":
+                if (NeedsActionUrl(primary))
+                {
+                    primary = "/Realtor/ProviderNetwork?filter=Verified";
+                }
+
+                break;
+
+            case "openhouse":
+                if (isOwned)
+                {
+                    if (NeedsActionUrl(primary))
+                    {
+                        primary = $"/Realtor/EditNetworkListing/{item.Id}";
+                    }
+
+                    if (NeedsActionUrl(secondary))
+                    {
+                        secondary = "/Realtor/PublicProfile";
+                    }
+                }
+                else
+                {
+                    if (NeedsActionUrl(primary))
+                    {
+                        primary = "/Realtor/Network?filter=OpenHouses";
+                    }
+
+                    if (NeedsActionUrl(secondary))
+                    {
+                        secondary = "/Realtor/PublicProfile";
+                    }
+                }
+
+                break;
+
+            default:
+                if (isOwned)
+                {
+                    if (NeedsActionUrl(primary))
+                    {
+                        primary = $"/Realtor/EditNetworkListing/{item.Id}";
+                    }
+
+                    if (NeedsActionUrl(secondary))
+                    {
+                        secondary = $"/Realtor/EditNetworkListing/{item.Id}";
+                    }
+                }
+                else
+                {
+                    if (NeedsActionUrl(primary))
+                    {
+                        var listingSearch = !string.IsNullOrWhiteSpace(item.Subtitle)
+                            ? item.Subtitle.Trim()
+                            : item.Title.Trim();
+                        primary = $"/Realtor/Network?filter=Homes&q={Uri.EscapeDataString(listingSearch)}";
+                    }
+
+                    if (NeedsActionUrl(secondary))
+                    {
+                        secondary = "/RealtorInviteClient/New";
+                    }
+                }
+
+                break;
+        }
+
+        return (primary, secondary);
+    }
+
+    private static bool NeedsActionUrl(string? url) =>
+        string.IsNullOrWhiteSpace(url) || url == "#";
+
     private static RealtorNetworkFeedCardViewModel MapToCard(IndorNearbyNetworkItem item, int currentRealtorId)
     {
         var cardType = item.CardType.ToLowerInvariant() switch
@@ -536,19 +652,7 @@ public class RealtorNearbyNetworkService(
         };
 
         var isOwned = item.OwnerRealtorId == currentRealtorId && item.IsOwnedListing;
-        var secondaryUrl = item.SecondaryActionUrl;
-        if (isOwned && item.CardType == NearbyNetworkCardTypes.Listing)
-        {
-            secondaryUrl = $"/Realtor/EditNetworkListing/{item.Id}";
-        }
-
-        var primaryUrl = item.PrimaryActionUrl;
-        if (cardType == "lead")
-        {
-            // No lead detail screen exists yet; show the action as unavailable
-            // instead of routing to the generic Clients page.
-            primaryUrl = "#";
-        }
+        var (primaryUrl, secondaryUrl) = ResolveFeedActionUrls(item, cardType, isOwned);
 
         var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
         if (cardType is "lead" or "emergency")

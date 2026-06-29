@@ -1,123 +1,503 @@
 @using IndorMvcApp.Validation
+
 @model IndorMvcApp.ViewModels.RealtorRegistrationStepViewModel
+
 @{
+
     var s = Model.State;
+
     string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+
     var brokerageError = FieldError("brokerageName");
+
     var licenseError = FieldError("licenseNumber");
+
     var licenseStateError = FieldError("licenseState");
+
+    var languagesError = FieldError("languages");
+
     var termsError = FieldError("professionalTermsAccepted");
+
+    var selectedLanguages = (s.Languages ?? "")
+
+        .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+
+        .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+    var formErrors = ViewData.ModelState
+
+        .Where(x => x.Value?.Errors.Count > 0)
+
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+
+        .Distinct()
+
+        .ToList();
+
 }
+
 <div class="ob-head-block">
+
     <h1>@Model.Title</h1>
+
     <p>@Model.Subtitle</p>
+
 </div>
 
-<form asp-action="Profile" method="post" class="rl-reg-form" novalidate>
+
+
+<form asp-action="Profile" method="post" class="rl-reg-form" id="rlRegProfileForm" novalidate>
+
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
 
-    <div class="rl-field-block">
-        <span class="rl-field-label">Brokerage / Company Name</span>
-        <label class="rl-field @(brokerageError.Length > 0 ? "is-error" : "")">
-            <i class="fas fa-building"></i>
-            <input type="text"
-                   name="brokerageName"
-                   value="@s.BrokerageName"
-                   placeholder="Keller Williams Realty"
-                   autocomplete="organization" />
-        </label>
-        @if (brokerageError.Length > 0)
-        {
-            <span class="rl-field-error">@brokerageError</span>
-        }
-    </div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-    <div class="rl-field-block">
-        <span class="rl-field-label">Real Estate License Number</span>
-        <label class="rl-field @(licenseError.Length > 0 ? "is-error" : "")">
-            <i class="fas fa-id-card"></i>
-            <input type="text"
-                   name="licenseNumber"
-                   value="@s.LicenseNumber"
-                   placeholder="BRE123456"
-                   inputmode="text"
-                   autocomplete="off" />
-        </label>
-        @if (licenseError.Length > 0)
-        {
-            <span class="rl-field-error">@licenseError</span>
-        }
-    </div>
 
-    <div class="rl-field-block">
-        <span class="rl-field-label">License State</span>
-        <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
-            <i class="fas fa-shield-halved"></i>
-            <select name="licenseState">
-                <option value="">Select state</option>
-                @foreach (var st in Model.LicenseStates)
-                {
-                    <option value="@st" selected="@(s.LicenseState == st)">@st</option>
-                }
-            </select>
-        </label>
-        @if (licenseStateError.Length > 0)
-        {
-            <span class="rl-field-error">@licenseStateError</span>
-        }
-    </div>
 
-    <div class="rl-field-block">
-        <span class="rl-field-label">City / Market Area</span>
-        <label class="rl-field">
-            <i class="fas fa-map"></i>
-            <input type="text"
-                   name="serviceAreas"
-                   value="@s.ServiceAreas"
-                   placeholder="Charlotte, NC" />
-        </label>
-    </div>
+    @if (formErrors.Count > 0)
 
-    <div class="rl-field-block">
-        <span class="rl-field-label">Office Address</span>
-        <label class="rl-field">
-            <i class="fas fa-location-dot"></i>
-            <input type="text"
-                   name="officeAddress"
-                   value="@s.OfficeAddress"
-                   placeholder="123 Business Ave, Miami, FL 33131"
-                   autocomplete="street-address" />
-        </label>
-    </div>
-
-    <div class="rl-field-block">
-        <span class="rl-field-label">Languages</span>
-        <label class="rl-field">
-            <i class="fas fa-globe"></i>
-            <input type="text"
-                   name="languages"
-                   value="@s.Languages"
-                   placeholder="English, Spanish" />
-        </label>
-    </div>
-
-    <div class="rl-info-box">
-        <i class="fas fa-circle-info"></i>
-        <div>
-            <strong class="rl-info-box-title">License Verification</strong>
-            <p>Your realtor license verification may take up to 24 hours. You can continue using Home Indor while we review your information. If there is any issue with your license or we need more information, we will notify you.</p>
-        </div>
-    </div>
-
-    <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
-        <input type="checkbox" name="professionalTermsAccepted" value="true" @(s.ProfessionalTermsAccepted ? "checked" : null) />
-        <span>I authorize Home Indor to verify my real estate license using the information provided.</span>
-    </label>
-    @if (termsError.Length > 0)
     {
-        <span class="rl-field-error">@termsError</span>
+
+        <div class="rl-error-banner" role="alert" id="rlProfileFormErrors">
+
+            <i class="fas fa-circle-exclamation"></i>
+
+            <div>
+
+                <strong>Please fix the following to continue:</strong>
+
+                <ul class="rl-error-list">
+
+                    @foreach (var msg in formErrors)
+
+                    {
+
+                        <li>@msg</li>
+
+                    }
+
+                </ul>
+
+            </div>
+
+        </div>
+
     }
 
+
+
+    <div class="rl-field-block">
+
+        <span class="rl-field-label">Brokerage / Company Name <span class="rl-required" aria-hidden="true">*</span></span>
+
+        <label class="rl-field @(brokerageError.Length > 0 ? "is-error" : "")">
+
+            <i class="fas fa-building"></i>
+
+            <input type="text"
+
+                   name="brokerageName"
+
+                   value="@s.BrokerageName"
+
+                   placeholder="Keller Williams Realty"
+
+                   autocomplete="organization"
+
+                   aria-required="true"
+
+                   aria-invalid="@(brokerageError.Length > 0)"
+
+                   @(brokerageError.Length > 0 ? Html.Raw("aria-describedby=\"brokerageNameError\"") : null) />
+
+        </label>
+
+        @if (brokerageError.Length > 0)
+
+        {
+
+            <span class="rl-field-error" id="brokerageNameError">@brokerageError</span>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-field-block">
+
+        <span class="rl-field-label">Real Estate License Number <span class="rl-required" aria-hidden="true">*</span></span>
+
+        <label class="rl-field @(licenseError.Length > 0 ? "is-error" : "")">
+
+            <i class="fas fa-id-card"></i>
+
+            <input type="text"
+
+                   name="licenseNumber"
+
+                   value="@s.LicenseNumber"
+
+                   placeholder="BRE123456"
+
+                   inputmode="text"
+
+                   autocomplete="off"
+
+                   aria-required="true"
+
+                   aria-invalid="@(licenseError.Length > 0)"
+
+                   @(licenseError.Length > 0 ? Html.Raw("aria-describedby=\"licenseNumberError\"") : null) />
+
+        </label>
+
+        @if (licenseError.Length > 0)
+
+        {
+
+            <span class="rl-field-error" id="licenseNumberError">@licenseError</span>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-field-block">
+
+        <span class="rl-field-label">License State <span class="rl-required" aria-hidden="true">*</span></span>
+
+        <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
+
+            <i class="fas fa-shield-halved"></i>
+
+            <select name="licenseState"
+
+                    aria-required="true"
+
+                    aria-invalid="@(licenseStateError.Length > 0)"
+
+                    @(licenseStateError.Length > 0 ? Html.Raw("aria-describedby=\"licenseStateError\"") : null)>
+
+                <option value="">Select state</option>
+
+                @foreach (var st in Model.LicenseStates)
+
+                {
+
+                    <option value="@st" selected="@(s.LicenseState == st)">@st</option>
+
+                }
+
+            </select>
+
+        </label>
+
+        @if (licenseStateError.Length > 0)
+
+        {
+
+            <span class="rl-field-error" id="licenseStateError">@licenseStateError</span>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-field-block">
+
+        <span class="rl-field-label">City / Market Area</span>
+
+        <label class="rl-field">
+
+            <i class="fas fa-map"></i>
+
+            <input type="text"
+
+                   name="serviceAreas"
+
+                   value="@s.ServiceAreas"
+
+                   placeholder="Charlotte, NC" />
+
+        </label>
+
+    </div>
+
+
+
+    <div class="rl-field-block">
+
+        <span class="rl-field-label">Office Address</span>
+
+        <label class="rl-field">
+
+            <i class="fas fa-location-dot"></i>
+
+            <input type="text"
+
+                   name="officeAddress"
+
+                   value="@s.OfficeAddress"
+
+                   placeholder="123 Business Ave, Miami, FL 33131"
+
+                   autocomplete="street-address" />
+
+        </label>
+
+    </div>
+
+
+
+    <div class="rl-field-block">
+
+        <span class="rl-field-label">Languages <span class="rl-required" aria-hidden="true">*</span></span>
+
+        <p class="rl-field-hint">Select one or more: English and Spanish only.</p>
+
+        <div class="rl-lang-options @(languagesError.Length > 0 ? "is-error" : "")"
+
+             id="rlSupportedLanguages"
+
+             data-supported-languages="@string.Join(",", Model.SupportedLanguages)"
+
+             @(languagesError.Length > 0 ? Html.Raw("aria-describedby=\"languagesError\"") : null)>
+
+            @foreach (var lang in Model.SupportedLanguages)
+
+            {
+
+                <label class="rl-lang-option">
+
+                    <input type="checkbox"
+
+                           name="languages"
+
+                           value="@lang"
+
+                           checked="@selectedLanguages.Contains(lang)" />
+
+                    <i class="fas fa-globe"></i>
+
+                    <span>@lang</span>
+
+                </label>
+
+            }
+
+        </div>
+
+        @if (languagesError.Length > 0)
+
+        {
+
+            <span class="rl-field-error" id="languagesError">@languagesError</span>
+
+        }
+
+        else
+
+        {
+
+            <span class="rl-field-error" id="languagesError"></span>
+
+        }
+
+    </div>
+
+
+
+    <div class="rl-info-box">
+
+        <i class="fas fa-circle-info"></i>
+
+        <div>
+
+            <strong class="rl-info-box-title">License Verification</strong>
+
+            <p>Your realtor license verification may take up to 24 hours. You can continue using Home Indor while we review your information. If there is any issue with your license or we need more information, we will notify you.</p>
+
+        </div>
+
+    </div>
+
+
+
+    <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
+
+        <input type="hidden" name="professionalTermsAccepted" value="false" />
+
+        <input type="checkbox"
+
+               name="professionalTermsAccepted"
+
+               value="true"
+
+               aria-required="true"
+
+               aria-invalid="@(termsError.Length > 0)"
+
+               @(s.ProfessionalTermsAccepted ? "checked" : null)
+
+               @(termsError.Length > 0 ? Html.Raw("aria-describedby=\"termsError\"") : null) />
+
+        <span>I authorize Home Indor to verify my real estate license using the information provided. <span class="rl-required" aria-hidden="true">*</span></span>
+
+    </label>
+
+    @if (termsError.Length > 0)
+
+    {
+
+        <span class="rl-field-error rl-field-error--terms" id="termsError">@termsError</span>
+
+    }
+
+    else
+
+    {
+
+        <span class="rl-field-error rl-field-error--terms" id="termsError"></span>
+
+    }
+
+
+
     <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+
 </form>
+
+
+
+@section Scripts {
+<script>
+(function () {
+    var banner = document.getElementById('rlProfileFormErrors');
+    var summary = document.querySelector('#rlRegProfileForm .ob-summary:not(.validation-summary-valid)');
+    var firstFieldError = document.querySelector('#rlRegProfileForm .rl-field-error, #rlRegProfileForm .rl-field.is-error, #rlRegProfileForm .rl-terms.is-error, #rlRegProfileForm .rl-lang-options.is-error');
+    var scrollTarget = banner || summary || firstFieldError;
+    if (scrollTarget) {
+        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    var form = document.getElementById('rlRegProfileForm');
+    if (!form) {
+        return;
+    }
+
+    var supportedRoot = document.getElementById('rlSupportedLanguages');
+    var supported = (supportedRoot?.dataset.supportedLanguages || 'English,Spanish')
+        .split(',')
+        .map(function (item) { return item.trim(); })
+        .filter(Boolean);
+
+    function showBanner(messages) {
+        var existing = document.getElementById('rlProfileClientErrors');
+        if (existing) {
+            existing.remove();
+        }
+        if (!messages.length) {
+            return;
+        }
+        var el = document.createElement('div');
+        el.className = 'rl-error-banner';
+        el.id = 'rlProfileClientErrors';
+        el.setAttribute('role', 'alert');
+        el.innerHTML =
+            '<i class="fas fa-circle-exclamation"></i>' +
+            '<div><strong>Please fix the following to continue:</strong>' +
+            '<ul class="rl-error-list">' +
+            messages.map(function (msg) { return '<li>' + msg + '</li>'; }).join('') +
+            '</ul></div>';
+        var summaryEl = form.querySelector('.ob-summary');
+        if (summaryEl && summaryEl.nextSibling) {
+            form.insertBefore(el, summaryEl.nextSibling);
+        } else {
+            form.insertBefore(el, form.firstChild.nextSibling);
+        }
+        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function setLanguagesError(message) {
+        var errorEl = document.getElementById('languagesError');
+        if (errorEl) {
+            errorEl.textContent = message || '';
+        }
+        if (supportedRoot) {
+            supportedRoot.classList.toggle('is-error', !!message);
+        }
+    }
+
+    function setTermsError(message) {
+        var errorEl = document.getElementById('termsError');
+        var terms = form.querySelector('.rl-terms');
+        if (errorEl) {
+            errorEl.textContent = message || '';
+        }
+        if (terms) {
+            terms.classList.toggle('is-error', !!message);
+        }
+    }
+
+    function validateProfileForm() {
+        var errors = [];
+        setLanguagesError('');
+        setTermsError('');
+
+        var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
+        if (!checkedLanguages.length) {
+            var languageError = 'Select at least one language.';
+            setLanguagesError(languageError);
+            errors.push(languageError);
+        } else {
+            checkedLanguages.forEach(function (input) {
+                if (supported.indexOf(input.value) === -1) {
+                    var invalidError = 'Only English and Spanish are supported.';
+                    setLanguagesError(invalidError);
+                    errors.push(invalidError);
+                }
+            });
+        }
+
+        var terms = form.querySelector('input[name="professionalTermsAccepted"][type="checkbox"]');
+        if (!terms || !terms.checked) {
+            var termsError = 'Please check the authorization box to verify your license before continuing.';
+            setTermsError(termsError);
+            errors.push(termsError);
+        }
+
+        if (errors.length) {
+            showBanner(errors);
+            return false;
+        }
+
+        return true;
+    }
+
+    form.addEventListener('submit', function (e) {
+        if (!validateProfileForm()) {
+            e.preventDefault();
+        }
+    });
+
+    form.querySelectorAll('input[name="languages"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            setLanguagesError('');
+        });
+    });
+
+    var termsCheckbox = form.querySelector('input[name="professionalTermsAccepted"][type="checkbox"]');
+    if (termsCheckbox) {
+        termsCheckbox.addEventListener('change', function () {
+            setTermsError('');
+        });
+    }
+})();
+</script>
+}
+

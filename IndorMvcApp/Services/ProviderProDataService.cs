@@ -10,7 +10,8 @@ public class ProviderProDataService(
     AppDbContext db,
     IRealtorProviderBridgeService realtorBridge,
     IHttpContextAccessor httpContextAccessor,
-    IAddressLookupService addressLookup) : IProviderProDataService
+    IAddressLookupService addressLookup,
+    ILogger<ProviderProDataService> logger) : IProviderProDataService
 {
     public async Task<ProviderProWorkspaceData> GetWorkspaceDataAsync(int proveedorId, bool includeLeads, CancellationToken cancellationToken = default)
     {
@@ -3357,6 +3358,471 @@ public class ProviderProDataService(
         };
     }
 
+    // ---------------------------------------------------------------
+    // Upload Photos flow (select job → add photos → review → save)
+    // ---------------------------------------------------------------
+
+    public async Task<ProviderProUploadPhotosSelectJobViewModel> GetUploadPhotosSelectJobAsync(
+        IndorProveedor proveedor,
+        string? search = null,
+        string? filter = "all",
+        CancellationToken cancellationToken = default)
+    {
+        var activeFilter = NormalizeUploadReportJobFilter(filter);
+        var recentCutoff = DateTime.UtcNow.AddDays(-30);
+
+        var jobRows = await db.IndorProveedorJobs
+            .AsNoTracking()
+            .Include(j => j.Cliente)
+            .Where(j => j.ProveedorId == proveedor.Id && !j.IsDraft)
+            .OrderByDescending(j => j.ScheduledAt ?? j.FechaCreacion)
+            .ToListAsync(cancellationToken);
+
+        var filtered = activeFilter switch
+        {
+            "completed" => jobRows.Where(j => j.Status == ProviderJobStatuses.Completed),
+            "inprogress" => jobRows.Where(j => j.Status is ProviderJobStatuses.InProgress
+                or ProviderJobStatuses.Scheduled
+                or ProviderJobStatuses.Confirmed
+                or ProviderJobStatuses.WaitingOnMaterials),
+            "recent" => jobRows.Where(j => (j.ScheduledAt ?? j.FechaCreacion) >= recentCutoff),
+            _ => jobRows.AsEnumerable()
+        };
+
+        var filteredList = filtered.ToList();
+        var totalAvailable = filteredList.Count;
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var q = search.Trim();
+            filteredList = filteredList.Where(j =>
+                j.Address.Contains(q, StringComparison.OrdinalIgnoreCase)
+                || j.Title.Contains(q, StringComparison.OrdinalIgnoreCase)
+                || j.JobCode.Contains(q, StringComparison.OrdinalIgnoreCase)
+                || (j.ServiceType ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)
+                || (j.Cliente?.Name ?? "").Contains(q, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        var jobIds = filteredList.Select(j => j.Id).ToList();
+        var photoCounts = await db.IndorProveedorReports
+            .AsNoTracking()
+            .Where(r => r.ProveedorId == proveedor.Id && r.JobId != null && jobIds.Contains(r.JobId.Value))
+            .GroupBy(r => r.JobId!.Value)
+            .Select(g => new { JobId = g.Key, Count = g.Sum(r => r.PhotosCount) })
+            .ToDictionaryAsync(x => x.JobId, x => x.Count, cancellationToken);
+
+        return new ProviderProUploadPhotosSelectJobViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            SearchQuery = search,
+            ActiveFilter = activeFilter,
+            TotalJobsAvailable = totalAvailable,
+            HasSearchWithNoResults = !string.IsNullOrWhiteSpace(search) && filteredList.Count == 0,
+            Jobs = filteredList.Select(j => new ProviderProUploadPhotosJobOptionViewModel
+            {
+                JobId = j.Id,
+                Title = j.Title,
+                Address = j.Address,
+                ServiceType = j.ServiceType ?? j.Title,
+                StatusLabel = MapJobStatusLabel(j.Status),
+                StatusClass = MapJobStatusClass(j.Status),
+                IconClass = MapServiceIcon(j.ServiceType ?? j.Title),
+                ImageUrl = j.ImageUrl,
+                PhotosCount = photoCounts.TryGetValue(j.Id, out var c) ? c : 0
+            }).ToList()
+        };
+    }
+
+    private async Task<ProviderProUploadPhotosJobSummary?> BuildUploadPhotosJobSummaryAsync(
+        IndorProveedor proveedor,
+        int jobId,
+        CancellationToken cancellationToken)
+    {
+        var job = await db.IndorProveedorJobs
+            .AsNoTracking()
+            .FirstOrDefaultAsync(j => j.Id == jobId && j.ProveedorId == proveedor.Id, cancellationToken);
+
+        if (job == null)
+        {
+            return null;
+        }
+
+        var existingPhotos = await db.IndorProveedorReports
+            .AsNoTracking()
+            .Where(r => r.ProveedorId == proveedor.Id && r.JobId == jobId)
+            .SumAsync(r => (int?)r.PhotosCount, cancellationToken) ?? 0;
+
+        return new ProviderProUploadPhotosJobSummary
+        {
+            JobId = job.Id,
+            Title = job.Title,
+            Address = job.Address,
+            StatusLabel = MapJobStatusLabel(job.Status),
+            StatusClass = MapJobStatusClass(job.Status),
+            IconClass = MapServiceIcon(job.ServiceType ?? job.Title),
+            ImageUrl = job.ImageUrl,
+            ExistingPhotosCount = existingPhotos
+        };
+    }
+
+    private static List<ProviderProUploadPhotosItem> MapUploadPhotosItems(ProviderProUploadPhotosDraft draft) =>
+        draft.Photos
+            .Select((p, i) => new ProviderProUploadPhotosItem
+            {
+                Index = i,
+                Url = p.Url ?? "",
+                Category = string.IsNullOrWhiteSpace(p.Slot) ? "After" : p.Slot
+            })
+            .Where(p => !string.IsNullOrWhiteSpace(p.Url))
+            .ToList();
+
+    public async Task<ProviderProUploadPhotosAddViewModel?> GetUploadPhotosAddAsync(
+        IndorProveedor proveedor,
+        ProviderProUploadPhotosDraft draft,
+        CancellationToken cancellationToken = default)
+    {
+        if (!draft.JobId.HasValue)
+        {
+            return null;
+        }
+
+        var summary = await BuildUploadPhotosJobSummaryAsync(proveedor, draft.JobId.Value, cancellationToken);
+        if (summary == null)
+        {
+            return null;
+        }
+
+        return new ProviderProUploadPhotosAddViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            Job = summary,
+            NewPhotos = MapUploadPhotosItems(draft)
+        };
+    }
+
+    public async Task<ProviderProUploadPhotosReviewViewModel?> GetUploadPhotosReviewAsync(
+        IndorProveedor proveedor,
+        ProviderProUploadPhotosDraft draft,
+        CancellationToken cancellationToken = default)
+    {
+        if (!draft.JobId.HasValue)
+        {
+            return null;
+        }
+
+        var summary = await BuildUploadPhotosJobSummaryAsync(proveedor, draft.JobId.Value, cancellationToken);
+        if (summary == null)
+        {
+            return null;
+        }
+
+        var items = MapUploadPhotosItems(draft);
+
+        return new ProviderProUploadPhotosReviewViewModel
+        {
+            CompanyName = ResolveCompanyName(proveedor),
+            Job = summary,
+            Photos = items,
+            Notes = draft.Notes,
+            NewCount = items.Count,
+            TotalCount = summary.ExistingPhotosCount + items.Count
+        };
+    }
+
+    public async Task<int?> SaveUploadPhotosFromDraftAsync(
+        int proveedorId,
+        ProviderProUploadPhotosDraft draft,
+        CancellationToken cancellationToken = default)
+    {
+        var validPhotos = draft.Photos.Where(p => !string.IsNullOrWhiteSpace(p.Url)).ToList();
+        if (!draft.JobId.HasValue || validPhotos.Count == 0)
+        {
+            return null;
+        }
+
+        var job = await db.IndorProveedorJobs
+            .Include(j => j.Cliente)
+            .FirstOrDefaultAsync(j => j.Id == draft.JobId && j.ProveedorId == proveedorId, cancellationToken);
+
+        if (job == null)
+        {
+            return null;
+        }
+
+        var title = $"{(job.ServiceType ?? job.Title)} — Photo Update";
+        if (title.Length > 150)
+        {
+            title = title[..150];
+        }
+
+        var report = new IndorProveedorReport
+        {
+            ProveedorId = proveedorId,
+            JobId = job.Id,
+            ClienteId = job.ClienteId,
+            ReportCode = $"RPT-{DateTime.UtcNow:yyyyMMddHHmm}",
+            Title = title,
+            Address = job.Address,
+            CustomerName = job.Cliente?.Name,
+            ServiceType = job.ServiceType ?? job.Title,
+            ReportType = ProviderReportTypes.Photo,
+            InternalNotes = NullIfEmpty(draft.Notes),
+            SendToHomeowner = true,
+            RequestApproval = false,
+            AttachToHouseFacts = false,
+            AddedToHouseFacts = false,
+            Status = ProviderReportStatuses.Ready,
+            PhotosCount = validPhotos.Count,
+            HasDocuments = false,
+            HasWarranty = false,
+            HasChecklist = false,
+            PhotoUrlsJson = SerializeUploadReportFiles([], validPhotos),
+            FilesCount = validPhotos.Count,
+            CompletedUtc = DateTime.UtcNow,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        db.IndorProveedorReports.Add(report);
+        await db.SaveChangesAsync(cancellationToken);
+        report.ReportCode = $"RPT-{1000 + report.Id}";
+        await db.SaveChangesAsync(cancellationToken);
+        return report.Id;
+    }
+
+    // ---------------------------------------------------------------
+    // Report Templates (DB-backed catalog)
+    // ---------------------------------------------------------------
+
+    public async Task<ProviderProTemplatesPageViewModel> GetReportTemplatesAsync(
+        int proveedorId,
+        CancellationToken cancellationToken = default)
+    {
+        var templates = await db.IndorProveedorReportTemplates
+            .AsNoTracking()
+            .Include(t => t.Sections)
+            .Where(t => t.Activo && (t.ProveedorId == null || t.ProveedorId == proveedorId))
+            .OrderBy(t => t.SortOrder).ThenBy(t => t.Name)
+            .ToListAsync(cancellationToken);
+
+        var views = templates.Select(MapTemplateView).ToList();
+
+        return new ProviderProTemplatesPageViewModel
+        {
+            MostUsed = views.Where(v => !v.IsCustom).ToList(),
+            MyTemplates = views.Where(v => v.IsCustom).ToList()
+        };
+    }
+
+    public async Task<ReportTemplateView?> GetReportTemplateAsync(
+        int proveedorId,
+        string key,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(key))
+        {
+            return null;
+        }
+
+        var template = await db.IndorProveedorReportTemplates
+            .AsNoTracking()
+            .Include(t => t.Sections)
+            .Where(t => t.Activo && (t.ProveedorId == null || t.ProveedorId == proveedorId))
+            .FirstOrDefaultAsync(t => t.TemplateKey == key, cancellationToken);
+
+        return template == null ? null : MapTemplateView(template);
+    }
+
+    private static ReportTemplateView MapTemplateView(IndorProveedorReportTemplate t) => new()
+    {
+        Id = t.Id,
+        Key = t.TemplateKey,
+        Name = t.Name,
+        Description = t.Description ?? "",
+        Icon = t.Icon,
+        Color = t.Color,
+        Badge = t.Badge,
+        Category = t.Category,
+        IsCustom = t.IsCustom,
+        Sections = t.Sections
+            .OrderBy(s => s.SortOrder)
+            .Select(s => new ReportTemplateSectionView { Label = s.Label, Icon = s.Icon })
+            .ToList()
+    };
+
+    // ---------------------------------------------------------------
+    // Export Report (DB-backed save)
+    // ---------------------------------------------------------------
+
+    public Task<ProviderProUploadPhotosJobSummary?> GetExportJobSummaryAsync(
+        IndorProveedor proveedor,
+        int jobId,
+        CancellationToken cancellationToken = default)
+        => BuildUploadPhotosJobSummaryAsync(proveedor, jobId, cancellationToken);
+
+    public async Task<int?> SaveExportReportFromDraftAsync(
+        int proveedorId,
+        ProviderProExportReportDraft draft,
+        bool send,
+        CancellationToken cancellationToken = default)
+    {
+        if (!draft.JobId.HasValue)
+        {
+            return null;
+        }
+
+        var job = await db.IndorProveedorJobs
+            .Include(j => j.Cliente)
+            .FirstOrDefaultAsync(j => j.Id == draft.JobId && j.ProveedorId == proveedorId, cancellationToken);
+
+        if (job == null)
+        {
+            return null;
+        }
+
+        var photos = draft.Photos.Where(p => !string.IsNullOrWhiteSpace(p.Url)).ToList();
+
+        var title = NullIfEmpty(draft.ReportName) ?? $"{(job.ServiceType ?? job.Title)} — Export Report";
+        if (title.Length > 150)
+        {
+            title = title[..150];
+        }
+
+        DateOnly? reportDate = null;
+        if (DateTime.TryParse(draft.ReportDate, out var parsedDate))
+        {
+            reportDate = DateOnly.FromDateTime(parsedDate);
+        }
+
+        var report = new IndorProveedorReport
+        {
+            ProveedorId = proveedorId,
+            JobId = job.Id,
+            ClienteId = job.ClienteId,
+            ReportCode = $"RPT-{DateTime.UtcNow:yyyyMMddHHmm}",
+            Title = title,
+            Address = job.Address,
+            CustomerName = job.Cliente?.Name,
+            ServiceType = job.ServiceType ?? job.Title,
+            ReportType = "Export Report",
+            Summary = NullIfEmpty(draft.Description),
+            InternalNotes = NullIfEmpty(draft.Notes),
+            PreparedBy = NullIfEmpty(draft.PreparedBy),
+            ReportDate = reportDate,
+            Category = NullIfEmpty(draft.Category),
+            LocationDetail = NullIfEmpty(draft.Location),
+            Priority = NullIfEmpty(draft.Priority),
+            Weather = NullIfEmpty(draft.Weather),
+            SendToHomeowner = send,
+            RequestApproval = false,
+            AttachToHouseFacts = false,
+            AddedToHouseFacts = false,
+            Status = send ? ProviderReportStatuses.Ready : ProviderReportStatuses.Draft,
+            PhotosCount = photos.Count,
+            HasDocuments = false,
+            HasWarranty = false,
+            HasChecklist = false,
+            PhotoUrlsJson = SerializeUploadReportFiles([], photos),
+            FilesCount = photos.Count,
+            CompletedUtc = send ? DateTime.UtcNow : null,
+            FechaCreacion = DateTime.UtcNow
+        };
+
+        db.IndorProveedorReports.Add(report);
+        await db.SaveChangesAsync(cancellationToken);
+
+        if (photos.Count > 0)
+        {
+            var order = 0;
+            foreach (var p in photos)
+            {
+                db.IndorProveedorReportPhotos.Add(new IndorProveedorReportPhoto
+                {
+                    ReportId = report.Id,
+                    ProveedorId = proveedorId,
+                    JobId = job.Id,
+                    Category = string.IsNullOrWhiteSpace(p.Slot) ? "After" : p.Slot,
+                    FileUrl = p.Url!,
+                    FileName = p.FileName,
+                    SortOrder = order++
+                });
+            }
+        }
+
+        report.ReportCode = $"RPT-{1000 + report.Id}";
+        await db.SaveChangesAsync(cancellationToken);
+        return report.Id;
+    }
+
+    private static int? ParseEmployeeCount(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        if (value.Trim().Equals("Just me", StringComparison.OrdinalIgnoreCase)) return 1;
+        var digits = new string(value.TakeWhile(char.IsDigit).ToArray());
+        return int.TryParse(digits, out var n) ? n : null;
+    }
+
+    public async Task<int> SaveInsuranceQuoteAsync(
+        int proveedorId,
+        ProviderProInsuranceQuoteDraft draft,
+        CancellationToken cancellationToken = default)
+    {
+        DateTime? dob = null;
+        if (DateTime.TryParse(draft.OwnerDateOfBirth, out var parsedDob))
+        {
+            dob = parsedDob.Date;
+        }
+
+        var now = DateTime.UtcNow;
+        var (payToday, monthly) = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing(draft.Plan);
+
+        var quote = new IndorProviderInsuranceQuote
+        {
+            ProveedorId = proveedorId,
+            QuoteCode = $"INS-{now:yyyyMMddHHmm}",
+            Plan = NullIfEmpty(draft.Plan),
+            Coverages = draft.Coverages.Count > 0 ? string.Join(", ", draft.Coverages) : "General Liability",
+            Trade = NullIfEmpty(draft.Trade),
+            BusinessName = NullIfEmpty(draft.BusinessName),
+            BusinessAddress = NullIfEmpty(draft.StreetAddress),
+            City = NullIfEmpty(draft.City),
+            State = NullIfEmpty(draft.State),
+            ZipCode = NullIfEmpty(draft.ZipCode),
+            OwnerName = NullIfEmpty(draft.OwnerName),
+            OwnerDateOfBirth = dob,
+            OwnerPhone = NullIfEmpty(draft.OwnerPhone),
+            OwnerEmail = NullIfEmpty(draft.OwnerEmail),
+            NumberOfEmployees = ParseEmployeeCount(draft.NumberOfEmployees),
+            EmployeePayroll = draft.EmployeePayroll,
+            CompanyGrossRevenue = draft.CompanyGrossRevenue,
+            YearsInBusiness = NullIfEmpty(draft.YearsInBusiness),
+            WorksAtCustomerHomes = draft.WorksAtCustomerHomes,
+            UsesSubcontractors = draft.UsesSubcontractors,
+            NeedsCOI = draft.NeedsCOI,
+            PayTodayAmount = payToday,
+            MonthlyAmount = monthly,
+            PaymentMethod = NullIfEmpty(draft.PaymentMethod) ?? "Card",
+            CardLast4 = NullIfEmpty(draft.CardLast4),
+            AutoPayMonthly = draft.AutoPayMonthly,
+            FirstBillingDate = DateTime.Today.AddDays(30),
+            // Payment gateway is not integrated yet — always approve for now.
+            PaymentStatus = "Paid",
+            PaymentAuthorized = true,
+            PaidUtc = now,
+            ConfirmedAccurate = true,
+            Status = "Pending Carrier Approval",
+            SubmittedUtc = now,
+            FechaCreacion = now
+        };
+
+        db.IndorProviderInsuranceQuotes.Add(quote);
+        await db.SaveChangesAsync(cancellationToken);
+
+        quote.QuoteCode = $"INS-{10000 + quote.Id}";
+        quote.ReceiptNumber = $"IND-GL-{now:yyyy}-{quote.Id:00000}";
+        await db.SaveChangesAsync(cancellationToken);
+        return quote.Id;
+    }
+
     public async Task<ProviderProMessagesInboxViewModel> GetMessagesInboxAsync(
         IndorProveedor proveedor,
         string? tab = "all",
@@ -4491,26 +4957,33 @@ public class ProviderProDataService(
 
     public Task<ProviderProEditProfileViewModel> GetEditProfileAsync(
         IndorProveedor proveedor,
+        ProviderProEditProfileInput? input = null,
         CancellationToken cancellationToken = default)
     {
-        var companyName = ResolveCompanyName(proveedor);
+        var companyName = input != null
+            ? ResolveCompanyNameFromInput(input)
+            : ResolveCompanyName(proveedor);
+
         return Task.FromResult(new ProviderProEditProfileViewModel
         {
             CompanyName = companyName,
             LogoUrl = ResolveProviderLogoUrl(proveedor),
             CompanyInitial = BuildCompanyInitial(companyName),
-            BusinessName = proveedor.BusinessName ?? "",
-            DbaName = proveedor.DbaName ?? "",
-            PrimaryContact = proveedor.PrimaryContact ?? "",
-            Phone = proveedor.Phone ?? "",
-            Email = proveedor.Email ?? "",
-            BusinessAddress = proveedor.BusinessAddress ?? "",
-            PrimaryCity = proveedor.PrimaryCity ?? "",
-            PreferredHours = proveedor.PreferredHours ?? "",
-            ServiceDescription = proveedor.ServiceDescription ?? "",
-            TravelRadiusMiles = proveedor.TravelRadiusMiles > 0 ? proveedor.TravelRadiusMiles : 25,
-            EmergencyService = proveedor.EmergencyService,
-            SameDayJobs = proveedor.SameDayJobs
+            BusinessName = input?.BusinessName?.Trim() ?? proveedor.BusinessName ?? "",
+            DbaName = input?.DbaName?.Trim() ?? proveedor.DbaName ?? "",
+            PrimaryContact = input?.PrimaryContact?.Trim() ?? proveedor.PrimaryContact ?? "",
+            Phone = input?.Phone?.Trim() ?? proveedor.Phone ?? "",
+            Email = input?.Email?.Trim() ?? proveedor.Email ?? "",
+            BusinessAddress = input?.BusinessAddress?.Trim() ?? proveedor.BusinessAddress ?? "",
+            PrimaryCity = input?.PrimaryCity?.Trim() ?? proveedor.PrimaryCity ?? "",
+            ServiceZipCodes = input?.ServiceZipCodes?.Trim() ?? FormatZipNeighborhoods(proveedor.ZipNeighborhoodsJson),
+            PreferredHours = input?.PreferredHours?.Trim() ?? proveedor.PreferredHours ?? "",
+            ServiceDescription = input?.ServiceDescription?.Trim() ?? proveedor.ServiceDescription ?? "",
+            TravelRadiusMiles = input?.TravelRadiusMiles > 0
+                ? input.TravelRadiusMiles
+                : proveedor.TravelRadiusMiles > 0 ? proveedor.TravelRadiusMiles : 25,
+            EmergencyService = input?.EmergencyService ?? proveedor.EmergencyService,
+            SameDayJobs = input?.SameDayJobs ?? proveedor.SameDayJobs
         });
     }
 
@@ -4534,6 +5007,7 @@ public class ProviderProDataService(
         entity.Email = TrimOrEmpty(input.Email);
         entity.BusinessAddress = TrimOrEmpty(input.BusinessAddress);
         entity.PrimaryCity = TrimOrEmpty(input.PrimaryCity);
+        entity.ZipNeighborhoodsJson = ParseZipNeighborhoodsJson(input.ServiceZipCodes);
         entity.PreferredHours = TrimOrEmpty(input.PreferredHours);
         entity.ServiceDescription = TrimOrEmpty(input.ServiceDescription);
         entity.TravelRadiusMiles = input.TravelRadiusMiles > 0 ? input.TravelRadiusMiles : entity.TravelRadiusMiles;
@@ -4541,10 +5015,361 @@ public class ProviderProDataService(
         entity.SameDayJobs = input.SameDayJobs;
         entity.FechaActualizacion = DateTime.UtcNow;
 
-        await ProviderGeolocationHelper.ApplyGeocodeAsync(entity, addressLookup, cancellationToken);
+        try
+        {
+            await ProviderGeolocationHelper.ApplyGeocodeAsync(entity, addressLookup, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            logger.LogWarning(ex, "Geocoding skipped for provider {ProviderId} during profile save.", proveedorId);
+        }
 
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+        catch (DbUpdateException ex)
+        {
+            logger.LogError(ex, "Failed to save provider profile for provider {ProviderId}.", proveedorId);
+            return false;
+        }
+    }
+
+    public async Task<ProviderProEditProfileServicesViewModel> GetEditProfileServicesAsync(
+        IndorProveedor proveedor,
+        CancellationToken cancellationToken = default)
+    {
+        var companyName = ResolveCompanyName(proveedor);
+        var selectedCategories = proveedor.Categorias
+            .Select(c => c.CategoriaId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var selectedServices = proveedor.Ofertas
+            .Select(o => o.OfertaId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var categories = await db.IndorProveedorCategoriasCatalogo
+            .AsNoTracking()
+            .Where(c => c.Activo)
+            .OrderBy(c => c.SortOrder)
+            .Select(c => new ProviderProEditProfileServiceOptionViewModel
+            {
+                Id = c.Id,
+                Label = c.LabelEn,
+                IconClass = c.IconClass.StartsWith("fa-") ? c.IconClass : $"fa-{c.IconClass}",
+                IsCategory = true,
+                IsSelected = selectedCategories.Contains(c.Id)
+            })
+            .ToListAsync(cancellationToken);
+
+        var services = await db.IndorProveedorOfertasCatalogo
+            .AsNoTracking()
+            .Where(o => o.Activo)
+            .OrderBy(o => o.SortOrder)
+            .Select(o => new ProviderProEditProfileServiceOptionViewModel
+            {
+                Id = o.Id,
+                Label = o.LabelEn,
+                IconClass = o.IconClass.StartsWith("fa-") ? o.IconClass : $"fa-{o.IconClass}",
+                IsCategory = false,
+                IsSelected = selectedServices.Contains(o.Id)
+            })
+            .ToListAsync(cancellationToken);
+
+        if (categories.Count == 0)
+        {
+            categories = OnboardingCatalog.ProviderCategories
+                .Select(c => new ProviderProEditProfileServiceOptionViewModel
+                {
+                    Id = c.Id,
+                    Label = c.Label,
+                    IconClass = c.IconClass,
+                    IsCategory = true,
+                    IsSelected = selectedCategories.Contains(c.Id)
+                })
+                .ToList();
+        }
+
+        return new ProviderProEditProfileServicesViewModel
+        {
+            CompanyName = companyName,
+            CompanyInitial = BuildCompanyInitial(companyName),
+            Options = categories.Concat(services).ToList()
+        };
+    }
+
+    public async Task<bool> SaveEditProfileServicesAsync(
+        int proveedorId,
+        IReadOnlyList<string> selectedIds,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await db.IndorProveedores
+            .Include(p => p.Categorias)
+            .Include(p => p.Ofertas)
+            .FirstOrDefaultAsync(p => p.Id == proveedorId, cancellationToken);
+
+        if (entity == null)
+        {
+            return false;
+        }
+
+        var categoryIds = await db.IndorProveedorCategoriasCatalogo
+            .AsNoTracking()
+            .Where(c => c.Activo)
+            .Select(c => c.Id)
+            .ToListAsync(cancellationToken);
+
+        if (categoryIds.Count == 0)
+        {
+            categoryIds = OnboardingCatalog.ProviderCategories.Select(c => c.Id).ToList();
+        }
+
+        var serviceIds = await db.IndorProveedorOfertasCatalogo
+            .AsNoTracking()
+            .Where(o => o.Activo)
+            .Select(o => o.Id)
+            .ToListAsync(cancellationToken);
+
+        var categorySet = categoryIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var serviceSet = serviceIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var desired = selectedIds
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        SyncCategoriesOnEntity(entity, desired.Where(id => categorySet.Contains(id)).ToList());
+        SyncOfertasOnEntity(entity, desired.Where(id => serviceSet.Contains(id)).ToList());
+        entity.FechaActualizacion = DateTime.UtcNow;
+
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+            return true;
+        }
+        catch (DbUpdateException)
+        {
+            return false;
+        }
+    }
+
+    public Task<ProviderProEditProfileVerificationViewModel> GetEditProfileVerificationAsync(
+        IndorProveedor proveedor,
+        CancellationToken cancellationToken = default)
+    {
+        var companyName = ResolveCompanyName(proveedor);
+        var docs = proveedor.Documentos;
+        bool HasDoc(string type) =>
+            docs.Any(d => string.Equals(d.DocumentType, type, StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(d.FileUrl));
+
+        string? GetDocUrl(string type) =>
+            docs.FirstOrDefault(d => string.Equals(d.DocumentType, type, StringComparison.OrdinalIgnoreCase)
+                && !string.IsNullOrWhiteSpace(d.FileUrl))?.FileUrl;
+
+        var slots = new[]
+        {
+            (ProviderDocumentTypes.License, "Trade / business license"),
+            (ProviderDocumentTypes.Insurance, "Insurance certificate"),
+            (ProviderDocumentTypes.GovernmentId, "Government-issued ID"),
+            (ProviderDocumentTypes.W9, "W-9 tax form")
+        }.Select(slot => new ProviderProEditProfileDocumentSlotViewModel
+        {
+            DocumentType = slot.Item1,
+            Label = slot.Item2,
+            FileUrl = GetDocUrl(slot.Item1),
+            IsUploaded = HasDoc(slot.Item1)
+        }).ToList();
+
+        return Task.FromResult(new ProviderProEditProfileVerificationViewModel
+        {
+            CompanyName = companyName,
+            CompanyInitial = BuildCompanyInitial(companyName),
+            Items = BuildVerificationItems(proveedor),
+            DocumentSlots = slots
+        });
+    }
+
+    public async Task ApplyVerificationDocumentFlagsAsync(
+        int proveedorId,
+        string documentType,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await db.IndorProveedores
+            .FirstOrDefaultAsync(p => p.Id == proveedorId, cancellationToken);
+
+        if (entity == null)
+        {
+            return;
+        }
+
+        if (documentType.Equals(ProviderDocumentTypes.License, StringComparison.OrdinalIgnoreCase)
+            || documentType.Equals(ProviderDocumentTypes.ContractorLicense, StringComparison.OrdinalIgnoreCase)
+            || documentType.Equals(ProviderDocumentTypes.HvacLicense, StringComparison.OrdinalIgnoreCase)
+            || documentType.Equals(ProviderDocumentTypes.PlumbingLicense, StringComparison.OrdinalIgnoreCase))
+        {
+            entity.IsLicensed = true;
+        }
+
+        if (documentType.Equals(ProviderDocumentTypes.Insurance, StringComparison.OrdinalIgnoreCase)
+            || documentType.Equals(ProviderDocumentTypes.LiabilityInsurance, StringComparison.OrdinalIgnoreCase))
+        {
+            entity.IsInsured = true;
+        }
+
+        entity.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
-        return true;
+    }
+
+    private static void SyncCategoriesOnEntity(IndorProveedor entity, List<string> ids)
+    {
+        var desired = ids
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var sel in entity.Categorias.ToList())
+        {
+            if (!desired.Contains(sel.CategoriaId))
+            {
+                entity.Categorias.Remove(sel);
+            }
+        }
+
+        var existing = entity.Categorias
+            .Select(c => c.CategoriaId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var id in desired.Where(id => !existing.Contains(id)))
+        {
+            entity.Categorias.Add(new IndorProveedorCategoriaSel { CategoriaId = id });
+        }
+    }
+
+    private static void SyncOfertasOnEntity(IndorProveedor entity, List<string> ids)
+    {
+        var desired = ids
+            .Where(id => !string.IsNullOrWhiteSpace(id))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var sel in entity.Ofertas.ToList())
+        {
+            if (!desired.Contains(sel.OfertaId))
+            {
+                entity.Ofertas.Remove(sel);
+            }
+        }
+
+        var existing = entity.Ofertas
+            .Select(o => o.OfertaId)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var id in desired.Where(id => !existing.Contains(id)))
+        {
+            entity.Ofertas.Add(new IndorProveedorOfertaSel { OfertaId = id });
+        }
+    }
+
+    private static string FormatZipNeighborhoods(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return "";
+        }
+
+        try
+        {
+            var zips = JsonSerializer.Deserialize<List<string>>(json);
+            return zips == null ? "" : string.Join(", ", zips.Where(z => !string.IsNullOrWhiteSpace(z)));
+        }
+        catch
+        {
+            return "";
+        }
+    }
+
+    private static string? ParseZipNeighborhoodsJson(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var zips = value
+            .Split([',', ';', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Where(z => !string.IsNullOrWhiteSpace(z))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        return zips.Count == 0 ? null : JsonSerializer.Serialize(zips);
+    }
+
+    public async Task<ProviderProNotificationsViewModel> GetNotificationsPageAsync(
+        IndorProveedor proveedor,
+        CancellationToken cancellationToken = default)
+    {
+        var meta = ReadOnboardingMeta(proveedor.OnboardingMetaJson);
+        var companyName = ResolveCompanyName(proveedor);
+        return new ProviderProNotificationsViewModel
+        {
+            CompanyName = companyName,
+            CompanyInitial = BuildCompanyInitial(companyName),
+            NotifyJobAlerts = meta.NotifyJobAlerts,
+            NotifyLeadUpdates = meta.NotifyLeadUpdates,
+            NotifyPaymentAlerts = meta.NotifyPaymentAlerts,
+            NotifyReportReminders = meta.NotifyReportReminders
+        };
+    }
+
+    public async Task SaveNotificationPreferencesAsync(
+        int proveedorId,
+        ProviderProNotificationsInput input,
+        CancellationToken cancellationToken = default)
+    {
+        var entity = await db.IndorProveedores
+            .FirstOrDefaultAsync(p => p.Id == proveedorId, cancellationToken)
+            ?? throw new InvalidOperationException("Provider not found.");
+
+        UpdateOnboardingMeta(entity, meta =>
+        {
+            meta.NotifyJobAlerts = input.NotifyJobAlerts;
+            meta.NotifyLeadUpdates = input.NotifyLeadUpdates;
+            meta.NotifyPaymentAlerts = input.NotifyPaymentAlerts;
+            meta.NotifyReportReminders = input.NotifyReportReminders;
+        });
+
+        entity.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    private static readonly JsonSerializerOptions OnboardingMetaJsonOptions = new()
+    {
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+    };
+
+    private static ProviderOnboardingMeta ReadOnboardingMeta(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new ProviderOnboardingMeta();
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<ProviderOnboardingMeta>(json, OnboardingMetaJsonOptions)
+                ?? new ProviderOnboardingMeta();
+        }
+        catch (JsonException)
+        {
+            return new ProviderOnboardingMeta();
+        }
+    }
+
+    private static void UpdateOnboardingMeta(IndorProveedor entity, Action<ProviderOnboardingMeta> update)
+    {
+        var meta = ReadOnboardingMeta(entity.OnboardingMetaJson);
+        update(meta);
+        entity.OnboardingMetaJson = JsonSerializer.Serialize(meta, OnboardingMetaJsonOptions);
     }
 
     private static string? ResolveProviderLogoUrl(IndorProveedor proveedor) =>
@@ -5572,6 +6397,15 @@ public class ProviderProDataService(
         !string.IsNullOrWhiteSpace(proveedor.DbaName)
             ? proveedor.DbaName
             : proveedor.BusinessName ?? proveedor.PrimaryContact ?? "Your company";
+
+    private static string ResolveCompanyNameFromInput(ProviderProEditProfileInput input) =>
+        !string.IsNullOrWhiteSpace(input.DbaName)
+            ? input.DbaName.Trim()
+            : !string.IsNullOrWhiteSpace(input.BusinessName)
+                ? input.BusinessName.Trim()
+                : !string.IsNullOrWhiteSpace(input.PrimaryContact)
+                    ? input.PrimaryContact.Trim()
+                    : "Your company";
 
     private static string MapJobStatusClass(string status) => status switch
     {

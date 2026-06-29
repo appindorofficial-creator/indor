@@ -54,7 +54,7 @@
                         <input asp-for="RememberMe" type="checkbox" />
                         <span>Remember me</span>
                     </label>
-                    <a href="#" class="forgot-link">Forgot your password?</a>
+                    <a asp-controller="Account" asp-action="ForgotPassword" class="forgot-link">Forgot your password?</a>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-primary--submit">

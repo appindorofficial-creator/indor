@@ -12,7 +12,7 @@
     <p>Help INDOR send the right cleaning crew for your move.</p>
 </div>
 
-<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+<div asp-validation-summary="All" class="validation-summary"></div>
 
 <form asp-action="CleaningDetails" method="post" id="cleaningDetailsForm" class="iw-step-form">
     <input type="hidden" asp-for="SolicitudId" />
@@ -96,7 +96,7 @@
         </div>
     </div>
 
-    <div class="cl-form-actions">
+    <div class="sticky-footer">
         <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
         <button type="submit" name="action" value="skip" class="btn-outline">Skip date for now</button>
     </div>

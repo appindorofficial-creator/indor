@@ -1,0 +1,81 @@
+@model string
+@{
+    ViewData["Title"] = "Report Templates - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "report-templates.css";
+
+    var initial = string.IsNullOrWhiteSpace(Model) ? "P" : Model.Trim()[0].ToString().ToUpperInvariant();
+
+    var mostUsed = new (string icon, string color, string title, string desc, string template)[] {
+        ("fa-file-lines", "blue", "Completion Report", "Document finished work, photos, notes, and signatures.", "completion"),
+        ("fa-magnifying-glass", "green", "Inspection Report", "Record findings, issues, and recommendations.", "inspection"),
+        ("fa-calendar-days", "amber", "Daily Report", "Track daily work completed, crew, and site notes.", "daily"),
+        ("fa-chart-column", "purple", "Progress Report", "Show project progress, milestones, and updates.", "progress"),
+        ("fa-camera", "orange", "Photo Report", "Organize before-and-after photos with captions.", "photo"),
+        ("fa-wrench", "teal", "Maintenance Report", "Log service work, maintenance tasks, and materials.", "maintenance")
+    };
+
+    var moreTypes = new (string icon, string color, string title, string desc, string template)[] {
+        ("fa-shield-halved", "red", "Safety / Incident Report", "Record accidents, hazards, or safety concerns.", "safety"),
+        ("fa-file-pen", "blue", "Change Order Report", "Document scope changes, approvals, and costs.", "changeorder"),
+        ("fa-list-check", "amber", "Punch List Report", "List pending fixes, touch-ups, and incomplete items.", "punchlist"),
+        ("fa-truck", "purple", "Material Delivery Report", "Track delivered materials, quantities, and dates.", "materialdelivery")
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--report-templates">
+    <header class="prv-pro-rt-topbar">
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-rt-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <div class="prv-pro-brand">
+            <span class="prv-pro-brand-indor">INDOR</span>
+            <span class="prv-pro-brand-pro">PRO</span>
+        </div>
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-profile-btn prv-pro-profile-btn--compact" aria-label="Profile menu">
+            <span class="prv-pro-avatar prv-pro-avatar--initial">@initial</span>
+            <i class="fas fa-chevron-down prv-pro-profile-chevron"></i>
+        </a>
+    </header>
+
+    <section class="prv-pro-rt-head">
+        <div class="prv-pro-rt-head-text">
+            <h1>Report Templates</h1>
+            <p>Choose the type of report you want to create.</p>
+        </div>
+        <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="prv-pro-rt-add">
+            <i class="fas fa-plus"></i> Add Custom
+        </a>
+    </section>
+
+    <h2 class="prv-pro-rt-section">Most Used</h2>
+    <div class="prv-pro-rt-grid">
+        @foreach (var t in mostUsed)
+        {
+            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" asp-route-template="@t.template" class="prv-pro-rt-card">
+                <span class="prv-pro-rt-icon prv-pro-rt-icon--@t.color"><i class="fas @t.icon"></i></span>
+                <strong>@t.title</strong>
+                <small>@t.desc</small>
+            </a>
+        }
+    </div>
+
+    <h2 class="prv-pro-rt-section">More Report Types</h2>
+    <div class="prv-pro-rt-list">
+        @foreach (var t in moreTypes)
+        {
+            <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" asp-route-template="@t.template" class="prv-pro-rt-row">
+                <span class="prv-pro-rt-icon prv-pro-rt-icon--@t.color"><i class="fas @t.icon"></i></span>
+                <div class="prv-pro-rt-row-text">
+                    <strong>@t.title</strong>
+                    <small>@t.desc</small>
+                </div>
+                <i class="fas fa-chevron-right prv-pro-rt-chevron"></i>
+            </a>
+        }
+    </div>
+
+    <div class="prv-pro-rt-note">
+        <i class="fas fa-circle-info"></i>
+        <span>You can customize any report after choosing a template.</span>
+    </div>
+</div>

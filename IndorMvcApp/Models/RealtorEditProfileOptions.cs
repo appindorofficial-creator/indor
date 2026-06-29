@@ -21,6 +21,12 @@ public static class RealtorEditProfileOptions
         "10+ years",
         "15+ years"
     ];
+
+    public static IReadOnlyList<string> SupportedLanguages { get; } =
+    [
+        "English",
+        "Spanish"
+    ];
 }
 
 public static class RealtorEditProfileActions

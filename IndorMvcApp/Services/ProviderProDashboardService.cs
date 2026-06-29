@@ -1,3 +1,4 @@
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 
 using IndorMvcApp.ViewModels;
@@ -68,6 +69,8 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
 
             ActivationPending = !isApproved,
 
+            IsInsured = proveedor.IsInsured,
+
             ProviderScore = score,
 
             ScoreLabel = score >= 85 ? "Great Work!" : score >= 70 ? "On Track" : "Getting Started",
@@ -132,25 +135,7 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
 
 
 
-    private static string ResolveGreeting()
-
-    {
-
-        var hour = DateTime.Now.Hour;
-
-        return hour switch
-
-        {
-
-            < 12 => "Good morning",
-
-            < 17 => "Good afternoon",
-
-            _ => "Good evening"
-
-        };
-
-    }
+    private static string ResolveGreeting() => IndorGreeting.ForNow();
 
 
 

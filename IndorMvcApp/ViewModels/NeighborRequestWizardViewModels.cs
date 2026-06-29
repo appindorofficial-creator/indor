@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using IndorMvcApp.Models;
+using IndorMvcApp.Services;
 using Microsoft.AspNetCore.Http;
 
 namespace IndorMvcApp.ViewModels;
@@ -15,11 +16,13 @@ public class NeighborRequestWizardShellViewModel
     public string? BackUrl { get; set; }
     public string CloseUrl { get; set; } = "/Home/Index";
     public IReadOnlyList<string> StepLabels { get; set; } = ["Details", "Schedule", "Extras", "Helpers"];
+    public string MinNeededByDateIso => DateTime.UtcNow.ToString("yyyy-MM-dd");
 }
 
 public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellViewModel
 {
     public int? SelectedCategoryId { get; set; }
+    public bool ResumeDraft { get; set; }
 
     [Required]
     public int CategoryId { get; set; }
@@ -69,7 +72,7 @@ public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellVi
     public IReadOnlyList<(string Value, string Label, string IconClass)> ToolOptions { get; set; } = [];
 }
 
-public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShellViewModel
+public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShellViewModel, IValidatableObject
 {
     public string WhenCode { get; set; } = NeighborRequestTimelineCodes.Today;
     public string PreferredTimeCode { get; set; } = NeighborRequestPreferredTimeCodes.Flexible;
@@ -90,9 +93,30 @@ public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShel
     public IReadOnlyList<(string Value, string Label, string IconClass)> DurationOptions { get; set; } = [];
     public IReadOnlyList<(string Value, string Label)> TimelineOptions { get; set; } = [];
     public IReadOnlyList<(string Value, string Label, string Subtitle, string IconClass)> AudienceOptions { get; set; } = [];
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (IsEditMode || WhenCode != NeighborRequestTimelineCodes.PickDate)
+        {
+            yield break;
+        }
+
+        if (NeededByDate == null)
+        {
+            yield return new ValidationResult("Pick a date to continue.", [nameof(NeededByDate)]);
+            yield break;
+        }
+
+        if (!NeighborRequestWizardService.IsNeededByDateAllowed(NeededByDate))
+        {
+            yield return new ValidationResult(
+                NeighborRequestWizardService.NeededByDatePastErrorMessage,
+                [nameof(NeededByDate)]);
+        }
+    }
 }
 
-public class NeighborRequestEditDetailsStepViewModel : NeighborRequestWizardShellViewModel
+public class NeighborRequestEditDetailsStepViewModel : NeighborRequestWizardShellViewModel, IValidatableObject
 {
     public int CategoryId { get; set; }
     public string CategoryLabel { get; set; } = string.Empty;
@@ -114,6 +138,17 @@ public class NeighborRequestEditDetailsStepViewModel : NeighborRequestWizardShel
 
     public List<NeighborRequestCategoryOptionViewModel> Categories { get; set; } = [];
     public IReadOnlyList<(string Value, string Label)> TimeWindowOptions { get; set; } = [];
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (NeededByDate is not null
+            && !NeighborRequestWizardService.IsNeededByDateAllowed(NeededByDate))
+        {
+            yield return new ValidationResult(
+                NeighborRequestWizardService.NeededByDatePastErrorMessage,
+                [nameof(NeededByDate)]);
+        }
+    }
 }
 
 public class NeighborRequestReviewStepViewModel : NeighborRequestWizardShellViewModel

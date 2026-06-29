@@ -176,6 +176,24 @@ public class ProviderProProfilePageViewModel : ProviderProPageBaseViewModel
     public int DocumentsRequired { get; set; }
 }
 
+public class ProviderProNotificationsViewModel : ProviderProPageBaseViewModel
+{
+    public string CompanyInitial { get; set; } = "P";
+    public bool NotifyJobAlerts { get; set; } = true;
+    public bool NotifyLeadUpdates { get; set; } = true;
+    public bool NotifyPaymentAlerts { get; set; } = true;
+    public bool NotifyReportReminders { get; set; } = true;
+    public bool NotificationsSaved { get; set; }
+}
+
+public class ProviderProNotificationsInput
+{
+    public bool NotifyJobAlerts { get; set; } = true;
+    public bool NotifyLeadUpdates { get; set; } = true;
+    public bool NotifyPaymentAlerts { get; set; } = true;
+    public bool NotifyReportReminders { get; set; } = true;
+}
+
 public class ProviderProProfileVerificationItemViewModel
 {
     public string Label { get; set; } = "";
@@ -215,6 +233,7 @@ public class ProviderProEditProfileViewModel : ProviderProPageBaseViewModel
     public string Email { get; set; } = "";
     public string BusinessAddress { get; set; } = "";
     public string PrimaryCity { get; set; } = "";
+    public string ServiceZipCodes { get; set; } = "";
     public string PreferredHours { get; set; } = "";
     public string ServiceDescription { get; set; } = "";
     public int TravelRadiusMiles { get; set; } = 25;
@@ -224,16 +243,47 @@ public class ProviderProEditProfileViewModel : ProviderProPageBaseViewModel
 
 public class ProviderProEditProfileInput
 {
-    public string BusinessName { get; set; } = "";
-    public string DbaName { get; set; } = "";
-    public string PrimaryContact { get; set; } = "";
-    public string Phone { get; set; } = "";
-    public string Email { get; set; } = "";
-    public string BusinessAddress { get; set; } = "";
-    public string PrimaryCity { get; set; } = "";
-    public string PreferredHours { get; set; } = "";
-    public string ServiceDescription { get; set; } = "";
+    public string? BusinessName { get; set; }
+    public string? DbaName { get; set; }
+    public string? PrimaryContact { get; set; }
+    public string? Phone { get; set; }
+    public string? Email { get; set; }
+    public string? BusinessAddress { get; set; }
+    public string? PrimaryCity { get; set; }
+    public string? ServiceZipCodes { get; set; }
+    public string? PreferredHours { get; set; }
+    public string? ServiceDescription { get; set; }
     public int TravelRadiusMiles { get; set; } = 25;
     public bool EmergencyService { get; set; } = true;
     public bool SameDayJobs { get; set; } = true;
+}
+
+public class ProviderProEditProfileServicesViewModel : ProviderProPageBaseViewModel
+{
+    public string CompanyInitial { get; set; } = "P";
+    public List<ProviderProEditProfileServiceOptionViewModel> Options { get; set; } = [];
+}
+
+public class ProviderProEditProfileServiceOptionViewModel
+{
+    public string Id { get; set; } = "";
+    public string Label { get; set; } = "";
+    public string IconClass { get; set; } = "fa-wrench";
+    public bool IsSelected { get; set; }
+    public bool IsCategory { get; set; }
+}
+
+public class ProviderProEditProfileVerificationViewModel : ProviderProPageBaseViewModel
+{
+    public string CompanyInitial { get; set; } = "P";
+    public List<ProviderProProfileVerificationItemViewModel> Items { get; set; } = [];
+    public List<ProviderProEditProfileDocumentSlotViewModel> DocumentSlots { get; set; } = [];
+}
+
+public class ProviderProEditProfileDocumentSlotViewModel
+{
+    public string DocumentType { get; set; } = "";
+    public string Label { get; set; } = "";
+    public string? FileUrl { get; set; }
+    public bool IsUploaded { get; set; }
 }

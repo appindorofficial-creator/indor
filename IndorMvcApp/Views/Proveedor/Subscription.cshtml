@@ -1,0 +1,58 @@
+@model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
+@{
+    ViewData["Title"] = "Subscription - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--support">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head prv-pro-settings-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1>Subscription / Plan</h1>
+            <p>Your INDOR Pro plan and activation status.</p>
+        </div>
+    </header>
+
+    <section class="prv-pro-subscription-hero">
+        <span class="prv-pro-subscription-badge"><i class="fas fa-crown"></i> Current plan</span>
+        <h2>@Model.SubscriptionPlan</h2>
+        <p>@(Model.IsApproved ? "Your provider profile is active for INDOR opportunities." : "Complete verification to unlock INDOR job leads.")</p>
+    </section>
+
+    <section class="prv-pro-profile-card">
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-check-circle"></i> Included with INDOR Pro</h3></header>
+        <div class="prv-pro-profile-kv"><i class="fas fa-users"></i><span>Clients &amp; CRM</span></div>
+        <div class="prv-pro-profile-kv"><i class="fas fa-briefcase"></i><span>Jobs, photos &amp; scheduling</span></div>
+        <div class="prv-pro-profile-kv"><i class="fas fa-file-invoice-dollar"></i><span>Estimates &amp; invoices</span></div>
+        <div class="prv-pro-profile-kv"><i class="fas fa-file-lines"></i><span>Reports &amp; property history</span></div>
+    </section>
+
+    <section class="prv-pro-profile-card">
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-shield-halved"></i> Activation status</h3></header>
+        <div class="prv-pro-profile-kv-row">
+            <span>Provider verification</span>
+            <strong class="@(Model.IsVerified ? "prv-pro-status-ok" : "")">@(Model.IsVerified ? "Verified" : "Pending")</strong>
+        </div>
+        <div class="prv-pro-profile-kv-row">
+            <span>Documents uploaded</span>
+            <strong>@Model.DocumentsUploaded / @Model.DocumentsRequired</strong>
+        </div>
+        <div class="prv-pro-profile-kv-row">
+            <span>Payment processing</span>
+            <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
+        </div>
+    </section>
+
+    @if (!Model.IsApproved)
+    {
+        <a asp-controller="ProviderRegistration" asp-action="ActivationCall" class="prv-pro-btn prv-pro-btn--primary prv-pro-subscription-cta">
+            Complete activation
+        </a>
+    }
+</div>

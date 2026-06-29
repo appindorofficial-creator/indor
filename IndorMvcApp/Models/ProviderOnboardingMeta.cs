@@ -21,4 +21,12 @@ public class ProviderOnboardingMeta
     public bool IndorProActive { get; set; }
 
     public bool UsesNewWizard { get; set; } = true;
+
+    public bool NotifyJobAlerts { get; set; } = true;
+
+    public bool NotifyLeadUpdates { get; set; } = true;
+
+    public bool NotifyPaymentAlerts { get; set; } = true;
+
+    public bool NotifyReportReminders { get; set; } = true;
 }

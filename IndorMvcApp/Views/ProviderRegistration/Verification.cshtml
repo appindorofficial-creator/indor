@@ -39,7 +39,7 @@
     </span>
 </div>
 
-<form asp-action="Verification" method="post" enctype="multipart/form-data" class="prv-wiz-stack">
+<form asp-action="Verification" method="post" enctype="multipart/form-data" id="prvVerificationForm" class="prv-wiz-stack prv-verification-form">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -53,14 +53,9 @@
             <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline"><i class="fas fa-upload"></i> Upload Documents</button>
         </div>
     }
-
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Continue with Verification</button>
-        <button type="submit" name="action" value="pro-only" class="ob-btn ob-btn-outline">Use Only INDOR Pro for Now</button>
-    </div>
 </form>
 
-<div class="prv-wiz-info">
+<div class="prv-wiz-info prv-verification-note">
     <i class="fas fa-circle-info"></i>
     <div>
         <p>You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads.</p>
@@ -71,3 +66,8 @@
 {
     <p class="prv-wiz-note"><i class="fas fa-check text-success"></i> Documents uploaded</p>
 }
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvVerificationForm" class="ob-btn ob-btn-primary">Continue with Verification</button>
+    <button type="submit" form="prvVerificationForm" name="action" value="pro-only" class="ob-btn ob-btn-outline">Use Only INDOR Pro for Now</button>
+</div>

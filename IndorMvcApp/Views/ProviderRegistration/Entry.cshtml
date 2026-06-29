@@ -2,6 +2,7 @@
 @{
     Layout = "_LayoutStep";
     var s = Model.State;
+    var selectedPath = string.Equals(s.OnboardingPath, "Apply", StringComparison.OrdinalIgnoreCase) ? "apply" : "pro";
 }
 <div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
 <div class="ob-head-block">
@@ -9,12 +10,12 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Entry" method="post" class="prv-wiz-stack">
+<form asp-action="Entry" method="post" id="prvEntryForm" class="prv-wiz-stack pa-validate" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
-    <label class="prv-wiz-card prv-wiz-card--selectable">
-        <input type="radio" name="path" value="pro" checked />
+    <label class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "pro" ? "is-selected" : "")">
+        <input type="radio" name="path" value="pro" @(selectedPath == "pro" ? "checked" : null) />
         <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-chart-line"></i></span>
         <span class="prv-wiz-card-body">
             <strong>Use INDOR Pro</strong>
@@ -24,8 +25,8 @@
         <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
     </label>
 
-    <label class="prv-wiz-card prv-wiz-card--selectable">
-        <input type="radio" name="path" value="apply" />
+    <label class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "apply" ? "is-selected" : "")">
+        <input type="radio" name="path" value="apply" @(selectedPath == "apply" ? "checked" : null) />
         <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-check"></i></span>
         <span class="prv-wiz-card-body">
             <strong>Apply to Become an INDOR Provider</strong>
@@ -44,12 +45,16 @@
     </div>
 
     <label class="prv-wiz-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
-        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms">Terms &amp; Conditions</a></span>
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-entry">Terms &amp; Conditions</a></span>
     </label>
-
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
-        <button type="submit" name="action" value="later" class="prv-save-later">I'll do this later</button>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvEntryForm" class="ob-btn ob-btn-primary">Continue</button>
+    <button type="submit" form="prvEntryForm" name="action" value="later" class="prv-save-later" formnovalidate>I'll do this later</button>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
+}

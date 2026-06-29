@@ -1,0 +1,61 @@
+@model IndorMvcApp.ViewModels.ProviderProTemplatesPageViewModel
+@{
+    ViewData["Title"] = "Templates - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "templates-flow.css";
+}
+
+<div class="prv-pro-shell prv-pro-shell--templates">
+    @await Html.PartialAsync("_TemplatesHead")
+
+    <section class="tpl-head">
+        <h1>Templates</h1>
+        <p>Choose a template to start faster.</p>
+    </section>
+
+    <div class="tpl-subrow">
+        <span class="tpl-step">Step 1 of 3</span>
+        <a asp-controller="Proveedor" asp-action="Templates" class="tpl-add-btn"><i class="fas fa-plus"></i> Add Custom Template</a>
+    </div>
+
+    <form class="tpl-search" onsubmit="return false;">
+        <div class="tpl-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" placeholder="Search templates" />
+        </div>
+        <button type="button" class="tpl-filter-btn" aria-label="Filters"><i class="fas fa-sliders"></i></button>
+    </form>
+
+    <h2 class="tpl-section">Most Used</h2>
+    <div class="tpl-list">
+        @foreach (var t in Model.MostUsed)
+        {
+            <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@t.Key" class="tpl-row">
+                <span class="tpl-icon tpl-icon--@t.Color"><i class="fas @t.Icon"></i></span>
+                <span class="tpl-row-text">
+                    <strong>@t.Name</strong>
+                    <small>@t.Description</small>
+                </span>
+                <i class="fas fa-chevron-right tpl-row-chevron"></i>
+            </a>
+        }
+    </div>
+
+    @if (Model.MyTemplates.Count > 0)
+    {
+        <h2 class="tpl-section">My Templates</h2>
+        <div class="tpl-list">
+            @foreach (var t in Model.MyTemplates)
+            {
+                <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@t.Key" class="tpl-row tpl-row--compact">
+                    <span class="tpl-icon tpl-icon--@t.Color"><i class="fas @t.Icon"></i></span>
+                    <span class="tpl-row-text">
+                        <strong>@t.Name</strong>
+                    </span>
+                    <i class="fas fa-chevron-right tpl-row-chevron"></i>
+                </a>
+            }
+        </div>
+    }
+</div>

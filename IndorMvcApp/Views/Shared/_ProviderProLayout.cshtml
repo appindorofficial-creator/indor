@@ -24,8 +24,12 @@
 
     @RenderBody()
 
-    @await Html.PartialAsync("_ProviderProBottomNav", (string)(ViewBag.NavActive ?? "home"))
+    @if (ViewBag.HideBottomNav != true)
+    {
+        @await Html.PartialAsync("_ProviderProBottomNav", (string)(ViewBag.NavActive ?? "home"))
+    }
 
+    <script src="~/js/indor-greeting.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
 </body>

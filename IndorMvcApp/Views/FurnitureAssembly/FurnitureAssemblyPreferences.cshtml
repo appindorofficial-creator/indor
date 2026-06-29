@@ -12,7 +12,7 @@
 <h2 class="page-heading" style="font-size:1.1rem;">Access, room and schedule</h2>
     <p class="page-lead" style="margin-top:-8px;">Tell us where the items are and when you need help.</p>
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+    <div asp-validation-summary="All" class="validation-summary"></div>
 
     <form asp-action="FurnitureAssemblyPreferences" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -65,7 +65,8 @@
 
         <div class="field-card">
             <span class="field-label">Preferred date</span>
-            <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" required /></div>
+            <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" min="@Model.MinServiceDateIso" required /></div>
+            <span asp-validation-for="FechaServicio" class="text-danger"></span>
         </div>
 
         <div class="field-card">
@@ -129,6 +130,28 @@
         initSingleChip('accessGroup', 'DetallesAcceso', '@Model.DetallesAcceso');
         initSegments('[data-target="AyudaMover"]', 'AyudaMover', '@Model.AyudaMover');
         initTimeSlots('[data-target="VentanaHorario"]', 'VentanaHorario', '@Model.VentanaHorario');
+
+        const serviceDateInput = document.querySelector('input[name="FechaServicio"]');
+        const minServiceDate = '@Model.MinServiceDateIso';
+
+        function validateServiceDate() {
+            if (!serviceDateInput || !serviceDateInput.value) return true;
+            if (serviceDateInput.value < minServiceDate) {
+                serviceDateInput.setCustomValidity('Please select today or a future date.');
+                return false;
+            }
+            serviceDateInput.setCustomValidity('');
+            return true;
+        }
+
+        serviceDateInput?.addEventListener('input', validateServiceDate);
+        serviceDateInput?.addEventListener('change', validateServiceDate);
+        document.querySelector('form')?.addEventListener('submit', function (e) {
+            if (!validateServiceDate()) {
+                e.preventDefault();
+                serviceDateInput.reportValidity();
+            }
+        });
 
         const addressInput = document.getElementById('DireccionPropiedad');
         const addressCard = document.getElementById('addressCard');

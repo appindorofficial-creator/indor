@@ -179,6 +179,9 @@ public class ProviderProCreateJobSuccessViewModel : ProviderProPageBaseViewModel
 
 public class ProviderProCreateJobDraft
 {
+    /// <summary>Bottom nav context: "home" when started from Home, otherwise "jobs".</summary>
+    public string NavOrigin { get; set; } = "jobs";
+
     public string ServiceCategoryId { get; set; } = "";
     public string ServiceCategoryLabel { get; set; } = "";
     public string Title { get; set; } = "";

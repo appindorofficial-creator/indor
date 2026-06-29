@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace IndorMvcApp.Controllers;
 
 [Authorize]
+[ResponseCache(NoStore = true, Duration = 0, Location = ResponseCacheLocation.None)]
 public class NeighborRequestController(
     NeighborRequestWizardService wizardService,
     UserManager<ApplicationUser> userManager) : Controller
@@ -29,11 +30,11 @@ public class NeighborRequestController(
 
         wizardService.ClearDraft(HttpContext.Session);
         wizardService.MarkFreshStart(HttpContext.Session);
-        return RedirectToAction(nameof(Category), new { propiedadId });
+        return RedirectToAction(nameof(Category), new { propiedadId, fresh = true });
     }
 
     [HttpGet]
-    public async Task<IActionResult> Category(int propiedadId, CancellationToken cancellationToken)
+    public async Task<IActionResult> Category(int propiedadId, bool? fresh, CancellationToken cancellationToken)
     {
         var userId = userManager.GetUserId(User);
         if (userId == null)
@@ -47,16 +48,37 @@ public class NeighborRequestController(
             return RedirectToAction("Index", "Home");
         }
 
-        await wizardService.EnsureDraftAsync(HttpContext.Session, propiedad, cancellationToken);
-        var draft = wizardService.LoadDraft(HttpContext.Session);
-        var model = await wizardService.BuildCategoryStepAsync(propiedad, propiedad.Id, draft, Url, cancellationToken);
-        if (!wizardService.IsFreshStart(HttpContext.Session) && draft?.CategoryId > 0)
+        if (fresh == true)
         {
-            model.SelectedCategoryId = draft.CategoryId;
-            model.CategoryId = draft.CategoryId;
+            wizardService.ClearDraft(HttpContext.Session);
+            wizardService.MarkFreshStart(HttpContext.Session);
         }
 
-        return View(model);
+        var fromWizard = IsNeighborRequestWizardReferrer();
+        var isFreshStart = wizardService.IsFreshStart(HttpContext.Session);
+        var draft = wizardService.LoadDraft(HttpContext.Session);
+
+        if (draft?.EditingRequestId is int editId and > 0)
+        {
+            return RedirectToAction(nameof(Edit), new { id = editId });
+        }
+
+        var resumeDraft = fromWizard && !isFreshStart && draft is { CategoryId: > 0 };
+
+        if (!resumeDraft)
+        {
+            await wizardService.InitializeBlankDraftAsync(HttpContext.Session, propiedad, cancellationToken);
+        }
+
+        draft = wizardService.LoadDraft(HttpContext.Session);
+
+        return View(await wizardService.BuildCategoryStepAsync(
+            propiedad,
+            propiedad.Id,
+            draft,
+            Url,
+            cancellationToken,
+            useDraftFieldValues: resumeDraft));
     }
 
     [HttpPost]
@@ -90,10 +112,10 @@ public class NeighborRequestController(
             invalidVm.Description = model.Description;
             invalidVm.LocationAddress = model.LocationAddress;
             invalidVm.UseHomeAddress = model.UseHomeAddress;
+            invalidVm.ResumeDraft = model.ResumeDraft;
             return View(invalidVm);
         }
 
-        var isFreshStart = wizardService.IsFreshStart(HttpContext.Session);
         var draft = wizardService.LoadDraft(HttpContext.Session);
 
         if (draft?.EditingRequestId is > 0)
@@ -101,7 +123,11 @@ public class NeighborRequestController(
             draft.PropiedadId = model.PropiedadId;
             draft.CategoryId = model.CategoryId;
         }
-        else if (isFreshStart || draft == null || draft.CategoryId != model.CategoryId)
+        else if (model.ResumeDraft && draft is { CategoryId: > 0, EditingRequestId: null } && draft.CategoryId == model.CategoryId)
+        {
+            // Keep in-progress draft when returning from a later wizard step.
+        }
+        else
         {
             draft = await wizardService.CreateNewDraftAsync(HttpContext.Session, propiedad, model.CategoryId, cancellationToken);
         }
@@ -122,17 +148,17 @@ public class NeighborRequestController(
         var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
         if (draft == null)
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
         }
 
         if (draft.EditingRequestId is null && string.IsNullOrWhiteSpace(draft.Title))
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
         }
 
         var vm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
         return vm == null
-            ? RedirectToAction(nameof(Category), new { propiedadId })
+            ? RestartWizard(propiedadId)
             : View(vm);
     }
 
@@ -149,7 +175,7 @@ public class NeighborRequestController(
         var draft = await RequireDraftAsync(model.PropiedadId, minCategory: true, cancellationToken);
         if (draft == null)
         {
-            return RedirectToAction(nameof(Category), new { propiedadId = model.PropiedadId });
+            return RestartWizard(model.PropiedadId);
         }
 
         wizardService.ApplyExtrasToDraft(draft, model);
@@ -179,12 +205,12 @@ public class NeighborRequestController(
         var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
         if (draft == null)
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
         }
 
         if (draft.EditingRequestId is null && string.IsNullOrWhiteSpace(draft.Title))
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
         }
 
         return View(wizardService.BuildPreferencesStep(draft));
@@ -197,7 +223,14 @@ public class NeighborRequestController(
         var draft = await RequireDraftAsync(model.PropiedadId, minCategory: true, cancellationToken);
         if (draft == null)
         {
-            return RedirectToAction(nameof(Category), new { propiedadId = model.PropiedadId });
+            return RestartWizard(model.PropiedadId);
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var invalidVm = wizardService.BuildPreferencesStep(draft);
+            MergePreferencesPostedValues(invalidVm, model);
+            return View(invalidVm);
         }
 
         wizardService.ApplyScheduleToDraft(draft, model);
@@ -216,7 +249,9 @@ public class NeighborRequestController(
             await wizardService.PersistPreferencesAsync(userId, draft, cancellationToken);
         }
 
-        return RedirectToAction(nameof(Describe), new { propiedadId = model.PropiedadId });
+        return model.IsEditMode
+            ? RedirectToAction(nameof(Review), new { propiedadId = model.PropiedadId })
+            : RedirectToAction(nameof(Describe), new { propiedadId = model.PropiedadId });
     }
 
     [HttpGet]
@@ -225,17 +260,28 @@ public class NeighborRequestController(
         var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
         if (draft == null)
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
         }
 
         if (draft.EditingRequestId is null && string.IsNullOrWhiteSpace(draft.Title))
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
+        }
+
+        if (!NeighborRequestWizardService.IsNeededByDateAllowed(draft.NeededByDate))
+        {
+            TempData["NeighborRequestError"] = NeighborRequestWizardService.NeededByDatePastErrorMessage;
+            if (draft.EditingRequestId is int editId and > 0)
+            {
+                return RedirectToAction(nameof(Edit), new { id = editId });
+            }
+
+            return RedirectToAction(nameof(Preferences), new { propiedadId });
         }
 
         var vm = await wizardService.BuildReviewStepAsync(draft, cancellationToken);
         return vm == null
-            ? RedirectToAction(nameof(Category), new { propiedadId })
+            ? RestartWizard(propiedadId)
             : View(vm);
     }
 
@@ -252,7 +298,18 @@ public class NeighborRequestController(
         var draft = await RequireDraftAsync(propiedadId, minCategory: true, cancellationToken);
         if (draft == null || string.IsNullOrWhiteSpace(draft.Title))
         {
-            return RedirectToAction(nameof(Category), new { propiedadId });
+            return RestartWizard(propiedadId);
+        }
+
+        if (!NeighborRequestWizardService.IsNeededByDateAllowed(draft.NeededByDate))
+        {
+            TempData["NeighborRequestError"] = NeighborRequestWizardService.NeededByDatePastErrorMessage;
+            if (draft.EditingRequestId is int editId and > 0)
+            {
+                return RedirectToAction(nameof(Edit), new { id = editId });
+            }
+
+            return RedirectToAction(nameof(Review), new { propiedadId });
         }
 
         var requestId = await wizardService.PublishAsync(userId, draft, cancellationToken);
@@ -386,7 +443,27 @@ public class NeighborRequestController(
         var saved = await wizardService.SaveEditDetailsStepAsync(userId, model, HttpContext.Session, cancellationToken);
         if (!saved)
         {
-            return RedirectToAction("Index", "Home");
+            if (!NeighborRequestWizardService.IsNeededByDateAllowed(model.NeededByDate))
+            {
+                ModelState.AddModelError(
+                    nameof(model.NeededByDate),
+                    NeighborRequestWizardService.NeededByDatePastErrorMessage);
+            }
+
+            var failedVm = await wizardService.BuildEditDetailsStepAsync(userId, model.RequestId ?? 0, Url, cancellationToken);
+            if (failedVm == null)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            failedVm.CategoryId = model.CategoryId;
+            failedVm.DetailsSummary = model.DetailsSummary;
+            failedVm.Description = model.Description;
+            failedVm.NeededByDate = model.NeededByDate;
+            failedVm.TimeWindowPreset = model.TimeWindowPreset;
+            failedVm.AudienceCode = model.AudienceCode;
+
+            return View(failedVm);
         }
 
         return RedirectToAction(nameof(Preferences), new { propiedadId = model.PropiedadId });
@@ -431,6 +508,31 @@ public class NeighborRequestController(
         return RedirectToAction(nameof(Mine), new { propiedadId });
     }
 
+    private IActionResult RestartWizard(int propiedadId) =>
+        RedirectToAction(nameof(Create), new { propiedadId });
+
+    private bool IsNeighborRequestWizardReferrer()
+    {
+        var referer = Request.Headers.Referer.ToString();
+        return referer.Contains("/NeighborRequest/", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static void MergePreferencesPostedValues(
+        NeighborRequestPreferencesStepViewModel target,
+        NeighborRequestPreferencesStepViewModel source)
+    {
+        target.WhenCode = source.WhenCode;
+        target.PreferredTimeCode = source.PreferredTimeCode;
+        target.HelperCount = source.HelperCount;
+        target.DurationCode = source.DurationCode;
+        target.PayTypeCode = source.PayTypeCode;
+        target.TimelineCode = source.TimelineCode;
+        target.AudienceCode = source.AudienceCode;
+        target.SelectedAudiences = source.SelectedAudiences;
+        target.BudgetAmount = source.BudgetAmount;
+        target.NeededByDate = source.NeededByDate;
+    }
+
     private async Task<NeighborRequestDraftState?> RequireDraftAsync(
         int propiedadId,
         bool minCategory,
@@ -461,9 +563,6 @@ public class NeighborRequestController(
 
         return draft;
     }
-
-    private Task<IActionResult> RedirectToCategoryAsync(int propiedadId, CancellationToken ct) =>
-        Task.FromResult<IActionResult>(RedirectToAction(nameof(Category), new { propiedadId }));
 
     private static string NormalizeTimeline(string? code) =>
         code?.Trim() switch

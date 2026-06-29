@@ -197,9 +197,10 @@ public class FurnitureAssemblyController : Controller
             Habitacion = solicitud.Habitacion ?? "Bedroom",
             DetallesAcceso = solicitud.DetallesAcceso ?? "Stairs",
             AyudaMover = solicitud.AyudaMover ?? "No",
-            FechaServicio = solicitud.FechaServicio ?? DateTime.Today.AddDays(30),
+            FechaServicio = NormalizeServiceDate(solicitud.FechaServicio),
             VentanaHorario = solicitud.VentanaHorario ?? "Afternoon",
-            NotaCorta = solicitud.NotaCorta
+            NotaCorta = solicitud.NotaCorta,
+            MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd")
         });
     }
 
@@ -215,9 +216,15 @@ public class FurnitureAssemblyController : Controller
             return RedirectToAction(nameof(FurnitureAssemblyItems), new { id = solicitud.Id });
         }
 
+        if (model.FechaServicio.Date < DateTime.Today)
+        {
+            ModelState.AddModelError(nameof(model.FechaServicio), "Please select today or a future date.");
+        }
+
         if (!ModelState.IsValid)
         {
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
+            model.MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd");
             return View(model);
         }
 
@@ -227,7 +234,7 @@ public class FurnitureAssemblyController : Controller
             solicitud.Habitacion = model.Habitacion;
             solicitud.DetallesAcceso = model.DetallesAcceso;
             solicitud.AyudaMover = model.AyudaMover;
-            solicitud.FechaServicio = model.FechaServicio;
+            solicitud.FechaServicio = model.FechaServicio.Date;
             solicitud.VentanaHorario = model.VentanaHorario;
             solicitud.NotaCorta = model.NotaCorta?.Trim();
             solicitud.Estado = "PreferencesCompleted";
@@ -242,6 +249,7 @@ public class FurnitureAssemblyController : Controller
             ModelState.AddModelError("",
                 "Could not save preferences. Please ensure the furniture assembly flow tables exist in the database and try again.");
             model.NombreServicio = solicitud.MovingSetupServicio!.Nombre;
+            model.MinServiceDateIso = DateTime.Today.ToString("yyyy-MM-dd");
             return View(model);
         }
     }
@@ -587,4 +595,10 @@ public class FurnitureAssemblyController : Controller
         string.Equals(solicitud.Estado, "ItemsCompleted", StringComparison.OrdinalIgnoreCase)
         || string.Equals(solicitud.Estado, "PreferencesCompleted", StringComparison.OrdinalIgnoreCase)
         || string.Equals(solicitud.Estado, "Confirmed", StringComparison.OrdinalIgnoreCase);
+
+    private static DateTime NormalizeServiceDate(DateTime? date)
+    {
+        var today = DateTime.Today;
+        return date is { } value && value.Date >= today ? value.Date : today.AddDays(30);
+    }
 }

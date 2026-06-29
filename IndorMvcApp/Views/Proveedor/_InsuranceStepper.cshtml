@@ -1,0 +1,24 @@
+@model int
+@{
+    var steps = new[] { "Coverage", "Business Info", "Business Details", "Review & Payment", "Submit" };
+}
+<ol class="ins-steps">
+    @for (var i = 0; i < steps.Length; i++)
+    {
+        var n = i + 1;
+        var cls = n == Model ? "is-active" : (n < Model ? "is-done" : "");
+        <li class="@cls">
+            <span class="ins-step-dot">
+                @if (n < Model)
+                {
+                    <i class="fas fa-check"></i>
+                }
+                else
+                {
+                    @n
+                }
+            </span>
+            <span class="ins-step-lbl">@steps[i]</span>
+        </li>
+    }
+</ol>

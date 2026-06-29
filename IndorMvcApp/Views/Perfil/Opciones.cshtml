@@ -21,18 +21,18 @@
     <div>
         <h4>Complete your profile</h4>
         <p>Add a few more details to personalize your experience and get better recommendations.</p>
-        <a asp-controller="Perfil" asp-action="EditarPerfil" class="pf-btn" style="display:inline-flex;">Edit profile</a>
+        <a asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" class="pf-btn" style="display:inline-flex;">Edit profile</a>
     </div>
 </div>
 }
 
 <nav class="pf-settings-list">
-    <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="personal">
+    <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" asp-fragment="personal">
         <span class="si-icon"><i class="fas fa-user"></i></span>
         <span class="si-text"><strong>Personal Information</strong><small>Update your name, address, and personal details.</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
-    <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="photo">
+    <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" asp-fragment="photo">
         <span class="si-icon"><i class="fas fa-camera"></i></span>
         <span class="si-text"><strong>Profile Photo</strong><small>Change your profile picture.</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>

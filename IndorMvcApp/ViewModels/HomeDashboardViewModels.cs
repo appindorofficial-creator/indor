@@ -35,6 +35,7 @@ public class HomeQuickActionViewModel
 public class HomeTodayTaskViewModel
 {
     public string Icon { get; set; } = "fa-circle";
+    public string? Category { get; set; }
     public string Title { get; set; } = string.Empty;
     public string Subtitle { get; set; } = string.Empty;
     public string? Badge { get; set; }

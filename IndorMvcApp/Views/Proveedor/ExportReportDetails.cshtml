@@ -1,0 +1,127 @@
+@model IndorMvcApp.ViewModels.ProviderProExportReportViewModel
+@{
+    ViewData["Title"] = "Export Report - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "export-report.css";
+    var d = Model.Draft;
+    var categories = new[] { "Roof", "Plumbing", "Electrical", "HVAC", "General" };
+    var priorities = new[] { "Low", "Medium", "High" };
+    var weathers = new[] { "Clear", "Cloudy", "Rain", "Snow", "Windy" };
+    var photoChips = new[] { "Before", "During", "After", "Damage" };
+    var selectedChip = string.IsNullOrWhiteSpace(d.Category) ? "Damage" : "Damage";
+}
+
+<div class="prv-pro-shell prv-pro-shell--export">
+    @await Html.PartialAsync("_ExportReportHead")
+
+    <section class="exr-head">
+        <h1>Export Report</h1>
+        <p>Add details, notes, and photos for this report.</p>
+    </section>
+
+    <div class="exr-progress">
+        <span class="exr-step">Step 2 of 3</span>
+        <span class="exr-bar"><span class="exr-bar-fill" style="width:66%"></span></span>
+    </div>
+
+    <section class="exr-summary">
+        <span class="exr-job-icon exr-icon--blue"><i class="fas @Model.Job.IconClass"></i></span>
+        <div class="exr-summary-body">
+            <strong>@Model.Job.Title</strong>
+            <small>@Model.Job.Address</small>
+            <span class="exr-pill exr-pill--@Model.Job.StatusClass">@Model.Job.StatusLabel</span>
+        </div>
+    </section>
+
+    <form method="post" enctype="multipart/form-data" asp-controller="Proveedor" asp-action="AddExportPhotos">
+        @Html.AntiForgeryToken()
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">Report Details</h2>
+            <div class="exr-fields">
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-table-cells-large"></i> Category</span>
+                    <select name="reportCategory">
+                        @foreach (var c in categories)
+                        {
+                            <option value="@c" selected="@(d.Category == c)">@c</option>
+                        }
+                    </select>
+                </label>
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-location-dot"></i> Location</span>
+                    <input type="text" name="location" value="@d.Location" placeholder="e.g. Rear slope" />
+                </label>
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-flag"></i> Priority</span>
+                    <select name="priority">
+                        @foreach (var p in priorities)
+                        {
+                            <option value="@p" selected="@(d.Priority == p || (string.IsNullOrEmpty(d.Priority) && p == "Medium"))">@p</option>
+                        }
+                    </select>
+                </label>
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-cloud-sun"></i> Weather</span>
+                    <select name="weather">
+                        @foreach (var w in weathers)
+                        {
+                            <option value="@w" selected="@(d.Weather == w || (string.IsNullOrEmpty(d.Weather) && w == "Clear"))">@w</option>
+                        }
+                    </select>
+                </label>
+            </div>
+        </section>
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">Description</h2>
+            <textarea class="exr-textarea" name="description" rows="3" placeholder="Describe the work and findings...">@d.Description</textarea>
+        </section>
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">Add Photos</h2>
+            <div class="exr-chips">
+                @foreach (var chip in photoChips)
+                {
+                    <label class="exr-chip">
+                        <input type="radio" name="category" value="@chip" checked="@(chip == selectedChip)" />
+                        <span>@chip</span>
+                    </label>
+                }
+            </div>
+
+            <div class="exr-dropzone">
+                <i class="fas fa-image"></i>
+                <span>Add photos for this report</span>
+                <div class="exr-dropzone-btns">
+                    <label class="exr-mini-btn"><i class="fas fa-camera"></i> Camera
+                        <input type="file" name="photos" accept="image/*" capture="environment" multiple hidden />
+                    </label>
+                    <label class="exr-mini-btn"><i class="fas fa-images"></i> Gallery
+                        <input type="file" name="photos" accept="image/*" multiple hidden />
+                    </label>
+                </div>
+                <button type="submit" name="action" value="add" class="exr-add-photos-btn">Upload selected</button>
+            </div>
+
+            @if (d.Photos.Count > 0)
+            {
+                <div class="exr-thumbs">
+                    @for (var i = 0; i < d.Photos.Count; i++)
+                    {
+                        <div class="exr-thumb">
+                            <img src="@d.Photos[i].Url" alt="" />
+                            <button type="submit" formaction="@Url.Action("RemoveExportPhoto", "Proveedor")" name="index" value="@i" class="exr-thumb-x"><i class="fas fa-xmark"></i></button>
+                        </div>
+                    }
+                </div>
+            }
+        </section>
+
+        <div class="exr-actions">
+            <button type="submit" name="action" value="continue" class="exr-btn exr-btn--primary">Continue</button>
+            <a asp-controller="Proveedor" asp-action="ExportReport" class="exr-btn-text">Back</a>
+        </div>
+    </form>
+</div>

@@ -26,7 +26,11 @@ public interface IProviderRegistrationService
     Task SubmitApplicationAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default);
     Task EnsureDocumentSlotsAsync(CancellationToken cancellationToken = default);
     Task<IReadOnlyList<ProviderDocumentSlot>> GetDocumentSlotsAsync(CancellationToken cancellationToken = default);
-    Task RegisterDocumentUploadAsync(string documentType, string relativeUrl, CancellationToken cancellationToken = default);
+    Task RegisterDocumentUploadAsync(
+        string documentType,
+        string relativeUrl,
+        int? proveedorId = null,
+        CancellationToken cancellationToken = default);
     Task<bool> HasRequiredDocumentsAsync(CancellationToken cancellationToken = default);
     Task<IndorProveedor?> GetProveedorForCurrentUserAsync(CancellationToken cancellationToken = default);
     Task ActivateIndorProAsync(ProviderRegistrationState state, CancellationToken cancellationToken = default);

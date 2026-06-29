@@ -1,0 +1,46 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorUploadDocumentsViewModel
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.FormError))
+{
+    <div class="pa-summary-error">@Model.FormError</div>
+}
+@if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
+{
+    <div class="pa-step-hint" style="color:#059669;font-weight:600;margin-bottom:14px;">@Model.FormSuccess</div>
+}
+
+@if (Model.UploadedFiles.Count > 0)
+{
+    <div class="pa-review-card" style="margin-bottom:16px;">
+        @foreach (var file in Model.UploadedFiles)
+        {
+            <div class="pa-check-item"><i class="fas fa-circle-check"></i> @file</div>
+        }
+    </div>
+}
+
+<div class="pa-review-card" style="margin-bottom:16px;">
+    <p class="pa-step-hint" style="margin:0;">Accepted formats: PDF, JPG, PNG, WEBP, HEIC. Max 10 MB per file.</p>
+</div>
+
+<form asp-action="UploadPropertyDocuments" method="post" enctype="multipart/form-data" id="uploadDocumentsForm">
+    @Html.AntiForgeryToken()
+
+    <label class="pa-field">
+        <i class="fas fa-file-arrow-up"></i>
+        <input type="file"
+               name="documentFiles"
+               accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf"
+               multiple />
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Upload documents</button>
+</form>
+
+<div class="pa-reg-actions" style="margin-top:18px;">
+    <a href="@Model.BackUrl" class="pa-reg-action-back">Back to properties</a>
+</div>

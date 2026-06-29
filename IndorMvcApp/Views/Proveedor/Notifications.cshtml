@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.ProviderProNotificationsViewModel
+@{
+    ViewData["Title"] = "Notifications - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--support">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head prv-pro-settings-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1>Notifications</h1>
+            <p>Choose what updates you want to receive.</p>
+        </div>
+    </header>
+
+    @if (TempData["NotificationsSaved"] is true || Model.NotificationsSaved)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+            <i class="fas fa-circle-check"></i> Notification preferences saved.
+        </div>
+    }
+
+    <form asp-controller="Proveedor" asp-action="Notifications" method="post" class="prv-pro-notify-card" id="prvNotifyForm">
+        @Html.AntiForgeryToken()
+
+        <label class="prv-pro-notify-row">
+            <span>Job alerts</span>
+            <span class="prv-pro-notify-toggle-wrap">
+                <input type="hidden" name="NotifyJobAlerts" value="false" />
+                <input type="checkbox" name="NotifyJobAlerts" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyJobAlerts ? "checked" : null) />
+                <span class="prv-pro-notify-toggle" aria-hidden="true"></span>
+            </span>
+        </label>
+        <label class="prv-pro-notify-row">
+            <span>New lead updates</span>
+            <span class="prv-pro-notify-toggle-wrap">
+                <input type="hidden" name="NotifyLeadUpdates" value="false" />
+                <input type="checkbox" name="NotifyLeadUpdates" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyLeadUpdates ? "checked" : null) />
+                <span class="prv-pro-notify-toggle" aria-hidden="true"></span>
+            </span>
+        </label>
+        <label class="prv-pro-notify-row">
+            <span>Payment alerts</span>
+            <span class="prv-pro-notify-toggle-wrap">
+                <input type="hidden" name="NotifyPaymentAlerts" value="false" />
+                <input type="checkbox" name="NotifyPaymentAlerts" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyPaymentAlerts ? "checked" : null) />
+                <span class="prv-pro-notify-toggle" aria-hidden="true"></span>
+            </span>
+        </label>
+        <label class="prv-pro-notify-row">
+            <span>Report reminders</span>
+            <span class="prv-pro-notify-toggle-wrap">
+                <input type="hidden" name="NotifyReportReminders" value="false" />
+                <input type="checkbox" name="NotifyReportReminders" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyReportReminders ? "checked" : null) />
+                <span class="prv-pro-notify-toggle" aria-hidden="true"></span>
+            </span>
+        </label>
+
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Save preferences</button>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+(function () {
+    var form = document.getElementById('prvNotifyForm');
+    if (!form) return;
+
+    function syncToggles() {
+        form.querySelectorAll('.prv-pro-notify-row').forEach(function (row) {
+            var checkbox = row.querySelector('.prv-pro-notify-checkbox');
+            var track = row.querySelector('.prv-pro-notify-toggle');
+            if (checkbox && track) {
+                track.classList.toggle('is-on', checkbox.checked);
+            }
+        });
+    }
+
+    syncToggles();
+    form.addEventListener('change', syncToggles);
+})();
+</script>
+}

@@ -1,0 +1,173 @@
+@model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
+@{
+    ViewData["Title"] = "Public Profile - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+    var allServices = Model.Categories.Concat(Model.Services).Distinct().ToList();
+    var aboutText = !string.IsNullOrWhiteSpace(Model.SpecialtiesSummary) && Model.SpecialtiesSummary != "Services pending"
+        ? $"Professional services including {Model.SpecialtiesSummary.ToLowerInvariant()}."
+        : "Trusted local service provider on INDOR.";
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--public-profile">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head prv-pro-public-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1>Public Profile</h1>
+            <p>Preview how homeowners see your business on INDOR.</p>
+        </div>
+    </header>
+
+    <section class="prv-pro-public-hero">
+        <div class="prv-pro-public-hero-main">
+            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+            {
+                <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@Model.CompanyName" class="prv-pro-profile-logo prv-pro-profile-logo--img" />
+            }
+            else
+            {
+                <div class="prv-pro-profile-logo">@Model.CompanyInitial</div>
+            }
+            <div>
+                <div class="prv-pro-profile-name-row">
+                    <h2>@Model.CompanyName</h2>
+                    @if (Model.IsVerified)
+                    {
+                        <span class="prv-pro-verified"><i class="fas fa-circle-check"></i> Verified Provider</span>
+                    }
+                    @if (Model.IsTopRated)
+                    {
+                        <span class="prv-pro-top-rated"><i class="fas fa-star"></i> Top Rated</span>
+                    }
+                </div>
+                <p class="prv-pro-profile-specialties">@Model.SpecialtiesSummary</p>
+                <p class="prv-pro-profile-area"><i class="fas fa-location-dot"></i> @Model.ServiceAreaLabel</p>
+            </div>
+        </div>
+        <div class="prv-pro-public-actions">
+            <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-btn prv-pro-btn--primary">
+                <i class="fas fa-pen"></i> Edit Profile
+            </a>
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost" id="prvPublicShareBtn">
+                <i class="fas fa-share-nodes"></i> Share
+            </button>
+        </div>
+    </section>
+
+    <div class="prv-pro-profile-grid prv-pro-public-grid">
+        <section class="prv-pro-profile-card prv-pro-profile-card--wide">
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-circle-info"></i> About</h3></header>
+            <p class="prv-pro-public-about">@aboutText</p>
+            <div class="prv-pro-profile-kv"><i class="fas fa-clock"></i><span>@Model.BusinessHours</span></div>
+            @if (Model.EmergencyService)
+            {
+                <div class="prv-pro-profile-kv"><i class="fas fa-bolt"></i><span>Emergency service available</span></div>
+            }
+            @if (Model.SameDayJobs)
+            {
+                <div class="prv-pro-profile-kv"><i class="fas fa-calendar-day"></i><span>Same-day jobs available</span></div>
+            }
+            @if (Model.TravelRadiusMiles > 0)
+            {
+                <div class="prv-pro-profile-kv"><i class="fas fa-route"></i><span>Travel radius: @Model.TravelRadiusMiles miles</span></div>
+            }
+        </section>
+
+        <section class="prv-pro-profile-card">
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-wrench"></i> Services Offered</h3></header>
+            @if (allServices.Count == 0)
+            {
+                <p class="prv-pro-empty">No services selected yet.</p>
+            }
+            else
+            {
+                <div class="prv-pro-profile-tags">
+                    @foreach (var svc in allServices)
+                    {
+                        <span class="prv-pro-pill prv-pro-pill--scheduled">@svc</span>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="prv-pro-profile-card">
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-map-location-dot"></i> Service Areas</h3></header>
+            @if (Model.ServiceAreas.Count == 0)
+            {
+                <p class="prv-pro-empty">@Model.ServiceAreaLabel</p>
+            }
+            else
+            {
+                @foreach (var area in Model.ServiceAreas)
+                {
+                    <div class="prv-pro-profile-kv"><i class="fas fa-location-dot"></i><span>@area</span></div>
+                }
+            }
+        </section>
+
+        <section class="prv-pro-profile-card">
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-star"></i> Reputation</h3></header>
+            <div class="prv-pro-profile-kv-row">
+                <span>Provider Score</span>
+                <strong>@(Model.ProviderScore > 0 ? Model.ProviderScore.ToString() : "—")</strong>
+            </div>
+            <div class="prv-pro-profile-kv-row">
+                <span>Rating</span>
+                <strong>@(Model.ReviewCount > 0 ? $"{Model.Rating:0.0} ★ ({Model.ReviewCount} reviews)" : "No reviews yet")</strong>
+            </div>
+            <div class="prv-pro-profile-kv-row">
+                <span>Jobs completed this year</span>
+                <strong>@Model.JobsCompletedThisYear</strong>
+            </div>
+        </section>
+    </div>
+</div>
+
+<div id="prvProfileToast" class="prv-pro-profile-toast" hidden role="status"></div>
+
+@section Scripts {
+<script>
+(function () {
+    var shareBtn = document.getElementById('prvPublicShareBtn');
+    var toast = document.getElementById('prvProfileToast');
+    var toastTimer = null;
+
+    function showToast(message) {
+        if (!toast) return;
+        toast.textContent = message;
+        toast.hidden = false;
+        toast.classList.add('is-visible');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(function () {
+            toast.classList.remove('is-visible');
+            toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
+        }, 2400);
+    }
+
+    if (shareBtn) {
+        var shareUrl = window.location.origin + '@Url.Action("PublicProfile", "Proveedor")';
+        shareBtn.addEventListener('click', async function () {
+            var payload = {
+                title: '@Model.CompanyName - INDOR PRO',
+                text: 'View my provider profile on INDOR',
+                url: shareUrl
+            };
+            if (navigator.share) {
+                try { await navigator.share(payload); return; } catch (_) { }
+            }
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                showToast('Profile link copied to clipboard.');
+            } catch (_) {
+                window.prompt('Copy profile link:', shareUrl);
+            }
+        });
+    }
+})();
+</script>
+}

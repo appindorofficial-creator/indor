@@ -52,14 +52,14 @@ public class RealtorInviteCreatePropertyViewModel : RealtorInviteStepViewModel
 
 public class RealtorInviteAccessViewModel : RealtorInviteStepViewModel
 {
-    public bool AccessPropertyOverview { get; set; } = true;
-    public bool AccessFilesReports { get; set; } = true;
-    public bool AccessQuotesEstimates { get; set; } = true;
-    public bool AccessMessages { get; set; } = true;
-    public bool AccessProjectUpdates { get; set; } = true;
+    public bool AccessPropertyOverview { get; set; }
+    public bool AccessFilesReports { get; set; }
+    public bool AccessQuotesEstimates { get; set; }
+    public bool AccessMessages { get; set; }
+    public bool AccessProjectUpdates { get; set; }
     public bool AccessPayments { get; set; }
-    public string CollaborationLevel { get; set; } = "CanComment";
-    public bool DeliveryEmail { get; set; } = true;
+    public string CollaborationLevel { get; set; } = "";
+    public bool DeliveryEmail { get; set; }
     public bool DeliveryText { get; set; }
     public string WelcomeMessage { get; set; } = "";
     public IReadOnlyList<(string Value, string Label, string Icon)> CollaborationOptions { get; set; } = [];

@@ -1,0 +1,80 @@
+@model IndorMvcApp.ViewModels.ProviderProEditProfileVerificationViewModel
+@{
+    ViewData["Title"] = "Verification & Documents - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--edit-profile">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Verification &amp; Documents</h1>
+            <p>Upload credentials so INDOR can verify your provider account.</p>
+        </div>
+    </header>
+
+    @if (TempData["ProfileSaved"] is true)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+            <i class="fas fa-circle-check"></i> Document uploaded successfully.
+        </div>
+    }
+    @if (TempData["ProfileSectionError"] is string sectionError)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
+            <i class="fas fa-circle-exclamation"></i> @sectionError
+        </div>
+    }
+
+    <section class="prv-pro-wizard-card">
+        <h2>Verification status</h2>
+        @foreach (var item in Model.Items)
+        {
+            <div class="prv-pro-profile-check @(item.IsComplete ? "is-complete" : "")">
+                <i class="fas @(item.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
+                <span>@item.Label</span>
+            </div>
+        }
+    </section>
+
+    @foreach (var slot in Model.DocumentSlots)
+    {
+        <section class="prv-pro-wizard-card">
+            <div class="prv-pro-edit-profile-doc-head">
+                <div>
+                    <h2>@slot.Label</h2>
+                    <p>@(slot.IsUploaded ? "Document on file. Upload again to replace it." : "Upload a clear photo or PDF.")</p>
+                </div>
+                @if (slot.IsUploaded)
+                {
+                    <span class="prv-pro-pill prv-pro-pill--scheduled">Uploaded</span>
+                }
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(slot.FileUrl))
+            {
+                <a href="@Url.Content($"~{slot.FileUrl}")" target="_blank" rel="noopener" class="prv-pro-edit-profile-doc-link">
+                    <i class="fas fa-file-lines"></i> View current document
+                </a>
+            }
+
+            <form asp-controller="Proveedor" asp-action="EditProfileVerification" method="post" enctype="multipart/form-data" class="prv-pro-edit-profile-doc-form">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="documentType" value="@slot.DocumentType" />
+                <label class="prv-pro-btn prv-pro-btn--ghost prv-pro-edit-profile-upload-btn">
+                    <i class="fas fa-upload"></i> Choose file
+                    <input type="file" name="documentFile" accept="image/jpeg,image/png,image/webp,application/pdf" required />
+                </label>
+                <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Upload</button>
+            </form>
+        </section>
+    }
+
+    <footer class="prv-pro-edit-profile-actions">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--primary">Back to profile</a>
+    </footer>
+</div>

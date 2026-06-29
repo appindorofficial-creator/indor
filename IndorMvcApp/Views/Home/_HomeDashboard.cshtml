@@ -81,7 +81,7 @@ else
                 if (isHash)
                 {
                     <button type="button" class="hd-task nav-jump" data-target="@todayTask.Url.TrimStart('#')" style="width:100%;border:none;background:transparent;text-align:left;cursor:pointer;">
-                        <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, title: todayTask.Title)"></i></span>
+                        <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, todayTask.Category, todayTask.Title)"></i></span>
                         <span class="hd-task-body">
                             <span class="hd-task-title">@todayTask.Title</span>
                             <span class="hd-task-sub">
@@ -102,7 +102,7 @@ else
                 else
                 {
                     <a href="@todayTask.Url" class="hd-task">
-                        <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, title: todayTask.Title)"></i></span>
+                        <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, todayTask.Category, todayTask.Title)"></i></span>
                         <span class="hd-task-body">
                             <span class="hd-task-title">@todayTask.Title</span>
                             <span class="hd-task-sub">
@@ -121,30 +121,6 @@ else
                     </a>
                 }
             }
-        </div>
-    }
-
-    @if (Model.UpcomingSchedule.Count > 0)
-    {
-        <div class="hd-card">
-            <div class="hd-card-head">
-                <h3>Upcoming schedule</h3>
-            </div>
-            @foreach (var item in Model.UpcomingSchedule)
-            {
-                <div class="hd-schedule-item">
-                    <span class="hd-schedule-icon"><i class="fas @item.Icon"></i></span>
-                    <div class="hd-schedule-body">
-                        <div class="hd-schedule-title">@item.Title</div>
-                        <div class="hd-schedule-loc"><i class="fas fa-location-dot"></i>@item.Location</div>
-                    </div>
-                    <span class="hd-due-pill">@item.DueLabel</span>
-                </div>
-            }
-            <button type="button" class="hd-schedule-footer nav-jump" data-target="section-schedule">
-                View full schedule
-                <i class="fas fa-chevron-right"></i>
-            </button>
         </div>
     }
 

@@ -164,44 +164,54 @@
                 };
 
                 var iconClass = PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title);
-
-                <article class="pm-card @priorityClass" role="listitem">
-
-                    <div class="pm-card-top">
-
-                        <span class="pm-card-icon"><i class="@iconClass"></i></span>
-
-                        <div class="pm-card-top-meta">
-
-                            <span class="pm-card-index">@index</span>
-
-                            <span class="pm-priority">@item.Priority</span>
-
+                if (item.HasScheduleLink)
+                {
+                    <a href="@item.ScheduleUrl" class="pm-card @priorityClass pm-card--link" role="listitem">
+                        <div class="pm-card-top">
+                            <span class="pm-card-icon"><i class="@iconClass"></i></span>
+                            <div class="pm-card-top-meta">
+                                <span class="pm-card-index">@index</span>
+                                <span class="pm-priority">@item.Priority</span>
+                            </div>
                         </div>
-
-                    </div>
-
-                    <h3 class="pm-card-title">@item.Title</h3>
-
-                    <p class="pm-card-desc">@item.Description</p>
-
-                    @if (!string.IsNullOrWhiteSpace(item.Reason))
-
-                    {
-
-                        <p class="pm-card-reason"><i class="fas fa-lightbulb"></i> @item.Reason</p>
-
-                    }
-
-                    <div class="pm-card-meta">
-
-                        <span class="pm-chip pm-chip--category"><i class="fas fa-tag"></i> @item.Category</span>
-
-                        <span class="pm-chip"><i class="fas fa-clock"></i> @item.Frequency</span>
-
-                    </div>
-
-                </article>
+                        <h3 class="pm-card-title">@item.Title</h3>
+                        <p class="pm-card-desc">@item.Description</p>
+                        @if (!string.IsNullOrWhiteSpace(item.Reason))
+                        {
+                            <p class="pm-card-reason"><i class="fas fa-lightbulb"></i> @item.Reason</p>
+                        }
+                        <div class="pm-card-meta">
+                            <span class="pm-chip pm-chip--category"><i class="fas fa-tag"></i> @item.Category</span>
+                            <span class="pm-chip"><i class="fas fa-clock"></i> @item.Frequency</span>
+                        </div>
+                        <span class="pm-card-schedule">
+                            @item.ScheduleActionLabel
+                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                        </span>
+                    </a>
+                }
+                else
+                {
+                    <article class="pm-card @priorityClass" role="listitem">
+                        <div class="pm-card-top">
+                            <span class="pm-card-icon"><i class="@iconClass"></i></span>
+                            <div class="pm-card-top-meta">
+                                <span class="pm-card-index">@index</span>
+                                <span class="pm-priority">@item.Priority</span>
+                            </div>
+                        </div>
+                        <h3 class="pm-card-title">@item.Title</h3>
+                        <p class="pm-card-desc">@item.Description</p>
+                        @if (!string.IsNullOrWhiteSpace(item.Reason))
+                        {
+                            <p class="pm-card-reason"><i class="fas fa-lightbulb"></i> @item.Reason</p>
+                        }
+                        <div class="pm-card-meta">
+                            <span class="pm-chip pm-chip--category"><i class="fas fa-tag"></i> @item.Category</span>
+                            <span class="pm-chip"><i class="fas fa-clock"></i> @item.Frequency</span>
+                        </div>
+                    </article>
+                }
 
             }
 

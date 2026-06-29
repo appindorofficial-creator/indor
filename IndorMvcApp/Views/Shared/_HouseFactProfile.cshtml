@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HouseFactProfileViewModel
 @{
-    var showJson = ViewData["ShowJson"] as bool? ?? true;
+    var showJson = ViewData["ShowJson"] as bool? ?? false;
     var compact = ViewData["Compact"] as bool? ?? false;
 }
 
@@ -102,22 +102,22 @@ else
                 <h3 class="hf-property-management-title">Property Management</h3>
                 <p class="hf-property-management-sub">Tools to help you manage your property with ease.</p>
                 <div class="hf-mgmt-grid">
-                    <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                    <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-clock-rotate-left"></i></span>
                         <span class="hf-mgmt-copy"><strong>History</strong><span>View property history &amp; changes</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
-                    <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                    <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-file-lines"></i></span>
                         <span class="hf-mgmt-copy"><strong>Documents</strong><span>Reports &amp; disclosures</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
-                    <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                    <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-user-group"></i></span>
                         <span class="hf-mgmt-copy"><strong>Providers</strong><span>Your saved service providers</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
-                    <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@propiedadId.Value" class="hf-mgmt-card">
+                    <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-clipboard-check"></i></span>
                         <span class="hf-mgmt-copy"><strong>Maintenance</strong><span>Track tasks &amp; requests</span></span>
                         <i class="fas fa-chevron-right"></i>

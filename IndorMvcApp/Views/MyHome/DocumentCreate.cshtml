@@ -10,13 +10,29 @@
         .hf-validation-summary { background:#FEF2F2; border:1px solid #FECACA; color:#B91C1C; border-radius:12px; padding:12px 14px; margin-bottom:14px; font-size:0.86rem; line-height:1.45; }
         .hf-validation-summary ul { margin:0; padding-left:18px; }
         .hf-field-error { display:block; color:#B91C1C; font-size:0.82rem; font-weight:600; margin:-6px 0 12px; }
+        .hf-document-form { padding-bottom:calc(var(--homeowner-bottom-nav-h, 80px) + 88px + env(safe-area-inset-bottom, 0px)); }
+        .hf-file-input { padding:12px; background:#FFF; }
+        .hf-file-name { display:block; margin:-4px 0 12px; font-size:0.82rem; font-weight:600; color:#0066CC; word-break:break-all; }
+        .hf-form-actions {
+            position:fixed;
+            left:0;
+            right:0;
+            bottom:calc(var(--homeowner-bottom-nav-h, 80px) + env(safe-area-inset-bottom, 0px));
+            z-index:90;
+            padding:12px 16px;
+            background:linear-gradient(180deg, rgba(233,242,254,0) 0%, rgba(233,242,254,.95) 28%, rgba(233,242,254,.98) 100%);
+            backdrop-filter:blur(8px);
+            -webkit-backdrop-filter:blur(8px);
+        }
+        .hf-form-actions-inner { max-width:520px; margin:0 auto; }
+        .hf-form-actions .hf-btn-primary { box-shadow:0 8px 18px rgba(0,102,204,.28); }
     </style>
 }
 <div class="hf-title-row">
-    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
+    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">Upload document</h1>
 </div>
-<form asp-action="DocumentCreate" method="post" enctype="multipart/form-data">
+<form asp-action="DocumentCreate" method="post" enctype="multipart/form-data" class="hf-document-form" id="documentCreateForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <div asp-validation-summary="All" class="hf-validation-summary"></div>
@@ -32,10 +48,34 @@
     <input asp-for="Title" class="hf-input" required maxlength="200" placeholder="Document title" />
     <span asp-validation-for="Title" class="hf-field-error"></span>
     <label for="documentFile" class="hf-label">File</label>
-    <input type="file" name="file" id="documentFile" class="hf-input" accept="image/*,.pdf,.doc,.docx,.heic,.heif" required />
+    <input type="file" name="file" id="documentFile" class="hf-input hf-file-input" accept="image/*,.pdf,.doc,.docx,.heic,.heif" required />
+    <span id="documentFileName" class="hf-file-name" hidden></span>
     @if (ViewData.ModelState["file"]?.Errors.Count > 0)
     {
         <span class="hf-field-error">@ViewData.ModelState["file"]!.Errors[0].ErrorMessage</span>
     }
-    <button type="submit" class="hf-btn hf-btn-primary">Save document</button>
+    <div class="hf-form-actions">
+        <div class="hf-form-actions-inner">
+            <button type="submit" class="hf-btn hf-btn-primary">Save document</button>
+        </div>
+    </div>
 </form>
+@section Scripts {
+<script>
+    (function () {
+        var fileInput = document.getElementById('documentFile');
+        var fileName = document.getElementById('documentFileName');
+        fileInput?.addEventListener('change', function () {
+            if (!fileName) return;
+            var selected = fileInput.files && fileInput.files[0];
+            if (selected) {
+                fileName.textContent = selected.name;
+                fileName.hidden = false;
+            } else {
+                fileName.textContent = '';
+                fileName.hidden = true;
+            }
+        });
+    })();
+</script>
+}

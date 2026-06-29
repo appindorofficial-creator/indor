@@ -697,13 +697,19 @@ public class HomeController : Controller
                     dashboardData.Documentos,
                     dashboardData.Historial,
                     notificationCount,
-                    Url);
+                    Url,
+                    prioritiesItems);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to build home dashboard for propiedad {PropiedadId}", primaryPropiedad.Id);
                 var primaryInfo = MyHomeDisplayService.DeserializeProperty(primaryPropiedad);
-                ViewBag.HomeDashboard = HomeDashboardDisplayService.BuildBasic(usuario, primaryPropiedad, primaryInfo, Url);
+                ViewBag.HomeDashboard = HomeDashboardDisplayService.BuildBasic(
+                    usuario,
+                    primaryPropiedad,
+                    primaryInfo,
+                    Url,
+                    prioritiesItems);
             }
         }
         else

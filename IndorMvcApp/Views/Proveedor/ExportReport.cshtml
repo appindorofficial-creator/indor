@@ -1,0 +1,86 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadPhotosSelectJobViewModel
+@{
+    ViewData["Title"] = "Export Report - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "export-report.css";
+    var draft = ViewBag.ExportDraft as IndorMvcApp.ViewModels.ProviderProExportReportDraft
+                ?? new IndorMvcApp.ViewModels.ProviderProExportReportDraft();
+    var selectedJobId = draft.JobId ?? Model.Jobs.FirstOrDefault()?.JobId ?? 0;
+}
+
+<div class="prv-pro-shell prv-pro-shell--export">
+    @await Html.PartialAsync("_ExportReportHead")
+
+    <section class="exr-head">
+        <h1>Export Report</h1>
+        <p>Select the job and basic info to start your report.</p>
+    </section>
+
+    <div class="exr-progress">
+        <span class="exr-step">Step 1 of 3</span>
+        <span class="exr-bar"><span class="exr-bar-fill" style="width:33%"></span></span>
+    </div>
+
+    <form method="get" asp-controller="Proveedor" asp-action="ExportReport" class="exr-search">
+        <div class="exr-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs or properties" />
+        </div>
+        <button type="submit" class="exr-filter-btn" aria-label="Search"><i class="fas fa-magnifying-glass"></i></button>
+    </form>
+
+    <form method="post" asp-controller="Proveedor" asp-action="ExportReport">
+        @Html.AntiForgeryToken()
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">Select Job</h2>
+
+            @if (Model.Jobs.Count == 0)
+            {
+                <p class="exr-empty">No jobs found. Create a job first, then come back to build a report.</p>
+            }
+            else
+            {
+                <div class="exr-jobs">
+                    @foreach (var job in Model.Jobs)
+                    {
+                        <label class="exr-job">
+                            <input type="radio" name="jobId" value="@job.JobId" checked="@(job.JobId == selectedJobId)" required />
+                            <span class="exr-job-radio"></span>
+                            <span class="exr-job-icon exr-icon--blue"><i class="fas @job.IconClass"></i></span>
+                            <span class="exr-job-body">
+                                <strong>@job.Title</strong>
+                                <small>@job.Address</small>
+                                <span class="exr-pill exr-pill--@job.StatusClass">@job.StatusLabel</span>
+                            </span>
+                        </label>
+                    }
+                </div>
+            }
+        </section>
+
+        <section class="exr-card">
+            <h2 class="exr-card-title">Report Basics</h2>
+            <div class="exr-fields">
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-file-lines"></i> Report Name</span>
+                    <input type="text" name="reportName" value="@draft.ReportName" placeholder="e.g. Roof Spot Check" />
+                </label>
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-calendar"></i> Date</span>
+                    <input type="date" name="reportDate" value="@draft.ReportDate" />
+                </label>
+                <label class="exr-field">
+                    <span class="exr-field-label"><i class="fas fa-user"></i> Prepared By</span>
+                    <input type="text" name="preparedBy" value="@draft.PreparedBy" placeholder="Your name" />
+                </label>
+            </div>
+        </section>
+
+        <div class="exr-actions">
+            <button type="submit" class="exr-btn exr-btn--primary">Continue</button>
+            <a asp-controller="Proveedor" asp-action="Reports" class="exr-btn-text">Cancel</a>
+        </div>
+    </form>
+</div>

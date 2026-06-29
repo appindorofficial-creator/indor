@@ -1123,22 +1123,22 @@ public class IndorRealtorInvitation
     [MaxLength(40)]
     public string? PropertyStatusLabel { get; set; }
 
-    public bool AccessPropertyOverview { get; set; } = true;
+    public bool AccessPropertyOverview { get; set; }
 
-    public bool AccessFilesReports { get; set; } = true;
+    public bool AccessFilesReports { get; set; }
 
-    public bool AccessQuotesEstimates { get; set; } = true;
+    public bool AccessQuotesEstimates { get; set; }
 
-    public bool AccessMessages { get; set; } = true;
+    public bool AccessMessages { get; set; }
 
-    public bool AccessProjectUpdates { get; set; } = true;
+    public bool AccessProjectUpdates { get; set; }
 
     public bool AccessPayments { get; set; }
 
     [Required, MaxLength(30)]
-    public string CollaborationLevel { get; set; } = RealtorCollaborationLevels.CanComment;
+    public string CollaborationLevel { get; set; } = RealtorCollaborationLevels.ViewOnly;
 
-    public bool DeliveryEmail { get; set; } = true;
+    public bool DeliveryEmail { get; set; }
 
     public bool DeliveryText { get; set; }
 

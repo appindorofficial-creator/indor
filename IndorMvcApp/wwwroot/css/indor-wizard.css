@@ -318,10 +318,10 @@
     --indor-action-h: 52px;
     --indor-action-gap: 10px;
     --indor-footer-pad-y: 12px;
-    --indor-bottom-nav-h: 56px;
+    --indor-bottom-nav-h: var(--homeowner-bottom-nav-h, 80px);
     --indor-bottom-nav-offset: 0px;
     --indor-page-footer-bottom: calc(var(--indor-footer-pad-y) + env(safe-area-inset-bottom, 0px));
-    --indor-page-footer-scroll: calc(96px + env(safe-area-inset-bottom, 0px));
+    --indor-page-footer-scroll: calc(var(--indor-action-h) + var(--indor-footer-pad-y) * 2 + 32px + env(safe-area-inset-bottom, 0px));
     --indor-page-footer-bg: linear-gradient(180deg, rgba(240, 247, 255, 0) 0%, rgba(240, 247, 255, .92) 28%, rgba(240, 247, 255, .98) 100%);
 }
 
@@ -331,7 +331,7 @@ body:has(.rl-bottom-nav),
 body:has(.prv-pro-bottom-nav) {
     --indor-bottom-nav-offset: var(--indor-bottom-nav-h);
     --indor-page-footer-bottom: calc(var(--indor-footer-pad-y) + var(--indor-bottom-nav-offset) + env(safe-area-inset-bottom, 0px));
-    --indor-page-footer-scroll: calc(96px + var(--indor-bottom-nav-offset) + env(safe-area-inset-bottom, 0px));
+    --indor-page-footer-scroll: calc(var(--indor-action-h) + var(--indor-footer-pad-y) * 2 + var(--indor-bottom-nav-offset) + 16px + env(safe-area-inset-bottom, 0px));
 }
 
 /* Shared fixed footer bar (containers) */
@@ -356,18 +356,71 @@ body:has(.prv-pro-bottom-nav) {
 
 .iw-wizard-page .sticky-footer .btn-primary,
 .iw-wizard-page .sticky-footer .btn-outline,
+.iw-wizard-page .sticky-footer .hvac-save-btn,
+.iw-wizard-page .sticky-footer .hvac-outline-btn,
 .iw-wizard-page .sticky-total .btn-primary,
 .iw-wizard-page .sticky-total .btn-outline {
     margin-top: 0 !important;
 }
 
+.iw-wizard-page .sticky-footer .hvac-save-btn,
+.iw-wizard-page .sticky-footer .hvac-outline-btn {
+    width: 100%;
+}
+
+.iw-wizard-page .iw-wizard-shell form:has(.sticky-footer) {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+.iw-wizard-page .iw-wizard-shell form:has(.sticky-footer > button[type="submit"]:nth-last-child(2)),
+.iw-wizard-page .iw-wizard-shell form:has(.cl-form-actions > button[type="submit"]:nth-last-child(2)) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
+/* Legacy .cl-form-actions wrapper (Moving/Cleaning steps before sticky-footer migration) */
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) .cl-form-actions {
+    position: fixed !important;
+    left: 0;
+    right: 0;
+    bottom: 0 !important;
+    z-index: 41;
+    margin-top: 0 !important;
+    padding: var(--indor-footer-pad-y, 12px) 16px var(--indor-page-footer-bottom) !important;
+    background: var(--indor-page-footer-bg) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-top: none !important;
+    display: flex;
+    flex-direction: column;
+    gap: var(--indor-action-gap, 10px);
+    box-sizing: border-box;
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) .cl-form-actions .btn-primary,
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) .cl-form-actions .btn-outline {
+    width: 100%;
+    margin-top: 0 !important;
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):has(.cl-form-actions) {
+    padding-bottom: var(--indor-page-footer-scroll);
+}
+
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):has(.cl-form-actions > button[type="submit"]:nth-last-child(2)) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
+.iw-wizard-page .iw-step-form .field-card {
+    scroll-margin-bottom: var(--indor-page-footer-scroll);
+}
+
 /* Pin standalone submit buttons in service wizards */
-.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions),
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(:has(.cl-form-actions)),
 .iw-wizard-page form.cl-form-actions {
     padding-bottom: var(--indor-page-footer-scroll);
 }
 
-.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"],
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(:has(.cl-form-actions)) > button[type="submit"],
 .iw-wizard-page form.cl-form-actions > button[type="submit"],
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > button.hvac-save-btn[type="submit"],
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > a.hvac-save-btn.indor-page-cta {
@@ -500,15 +553,19 @@ body:has(.prv-pro-bottom-nav) {
 
 .prv-page .prv-wiz-footer,
 .prv-page .prv-exam-nav {
-    position: fixed;
+    position: fixed !important;
     left: 0;
     right: 0;
     bottom: 0;
+    top: auto !important;
     z-index: 41;
     padding: var(--indor-footer-pad-y) 20px var(--indor-page-footer-bottom);
-    background: var(--indor-page-footer-bg);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    /* Solid background instead of backdrop-filter: on iOS Safari a
+       position: fixed element combined with backdrop-filter is mis-positioned
+       and floats over the page content, so we avoid the blur here. */
+    background: #F0F7FF;
+    border-top: 1px solid rgba(15, 23, 42, .06);
+    box-shadow: 0 -6px 18px rgba(10, 37, 64, .06);
     box-sizing: border-box;
 }
 
@@ -522,9 +579,20 @@ body:has(.prv-pro-bottom-nav) {
 .prv-page .prv-wiz-footer > .ob-btn,
 .prv-page .prv-wiz-footer > button,
 .prv-page .prv-wiz-footer > a {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
     width: 100%;
     max-width: 430px;
     margin: 0;
+}
+
+.prv-page .prv-wiz-stack button[type="submit"] {
+    position: static !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
 }
 
 .prv-page .prv-wiz-footer > .prv-save-later {

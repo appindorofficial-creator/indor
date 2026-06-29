@@ -1,7 +1,9 @@
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
+using System.Text.RegularExpressions;
 
 namespace IndorMvcApp.Services;
 
@@ -168,6 +170,11 @@ public class RealtorInviteClientService(
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
             ?? throw new InvalidOperationException("Realtor profile not found.");
 
+        if (propertyFileId is not > 0 && draft.PropertyFileId is > 0)
+        {
+            propertyFileId = draft.PropertyFileId;
+        }
+
         if (propertyFileId is not > 0)
         {
             throw new InvalidOperationException("Select a property.");
@@ -187,7 +194,9 @@ public class RealtorInviteClientService(
         await db.SaveChangesAsync(cancellationToken);
     }
 
-    public async Task<RealtorInviteCreatePropertyViewModel> BuildCreatePropertyAsync(CancellationToken cancellationToken = default)
+    public async Task<RealtorInviteCreatePropertyViewModel> BuildCreatePropertyAsync(
+        string? prefillAddress = null,
+        CancellationToken cancellationToken = default)
     {
         var draft = await GetDraftAsync(cancellationToken);
         if (draft == null || string.IsNullOrWhiteSpace(draft.FullName))
@@ -195,7 +204,7 @@ public class RealtorInviteClientService(
             throw new InvalidOperationException("Complete client info first.");
         }
 
-        return new RealtorInviteCreatePropertyViewModel
+        var model = new RealtorInviteCreatePropertyViewModel
         {
             DisplayStep = 2,
             Title = "Create New Property",
@@ -203,6 +212,9 @@ public class RealtorInviteClientService(
             States = registration.GetLicenseStates(),
             PropertyTypes = RealtorPropertyTypes.Options
         };
+
+        ApplyAddressPrefill(model, prefillAddress);
+        return model;
     }
 
     public async Task<int> CreatePropertyAsync(RealtorInviteCreatePropertyViewModel model, CancellationToken cancellationToken = default)
@@ -215,6 +227,28 @@ public class RealtorInviteClientService(
         var city = model.City?.Trim() ?? "";
         var state = model.StateCode?.Trim() ?? "";
         var zip = model.PostalCode?.Trim() ?? "";
+
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            throw new InvalidOperationException("Property address is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(city))
+        {
+            throw new InvalidOperationException("City is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(state))
+        {
+            throw new InvalidOperationException("State is required.");
+        }
+
+        if (!UsZipCodeAttribute.IsValidRequired(zip, out var zipError))
+        {
+            throw new InvalidOperationException(zipError ?? "Enter a valid 5-digit ZIP code.");
+        }
+
+        zip = UsZipCodeAttribute.NormalizeToStorage(zip) ?? zip;
         var nickname = model.Nickname?.Trim() ?? "";
         var unit = model.Unit?.Trim() ?? "";
         var propertyType = RealtorPropertyTypes.IsValid(model.PropertyType)
@@ -252,6 +286,7 @@ public class RealtorInviteClientService(
             draft.PropertyCityRegion = property.CityRegion;
             draft.PropertyLabel = MapPropertyLabel(property);
             draft.PropertyStatusLabel = property.FilePhase ?? property.Status;
+            draft.CurrentStep = 3;
             draft.FechaActualizacion = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
         }
@@ -277,19 +312,21 @@ public class RealtorInviteClientService(
             throw new InvalidOperationException("Select a property first.");
         }
 
+        var accessSaved = draft.CurrentStep >= 4;
+
         return new RealtorInviteAccessViewModel
         {
             DisplayStep = 3,
             Subtitle = "Choose what the client can access",
-            AccessPropertyOverview = draft.AccessPropertyOverview,
-            AccessFilesReports = draft.AccessFilesReports,
-            AccessQuotesEstimates = draft.AccessQuotesEstimates,
-            AccessMessages = draft.AccessMessages,
-            AccessProjectUpdates = draft.AccessProjectUpdates,
-            AccessPayments = draft.AccessPayments,
-            CollaborationLevel = draft.CollaborationLevel,
-            DeliveryEmail = draft.DeliveryEmail,
-            DeliveryText = draft.DeliveryText,
+            AccessPropertyOverview = accessSaved && draft.AccessPropertyOverview,
+            AccessFilesReports = accessSaved && draft.AccessFilesReports,
+            AccessQuotesEstimates = accessSaved && draft.AccessQuotesEstimates,
+            AccessMessages = accessSaved && draft.AccessMessages,
+            AccessProjectUpdates = accessSaved && draft.AccessProjectUpdates,
+            AccessPayments = accessSaved && draft.AccessPayments,
+            CollaborationLevel = accessSaved ? draft.CollaborationLevel : "",
+            DeliveryEmail = accessSaved && draft.DeliveryEmail,
+            DeliveryText = accessSaved && draft.DeliveryText,
             WelcomeMessage = string.IsNullOrWhiteSpace(draft.WelcomeMessage)
                 ? DefaultWelcomeMessage
                 : draft.WelcomeMessage,
@@ -306,16 +343,9 @@ public class RealtorInviteClientService(
         draft.AccessMessages = model.AccessMessages;
         draft.AccessProjectUpdates = model.AccessProjectUpdates;
         draft.AccessPayments = model.AccessPayments;
-        draft.CollaborationLevel = string.IsNullOrWhiteSpace(model.CollaborationLevel)
-            ? RealtorCollaborationLevels.CanComment
-            : model.CollaborationLevel;
+        draft.CollaborationLevel = model.CollaborationLevel.Trim();
         draft.DeliveryEmail = model.DeliveryEmail;
         draft.DeliveryText = model.DeliveryText;
-
-        if (!draft.DeliveryEmail && !draft.DeliveryText)
-        {
-            draft.DeliveryEmail = true;
-        }
 
         draft.WelcomeMessage = model.WelcomeMessage?.Trim().Length > 250
             ? model.WelcomeMessage.Trim()[..250]
@@ -588,6 +618,14 @@ public class RealtorInviteClientService(
             ? inv.PropertyAddress ?? ""
             : $"{inv.PropertyAddress}, {inv.PropertyCityRegion}";
 
+    public static bool HasAnyAccessPermission(RealtorInviteAccessViewModel model) =>
+        model.AccessPropertyOverview
+        || model.AccessFilesReports
+        || model.AccessQuotesEstimates
+        || model.AccessMessages
+        || model.AccessProjectUpdates
+        || model.AccessPayments;
+
     private static string BuildAccessSummary(IndorRealtorInvitation inv)
     {
         var parts = new List<string>();
@@ -629,5 +667,57 @@ public class RealtorInviteClientService(
             Initials = initials.ToUpperInvariant(),
             SentLabel = inv.SentUtc.ToLocalTime().ToString("MMM d, yyyy")
         };
+    }
+
+    private static void ApplyAddressPrefill(RealtorInviteCreatePropertyViewModel model, string? raw)
+    {
+        if (string.IsNullOrWhiteSpace(raw))
+        {
+            return;
+        }
+
+        var trimmed = raw.Trim();
+        model.Address = trimmed;
+
+        var parts = trimmed.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2)
+        {
+            return;
+        }
+
+        model.Address = parts[0];
+
+        if (parts.Length >= 3)
+        {
+            model.City = parts[1];
+            ApplyStateZip(model, parts[2]);
+            return;
+        }
+
+        ApplyCityStateZip(model, parts[1]);
+    }
+
+    private static void ApplyCityStateZip(RealtorInviteCreatePropertyViewModel model, string segment)
+    {
+        var match = Regex.Match(segment, @"^(.+?)\s+([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$");
+        if (match.Success)
+        {
+            model.City = match.Groups[1].Value.Trim();
+            model.StateCode = match.Groups[2].Value.ToUpperInvariant();
+            model.PostalCode = match.Groups[3].Value;
+            return;
+        }
+
+        model.City = segment;
+    }
+
+    private static void ApplyStateZip(RealtorInviteCreatePropertyViewModel model, string segment)
+    {
+        var match = Regex.Match(segment, @"^([A-Za-z]{2})\s+(\d{5}(?:-\d{4})?)$");
+        if (match.Success)
+        {
+            model.StateCode = match.Groups[1].Value.ToUpperInvariant();
+            model.PostalCode = match.Groups[2].Value;
+        }
     }
 }

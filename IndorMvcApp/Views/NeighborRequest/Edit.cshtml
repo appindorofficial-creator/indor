@@ -9,6 +9,7 @@
     var timeWindowLabel = !string.IsNullOrWhiteSpace(matchedTimeWindow.Label)
         ? matchedTimeWindow.Label
         : timeWindowOptions.FirstOrDefault().Label ?? "Select a time";
+    var selectedTimeWindow = Model.TimeWindowPreset ?? timeWindowOptions.FirstOrDefault().Value ?? string.Empty;
 }
 
 <form asp-action="Edit" method="post" class="nr-edit-form">
@@ -22,13 +23,28 @@
         <section class="nr-edit-section">
             <h2 class="nr-edit-section-title">What do you need help with?</h2>
             <div class="nr-edit-picker" id="nrCategoryPicker">
-                <select asp-for="CategoryId" class="nr-edit-picker-native" aria-label="Category">
+                @if (categories.Count == 0)
+                {
+                    <p class="nr-empty">Categories are not available yet. Run the database script and try again.</p>
+                }
+                else
+                {
+                <select name="CategoryId" id="CategoryId" class="nr-edit-picker-native" aria-label="Category" required>
                     @foreach (var category in categories)
                     {
-                        <option value="@category.Id"
-                                data-icon="@category.IconClass"
-                                data-label="@category.Label"
-                                selected="@(category.Id == Model.CategoryId)">@category.Label</option>
+                        if (category.Id == Model.CategoryId)
+                        {
+                            <option value="@category.Id"
+                                    data-icon="@category.IconClass"
+                                    data-label="@category.Label"
+                                    selected="selected">@category.Label</option>
+                        }
+                        else
+                        {
+                            <option value="@category.Id"
+                                    data-icon="@category.IconClass"
+                                    data-label="@category.Label">@category.Label</option>
+                        }
                     }
                 </select>
                 <div class="nr-edit-picker-face">
@@ -36,6 +52,7 @@
                     <span class="nr-edit-picker-label" id="nrCategoryLabel">@(selectedCategory?.Label ?? Model.CategoryLabel)</span>
                     <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
                 </div>
+                }
             </div>
         </section>
 
@@ -53,21 +70,29 @@
             <h2 class="nr-edit-section-title">Preferred date</h2>
             <label class="nr-edit-picker nr-edit-picker--date">
                 <span class="nr-edit-picker-icon"><i class="far fa-calendar"></i></span>
-                <input asp-for="NeededByDate" type="date" class="nr-edit-picker-native nr-edit-picker-native--date" />
+                <input asp-for="NeededByDate" type="date" class="nr-edit-picker-native nr-edit-picker-native--date" min="@Model.MinNeededByDateIso" />
                 <span class="nr-edit-picker-label" id="nrPreferredDateLabel">
                     @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? "Select a date")
                 </span>
                 <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
             </label>
+            <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
         </section>
 
         <section class="nr-edit-section">
             <h2 class="nr-edit-section-title">Time window</h2>
             <div class="nr-edit-picker">
-                <select asp-for="TimeWindowPreset" class="nr-edit-picker-native" aria-label="Time window">
+                <select name="TimeWindowPreset" id="TimeWindowPreset" class="nr-edit-picker-native" aria-label="Time window">
                     @foreach (var option in timeWindowOptions)
                     {
-                        <option value="@option.Value" selected="@(option.Value == Model.TimeWindowPreset)">@option.Label</option>
+                        if (option.Value == selectedTimeWindow)
+                        {
+                            <option value="@option.Value" selected="selected">@option.Label</option>
+                        }
+                        else
+                        {
+                            <option value="@option.Value">@option.Label</option>
+                        }
                     }
                 </select>
                 <div class="nr-edit-picker-face">

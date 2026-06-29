@@ -171,9 +171,12 @@
 .rl-ep-language-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
 .rl-ep-language-chip {
     display: inline-flex; align-items: center; gap: 6px;
-    padding: 6px 10px; border-radius: 999px;
-    background: #EFF6FF; color: #0066CC; border: none;
-    font-size: .78rem; font-weight: 600; cursor: pointer;
+    padding: 8px 12px; border-radius: 999px;
+    border: 1px solid #E2E8F0; background: #fff;
+    font-size: .78rem; font-weight: 600; color: #475569; cursor: pointer;
+}
+.rl-ep-language-chip.is-selected {
+    background: #0066CC; border-color: #0066CC; color: #fff;
 }
 .rl-ep-language-add {
     display: inline-flex; align-items: center; justify-content: center;

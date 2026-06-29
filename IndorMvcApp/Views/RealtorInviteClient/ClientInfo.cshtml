@@ -5,42 +5,85 @@
     var emailError = FieldError("email");
     var phoneError = FieldError("phone");
     var clientRoleError = FieldError("clientRole");
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
 }
 
 <form id="inviteClientForm" asp-action="ClientInfo" method="post" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert" id="inviteClientFormErrors">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Please fix the following to continue:</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
 
     <h2 class="rl-invite-section-title">Client Information</h2>
 
-    <label class="rl-field @(fullNameError.Length > 0 ? "is-error" : null)">
+    <label class="rl-field @(fullNameError.Length > 0 ? "is-error" : null)" for="inviteClientFullName">
         <i class="fas fa-user"></i>
-        <input type="text" name="fullName" value="@Model.FullName" placeholder="Enter full name" autocomplete="name" />
+        <input type="text"
+               id="inviteClientFullName"
+               name="fullName"
+               value="@Model.FullName"
+               placeholder="Enter full name"
+               autocomplete="name"
+               aria-required="true"
+               aria-invalid="@(fullNameError.Length > 0)"
+               @(fullNameError.Length > 0 ? Html.Raw("aria-describedby=\"fullNameError\"") : null) />
     </label>
-    @if (!string.IsNullOrWhiteSpace(fullNameError))
-    {
-        <span class="rl-field-error">@fullNameError</span>
-    }
+    <span class="rl-field-error" id="fullNameError" data-client-error="fullName">@fullNameError</span>
 
-    <label class="rl-field @(emailError.Length > 0 ? "is-error" : null)">
+    <label class="rl-field @(emailError.Length > 0 ? "is-error" : null)" for="inviteClientEmail">
         <i class="fas fa-envelope"></i>
-        <input type="email" name="email" value="@Model.Email" placeholder="Enter email address" autocomplete="email" inputmode="email" />
+        <input type="email"
+               id="inviteClientEmail"
+               name="email"
+               value="@Model.Email"
+               placeholder="Enter email address (e.g. name@email.com)"
+               autocomplete="email"
+               inputmode="email"
+               aria-required="true"
+               aria-invalid="@(emailError.Length > 0)"
+               @(emailError.Length > 0 ? Html.Raw("aria-describedby=\"emailError\"") : null) />
     </label>
-    @if (!string.IsNullOrWhiteSpace(emailError))
-    {
-        <span class="rl-field-error">@emailError</span>
-    }
+    <span class="rl-field-error" id="emailError" data-client-error="email">@emailError</span>
 
-    <label class="rl-field @(phoneError.Length > 0 ? "is-error" : null)">
+    <label class="rl-field @(phoneError.Length > 0 ? "is-error" : null)" for="inviteClientPhone">
         <i class="fas fa-phone"></i>
-        <input type="text" id="inviteClientPhone" name="phone" value="@Model.Phone" placeholder="Enter phone number" autocomplete="tel" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" data-phone-input />
+        <input type="text"
+               id="inviteClientPhone"
+               name="phone"
+               value="@Model.Phone"
+               placeholder="Enter 10-digit phone number"
+               autocomplete="tel"
+               inputmode="numeric"
+               maxlength="10"
+               pattern="[0-9]{10}"
+               data-phone-input
+               data-phone-required="true"
+               aria-required="true"
+               aria-invalid="@(phoneError.Length > 0)"
+               @(phoneError.Length > 0 ? Html.Raw("aria-describedby=\"phoneError\"") : null) />
     </label>
-    @if (!string.IsNullOrWhiteSpace(phoneError))
-    {
-        <span class="rl-field-error">@phoneError</span>
-    }
+    <span class="rl-field-error" id="phoneError" data-client-error="phone">@phoneError</span>
 
-    <p class="rl-invite-section-title">Client Role</p>
+    <p class="rl-invite-section-title">Client Role <span class="rl-required" aria-hidden="true">*</span></p>
     <div class="rl-role-pills">
         @foreach (var role in Model.ClientRoles)
         {
@@ -50,10 +93,7 @@
             </label>
         }
     </div>
-    @if (!string.IsNullOrWhiteSpace(clientRoleError))
-    {
-        <span class="rl-field-error">@clientRoleError</span>
-    }
+    <span class="rl-field-error" id="clientRoleError" data-client-error="clientRole">@clientRoleError</span>
 
     <p class="rl-invite-section-title">Quick Note <small>(optional)</small></p>
     <label class="rl-field rl-field--textarea">
@@ -72,3 +112,17 @@
         <button type="submit" id="inviteNextBtn" class="ob-btn ob-btn-primary">Next</button>
     </div>
 </form>
+
+@section Scripts {
+<script>
+(function () {
+    var banner = document.getElementById('inviteClientFormErrors');
+    var summary = document.querySelector('#inviteClientForm .ob-summary:not(.validation-summary-valid)');
+    var firstFieldError = document.querySelector('#inviteClientForm .rl-field-error:not(:empty), #inviteClientForm .rl-field.is-error');
+    var scrollTarget = banner || summary || firstFieldError;
+    if (scrollTarget) {
+        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+})();
+</script>
+}

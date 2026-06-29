@@ -1,0 +1,88 @@
+@model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
+@{
+    ViewData["Title"] = "Settings - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--settings">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head prv-pro-settings-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div>
+            <h1>Settings</h1>
+            <p>Manage your business profile, tools, and account.</p>
+        </div>
+    </header>
+
+    <nav class="prv-pro-settings-nav">
+        <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-building"></i></span>
+            <div>
+                <strong>Business Profile</strong>
+                <span>Update company details, contact info, and service description.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-globe"></i></span>
+            <div>
+                <strong>Public Profile</strong>
+                <span>Preview how your business appears to homeowners.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-file-lines"></i></span>
+            <div>
+                <strong>Report Templates</strong>
+                <span>Manage saved templates for job reports.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Templates" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-layer-group"></i></span>
+            <div>
+                <strong>Job Templates</strong>
+                <span>Configure reusable job and estimate templates.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-crown"></i></span>
+            <div>
+                <strong>Subscription / Plan</strong>
+                <span>@Model.SubscriptionPlan — view plan details and activation status.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-bell"></i></span>
+            <div>
+                <strong>Notifications</strong>
+                <span>Manage job, lead, payment, and report alerts.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+        <a asp-controller="Proveedor" asp-action="HelpCenter" class="prv-pro-settings-item">
+            <span class="prv-pro-settings-icon"><i class="fas fa-book"></i></span>
+            <div>
+                <strong>Help Center</strong>
+                <span>Guides, verification steps, and support resources.</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    </nav>
+
+    <section class="prv-pro-profile-card prv-pro-settings-account">
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-life-ring"></i> Account</h3></header>
+        <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
+            @Html.AntiForgeryToken()
+            <button type="submit" class="prv-pro-profile-logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
+        </form>
+    </section>
+</div>

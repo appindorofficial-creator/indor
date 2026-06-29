@@ -60,7 +60,7 @@ public class FurnitureAssemblyItemsViewModel
     public string AnclajePared { get; set; } = string.Empty;
 }
 
-public class FurnitureAssemblyPreferencesViewModel
+public class FurnitureAssemblyPreferencesViewModel : IValidatableObject
 {
     public int SolicitudId { get; set; }
     public int MovingSetupServicioId { get; set; }
@@ -79,7 +79,9 @@ public class FurnitureAssemblyPreferencesViewModel
     [Required]
     public string AyudaMover { get; set; } = "NotSure";
 
-    [Required]
+    [Required(ErrorMessage = "Select a preferred date.")]
+    [DataType(DataType.Date)]
+    [Display(Name = "Preferred date")]
     public DateTime FechaServicio { get; set; }
 
     [Required]
@@ -87,6 +89,18 @@ public class FurnitureAssemblyPreferencesViewModel
 
     [MaxLength(250)]
     public string? NotaCorta { get; set; }
+
+    public string MinServiceDateIso { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
+
+    public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
+    {
+        if (FechaServicio.Date < DateTime.Today)
+        {
+            yield return new ValidationResult(
+                "Please select today or a future date.",
+                [nameof(FechaServicio)]);
+        }
+    }
 }
 
 public class ExistingFurnitureAssemblyFileViewModel

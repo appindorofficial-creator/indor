@@ -14,6 +14,8 @@ public class ProviderProDashboardViewModel
 
     public bool ActivationPending { get; set; }
 
+    public bool IsInsured { get; set; }
+
     public int ProviderScore { get; set; }
 
     public string ScoreLabel { get; set; } = "Great Work!";

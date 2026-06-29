@@ -1,26 +1,46 @@
 namespace IndorMvcApp.Services;
 
 /// <summary>
-/// Maps AI-suggested Font Awesome tokens to icons that exist in FA 6 Free.
+/// Maps AI-suggested Font Awesome tokens to icons that exist in FA 6.4 Free.
 /// </summary>
 public static class PropertyMaintenanceIconResolver
 {
-    private static readonly HashSet<string> KnownIcons = new(StringComparer.OrdinalIgnoreCase)
+    /// <summary>Icons verified in Font Awesome 6.4.0 free metadata.</summary>
+    private static readonly HashSet<string> FreeIcons = new(StringComparer.OrdinalIgnoreCase)
     {
         "fan", "faucet-drip", "bolt", "house-chimney", "paint-roller", "shield-halved", "leaf",
         "screwdriver-wrench", "droplet", "fire-flame-simple", "fire", "fire-extinguisher", "bell",
-        "grip-lines", "water", "thermometer-half", "filter", "broom", "bug", "tree", "seedling",
+        "grip-lines", "water", "filter", "broom", "bug", "tree", "seedling",
         "window-maximize", "plug", "lightbulb", "wrench", "hammer", "cloud-bolt", "snowflake",
         "sun", "wind", "circle-check", "triangle-exclamation", "house", "building", "warehouse",
         "stairs", "sink", "shower", "toilet", "smog", "lungs", "eye", "clipboard-check",
         "house-crack", "person-shelter", "helmet-safety", "mask-face", "bolt-lightning",
-        "temperature-arrow-up", "temperature-half", "air-conditioner"
+        "temperature-arrow-up", "temperature-half", "house-fire", "fire-burner", "file-circle-plus"
+    };
+
+    private static readonly Dictionary<string, string> IconAliases = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["thermometer-half"] = "temperature-half",
+        ["thermometer"] = "temperature-half",
+        ["air-conditioner"] = "fan",
+        ["airconditioner"] = "fan",
+        ["hvac"] = "fan",
+        ["extinguisher"] = "fire-extinguisher",
+        ["smoke-detector"] = "bell",
+        ["smoke-alarm"] = "bell",
+        ["shield"] = "shield-halved",
+        ["house-damage"] = "house-crack",
+        ["exclamation-triangle"] = "triangle-exclamation",
+        ["alert-triangle"] = "triangle-exclamation",
+        ["tools"] = "screwdriver-wrench",
+        ["toolbox"] = "screwdriver-wrench",
+        ["home"] = "house"
     };
 
     public static string Resolve(string? icon, string? category = null, string? title = null)
     {
-        var token = NormalizeToken(icon);
-        if (!string.IsNullOrEmpty(token) && KnownIcons.Contains(token))
+        var token = ApplyAlias(NormalizeToken(icon));
+        if (IsUsableFreeIcon(token))
         {
             return $"fa-{token}";
         }
@@ -43,23 +63,21 @@ public static class PropertyMaintenanceIconResolver
         return $"fas fa-{token}";
     }
 
-    /// <summary>Ensures a stored icon token renders as a full FA class list.</summary>
-    public static string EnsureCssClass(string? icon, string? category = null, string? title = null)
+    /// <summary>Always re-resolves to a valid FA 6 Free icon class list.</summary>
+    public static string EnsureCssClass(string? icon, string? category = null, string? title = null) =>
+        ToCssClass(icon, category, title);
+
+    private static string? ApplyAlias(string? token)
     {
-        if (string.IsNullOrWhiteSpace(icon))
-        {
-            return ToCssClass(null, category, title);
-        }
+        if (string.IsNullOrWhiteSpace(token)) return null;
+        return IconAliases.TryGetValue(token, out var alias) ? alias : token;
+    }
 
-        var trimmed = icon.Trim();
-        if (trimmed.StartsWith("fas ", StringComparison.OrdinalIgnoreCase)
-            || trimmed.StartsWith("far ", StringComparison.OrdinalIgnoreCase)
-            || trimmed.StartsWith("fab ", StringComparison.OrdinalIgnoreCase))
-        {
-            return trimmed;
-        }
-
-        return ToCssClass(trimmed, category, title);
+    private static bool IsUsableFreeIcon(string? token)
+    {
+        if (string.IsNullOrWhiteSpace(token)) return false;
+        if (token.Length == 1 && token[0] is >= 'a' and <= 'z') return false;
+        return FreeIcons.Contains(token);
     }
 
     private static string? NormalizeToken(string? icon)
@@ -90,14 +108,18 @@ public static class PropertyMaintenanceIconResolver
         if (t.Contains("earthquake", StringComparison.Ordinal) || t.Contains("seismic", StringComparison.Ordinal))
             return "fa-house-crack";
         if (t.Contains("fire safety", StringComparison.Ordinal) || t.Contains("fire check", StringComparison.Ordinal)
+            || t.Contains("fire extinguisher", StringComparison.Ordinal)
             || (t.Contains("fire", StringComparison.Ordinal) && t.Contains("safety", StringComparison.Ordinal)))
             return "fa-fire-extinguisher";
+        if (t.Contains("carbon monoxide", StringComparison.Ordinal) || t.Contains("co alarm", StringComparison.Ordinal))
+            return "fa-bell";
         if (t.Contains("smoke", StringComparison.Ordinal) || t.Contains("detector", StringComparison.Ordinal))
             return "fa-bell";
         if (t.Contains("water heater", StringComparison.Ordinal)) return "fa-fire-flame-simple";
         if (t.Contains("gutter", StringComparison.Ordinal)) return "fa-grip-lines";
         if (t.Contains("hvac", StringComparison.Ordinal) || t.Contains("furnace", StringComparison.Ordinal)
-            || t.Contains("air condition", StringComparison.Ordinal) || t.Contains("a/c", StringComparison.Ordinal))
+            || t.Contains("air condition", StringComparison.Ordinal) || t.Contains("a/c", StringComparison.Ordinal)
+            || (t.Contains("system check", StringComparison.Ordinal) && t.Contains("heat", StringComparison.Ordinal)))
             return "fa-fan";
         if (t.Contains("roof", StringComparison.Ordinal)) return "fa-house-chimney";
         if (t.Contains("paint", StringComparison.Ordinal) || t.Contains("exterior", StringComparison.Ordinal))
@@ -119,6 +141,8 @@ public static class PropertyMaintenanceIconResolver
         if (t.Contains("window", StringComparison.Ordinal)) return "fa-window-maximize";
         if (t.Contains("clean", StringComparison.Ordinal)) return "fa-broom";
         if (t.Contains("foundation", StringComparison.Ordinal)) return "fa-house";
+        if (t.Contains("inspection", StringComparison.Ordinal) || t.Contains("inspection report", StringComparison.Ordinal))
+            return "fa-file-circle-plus";
         return null;
     }
 

@@ -54,13 +54,13 @@ public class IndorPropertyAdministrator
     [MaxLength(40)]
     public string? ManagementStyle { get; set; }
 
-    public bool ToolMaintenanceRequests { get; set; } = true;
-    public bool ToolTurnoverCleaning { get; set; } = true;
-    public bool ToolGuestMessaging { get; set; } = true;
-    public bool ToolInvoicesPayments { get; set; } = true;
+    public bool ToolMaintenanceRequests { get; set; }
+    public bool ToolTurnoverCleaning { get; set; }
+    public bool ToolGuestMessaging { get; set; }
+    public bool ToolInvoicesPayments { get; set; }
     public bool ToolDocumentsWarranties { get; set; }
-    public bool ToolServiceProviders { get; set; } = true;
-    public bool ToolTeamAccess { get; set; } = true;
+    public bool ToolServiceProviders { get; set; }
+    public bool ToolTeamAccess { get; set; }
 
     public bool NotifyUrgentMaintenance { get; set; } = true;
     public bool NotifyWeeklySummary { get; set; } = true;

@@ -1,5 +1,6 @@
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -22,7 +23,11 @@ public class RealtorRegistrationService(
         "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC"
     ];
 
+    private static readonly IReadOnlyList<string> SupportedLanguagesList = RealtorEditProfileOptions.SupportedLanguages;
+
     public IReadOnlyList<string> GetLicenseStates() => UsStates;
+
+    public IReadOnlyList<string> GetSupportedLanguages() => SupportedLanguagesList;
 
     public async Task<RealtorRegistrationState> GetAsync(CancellationToken cancellationToken = default)
     {
@@ -49,7 +54,13 @@ public class RealtorRegistrationService(
         entity.LicenseState = state.LicenseState.Trim();
         entity.ServiceAreas = state.ServiceAreas.Trim();
         entity.OfficeAddress = state.OfficeAddress.Trim();
-        entity.LanguagesJson = SerializeLanguages(state.Languages);
+
+        if (!RealtorSupportedLanguages.TryNormalize(state.Languages, out var normalizedLanguages, out var languagesError))
+        {
+            throw new InvalidOperationException(languagesError ?? "Select at least one language.");
+        }
+
+        entity.LanguagesJson = RealtorSupportedLanguages.SerializeJson(normalizedLanguages);
         entity.ProfessionalTermsAccepted = state.ProfessionalTermsAccepted;
         entity.TermsAcceptedUtc = state.ProfessionalTermsAccepted ? DateTime.UtcNow : entity.TermsAcceptedUtc;
         entity.CurrentStep = 2;
@@ -366,14 +377,9 @@ public class RealtorRegistrationService(
         }
     }
 
-    private static string SerializeLanguages(string languages)
-    {
-        var items = languages
-            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-            .Where(l => !string.IsNullOrWhiteSpace(l))
-            .Distinct(StringComparer.OrdinalIgnoreCase)
-            .ToList();
-
-        return System.Text.Json.JsonSerializer.Serialize(items);
-    }
+    private static string SerializeLanguages(string languages) =>
+        RealtorSupportedLanguages.SerializeJson(
+            RealtorSupportedLanguages.TryNormalize(languages, out var normalized, out _)
+                ? normalized
+                : string.Empty);
 }

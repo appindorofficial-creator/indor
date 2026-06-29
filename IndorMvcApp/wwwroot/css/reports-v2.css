@@ -1,0 +1,320 @@
+/* ============================================================
+   INDOR PRO — Reports page, polished v2 design.
+   Fully scoped to .prv-pro-shell--reports-v2 so it never
+   affects other provider-pro pages.
+   ============================================================ */
+
+.prv-pro-shell--reports-v2 .prv-pro-toast {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 -4px;
+    padding: 12px 16px;
+    border-radius: 12px;
+    background: #DCFCE7;
+    color: #15803D;
+    font-size: .88rem;
+    font-weight: 700;
+}
+
+.prv-pro-shell--reports-v2 {
+    max-width: 480px;
+    padding: 0 16px 100px;
+    background: #F4F6FA;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ---- Blue gradient hero header with a soft wave bottom ---- */
+.prv-pro-shell--reports-v2 .prv-pro-topbar {
+    position: relative;
+    margin: 0 -16px;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 18px 48px;
+    background: linear-gradient(135deg, #3B93FF 0%, #0066CC 58%, #0056D2 100%);
+    z-index: 1;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 38px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath fill='%23F4F6FA' d='M0,48 C320,128 1040,8 1440,72 L1440,120 L0,120 Z'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-brand-indor,
+.prv-pro-shell--reports-v2 .prv-pro-brand-pro {
+    color: #fff;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-brand-pro {
+    background: rgba(255, 255, 255, .2);
+    padding: 2px 8px;
+    border-radius: 7px;
+    font-size: .7rem;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-profile-btn--compact {
+    background: rgba(255, 255, 255, .16);
+    box-shadow: none;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-profile-chevron {
+    color: #fff;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-avatar--initial {
+    background: #fff;
+    color: #0056D2;
+}
+
+/* ---- Title with icon badge + create button ---- */
+.prv-pro-shell--reports-v2 .prv-pro-jobs-head {
+    display: block;
+    margin: 16px 0 14px;
+}
+
+.prv-pro-reports-title-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.prv-pro-reports-title-badge {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    background: linear-gradient(145deg, #E8F1FB, #BFDBFE);
+    color: #0056D2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.15rem;
+    flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(0, 86, 210, .16);
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-head h1 {
+    margin: 0;
+    font-size: 1.7rem;
+    font-weight: 900;
+    letter-spacing: -.02em;
+    color: #1A2B48;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-head p {
+    margin: 0 0 14px;
+    color: #6B7280;
+    font-size: .85rem;
+    line-height: 1.45;
+    max-width: none;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-create-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #3B93FF, #0056D2);
+    color: #fff;
+    font-size: .9rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 8px 20px rgba(0, 86, 210, .32);
+    transition: transform .15s ease;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-create-btn:active {
+    transform: scale(.98);
+}
+
+/* ---- Search + filters ---- */
+.prv-pro-shell--reports-v2 .prv-pro-search-wrap {
+    border: none;
+    border-radius: 14px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, .05);
+    background: #fff;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-filter-btn {
+    border: none;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, .05);
+}
+
+/* ---- Stat cards with colored icon + watermark ---- */
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stats {
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat {
+    position: relative;
+    overflow: hidden;
+    min-width: 96px;
+    flex: 1;
+    border: none;
+    border-radius: 18px;
+    padding: 14px 12px;
+    text-align: center;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .05);
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat::after {
+    content: "";
+    position: absolute;
+    left: -10%;
+    right: -10%;
+    bottom: -28px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--rstat-wm, rgba(59, 130, 246, .14));
+    z-index: 0;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat > * {
+    position: relative;
+    z-index: 1;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    margin: 0 auto 8px;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat-icon i {
+    color: inherit;
+    margin: 0;
+    font-size: .98rem;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat strong {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 900;
+    color: #1A2B48;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-stat span:last-child {
+    display: block;
+    font-size: .68rem;
+    font-weight: 600;
+    color: #6B7280;
+}
+
+/* Stat colour variants (icon gradient + watermark tint) */
+.prv-pro-jobs-stat-icon--orange { background: linear-gradient(145deg, #FFEDD5, #FDBA74); color: #C2410C; }
+.prv-pro-jobs-stat-icon--indigo { background: linear-gradient(145deg, #E0E7FF, #A5B4FC); color: #4338CA; }
+
+.prv-pro-jobs-stat--blue { --rstat-wm: rgba(59, 130, 246, .16); }
+.prv-pro-jobs-stat--green { --rstat-wm: rgba(34, 197, 94, .16); }
+.prv-pro-jobs-stat--orange { --rstat-wm: rgba(249, 115, 22, .16); }
+.prv-pro-jobs-stat--purple { --rstat-wm: rgba(139, 92, 246, .16); }
+.prv-pro-jobs-stat--indigo { --rstat-wm: rgba(99, 102, 241, .16); }
+
+/* ---- Tabs ---- */
+.prv-pro-shell--reports-v2 .prv-pro-jobs-tabs {
+    border-bottom: 1px solid #E8EEF5;
+    gap: 0;
+    margin-bottom: 16px;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-tabs a {
+    padding: 12px 14px;
+    font-size: .8rem;
+    color: #6B7280;
+    border: none;
+    background: none;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-jobs-tabs a.is-active {
+    color: #0056D2;
+    font-weight: 800;
+    border-bottom: 3px solid #0056D2;
+}
+
+/* ---- Empty state with illustration ---- */
+.prv-pro-reports-empty {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 18px;
+    background: #fff;
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(15, 23, 42, .05);
+}
+
+.prv-pro-reports-empty-img {
+    width: 104px;
+    height: 104px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.prv-pro-reports-empty-text strong {
+    display: block;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #1A2B48;
+    margin-bottom: 4px;
+}
+
+.prv-pro-reports-empty-text p {
+    margin: 0;
+    font-size: .82rem;
+    color: #6B7280;
+    line-height: 1.45;
+}
+
+/* ---- Quick actions with colored icon circles ---- */
+.prv-pro-shell--reports-v2 .prv-pro-quick h2 {
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #1A2B48;
+    margin-bottom: 12px;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-quick-grid--reports {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-quick-item {
+    border: none;
+    border-radius: 18px;
+    padding: 18px 8px;
+    gap: 10px;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, .05);
+    font-size: .72rem;
+    color: #334155;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-quick-item i {
+    width: 46px;
+    height: 46px;
+    font-size: 1.1rem;
+}
+
+.prv-pro-quick-item--blue i { background: linear-gradient(145deg, #E8F1FB, #BFDBFE); color: #0056D2; }
+.prv-pro-quick-item--green i { background: linear-gradient(145deg, #DCFCE7, #86EFAC); color: #15803D; }
+.prv-pro-quick-item--indigo i { background: linear-gradient(145deg, #E0E7FF, #A5B4FC); color: #4338CA; }
+.prv-pro-quick-item--purple i { background: linear-gradient(145deg, #EDE9FE, #C4B5FD); color: #6D28D9; }
+.prv-pro-quick-item--orange i { background: linear-gradient(145deg, #FFEDD5, #FDBA74); color: #C2410C; }
+
+/* ---- FAB ---- */
+.prv-pro-shell--reports-v2 .prv-pro-fab {
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(135deg, #3B93FF, #0056D2);
+    box-shadow: 0 10px 26px rgba(0, 86, 210, .4);
+}

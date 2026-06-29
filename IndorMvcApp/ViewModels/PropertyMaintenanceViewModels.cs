@@ -19,6 +19,9 @@ public class PropertyMaintenanceItemViewModel
     public string Icon { get; set; } = "fa-screwdriver-wrench";
     public string? Reason { get; set; }
     public int SortOrder { get; set; }
+    public string? ScheduleUrl { get; set; }
+    public string ScheduleActionLabel { get; set; } = "Schedule now";
+    public bool HasScheduleLink => !string.IsNullOrWhiteSpace(ScheduleUrl);
 }
 
 public class PropertyMaintenanceSectionViewModel

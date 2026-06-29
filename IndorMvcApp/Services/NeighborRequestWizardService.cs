@@ -16,6 +16,7 @@ public class NeighborRequestWizardService(
 {
     public const string DraftSessionKey = "NeighborRequestDraft";
     public const string FreshStartSessionKey = "NeighborRequestFreshStart";
+    public const string NeededByDatePastErrorMessage = "Choose today or a future date.";
     private static readonly string[] AllowedPhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const int MaxPhotoBytes = 10_000_000;
     private const int MaxPhotos = 5;
@@ -30,6 +31,14 @@ public class NeighborRequestWizardService(
 
     public static IReadOnlyList<(string Value, string Label)> GetTimeWindowOptions() =>
         TimeWindowPresets.Select(p => (p.Value, p.Label)).ToList();
+
+    public static DateTime MinimumNeededByDate => DateTime.UtcNow.Date;
+
+    public static bool IsNeededByDateAllowed(DateTime? date) =>
+        date == null || date.Value.Date >= MinimumNeededByDate;
+
+    public static string? ValidateNeededByDate(DateTime? date) =>
+        IsNeededByDateAllowed(date) ? null : NeededByDatePastErrorMessage;
 
     public NeighborRequestDraftState? LoadDraft(ISession session)
     {
@@ -52,7 +61,11 @@ public class NeighborRequestWizardService(
     public void SaveDraft(ISession session, NeighborRequestDraftState draft) =>
         session.SetString(DraftSessionKey, JsonSerializer.Serialize(draft));
 
-    public void ClearDraft(ISession session) => session.Remove(DraftSessionKey);
+    public void ClearDraft(ISession session)
+    {
+        session.Remove(DraftSessionKey);
+        ClearFreshStart(session);
+    }
 
     public void MarkFreshStart(ISession session) =>
         session.SetString(FreshStartSessionKey, "1");
@@ -107,15 +120,17 @@ public class NeighborRequestWizardService(
         int propiedadId,
         NeighborRequestDraftState? draft,
         IUrlHelper url,
-        CancellationToken ct) =>
-        BuildCategoryStepAsync(null, propiedadId, draft, url, ct);
+        CancellationToken ct,
+        bool useDraftFieldValues = true) =>
+        BuildCategoryStepAsync(null, propiedadId, draft, url, ct, useDraftFieldValues);
 
     public async Task<NeighborRequestCategoryStepViewModel> BuildCategoryStepAsync(
         Propiedad? propiedad,
         int propiedadId,
         NeighborRequestDraftState? draft,
         IUrlHelper url,
-        CancellationToken ct)
+        CancellationToken ct,
+        bool useDraftFieldValues = true)
     {
         var categories = await LoadCategoriesAsync(ct);
         var defaultAddress = draft?.LocationAddress;
@@ -129,6 +144,8 @@ public class NeighborRequestWizardService(
             }
         }
 
+        var fieldDraft = useDraftFieldValues ? draft : null;
+
         return new NeighborRequestCategoryStepViewModel
         {
             PropiedadId = propiedadId,
@@ -138,12 +155,13 @@ public class NeighborRequestWizardService(
             StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
             BackUrl = url.Action("Index", "Home"),
             CloseUrl = url.Action("Index", "Home")!,
-            CategoryId = draft?.CategoryId ?? 0,
-            SelectedCategoryId = draft?.CategoryId,
-            Title = draft?.Title ?? string.Empty,
-            Description = draft?.Description,
+            CategoryId = fieldDraft?.CategoryId ?? 0,
+            SelectedCategoryId = fieldDraft?.CategoryId,
+            Title = fieldDraft?.Title ?? string.Empty,
+            Description = fieldDraft?.Description,
             LocationAddress = defaultAddress ?? string.Empty,
-            UseHomeAddress = draft?.UseHomeAddress ?? true,
+            UseHomeAddress = fieldDraft?.UseHomeAddress ?? true,
+            ResumeDraft = useDraftFieldValues && draft is { CategoryId: > 0, EditingRequestId: null },
             Categories = categories.Select(c => new NeighborRequestCategoryOptionViewModel
             {
                 Id = c.Id,
@@ -365,6 +383,25 @@ public class NeighborRequestWizardService(
                 ? request.Description
                 : null;
 
+        var categoryOptions = categories.Select(c => new NeighborRequestCategoryOptionViewModel
+        {
+            Id = c.Id,
+            Label = ResolveCategoryLabel(c.Code, c.LabelEn),
+            Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
+            IconClass = ResolveCategoryIcon(c.Code, c.IconClass)
+        }).ToList();
+
+        if (category != null && categoryOptions.All(c => c.Id != category.Id))
+        {
+            categoryOptions.Insert(0, new NeighborRequestCategoryOptionViewModel
+            {
+                Id = category.Id,
+                Label = ResolveCategoryLabel(category.Code, category.LabelEn),
+                Description = ResolveCategoryDescription(category.Code, category.DescriptionEn),
+                IconClass = ResolveCategoryIcon(category.Code, category.IconClass)
+            });
+        }
+
         return new NeighborRequestEditDetailsStepViewModel
         {
             PropiedadId = request.PropiedadId,
@@ -384,13 +421,7 @@ public class NeighborRequestWizardService(
             NeededByDate = request.NeededByDate,
             TimeWindowPreset = ResolveTimeWindowPresetValue(request.TimeWindowStart, request.TimeWindowEnd),
             AudienceCode = request.AudienceCode,
-            Categories = categories.Select(c => new NeighborRequestCategoryOptionViewModel
-            {
-                Id = c.Id,
-                Label = ResolveCategoryLabel(c.Code, c.LabelEn),
-                Description = ResolveCategoryDescription(c.Code, c.DescriptionEn),
-                IconClass = ResolveCategoryIcon(c.Code, c.IconClass)
-            }).ToList(),
+            Categories = categoryOptions,
             TimeWindowOptions = GetTimeWindowOptions()
         };
     }
@@ -421,6 +452,11 @@ public class NeighborRequestWizardService(
             .AnyAsync(c => c.Id == model.CategoryId && c.IsActive, ct);
 
         if (!categoryExists)
+        {
+            return false;
+        }
+
+        if (!IsNeededByDateAllowed(model.NeededByDate))
         {
             return false;
         }
@@ -512,6 +548,11 @@ public class NeighborRequestWizardService(
             .AnyAsync(c => c.Id == draft.CategoryId && c.IsActive, ct);
 
         if (!categoryExists)
+        {
+            return null;
+        }
+
+        if (!IsNeededByDateAllowed(draft.NeededByDate))
         {
             return null;
         }
@@ -778,22 +819,25 @@ public class NeighborRequestWizardService(
         CancellationToken ct)
     {
         var activeTab = NormalizeTab(tab);
-        var statusFilter = activeTab switch
-        {
-            "InProgress" => NeighborRequestStatuses.InProgress,
-            "Completed" => NeighborRequestStatuses.Completed,
-            _ => NeighborRequestStatuses.Active
-        };
 
         List<IndorNeighborRequest> requests;
         try
         {
-            requests = await db.IndorNeighborRequests
+            var query = db.IndorNeighborRequests
                 .AsNoTracking()
                 .Include(r => r.Category)
                 .Include(r => r.Offers)
-                .Where(r => r.UserId == userId && r.PropiedadId == propiedadId)
-                .Where(r => r.Status == statusFilter)
+                .Where(r => r.UserId == userId && r.IsActive);
+
+            query = activeTab switch
+            {
+                "InProgress" => query.Where(r => r.Status == NeighborRequestStatuses.InProgress),
+                "Completed" => query.Where(r => r.Status == NeighborRequestStatuses.Completed),
+                _ => query.Where(r => r.Status != NeighborRequestStatuses.Completed
+                                      && r.Status != NeighborRequestStatuses.Cancelled)
+            };
+
+            requests = await query
                 .OrderByDescending(r => r.PublishedUtc ?? r.CreatedUtc)
                 .ToListAsync(ct);
         }
@@ -1108,6 +1152,12 @@ public class NeighborRequestWizardService(
 
     public void ApplyScheduleToDraft(NeighborRequestDraftState draft, NeighborRequestPreferencesStepViewModel model)
     {
+        if (model.IsEditMode)
+        {
+            draft.TimelineCode = NormalizeTimelineCode(model.TimelineCode);
+            return;
+        }
+
         draft.TimelineCode = NormalizeWhenCode(model.WhenCode);
         draft.PreferredTimeCode = NormalizePreferredTimeCode(model.PreferredTimeCode);
         draft.HelperCount = model.HelperCount is > 0 ? model.HelperCount : 1;
@@ -1120,9 +1170,16 @@ public class NeighborRequestWizardService(
         {
             NeighborRequestTimelineCodes.Today => today,
             NeighborRequestTimelineCodes.Tomorrow => today.AddDays(1),
-            NeighborRequestTimelineCodes.PickDate => model.NeededByDate?.Date ?? today.AddDays(2),
+            NeighborRequestTimelineCodes.PickDate => model.NeededByDate?.Date,
             _ => model.NeededByDate?.Date ?? today
         };
+
+        if (!IsNeededByDateAllowed(draft.NeededByDate))
+        {
+            draft.NeededByDate = draft.TimelineCode == NeighborRequestTimelineCodes.PickDate
+                ? null
+                : today;
+        }
 
         var (start, end) = ResolvePreferredTimeWindow(draft.PreferredTimeCode);
         draft.TimeWindowStart = start;
@@ -1279,6 +1336,15 @@ public class NeighborRequestWizardService(
             NeighborRequestTimelineCodes.ThisMonth => NeighborRequestTimelineCodes.ThisMonth,
             NeighborRequestTimelineCodes.Flexible => NeighborRequestTimelineCodes.Flexible,
             _ => NeighborRequestTimelineCodes.Today
+        };
+
+    private static string NormalizeTimelineCode(string? code) =>
+        code?.Trim() switch
+        {
+            NeighborRequestTimelineCodes.Asap => NeighborRequestTimelineCodes.Asap,
+            NeighborRequestTimelineCodes.ThisMonth => NeighborRequestTimelineCodes.ThisMonth,
+            NeighborRequestTimelineCodes.Flexible => NeighborRequestTimelineCodes.Flexible,
+            _ => NeighborRequestTimelineCodes.ThisWeek
         };
 
     private static string NormalizePreferredTimeCode(string? code) =>
@@ -1450,11 +1516,35 @@ public class NeighborRequestWizardService(
         return $"{dayLabel}, {time}";
     }
 
+    public async Task InitializeBlankDraftAsync(
+        ISession session,
+        Propiedad propiedad,
+        CancellationToken ct)
+    {
+        SaveDraft(session, new NeighborRequestDraftState
+        {
+            PropiedadId = propiedad.Id,
+            LocationAddress = await ResolveDefaultAddressAsync(propiedad, ct),
+            TimelineCode = NeighborRequestTimelineCodes.Today,
+            AudienceCode = NeighborRequestAudienceCodes.Neighbors
+        });
+    }
+
     public async Task EnsureDraftAsync(
         ISession session,
         Propiedad propiedad,
         CancellationToken ct)
     {
+        if (IsFreshStart(session))
+        {
+            SaveDraft(session, new NeighborRequestDraftState
+            {
+                PropiedadId = propiedad.Id,
+                LocationAddress = await ResolveDefaultAddressAsync(propiedad, ct)
+            });
+            return;
+        }
+
         var existing = LoadDraft(session);
         if (existing?.PropiedadId == propiedad.Id)
         {

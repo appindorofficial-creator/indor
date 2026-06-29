@@ -1,0 +1,57 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorInviteTeamViewModel
+@{
+    var s = Model.State;
+}
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.FormError))
+{
+    <div class="pa-summary-error">@Model.FormError</div>
+}
+else if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
+{
+    <div class="pa-step-hint" style="color:#059669;font-weight:600;margin-bottom:14px;">@Model.FormSuccess</div>
+}
+
+@if (Model.PendingInvites.Count > 0)
+{
+    <div class="pa-review-card" style="margin-bottom:16px;">
+        @foreach (var invite in Model.PendingInvites)
+        {
+            <div class="pa-check-item"><i class="fas fa-circle-check"></i> @invite</div>
+        }
+    </div>
+}
+
+<form asp-action="InviteTeam" method="post" id="inviteTeamForm" class="pa-validate" novalidate>
+    @Html.AntiForgeryToken()
+
+    <label class="pa-field">
+        <i class="fas fa-user"></i>
+        <input type="text" name="inviteName" placeholder="Name (optional)" autocomplete="name" />
+    </label>
+
+    <label class="pa-field">
+        <i class="fas fa-envelope"></i>
+        <input type="email"
+               name="inviteEmail"
+               placeholder="Email address"
+               inputmode="email"
+               autocomplete="email"
+               data-pa-required="true"
+               data-field-label="an email address" />
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Send invite</button>
+</form>
+
+<div class="pa-reg-actions" style="margin-top:18px;">
+    <a href="@Model.BackUrl" class="pa-reg-action-back">Back to review</a>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
+}

@@ -6,6 +6,7 @@
     ViewBag.NavActive = "home";
     ViewBag.CompanyInitial = Model.CompanyInitial;
     var money = CultureInfo.GetCultureInfo("en-US");
+    var todayIso = DateTime.Today.ToString("yyyy-MM-dd");
 }
 
 <div class="prv-pro-shell prv-pro-shell--home">
@@ -30,7 +31,7 @@
         <div class="prv-pro-home-profile-top">
             <span class="prv-pro-home-profile-icon" aria-hidden="true"><i class="fas fa-building"></i></span>
             <div class="prv-pro-home-profile-text">
-                <p class="prv-pro-home-greeting">@Model.Greeting,</p>
+                <p class="prv-pro-home-greeting" data-indor-greeting data-indor-greeting-suffix=",">@Model.Greeting,</p>
                 <h1>@Model.CompanyName</h1>
                 @if (Model.IsVerified)
                 {
@@ -69,11 +70,11 @@
     </a>
 
     <section class="prv-pro-home-metrics">
-        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-home-metric">
+        <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@todayIso" asp-route-from="home" class="prv-pro-home-metric">
             <span class="prv-pro-home-metric-icon prv-pro-home-metric-icon--blue"><i class="fas fa-calendar-days"></i></span>
             <div class="prv-pro-home-metric-copy">
                 <strong><span class="prv-pro-home-metric-num">@Model.Metrics.JobsToday</span> Jobs Today</strong>
-                <em>View schedule <i class="fas fa-chevron-right"></i></em>
+                <em>View all <i class="fas fa-chevron-right"></i></em>
             </div>
         </a>
         <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-home-metric">
@@ -99,10 +100,129 @@
         </a>
     </section>
 
+    <section class="prv-pro-quick prv-pro-quick--home">
+        <h2>Quick Actions</h2>
+        <div class="prv-pro-quick-grid prv-pro-quick-grid--home">
+            <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="home" class="prv-pro-quick-item prv-pro-quick-item--blue">
+                <i class="fas fa-briefcase"></i><span>New Job</span>
+            </a>
+            <a asp-controller="Proveedor" asp-action="CreateEstimate" class="prv-pro-quick-item prv-pro-quick-item--green">
+                <i class="fas fa-file-invoice-dollar"></i><span>New Estimate</span>
+            </a>
+            <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-quick-item prv-pro-quick-item--indigo">
+                <i class="fas fa-user-plus"></i><span>Add Customer</span>
+            </a>
+            <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-quick-item prv-pro-quick-item--orange">
+                <i class="fas fa-file-lines"></i><span>Create Report</span>
+            </a>
+        </div>
+    </section>
+
+    <section class="prv-pro-ins" aria-labelledby="prvInsTitle">
+        <div class="prv-pro-ins-card">
+            <div class="prv-pro-ins-head">
+                <span class="prv-pro-ins-shield" aria-hidden="true"><i class="fas fa-shield-halved"></i></span>
+                <div class="prv-pro-ins-head-text">
+                    <h3 id="prvInsTitle">Get Protected. Win More Jobs.</h3>
+                    <p>INDOR Insurance helps protect your business, build trust, and unlock more opportunities.</p>
+                </div>
+                <div class="prv-pro-ins-head-side">
+                    @if (Model.IsInsured)
+                    {
+                        <span class="prv-pro-ins-state prv-pro-ins-state--ok"><i class="fas fa-circle-check"></i> Insured</span>
+                    }
+                    else
+                    {
+                        <span class="prv-pro-ins-state prv-pro-ins-state--warn"><i class="fas fa-circle-exclamation"></i> Not insured</span>
+                    }
+                </div>
+            </div>
+
+            <div class="prv-pro-ins-body">
+                <ul class="prv-pro-ins-benefits">
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-house"></i></span> Property damage claim support</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-people-group"></i></span> More trust with customers</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-user"></i></span> Third-party injury claim support</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-briefcase"></i></span> More job opportunities through INDOR</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-gavel"></i></span> Legal defense support</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-hand-holding-dollar"></i></span> Lower out-of-pocket risk</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-file-shield"></i></span> COI / proof of insurance support</li>
+                    <li><span class="prv-pro-ins-bic"><i class="fas fa-building"></i></span> Stronger professional business presence</li>
+                </ul>
+                <img src="~/images/insurance/ins-certificate.png" alt="" class="prv-pro-ins-illus" asp-append-version="true" />
+            </div>
+
+            @{
+                var pBasic = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing("basic");
+                var pStandard = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing("standard");
+                var pPremium = IndorMvcApp.ViewModels.InsuranceCatalog.Pricing("premium");
+            }
+            <div class="prv-pro-ins-plans">
+                <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="basic" class="prv-pro-ins-plan prv-pro-ins-plan--basic">
+                    <div class="prv-pro-ins-plan-head">
+                        <div class="prv-pro-ins-plan-name">
+                            <strong>Basic</strong>
+                            <small>Essential</small>
+                        </div>
+                        <i class="fas fa-shield-halved prv-pro-ins-plan-shield prv-pro-ins-plan-shield--blue"></i>
+                    </div>
+                    <div class="prv-pro-ins-plan-price">$@pBasic.Monthly.ToString("0")<span>/mo</span></div>
+                    <div class="prv-pro-ins-plan-down">Down payment $@pBasic.PayToday.ToString("0")</div>
+                    <ul class="prv-pro-ins-plan-feats">
+                        <li><i class="fas fa-circle-check"></i> Claims support</li>
+                        <li><i class="fas fa-circle-check"></i> COI help</li>
+                        <li><i class="fas fa-circle-check"></i> Customer trust</li>
+                    </ul>
+                </a>
+
+                <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="standard" class="prv-pro-ins-plan prv-pro-ins-plan--standard is-popular">
+                    <span class="prv-pro-ins-plan-badge">MOST POPULAR</span>
+                    <div class="prv-pro-ins-plan-head">
+                        <div class="prv-pro-ins-plan-name">
+                            <strong>Standard</strong>
+                            <small>Most Popular</small>
+                        </div>
+                        <i class="fas fa-shield-halved prv-pro-ins-plan-shield prv-pro-ins-plan-shield--green"></i>
+                    </div>
+                    <div class="prv-pro-ins-plan-price">$@pStandard.Monthly.ToString("0")<span>/mo</span></div>
+                    <div class="prv-pro-ins-plan-down">Down payment $@pStandard.PayToday.ToString("0")</div>
+                    <ul class="prv-pro-ins-plan-feats prv-pro-ins-plan-feats--green">
+                        <li><i class="fas fa-circle-check"></i> Everything in Basic</li>
+                        <li><i class="fas fa-circle-check"></i> Priority COI support</li>
+                        <li><i class="fas fa-circle-check"></i> Verified business badge</li>
+                        <li><i class="fas fa-circle-check"></i> More job opportunities</li>
+                    </ul>
+                </a>
+
+                <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="premium" class="prv-pro-ins-plan prv-pro-ins-plan--premium">
+                    <div class="prv-pro-ins-plan-head">
+                        <div class="prv-pro-ins-plan-name">
+                            <strong>Premium</strong>
+                            <small>Best Visibility</small>
+                        </div>
+                        <i class="fas fa-shield-halved prv-pro-ins-plan-shield prv-pro-ins-plan-shield--purple"></i>
+                    </div>
+                    <div class="prv-pro-ins-plan-price">$@pPremium.Monthly.ToString("0")<span>/mo</span></div>
+                    <div class="prv-pro-ins-plan-down">Down payment $@pPremium.PayToday.ToString("0")</div>
+                    <ul class="prv-pro-ins-plan-feats prv-pro-ins-plan-feats--purple">
+                        <li><i class="fas fa-circle-check"></i> Everything in Standard</li>
+                        <li><i class="fas fa-circle-check"></i> Top visibility</li>
+                        <li><i class="fas fa-circle-check"></i> Priority support</li>
+                        <li><i class="fas fa-circle-check"></i> Stronger business presence</li>
+                    </ul>
+                </a>
+            </div>
+
+            <div class="prv-pro-ins-cta-row">
+                <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="standard" class="prv-pro-ins-cta prv-pro-ins-cta--solid">Get Standard Plan</a>
+                <a asp-controller="Proveedor" asp-action="InsuranceQuote" asp-route-plan="standard" class="prv-pro-ins-cta prv-pro-ins-cta--ghost">View Plans</a>
+            </div>
+        </div>
+    </section>
+
     <section class="prv-pro-home-jobs">
         <div class="prv-pro-home-jobs-head">
             <h2><i class="fas fa-clipboard-list"></i> Today's Jobs</h2>
-            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today">View all <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.TodaysJobs.Count == 0)
         {
@@ -124,7 +244,13 @@
                 </a>
             }
         }
+        <div class="prv-pro-home-jobs-actions">
+            <a asp-controller="Proveedor" asp-action="DaySchedule" asp-route-date="@todayIso" asp-route-from="home" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--schedule">
+                View all <i class="fas fa-chevron-right"></i>
+            </a>
+            <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="home" class="prv-pro-home-jobs-action prv-pro-home-jobs-action--new">
+                <i class="fas fa-plus"></i> New job
+            </a>
+        </div>
     </section>
-
-    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-fab prv-pro-fab--home" aria-label="Create job"><i class="fas fa-plus"></i></a>
 </div>

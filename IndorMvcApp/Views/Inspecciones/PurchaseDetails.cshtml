@@ -5,7 +5,7 @@
     ViewData["WizardTitle"] = "Purchase Details";
 var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                            ?? DateTime.Today.AddDays(21).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-    ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "inspections" });
+    ViewData["WizardBackUrl"] = HomeNavigationUrls.ServicesTab(Url, "inspections");
 
 }
 

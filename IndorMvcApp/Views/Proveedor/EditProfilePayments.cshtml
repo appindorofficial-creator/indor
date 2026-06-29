@@ -1,0 +1,68 @@
+@model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
+@using System.Globalization
+@{
+    ViewData["Title"] = "Payments & Banking - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+    var money = CultureInfo.GetCultureInfo("en-US");
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--edit-profile">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <h1>Payments &amp; Banking</h1>
+            <p>Review payout status and manage invoices.</p>
+        </div>
+    </header>
+
+    <section class="prv-pro-wizard-card">
+        <h2>Account status</h2>
+        <div class="prv-pro-profile-kv-row">
+            <span>Payout account</span>
+            <strong class="@(Model.PayoutConnected ? "prv-pro-status-ok" : "")">@(Model.PayoutConnected ? "Connected" : "Not connected")</strong>
+        </div>
+        <div class="prv-pro-profile-kv-row">
+            <span>Payment processing</span>
+            <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
+        </div>
+        <div class="prv-pro-profile-kv-row">
+            <span>Next payout</span>
+            <div>
+                <strong>@Model.NextPayoutAmount.ToString("C2", money)</strong>
+                @if (!string.IsNullOrWhiteSpace(Model.NextPayoutDateLabel))
+                {
+                    <small>@Model.NextPayoutDateLabel</small>
+                }
+            </div>
+        </div>
+    </section>
+
+    <section class="prv-pro-wizard-card">
+        <h2>Manage payments</h2>
+        <p>View pending, overdue, and paid invoices from your jobs and estimates.</p>
+        <div class="prv-pro-edit-profile-actions prv-pro-edit-profile-actions--stack">
+            <a asp-controller="Proveedor" asp-action="Invoices" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
+                <i class="fas fa-file-invoice-dollar"></i> View invoices
+            </a>
+            <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--block">
+                <i class="fas fa-crown"></i> Subscription / plan
+            </a>
+        </div>
+    </section>
+
+    @if (!Model.PayoutConnected)
+    {
+        <div class="prv-pro-edit-profile-alert">
+            <i class="fas fa-circle-info"></i>
+            Payout account setup is coming soon. You can still track invoices and record payments in INDOR Pro.
+        </div>
+    }
+
+    <footer class="prv-pro-edit-profile-actions">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Back to profile</a>
+    </footer>
+</div>

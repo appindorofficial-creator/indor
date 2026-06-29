@@ -66,6 +66,12 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddEntityFrameworkStores<AppDbContext>()
 .AddDefaultTokenProviders();
 
+// Password reset tokens (and other data-protection tokens) are valid for 24 hours.
+builder.Services.Configure<Microsoft.AspNetCore.Identity.DataProtectionTokenProviderOptions>(options =>
+{
+    options.TokenLifespan = TimeSpan.FromHours(24);
+});
+
 // Configurar cookies de autenticación
 builder.Services.ConfigureApplicationCookie(options =>
 {
@@ -147,6 +153,8 @@ builder.Services.AddScoped<NeighborRequestWizardService>();
 builder.Services.AddScoped<RealtorSharedQuoteService>();
 builder.Services.Configure<IndorMvcApp.Models.SmtpSettings>(builder.Configuration.GetSection("Smtp"));
 builder.Services.AddScoped<IInvitationEmailSender, SmtpInvitationEmailSender>();
+builder.Services.AddScoped<IPasswordResetEmailSender, SmtpPasswordResetEmailSender>();
+builder.Services.AddHostedService<StartupWarmupService>();
 builder.Services.AddScoped<IRealtorInviteClientService, RealtorInviteClientService>();
 builder.Services.AddScoped<IRealtorPropertyFileWizardService, RealtorPropertyFileWizardService>();
 builder.Services.AddScoped<IRealtorQuoteRequestService, RealtorQuoteRequestService>();
@@ -239,6 +247,21 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Account}/{action=Welcome}/{id?}");
 
+// Lightweight warmup/health endpoint. IIS Application Initialization (preload) hits this
+// after an app-pool recycle so the EF model + DB connection are warm before any real user,
+// avoiding the multi-second blank screen on first open.
+app.MapGet("/healthz", async (AppDbContext db, CancellationToken ct) =>
+{
+    try
+    {
+        await db.Microservicios.AsNoTracking().Select(m => m.Id).FirstOrDefaultAsync(ct);
+        return Results.Text("ok");
+    }
+    catch
+    {
+        return Results.Text("starting");
+    }
+}).AllowAnonymous();
 
 app.Run();
 

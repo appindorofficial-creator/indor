@@ -19,6 +19,7 @@ public class AccountController : Controller
     private readonly IProviderRegistrationService _registration;
     private readonly IRealtorRegistrationService _realtorRegistration;
     private readonly IPropertyAdministratorRegistrationService _propertyAdministratorRegistration;
+    private readonly IPasswordResetEmailSender _passwordResetEmail;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -27,7 +28,8 @@ public class AccountController : Controller
         AppDbContext db,
         IProviderRegistrationService registration,
         IRealtorRegistrationService realtorRegistration,
-        IPropertyAdministratorRegistrationService propertyAdministratorRegistration)
+        IPropertyAdministratorRegistrationService propertyAdministratorRegistration,
+        IPasswordResetEmailSender passwordResetEmail)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -36,6 +38,7 @@ public class AccountController : Controller
         _registration = registration;
         _realtorRegistration = realtorRegistration;
         _propertyAdministratorRegistration = propertyAdministratorRegistration;
+        _passwordResetEmail = passwordResetEmail;
     }
 
     [HttpPost]
@@ -152,6 +155,31 @@ public class AccountController : Controller
             return Url.Action("Review", "HvacSetup", new { propiedadId });
         }
 
+        if (from == "provider-entry")
+        {
+            return Url.Action("Entry", "ProviderRegistration");
+        }
+
+        if (from == "provider-company-info")
+        {
+            return Url.Action("CompanyInfo", "ProviderRegistration");
+        }
+
+        if (from == "provider-activation")
+        {
+            return Url.Action("ActivationCall", "ProviderRegistration");
+        }
+
+        if (from == "provider-help")
+        {
+            return Url.Action("HelpCenter", "Proveedor");
+        }
+
+        if (from == "realtor-support")
+        {
+            return Url.Action("SupportAccount", "Realtor");
+        }
+
         return Url.Action(nameof(Welcome));
     }
 
@@ -214,6 +242,191 @@ public class AccountController : Controller
     {
         await _signInManager.SignOutAsync();
         return RedirectToAction(nameof(Welcome));
+    }
+
+    [HttpGet]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public IActionResult ForgotPassword()
+    {
+        ViewBag.OnboardingTitle = "Reset password";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
+        ViewBag.OnboardingShowBack = true;
+        return View(new ForgotPasswordViewModel());
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            ViewBag.OnboardingTitle = "Reset password";
+            ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
+            ViewBag.OnboardingShowBack = true;
+            return View(model);
+        }
+
+        var email = model.Email.Trim();
+        var user = await _userManager.FindByEmailAsync(email);
+
+        // Only generate/send when the account exists, but always respond the same
+        // way so we don't reveal which emails are registered.
+        if (user != null && !string.IsNullOrEmpty(user.Email))
+        {
+            var now = DateTime.UtcNow;
+
+            // Invalidate any previous codes still pending for this user.
+            var pending = await _db.IndorPasswordResetCodes
+                .Where(c => c.UserId == user.Id && !c.Used)
+                .ToListAsync();
+            foreach (var old in pending)
+            {
+                old.Used = true;
+                old.UsedUtc = now;
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+            var code = GenerateSixDigitCode();
+
+            _db.IndorPasswordResetCodes.Add(new IndorPasswordResetCode
+            {
+                UserId = user.Id,
+                Email = user.Email,
+                Code = code,
+                ResetToken = token,
+                ExpiresUtc = now.AddHours(24),
+                FechaCreacion = now
+            });
+            await _db.SaveChangesAsync();
+
+            var resetUrl = Url.Action(nameof(ResetPassword), "Account",
+                new { email = user.Email, code }, Request.Scheme) ?? string.Empty;
+            var displayName = BuildDisplayName(user);
+
+            await _passwordResetEmail.SendPasswordResetEmailAsync(
+                new PasswordResetEmailModel(user.Email, displayName, code, resetUrl, 24));
+        }
+
+        return RedirectToAction(nameof(ForgotPasswordConfirmation), new { email });
+    }
+
+    [HttpGet]
+    public IActionResult ForgotPasswordConfirmation(string? email = null)
+    {
+        ViewBag.OnboardingTitle = "Check your email";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
+        ViewBag.OnboardingShowBack = true;
+        ViewBag.Email = email;
+        return View();
+    }
+
+    [HttpGet]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public IActionResult ResetPassword(string? email = null, string? code = null)
+    {
+        ViewBag.OnboardingTitle = "Set a new password";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
+        ViewBag.OnboardingShowBack = true;
+        return View(new ResetPasswordViewModel
+        {
+            Email = email ?? string.Empty,
+            Code = code ?? string.Empty
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+    {
+        ViewBag.OnboardingTitle = "Set a new password";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
+        ViewBag.OnboardingShowBack = true;
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        var email = model.Email.Trim();
+        var code = model.Code.Trim();
+        var now = DateTime.UtcNow;
+
+        var record = await _db.IndorPasswordResetCodes
+            .Where(c => c.Email == email && c.Code == code && !c.Used)
+            .OrderByDescending(c => c.Id)
+            .FirstOrDefaultAsync();
+
+        if (record == null || record.ExpiresUtc < now)
+        {
+            if (record != null)
+            {
+                record.Attempts += 1;
+                await _db.SaveChangesAsync();
+            }
+
+            ModelState.AddModelError(string.Empty,
+                "This code is invalid or has expired. Please request a new one.");
+            return View(model);
+        }
+
+        var user = await _userManager.FindByIdAsync(record.UserId)
+                   ?? await _userManager.FindByEmailAsync(email);
+        if (user == null)
+        {
+            ModelState.AddModelError(string.Empty, "We couldn't find an account for this email.");
+            return View(model);
+        }
+
+        var result = await _userManager.ResetPasswordAsync(user, record.ResetToken, model.NewPassword);
+        if (!result.Succeeded)
+        {
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError(string.Empty, error.Description);
+            }
+
+            record.Attempts += 1;
+            await _db.SaveChangesAsync();
+            return View(model);
+        }
+
+        record.Used = true;
+        record.UsedUtc = now;
+
+        // Burn any other pending codes for this user too.
+        var others = await _db.IndorPasswordResetCodes
+            .Where(c => c.UserId == record.UserId && !c.Used && c.Id != record.Id)
+            .ToListAsync();
+        foreach (var o in others)
+        {
+            o.Used = true;
+            o.UsedUtc = now;
+        }
+        await _db.SaveChangesAsync();
+
+        return RedirectToAction(nameof(ResetPasswordConfirmation));
+    }
+
+    [HttpGet]
+    public IActionResult ResetPasswordConfirmation()
+    {
+        ViewBag.OnboardingTitle = "Password updated";
+        ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
+        ViewBag.OnboardingShowBack = true;
+        return View();
+    }
+
+    private static string GenerateSixDigitCode()
+    {
+        // Cryptographically strong 6-digit code (000000-999999).
+        var value = System.Security.Cryptography.RandomNumberGenerator.GetInt32(0, 1_000_000);
+        return value.ToString("D6");
+    }
+
+    private static string BuildDisplayName(ApplicationUser user)
+    {
+        var name = $"{user.Nombre} {user.Apellidos}".Trim();
+        return string.IsNullOrWhiteSpace(name) ? (user.Email ?? string.Empty) : name;
     }
 
     [HttpGet]

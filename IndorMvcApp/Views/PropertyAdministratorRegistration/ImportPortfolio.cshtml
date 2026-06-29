@@ -1,0 +1,44 @@
+@model IndorMvcApp.ViewModels.PropertyAdministratorImportPortfolioViewModel
+@using IndorMvcApp.Models
+<div class="ob-head-block">
+    <h1>@Model.Title</h1>
+    <p>@Model.Subtitle</p>
+</div>
+
+@if (!string.IsNullOrWhiteSpace(Model.FormError))
+{
+    <div class="pa-summary-error">@Model.FormError</div>
+}
+
+<div class="pa-review-card" style="margin-bottom:16px;">
+    <p class="pa-step-hint" style="margin:0 0 10px;">Use a CSV file with one property per row. Required columns:</p>
+    <div class="pa-check-item"><i class="fas fa-circle-check"></i> HouseNumber, StreetName, City, State, ZipCode, PropertyType</div>
+    <div class="pa-check-item"><i class="fas fa-circle-check"></i> Nickname (optional)</div>
+    <p class="pa-step-hint" style="margin:12px 0 0;">
+        PropertyType values:
+        @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type => type.Value))
+    </p>
+</div>
+
+<p style="margin-bottom:16px;">
+    <a asp-action="DownloadPortfolioTemplate" class="pa-reg-action-back" style="display:inline-flex;align-items:center;gap:6px;">
+        <i class="fas fa-download"></i> Download CSV template
+    </a>
+</p>
+
+<form asp-action="ImportPortfolio" method="post" enctype="multipart/form-data" id="importPortfolioForm">
+    @Html.AntiForgeryToken()
+
+    <label class="pa-field">
+        <i class="fas fa-file-csv"></i>
+        <input type="file"
+               name="portfolioFile"
+               accept=".csv,text/csv,.txt" />
+    </label>
+
+    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Import properties</button>
+</form>
+
+<div class="pa-reg-actions" style="margin-top:18px;">
+    <a href="@Model.BackUrl" class="pa-reg-action-back">Back to properties</a>
+</div>

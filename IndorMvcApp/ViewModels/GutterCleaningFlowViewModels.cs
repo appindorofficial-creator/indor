@@ -60,15 +60,16 @@ public class GutterCleaningPreferencesViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "Gutter Cleaning";
 
+    [Required(ErrorMessage = "Select at least one issue you've noticed.")]
     public string ProblemasSeleccionados { get; set; } = string.Empty;
 
-    [Required]
+    [Required(ErrorMessage = "Select a problem area.")]
     public string AreaProblema { get; set; } = "WholeHouse";
 
-    [Required]
+    [Required(ErrorMessage = "Select what you want today.")]
     public string ObjetivoHoy { get; set; } = "ScheduleService";
 
-    [Required]
+    [Required(ErrorMessage = "Select a reminder preference.")]
     public string PreferenciaRecordatorio { get; set; } = "SpringFall";
 
     public DateTime? FechaRecordatorioPersonalizada { get; set; }

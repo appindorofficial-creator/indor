@@ -2,6 +2,18 @@
 @using System.Text.Json
 @{
     var isMapView = Model.ActiveView == "map";
+    string BuildFilterUrl(string filter) =>
+        (Url.Action("Index", "Home", new { filter, view = Model.ActiveView, q = Model.SearchQuery }) ?? "/") + "#section-home";
+    var showQuickHelpHero = Model.ActiveFilter is "All" or "NeighborRequests";
+    var emptyFilterMessage = Model.ActiveFilter switch
+    {
+        "Homes" => "No nearby home listings yet. Check back soon or browse all categories.",
+        "Providers" => "No nearby service providers yet. Try All or browse available services.",
+        "Promotions" => "No promotions in your area yet. Check back soon.",
+        "NeighborRequests" => "No neighbor help requests nearby yet. Be the first to post one.",
+        "Emergency" => "No emergency providers nearby right now.",
+        _ => "No nearby items match your filters yet."
+    };
     var mapConfigJson = isMapView && Model.HasGoogleMaps
         ? JsonSerializer.Serialize(new
         {
@@ -49,21 +61,11 @@
     }
 
     <div class="hn-network-view-toggle @(isMapView ? "hn-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
-        <a asp-controller="Home"
-           asp-action="Index"
-           asp-route-view="map"
-           asp-route-filter="@Model.ActiveFilter"
-           asp-route-q="@Model.SearchQuery"
-           asp-fragment="section-home"
+        <a href="@((Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view = "map", q = Model.SearchQuery }) ?? "/") + "#section-home")"
            class="hn-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
             <i class="fas fa-map"></i> Map
         </a>
-        <a asp-controller="Home"
-           asp-action="Index"
-           asp-route-view="feed"
-           asp-route-filter="@Model.ActiveFilter"
-           asp-route-q="@Model.SearchQuery"
-           asp-fragment="section-home"
+        <a href="@((Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view = "feed", q = Model.SearchQuery }) ?? "/") + "#section-home")"
            class="hn-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
             <i class="fas fa-list"></i> Feed
         </a>
@@ -82,13 +84,9 @@
         <div class="hn-filter-chips hn-filter-chips--map hn-filter-chips--scroll">
             @foreach (var chip in Model.Filters)
             {
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   asp-route-filter="@chip.Value"
-                   asp-route-view="map"
-                   asp-route-q="@Model.SearchQuery"
-                   asp-fragment="section-home"
-                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                <a href="@BuildFilterUrl(chip.Value)"
+                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
+                   aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
                     <i class="fas @chip.Icon"></i> @chip.Label
                 </a>
             }
@@ -152,18 +150,33 @@
         <div class="hn-filter-chips hn-filter-chips--scroll">
             @foreach (var chip in Model.Filters)
             {
-                <a asp-controller="Home"
-                   asp-action="Index"
-                   asp-route-filter="@chip.Value"
-                   asp-route-view="@Model.ActiveView"
-                   asp-route-q="@Model.SearchQuery"
-                   asp-fragment="section-home"
-                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                <a href="@BuildFilterUrl(chip.Value)"
+                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
+                   aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
                     <i class="fas @chip.Icon"></i> @chip.Label
                 </a>
             }
         </div>
 
+        @if (Model.QuickActions.Count > 0)
+        {
+            <section class="hn-quick-actions" aria-label="Nearby network shortcuts">
+                @foreach (var action in Model.QuickActions)
+                {
+                    <a href="@action.Url" class="hn-quick-action">
+                        <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
+                        <span class="hn-quick-action-label">@action.Label</span>
+                        @if (!string.IsNullOrWhiteSpace(action.Subtitle))
+                        {
+                            <span class="hn-quick-action-sub">@action.Subtitle</span>
+                        }
+                    </a>
+                }
+            </section>
+        }
+
+        @if (showQuickHelpHero)
+        {
         <section class="hn-quick-help-hero" aria-label="Quick Help Nearby">
             <span class="hn-quick-help-badge">NEW</span>
             <div class="hn-quick-help-copy">
@@ -182,7 +195,10 @@
                 <img src="@Url.Content("~/images/hn-quick-help-hero.svg")" alt="" width="140" height="108" loading="lazy" decoding="async" asp-append-version="true" />
             </div>
         </section>
+        }
 
+        @if (Model.ActiveFilter is "All" or "NeighborRequests")
+        {
         <section class="hn-mgmt-cards" aria-label="Manage quick help">
             <a href="@Model.MyQuickJobsUrl" class="hn-mgmt-card hn-mgmt-card--jobs">
                 <span class="hn-mgmt-card-icon"><i class="fas fa-clipboard-list"></i></span>
@@ -199,11 +215,12 @@
                 </span>
             </a>
         </section>
+        }
 
         <section class="hn-network-feed" id="hn-network-feed">
             @if (Model.FeedCards.Count == 0)
             {
-                <div class="hn-feed-empty">No nearby items match your filters yet.</div>
+                <div class="hn-feed-empty">@emptyFilterMessage</div>
             }
             else
             {

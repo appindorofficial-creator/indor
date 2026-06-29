@@ -1,0 +1,283 @@
+/* ============================================================
+   INDOR PRO — Report Templates picker screen.
+   Scoped to .prv-pro-shell--report-templates so it never
+   affects other provider-pro pages.
+   ============================================================ */
+
+.prv-pro-shell--report-templates {
+    max-width: 480px;
+    padding: 0 16px 110px;
+    background: #F4F6FA;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ---- Blue gradient header with back arrow + soft wave bottom ---- */
+.prv-pro-rt-topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 -16px;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 18px 40px;
+    background: linear-gradient(135deg, #3B93FF 0%, #0066CC 58%, #0056D2 100%);
+    z-index: 1;
+}
+
+.prv-pro-rt-topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 34px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath fill='%23F4F6FA' d='M0,48 C320,128 1040,8 1440,72 L1440,120 L0,120 Z'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.prv-pro-rt-back {
+    width: 36px;
+    height: 36px;
+    border-radius: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 1rem;
+    background: rgba(255, 255, 255, .16);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.prv-pro-rt-topbar .prv-pro-brand {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.prv-pro-rt-topbar .prv-pro-brand-indor,
+.prv-pro-rt-topbar .prv-pro-brand-pro {
+    color: #fff;
+    font-weight: 900;
+    letter-spacing: -.01em;
+}
+
+.prv-pro-rt-topbar .prv-pro-brand-indor {
+    font-size: 1.25rem;
+}
+
+.prv-pro-rt-topbar .prv-pro-brand-pro {
+    background: rgba(255, 255, 255, .2);
+    padding: 2px 8px;
+    border-radius: 7px;
+    font-size: .7rem;
+}
+
+.prv-pro-rt-topbar .prv-pro-profile-btn {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .16);
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.prv-pro-rt-topbar .prv-pro-avatar--initial {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #0056D2;
+    font-weight: 800;
+    font-size: .85rem;
+}
+
+.prv-pro-rt-topbar .prv-pro-profile-chevron {
+    color: #fff;
+    font-size: .7rem;
+}
+
+/* ---- Title row + Add Custom ---- */
+.prv-pro-rt-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 14px 0 18px;
+}
+
+.prv-pro-rt-head h1 {
+    margin: 0 0 4px;
+    font-size: 1.7rem;
+    font-weight: 900;
+    letter-spacing: -.02em;
+    color: #1A2B48;
+}
+
+.prv-pro-rt-head p {
+    margin: 0;
+    color: #6B7280;
+    font-size: .85rem;
+    line-height: 1.45;
+}
+
+.prv-pro-rt-add {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1.5px solid #BFD7F5;
+    color: #0056D2;
+    font-size: .85rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 2px 10px rgba(15, 23, 42, .05);
+    white-space: nowrap;
+}
+
+.prv-pro-rt-add:active {
+    transform: scale(.98);
+}
+
+/* ---- Section titles ---- */
+.prv-pro-rt-section {
+    margin: 4px 0 12px;
+    font-size: 1.05rem;
+    font-weight: 900;
+    color: #1A2B48;
+}
+
+/* ---- Most Used 2-col grid ---- */
+.prv-pro-rt-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.prv-pro-rt-card {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 16px 14px;
+    border-radius: 18px;
+    background: #fff;
+    text-decoration: none;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, .05);
+    transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.prv-pro-rt-card:active {
+    transform: scale(.98);
+}
+
+.prv-pro-rt-card strong {
+    font-size: .92rem;
+    font-weight: 800;
+    color: #1A2B48;
+    line-height: 1.25;
+}
+
+.prv-pro-rt-card small {
+    font-size: .76rem;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+/* ---- More Report Types full-width rows ---- */
+.prv-pro-rt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 18px;
+}
+
+.prv-pro-rt-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border-radius: 18px;
+    background: #fff;
+    text-decoration: none;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, .05);
+    transition: transform .15s ease;
+}
+
+.prv-pro-rt-row:active {
+    transform: scale(.99);
+}
+
+.prv-pro-rt-row-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.prv-pro-rt-row-text strong {
+    display: block;
+    font-size: .92rem;
+    font-weight: 800;
+    color: #1A2B48;
+    margin-bottom: 2px;
+}
+
+.prv-pro-rt-row-text small {
+    font-size: .78rem;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+.prv-pro-rt-chevron {
+    color: #C2CBD8;
+    font-size: .85rem;
+    flex-shrink: 0;
+}
+
+/* ---- Icon badges (shared) ---- */
+.prv-pro-rt-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.05rem;
+    flex-shrink: 0;
+}
+
+.prv-pro-rt-icon--blue { background: linear-gradient(145deg, #E8F1FB, #BFDBFE); color: #0056D2; }
+.prv-pro-rt-icon--green { background: linear-gradient(145deg, #DCFCE7, #86EFAC); color: #15803D; }
+.prv-pro-rt-icon--amber { background: linear-gradient(145deg, #FEF3C7, #FCD34D); color: #B45309; }
+.prv-pro-rt-icon--purple { background: linear-gradient(145deg, #EDE9FE, #C4B5FD); color: #6D28D9; }
+.prv-pro-rt-icon--orange { background: linear-gradient(145deg, #FFEDD5, #FDBA74); color: #C2410C; }
+.prv-pro-rt-icon--teal { background: linear-gradient(145deg, #CCFBF1, #5EEAD4); color: #0F766E; }
+.prv-pro-rt-icon--red { background: linear-gradient(145deg, #FEE2E2, #FCA5A5); color: #DC2626; }
+
+/* ---- Info note ---- */
+.prv-pro-rt-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    border-radius: 14px;
+    background: #EAF2FE;
+    color: #1D4ED8;
+    font-size: .82rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.prv-pro-rt-note i {
+    font-size: .95rem;
+    flex-shrink: 0;
+}

@@ -1,0 +1,163 @@
+@model IndorMvcApp.ViewModels.InsuranceBusinessDetailsStepViewModel
+@{
+    ViewData["Title"] = "Business Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    ViewData["ProviderProExtraCss"] = "insurance-quote.css";
+
+    // Default to Yes (matches design) when not yet answered.
+    var homesYes = Model.WorksAtCustomerHomes != false;
+    var subYes = Model.UsesSubcontractors != false;
+    var coiYes = Model.NeedsCOI != false;
+}
+
+<div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
+    <header class="ins-hd">
+        <a asp-controller="Proveedor" asp-action="InsuranceBusinessInfo" class="ins-hd-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <div class="ins-hd-text">
+            <h1>Business Details</h1>
+            <p>A few business details help our insurance partner prepare the quote.</p>
+        </div>
+    </header>
+
+    @await Html.PartialAsync("_InsuranceStepper", 3)
+
+    <div class="ins-plancard">
+        <span class="ins-plancard-icon"><i class="fas fa-shield-halved"></i></span>
+        <div class="ins-plancard-name">
+            <strong>@Model.PlanDisplayName</strong>
+            <small>@Model.CoverageTagline</small>
+            @if (Model.IsPopular)
+            {
+                <span class="ins-popular ins-popular--block">Most Popular</span>
+            }
+        </div>
+        <div class="ins-plancard-price">
+            <div><small>Pay today</small><strong>$@Model.PayToday.ToString("0")</strong></div>
+            <div><small>Then</small><strong>$@Model.Monthly.ToString("0")<span>/mo</span></strong></div>
+        </div>
+    </div>
+
+    <form asp-controller="Proveedor" asp-action="InsuranceBusinessDetails" method="post">
+        <div class="ins-fc">
+            <div class="ins-bx-row">
+                <div class="ins-bx">
+                    <span class="ins-bx-lbl">Number of Employees</span>
+                    <div class="ins-bx-ctl">
+                        <select asp-for="NumberOfEmployees" class="ins-bx-select">
+                            <option value="">Select number</option>
+                            @foreach (var e in IndorMvcApp.ViewModels.InsuranceCatalog.EmployeeOptions)
+                            {
+                                <option value="@e" selected="@(Model.NumberOfEmployees == e)">@e</option>
+                            }
+                        </select>
+                        <i class="fas fa-chevron-down ins-bx-caret"></i>
+                    </div>
+                </div>
+                <div class="ins-bx">
+                    <span class="ins-bx-lbl">Annual Payroll</span>
+                    <div class="ins-bx-ctl">
+                        <input asp-for="EmployeePayroll" type="number" min="0" step="any" class="ins-bx-input" placeholder="Enter amount in USD" />
+                    </div>
+                </div>
+            </div>
+
+            <div class="ins-bx">
+                <span class="ins-bx-lbl">Annual Gross Revenue</span>
+                <div class="ins-bx-ctl">
+                    <input asp-for="CompanyGrossRevenue" type="number" min="0" step="any" class="ins-bx-input" placeholder="Enter amount in USD" />
+                </div>
+            </div>
+
+            <div class="ins-bx">
+                <span class="ins-bx-lbl">Years in Business</span>
+                <div class="ins-bx-ctl">
+                    <select asp-for="YearsInBusiness" class="ins-bx-select">
+                        <option value="">Select years</option>
+                        @foreach (var y in IndorMvcApp.ViewModels.InsuranceCatalog.YearsOptions)
+                        {
+                            <option value="@y" selected="@(Model.YearsInBusiness == y)">@y</option>
+                        }
+                    </select>
+                    <i class="fas fa-chevron-down ins-bx-caret"></i>
+                </div>
+            </div>
+
+            <div class="ins-drow ins-drow--top">
+                <label class="ins-drow-lbl">Do you work at customer homes?</label>
+                <div class="ins-seg">
+                    <label class="ins-seg-opt @(homesYes ? "is-on" : "")">
+                        <input type="radio" name="WorksAtCustomerHomes" value="true" @(homesYes ? "checked" : null) /> Yes
+                    </label>
+                    <label class="ins-seg-opt @(!homesYes ? "is-on" : "")">
+                        <input type="radio" name="WorksAtCustomerHomes" value="false" @(!homesYes ? "checked" : null) /> No
+                    </label>
+                </div>
+            </div>
+
+            <div class="ins-drow">
+                <label class="ins-drow-lbl">Do you use subcontractors?</label>
+                <div class="ins-seg">
+                    <label class="ins-seg-opt @(subYes ? "is-on" : "")">
+                        <input type="radio" name="UsesSubcontractors" value="true" @(subYes ? "checked" : null) /> Yes
+                    </label>
+                    <label class="ins-seg-opt @(!subYes ? "is-on" : "")">
+                        <input type="radio" name="UsesSubcontractors" value="false" @(!subYes ? "checked" : null) /> No
+                    </label>
+                </div>
+            </div>
+
+            <div class="ins-drow ins-drow--last">
+                <label class="ins-drow-lbl">Need a Certificate of Insurance (COI)?</label>
+                <div class="ins-seg">
+                    <label class="ins-seg-opt @(coiYes ? "is-on" : "")">
+                        <input type="radio" name="NeedsCOI" value="true" @(coiYes ? "checked" : null) /> Yes
+                    </label>
+                    <label class="ins-seg-opt @(!coiYes ? "is-on" : "")">
+                        <input type="radio" name="NeedsCOI" value="false" @(!coiYes ? "checked" : null) /> No
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="ins-fc ins-pay-setup">
+            <h3 class="ins-pay-title">Payment Setup</h3>
+            <div class="ins-pay-row">
+                <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-credit-card"></i></span>
+                <span class="ins-pay-body">
+                    <strong>Card on File</strong>
+                    <small>Visa ending in @Model.CardLast4</small>
+                </span>
+                <a href="#" class="ins-pay-edit" onclick="return false;">Edit <i class="fas fa-chevron-right"></i></a>
+            </div>
+            <div class="ins-pay-row">
+                <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-arrows-rotate"></i></span>
+                <span class="ins-pay-body">
+                    <strong>AutoPay <span class="ins-pay-muted">(charged monthly)</span></strong>
+                    <small>Automatically charge my card each month</small>
+                </span>
+                <label class="ins-switch">
+                    <input type="checkbox" asp-for="AutoPayMonthly" />
+                    <span class="ins-switch-track"></span>
+                </label>
+            </div>
+            <div class="ins-pay-row">
+                <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-calendar-days"></i></span>
+                <span class="ins-pay-body">
+                    <strong>First monthly billing date</strong>
+                </span>
+                <span class="ins-pay-val ins-pay-val--date">@Model.FirstBillingDate.ToString("MMMM d, yyyy")</span>
+            </div>
+        </div>
+
+        <div class="ins-note ins-note--info">
+            <i class="fas fa-circle-info"></i>
+            <span>Monthly payments include the carrier installment plus your selected INDOR business benefits.</span>
+        </div>
+
+        <div class="ins-footer ins-footer--split">
+            <a asp-controller="Proveedor" asp-action="InsuranceBusinessInfo" class="ins-cta ins-cta--ghost">Back</a>
+            <button type="submit" class="ins-cta">Continue</button>
+        </div>
+    </form>
+</div>

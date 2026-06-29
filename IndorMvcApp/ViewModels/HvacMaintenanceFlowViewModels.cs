@@ -67,8 +67,12 @@ public class HvacMaintenanceScheduleViewModel
     public int HomeCarePriorityId { get; set; }
     public string PageTitle { get; set; } = "HVAC Tune-Up";
 
-    [Required]
+    [Required(ErrorMessage = "Select a preferred date.")]
+    [DataType(DataType.Date)]
+    [Display(Name = "Preferred date")]
     public DateTime FechaVisita { get; set; }
+
+    public string MinVisitDateIso { get; set; } = DateTime.Today.ToString("yyyy-MM-dd");
 
     [Required]
     public string VentanaHorario { get; set; } = "Morning";

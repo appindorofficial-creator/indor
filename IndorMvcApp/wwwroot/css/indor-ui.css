@@ -183,6 +183,7 @@ select.form-control,
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
+    -webkit-box-shadow: none !important;
 }
 
 .search-bar,
@@ -211,8 +212,10 @@ select:focus {
 .rl-search-bar input:focus-visible,
 .rl-cp-input input:focus,
 .rl-cp-input input:focus-visible,
+.rl-cp-input input:active,
 .rl-cp-input select:focus,
 .rl-cp-input select:focus-visible,
+.rl-cp-input select:active,
 .pa-network-search input:focus,
 .pa-network-search input:focus-visible,
 .pa-search-bar input:focus,
@@ -220,9 +223,14 @@ select:focus {
 .pa-field input:focus,
 .pa-field input:focus-visible,
 .pa-field select:focus,
-.pa-field select:focus-visible {
+.pa-field select:focus-visible,
+.rl-field-icon input:focus,
+.rl-field-icon input:focus-visible {
     border: none !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
     box-shadow: none !important;
+    -webkit-box-shadow: none !important;
     outline: none !important;
 }
 

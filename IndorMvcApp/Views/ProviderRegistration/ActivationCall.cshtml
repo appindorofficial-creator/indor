@@ -66,7 +66,7 @@
 
     <label class="prv-wiz-terms">
         <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
-        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms">Terms &amp; Conditions</a></span>
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-activation">Terms &amp; Conditions</a></span>
     </label>
 
     <div class="prv-wiz-footer">

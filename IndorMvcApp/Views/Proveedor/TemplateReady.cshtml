@@ -1,0 +1,49 @@
+@model IndorMvcApp.ViewModels.ReportTemplateView
+@{
+    ViewData["Title"] = "Template Ready - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "templates-flow.css";
+}
+
+<div class="prv-pro-shell prv-pro-shell--templates">
+    @await Html.PartialAsync("_TemplatesHead")
+
+    <section class="tpl-head">
+        <h1>Ready to Use</h1>
+        <p>Template created and ready for your next report.</p>
+    </section>
+
+    <div class="tpl-subrow">
+        <span class="tpl-step">Step 3 of 3</span>
+    </div>
+
+    <section class="tpl-ready-card">
+        <div class="tpl-ready-illus">
+            <span class="tpl-ready-badge"><i class="fas fa-clipboard-check"></i></span>
+            <span class="tpl-confetti tpl-confetti--1"></span>
+            <span class="tpl-confetti tpl-confetti--2"></span>
+            <span class="tpl-confetti tpl-confetti--3"></span>
+            <span class="tpl-confetti tpl-confetti--4"></span>
+        </div>
+        <h2 class="tpl-ready-title">Template Ready</h2>
+
+        <dl class="tpl-summary">
+            <div><dt>Template Name</dt><dd>@Model.Name</dd></div>
+            <div><dt>Includes</dt><dd>@Model.Sections.Count sections</dd></div>
+            <div><dt>Category</dt><dd>@Model.Category</dd></div>
+            <div><dt>Saved To</dt><dd>@Model.SavedTo</dd></div>
+        </dl>
+    </section>
+
+    <div class="tpl-note">
+        <i class="fas fa-circle-info"></i>
+        <span>You can edit this template anytime before creating a report.</span>
+    </div>
+
+    <div class="tpl-actions">
+        <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="tpl-btn tpl-btn--primary"><i class="fas fa-file-circle-plus"></i> Create Report</a>
+        <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--outline"><i class="fas fa-pen"></i> Edit Template</a>
+        <a asp-controller="Proveedor" asp-action="Templates" class="tpl-btn-text">Back to Templates</a>
+    </div>
+</div>

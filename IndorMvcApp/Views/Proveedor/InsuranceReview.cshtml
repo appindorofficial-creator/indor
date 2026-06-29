@@ -1,0 +1,116 @@
+@model IndorMvcApp.ViewModels.InsuranceReviewViewModel
+@{
+    ViewData["Title"] = "Review & Payment - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "home";
+    ViewData["ProviderProExtraCss"] = "insurance-quote.css";
+
+    var d = Model.Draft;
+    string Money(decimal? v) => v.HasValue ? "$" + v.Value.ToString("N0") : "—";
+    string OrDash(string? v) => string.IsNullOrWhiteSpace(v) ? "—" : v;
+    var includes = IndorMvcApp.ViewModels.InsuranceCatalog.ReviewIncludesFor(Model.Plan);
+    var confirmError = TempData["InsuranceConfirmError"] as string;
+    var empDisplay = string.IsNullOrWhiteSpace(d.NumberOfEmployees) ? "—" : d.NumberOfEmployees;
+}
+
+<div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
+    <header class="ins-hd">
+        <a asp-controller="Proveedor" asp-action="InsuranceBusinessDetails" class="ins-hd-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <div class="ins-hd-text">
+            <h1>Review &amp; Payment</h1>
+            <p>Review your information and complete your payment.</p>
+        </div>
+    </header>
+
+    @await Html.PartialAsync("_InsuranceStepper", 4)
+
+    <div class="ins-fc ins-rv">
+        <div class="ins-rv-head">
+            <span class="ins-rv-shield"><i class="fas fa-shield-halved"></i></span>
+            <div class="ins-rv-head-main">
+                <span class="ins-rv-selected">Selected plan: <strong>@Model.PlanDisplayName</strong></span>
+                <div class="ins-rv-priceband">
+                    <div><small>Pay today</small><strong>$@Model.PayToday.ToString("0")</strong></div>
+                    <div><small>Monthly plan</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-circle-check"></i></span><span class="ins-rv-k">Coverage</span><span class="ins-rv-v">@Model.Coverage</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-briefcase"></i></span><span class="ins-rv-k">Trade</span><span class="ins-rv-v">@OrDash(d.Trade)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-building"></i></span><span class="ins-rv-k">Business Name</span><span class="ins-rv-v">@OrDash(d.BusinessName)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-location-dot"></i></span><span class="ins-rv-k">Address</span><span class="ins-rv-v">@OrDash(d.FullAddress)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-user"></i></span><span class="ins-rv-k">Owner</span><span class="ins-rv-v">@OrDash(d.OwnerName)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-phone"></i></span><span class="ins-rv-k">Phone</span><span class="ins-rv-v">@OrDash(d.OwnerPhone)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-envelope"></i></span><span class="ins-rv-k">Email</span><span class="ins-rv-v">@OrDash(d.OwnerEmail)</span></div>
+
+        <div class="ins-rv-sep"></div>
+
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-people-group"></i></span><span class="ins-rv-k">Employees</span><span class="ins-rv-v">@empDisplay</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-money-bill-wave"></i></span><span class="ins-rv-k">Payroll</span><span class="ins-rv-v">@Money(d.EmployeePayroll)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-chart-line"></i></span><span class="ins-rv-k">Gross revenue</span><span class="ins-rv-v">@Money(d.CompanyGrossRevenue)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-file-shield"></i></span><span class="ins-rv-k">COI needed</span><span class="ins-rv-v">@(d.NeedsCOI != false ? "Yes" : "No")</span></div>
+    </div>
+
+    <div class="ins-fc">
+        <h3 class="ins-rv-title">Included With Your @Model.PlanDisplayName</h3>
+        <div class="ins-incl3">
+            @foreach (var item in includes)
+            {
+                <div class="ins-incl3-item">
+                    <span class="ins-incl3-ic"><i class="fas @item.Icon"></i></span>
+                    <span>@item.Title</span>
+                </div>
+            }
+        </div>
+    </div>
+
+    <form asp-controller="Proveedor" asp-action="InsurancePay" method="post">
+        <div class="ins-fc">
+            <h3 class="ins-rv-title">Choose your payment method</h3>
+            <div class="ins-pm-grid">
+                <label class="ins-pm">
+                    <input type="radio" name="paymentMethod" value="Card" checked="@(Model.PaymentMethod == "Card")" />
+                    <span class="ins-pm-card">
+                        <span class="ins-pm-radio"></span>
+                        <i class="fas fa-credit-card"></i>
+                        <span class="ins-pm-txt"><strong>Card</strong><small>Pay with credit or debit card</small></span>
+                    </span>
+                </label>
+                <label class="ins-pm">
+                    <input type="radio" name="paymentMethod" value="ApplePay" checked="@(Model.PaymentMethod == "ApplePay")" />
+                    <span class="ins-pm-card">
+                        <span class="ins-pm-radio"></span>
+                        <i class="fab fa-apple"></i>
+                        <span class="ins-pm-txt"><strong>Apple Pay</strong><small>Pay quickly and securely</small></span>
+                    </span>
+                </label>
+                <label class="ins-pm">
+                    <input type="radio" name="paymentMethod" value="BankAccount" checked="@(Model.PaymentMethod == "BankAccount")" />
+                    <span class="ins-pm-card">
+                        <span class="ins-pm-radio"></span>
+                        <i class="fas fa-building-columns"></i>
+                        <span class="ins-pm-txt"><strong>Bank Account</strong><small>Pay directly from your bank</small></span>
+                    </span>
+                </label>
+            </div>
+
+            @if (!string.IsNullOrWhiteSpace(confirmError))
+            {
+                <span class="ins-error">@confirmError</span>
+            }
+
+            <label class="ins-authorize">
+                <input type="checkbox" name="authorize" value="true" />
+                <span>I authorize INDOR and its insurance partners to charge $@Model.PayToday.ToString("0") today and $@Model.Monthly.ToString("0") monthly until I cancel. I understand I can cancel at any time.</span>
+            </label>
+
+            <button type="submit" class="ins-cta ins-cta--block"><i class="fas fa-lock"></i> Pay $@Model.PayToday.ToString("0") Today</button>
+        </div>
+
+        <div class="ins-note ins-note--info">
+            <i class="fas fa-circle-info"></i>
+            <span>Your policy is subject to final carrier approval. Rates may vary based on underwriting review. You'll receive confirmation once your policy is active.</span>
+        </div>
+    </form>
+</div>

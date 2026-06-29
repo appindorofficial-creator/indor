@@ -2,16 +2,16 @@
 @{
     ViewData["Title"] = "AI Quote Draft - INDOR PRO";
     Layout = "_ProviderProLayout";
-    ViewBag.NavActive = "jobs";
 }
 
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
-    <header class="prv-pro-wizard-head">
-        <h1>AI Quote Draft</h1>
-        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
-    </header>
+    @{
+        ViewBag.WizardTitle = "AI Quote Draft";
+        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+    }
+    @await Html.PartialAsync("_CreateJobWizardHead")
 
     <div class="prv-pro-ai-ready">
         <i class="fas fa-wand-magic-sparkles"></i>

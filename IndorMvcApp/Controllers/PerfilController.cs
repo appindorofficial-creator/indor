@@ -82,6 +82,17 @@ public class PerfilController : Controller
         ViewBag.MoreProfile = await BuildMoreProfileAsync();
     }
 
+    private string ResolveProfileBackUrl(string? from) =>
+        string.Equals(from, "opciones", StringComparison.OrdinalIgnoreCase)
+            ? Url.Action(nameof(Opciones)) ?? HomeNavigationUrls.MoreTab(Url)
+            : HomeNavigationUrls.MoreTab(Url);
+
+    private void SetMoreSectionBackUrl(string? from = null)
+    {
+        ViewData["MembershipBackUrl"] = ResolveProfileBackUrl(from);
+        ViewBag.BottomNavActive ??= "more";
+    }
+
     private MembershipSignupState? GetMembershipSignup()
     {
         var json = HttpContext.Session.GetString(MembershipSessionKey);
@@ -125,12 +136,12 @@ public class PerfilController : Controller
         await CargarUsuarioYMembresiaAsync();
         ViewData["Title"] = "Profile Options";
         ViewData["Subtitulo"] = "Manage your account details and preferences.";
-        ViewBag.BottomNavActive = "more";
+        SetMoreSectionBackUrl();
         return View();
     }
 
     [HttpGet]
-    public async Task<IActionResult> EditarPerfil()
+    public async Task<IActionResult> EditarPerfil(string? from)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
@@ -138,7 +149,7 @@ public class PerfilController : Controller
         await CargarUsuarioYMembresiaAsync();
         ViewData["Title"] = "Edit Profile";
         ViewData["Subtitulo"] = "Update your details and connect your home with AI.";
-        ViewBag.BottomNavActive = "more";
+        SetMoreSectionBackUrl(from);
         return View(await MapEditProfileViewModelAsync(user));
     }
 
@@ -247,6 +258,7 @@ public class PerfilController : Controller
             TempData["PerfilError"] = photoError;
             ViewData["Title"] = "Edit Profile";
             ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+            SetMoreSectionBackUrl(Request.Query["from"].ToString());
             return View(await MapEditProfileViewModelAsync(user));
         }
 
@@ -271,6 +283,7 @@ public class PerfilController : Controller
             .ToListAsync();
         ViewData["Title"] = "Payments & History";
         ViewData["Subtitulo"] = "Track services, billing, and financing in one place.";
+        SetMoreSectionBackUrl();
         return View();
     }
 
@@ -292,7 +305,7 @@ public class PerfilController : Controller
         ViewData["Subtitulo"] = "Pick the plan that fits your home care needs.";
         ViewData["MembershipStep"] = 1;
         ViewData["MembershipTotalSteps"] = 6;
-        ViewData["MembershipBackUrl"] = Url.Action("Index", "Home", new { section = "more" });
+        ViewData["MembershipBackUrl"] = HomeNavigationUrls.MoreTab(Url);
         return View();
     }
 
@@ -836,8 +849,8 @@ public class PerfilController : Controller
             .OrderByDescending(h => h.Fecha)
             .ToListAsync();
         ViewData["Title"] = "History";
-        ViewBag.BottomNavActive = "more";
         ViewData["Subtitulo"] = "Microservices, inspections, and past services";
+        SetMoreSectionBackUrl();
         return View();
     }
 
@@ -851,6 +864,7 @@ public class PerfilController : Controller
             .ToListAsync();
         ViewData["Title"] = "Internet comparison";
         ViewData["Subtitulo"] = "Compare internet plans and providers";
+        SetMoreSectionBackUrl();
         return View();
     }
 
@@ -865,6 +879,7 @@ public class PerfilController : Controller
             .ToListAsync();
         ViewData["Title"] = "Support";
         ViewData["Subtitulo"] = "Chat with our team";
+        SetMoreSectionBackUrl();
         return View();
     }
 

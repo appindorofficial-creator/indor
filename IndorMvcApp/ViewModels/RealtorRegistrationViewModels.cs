@@ -24,6 +24,7 @@ public class RealtorRegistrationStepViewModel
     public string BackUrl { get; set; } = "";
     public RealtorRegistrationState State { get; set; } = new();
     public IReadOnlyList<string> LicenseStates { get; set; } = [];
+    public IReadOnlyList<string> SupportedLanguages { get; set; } = [];
 }
 
 public class RealtorDocumentSlotViewModel

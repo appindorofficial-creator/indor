@@ -1,0 +1,519 @@
+/* ============================================================
+   INDOR PRO — Templates flow (list → details → ready).
+   Scoped to .prv-pro-shell--templates.
+   ============================================================ */
+
+.prv-pro-shell--templates {
+    max-width: 480px;
+    padding: 0 16px 120px;
+    background: #F4F6FA;
+    min-height: 100vh;
+    min-height: 100dvh;
+}
+
+/* ---- Centered logo header with wave ---- */
+.tpl-topbar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 -16px;
+    padding: calc(env(safe-area-inset-top, 0px) + 16px) 18px 42px;
+    background: linear-gradient(135deg, #3B93FF 0%, #0066CC 58%, #0056D2 100%);
+    z-index: 1;
+}
+
+.tpl-topbar::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 36px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 120' preserveAspectRatio='none'%3E%3Cpath fill='%23F4F6FA' d='M0,48 C320,128 1040,8 1440,72 L1440,120 L0,120 Z'/%3E%3C/svg%3E");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+}
+
+.tpl-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    color: #fff;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 800;
+    letter-spacing: .01em;
+}
+
+.tpl-brand-mark {
+    width: 24px;
+    height: 24px;
+}
+
+.tpl-brand strong {
+    font-weight: 900;
+}
+
+/* ---- Title + step ---- */
+.tpl-head {
+    margin: 16px 0 12px;
+}
+
+.tpl-head h1 {
+    margin: 0 0 4px;
+    font-size: 2rem;
+    font-weight: 900;
+    letter-spacing: -.02em;
+    color: #1A2B48;
+}
+
+.tpl-head p {
+    margin: 0;
+    color: #6B7280;
+    font-size: .9rem;
+}
+
+.tpl-subrow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+
+.tpl-step {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #E3EDFB;
+    color: #0056D2;
+    font-size: .78rem;
+    font-weight: 800;
+}
+
+.tpl-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 14px;
+    border-radius: 12px;
+    background: #fff;
+    border: 1.5px solid #BFD7F5;
+    color: #0056D2;
+    font-size: .82rem;
+    font-weight: 800;
+    text-decoration: none;
+    box-shadow: 0 2px 8px rgba(15, 23, 42, .05);
+    white-space: nowrap;
+}
+
+/* ---- Search + filter ---- */
+.tpl-search {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.tpl-search-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 0 14px;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, .05);
+}
+
+.tpl-search-wrap i {
+    color: #94A3B8;
+    font-size: .9rem;
+}
+
+.tpl-search-wrap input {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: none;
+    padding: 13px 0;
+    font-size: .9rem;
+    color: #1A2B48;
+}
+
+.tpl-filter-btn {
+    width: 48px;
+    border: none;
+    border-radius: 14px;
+    background: #fff;
+    color: #0056D2;
+    box-shadow: 0 2px 12px rgba(15, 23, 42, .05);
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+/* ---- Section heading ---- */
+.tpl-section {
+    margin: 8px 0 12px;
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #1A2B48;
+}
+
+/* ---- Template rows (list) ---- */
+.tpl-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.tpl-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 14px;
+    border-radius: 18px;
+    background: #fff;
+    text-decoration: none;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, .05);
+    transition: transform .15s ease;
+}
+
+.tpl-row:active {
+    transform: scale(.99);
+}
+
+.tpl-row--compact {
+    padding: 14px;
+}
+
+.tpl-row-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.tpl-row-text strong {
+    display: block;
+    font-size: .95rem;
+    font-weight: 800;
+    color: #1A2B48;
+    margin-bottom: 2px;
+}
+
+.tpl-row-text small {
+    font-size: .78rem;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+.tpl-row-chevron {
+    color: #C2CBD8;
+    font-size: .85rem;
+    flex-shrink: 0;
+}
+
+/* ---- Icon badges ---- */
+.tpl-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+.tpl-icon--blue { background: linear-gradient(145deg, #E8F1FB, #BFDBFE); color: #0056D2; }
+.tpl-icon--green { background: linear-gradient(145deg, #DCFCE7, #86EFAC); color: #15803D; }
+.tpl-icon--orange { background: linear-gradient(145deg, #FFEDD5, #FDBA74); color: #C2410C; }
+.tpl-icon--purple { background: linear-gradient(145deg, #EDE9FE, #C4B5FD); color: #6D28D9; }
+.tpl-icon--indigo { background: linear-gradient(145deg, #E0E7FF, #A5B4FC); color: #4338CA; }
+
+/* ---- Selected template card (details) ---- */
+.tpl-selected {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 16px 14px;
+    border-radius: 18px;
+    background: #fff;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, .05);
+    margin-bottom: 22px;
+}
+
+.tpl-selected-text {
+    flex: 1;
+    min-width: 0;
+}
+
+.tpl-selected-text strong {
+    display: block;
+    font-size: .98rem;
+    font-weight: 800;
+    color: #1A2B48;
+    margin-bottom: 2px;
+}
+
+.tpl-selected-text small {
+    font-size: .78rem;
+    color: #6B7280;
+    line-height: 1.4;
+}
+
+.tpl-badge {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: #E3EDFB;
+    color: #0056D2;
+    font-size: .68rem;
+    font-weight: 800;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+/* ---- Included sections ---- */
+.tpl-sections {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, .05);
+    overflow: hidden;
+    margin-bottom: 22px;
+}
+
+.tpl-section-row {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 13px 14px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.tpl-section-row:last-child {
+    border-bottom: none;
+}
+
+.tpl-section-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: #EEF4FE;
+    color: #0056D2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .85rem;
+    flex-shrink: 0;
+}
+
+.tpl-section-label {
+    flex: 1;
+    min-width: 0;
+    font-size: .9rem;
+    font-weight: 600;
+    color: #1A2B48;
+}
+
+.tpl-section-check {
+    color: #0056D2;
+    font-size: 1.1rem;
+    flex-shrink: 0;
+}
+
+/* ---- Options ---- */
+.tpl-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.tpl-option {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    padding: 14px;
+    border-radius: 16px;
+    background: #fff;
+    text-decoration: none;
+    box-shadow: 0 3px 14px rgba(15, 23, 42, .05);
+}
+
+.tpl-option-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 11px;
+    background: #EEF4FE;
+    color: #0056D2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+    flex-shrink: 0;
+}
+
+.tpl-option-label {
+    flex: 1;
+    min-width: 0;
+    font-size: .9rem;
+    font-weight: 700;
+    color: #1A2B48;
+}
+
+/* ---- Ready card (step 3) ---- */
+.tpl-ready-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+    padding: 28px 20px 22px;
+    margin-bottom: 18px;
+    text-align: center;
+}
+
+.tpl-ready-illus {
+    position: relative;
+    width: 120px;
+    height: 120px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 45%, #EAF2FE 0%, #F4F8FE 70%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tpl-ready-badge {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: linear-gradient(145deg, #E8F1FB, #BFDBFE);
+    color: #0056D2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.7rem;
+}
+
+.tpl-confetti {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+}
+
+.tpl-confetti--1 { top: 16px; left: 24px; background: #34D399; transform: rotate(20deg); }
+.tpl-confetti--2 { top: 22px; right: 22px; background: #FBBF24; border-radius: 50%; }
+.tpl-confetti--3 { bottom: 24px; left: 30px; background: #60A5FA; border-radius: 50%; }
+.tpl-confetti--4 { bottom: 18px; right: 28px; background: #F472B6; transform: rotate(-15deg); }
+
+.tpl-ready-title {
+    margin: 0 0 18px;
+    font-size: 1.35rem;
+    font-weight: 900;
+    color: #1A2B48;
+}
+
+.tpl-summary {
+    margin: 0;
+    text-align: left;
+    border-top: 1px solid #F1F5F9;
+}
+
+.tpl-summary > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 2px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.tpl-summary > div:last-child {
+    border-bottom: none;
+}
+
+.tpl-summary dt {
+    margin: 0;
+    color: #6B7280;
+    font-size: .85rem;
+}
+
+.tpl-summary dd {
+    margin: 0;
+    color: #1A2B48;
+    font-size: .9rem;
+    font-weight: 800;
+    text-align: right;
+}
+
+/* ---- Info note ---- */
+.tpl-note {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 16px;
+    border-radius: 14px;
+    background: #EAF2FE;
+    color: #1D4ED8;
+    font-size: .82rem;
+    font-weight: 600;
+    line-height: 1.4;
+    margin-bottom: 20px;
+}
+
+.tpl-note i {
+    font-size: .95rem;
+    flex-shrink: 0;
+}
+
+/* ---- Buttons / actions ---- */
+.tpl-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 6px;
+}
+
+.tpl-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 15px;
+    border-radius: 14px;
+    font-size: .95rem;
+    font-weight: 800;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    box-sizing: border-box;
+}
+
+.tpl-btn--primary {
+    background: linear-gradient(135deg, #3B93FF, #0056D2);
+    color: #fff;
+    box-shadow: 0 8px 20px rgba(0, 86, 210, .3);
+}
+
+.tpl-btn--primary:active {
+    transform: scale(.99);
+}
+
+.tpl-btn--outline {
+    background: #fff;
+    color: #0056D2;
+    border: 1.5px solid #BFD7F5;
+}
+
+.tpl-btn-text {
+    display: block;
+    text-align: center;
+    color: #0056D2;
+    font-size: .9rem;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 4px;
+}

@@ -2,17 +2,16 @@
 @{
     ViewData["Title"] = "Create Job - INDOR PRO";
     Layout = "_ProviderProLayout";
-    ViewBag.NavActive = "jobs";
     var selectedCustomer = Model.Customers.FirstOrDefault(c => c.Id == Model.ClienteId) ?? Model.Customers.FirstOrDefault();
 }
 
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
-    <header class="prv-pro-wizard-head">
-        <h1>Create Job</h1>
-        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
-    </header>
+    @{
+        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+    }
+    @await Html.PartialAsync("_CreateJobWizardHead")
 
     <form asp-controller="Proveedor" asp-action="CreateJobDetails" method="post" class="prv-pro-wizard-form" id="createJobCustomerForm">
         @Html.AntiForgeryToken()

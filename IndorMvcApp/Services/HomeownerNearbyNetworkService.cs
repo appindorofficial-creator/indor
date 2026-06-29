@@ -21,7 +21,7 @@ public class HomeownerNearbyNetworkService(
     private static readonly IReadOnlyList<RealtorNetworkFilterChipViewModel> FilterChips =
     [
         new() { Label = "All", Value = NearbyNetworkHomeownerFilters.All, Icon = "fa-border-all" },
-        new() { Label = "Listings", Value = NearbyNetworkHomeownerFilters.Homes, Icon = "fa-house" },
+        new() { Label = "Homes", Value = NearbyNetworkHomeownerFilters.Homes, Icon = "fa-house" },
         new() { Label = "Services", Value = NearbyNetworkHomeownerFilters.Providers, Icon = "fa-screwdriver-wrench" },
         new() { Label = "Quick Help", Value = NearbyNetworkHomeownerFilters.NeighborRequests, Icon = "fa-people-carry-box" },
         new() { Label = "Promotions", Value = NearbyNetworkHomeownerFilters.Promotions, Icon = "fa-tags" }
@@ -431,6 +431,7 @@ public class HomeownerNearbyNetworkService(
             var query = db.IndorNeighborRequests
                 .AsNoTracking()
                 .Include(r => r.Category)
+                .Include(r => r.Propiedad)
                 .Where(r => r.IsActive
                     && r.Status == NeighborRequestStatuses.Active
                     && (r.AudienceCode == NeighborRequestAudienceCodes.Neighbors
@@ -471,7 +472,7 @@ public class HomeownerNearbyNetworkService(
 
             if (!IsNeighborRequestVisible(
                     distance,
-                    request.LocationAddress,
+                    request.LocationAddress ?? request.Propiedad?.Direccion,
                     viewerCity,
                     viewerState))
             {
@@ -498,12 +499,25 @@ public class HomeownerNearbyNetworkService(
             return ((double)request.Latitude.Value, (double)request.Longitude.Value);
         }
 
-        if (string.IsNullOrWhiteSpace(request.LocationAddress))
+        if (request.Propiedad != null)
+        {
+            var propertyInfo = MyHomeDisplayService.DeserializeProperty(request.Propiedad);
+            if (propertyInfo is { Latitude: not 0, Longitude: not 0 })
+            {
+                return ((double)propertyInfo.Latitude, (double)propertyInfo.Longitude);
+            }
+        }
+
+        var address = !string.IsNullOrWhiteSpace(request.LocationAddress)
+            ? request.LocationAddress
+            : request.Propiedad?.Direccion;
+
+        if (string.IsNullOrWhiteSpace(address))
         {
             return (null, null);
         }
 
-        var coords = await addressLookup.GeocodeAddressAsync(request.LocationAddress.Trim(), ct);
+        var coords = await addressLookup.GeocodeAddressAsync(address.Trim(), ct);
         if (coords is not { } resolved)
         {
             return (null, null);
@@ -527,27 +541,63 @@ public class HomeownerNearbyNetworkService(
     }
 
     private static string? ResolveViewerCity(PropertyInfoViewModel? info, Propiedad propiedad) =>
-        !string.IsNullOrWhiteSpace(info?.City) ? info!.City.Trim() : ExtractAddressPart(propiedad.Direccion, part: "city");
+        FirstNonEmpty(
+            info?.City,
+            ExtractAddressPart(info?.FormattedAddress, "city"),
+            ExtractAddressPart(propiedad.Direccion, "city"));
 
     private static string? ResolveViewerState(PropertyInfoViewModel? info, Propiedad propiedad) =>
-        !string.IsNullOrWhiteSpace(info?.State) ? info!.State.Trim() : ExtractAddressPart(propiedad.Direccion, part: "state");
+        FirstNonEmpty(
+            info?.State,
+            ExtractAddressPart(info?.FormattedAddress, "state"),
+            ExtractAddressPart(propiedad.Direccion, "state"));
+
+    private static string? FirstNonEmpty(params string?[] values)
+    {
+        foreach (var value in values)
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                return value.Trim();
+            }
+        }
+
+        return null;
+    }
 
     private static bool IsSameCityAndState(
         string? requestAddress,
         string? viewerCity,
         string? viewerState)
     {
-        if (string.IsNullOrWhiteSpace(requestAddress)
-            || string.IsNullOrWhiteSpace(viewerCity)
-            || string.IsNullOrWhiteSpace(viewerState))
+        if (string.IsNullOrWhiteSpace(viewerCity) || string.IsNullOrWhiteSpace(viewerState))
+        {
+            return false;
+        }
+
+        var requestCity = ExtractAddressPart(requestAddress, "city");
+        var requestState = ExtractAddressPart(requestAddress, "state");
+        if (!string.IsNullOrWhiteSpace(requestCity) && !string.IsNullOrWhiteSpace(requestState))
+        {
+            return string.Equals(requestCity, viewerCity, StringComparison.OrdinalIgnoreCase)
+                && string.Equals(NormalizeStateCode(requestState), NormalizeStateCode(viewerState), StringComparison.OrdinalIgnoreCase);
+        }
+
+        if (string.IsNullOrWhiteSpace(requestAddress))
         {
             return false;
         }
 
         var normalized = requestAddress.Trim();
         return normalized.Contains(viewerCity, StringComparison.OrdinalIgnoreCase)
-            && normalized.Contains(viewerState, StringComparison.OrdinalIgnoreCase);
+            && normalized.Contains(NormalizeStateCode(viewerState), StringComparison.OrdinalIgnoreCase);
     }
+
+    private static string NormalizeStateCode(string value) =>
+        value.Trim().Length >= 2 ? value.Trim()[..2].ToUpperInvariant() : value.Trim().ToUpperInvariant();
+
+    private static bool IsUsStateCode(string value) =>
+        value.Length == 2 && char.IsLetter(value[0]) && char.IsLetter(value[1]);
 
     private static string? ExtractAddressPart(string? address, string part)
     {
@@ -562,12 +612,35 @@ public class HomeownerNearbyNetworkService(
             return null;
         }
 
-        return part switch
+        // Common US formats:
+        // "Street, City, ST ZIP" (3 segments)
+        // "Street, City, ST, ZIP" (4 segments)
+        if (part == "city")
         {
-            "city" when segments.Length >= 2 => segments[^2],
-            "state" => segments[^1].Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).FirstOrDefault(),
-            _ => null
-        };
+            return segments.Length >= 4 ? segments[^3] : segments[^2];
+        }
+
+        if (part == "state")
+        {
+            if (segments.Length >= 4 && IsUsStateCode(segments[^2]))
+            {
+                return segments[^2].ToUpperInvariant();
+            }
+
+            var lastSegmentParts = segments[^1]
+                .Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (lastSegmentParts.Length >= 1 && IsUsStateCode(lastSegmentParts[0]))
+            {
+                return lastSegmentParts[0].ToUpperInvariant();
+            }
+
+            if (segments.Length >= 3 && IsUsStateCode(segments[^2]))
+            {
+                return segments[^2].ToUpperInvariant();
+            }
+        }
+
+        return null;
     }
 
     private async Task<List<FeedCardSortable>> LoadProviderCardsAsync(
@@ -852,7 +925,7 @@ public class HomeownerNearbyNetworkService(
             BadgeCss = "mypost",
             ImageUrl = imageUrl,
             Title = request.Title,
-            Subtitle = request.Description,
+            Subtitle = TruncateFeedText(request.Description, 140),
             MetaLabel = !string.IsNullOrWhiteSpace(request.LocationAddress)
                 ? request.LocationAddress
                 : request.Propiedad?.Direccion,
@@ -871,6 +944,22 @@ public class HomeownerNearbyNetworkService(
         "cleaning" => "/img/cleaning-service.jpg",
         _ => "/cesped.jpeg"
     };
+
+    private static string? TruncateFeedText(string? value, int maxLength)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return null;
+        }
+
+        var trimmed = value.Trim();
+        if (trimmed.Length <= maxLength)
+        {
+            return trimmed;
+        }
+
+        return string.Concat(trimmed.AsSpan(0, maxLength).TrimEnd(), "…");
+    }
 
     private static RealtorNetworkFeedCardViewModel MapNeighborRequestToCard(
         IndorNeighborRequest request,
@@ -1020,11 +1109,26 @@ public class HomeownerNearbyNetworkService(
             ? url.Action("Mine", "NeighborRequest", new { propiedadId }) ?? "#"
             : url.Action("EditarPerfil", "Perfil") + "#home";
         var servicesUrl = (url.Action("Index", "Home") ?? "/") + "#section-services";
+        var myHomeUrl = (url.Action("Index", "Home") ?? "/") + "#section-mydashboard";
 
         return activeFilter switch
         {
             NearbyNetworkHomeownerFilters.Homes =>
             [
+                new()
+                {
+                    Label = "Homes for sale",
+                    Subtitle = "Browse nearby listings",
+                    Icon = "fa-house",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Homes, searchQuery)
+                },
+                new()
+                {
+                    Label = "My Home",
+                    Subtitle = "View your home profile",
+                    Icon = "fa-house-chimney",
+                    Url = myHomeUrl
+                },
                 new()
                 {
                     Label = "Post a Request",
@@ -1051,14 +1155,35 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
+                    Label = "Certified Providers",
+                    Subtitle = "Verified professionals in your area",
+                    Icon = "fa-shield-halved",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Providers, searchQuery)
+                },
+                new()
+                {
                     Label = "Post a Request",
                     Subtitle = "Ask neighbors for help",
                     Icon = "fa-plus",
                     Url = postUrl
+                },
+                new()
+                {
+                    Label = "View all nearby",
+                    Subtitle = "Listings, help, and more",
+                    Icon = "fa-border-all",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.All, searchQuery)
                 }
             ],
             NearbyNetworkHomeownerFilters.Promotions =>
             [
+                new()
+                {
+                    Label = "Nearby promotions",
+                    Subtitle = "Deals and offers in your area",
+                    Icon = "fa-tags",
+                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Promotions, searchQuery)
+                },
                 new()
                 {
                     Label = "View all nearby",
@@ -1072,6 +1197,13 @@ public class HomeownerNearbyNetworkService(
                     Subtitle = "Ask neighbors for help",
                     Icon = "fa-plus",
                     Url = postUrl
+                },
+                new()
+                {
+                    Label = "My Home",
+                    Subtitle = "View your home profile",
+                    Icon = "fa-house-chimney",
+                    Url = myHomeUrl
                 }
             ],
             NearbyNetworkHomeownerFilters.Emergency =>
@@ -1119,10 +1251,10 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
-                    Label = "Homes for sale",
-                    Subtitle = "Listings near you",
-                    Icon = "fa-house",
-                    Url = BuildNetworkFeedUrl(url, NearbyNetworkHomeownerFilters.Homes, searchQuery)
+                    Label = "My Home",
+                    Subtitle = "View your home profile",
+                    Icon = "fa-house-chimney",
+                    Url = myHomeUrl
                 },
                 new()
                 {
@@ -1236,11 +1368,13 @@ public class HomeownerNearbyNetworkService(
     private static string NormalizeFilter(string? filter) =>
         filter?.Trim() switch
         {
-            NearbyNetworkHomeownerFilters.Homes or "Listings" => NearbyNetworkHomeownerFilters.Homes,
-            NearbyNetworkHomeownerFilters.Providers or "Services" => NearbyNetworkHomeownerFilters.Providers,
-            NearbyNetworkHomeownerFilters.Promotions => NearbyNetworkHomeownerFilters.Promotions,
-            NearbyNetworkHomeownerFilters.Emergency => NearbyNetworkHomeownerFilters.Emergency,
-            "NeighborRequests" or "Neighbor Requests" => NearbyNetworkHomeownerFilters.NeighborRequests,
+            NearbyNetworkHomeownerFilters.All or "All" => NearbyNetworkHomeownerFilters.All,
+            NearbyNetworkHomeownerFilters.Homes or "Homes" or "Listings" => NearbyNetworkHomeownerFilters.Homes,
+            NearbyNetworkHomeownerFilters.Providers or "Providers" or "Services" => NearbyNetworkHomeownerFilters.Providers,
+            NearbyNetworkHomeownerFilters.Promotions or "Promotions" => NearbyNetworkHomeownerFilters.Promotions,
+            NearbyNetworkHomeownerFilters.Emergency or "Emergency" => NearbyNetworkHomeownerFilters.Emergency,
+            NearbyNetworkHomeownerFilters.NeighborRequests or "NeighborRequests" or "Neighbor Requests" or "Quick Help" =>
+                NearbyNetworkHomeownerFilters.NeighborRequests,
             _ => NearbyNetworkHomeownerFilters.All
         };
 

@@ -646,6 +646,10 @@ public class RealtorController(
     public async Task<IActionResult> ProviderNetwork(string? q, string? filter, CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildNetworkAsync(r, q, filter, cancellationToken), cancellationToken);
 
+    [HttpGet]
+    public async Task<IActionResult> SupportAccount(CancellationToken cancellationToken) =>
+        await PortalPageAsync(r => portalService.BuildShellAsync(r, cancellationToken), cancellationToken);
+
     private async Task<IActionResult> PortalPageAsync<T>(
         Func<IndorRealtor, Task<T>> build,
         CancellationToken cancellationToken)

@@ -11,7 +11,6 @@
         var detailSections = root.querySelectorAll(".hf-detail-section");
         var openButtons = root.querySelectorAll("[data-hf-open-category]");
         var backBtn = root.querySelector("[data-hf-back-overview]");
-        var expandAllBtn = root.querySelector("[data-hf-expand-all]");
 
         function sectionMatchesCategory(section, categoryKey, sectionIds) {
             if (sectionIds && sectionIds.length > 0) {
@@ -23,6 +22,22 @@
             }
 
             return section.dataset.hfCategory === categoryKey;
+        }
+
+        function expandAllSections() {
+            if (!detailScreen || !overviewScreen) return;
+            overviewScreen.hidden = true;
+            detailScreen.hidden = false;
+            if (detailTitle) {
+                detailTitle.textContent = "All property details";
+            }
+            detailSections.forEach(function (section) {
+                section.hidden = false;
+                section.open = true;
+            });
+
+            var scrollTarget = detailScreen.querySelector("[data-hf-back-overview]") || detailScreen;
+            scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         function openCategory(categoryKey, title, sectionIds) {
@@ -41,7 +56,8 @@
                 section.open = match;
             });
 
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            var scrollTarget = detailScreen.querySelector("[data-hf-back-overview]") || detailScreen;
+            scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         function backToOverview() {
@@ -52,7 +68,10 @@
                 section.hidden = true;
                 section.open = false;
             });
-            window.scrollTo({ top: 0, behavior: "smooth" });
+            var scrollTarget = overviewScreen.querySelector(".hf-explore-more")
+                || overviewScreen.querySelector("[data-hf-expand-all]")
+                || overviewScreen;
+            scrollTarget.scrollIntoView({ behavior: "smooth", block: "start" });
         }
 
         openButtons.forEach(function (button) {
@@ -69,21 +88,9 @@
             backBtn.addEventListener("click", backToOverview);
         }
 
-        if (expandAllBtn) {
-            expandAllBtn.addEventListener("click", function () {
-                if (!detailScreen || !overviewScreen) return;
-                overviewScreen.hidden = true;
-                detailScreen.hidden = false;
-                if (detailTitle) {
-                    detailTitle.textContent = "All property details";
-                }
-                detailSections.forEach(function (section) {
-                    section.hidden = false;
-                    section.open = true;
-                });
-                window.scrollTo({ top: 0, behavior: "smooth" });
-            });
-        }
+        root.querySelectorAll("[data-hf-expand-all]").forEach(function (expandAllBtn) {
+            expandAllBtn.addEventListener("click", expandAllSections);
+        });
     }
 
     function bindAll() {

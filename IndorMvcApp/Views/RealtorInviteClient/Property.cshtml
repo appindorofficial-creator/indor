@@ -2,20 +2,34 @@
 
 <h2 class="rl-invite-section-title">Select Property</h2>
 
-<form asp-action="Property" method="get" class="rl-search-form">
+<form asp-action="Property" method="get" class="rl-search-form" id="invitePropertySearchForm">
     <div class="rl-search-bar">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search address or property name" />
+        <input type="search" name="q" id="invitePropertySearch" value="@Model.SearchQuery" placeholder="Search address or property name" />
     </div>
 </form>
 
 <form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm">
     @Html.AntiForgeryToken()
+    <input type="hidden" name="q" id="invitePropertySearchHidden" value="@Model.SearchQuery" />
     <div asp-validation-summary="All" class="ob-summary"></div>
 
     @if (Model.Properties.Count == 0)
     {
-        <div class="rl-dash-empty">No properties found. Add a property file first.</div>
+        <div class="rl-dash-empty">
+            @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+            {
+                <p>No matching properties found for <strong>@Model.SearchQuery</strong>.</p>
+                <p>Create a new property with this address to continue.</p>
+                <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="ob-btn ob-btn-primary rl-invite-create-from-search">
+                    Create property for this address
+                </a>
+            }
+            else
+            {
+                <p>No properties found yet. Search an address above or create a new property below.</p>
+            }
+        </div>
     }
     else
     {
@@ -23,7 +37,7 @@
         {
             var selected = Model.SelectedPropertyFileId == prop.Id;
             <label class="rl-property-pick @(selected ? "is-selected" : "")">
-                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
+                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) required />
                 <span class="rl-property-pick-icon"><i class="fas @prop.Icon"></i></span>
                 <span class="rl-property-pick-body">
                     <strong>@prop.Address</strong>
@@ -39,7 +53,7 @@
     }
 
     <h2 class="rl-invite-section-title">Or Add New Property</h2>
-    <a asp-action="CreateProperty" class="rl-action-card">
+    <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
         <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
         <div>
             <strong>Create New Property</strong>
@@ -57,16 +71,45 @@
 
 <div class="rl-invite-actions">
     <a asp-action="ClientInfo" asp-route-edit="true" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="invitePropertyForm" class="ob-btn ob-btn-primary">Next</button>
+    <button type="submit" form="invitePropertyForm" class="ob-btn ob-btn-primary" id="invitePropertyNextBtn">Next</button>
 </div>
 
 @section Scripts {
 <script>
-    document.querySelectorAll('.rl-property-pick input').forEach(r => {
-        r.addEventListener('change', () => {
-            document.querySelectorAll('.rl-property-pick').forEach(p => p.classList.remove('is-selected'));
-            r.closest('.rl-property-pick')?.classList.add('is-selected');
+    (function () {
+        var searchInput = document.getElementById('invitePropertySearch');
+        var searchHidden = document.getElementById('invitePropertySearchHidden');
+        var form = document.getElementById('invitePropertyForm');
+        var nextBtn = document.getElementById('invitePropertyNextBtn');
+        var createUrl = '@Url.Action("CreateProperty")';
+
+        if (searchInput && searchHidden) {
+            searchInput.addEventListener('input', function () {
+                searchHidden.value = searchInput.value;
+            });
+        }
+
+        document.querySelectorAll('.rl-property-pick input').forEach(function (r) {
+            r.addEventListener('change', function () {
+                document.querySelectorAll('.rl-property-pick').forEach(function (p) {
+                    p.classList.remove('is-selected');
+                });
+                r.closest('.rl-property-pick')?.classList.add('is-selected');
+            });
         });
-    });
+
+        if (form && nextBtn) {
+            form.addEventListener('submit', function (e) {
+                var selected = form.querySelector('input[name="propertyFileId"]:checked');
+                var query = (searchInput?.value || searchHidden?.value || '').trim();
+                var hasOptions = form.querySelectorAll('input[name="propertyFileId"]').length > 0;
+
+                if (!selected && !hasOptions && query.length > 0) {
+                    e.preventDefault();
+                    window.location.href = createUrl + '?address=' + encodeURIComponent(query);
+                }
+            });
+        }
+    })();
 </script>
 }

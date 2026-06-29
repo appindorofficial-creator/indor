@@ -182,10 +182,10 @@ public class PackingController : Controller
             MovingSetupServicioId = solicitud.MovingSetupServicioId,
             NombreServicio = solicitud.MovingSetupServicio!.Nombre,
             DireccionPropiedad = solicitud.DireccionPropiedad ?? string.Empty,
-            HabitacionesEmpacar = solicitud.HabitacionesEmpacar ?? "Kitchen|Bedroom|LivingRoom",
+            HabitacionesEmpacar = solicitud.HabitacionesEmpacar ?? string.Empty,
             ItemsEspeciales = solicitud.ItemsEspeciales ?? string.Empty,
-            SuministrosNecesarios = solicitud.SuministrosNecesarios ?? "Boxes|Tape|BubbleWrap",
-            DetallesAcceso = solicitud.DetallesAcceso ?? "Elevator",
+            SuministrosNecesarios = solicitud.SuministrosNecesarios ?? string.Empty,
+            DetallesAcceso = solicitud.DetallesAcceso ?? string.Empty,
             NotaCorta = solicitud.NotaCorta,
             ArchivosExistentes = solicitud.Archivos
                 .OrderByDescending(a => a.FechaSubida)

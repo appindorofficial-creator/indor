@@ -18,19 +18,27 @@
         }
 
         options = options || {};
+        var required = options.required === true;
         input.dataset.phoneBound = 'true';
         input.setAttribute('inputmode', 'numeric');
         input.setAttribute('autocomplete', input.getAttribute('autocomplete') || 'tel');
         input.setAttribute('maxlength', '10');
 
         var invalidMessage = options.invalidMessage || 'Enter a valid 10-digit US phone number.';
+        var requiredMessage = options.requiredMessage || 'Phone number is required.';
 
         function syncValue() {
             var digits = normalizePhoneDigits(input.value);
             if (input.value !== digits) {
                 input.value = digits;
             }
-            input.setCustomValidity(isValidOptionalPhone(digits) ? '' : invalidMessage);
+
+            if (!digits) {
+                input.setCustomValidity(required ? requiredMessage : '');
+                return;
+            }
+
+            input.setCustomValidity(digits.length === 10 ? '' : invalidMessage);
         }
 
         input.addEventListener('beforeinput', function (e) {

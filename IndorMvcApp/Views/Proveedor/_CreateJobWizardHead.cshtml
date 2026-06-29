@@ -1,0 +1,17 @@
+@{
+    var cancelAction = (ViewBag.CreateJobCancelAction as string) ?? "Jobs";
+    var cancelLabel = cancelAction == "Dashboard" ? "Home" : "Jobs";
+    var stepLine = ViewBag.WizardStepLine as string;
+    var title = ViewBag.WizardTitle as string ?? "Create Job";
+}
+
+<header class="prv-pro-wizard-head prv-pro-wizard-head--nav">
+    <a asp-controller="Proveedor" asp-action="@cancelAction" class="prv-pro-wizard-back" aria-label="@($"Back to {cancelLabel}")">
+        <i class="fas fa-arrow-left"></i> Back to @cancelLabel
+    </a>
+    <h1>@title</h1>
+    @if (!string.IsNullOrWhiteSpace(stepLine))
+    {
+        <p class="prv-pro-wizard-step">@stepLine</p>
+    }
+</header>

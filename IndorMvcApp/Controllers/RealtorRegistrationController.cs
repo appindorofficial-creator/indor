@@ -76,12 +76,12 @@ public class RealtorRegistrationController(
         string licenseState,
         string serviceAreas,
         string officeAddress,
-        string languages,
+        string[]? languages,
         bool professionalTermsAccepted)
     {
         var state = await registration.GetAsync();
 
-        if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError))
+        if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError, "Brokerage / Company Name"))
         {
             ModelState.AddModelError(nameof(brokerageName), brokerageError!);
         }
@@ -93,12 +93,25 @@ public class RealtorRegistrationController(
 
         if (string.IsNullOrWhiteSpace(licenseState))
         {
-            ModelState.AddModelError(nameof(licenseState), "License state is required.");
+            ModelState.AddModelError(nameof(licenseState), "Please select your license state.");
+        }
+
+        var languagesCsv = languages == null || languages.Length == 0
+            ? string.Empty
+            : string.Join(", ", languages
+                .Where(l => !string.IsNullOrWhiteSpace(l))
+                .Select(l => l!.Trim())
+                .Distinct(StringComparer.OrdinalIgnoreCase));
+
+        if (!RealtorSupportedLanguages.TryNormalize(languagesCsv, out var normalizedLanguages, out var languagesError))
+        {
+            ModelState.AddModelError(nameof(languages), languagesError!);
         }
 
         if (!professionalTermsAccepted)
         {
-            ModelState.AddModelError(nameof(professionalTermsAccepted), "Please authorize Home Indor to verify your license to continue.");
+            ModelState.AddModelError(nameof(professionalTermsAccepted),
+                "Please check the authorization box to verify your license before continuing.");
         }
 
         if (!ModelState.IsValid)
@@ -108,7 +121,7 @@ public class RealtorRegistrationController(
             state.LicenseState = licenseState?.Trim() ?? "";
             state.ServiceAreas = serviceAreas?.Trim() ?? "";
             state.OfficeAddress = officeAddress?.Trim() ?? "";
-            state.Languages = languages?.Trim() ?? "";
+            state.Languages = languagesCsv;
             state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
             return View(StepVm(2, "Realtor Verification",
@@ -122,7 +135,7 @@ public class RealtorRegistrationController(
         state.LicenseState = licenseState.Trim();
         state.ServiceAreas = serviceAreas?.Trim() ?? "";
         state.OfficeAddress = officeAddress?.Trim() ?? "";
-        state.Languages = languages?.Trim() ?? "";
+        state.Languages = normalizedLanguages;
         state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
         await registration.SaveProfileAsync(state);
@@ -214,7 +227,7 @@ public class RealtorRegistrationController(
         return View(model);
     }
 
-    private static RealtorRegistrationStepViewModel StepVm(
+    private RealtorRegistrationStepViewModel StepVm(
         int displayStep,
         string title,
         string subtitle,
@@ -230,7 +243,8 @@ public class RealtorRegistrationController(
             Subtitle = subtitle,
             BackUrl = backUrl,
             State = state,
-            LicenseStates = licenseStates
+            LicenseStates = licenseStates,
+            SupportedLanguages = registration.GetSupportedLanguages()
         };
 
     private async Task<List<string>> SaveVerificationDocumentsAsync(

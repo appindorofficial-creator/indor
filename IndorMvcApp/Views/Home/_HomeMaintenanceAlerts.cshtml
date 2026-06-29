@@ -31,26 +31,50 @@
                     "High" => "high",
                     _ => "routine"
                 };
-                <article class="hd-maint-item hd-maint-item--@tone">
-                    <span class="hd-maint-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title)"></i></span>
-                    <div class="hd-maint-body">
-                        <div class="hd-maint-row">
-                            <strong>@item.Title</strong>
-                            <span class="hd-maint-priority">@item.Priority</span>
+                if (item.HasScheduleLink)
+                {
+                    <a href="@item.ScheduleUrl" class="hd-maint-item hd-maint-item--@tone hd-maint-item--link">
+                        <span class="hd-maint-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title)"></i></span>
+                        <div class="hd-maint-body">
+                            <div class="hd-maint-row">
+                                <strong>@item.Title</strong>
+                                <span class="hd-maint-priority">@item.Priority</span>
+                            </div>
+                            <p>@item.Description</p>
+                            <div class="hd-maint-tags">
+                                <span>@item.Category</span>
+                                <span>@item.Frequency</span>
+                            </div>
+                            <span class="hd-maint-schedule">
+                                @item.ScheduleActionLabel
+                                <i class="fas fa-chevron-right" aria-hidden="true"></i>
+                            </span>
                         </div>
-                        <p>@item.Description</p>
-                        <div class="hd-maint-tags">
-                            <span>@item.Category</span>
-                            <span>@item.Frequency</span>
+                    </a>
+                }
+                else
+                {
+                    <article class="hd-maint-item hd-maint-item--@tone">
+                        <span class="hd-maint-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title)"></i></span>
+                        <div class="hd-maint-body">
+                            <div class="hd-maint-row">
+                                <strong>@item.Title</strong>
+                                <span class="hd-maint-priority">@item.Priority</span>
+                            </div>
+                            <p>@item.Description</p>
+                            <div class="hd-maint-tags">
+                                <span>@item.Category</span>
+                                <span>@item.Frequency</span>
+                            </div>
                         </div>
-                    </div>
-                </article>
+                    </article>
+                }
             }
         </div>
 
-        <button type="button" class="hd-maint-cta nav-jump" data-target="section-services">
-            Request a professional
+        <a href="@($"{Url.Action("Index", "Home")}#home-care-priorities")" class="hd-maint-cta">
+            Browse all maintenance services
             <i class="fas fa-chevron-right"></i>
-        </button>
+        </a>
     </section>
 }

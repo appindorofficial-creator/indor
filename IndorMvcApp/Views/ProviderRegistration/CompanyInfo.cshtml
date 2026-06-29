@@ -11,17 +11,18 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="CompanyInfo" method="post" class="ob-form-card">
+<form asp-action="CompanyInfo" method="post" class="ob-form-card pa-validate" id="prvCompanyInfoForm" novalidate
+      data-save-draft-url="@Url.Action("SaveCompanyInfoDraft", "ProviderRegistration")">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
     <div class="ob-field prv-field-icon">
         <i class="fas fa-building"></i>
-        <input class="ob-control" name="businessName" value="@s.BusinessName" placeholder="Company name" required />
+        <input class="ob-control" name="businessName" value="@s.BusinessName" placeholder="Company name" data-pa-required="true" data-field-label="company name" />
     </div>
     <div class="ob-field prv-field-icon">
         <i class="fas fa-user"></i>
-        <input class="ob-control" name="primaryContact" value="@s.PrimaryContact" placeholder="Contact name" required />
+        <input class="ob-control" name="primaryContact" value="@s.PrimaryContact" placeholder="Contact name" data-pa-required="true" data-field-label="contact name" />
     </div>
     <div class="ob-field prv-field-icon">
         <i class="fas fa-phone"></i>
@@ -29,7 +30,7 @@
     </div>
     <div class="ob-field prv-field-icon">
         <i class="fas fa-envelope"></i>
-        <input class="ob-control" name="email" value="@s.Email" type="email" placeholder="Email address" required />
+        <input class="ob-control" name="email" value="@s.Email" type="email" inputmode="email" autocomplete="email" placeholder="Email address" data-pa-required="true" data-field-label="email address" />
     </div>
     <div class="ob-field prv-field-icon">
         <i class="fas fa-briefcase"></i>
@@ -62,12 +63,16 @@
     </div>
 
     <label class="prv-wiz-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
-        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms">Terms &amp; Conditions</a></span>
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-company-info" onclick="event.stopPropagation();">Terms &amp; Conditions</a></span>
     </label>
 
     <div class="prv-wiz-footer">
         <button type="submit" class="ob-btn ob-btn-primary">Save &amp; Continue</button>
-        <button type="submit" name="action" value="later" class="prv-save-later">I'll do this later</button>
+        <button type="submit" name="action" value="later" class="prv-save-later" formnovalidate>I'll do this later</button>
     </div>
 </form>
+
+@section Scripts {
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
+}

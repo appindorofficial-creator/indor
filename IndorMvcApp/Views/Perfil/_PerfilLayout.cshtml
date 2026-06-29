@@ -1,3 +1,4 @@
+@using IndorMvcApp.Helpers
 @{
     Layout = "_Layout";
     var titulo = ViewData["Title"] as string ?? "Profile";
@@ -19,7 +20,7 @@
         }
         else
         {
-            <a class="app-back-btn" asp-controller="Home" asp-action="Index" asp-fragment="section-mydashboard" aria-label="Back">
+            <a class="app-back-btn" href="@HomeNavigationUrls.MoreTab(Url)" aria-label="Back">
                 <i class="fas fa-chevron-left"></i>
             </a>
         }

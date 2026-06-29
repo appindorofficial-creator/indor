@@ -17,6 +17,45 @@ public sealed class PersonNameAttribute : ValidationAttribute
     {
     }
 
+    public static bool IsValidName(string? value, out string? errorMessage)
+    {
+        errorMessage = null;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            errorMessage = "Full name is required.";
+            return false;
+        }
+
+        var name = value.Trim();
+
+        if (name.Length < 2)
+        {
+            errorMessage = "Full name must be at least 2 characters.";
+            return false;
+        }
+
+        if (!HasLetterRegex.IsMatch(name))
+        {
+            errorMessage = "Enter a valid full name using letters (e.g. John Smith).";
+            return false;
+        }
+
+        if (OnlyDigitsAndSpacesRegex.IsMatch(name))
+        {
+            errorMessage = "Full name cannot contain only numbers.";
+            return false;
+        }
+
+        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        if (parts.Length < 2 || parts.Any(part => !part.Any(char.IsLetter)))
+        {
+            errorMessage = "Enter the client's first and last name.";
+            return false;
+        }
+
+        return true;
+    }
+
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
         if (value is not string text || string.IsNullOrWhiteSpace(text))
@@ -24,29 +63,8 @@ public sealed class PersonNameAttribute : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        var name = text.Trim();
-
-        if (name.Length < 2)
-        {
-            return new ValidationResult("Full name must be at least 2 characters.");
-        }
-
-        if (!HasLetterRegex.IsMatch(name))
-        {
-            return new ValidationResult(ErrorMessage ?? "Enter a valid full name using letters.");
-        }
-
-        if (OnlyDigitsAndSpacesRegex.IsMatch(name))
-        {
-            return new ValidationResult("Full name cannot contain only numbers.");
-        }
-
-        var parts = name.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-        if (parts.Length < 2 || parts.Any(part => !part.Any(char.IsLetter)))
-        {
-            return new ValidationResult("Enter your first and last name.");
-        }
-
-        return ValidationResult.Success;
+        return IsValidName(text, out var message)
+            ? ValidationResult.Success
+            : new ValidationResult(message ?? ErrorMessage ?? "Enter a valid full name using letters.");
     }
 }

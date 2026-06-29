@@ -19,7 +19,7 @@ public static class MaintenanceRecommendationPrompt
               "category": "HVAC" | "Plumbing" | "Electrical" | "Roof" | "Exterior" | "Safety" | "Landscaping" | "General",
               "priority": "Urgent" | "High" | "Routine",
               "frequency": "e.g. Every 3 months, Annually, Before winter",
-              "icon": "fontawesome icon class without fa- prefix e.g. fan, faucet-drip, bolt",
+              "icon": "fontawesome 6 FREE icon without fa- prefix e.g. fan, faucet-drip, bolt, fire-extinguisher, house-crack, shield-halved, triangle-exclamation, temperature-half",
               "reason": "brief why this matters for this specific home"
             }
           ]

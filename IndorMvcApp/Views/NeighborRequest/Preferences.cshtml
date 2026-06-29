@@ -9,6 +9,8 @@
     <input type="hidden" asp-for="IsEditMode" />
     <input type="hidden" asp-for="RequestId" />
 
+    <div asp-validation-summary="All" class="validation-summary"></div>
+
   @if (!Model.IsEditMode)
   {
     <section class="nr-card">
@@ -30,7 +32,8 @@
         </div>
         <div class="nr-pick-date" id="nrPickDateWrap" hidden>
             <label asp-for="NeededByDate">Pick a date</label>
-            <input asp-for="NeededByDate" type="date" class="nr-input" />
+            <input asp-for="NeededByDate" type="date" class="nr-input" min="@Model.MinNeededByDateIso" />
+            <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
         </div>
     </section>
 
@@ -139,6 +142,7 @@
     </div>
   }
 
+    <div class="nr-wizard-scroll-spacer" aria-hidden="true"></div>
 </form>
 
 @section WizardFooter {
@@ -190,6 +194,23 @@
 
             document.querySelectorAll('.nr-option-tile input:checked').forEach(function (input) {
                 input.closest('.nr-option-tile')?.classList.add('is-selected');
+            });
+
+            document.querySelectorAll('.nr-pay-toggle-btn input:checked').forEach(function (input) {
+                input.closest('.nr-pay-toggle-btn')?.classList.add('is-active');
+            });
+
+            function scrollCardIntoView(el) {
+                if (!el) return;
+                var card = el.closest('.nr-card, .nr-pref-card');
+                if (card) {
+                    card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+
+            document.querySelectorAll('.nr-option-tile, .nr-pay-toggle-btn, .nr-input').forEach(function (el) {
+                el.addEventListener('click', function () { scrollCardIntoView(el); });
+                el.addEventListener('focus', function () { scrollCardIntoView(el); });
             });
         })();
     </script>

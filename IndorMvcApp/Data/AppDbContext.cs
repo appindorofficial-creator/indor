@@ -145,7 +145,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorProveedorEstimate> IndorProveedorEstimates { get; set; }
     public DbSet<IndorProveedorInvoice> IndorProveedorInvoices { get; set; }
     public DbSet<IndorProveedorApproval> IndorProveedorApprovals { get; set; }
+    public DbSet<IndorPasswordResetCode> IndorPasswordResetCodes { get; set; }
+    public DbSet<IndorProviderInsuranceQuote> IndorProviderInsuranceQuotes { get; set; }
     public DbSet<IndorProveedorReport> IndorProveedorReports { get; set; }
+    public DbSet<IndorProveedorReportPhoto> IndorProveedorReportPhotos { get; set; }
+    public DbSet<IndorProveedorReportTemplate> IndorProveedorReportTemplates { get; set; }
+    public DbSet<IndorProveedorReportTemplateSection> IndorProveedorReportTemplateSections { get; set; }
     public DbSet<IndorProveedorConversation> IndorProveedorConversations { get; set; }
     public DbSet<IndorProveedorMessage> IndorProveedorMessages { get; set; }
 

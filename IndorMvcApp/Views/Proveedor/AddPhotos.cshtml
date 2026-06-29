@@ -1,0 +1,99 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadPhotosAddViewModel
+@{
+    ViewData["Title"] = "Add Photos - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "upload-photos.css";
+    var categories = new[] { ("Before", "fa-camera"), ("During", "fa-clock"), ("After", "fa-wand-magic-sparkles"), ("Damage", "fa-triangle-exclamation") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--photos">
+    @await Html.PartialAsync("_UploadPhotosHead")
+
+    <section class="upp-head">
+        <h1>Add Photos</h1>
+        <p>Upload more photos for this job.</p>
+    </section>
+
+    <div class="upp-progress">
+        <span class="upp-step">Step 2 of 3</span>
+        <div class="upp-bar"><span style="width:66%"></span></div>
+    </div>
+
+    <section class="upp-job-summary">
+        @if (!string.IsNullOrWhiteSpace(Model.Job.ImageUrl))
+        {
+            <img src="@Model.Job.ImageUrl" alt="" class="upp-job-thumb" />
+        }
+        else
+        {
+            <span class="upp-job-thumb upp-job-thumb--icon"><i class="fas @Model.Job.IconClass"></i></span>
+        }
+        <div class="upp-job-summary-body">
+            <strong>@Model.Job.Title</strong>
+            <span class="upp-job-addr">@Model.Job.Address</span>
+            <span class="upp-job-meta">
+                <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@Model.Job.StatusLabel</span>
+                <span class="upp-job-photos"><i class="fas fa-image"></i> @Model.Job.ExistingPhotosCount photos uploaded</span>
+            </span>
+        </div>
+    </section>
+
+    <form method="post" asp-controller="Proveedor" asp-action="AddPhotos" enctype="multipart/form-data" class="upp-add-form" id="uppAddForm">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="action" id="uppAction" value="add" />
+
+        <h2 class="upp-section">Photo Category</h2>
+        <div class="upp-cats">
+            @foreach (var (cat, icon) in categories)
+            {
+                <label class="upp-cat">
+                    <input type="radio" name="category" value="@cat" @(cat == "After" ? "checked" : "") />
+                    <i class="fas @icon"></i> @cat
+                </label>
+            }
+        </div>
+
+        <label class="upp-dropzone">
+            <span class="upp-dropzone-icon"><i class="fas fa-images"></i></span>
+            <span class="upp-dropzone-text">Drag photos here or choose a source</span>
+            <span class="upp-dropzone-sources">
+                <span class="upp-source"><i class="fas fa-camera"></i> Camera</span>
+                <span class="upp-source"><i class="fas fa-image"></i> Gallery</span>
+            </span>
+            <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAddForm').submit();" />
+        </label>
+
+        @if (Model.NewPhotos.Count > 0)
+        {
+            <h2 class="upp-section">New Photos</h2>
+            <div class="upp-thumbs">
+                @foreach (var photo in Model.NewPhotos)
+                {
+                    <div class="upp-thumb">
+                        <img src="@photo.Url" alt="@photo.Category" />
+                        <button type="submit" form="uppRemoveForm-@photo.Index" class="upp-thumb-remove" aria-label="Remove photo"><i class="fas fa-xmark"></i></button>
+                    </div>
+                }
+                <label class="upp-thumb upp-thumb--add">
+                    <i class="fas fa-plus"></i>
+                    <span>Add More</span>
+                    <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAddForm').submit();" />
+                </label>
+            </div>
+        }
+
+        <div class="upp-actions">
+            <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppAction').value='continue';">Continue</button>
+            <a asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-btn-text">Back</a>
+        </div>
+    </form>
+
+    @foreach (var photo in Model.NewPhotos)
+    {
+        <form method="post" asp-controller="Proveedor" asp-action="RemovePhoto" id="uppRemoveForm-@photo.Index" class="upp-remove-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="index" value="@photo.Index" />
+        </form>
+    }
+</div>

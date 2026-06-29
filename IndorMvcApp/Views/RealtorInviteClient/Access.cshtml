@@ -1,7 +1,36 @@
 @model IndorMvcApp.ViewModels.RealtorInviteAccessViewModel
+@{
+    string FieldError(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage ?? "";
+    var collaborationError = FieldError("CollaborationLevel");
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
+}
 
-<form asp-action="Access" method="post" class="rl-invite-form" id="inviteAccessForm">
+<form asp-action="Access" method="post" class="rl-invite-form" id="inviteAccessForm" novalidate>
     @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert" id="inviteAccessFormErrors">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Please fix the following to continue:</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    <p class="rl-page-subtitle rl-invite-access-intro">Choose what this client can see and how they can collaborate. Nothing is shared until you turn it on.</p>
 
     <h2 class="rl-invite-section-title">Access &amp; Permissions</h2>
     <div class="rl-toggle-list">
@@ -37,8 +66,8 @@
         </label>
     </div>
 
-    <h2 class="rl-invite-section-title">Collaboration Level</h2>
-    <div class="rl-collab-grid">
+    <h2 class="rl-invite-section-title">Collaboration Level <span class="rl-cp-req">*</span></h2>
+    <div class="rl-collab-grid @(collaborationError.Length > 0 ? "is-error" : null)">
         @foreach (var opt in Model.CollaborationOptions)
         {
             var selected = Model.CollaborationLevel == opt.Value;
@@ -50,8 +79,12 @@
             </label>
         }
     </div>
+    @if (!string.IsNullOrWhiteSpace(collaborationError))
+    {
+        <span class="rl-field-error">@collaborationError</span>
+    }
 
-    <h2 class="rl-invite-section-title">Invitation Delivery</h2>
+    <h2 class="rl-invite-section-title">Invitation Delivery <span class="rl-cp-req">*</span></h2>
     <div class="rl-delivery-row">
         <label class="rl-delivery-btn @(Model.DeliveryEmail ? "is-selected" : "")">
             <input type="checkbox" name="DeliveryEmail" value="true" @(Model.DeliveryEmail ? "checked" : null) />
@@ -78,19 +111,31 @@
 
 <div class="rl-invite-actions">
     <a asp-action="Property" asp-route-edit="true" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="inviteAccessForm" class="ob-btn ob-btn-primary">Next</button>
+    <button type="submit" form="inviteAccessForm" id="inviteAccessNextBtn" class="ob-btn ob-btn-primary">Next</button>
 </div>
 
 @section Scripts {
 <script>
-    document.querySelectorAll('.rl-collab-card input').forEach(r => {
-        r.addEventListener('change', () => {
-            document.querySelectorAll('.rl-collab-card').forEach(c => c.classList.remove('is-selected'));
+(function () {
+    var banner = document.getElementById('inviteAccessFormErrors');
+    var summary = document.querySelector('#inviteAccessForm .ob-summary:not(.validation-summary-valid)');
+    var scrollTarget = banner || summary || document.querySelector('#inviteAccessForm .rl-field-error:not(:empty), #inviteAccessForm .rl-collab-grid.is-error');
+    if (scrollTarget) {
+        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    document.querySelectorAll('.rl-collab-card input').forEach(function (r) {
+        r.addEventListener('change', function () {
+            document.querySelectorAll('.rl-collab-card').forEach(function (c) { c.classList.remove('is-selected'); });
             r.closest('.rl-collab-card')?.classList.add('is-selected');
+            document.querySelector('.rl-collab-grid')?.classList.remove('is-error');
         });
     });
-    document.querySelectorAll('.rl-delivery-btn input').forEach(c => {
-        c.addEventListener('change', () => c.closest('.rl-delivery-btn')?.classList.toggle('is-selected', c.checked));
+    document.querySelectorAll('.rl-delivery-btn input').forEach(function (c) {
+        c.addEventListener('change', function () {
+            c.closest('.rl-delivery-btn')?.classList.toggle('is-selected', c.checked);
+        });
     });
+})();
 </script>
 }

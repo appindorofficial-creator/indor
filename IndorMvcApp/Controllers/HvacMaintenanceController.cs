@@ -212,6 +212,7 @@ public class HvacMaintenanceController : Controller
             schedule.TipoServicio = model.TipoServicio;
             schedule.DireccionPropiedad = model.DireccionPropiedad;
             schedule.TelefonoContacto = model.TelefonoContacto;
+            schedule.MinVisitDateIso = DateTime.Today.ToString("yyyy-MM-dd");
             return View(schedule);
         }
 
@@ -365,11 +366,12 @@ public class HvacMaintenanceController : Controller
             SolicitudId = solicitud.Id,
             HomeCarePriorityId = solicitud.HomeCarePriorityId,
             PageTitle = landing?.LandingTitulo ?? "HVAC Tune-Up",
-            FechaVisita = solicitud.FechaVisita ?? GetNextAvailableDate(),
+            FechaVisita = NormalizeVisitDate(solicitud.FechaVisita),
             VentanaHorario = solicitud.VentanaHorario ?? "Morning",
             TipoServicio = tipoServicio,
             DireccionPropiedad = address ?? string.Empty,
             TelefonoContacto = phone ?? string.Empty,
+            MinVisitDateIso = DateTime.Today.ToString("yyyy-MM-dd"),
             PrecioEstimado = HvacMaintenancePricingService.GetEstimatedPrice(tipoServicio),
             PrecioTexto = landing?.PrecioTexto ?? HvacMaintenanceDisplayLabels.FormatPrice(HvacMaintenancePricingService.StartingPrice),
             InfoBoxTexto = landing?.InfoBoxTexto
@@ -416,6 +418,17 @@ public class HvacMaintenanceController : Controller
         }
 
         return date;
+    }
+
+    private static DateTime NormalizeVisitDate(DateTime? date)
+    {
+        var today = DateTime.Today;
+        if (date is { } value && value.Date >= today)
+        {
+            return value.Date;
+        }
+
+        return GetNextAvailableDate();
     }
 
     private static List<HvacMaintenanceFeatureItemViewModel> SplitPipePairs(string? texts, string? icons)

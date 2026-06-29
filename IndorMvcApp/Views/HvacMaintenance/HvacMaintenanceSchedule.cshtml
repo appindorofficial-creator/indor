@@ -22,7 +22,7 @@
 
         <div class="field-card">
             <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
-            <input asp-for="FechaVisita" type="date" id="visitDateInput" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+            <input asp-for="FechaVisita" type="date" id="visitDateInput" data-min-date="@Model.MinVisitDateIso" />
             <span asp-validation-for="FechaVisita" class="text-danger"></span>
         </div>
 
@@ -125,20 +125,36 @@
         });
 
         var visitDateInput = document.getElementById('visitDateInput');
-        function syncVisitDateValidity() {
-            if (!visitDateInput) return;
-            // Browsers show the native min-date message in the device locale (e.g. Spanish).
-            if (visitDateInput.validity.rangeUnderflow) {
-                visitDateInput.setCustomValidity('Please select today or a future date.');
-            } else {
-                visitDateInput.setCustomValidity('');
+        var scheduleForm = document.getElementById('hvac-schedule-form');
+        var minVisitDate = visitDateInput?.getAttribute('data-min-date') || '@Model.MinVisitDateIso';
+
+        function visitDateErrorMessage() {
+            if (!visitDateInput || !visitDateInput.value) {
+                return 'Please select a preferred date.';
             }
+            if (visitDateInput.value < minVisitDate) {
+                return 'Please select today or a future date.';
+            }
+            return '';
         }
-        if (visitDateInput) {
-            visitDateInput.addEventListener('input', syncVisitDateValidity);
-            visitDateInput.addEventListener('change', syncVisitDateValidity);
-            visitDateInput.addEventListener('invalid', syncVisitDateValidity);
+
+        function syncVisitDateValidity() {
+            if (!visitDateInput) return true;
+            var message = visitDateErrorMessage();
+            visitDateInput.setCustomValidity(message);
+            return !message;
         }
+
+        visitDateInput?.addEventListener('input', syncVisitDateValidity);
+        visitDateInput?.addEventListener('change', syncVisitDateValidity);
+        visitDateInput?.addEventListener('blur', syncVisitDateValidity);
+
+        scheduleForm?.addEventListener('submit', function (e) {
+            if (!syncVisitDateValidity()) {
+                e.preventDefault();
+                visitDateInput.reportValidity();
+            }
+        });
     })();
 
 </script>

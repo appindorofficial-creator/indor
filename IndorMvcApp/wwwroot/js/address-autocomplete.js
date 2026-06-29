@@ -96,8 +96,49 @@
         }
     }
 
-    function runServerZipLookup(sourceInput, city, state, zipEl) {
-        if (!city || !state || !zipEl || zipEl.value.trim()) {
+    function shouldReplaceZip(zipEl) {
+        return !zipEl.value.trim() || zipEl.dataset.autoZip === 'true';
+    }
+
+    function markAutoZip(zipEl) {
+        zipEl.dataset.autoZip = 'true';
+    }
+
+    function bindManualZipEdit(zipEl) {
+        if (!zipEl || zipEl.dataset.manualZipBound === 'true') {
+            return;
+        }
+        zipEl.dataset.manualZipBound = 'true';
+        zipEl.addEventListener('input', function () {
+            if (zipEl.value.trim()) {
+                delete zipEl.dataset.autoZip;
+            }
+        });
+    }
+
+    function setZipValue(zipEl, zip) {
+        if (!zipEl || !zip) {
+            return;
+        }
+        zipEl.value = zip;
+        markAutoZip(zipEl);
+        zipEl.dispatchEvent(new Event('input', { bubbles: true }));
+        zipEl.dispatchEvent(new Event('change', { bubbles: true }));
+        showZipHint(zipEl);
+    }
+
+    function showZipHint(zipEl) {
+        if (!zipEl || !zipEl.id) {
+            return;
+        }
+        var hint = document.querySelector('[data-ac-zip-hint-for="' + zipEl.id + '"]');
+        if (hint) {
+            hint.hidden = false;
+        }
+    }
+
+    function runServerZipLookup(city, state, zipEl) {
+        if (!city || !state || !zipEl || !shouldReplaceZip(zipEl)) {
             return;
         }
 
@@ -108,49 +149,78 @@
             headers: { 'Accept': 'application/json' },
             credentials: 'same-origin'
         }).then(function (response) {
-            if (!response.ok || zipEl.value.trim()) {
+            if (!response.ok || !shouldReplaceZip(zipEl)) {
                 return null;
             }
             return response.json();
         }).then(function (payload) {
-            if (!payload || !payload.zip || zipEl.value.trim()) {
+            if (!payload || !payload.zip || !shouldReplaceZip(zipEl)) {
                 return;
             }
-            zipEl.value = payload.zip;
-            zipEl.dispatchEvent(new Event('input', { bubbles: true }));
-            zipEl.dispatchEvent(new Event('change', { bubbles: true }));
+            setZipValue(zipEl, payload.zip);
         }).catch(function () {
             // Ignore lookup failures; the user can enter ZIP manually.
         });
     }
 
-    function tryGeocodeLinkedZip(sourceInput) {
+    function resolveLinkedAddressFields(sourceInput) {
         var zipEl = getLinkedElement(sourceInput, 'Zip');
         var stateEl = getLinkedElement(sourceInput, 'State');
-        if (!zipEl || !stateEl) return;
-        if (zipEl.value.trim()) return;
+        if (!zipEl || !stateEl) {
+            return null;
+        }
 
-        var state = stateEl.value.trim();
-        if (!state) return;
+        bindManualZipEdit(zipEl);
 
         var isCitySource = sourceInput.hasAttribute('data-city-autocomplete');
         var cityEl = isCitySource ? sourceInput : getLinkedElement(sourceInput, 'City');
-        var city = cityEl ? cityEl.value.trim() : '';
         var street = isCitySource ? '' : sourceInput.value.trim();
-        if (!city && !street) return;
+        var city = cityEl ? cityEl.value.trim() : '';
 
-        if (city) {
-            runServerZipLookup(sourceInput, city, state, zipEl);
+        return {
+            zipEl: zipEl,
+            stateEl: stateEl,
+            cityEl: cityEl,
+            city: city,
+            street: street
+        };
+    }
+
+    function lookupLinkedZip(sourceInput) {
+        var fields = resolveLinkedAddressFields(sourceInput);
+        if (!fields || !shouldReplaceZip(fields.zipEl)) {
+            return;
         }
 
-        if (window.google && google.maps && google.maps.Geocoder && street && city) {
-            var address = street + ', ' + city + ', ' + state + ', USA';
-            scheduleGeocode(sourceInput, address, zipEl);
+        var state = fields.stateEl.value.trim();
+        if (!state) {
+            return;
+        }
+
+        if (!fields.city && !fields.street) {
+            return;
+        }
+
+        if (fields.city) {
+            runServerZipLookup(fields.city, state, fields.zipEl);
+        }
+
+        if (window.google && google.maps && google.maps.Geocoder) {
+            var address = fields.street && fields.city
+                ? fields.street + ', ' + fields.city + ', ' + state + ', USA'
+                : (fields.city ? fields.city + ', ' + state + ', USA' : null);
+            if (address) {
+                scheduleGeocode(sourceInput, address, fields.zipEl);
+            }
         }
     }
 
+    function tryGeocodeLinkedZip(sourceInput) {
+        lookupLinkedZip(sourceInput);
+    }
+
     function runGeocode(sourceInput, address, zipEl) {
-        if (zipEl.value.trim()) return;
+        if (!shouldReplaceZip(zipEl)) return;
 
         if (!(window.google && google.maps && google.maps.Geocoder)) {
             return;
@@ -164,29 +234,27 @@
             if (status !== 'OK' || !results || !results.length) {
                 return;
             }
-            if (zipEl.value.trim()) return;
+            if (!shouldReplaceZip(zipEl)) return;
 
             var components = results[0].address_components;
             var zip = getComponent(components, 'postal_code', false);
             if (!zip) return;
 
-            zipEl.value = zip;
-            zipEl.dispatchEvent(new Event('input', { bubbles: true }));
-            zipEl.dispatchEvent(new Event('change', { bubbles: true }));
+            setZipValue(zipEl, zip);
 
-            var cityEl = sourceInput.hasAttribute('data-city-autocomplete')
+            var cityEl = sourceInput && sourceInput.hasAttribute('data-city-autocomplete')
                 ? sourceInput
-                : getLinkedElement(sourceInput, 'City');
+                : (sourceInput ? getLinkedElement(sourceInput, 'City') : null);
             if (cityEl && !cityEl.value.trim()) {
                 var city = getComponent(components, 'locality', false)
                     || getComponent(components, 'sublocality', false)
                     || getComponent(components, 'postal_town', false);
                 if (city) {
-                    if (sourceInput.hasAttribute('data-city-autocomplete')) {
+                    if (sourceInput && sourceInput.hasAttribute('data-city-autocomplete')) {
                         cityEl.value = city;
                         cityEl.dispatchEvent(new Event('input', { bubbles: true }));
                         cityEl.dispatchEvent(new Event('change', { bubbles: true }));
-                    } else {
+                    } else if (sourceInput) {
                         fillLinkedField(sourceInput, 'City', city);
                     }
                 }
@@ -203,6 +271,38 @@
         } else {
             tryGeocodeLinkedZip(sourceInput);
         }
+    }
+
+    function bindStateSelectZipLookup() {
+        var linkedStateIds = {};
+
+        document.querySelectorAll('[data-ac-state]').forEach(function (input) {
+            var stateId = input.dataset.acState;
+            if (!stateId) {
+                return;
+            }
+            linkedStateIds[stateId] = true;
+        });
+
+        document.querySelectorAll('select[data-ac-zip]').forEach(function (select) {
+            if (select.id) {
+                linkedStateIds[select.id] = true;
+            }
+        });
+
+        Object.keys(linkedStateIds).forEach(function (stateId) {
+            var stateEl = document.getElementById(stateId);
+            if (!stateEl || stateEl.dataset.zipLookupBound === 'true') {
+                return;
+            }
+            stateEl.dataset.zipLookupBound = 'true';
+
+            stateEl.addEventListener('change', function () {
+                document.querySelectorAll('[data-ac-state="' + stateId + '"]').forEach(function (input) {
+                    lookupLinkedZip(input);
+                });
+            });
+        });
     }
 
     function bindCityZipGeocode(sourceInput) {
@@ -236,6 +336,12 @@
             bindCityZipGeocode(input);
         });
 
+        bindStateSelectZipLookup();
+
+        document.querySelectorAll('[data-ac-state]').forEach(function (input) {
+            bindManualZipEdit(getLinkedElement(input, 'Zip'));
+        });
+
         document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete]').forEach(function (input) {
             tryGeocodeLinkedZip(input);
         });
@@ -264,7 +370,10 @@
 
         var zip = getComponent(components, 'postal_code', false);
         if (zip) {
-            fillLinkedField(cityInput, 'Zip', zip);
+            var zipEl = getLinkedElement(cityInput, 'Zip');
+            if (zipEl) {
+                setZipValue(zipEl, zip);
+            }
         } else {
             tryGeocodeLinkedZip(cityInput);
         }
@@ -281,6 +390,7 @@
         document.querySelectorAll('input[data-city-autocomplete]').forEach(function (input) {
             if (input.dataset.cityAcInitialized === 'true') return;
             input.dataset.cityAcInitialized = 'true';
+            input.setAttribute('autocomplete', 'off');
 
             var stateEl = getLinkedElement(input, 'State');
             if (stateEl) {
@@ -336,7 +446,13 @@
             fillLinkedField(input, 'City', city);
             var stateCode = getComponent(components, 'administrative_area_level_1', true);
             fillLinkedField(input, 'State', stateCode);
-            fillLinkedField(input, 'Zip', getComponent(components, 'postal_code', false));
+            var zipCode = getComponent(components, 'postal_code', false);
+            if (zipCode) {
+                var zipEl = getLinkedElement(input, 'Zip');
+                if (zipEl) {
+                    setZipValue(zipEl, zipCode);
+                }
+            }
 
             var stateEl = getLinkedElement(input, 'State');
             if (stateEl && stateCode) {
@@ -360,6 +476,7 @@
         document.querySelectorAll('input[data-address-autocomplete]').forEach(function (input) {
             if (input.dataset.acInitialized === 'true') return;
             input.dataset.acInitialized = 'true';
+            input.setAttribute('autocomplete', 'off');
 
             var ac = new google.maps.places.Autocomplete(input, {
                 types: ['address'],

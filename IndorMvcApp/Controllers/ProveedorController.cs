@@ -357,6 +357,602 @@ public class ProveedorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> ReportTemplates(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var p = proveedor.Entity!;
+        var companyName = !string.IsNullOrWhiteSpace(p.DbaName) ? p.DbaName
+            : !string.IsNullOrWhiteSpace(p.BusinessName) ? p.BusinessName
+            : !string.IsNullOrWhiteSpace(p.PrimaryContact) ? p.PrimaryContact
+            : "Your company";
+
+        return View(model: companyName);
+    }
+
+    // ---------------------------------------------------------------
+    // Insurance — provider coverage acquisition
+    // ---------------------------------------------------------------
+
+    // Step 1 — Coverage (plan summary)
+    [HttpGet]
+    public async Task<IActionResult> InsuranceQuote(string? plan, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var p = proveedor.Entity!;
+        var draft = GetInsuranceDraft();
+
+        if (!string.IsNullOrWhiteSpace(plan))
+        {
+            draft.Plan = NormalizePlan(plan);
+        }
+        else if (string.IsNullOrWhiteSpace(draft.Plan))
+        {
+            draft.Plan = "Basic";
+        }
+
+        draft.Coverages = ["General Liability"];
+
+        SaveInsuranceDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        return View(new InsuranceCoverageStepViewModel
+        {
+            CompanyInitial = CompanyInitial(p),
+            Plan = draft.Plan
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InsuranceQuote(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetInsuranceDraft();
+        if (string.IsNullOrWhiteSpace(draft.Plan)) draft.Plan = "Basic";
+        draft.Coverages = ["General Liability"];
+        SaveInsuranceDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(InsuranceBusinessInfo));
+    }
+
+    // Step 2 — Business & Owner info
+    [HttpGet]
+    public async Task<IActionResult> InsuranceBusinessInfo(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var p = proveedor.Entity!;
+        var draft = GetInsuranceDraft();
+
+        // Prefill from the provider profile the first time.
+        if (string.IsNullOrWhiteSpace(draft.BusinessName)) draft.BusinessName = ResolveCompanyName(p);
+        if (string.IsNullOrWhiteSpace(draft.StreetAddress)) draft.StreetAddress = p.BusinessAddress ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(draft.OwnerName)) draft.OwnerName = p.PrimaryContact ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(draft.OwnerPhone)) draft.OwnerPhone = p.Phone ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(draft.OwnerEmail)) draft.OwnerEmail = p.Email ?? string.Empty;
+        SaveInsuranceDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        return View(new InsuranceBusinessInfoStepViewModel
+        {
+            CompanyInitial = CompanyInitial(p),
+            Plan = draft.Plan,
+            Trade = draft.Trade,
+            BusinessName = draft.BusinessName,
+            StreetAddress = draft.StreetAddress,
+            City = draft.City,
+            State = string.IsNullOrWhiteSpace(draft.State) ? "NC" : draft.State,
+            ZipCode = draft.ZipCode,
+            OwnerName = draft.OwnerName,
+            OwnerDateOfBirth = draft.OwnerDateOfBirth,
+            OwnerPhone = draft.OwnerPhone,
+            OwnerEmail = draft.OwnerEmail
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InsuranceBusinessInfo(InsuranceBusinessInfoStepViewModel model, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetInsuranceDraft();
+        draft.Trade = TrimOrEmpty(model.Trade);
+        draft.BusinessName = TrimOrEmpty(model.BusinessName);
+        draft.StreetAddress = TrimOrEmpty(model.StreetAddress);
+        draft.City = TrimOrEmpty(model.City);
+        draft.State = string.IsNullOrWhiteSpace(model.State) ? "NC" : TrimOrEmpty(model.State);
+        draft.ZipCode = TrimOrEmpty(model.ZipCode);
+        draft.OwnerName = TrimOrEmpty(model.OwnerName);
+        draft.OwnerDateOfBirth = TrimOrEmpty(model.OwnerDateOfBirth);
+        draft.OwnerPhone = TrimOrEmpty(model.OwnerPhone);
+        draft.OwnerEmail = TrimOrEmpty(model.OwnerEmail);
+
+        if (string.IsNullOrWhiteSpace(draft.Trade))
+            ModelState.AddModelError(nameof(model.Trade), "Select your trade or industry.");
+        if (string.IsNullOrWhiteSpace(draft.BusinessName))
+            ModelState.AddModelError(nameof(model.BusinessName), "Business name is required.");
+        if (string.IsNullOrWhiteSpace(draft.OwnerName))
+            ModelState.AddModelError(nameof(model.OwnerName), "Owner name is required.");
+        if (string.IsNullOrWhiteSpace(draft.OwnerEmail))
+            ModelState.AddModelError(nameof(model.OwnerEmail), "Owner email is required.");
+
+        if (!ModelState.IsValid)
+        {
+            model.CompanyInitial = CompanyInitial(proveedor.Entity!);
+            model.Plan = draft.Plan;
+            return View(model);
+        }
+
+        SaveInsuranceDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(InsuranceBusinessDetails));
+    }
+
+    // Step 3 — Business details + payment setup
+    [HttpGet]
+    public async Task<IActionResult> InsuranceBusinessDetails(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetInsuranceDraft();
+        return View(new InsuranceBusinessDetailsStepViewModel
+        {
+            CompanyInitial = CompanyInitial(proveedor.Entity!),
+            Plan = draft.Plan,
+            NumberOfEmployees = draft.NumberOfEmployees,
+            EmployeePayroll = draft.EmployeePayroll,
+            CompanyGrossRevenue = draft.CompanyGrossRevenue,
+            YearsInBusiness = draft.YearsInBusiness,
+            WorksAtCustomerHomes = draft.WorksAtCustomerHomes,
+            UsesSubcontractors = draft.UsesSubcontractors,
+            NeedsCOI = draft.NeedsCOI,
+            AutoPayMonthly = draft.AutoPayMonthly,
+            CardLast4 = draft.CardLast4,
+            FirstBillingDate = DateTime.Today.AddDays(30)
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InsuranceBusinessDetails(InsuranceBusinessDetailsStepViewModel model, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetInsuranceDraft();
+        draft.NumberOfEmployees = TrimOrEmpty(model.NumberOfEmployees);
+        draft.EmployeePayroll = model.EmployeePayroll;
+        draft.CompanyGrossRevenue = model.CompanyGrossRevenue;
+        draft.YearsInBusiness = TrimOrEmpty(model.YearsInBusiness);
+        draft.WorksAtCustomerHomes = model.WorksAtCustomerHomes;
+        draft.UsesSubcontractors = model.UsesSubcontractors;
+        draft.NeedsCOI = model.NeedsCOI;
+        draft.AutoPayMonthly = model.AutoPayMonthly;
+
+        SaveInsuranceDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(InsuranceReview));
+    }
+
+    // Step 4 — Review & payment
+    [HttpGet]
+    public async Task<IActionResult> InsuranceReview(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetInsuranceDraft();
+        if (string.IsNullOrWhiteSpace(draft.BusinessName))
+        {
+            return RedirectToAction(nameof(InsuranceBusinessInfo));
+        }
+
+        return View(new InsuranceReviewViewModel
+        {
+            CompanyInitial = CompanyInitial(proveedor.Entity!),
+            Plan = draft.Plan,
+            Draft = draft,
+            PaymentMethod = string.IsNullOrWhiteSpace(draft.PaymentMethod) ? "Card" : draft.PaymentMethod
+        });
+    }
+
+    // Step 4 → process payment (always approved — no gateway yet) → Step 5
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InsurancePay(string? paymentMethod, bool authorize, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetInsuranceDraft();
+        if (string.IsNullOrWhiteSpace(draft.BusinessName))
+        {
+            return RedirectToAction(nameof(InsuranceBusinessInfo));
+        }
+
+        if (!authorize)
+        {
+            TempData["InsuranceConfirmError"] = "Please authorize the payment to continue.";
+            return RedirectToAction(nameof(InsuranceReview));
+        }
+
+        draft.PaymentMethod = string.IsNullOrWhiteSpace(paymentMethod) ? "Card" : paymentMethod;
+        SaveInsuranceDraft(draft);
+
+        var quoteId = await proData.SaveInsuranceQuoteAsync(proveedor.Entity!.Id, draft, cancellationToken);
+
+        var (payToday, monthly) = InsuranceCatalog.Pricing(draft.Plan);
+        ClearInsuranceDraft();
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        TempData["InsuranceQuotePlan"] = draft.Plan;
+        TempData["InsurancePaidToday"] = payToday.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        TempData["InsuranceMonthly"] = monthly.ToString(System.Globalization.CultureInfo.InvariantCulture);
+        TempData["InsuranceReceipt"] = $"IND-GL-{DateTime.UtcNow:yyyy}-{quoteId:00000}";
+        return RedirectToAction(nameof(InsuranceQuoteSubmitted));
+    }
+
+    // Step 5 — Success
+    [HttpGet]
+    public async Task<IActionResult> InsuranceQuoteSubmitted(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var plan = TempData["InsuranceQuotePlan"] as string ?? "Basic";
+        var (payToday, monthly) = InsuranceCatalog.Pricing(plan);
+        decimal.TryParse(TempData["InsurancePaidToday"] as string, System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var paid);
+        decimal.TryParse(TempData["InsuranceMonthly"] as string, System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture, out var mon);
+
+        return View(new InsuranceSubmittedViewModel
+        {
+            CompanyInitial = CompanyInitial(proveedor.Entity!),
+            Plan = plan,
+            PaidToday = paid > 0 ? paid : payToday,
+            MonthlyPlan = mon > 0 ? mon : monthly,
+            Status = "Pending Carrier Approval",
+            ReceiptNumber = TempData["InsuranceReceipt"] as string ?? string.Empty
+        });
+    }
+
+    private static string NormalizePlan(string? plan) => plan?.Trim().ToLowerInvariant() switch
+    {
+        "standard" => "Standard",
+        "premium" => "Premium",
+        _ => "Basic"
+    };
+
+    private static string ResolveCompanyName(IndorProveedor p) =>
+        !string.IsNullOrWhiteSpace(p.DbaName) ? p.DbaName!
+        : !string.IsNullOrWhiteSpace(p.BusinessName) ? p.BusinessName!
+        : !string.IsNullOrWhiteSpace(p.PrimaryContact) ? p.PrimaryContact!
+        : "Your company";
+
+    private static string CompanyInitial(IndorProveedor p)
+    {
+        var name = ResolveCompanyName(p);
+        return string.IsNullOrWhiteSpace(name) ? "P" : name.Trim()[..1].ToUpperInvariant();
+    }
+
+    // ---------------------------------------------------------------
+    // Templates flow (list → details → ready) — DB-backed
+    // ---------------------------------------------------------------
+
+    [HttpGet]
+    public async Task<IActionResult> Templates(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetReportTemplatesAsync(proveedor.Entity!.Id, cancellationToken);
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TemplateDetails(string key, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var template = await proData.GetReportTemplateAsync(proveedor.Entity!.Id, key, cancellationToken);
+        if (template == null)
+        {
+            return RedirectToAction(nameof(Templates));
+        }
+
+        return View(template);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> TemplateReady(string key, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var template = await proData.GetReportTemplateAsync(proveedor.Entity!.Id, key, cancellationToken);
+        if (template == null)
+        {
+            return RedirectToAction(nameof(Templates));
+        }
+
+        return View(template);
+    }
+
+    // ---------------------------------------------------------------
+    // Export Report flow (select job → details/photos → review)
+    // Session-draft wizard that persists to IndorProveedorReports.
+    // ---------------------------------------------------------------
+
+    [HttpGet]
+    public async Task<IActionResult> ExportReport(string? q, bool? fresh, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (fresh == true)
+        {
+            ClearExportReportDraft();
+        }
+
+        SetExportAvatar(proveedor.Entity);
+
+        var draft = GetExportReportDraft();
+        draft.ReportName ??= "";
+        draft.PreparedBy ??= proveedor.Entity!.PrimaryContact ?? "";
+        draft.ReportDate ??= DateTime.Now.ToString("yyyy-MM-dd");
+        ViewBag.ExportDraft = draft;
+
+        var model = await proData.GetUploadPhotosSelectJobAsync(proveedor.Entity!, q, null, cancellationToken);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ExportReport(int jobId, string? reportName, string? reportDate, string? preparedBy, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (jobId <= 0)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        var draft = GetExportReportDraft();
+        draft.JobId = jobId;
+        draft.ReportName = TrimOrEmpty(reportName);
+        draft.ReportDate = TrimOrEmpty(reportDate);
+        draft.PreparedBy = TrimOrEmpty(preparedBy);
+        SaveExportReportDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        return RedirectToAction(nameof(ExportReportDetails));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExportReportDetails(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetExportReportDraft();
+        if (!draft.JobId.HasValue)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        var summary = await proData.GetExportJobSummaryAsync(proveedor.Entity!, draft.JobId.Value, cancellationToken);
+        if (summary == null)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        SetExportAvatar(proveedor.Entity);
+        return View(new ProviderProExportReportViewModel { Job = summary, Draft = draft });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddExportPhotos(string? category, List<IFormFile>? photos, string? action,
+        string? reportCategory, string? location, string? priority, string? weather, string? description,
+        CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetExportReportDraft();
+        if (!draft.JobId.HasValue)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        draft.Category = TrimOrEmpty(reportCategory);
+        draft.Location = TrimOrEmpty(location);
+        draft.Priority = TrimOrEmpty(priority);
+        draft.Weather = TrimOrEmpty(weather);
+        draft.Description = TrimOrEmpty(description);
+
+        var slot = string.IsNullOrWhiteSpace(category) ? "Damage" : category.Trim();
+        if (photos != null)
+        {
+            foreach (var file in photos.Where(f => f.Length > 0))
+            {
+                var saved = await SaveProviderReportFileAsync(proveedor.Entity!.Id, file);
+                if (saved != null)
+                {
+                    draft.Photos.Add(new ProviderProUploadReportFileSlot
+                    {
+                        Slot = slot,
+                        Url = saved.Value.Url,
+                        FileName = saved.Value.FileName
+                    });
+                }
+            }
+        }
+
+        SaveExportReportDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        if (string.Equals(action, "continue", StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(ExportReportReview));
+        }
+
+        return RedirectToAction(nameof(ExportReportDetails));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemoveExportPhoto(int index, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetExportReportDraft();
+        if (index >= 0 && index < draft.Photos.Count)
+        {
+            draft.Photos.RemoveAt(index);
+            SaveExportReportDraft(draft);
+            await HttpContext.Session.CommitAsync(cancellationToken);
+        }
+
+        return RedirectToAction(nameof(ExportReportDetails));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExportReportReview(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetExportReportDraft();
+        if (!draft.JobId.HasValue)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        var summary = await proData.GetExportJobSummaryAsync(proveedor.Entity!, draft.JobId.Value, cancellationToken);
+        if (summary == null)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        SetExportAvatar(proveedor.Entity);
+        return View(new ProviderProExportReportViewModel { Job = summary, Draft = draft });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ExportReportComplete(string? mode, string? notes, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetExportReportDraft();
+        if (!draft.JobId.HasValue)
+        {
+            return RedirectToAction(nameof(ExportReport));
+        }
+
+        draft.Notes = TrimOrEmpty(notes);
+        SaveExportReportDraft(draft);
+
+        var send = string.Equals(mode, "send", StringComparison.OrdinalIgnoreCase);
+        var reportId = await proData.SaveExportReportFromDraftAsync(proveedor.Entity!.Id, draft, send, cancellationToken);
+        if (reportId == null)
+        {
+            return RedirectToAction(nameof(ExportReportReview));
+        }
+
+        ClearExportReportDraft();
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        TempData["ProviderProToast"] = send ? "Export report sent." : "Export report saved.";
+        return RedirectToAction(nameof(Reports));
+    }
+
+    private void SetExportAvatar(IndorProveedor? proveedor)
+    {
+        var source = !string.IsNullOrWhiteSpace(proveedor?.DbaName) ? proveedor!.DbaName
+            : !string.IsNullOrWhiteSpace(proveedor?.BusinessName) ? proveedor!.BusinessName
+            : !string.IsNullOrWhiteSpace(proveedor?.PrimaryContact) ? proveedor!.PrimaryContact
+            : "Provider";
+        ViewBag.ExportAvatarInitial = source!.Trim()[0].ToString().ToUpperInvariant();
+    }
+
+    [HttpGet]
     public async Task<IActionResult> UploadReport(string? q, string? filter, bool? fresh, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -592,6 +1188,200 @@ public class ProveedorController(
         return View(model);
     }
 
+    // ---------------------------------------------------------------
+    // Upload Photos flow (select job → add photos → review → save)
+    // ---------------------------------------------------------------
+
+    [HttpGet]
+    public async Task<IActionResult> UploadPhotos(string? q, string? filter, bool? fresh, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (fresh == true || (string.IsNullOrWhiteSpace(q) && string.IsNullOrWhiteSpace(filter)))
+        {
+            ClearUploadPhotosDraft();
+        }
+
+        var model = await proData.GetUploadPhotosSelectJobAsync(proveedor.Entity!, q, filter, cancellationToken);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> UploadPhotos(int jobId, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (jobId <= 0)
+        {
+            return RedirectToAction(nameof(UploadPhotos));
+        }
+
+        var draft = GetUploadPhotosDraft();
+        draft.JobId = jobId;
+        SaveUploadPhotosDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+        return RedirectToAction(nameof(AddPhotos));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddPhotos(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetUploadPhotosDraft();
+        if (!draft.JobId.HasValue)
+        {
+            return RedirectToAction(nameof(UploadPhotos));
+        }
+
+        var model = await proData.GetUploadPhotosAddAsync(proveedor.Entity!, draft, cancellationToken);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(UploadPhotos));
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddPhotos(string? category, List<IFormFile>? photos, string? action, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetUploadPhotosDraft();
+        if (!draft.JobId.HasValue)
+        {
+            return RedirectToAction(nameof(UploadPhotos));
+        }
+
+        var slot = string.IsNullOrWhiteSpace(category) ? "After" : category.Trim();
+
+        if (photos != null)
+        {
+            foreach (var file in photos.Where(f => f.Length > 0))
+            {
+                var saved = await SaveProviderReportFileAsync(proveedor.Entity!.Id, file);
+                if (saved != null)
+                {
+                    draft.Photos.Add(new ProviderProUploadReportFileSlot
+                    {
+                        Slot = slot,
+                        Url = saved.Value.Url,
+                        FileName = saved.Value.FileName
+                    });
+                }
+            }
+        }
+
+        SaveUploadPhotosDraft(draft);
+        await HttpContext.Session.CommitAsync(cancellationToken);
+
+        if (string.Equals(action, "continue", StringComparison.OrdinalIgnoreCase) && draft.Photos.Count > 0)
+        {
+            return RedirectToAction(nameof(ReviewPhotos));
+        }
+
+        return RedirectToAction(nameof(AddPhotos));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RemovePhoto(int index, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetUploadPhotosDraft();
+        if (index >= 0 && index < draft.Photos.Count)
+        {
+            draft.Photos.RemoveAt(index);
+            SaveUploadPhotosDraft(draft);
+            await HttpContext.Session.CommitAsync(cancellationToken);
+        }
+
+        return RedirectToAction(nameof(AddPhotos));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ReviewPhotos(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetUploadPhotosDraft();
+        if (!draft.JobId.HasValue || draft.Photos.Count == 0)
+        {
+            return RedirectToAction(nameof(AddPhotos));
+        }
+
+        var model = await proData.GetUploadPhotosReviewAsync(proveedor.Entity!, draft, cancellationToken);
+        if (model == null)
+        {
+            return RedirectToAction(nameof(UploadPhotos));
+        }
+
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ReviewPhotos(string? notes, string? action, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var draft = GetUploadPhotosDraft();
+        draft.Notes = TrimOrEmpty(notes);
+        SaveUploadPhotosDraft(draft);
+
+        if (!draft.JobId.HasValue || draft.Photos.Count == 0)
+        {
+            return RedirectToAction(nameof(AddPhotos));
+        }
+
+        var reportId = await proData.SaveUploadPhotosFromDraftAsync(proveedor.Entity!.Id, draft, cancellationToken);
+        if (!reportId.HasValue)
+        {
+            return RedirectToAction(nameof(ReviewPhotos));
+        }
+
+        ClearUploadPhotosDraft();
+
+        if (string.Equals(action, "send", StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(Reports), new { tab = "ready" });
+        }
+
+        return RedirectToAction(nameof(UploadReportSuccess), new { id = reportId.Value });
+    }
+
     [HttpGet]
     public async Task<IActionResult> Messages(string? tab, string? q, CancellationToken cancellationToken)
     {
@@ -741,7 +1531,7 @@ public class ProveedorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> EditProfile(CancellationToken cancellationToken)
+    public async Task<IActionResult> PublicProfile(CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -749,14 +1539,98 @@ public class ProveedorController(
             return proveedor.Result;
         }
 
-        var model = await proData.GetEditProfileAsync(proveedor.Entity!, cancellationToken);
+        var model = await proData.GetProfilePageAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Settings(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetProfilePageAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> HelpCenter(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetProfilePageAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Subscription(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetProfilePageAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Notifications(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetNotificationsPageAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Notifications(ProviderProNotificationsInput input, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        await proData.SaveNotificationPreferencesAsync(proveedor.Entity!.Id, input, cancellationToken);
+        TempData["NotificationsSaved"] = true;
+        return RedirectToAction(nameof(Notifications));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfile(string? section, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetEditProfileAsync(proveedor.Entity!, cancellationToken: cancellationToken);
+        ViewBag.ActiveSection = string.IsNullOrWhiteSpace(section) ? "business" : section.Trim().ToLowerInvariant();
         return View(model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [RequestSizeLimit(10_000_000)]
-    public async Task<IActionResult> EditProfile(ProviderProEditProfileInput input, IFormFile? profilePhoto, CancellationToken cancellationToken)
+    public async Task<IActionResult> EditProfile(
+        [FromForm] ProviderProEditProfileInput input,
+        IFormFile? profilePhoto,
+        CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -766,19 +1640,21 @@ public class ProveedorController(
 
         if (string.IsNullOrWhiteSpace(input.BusinessName) && string.IsNullOrWhiteSpace(input.DbaName))
         {
-            ModelState.AddModelError(nameof(input.BusinessName), "Business name or DBA is required.");
+            ModelState.AddModelError(nameof(ProviderProEditProfileInput.BusinessName), "Business name or DBA is required.");
         }
 
         if (!ModelState.IsValid)
         {
-            var model = await proData.GetEditProfileAsync(proveedor.Entity!, cancellationToken);
-            return View(model);
+            var invalidModel = await proData.GetEditProfileAsync(proveedor.Entity!, input, cancellationToken);
+            return View(invalidModel);
         }
 
         var saved = await proData.SaveEditProfileAsync(proveedor.Entity!.Id, input, cancellationToken);
         if (!saved)
         {
-            return RedirectToAction(nameof(Profile));
+            ModelState.AddModelError(string.Empty, "We couldn't save your profile. Please try again.");
+            var failedModel = await proData.GetEditProfileAsync(proveedor.Entity!, input, cancellationToken);
+            return View(failedModel);
         }
 
         if (profilePhoto != null && profilePhoto.Length > 0)
@@ -792,6 +1668,106 @@ public class ProveedorController(
 
         TempData["ProfileSaved"] = true;
         return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfileServices(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetEditProfileServicesAsync(proveedor.Entity!, cancellationToken);
+        ViewBag.CompanyInitial = model.CompanyInitial;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfileServices(string[]? serviceIds, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (serviceIds == null || serviceIds.Length == 0)
+        {
+            TempData["ProfileSectionError"] = "Select at least one service or category.";
+            return RedirectToAction(nameof(EditProfileServices));
+        }
+
+        var saved = await proData.SaveEditProfileServicesAsync(
+            proveedor.Entity!.Id,
+            serviceIds ?? [],
+            cancellationToken);
+
+        if (!saved)
+        {
+            TempData["ProfileSectionError"] = "We couldn't save your services. Please try again.";
+            return RedirectToAction(nameof(EditProfileServices));
+        }
+
+        TempData["ProfileSaved"] = true;
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfileVerification(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetEditProfileVerificationAsync(proveedor.Entity!, cancellationToken);
+        ViewBag.CompanyInitial = model.CompanyInitial;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> EditProfileVerification(string documentType, IFormFile? documentFile, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        if (documentFile == null || documentFile.Length == 0 || string.IsNullOrWhiteSpace(documentType))
+        {
+            TempData["ProfileSectionError"] = "Choose a file to upload.";
+            return RedirectToAction(nameof(EditProfileVerification));
+        }
+
+        var uploadError = await SaveProviderDocumentAsync(proveedor.Entity!.Id, documentType.Trim(), documentFile);
+        if (!string.IsNullOrWhiteSpace(uploadError))
+        {
+            TempData["ProfileSectionError"] = uploadError;
+            return RedirectToAction(nameof(EditProfileVerification));
+        }
+
+        TempData["ProfileSaved"] = true;
+        return RedirectToAction(nameof(EditProfileVerification));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfilePayments(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await proData.GetProfilePageAsync(proveedor.Entity!, cancellationToken);
+        return View(model);
     }
 
     [HttpGet]
@@ -1643,7 +2619,7 @@ public class ProveedorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> DaySchedule(string? date, CancellationToken cancellationToken)
+    public async Task<IActionResult> DaySchedule(string? date, string? from, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1652,6 +2628,8 @@ public class ProveedorController(
         }
 
         var model = await jobWorkflow.GetDayScheduleAsync(proveedor.Entity!, date, cancellationToken);
+        ViewBag.FromHome = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase);
+        ViewBag.FromJobs = string.Equals(from, "jobs", StringComparison.OrdinalIgnoreCase);
         return View(model);
     }
 
@@ -1711,7 +2689,7 @@ public class ProveedorController(
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateJob(CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateJob(string? from, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -1720,7 +2698,12 @@ public class ProveedorController(
         }
 
         ClearCreateJobDraft();
+        SaveCreateJobDraft(new ProviderProCreateJobDraft
+        {
+            NavOrigin = NormalizeCreateJobNavOrigin(from)
+        });
         var model = await jobWorkflow.GetCreateJobCategoriesAsync(proveedor.Entity!, cancellationToken);
+        ApplyCreateJobNavigation();
         return View(model);
     }
 
@@ -1739,6 +2722,7 @@ public class ProveedorController(
             var model = await jobWorkflow.GetCreateJobCategoriesAsync(proveedor.Entity!, cancellationToken);
             model.SelectedCategoryId = input.ServiceCategoryId;
             model.JobTitle = input.Title;
+            ApplyCreateJobNavigation();
             return View(model);
         }
 
@@ -1749,6 +2733,7 @@ public class ProveedorController(
             var model = await jobWorkflow.GetCreateJobCategoriesAsync(proveedor.Entity!, cancellationToken);
             model.SelectedCategoryId = input.ServiceCategoryId;
             model.JobTitle = input.Title;
+            ApplyCreateJobNavigation();
             return View(model);
         }
 
@@ -1790,6 +2775,7 @@ public class ProveedorController(
 
         draft.ServiceCategoryLabel = model.ServiceCategoryLabel;
         SaveCreateJobDraft(draft);
+        ApplyCreateJobNavigation(draft);
         return View(model);
     }
 
@@ -1846,6 +2832,7 @@ public class ProveedorController(
             return RedirectToAction(nameof(CreateJob));
         }
 
+        ApplyCreateJobNavigation(draft);
         return View(model);
     }
 
@@ -1892,6 +2879,7 @@ public class ProveedorController(
         }
 
         SaveCreateJobDraft(draft);
+        ApplyCreateJobNavigation(draft);
         return View(model);
     }
 
@@ -1935,6 +2923,7 @@ public class ProveedorController(
         draft.CustomerMessage = model.CustomerMessage;
         draft.DeliveryMethod = model.DeliveryMethod;
         SaveCreateJobDraft(draft);
+        ApplyCreateJobNavigation(draft);
         return View(model);
     }
 
@@ -2187,6 +3176,22 @@ public class ProveedorController(
     private void ClearCreateJobDraft() =>
         HttpContext.Session.Remove(CreateJobDraftSessionKey);
 
+    private static string NormalizeCreateJobNavOrigin(string? from) =>
+        string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : "jobs";
+
+    private void ApplyCreateJobNavigation(ProviderProCreateJobDraft? draft = null)
+    {
+        draft ??= GetCreateJobDraft();
+        if (string.IsNullOrWhiteSpace(draft.NavOrigin))
+        {
+            draft.NavOrigin = "jobs";
+        }
+
+        ViewBag.NavActive = draft.NavOrigin;
+        ViewBag.CreateJobCancelAction = draft.NavOrigin == "home" ? "Dashboard" : "Jobs";
+        ViewBag.HideBottomNav = true;
+    }
+
     private const string CreateEstimateDraftSessionKey = "ProviderProCreateEstimateDraft";
 
     private ProviderProCreateEstimateDraft GetCreateEstimateDraft()
@@ -2252,6 +3257,72 @@ public class ProveedorController(
 
     private void ClearUploadReportDraft() =>
         HttpContext.Session.Remove(UploadReportDraftSessionKey);
+
+    private const string UploadPhotosDraftSessionKey = "ProviderProUploadPhotosDraft";
+
+    private ProviderProUploadPhotosDraft GetUploadPhotosDraft()
+    {
+        var json = HttpContext.Session.GetString(UploadPhotosDraftSessionKey);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new ProviderProUploadPhotosDraft();
+        }
+
+        return JsonSerializer.Deserialize<ProviderProUploadPhotosDraft>(json, CreateJobDraftJsonOptions)
+            ?? new ProviderProUploadPhotosDraft();
+    }
+
+    private void SaveUploadPhotosDraft(ProviderProUploadPhotosDraft draft) =>
+        HttpContext.Session.SetString(
+            UploadPhotosDraftSessionKey,
+            JsonSerializer.Serialize(draft, CreateJobDraftJsonOptions));
+
+    private void ClearUploadPhotosDraft() =>
+        HttpContext.Session.Remove(UploadPhotosDraftSessionKey);
+
+    private const string ExportReportDraftSessionKey = "ProviderProExportReportDraft";
+
+    private ProviderProExportReportDraft GetExportReportDraft()
+    {
+        var json = HttpContext.Session.GetString(ExportReportDraftSessionKey);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new ProviderProExportReportDraft();
+        }
+
+        return JsonSerializer.Deserialize<ProviderProExportReportDraft>(json, CreateJobDraftJsonOptions)
+            ?? new ProviderProExportReportDraft();
+    }
+
+    private void SaveExportReportDraft(ProviderProExportReportDraft draft) =>
+        HttpContext.Session.SetString(
+            ExportReportDraftSessionKey,
+            JsonSerializer.Serialize(draft, CreateJobDraftJsonOptions));
+
+    private void ClearExportReportDraft() =>
+        HttpContext.Session.Remove(ExportReportDraftSessionKey);
+
+    private const string InsuranceDraftSessionKey = "ProviderProInsuranceQuoteDraft";
+
+    private ProviderProInsuranceQuoteDraft GetInsuranceDraft()
+    {
+        var json = HttpContext.Session.GetString(InsuranceDraftSessionKey);
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return new ProviderProInsuranceQuoteDraft();
+        }
+
+        return JsonSerializer.Deserialize<ProviderProInsuranceQuoteDraft>(json, CreateJobDraftJsonOptions)
+            ?? new ProviderProInsuranceQuoteDraft();
+    }
+
+    private void SaveInsuranceDraft(ProviderProInsuranceQuoteDraft draft) =>
+        HttpContext.Session.SetString(
+            InsuranceDraftSessionKey,
+            JsonSerializer.Serialize(draft, CreateJobDraftJsonOptions));
+
+    private void ClearInsuranceDraft() =>
+        HttpContext.Session.Remove(InsuranceDraftSessionKey);
 
     private static string TrimOrEmpty(string? value) => value?.Trim() ?? "";
 
@@ -2358,7 +3429,21 @@ public class ProveedorController(
     }
 
     private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    private static readonly string[] ProfileDocumentExtensions = [".jpg", ".jpeg", ".png", ".webp", ".pdf"];
     private const long MaxProfilePhotoBytes = 10_000_000;
+    private const long MaxProfileDocumentBytes = 10_000_000;
+
+    private static readonly HashSet<string> AllowedProfileDocumentTypes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ProviderDocumentTypes.License,
+        ProviderDocumentTypes.Insurance,
+        ProviderDocumentTypes.GovernmentId,
+        ProviderDocumentTypes.W9,
+        ProviderDocumentTypes.LiabilityInsurance,
+        ProviderDocumentTypes.ContractorLicense,
+        ProviderDocumentTypes.HvacLicense,
+        ProviderDocumentTypes.PlumbingLicense
+    };
 
     private async Task<string?> SaveProfilePhotoAsync(int proveedorId, IFormFile file)
     {
@@ -2388,7 +3473,50 @@ public class ProveedorController(
         }
 
         var relativeUrl = $"/uploads/provider/{proveedorId}/{storedName}";
-        await registration.RegisterDocumentUploadAsync(ProviderDocumentTypes.Logo, relativeUrl);
+        await registration.RegisterDocumentUploadAsync(ProviderDocumentTypes.Logo, relativeUrl, proveedorId);
+        return null;
+    }
+
+    private async Task<string?> SaveProviderDocumentAsync(int proveedorId, string documentType, IFormFile file)
+    {
+        if (!AllowedProfileDocumentTypes.Contains(documentType))
+        {
+            return "That document type is not supported.";
+        }
+
+        var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) && file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        {
+            ext = ".jpg";
+        }
+        else if (string.IsNullOrEmpty(ext) && file.ContentType.Equals("application/pdf", StringComparison.OrdinalIgnoreCase))
+        {
+            ext = ".pdf";
+        }
+
+        if (!ProfileDocumentExtensions.Contains(ext))
+        {
+            return "Document must be JPG, PNG, WEBP, or PDF.";
+        }
+
+        if (file.Length > MaxProfileDocumentBytes)
+        {
+            return "Document must be 10 MB or less.";
+        }
+
+        var uploadDir = Path.Combine(env.WebRootPath, "uploads", "provider", proveedorId.ToString());
+        Directory.CreateDirectory(uploadDir);
+        var storedName = $"{documentType}-{Guid.NewGuid():N}{ext}";
+        var fullPath = Path.Combine(uploadDir, storedName);
+        await using (var stream = System.IO.File.Create(fullPath))
+        {
+            await file.CopyToAsync(stream);
+        }
+
+        var relativeUrl = $"/uploads/provider/{proveedorId}/{storedName}";
+        await registration.RegisterDocumentUploadAsync(documentType, relativeUrl, proveedorId);
+        await proData.ApplyVerificationDocumentFlagsAsync(proveedorId, documentType);
+
         return null;
     }
 }

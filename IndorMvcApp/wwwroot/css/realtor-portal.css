@@ -92,14 +92,43 @@
 .rl-search-bar input:focus-visible,
 .rl-cp-input input:focus,
 .rl-cp-input input:focus-visible,
+.rl-cp-input input:active,
 .rl-cp-input select:focus,
-.rl-cp-input select:focus-visible {
+.rl-cp-input select:focus-visible,
+.rl-cp-input select:active {
     border: none !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
     box-shadow: none !important;
+    -webkit-box-shadow: none !important;
     outline: none;
 }
 .rl-field-error { display: block; font-size: .75rem; color: #DC2626; margin: 6px 0 0 4px; }
 .rl-field-hint { display: block; font-size: .72rem; color: #64748B; margin: 6px 0 0 4px; line-height: 1.35; }
+
+.rl-lang-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+.rl-lang-options.is-error .rl-lang-option { border-color: #F87171; }
+.rl-lang-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 120px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 12px;
+    background: #fff;
+    cursor: pointer;
+    font-size: .88rem;
+    color: #0F172A;
+}
+.rl-lang-option i { color: #0066CC; width: 18px; text-align: center; }
+.rl-lang-option input[type="checkbox"] { width: 18px; height: 18px; accent-color: #0066CC; cursor: pointer; }
+.rl-lang-option:has(input:checked) { border-color: #0066CC; background: rgba(0, 102, 204, 0.06); }
 
 .rl-info-box {
     display: flex;
@@ -152,7 +181,7 @@
 
 .rl-error-banner {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     gap: 10px;
     background: #FEF2F2;
     border: 1px solid #FCA5A5;
@@ -163,6 +192,17 @@
     font-weight: 600;
     color: #B91C1C;
 }
+.rl-error-banner i { margin-top: 2px; flex-shrink: 0; }
+.rl-error-list {
+    margin: 8px 0 0;
+    padding-left: 18px;
+    font-size: .8rem;
+    font-weight: 600;
+    line-height: 1.45;
+}
+.rl-error-list li { margin: 0 0 4px; }
+.rl-required { color: #DC2626; font-weight: 800; }
+.rl-field-error--terms { margin: -8px 0 16px 28px; }
 
 .rl-doc-card {
     display: flex;
@@ -486,6 +526,11 @@
     font-size: .84rem;
 }
 
+.rl-invite-create-from-search {
+    display: inline-flex;
+    margin-top: 14px;
+}
+
 .rl-bottom-nav {
     position: fixed;
     bottom: 0;
@@ -538,6 +583,10 @@
     font-size: 1rem;
     position: relative;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 .rl-portal-icon-btn.has-dot::after {
     content: "";
@@ -799,7 +848,16 @@ button.rl-quick-action {
     font-weight: 700;
     color: #0066CC;
     text-decoration: none;
+    touch-action: manipulation;
 }
+a.rl-network-btn:not(.rl-soon) {
+    padding: 8px 14px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(0, 102, 204, .26);
+}
+a.rl-network-btn:not(.rl-soon) .fa-chevron-right { font-size: .62rem; opacity: .95; }
 button.rl-network-btn {
     border: none;
     background: transparent;
@@ -1169,6 +1227,7 @@ button.rl-network-btn {
 .rl-invite-step-line.is-done { background: #0066CC; }
 
 .rl-invite-section-title { font-size: .92rem; font-weight: 800; margin: 16px 0 10px; color: #0F172A; }
+.rl-invite-access-intro { margin: 0 0 14px; font-size: .84rem; color: #64748B; line-height: 1.45; }
 .rl-invite-section-title small { font-weight: 600; color: #64748B; }
 
 .rl-field--textarea { align-items: flex-start; }
@@ -1255,6 +1314,7 @@ a.rl-invite-cancel {
     border-radius: 12px;
     padding: 0 12px;
     background: #fff;
+    overflow: hidden;
 }
 .rl-cp-input:focus-within { border-color: #0066CC; box-shadow: 0 0 0 3px rgba(0,102,204,.12); }
 .rl-cp-input i { color: #94A3B8; font-size: .85rem; flex-shrink: 0; }
@@ -1263,6 +1323,8 @@ a.rl-invite-cancel {
     flex: 1;
     min-width: 0;
     border: 0 !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
     outline: none;
     background: transparent;
     padding: 12px 0;
@@ -1270,15 +1332,23 @@ a.rl-invite-cancel {
     font-family: inherit;
     color: #0A2540;
     box-shadow: none !important;
+    -webkit-box-shadow: none !important;
     border-radius: 0 !important;
+    -webkit-appearance: none;
+    appearance: none;
 }
 .rl-cp-input input:focus,
 .rl-cp-input input:focus-visible,
+.rl-cp-input input:active,
 .rl-cp-input select:focus,
-.rl-cp-input select:focus-visible {
-    border: none !important;
+.rl-cp-input select:focus-visible,
+.rl-cp-input select:active {
+    border: 0 !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
     outline: none !important;
     box-shadow: none !important;
+    -webkit-box-shadow: none !important;
 }
 .rl-cp-input input::placeholder { color: #94A3B8; }
 .rl-cp-input--select select { cursor: pointer; color: #0A2540; }
@@ -1499,6 +1569,7 @@ a.rl-invite-cancel {
 }
 
 .rl-collab-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 16px; }
+.rl-collab-grid.is-error .rl-collab-card { border-color: #F87171; }
 .rl-collab-card {
     position: relative; border: 1.5px solid #E2E8F0; border-radius: 12px;
     padding: 12px 8px; text-align: center; background: #fff; cursor: pointer;
@@ -1812,7 +1883,13 @@ a.rl-invite-cancel {
     font-family: inherit;
 }
 
-.rl-field-icon input:focus { outline: none; }
+.rl-field-icon input:focus,
+.rl-field-icon input:focus-visible {
+    outline: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
 
 .rl-field-icon input::placeholder { color: #94A3B8; }
 
@@ -3642,6 +3719,13 @@ button.rl-profile-nav-item {
 .rl-btn-outline.rl-soon .rl-soon-lock,
 .rl-btn-primary.rl-soon .rl-soon-lock {
     margin-left: 2px;
+}
+
+.rl-btn-outline.rl-soon > span:first-child,
+.rl-btn-primary.rl-soon > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
 }
 
 .rl-profile-nav-item.rl-soon > .rl-soon-lock {
@@ -6881,6 +6965,20 @@ a.rl-profile-nav-item {
     color: inherit;
 }
 
+.rl-support-copy {
+    margin: 0;
+    padding: 0 14px 14px;
+    font-size: .82rem;
+    color: #64748B;
+    line-height: 1.5;
+}
+
+.rl-support-copy a {
+    color: #0066CC;
+    font-weight: 700;
+    text-decoration: none;
+}
+
 /* ============================================================
    DESIGN REFRESH v2 — Realtor portal
    Sky background, gradient accents, softly elevated cards
@@ -6986,15 +7084,42 @@ a.rl-profile-nav-item {
     color: #0066CC;
 }
 .rl-clients-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
-.rl-clients-hero .rl-page-header { margin-bottom: 16px; }
+.rl-clients-hero .rl-page-header { margin-bottom: 16px; position: relative; z-index: 2; }
+.rl-page-header--clients { align-items: center; }
+.rl-page-header-copy { min-width: 0; flex: 1; }
 .rl-clients-hero .rl-page-title { color: #fff; }
 .rl-clients-hero .rl-page-subtitle { color: rgba(255, 255, 255, .85); }
 .rl-clients-hero .rl-clients-add {
-    background: rgba(255, 255, 255, .16);
-    border: 1px solid rgba(255, 255, 255, .45);
-    color: #fff;
-    box-shadow: none;
-    backdrop-filter: blur(4px);
+    background: #fff;
+    border: none;
+    color: #0066CC;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+    position: relative;
+    z-index: 4;
+    min-height: 44px;
+    padding: 10px 14px;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.rl-clients-hero .rl-clients-add:hover,
+.rl-clients-hero .rl-clients-add:focus-visible {
+    background: #F0F7FF;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+}
+.rl-clients-hero .rl-clients-add:active {
+    transform: scale(0.97);
+    background: #E8F1FB;
+}
+@media (max-width: 420px) {
+    .rl-page-header--clients {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .rl-page-header--clients .rl-clients-add {
+        width: 100%;
+        justify-content: center;
+    }
 }
 .rl-clients-hero .rl-search-form { margin-bottom: 0; }
 .rl-clients-hero .rl-search-bar { margin-bottom: 12px; border-color: transparent; }

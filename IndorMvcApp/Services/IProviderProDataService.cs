@@ -16,8 +16,17 @@ public interface IProviderProDataService
     Task<ProviderProAddCustomerSuccessViewModel?> GetAddCustomerSuccessAsync(IndorProveedor proveedor, int customerId, CancellationToken cancellationToken = default);
     Task<ProviderProReportsPageViewModel> GetReportsPageAsync(IndorProveedor proveedor, string? tab = "all", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProProfilePageViewModel> GetProfilePageAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
-    Task<ProviderProEditProfileViewModel> GetEditProfileAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
+    Task<ProviderProEditProfileViewModel> GetEditProfileAsync(
+        IndorProveedor proveedor,
+        ProviderProEditProfileInput? input = null,
+        CancellationToken cancellationToken = default);
     Task<bool> SaveEditProfileAsync(int proveedorId, ProviderProEditProfileInput input, CancellationToken cancellationToken = default);
+    Task<ProviderProEditProfileServicesViewModel> GetEditProfileServicesAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
+    Task<bool> SaveEditProfileServicesAsync(int proveedorId, IReadOnlyList<string> selectedIds, CancellationToken cancellationToken = default);
+    Task<ProviderProEditProfileVerificationViewModel> GetEditProfileVerificationAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
+    Task ApplyVerificationDocumentFlagsAsync(int proveedorId, string documentType, CancellationToken cancellationToken = default);
+    Task<ProviderProNotificationsViewModel> GetNotificationsPageAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
+    Task SaveNotificationPreferencesAsync(int proveedorId, ProviderProNotificationsInput input, CancellationToken cancellationToken = default);
     Task<ProviderProNewLeadsPageViewModel> GetNewLeadsPageAsync(IndorProveedor proveedor, string? filter = "all", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProLeadDetailsViewModel?> GetLeadDetailsAsync(IndorProveedor proveedor, int leadId, CancellationToken cancellationToken = default);
     Task<ProviderProInspectionFindingsViewModel?> GetInspectionFindingsAsync(IndorProveedor proveedor, int leadId, CancellationToken cancellationToken = default);
@@ -63,6 +72,14 @@ public interface IProviderProDataService
     Task<ProviderProUploadReportDetailsViewModel?> GetUploadReportDetailsAsync(IndorProveedor proveedor, ProviderProUploadReportDraft draft, CancellationToken cancellationToken = default);
     Task<int?> SaveUploadReportFromDraftAsync(int proveedorId, ProviderProUploadReportDraft draft, CancellationToken cancellationToken = default);
     Task<ProviderProUploadReportSuccessViewModel?> GetUploadReportSuccessAsync(IndorProveedor proveedor, int reportId, CancellationToken cancellationToken = default);
+    Task<ProviderProUploadPhotosSelectJobViewModel> GetUploadPhotosSelectJobAsync(IndorProveedor proveedor, string? search = null, string? filter = "all", CancellationToken cancellationToken = default);
+    Task<ProviderProUploadPhotosAddViewModel?> GetUploadPhotosAddAsync(IndorProveedor proveedor, ProviderProUploadPhotosDraft draft, CancellationToken cancellationToken = default);
+    Task<ProviderProUploadPhotosReviewViewModel?> GetUploadPhotosReviewAsync(IndorProveedor proveedor, ProviderProUploadPhotosDraft draft, CancellationToken cancellationToken = default);
+    Task<int?> SaveUploadPhotosFromDraftAsync(int proveedorId, ProviderProUploadPhotosDraft draft, CancellationToken cancellationToken = default);
+    Task<ProviderProTemplatesPageViewModel> GetReportTemplatesAsync(int proveedorId, CancellationToken cancellationToken = default);
+    Task<ReportTemplateView?> GetReportTemplateAsync(int proveedorId, string key, CancellationToken cancellationToken = default);
+    Task<ProviderProUploadPhotosJobSummary?> GetExportJobSummaryAsync(IndorProveedor proveedor, int jobId, CancellationToken cancellationToken = default);
+    Task<int?> SaveExportReportFromDraftAsync(int proveedorId, ProviderProExportReportDraft draft, bool send, CancellationToken cancellationToken = default);
     Task<ProviderProMessagesInboxViewModel> GetMessagesInboxAsync(IndorProveedor proveedor, string? tab = "all", string? search = null, CancellationToken cancellationToken = default);
     Task<ProviderProConversationViewModel?> GetConversationAsync(IndorProveedor proveedor, int conversationId, CancellationToken cancellationToken = default);
     Task<bool> SendConversationMessageAsync(int proveedorId, ProviderProSendMessageInput input, CancellationToken cancellationToken = default);
@@ -70,6 +87,7 @@ public interface IProviderProDataService
     Task<bool> SendMessageQuickActionAsync(int proveedorId, ProviderProMessageActionDraft draft, CancellationToken cancellationToken = default);
     Task<ProviderProMessageSentSuccessViewModel?> GetMessageSentSuccessAsync(IndorProveedor proveedor, int conversationId, string actionLabel, CancellationToken cancellationToken = default);
     Task<int> GetUnreadMessageCountAsync(int proveedorId, CancellationToken cancellationToken = default);
+    Task<int> SaveInsuranceQuoteAsync(int proveedorId, ProviderProInsuranceQuoteDraft draft, CancellationToken cancellationToken = default);
 }
 
 public class ProviderProWorkspaceData

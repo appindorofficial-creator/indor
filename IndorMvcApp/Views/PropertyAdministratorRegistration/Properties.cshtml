@@ -33,6 +33,10 @@
 {
     <div class="pa-summary-error">@Model.FormError</div>
 }
+else if (TempData["PropertyAdminSuccess"] is string success)
+{
+    <div class="pa-step-hint" style="color:#059669;font-weight:600;margin-bottom:14px;">@success</div>
+}
 else if (TempData["PropertyAdminError"] is string err)
 {
     <div class="pa-summary-error">@err</div>
@@ -63,7 +67,7 @@ else if (TempData["PropertyAdminError"] is string err)
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
     </summary>
-    <form asp-action="AddProperty" method="post" class="pa-add-property-form">
+    <form asp-action="AddProperty" method="post" class="pa-add-property-form pa-validate" novalidate>
         @Html.AntiForgeryToken()
 
         <div class="pa-field-row pa-field-row--2">
@@ -75,7 +79,8 @@ else if (TempData["PropertyAdminError"] is string err)
                        value="@formHouseNumber"
                        placeholder="House number"
                        inputmode="numeric"
-                       required
+                       data-pa-required="true"
+                       data-field-label="a house number"
                        autocomplete="address-line2" />
             </label>
             <label class="pa-field">
@@ -85,8 +90,9 @@ else if (TempData["PropertyAdminError"] is string err)
                        name="streetName"
                        value="@formStreetName"
                        placeholder="Street name"
+                       data-pa-required="true"
+                       data-field-label="a street name"
                        autocomplete="address-line1"
-                       required
                        data-address-autocomplete
                        data-ac-street-only="true"
                        data-ac-house-number="pa-prop-house"
@@ -104,15 +110,16 @@ else if (TempData["PropertyAdminError"] is string err)
                        name="city"
                        value="@formCity"
                        placeholder="City"
+                       data-pa-required="true"
+                       data-field-label="a city"
                        autocomplete="address-level2"
-                       required
                        data-city-autocomplete
                        data-ac-state="pa-prop-state"
                        data-ac-zip="pa-prop-zip" />
             </label>
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-map"></i>
-                <select id="pa-prop-state" name="state" required>
+                <select id="pa-prop-state" name="state" data-pa-required="true" data-field-label="a state">
                     @if (string.IsNullOrWhiteSpace(formState))
                     {
                         <option value="" disabled selected>State</option>
@@ -142,15 +149,16 @@ else if (TempData["PropertyAdminError"] is string err)
                        value="@formZipCode"
                        placeholder="ZIP"
                        inputmode="numeric"
+                       data-pa-required="true"
+                       data-field-label="a ZIP code"
                        autocomplete="postal-code"
-                       maxlength="10"
-                       required />
+                       maxlength="10" />
             </label>
         </div>
 
         <label class="pa-field">
             <i class="fas fa-tag"></i>
-            <select id="pa-prop-type" name="propertyType" required>
+            <select id="pa-prop-type" name="propertyType" data-pa-required="true" data-field-label="a property type">
                 @if (string.IsNullOrWhiteSpace(formPropertyType))
                 {
                     <option value="" disabled selected hidden>Property type</option>
@@ -182,17 +190,24 @@ else if (TempData["PropertyAdminError"] is string err)
     </form>
 </details>
 
-<a href="#" class="pa-action-row" onclick="return false;" style="opacity:.55;">
+<a asp-action="ImportPortfolio" class="pa-action-row">
     <span><i class="fas fa-file-import"></i> Import portfolio</span>
     <i class="fas fa-chevron-right"></i>
 </a>
-<a href="#" class="pa-action-row" onclick="return false;" style="opacity:.55;">
+<a asp-action="UploadPropertyDocuments" class="pa-action-row">
     <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
     <i class="fas fa-chevron-right"></i>
 </a>
 
 <form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
     @Html.AntiForgeryToken()
+    <input type="hidden" name="houseNumber" id="pa-continue-house" value="" />
+    <input type="hidden" name="streetName" id="pa-continue-street" value="" />
+    <input type="hidden" name="city" id="pa-continue-city" value="" />
+    <input type="hidden" name="state" id="pa-continue-state" value="" />
+    <input type="hidden" name="zipCode" id="pa-continue-zip" value="" />
+    <input type="hidden" name="propertyType" id="pa-continue-type" value="" />
+    <input type="hidden" name="propertyNickname" id="pa-continue-nickname" value="" />
 </form>
 
 @{
@@ -205,47 +220,88 @@ else if (TempData["PropertyAdminError"] is string err)
 
 @await Html.PartialAsync("_AddressAutocompleteScripts")
 
+@section Scripts {
+@await Html.PartialAsync("_PropertyAdminStepValidation")
 <script>
 (function () {
-    var form = document.querySelector('.pa-add-property-form');
-    if (!form) return;
+    var addForm = document.querySelector('.pa-add-property-form');
+    var continueForm = document.getElementById('paPropertiesContinueForm');
+    if (!addForm || !continueForm) return;
 
-    var fields = [
-        { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
-        { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
-        { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
-        { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
-        { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
-        { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
-    ];
+    var initialCity = (@Html.Raw(System.Text.Json.JsonSerializer.Serialize(defaultCity))).trim();
+    var initialState = (@Html.Raw(System.Text.Json.JsonSerializer.Serialize(defaultState))).trim();
 
-    function syncValidity(field) {
-        if (!field.el) return;
-        var empty = !field.el.value || !String(field.el.value).trim();
-        field.el.setCustomValidity(empty ? field.message : '');
+    function fieldValue(id) {
+        var el = document.getElementById(id);
+        return el && el.value ? String(el.value).trim() : '';
     }
 
-    fields.forEach(function (field) {
-        if (!field.el) return;
-        field.el.addEventListener('input', function () { syncValidity(field); });
-        field.el.addEventListener('change', function () { syncValidity(field); });
-        field.el.addEventListener('invalid', function () { syncValidity(field); });
-    });
+    function syncContinueDraft() {
+        document.getElementById('pa-continue-house').value = fieldValue('pa-prop-house');
+        document.getElementById('pa-continue-street').value = fieldValue('pa-prop-street');
+        document.getElementById('pa-continue-city').value = fieldValue('pa-prop-city');
+        document.getElementById('pa-continue-state').value = fieldValue('pa-prop-state');
+        document.getElementById('pa-continue-zip').value = fieldValue('pa-prop-zip');
+        document.getElementById('pa-continue-type').value = fieldValue('pa-prop-type');
+        var nickname = addForm.querySelector('[name="propertyNickname"]');
+        document.getElementById('pa-continue-nickname').value = nickname && nickname.value
+            ? String(nickname.value).trim()
+            : '';
+    }
 
-    form.addEventListener('submit', function (e) {
-        var firstInvalid = null;
-        fields.forEach(function (field) {
-            syncValidity(field);
-            if (!field.el || firstInvalid) return;
-            if (!field.el.checkValidity()) {
-                firstInvalid = field.el;
-            }
-        });
+    function isDraftStarted() {
+        if (fieldValue('pa-prop-house') || fieldValue('pa-prop-street') || fieldValue('pa-prop-zip') || fieldValue('pa-prop-type')) {
+            return true;
+        }
 
-        if (firstInvalid) {
-            e.preventDefault();
-            firstInvalid.reportValidity();
+        var nickname = addForm.querySelector('[name="propertyNickname"]');
+        if (nickname && nickname.value && String(nickname.value).trim()) {
+            return true;
+        }
+
+        var city = fieldValue('pa-prop-city');
+        if (city && city.toLowerCase() !== initialCity.toLowerCase()) {
+            return true;
+        }
+
+        var state = fieldValue('pa-prop-state');
+        if (state && state.toLowerCase() !== initialState.toLowerCase()) {
+            return true;
+        }
+
+        return false;
+    }
+
+    continueForm.addEventListener('submit', function (e) {
+        syncContinueDraft();
+
+        if (!isDraftStarted()) {
+            return;
+        }
+
+        if (continueForm.dataset.paValidated === '1') {
+            continueForm.dataset.paValidated = '';
+            return;
+        }
+
+        e.preventDefault();
+
+        var panel = document.querySelector('.pa-add-property-panel');
+        if (panel && !panel.open) {
+            panel.open = true;
+        }
+
+        if (typeof window.validatePaForm === 'function' && !window.validatePaForm(addForm)) {
+            return;
+        }
+
+        continueForm.dataset.paValidated = '1';
+        if (continueForm.requestSubmit) {
+            continueForm.requestSubmit();
+        } else {
+            continueForm.submit();
         }
     });
 })();
 </script>
+}

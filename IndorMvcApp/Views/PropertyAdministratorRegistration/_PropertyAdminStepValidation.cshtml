@@ -1,0 +1,126 @@
+<script>
+    (function () {
+        function isRequired(field) {
+            return field.hasAttribute('required') || field.getAttribute('data-pa-required') === 'true';
+        }
+
+        function requiredFields(form) {
+            return form.querySelectorAll('[required], [data-pa-required="true"]');
+        }
+
+        function labelFor(field) {
+            return field.getAttribute('data-field-label')
+                || field.getAttribute('placeholder')
+                || (field.tagName === 'SELECT' && field.options.length ? field.options[0].text : '')
+                || field.name;
+        }
+
+        function anchorFor(field) {
+            return field.closest('.pa-field, .pa-choice-grid, .pa-terms, .ob-field, .prv-wiz-terms') || field;
+        }
+
+        function messageFor(field) {
+            var label = labelFor(field);
+            if (field.type === 'checkbox') {
+                return label;
+            }
+            if (field.type === 'radio' || field.tagName === 'SELECT') {
+                return 'Please select ' + label + '.';
+            }
+            return 'Please enter ' + label + '.';
+        }
+
+        function clearErrors(form) {
+            form.querySelectorAll('.pa-inline-error').forEach(function (el) { el.remove(); });
+            form.querySelectorAll('.pa-invalid').forEach(function (el) { el.classList.remove('pa-invalid'); });
+        }
+
+        function showError(field) {
+            var anchor = anchorFor(field);
+            anchor.classList.add('pa-invalid');
+            if (anchor.nextElementSibling && anchor.nextElementSibling.classList.contains('pa-inline-error')) {
+                return;
+            }
+            var msg = document.createElement('div');
+            msg.className = 'pa-inline-error';
+            msg.textContent = messageFor(field);
+            anchor.insertAdjacentElement('afterend', msg);
+        }
+
+        function isMissing(field, form) {
+            if (field.type === 'radio') {
+                return !form.querySelector('input[name="' + CSS.escape(field.name) + '"]:checked');
+            }
+            if (field.type === 'checkbox') {
+                return !field.checked;
+            }
+            return !field.value || !field.value.trim();
+        }
+
+        function validateForm(form, options) {
+            options = options || {};
+            clearErrors(form);
+            var seenRadioGroups = {};
+            var firstInvalid = null;
+
+            requiredFields(form).forEach(function (field) {
+                if (field.type === 'radio') {
+                    if (seenRadioGroups[field.name]) { return; }
+                    seenRadioGroups[field.name] = true;
+                }
+                if (isMissing(field, form)) {
+                    if (!firstInvalid) { firstInvalid = field; }
+                    showError(field);
+                }
+            });
+
+            if (firstInvalid) {
+                if (options.scroll !== false) {
+                    anchorFor(firstInvalid).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                return false;
+            }
+
+            return true;
+        }
+
+        window.validatePaForm = validateForm;
+
+        document.querySelectorAll('form.pa-validate').forEach(function (form) {
+            form.addEventListener('invalid', function (e) {
+                e.preventDefault();
+                showError(e.target);
+            }, true);
+
+            form.addEventListener('submit', function (e) {
+                if (!validateForm(form)) {
+                    e.preventDefault();
+                }
+            });
+
+            form.addEventListener('input', function (e) {
+                var field = e.target;
+                if (!isRequired(field)) { return; }
+                if (!isMissing(field, form)) {
+                    var anchor = anchorFor(field);
+                    anchor.classList.remove('pa-invalid');
+                    if (anchor.nextElementSibling && anchor.nextElementSibling.classList.contains('pa-inline-error')) {
+                        anchor.nextElementSibling.remove();
+                    }
+                }
+            });
+
+            form.addEventListener('change', function (e) {
+                var field = e.target;
+                if (!isRequired(field)) { return; }
+                if (!isMissing(field, form)) {
+                    var anchor = anchorFor(field);
+                    anchor.classList.remove('pa-invalid');
+                    if (anchor.nextElementSibling && anchor.nextElementSibling.classList.contains('pa-inline-error')) {
+                        anchor.nextElementSibling.remove();
+                    }
+                }
+            });
+        });
+    })();
+</script>

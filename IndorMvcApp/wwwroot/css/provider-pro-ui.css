@@ -6,7 +6,7 @@
 .prv-pro-body,
 .ob-page.prv-page {
     background: var(--indor-bg-sky, #F0F7FF) !important;
-    background-attachment: fixed;
+    background-attachment: scroll;
     color: var(--indor-navy, #0A2540);
     font-family: Inter, system-ui, sans-serif;
 }

@@ -8,7 +8,7 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Portfolio" method="post" id="portfolioForm">
+<form asp-action="Portfolio" method="post" id="portfolioForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
 
@@ -17,7 +17,7 @@
         @foreach (var range in PropertyAdministratorCatalog.PropertyCountRanges)
         {
             <label class="pa-choice-card @(s.PropertyCountRange == range ? "is-selected" : "")">
-                <input type="radio" name="propertyCountRange" value="@range" @(s.PropertyCountRange == range ? "checked" : null) required />
+                <input type="radio" name="propertyCountRange" value="@range" @(s.PropertyCountRange == range ? "checked" : null) data-pa-required="true" data-field-label="how many properties you manage" />
                 <i class="fas fa-building"></i>
                 <span>@range</span>
             </label>
@@ -26,7 +26,7 @@
 
     <label class="pa-field">
         <i class="fas fa-house"></i>
-        <select name="portfolioType" required>
+        <select name="portfolioType" data-pa-required="true" data-field-label="a portfolio type">
             <option value="">Portfolio type</option>
             @foreach (var item in PropertyAdministratorCatalog.PortfolioTypes)
             {
@@ -37,7 +37,7 @@
 
     <label class="pa-field">
         <i class="fas fa-user"></i>
-        <select name="ownershipType" required>
+        <select name="ownershipType" data-pa-required="true" data-field-label="an ownership type">
             <option value="">Ownership type</option>
             @foreach (var item in PropertyAdministratorCatalog.OwnershipTypes)
             {
@@ -48,7 +48,7 @@
 
     <label class="pa-field">
         <i class="fas fa-location-dot"></i>
-        <select name="primaryMarket" required>
+        <select name="primaryMarket" data-pa-required="true" data-field-label="your primary market">
             <option value="">Select your primary market or city</option>
             @foreach (var market in PropertyAdministratorCatalog.PrimaryMarkets)
             {
@@ -62,7 +62,7 @@
         @foreach (var item in PropertyAdministratorCatalog.ManagementStyles)
         {
             <label class="pa-choice-card @(s.ManagementStyle == item.Value ? "is-selected" : "")">
-                <input type="radio" name="managementStyle" value="@item.Value" @(s.ManagementStyle == item.Value ? "checked" : null) required />
+                <input type="radio" name="managementStyle" value="@item.Value" @(s.ManagementStyle == item.Value ? "checked" : null) data-pa-required="true" data-field-label="how you manage your properties" />
                 <i class="fas @(item.Value == "SelfManage" ? "fa-user" : item.Value == "SmallTeam" ? "fa-users" : "fa-briefcase")"></i>
                 <span>@item.Label</span>
             </label>
@@ -88,4 +88,5 @@
         });
     });
 </script>
+@await Html.PartialAsync("_PropertyAdminStepValidation")
 }

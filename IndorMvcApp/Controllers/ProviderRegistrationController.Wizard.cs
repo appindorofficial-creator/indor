@@ -90,6 +90,18 @@ public partial class ProviderRegistrationController
             return RedirectToAction("Dashboard", "Proveedor");
         }
 
+        ApplyCompanyInfoFields(
+            state,
+            businessName,
+            primaryContact,
+            phone,
+            email,
+            primaryCategoryId,
+            serviceAreas,
+            website,
+            einNumber,
+            termsAccepted);
+
         if (!termsAccepted)
         {
             ModelState.AddModelError(string.Empty, "Please agree to INDOR's Terms & Conditions.");
@@ -118,10 +130,61 @@ public partial class ProviderRegistrationController
                 state, Url.Action(nameof(Entry))));
         }
 
-        state.BusinessName = businessName.Trim();
-        state.PrimaryContact = primaryContact.Trim();
+        await registration.SaveAsync(state, 2);
+        return RedirectToAction(nameof(Verification));
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SaveCompanyInfoDraft(
+        string? businessName,
+        string? primaryContact,
+        string? phone,
+        string? email,
+        string? primaryCategoryId,
+        string? serviceAreas,
+        string? website,
+        string? einNumber,
+        bool termsAccepted = false)
+    {
+        var state = await registration.GetAsync();
+        if (!state.UsesNewWizard)
+        {
+            return BadRequest();
+        }
+
+        ApplyCompanyInfoFields(
+            state,
+            businessName ?? "",
+            primaryContact ?? "",
+            phone,
+            email ?? "",
+            primaryCategoryId,
+            serviceAreas,
+            website,
+            einNumber,
+            termsAccepted);
+
+        await registration.SaveAsync(state, 2);
+        return Ok();
+    }
+
+    private static void ApplyCompanyInfoFields(
+        ProviderRegistrationState state,
+        string businessName,
+        string primaryContact,
+        string? phone,
+        string email,
+        string? primaryCategoryId,
+        string? serviceAreas,
+        string? website,
+        string? einNumber,
+        bool termsAccepted)
+    {
+        state.BusinessName = businessName?.Trim() ?? "";
+        state.PrimaryContact = primaryContact?.Trim() ?? "";
         state.Phone = phone?.Trim() ?? "";
-        state.Email = email.Trim();
+        state.Email = email?.Trim() ?? "";
         state.Website = website?.Trim();
         state.EinNumber = einNumber?.Trim();
         state.LicenseNumber = einNumber?.Trim();
@@ -138,9 +201,6 @@ public partial class ProviderRegistrationController
         {
             state.SelectedCategoryIds = [primaryCategoryId.Trim()];
         }
-
-        await registration.SaveAsync(state, 2);
-        return RedirectToAction(nameof(Verification));
     }
 
     [HttpGet]

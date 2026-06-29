@@ -346,14 +346,14 @@ body {
     box-sizing: border-box;
 }
 
-/* Service wizard shell uses 32px bottom padding; fixed bottom nav (~80px) covers CTAs */
+/* Service wizard shell — reserve scroll space when bottom nav is present */
 .iw-wizard-page:has(.bottom-nav) .iw-wizard-shell {
-    padding-bottom: calc(104px + env(safe-area-inset-bottom, 0));
+    padding-bottom: var(--indor-page-footer-scroll);
 }
 
 .iw-wizard-page:has(.bottom-nav) .hvac-save-btn,
 .iw-wizard-page:has(.bottom-nav) .hvac-outline-btn {
-    scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom, 0));
+    scroll-margin-bottom: var(--indor-page-footer-scroll);
 }
 
 a.hvac-save-btn {

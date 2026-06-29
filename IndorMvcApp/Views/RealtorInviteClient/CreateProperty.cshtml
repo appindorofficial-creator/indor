@@ -5,40 +5,56 @@
     var cityError = FieldError("City");
     var stateError = FieldError("StateCode");
     var zipError = FieldError("PostalCode");
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
 }
 
 <form id="createPropertyForm" asp-action="CreateProperty" method="post" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert" id="createPropertyFormErrors">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Please fix the following to continue:</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
 
     <div class="rl-cp-card">
         <div class="rl-cp-field @(addressError.Length > 0 ? "is-error" : null)">
-            <label>Property address <span class="rl-cp-req">*</span></label>
-            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="Enter street address" autocomplete="street-address" data-address-autocomplete data-ac-street-only="true" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" /></div>
-            @if (addressError.Length > 0)
-            {
-                <span class="rl-field-error">@addressError</span>
-            }
+            <label for="cp-address">Property address <span class="rl-cp-req">*</span></label>
+            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="Enter street address" autocomplete="off" data-address-autocomplete data-ac-street-only="true" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(addressError.Length > 0)" /></div>
+            <span class="rl-field-error" id="addressError" data-client-error="Address">@addressError</span>
         </div>
 
         <div class="rl-cp-field">
-            <label>Unit / Apt <small>(optional)</small></label>
-            <div class="rl-cp-input"><input type="text" name="Unit" value="@Model.Unit" placeholder="Unit, Apt, Suite, etc." /></div>
+            <label for="cp-unit">Unit / Apt <small>(optional)</small></label>
+            <div class="rl-cp-input"><input type="text" id="cp-unit" name="Unit" value="@Model.Unit" placeholder="Unit, Apt, Suite, etc." /></div>
         </div>
 
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(cityError.Length > 0 ? "is-error" : null)">
-                <label>City <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="Enter city" autocomplete="address-level2" data-city-autocomplete data-ac-state="cp-state" data-ac-zip="cp-postal-code" /></div>
-                @if (cityError.Length > 0)
-                {
-                    <span class="rl-field-error">@cityError</span>
-                }
+                <label for="cp-city">City <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="Enter city" autocomplete="off" data-city-autocomplete data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(cityError.Length > 0)" /></div>
+                <span class="rl-field-error" id="cityError" data-client-error="City">@cityError</span>
             </div>
             <div class="rl-cp-field @(stateError.Length > 0 ? "is-error" : null)">
-                <label>State <span class="rl-cp-req">*</span></label>
+                <label for="cp-state">State <span class="rl-cp-req">*</span></label>
                 <div class="rl-cp-input rl-cp-input--select">
-                    <select id="cp-state" name="StateCode">
+                    <select id="cp-state" name="StateCode" data-ac-zip="cp-postal-code" data-ac-city="cp-city" aria-required="true" aria-invalid="@(stateError.Length > 0)">
                         <option value="">Select state</option>
                         @foreach (var state in Model.States)
                         {
@@ -46,25 +62,20 @@
                         }
                     </select>
                 </div>
-                @if (stateError.Length > 0)
-                {
-                    <span class="rl-field-error">@stateError</span>
-                }
+                <span class="rl-field-error" id="stateError" data-client-error="StateCode">@stateError</span>
             </div>
         </div>
 
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(zipError.Length > 0 ? "is-error" : null)">
-                <label>ZIP code <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter ZIP code" inputmode="numeric" autocomplete="postal-code" maxlength="10" pattern="\d{5}(-\d{4})?" title="Enter a 5-digit ZIP code or ZIP+4 (e.g. 28269 or 28269-1234)" /></div>
-                @if (zipError.Length > 0)
-                {
-                    <span class="rl-field-error">@zipError</span>
-                }
+                <label for="cp-postal-code">ZIP code <span class="rl-cp-req">*</span></label>
+                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter 5-digit ZIP code" inputmode="numeric" autocomplete="postal-code" maxlength="10" data-zip-input aria-required="true" aria-invalid="@(zipError.Length > 0)" /></div>
+                <span class="rl-field-hint" id="cp-zip-hint" data-ac-zip-hint-for="cp-postal-code" hidden>Suggested from city and state. Change it if your property uses a different ZIP.</span>
+                <span class="rl-field-error" id="postalCodeError" data-client-error="PostalCode">@zipError</span>
             </div>
             <div class="rl-cp-field">
-                <label>Property nickname <small>(optional)</small></label>
-                <div class="rl-cp-input"><input type="text" name="Nickname" value="@Model.Nickname" placeholder="e.g., Main House, Investment Property" /></div>
+                <label for="cp-nickname">Property nickname <small>(optional)</small></label>
+                <div class="rl-cp-input"><input type="text" id="cp-nickname" name="Nickname" value="@Model.Nickname" placeholder="e.g., Main House, Investment Property" /></div>
             </div>
         </div>
 
@@ -112,17 +123,27 @@
 
 <div class="rl-invite-actions">
     <a asp-action="Property" asp-route-edit="true" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="createPropertyForm" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
+    <button type="submit" form="createPropertyForm" id="createPropertySubmitBtn" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
 </div>
 
 @section Scripts {
 @await Html.PartialAsync("_AddressAutocompleteScripts")
 <script>
-    document.querySelectorAll('.rl-cp-type input').forEach(r => {
-        r.addEventListener('change', () => {
-            document.querySelectorAll('.rl-cp-type').forEach(p => p.classList.remove('is-selected'));
+(function () {
+    var banner = document.getElementById('createPropertyFormErrors');
+    var summary = document.querySelector('#createPropertyForm .ob-summary:not(.validation-summary-valid)');
+    var firstFieldError = document.querySelector('#createPropertyForm .rl-field-error:not(:empty), #createPropertyForm .rl-cp-field.is-error');
+    var scrollTarget = banner || summary || firstFieldError;
+    if (scrollTarget) {
+        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    document.querySelectorAll('.rl-cp-type input').forEach(function (r) {
+        r.addEventListener('change', function () {
+            document.querySelectorAll('.rl-cp-type').forEach(function (p) { p.classList.remove('is-selected'); });
             r.closest('.rl-cp-type')?.classList.add('is-selected');
         });
     });
+})();
 </script>
 }

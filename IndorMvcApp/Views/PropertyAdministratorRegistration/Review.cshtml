@@ -7,7 +7,7 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Review" method="post" id="paReviewForm" novalidate>
+<form asp-action="Review" method="post" id="paReviewForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
 
@@ -68,11 +68,15 @@
         {
             <div class="pa-check-item"><i class="fas fa-circle-check"></i> Tools selected</div>
         }
-        <div class="pa-check-item pa-check-item--later"><i class="fas fa-user-plus"></i> Invite team members later from your dashboard</div>
     </div>
 
+    <a asp-action="InviteTeam" class="pa-action-row pa-action-row--review-invite">
+        <span><i class="fas fa-user-plus"></i> Invite team members</span>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+
     <label class="pa-terms">
-        <input type="checkbox" id="platformTermsAccepted" name="platformTermsAccepted" value="true" />
+        <input type="checkbox" id="platformTermsAccepted" name="platformTermsAccepted" value="true" data-pa-required="true" data-field-label="Please agree to INDOR's platform terms." />
         <span>I agree to <a asp-controller="Account" asp-action="Terms">INDOR's platform terms</a></span>
     </label>
 </form>
@@ -85,26 +89,5 @@
 @await Html.PartialAsync("_PropertyAdminStepActions")
 
 @section Scripts {
-<script>
-    (function () {
-        var form = document.getElementById('paReviewForm');
-        var terms = document.getElementById('platformTermsAccepted');
-        if (!form || !terms) return;
-
-        terms.addEventListener('change', function () {
-            terms.setCustomValidity('');
-        });
-
-        form.addEventListener('submit', function (e) {
-            if (terms.checked) {
-                terms.setCustomValidity('');
-                return;
-            }
-
-            e.preventDefault();
-            terms.setCustomValidity('Please agree to INDOR\'s platform terms.');
-            terms.reportValidity();
-        });
-    })();
-</script>
+    @await Html.PartialAsync("_PropertyAdminStepValidation")
 }

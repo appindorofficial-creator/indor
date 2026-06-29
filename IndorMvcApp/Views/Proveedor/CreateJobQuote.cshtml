@@ -2,17 +2,16 @@
 @{
     ViewData["Title"] = "Create Job - INDOR PRO";
     Layout = "_ProviderProLayout";
-    ViewBag.NavActive = "jobs";
     var charCount = Model.QuoteRequestNotes?.Length ?? 0;
 }
 
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--wizard">
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
-    <header class="prv-pro-wizard-head">
-        <h1>Create Job</h1>
-        <p>Step @Model.StepNumber of @Model.TotalSteps · @Model.StepSubtitle</p>
-    </header>
+    @{
+        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+    }
+    @await Html.PartialAsync("_CreateJobWizardHead")
 
     <section class="prv-pro-wizard-summary">
         <div>

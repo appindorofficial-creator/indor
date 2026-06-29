@@ -411,6 +411,11 @@
     margin-bottom: 16px;
 }
 
+.perfil-header-row .app-back-btn {
+    position: relative;
+    z-index: 2;
+}
+
 .pf-cta-card {
     background: linear-gradient(135deg, #EBF4FF 0%, #F5F9FF 100%);
     border: 1px solid #C7DCFF;

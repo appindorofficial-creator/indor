@@ -1,0 +1,97 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadPhotosSelectJobViewModel
+@{
+    ViewData["Title"] = "Upload Photos - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "upload-photos.css";
+    var filters = new[] { ("all", "All"), ("completed", "Completed"), ("inprogress", "In Progress"), ("recent", "Recent") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--photos">
+    @await Html.PartialAsync("_UploadPhotosHead")
+
+    <section class="upp-head">
+        <h1>Upload Photos</h1>
+        <p>Select the job or report you want to update.</p>
+    </section>
+
+    <div class="upp-progress">
+        <span class="upp-step">Step 1 of 3</span>
+        <div class="upp-bar"><span style="width:33%"></span></div>
+    </div>
+
+    <form method="get" asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-search">
+        <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+        <div class="upp-search-wrap">
+            <i class="fas fa-magnifying-glass"></i>
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs or reports" />
+        </div>
+        <button type="submit" class="upp-filter-btn" aria-label="Filters"><i class="fas fa-sliders"></i></button>
+    </form>
+
+    <div class="upp-filter-row">
+        @foreach (var (key, label) in filters)
+        {
+            <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@key" asp-route-q="@Model.SearchQuery"
+               class="upp-chip @(Model.ActiveFilter == key ? "is-active" : "")">@label</a>
+        }
+    </div>
+
+    @if (Model.Jobs.Count == 0)
+    {
+        <div class="upp-empty">
+            @if (Model.HasSearchWithNoResults)
+            {
+                <p>No jobs matched <strong>@Model.SearchQuery</strong>.</p>
+                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@Model.ActiveFilter" class="upp-btn upp-btn--outline">Clear search</a>
+            }
+            else if (Model.TotalJobsAvailable == 0)
+            {
+                <p>You don't have any jobs yet. Create a job first, then return here to add photos.</p>
+                <a asp-controller="Proveedor" asp-action="CreateJob" class="upp-btn upp-btn--primary">Create Job</a>
+            }
+            else
+            {
+                <p>No jobs match the current filter.</p>
+                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-q="@Model.SearchQuery" class="upp-btn upp-btn--outline">Show all jobs</a>
+            }
+        </div>
+    }
+    else
+    {
+        <form method="post" asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-select-form">
+            @Html.AntiForgeryToken()
+            <h2 class="upp-section">Recent Jobs</h2>
+            <div class="upp-jobs">
+                @foreach (var job in Model.Jobs)
+                {
+                    <label class="upp-job-card">
+                        <input type="radio" name="jobId" value="@job.JobId" />
+                        @if (!string.IsNullOrWhiteSpace(job.ImageUrl))
+                        {
+                            <img src="@job.ImageUrl" alt="" class="upp-job-thumb" />
+                        }
+                        else
+                        {
+                            <span class="upp-job-thumb upp-job-thumb--icon"><i class="fas @job.IconClass"></i></span>
+                        }
+                        <span class="upp-job-body">
+                            <strong>@job.Title</strong>
+                            <span class="upp-job-addr">@job.Address</span>
+                            <span class="upp-job-meta">
+                                <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
+                                <span class="upp-job-photos"><i class="fas fa-image"></i> @job.PhotosCount photos</span>
+                            </span>
+                        </span>
+                        <span class="upp-job-select">Select <i class="fas fa-chevron-right"></i></span>
+                    </label>
+                }
+            </div>
+
+            <div class="upp-actions">
+                <button type="submit" class="upp-btn upp-btn--primary">Continue</button>
+                <a asp-controller="Proveedor" asp-action="Dashboard" class="upp-btn-text">Cancel</a>
+            </div>
+        </form>
+    }
+</div>

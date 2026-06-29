@@ -1,0 +1,79 @@
+@model IndorMvcApp.ViewModels.ProviderProUploadPhotosReviewViewModel
+@{
+    ViewData["Title"] = "Review Photos - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "upload-photos.css";
+
+    string BadgeClass(string cat) => cat switch
+    {
+        "Damage" => "upp-badge--damage",
+        "Before" => "upp-badge--before",
+        "During" => "upp-badge--during",
+        _ => "upp-badge--after"
+    };
+}
+
+<div class="prv-pro-shell prv-pro-shell--photos">
+    @await Html.PartialAsync("_UploadPhotosHead")
+
+    <section class="upp-head">
+        <h1>Review Photos</h1>
+        <p>Check photos before saving the update.</p>
+    </section>
+
+    <div class="upp-progress">
+        <span class="upp-step">Step 3 of 3</span>
+        <div class="upp-bar"><span style="width:100%"></span></div>
+    </div>
+
+    <a asp-controller="Proveedor" asp-action="AddPhotos" class="upp-job-summary upp-job-summary--link">
+        @if (!string.IsNullOrWhiteSpace(Model.Job.ImageUrl))
+        {
+            <img src="@Model.Job.ImageUrl" alt="" class="upp-job-thumb" />
+        }
+        else
+        {
+            <span class="upp-job-thumb upp-job-thumb--icon"><i class="fas @Model.Job.IconClass"></i></span>
+        }
+        <div class="upp-job-summary-body">
+            <strong>@Model.Job.Title</strong>
+            <span class="upp-job-addr">@Model.Job.Address</span>
+            <span class="upp-job-meta">
+                <span class="prv-pro-pill prv-pro-pill--@Model.Job.StatusClass">@Model.Job.StatusLabel</span>
+                <span class="upp-job-photos"><i class="fas fa-image"></i> @Model.TotalCount photos total</span>
+            </span>
+        </div>
+        <i class="fas fa-chevron-right upp-job-summary-chevron"></i>
+    </a>
+
+    <h2 class="upp-section">Uploaded Photos</h2>
+    <div class="upp-review-grid">
+        @foreach (var photo in Model.Photos)
+        {
+            <div class="upp-review-cell">
+                <img src="@photo.Url" alt="@photo.Category" />
+                <span class="upp-badge @BadgeClass(photo.Category)">@photo.Category</span>
+            </div>
+        }
+    </div>
+
+    <div class="upp-note">
+        <i class="fas fa-circle-check"></i>
+        <span>@Model.NewCount new photos will be added to this report</span>
+    </div>
+
+    <form method="post" asp-controller="Proveedor" asp-action="ReviewPhotos" class="upp-review-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="action" id="uppReviewAction" value="save" />
+
+        <h2 class="upp-section">Notes</h2>
+        <textarea name="notes" rows="3" class="upp-notes" placeholder="Add a note about this update...">@Model.Notes</textarea>
+
+        <div class="upp-actions">
+            <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppReviewAction').value='save';">Save Update</button>
+            <button type="submit" class="upp-btn upp-btn--outline" onclick="document.getElementById('uppReviewAction').value='send';">Send to Report</button>
+            <a asp-controller="Proveedor" asp-action="AddPhotos" class="upp-btn-text">Back</a>
+        </div>
+    </form>
+</div>

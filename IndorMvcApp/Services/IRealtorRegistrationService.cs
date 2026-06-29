@@ -18,4 +18,5 @@ public interface IRealtorRegistrationService
     string ResolveWizardResumeAction(int currentStep);
     bool IsRegistrationComplete(IndorRealtor realtor);
     IReadOnlyList<string> GetLicenseStates();
+    IReadOnlyList<string> GetSupportedLanguages();
 }

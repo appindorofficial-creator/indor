@@ -676,11 +676,129 @@ public class IndorProveedorReport
 
     public int FilesCount { get; set; }
 
+    // ---- Export Report fields ----
+    public DateOnly? ReportDate { get; set; }
+
+    [MaxLength(120)]
+    public string? PreparedBy { get; set; }
+
+    [MaxLength(60)]
+    public string? Category { get; set; }
+
+    [MaxLength(120)]
+    public string? LocationDetail { get; set; }
+
+    [MaxLength(20)]
+    public string? Priority { get; set; }
+
+    [MaxLength(40)]
+    public string? Weather { get; set; }
+
     public DateTime? CompletedUtc { get; set; }
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
     public DateTime? FechaActualizacion { get; set; }
+
+    public ICollection<IndorProveedorReportPhoto> Photos { get; set; } = new List<IndorProveedorReportPhoto>();
+}
+
+[Table("IndorProveedorReportPhotos")]
+public class IndorProveedorReportPhoto
+{
+    public int Id { get; set; }
+
+    public int ReportId { get; set; }
+
+    [ForeignKey(nameof(ReportId))]
+    public IndorProveedorReport? Report { get; set; }
+
+    public int ProveedorId { get; set; }
+
+    public int? JobId { get; set; }
+
+    [MaxLength(40)]
+    public string? Category { get; set; }
+
+    [Required, MaxLength(500)]
+    public string FileUrl { get; set; } = string.Empty;
+
+    [MaxLength(260)]
+    public string? FileName { get; set; }
+
+    [MaxLength(250)]
+    public string? Caption { get; set; }
+
+    public int SortOrder { get; set; }
+
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+}
+
+[Table("IndorProveedorReportTemplates")]
+public class IndorProveedorReportTemplate
+{
+    public int Id { get; set; }
+
+    public int? ProveedorId { get; set; }
+
+    [ForeignKey(nameof(ProveedorId))]
+    public IndorProveedor? Proveedor { get; set; }
+
+    [Required, MaxLength(60)]
+    public string TemplateKey { get; set; } = string.Empty;
+
+    [Required, MaxLength(120)]
+    public string Name { get; set; } = string.Empty;
+
+    [MaxLength(300)]
+    public string? Description { get; set; }
+
+    [MaxLength(40)]
+    public string Icon { get; set; } = "fa-clipboard";
+
+    [MaxLength(20)]
+    public string Color { get; set; } = "blue";
+
+    [MaxLength(40)]
+    public string? Badge { get; set; }
+
+    [MaxLength(40)]
+    public string Category { get; set; } = "Reports";
+
+    public bool IsSystem { get; set; }
+
+    public bool IsCustom { get; set; }
+
+    public bool IsFavorite { get; set; }
+
+    public int SortOrder { get; set; }
+
+    public bool Activo { get; set; } = true;
+
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+
+    public ICollection<IndorProveedorReportTemplateSection> Sections { get; set; } = new List<IndorProveedorReportTemplateSection>();
+}
+
+[Table("IndorProveedorReportTemplateSections")]
+public class IndorProveedorReportTemplateSection
+{
+    public int Id { get; set; }
+
+    public int TemplateId { get; set; }
+
+    [ForeignKey(nameof(TemplateId))]
+    public IndorProveedorReportTemplate? Template { get; set; }
+
+    [Required, MaxLength(80)]
+    public string Label { get; set; } = string.Empty;
+
+    [MaxLength(40)]
+    public string Icon { get; set; } = "fa-circle";
+
+    public bool IsIncluded { get; set; } = true;
+
+    public int SortOrder { get; set; }
 }
 
 public static class ProviderReportTypes

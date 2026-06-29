@@ -1,0 +1,62 @@
+@model IndorMvcApp.ViewModels.ReportTemplateView
+@{
+    ViewData["Title"] = "Template Details - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "reports";
+    ViewData["ProviderProExtraCss"] = "templates-flow.css";
+    var options = new[] { ("fa-star", "Set as Favorite"), ("fa-copy", "Duplicate Template"), ("fa-pen", "Edit Template Name") };
+}
+
+<div class="prv-pro-shell prv-pro-shell--templates">
+    @await Html.PartialAsync("_TemplatesHead")
+
+    <section class="tpl-head">
+        <h1>Template Details</h1>
+        <p>Review sections included in this template.</p>
+    </section>
+
+    <div class="tpl-subrow">
+        <span class="tpl-step">Step 2 of 3</span>
+    </div>
+
+    <section class="tpl-selected">
+        <span class="tpl-icon tpl-icon--@Model.Color"><i class="fas @Model.Icon"></i></span>
+        <div class="tpl-selected-text">
+            <strong>@Model.Name</strong>
+            <small>@Model.Description</small>
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.Badge))
+        {
+            <span class="tpl-badge">@Model.Badge</span>
+        }
+    </section>
+
+    <h2 class="tpl-section">Included Sections</h2>
+    <div class="tpl-sections">
+        @foreach (var s in Model.Sections)
+        {
+            <div class="tpl-section-row">
+                <span class="tpl-section-icon"><i class="fas @s.Icon"></i></span>
+                <span class="tpl-section-label">@s.Label</span>
+                <i class="fas fa-circle-check tpl-section-check"></i>
+            </div>
+        }
+    </div>
+
+    <h2 class="tpl-section">Options</h2>
+    <div class="tpl-options">
+        @foreach (var (icon, label) in options)
+        {
+            <a asp-controller="Proveedor" asp-action="TemplateDetails" asp-route-key="@Model.Key" class="tpl-option">
+                <span class="tpl-option-icon"><i class="fas @icon"></i></span>
+                <span class="tpl-option-label">@label</span>
+                <i class="fas fa-chevron-right tpl-row-chevron"></i>
+            </a>
+        }
+    </div>
+
+    <div class="tpl-actions">
+        <a asp-controller="Proveedor" asp-action="TemplateReady" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--primary">Use Template</a>
+        <a asp-controller="Proveedor" asp-action="Templates" class="tpl-btn-text">Back</a>
+    </div>
+</div>

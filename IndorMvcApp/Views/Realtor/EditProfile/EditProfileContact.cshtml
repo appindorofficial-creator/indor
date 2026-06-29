@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.RealtorEditProfileContactViewModel
+@using IndorMvcApp.Models
 @{
     ViewData["Title"] = "Company & Contact Details";
 }
@@ -90,9 +91,19 @@
 
         <div class="rl-ep-languages">
             <span class="rl-ep-languages-label">Languages Spoken</span>
-            <div class="rl-ep-language-chips" id="rlLanguageChips" data-initial="@string.Join(",", Model.Languages)"></div>
+            <div class="rl-ep-language-chips" id="rlLanguageChips">
+                @foreach (var lang in RealtorEditProfileOptions.SupportedLanguages)
+                {
+                    var isSelected = Model.Languages.Any(l => string.Equals(l, lang, StringComparison.OrdinalIgnoreCase));
+                    <button type="button"
+                            class="rl-ep-language-chip @(isSelected ? "is-selected" : "")"
+                            data-language="@lang"
+                            aria-pressed="@(isSelected ? "true" : "false")">
+                        <i class="fas fa-globe" aria-hidden="true"></i> @lang
+                    </button>
+                }
+            </div>
             <input type="hidden" asp-for="LanguagesCsv" id="rlLanguagesInput" />
-            <button type="button" class="rl-ep-language-add" id="rlLanguageAddBtn">+ Add</button>
         </div>
     </div>
 

@@ -15,6 +15,8 @@ namespace IndorMvcApp.Controllers;
 [Authorize]
 public class MyHomeController : Controller
 {
+    private const long MaxDocumentBytes = 15_000_000;
+
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
@@ -180,10 +182,12 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> History(int id, string? filter)
+    public async Task<IActionResult> History(int id, string? filter, string? from)
     {
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
+        ConfigureMyHomeView(propiedad.Id, from);
+        ViewBag.MyHomeNav = "history";
 
         filter = string.IsNullOrWhiteSpace(filter) ? "All" : filter;
         var query = _db.PropiedadHistorial.Where(h => h.PropiedadId == propiedad.Id);
@@ -326,10 +330,12 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Providers(int id, string? search)
+    public async Task<IActionResult> Providers(int id, string? search, string? from)
     {
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
+        ConfigureMyHomeView(propiedad.Id, from);
+        ViewBag.MyHomeNav = "summary";
 
         var query = _db.PropiedadProveedores.Where(p => p.PropiedadId == propiedad.Id && p.Activo);
         if (!string.IsNullOrWhiteSpace(search))
@@ -428,6 +434,8 @@ public class MyHomeController : Controller
     {
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
+        ConfigureMyHomeView(propiedad.Id, from);
+        ViewBag.MyHomeNav = "maintenance";
 
         filter = string.IsNullOrWhiteSpace(filter) ? "Upcoming" : filter;
         var query = _db.PropiedadMantenimiento.Where(m => m.PropiedadId == propiedad.Id);
@@ -456,7 +464,7 @@ public class MyHomeController : Controller
             Address = propiedad.Direccion ?? string.Empty,
             Filter = filter,
             BackUrl = ResolveMaintenanceBackUrl(propiedad.Id, from),
-            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null,
+            NavigationFrom = HomeNavigationUrls.NormalizeMyHomeNavigationFrom(from),
             Items = items
         });
     }
@@ -468,7 +476,7 @@ public class MyHomeController : Controller
         return View(new MyHomeMaintenanceFormViewModel
         {
             PropiedadId = id,
-            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null
+            NavigationFrom = HomeNavigationUrls.NormalizeMyHomeNavigationFrom(from)
         });
     }
 
@@ -507,7 +515,7 @@ public class MyHomeController : Controller
             Status = item.Status,
             Notes = item.Notes,
             PropiedadProveedorId = item.PropiedadProveedorId,
-            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null
+            NavigationFrom = HomeNavigationUrls.NormalizeMyHomeNavigationFrom(from)
         });
     }
 
@@ -542,7 +550,7 @@ public class MyHomeController : Controller
         {
             Id = item.Id,
             PropiedadId = item.PropiedadId,
-            NavigationFrom = string.Equals(from, "home", StringComparison.OrdinalIgnoreCase) ? "home" : null,
+            NavigationFrom = HomeNavigationUrls.NormalizeMyHomeNavigationFrom(from),
             Title = item.Title,
             DueDate = item.DueDate,
             CompletedDate = item.CompletedDate,
@@ -553,10 +561,12 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> DocumentList(int id, string category)
+    public async Task<IActionResult> DocumentList(int id, string category, string? from)
     {
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
+        ConfigureMyHomeView(propiedad.Id, from);
+        ViewBag.MyHomeNav = "documents";
 
         category = string.IsNullOrWhiteSpace(category) ? "Other" : category;
         var items = await _db.PropiedadDocumentos
@@ -583,10 +593,12 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> Documents(int id, string? search)
+    public async Task<IActionResult> Documents(int id, string? search, string? from)
     {
         var propiedad = await LoadPropertyAsync(id);
         if (propiedad == null) return NotFound();
+        ConfigureMyHomeView(propiedad.Id, from);
+        ViewBag.MyHomeNav = "documents";
 
         var docs = await _db.PropiedadDocumentos.Where(d => d.PropiedadId == propiedad.Id).ToListAsync();
         if (!string.IsNullOrWhiteSpace(search))
@@ -614,9 +626,11 @@ public class MyHomeController : Controller
     }
 
     [HttpGet]
-    public async Task<IActionResult> DocumentCreate(int id, string? category)
+    public async Task<IActionResult> DocumentCreate(int id, string? category, string? from)
     {
         if (!await UserOwnsPropertyAsync(id)) return NotFound();
+        ConfigureMyHomeView(id, from);
+        ViewBag.MyHomeNav = "documents";
         return View(new MyHomeDocumentFormViewModel
         {
             PropiedadId = id,
@@ -626,9 +640,20 @@ public class MyHomeController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(50_000_000)]
     public async Task<IActionResult> DocumentCreate(MyHomeDocumentFormViewModel model, IFormFile? file)
     {
         if (!await UserOwnsPropertyAsync(model.PropiedadId)) return NotFound();
+
+        if (file == null || file.Length == 0)
+        {
+            ModelState.AddModelError("file", "Please attach a file to upload.");
+        }
+        else if (file.Length > MaxDocumentBytes)
+        {
+            ModelState.AddModelError("file", $"File is too large. Maximum size is {MaxDocumentBytes / 1_000_000} MB.");
+        }
+
         if (!ModelState.IsValid) return View(model);
 
         string? storagePath = null;
@@ -636,23 +661,20 @@ public class MyHomeController : Controller
         long? sizeBytes = null;
         string? contentType = null;
 
-        if (file != null && file.Length > 0)
+        var userId = _userManager.GetUserId(User)!;
+        var folder = Path.Combine(_env.WebRootPath, "uploads", "my-home", userId, model.PropiedadId.ToString());
+        Directory.CreateDirectory(folder);
+        fileName = Path.GetFileName(file!.FileName);
+        var stored = $"{Guid.NewGuid():N}_{fileName}";
+        var physical = Path.Combine(folder, stored);
+        await using (var stream = System.IO.File.Create(physical))
         {
-            var userId = _userManager.GetUserId(User)!;
-            var folder = Path.Combine(_env.WebRootPath, "uploads", "my-home", userId, model.PropiedadId.ToString());
-            Directory.CreateDirectory(folder);
-            fileName = Path.GetFileName(file.FileName);
-            var stored = $"{Guid.NewGuid():N}_{fileName}";
-            var physical = Path.Combine(folder, stored);
-            await using (var stream = System.IO.File.Create(physical))
-            {
-                await file.CopyToAsync(stream);
-            }
-
-            storagePath = $"/uploads/my-home/{userId}/{model.PropiedadId}/{stored}";
-            sizeBytes = file.Length;
-            contentType = file.ContentType;
+            await file.CopyToAsync(stream);
         }
+
+        storagePath = $"/uploads/my-home/{userId}/{model.PropiedadId}/{stored}";
+        sizeBytes = file.Length;
+        contentType = file.ContentType;
 
         _db.PropiedadDocumentos.Add(new PropiedadDocumento
         {
@@ -664,7 +686,21 @@ public class MyHomeController : Controller
             ContentType = contentType,
             SizeBytes = sizeBytes
         });
-        await _db.SaveChangesAsync();
+
+        try
+        {
+            await _db.SaveChangesAsync();
+        }
+        catch
+        {
+            if (!string.IsNullOrWhiteSpace(physical) && System.IO.File.Exists(physical))
+            {
+                try { System.IO.File.Delete(physical); } catch { /* best effort */ }
+            }
+
+            ModelState.AddModelError(string.Empty, "Could not save the document. Please try again.");
+            return View(model);
+        }
 
         return RedirectToAction(nameof(Documents), new { id = model.PropiedadId });
     }
@@ -759,10 +795,15 @@ public class MyHomeController : Controller
             .FirstOrDefaultAsync(m => m.Id == id && m.Propiedad!.UserId == userId);
     }
 
+    private void ConfigureMyHomeView(int propiedadId, string? from)
+    {
+        ViewBag.PropiedadId = propiedadId;
+        ViewBag.MyHomeBackUrl = HomeNavigationUrls.ResolveMyHomeBackUrl(Url, from, propiedadId);
+        ViewBag.MyHomeNavFrom = HomeNavigationUrls.NormalizeMyHomeNavigationFrom(from);
+    }
+
     private string ResolveMaintenanceBackUrl(int propiedadId, string? from) =>
-        string.Equals(from, "home", StringComparison.OrdinalIgnoreCase)
-            ? Url.Action("Index", "Home") ?? "/"
-            : Url.Action(nameof(Index), new { id = propiedadId }) ?? "/";
+        HomeNavigationUrls.ResolveMyHomeBackUrl(Url, from, propiedadId);
 
     private static string SerializePropertyInfo(PropertyInfoViewModel info)
     {
