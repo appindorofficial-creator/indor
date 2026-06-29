@@ -700,7 +700,9 @@
 button.rl-quick-action {
     width: 100%;
     cursor: pointer;
-    font: inherit;
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
 }
 .rl-quick-action:active,
 .rl-quick-action:hover {
