@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 using System.Globalization;
 using IndorMvcApp;
 using IndorMvcApp.Data;
+using IndorMvcApp.Dev;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Middleware;
@@ -189,6 +190,12 @@ builder.WebHost.ConfigureKestrel(options =>
 });
 
 var app = builder.Build();
+
+if (args.Contains("--seed-test-users", StringComparer.OrdinalIgnoreCase))
+{
+    await SeedTestProfileUsers.RunAsync(app.Services);
+    return;
+}
 
 var openAiStartup = app.Configuration.GetSection(OpenAiPropertyOptions.SectionName);
 var openAiEnabled = openAiStartup.GetValue<bool>("Enabled");
