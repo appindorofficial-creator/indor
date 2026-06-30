@@ -264,6 +264,97 @@
         return true;
     }
 
+    function validateInvitePropertyForm() {
+        var form = document.getElementById('invitePropertyForm');
+        if (!form) {
+            return true;
+        }
+
+        var existing = document.getElementById('invitePropertyClientErrors');
+        if (existing) {
+            existing.remove();
+        }
+
+        var errors = [];
+        var selected = form.querySelector('input[name="propertyFileId"]:checked');
+        var searchInput = document.getElementById('invitePropertySearch');
+        var searchHidden = document.getElementById('invitePropertySearchHidden');
+        var query = (searchInput?.value || searchHidden?.value || '').trim();
+        var hasOptions = form.querySelectorAll('input[name="propertyFileId"]').length > 0;
+
+        if (hasOptions && !selected) {
+            errors.push('Please select a property to continue.');
+        } else if (!hasOptions && !query) {
+            errors.push('Search for an address or create a new property to continue.');
+        }
+
+        if (errors.length) {
+            showFormErrorBanner('invitePropertyForm', 'invitePropertyClientErrors', errors);
+            return false;
+        }
+
+        return true;
+    }
+
+    function initInvitePropertyForm() {
+        var form = document.getElementById('invitePropertyForm');
+        var nextBtn = document.getElementById('invitePropertyNextBtn');
+        var searchInput = document.getElementById('invitePropertySearch');
+        var searchHidden = document.getElementById('invitePropertySearchHidden');
+        var createUrl = form?.dataset.createUrl;
+
+        if (searchInput && searchHidden) {
+            searchInput.addEventListener('input', function () {
+                searchHidden.value = searchInput.value;
+                var existing = document.getElementById('invitePropertyClientErrors');
+                if (existing) {
+                    existing.remove();
+                }
+            });
+        }
+
+        document.querySelectorAll('.rl-property-pick input').forEach(function (radio) {
+            radio.addEventListener('change', function () {
+                document.querySelectorAll('.rl-property-pick').forEach(function (pill) {
+                    pill.classList.remove('is-selected');
+                });
+                radio.closest('.rl-property-pick')?.classList.add('is-selected');
+                var existing = document.getElementById('invitePropertyClientErrors');
+                if (existing) {
+                    existing.remove();
+                }
+            });
+        });
+
+        if (!form) {
+            return;
+        }
+
+        form.addEventListener('submit', function (e) {
+            var selected = form.querySelector('input[name="propertyFileId"]:checked');
+            var query = (searchInput?.value || searchHidden?.value || '').trim();
+            var hasOptions = form.querySelectorAll('input[name="propertyFileId"]').length > 0;
+
+            if (!selected && !hasOptions && query.length > 0 && createUrl) {
+                e.preventDefault();
+                window.location.href = createUrl + '?address=' + encodeURIComponent(query);
+                return;
+            }
+
+            if (!validateInvitePropertyForm()) {
+                e.preventDefault();
+            }
+        });
+
+        if (nextBtn) {
+            nextBtn.addEventListener('click', function (e) {
+                if (!validateInvitePropertyForm()) {
+                    e.preventDefault();
+                }
+            });
+        }
+    }
+
     function initInviteClientForm() {
         var form = document.getElementById('inviteClientForm');
         var nextBtn = document.getElementById('inviteNextBtn');
@@ -394,6 +485,7 @@
 
     function init() {
         initInviteClientForm();
+        initInvitePropertyForm();
         initInviteAccessForm();
         initCreatePropertyForm();
     }

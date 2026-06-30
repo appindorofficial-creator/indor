@@ -63,6 +63,30 @@ public class RealtorPropertyFileController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Details(int sourcePropertyId, string filePhase)
     {
+        if (sourcePropertyId <= 0)
+        {
+            ModelState.AddModelError(nameof(sourcePropertyId), "Select a property from the list below to continue.");
+        }
+
+        var validPhases = RealtorPropertyFilePhases.Options
+            .Select(o => o.Value)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+        if (string.IsNullOrWhiteSpace(filePhase) || !validPhases.Contains(filePhase))
+        {
+            ModelState.AddModelError(nameof(filePhase), "Select a file type.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var vm = await wizard.BuildDetailsAsync(null);
+            vm.SelectedPropertyId = sourcePropertyId > 0 ? sourcePropertyId : null;
+            if (!string.IsNullOrWhiteSpace(filePhase) && validPhases.Contains(filePhase))
+            {
+                vm.FilePhase = filePhase;
+            }
+            return View(vm);
+        }
+
         try
         {
             await wizard.SaveDetailsAsync(sourcePropertyId, filePhase);
@@ -72,7 +96,7 @@ public class RealtorPropertyFileController(
         {
             ModelState.AddModelError(string.Empty, "Select a property from the list below to continue.");
             var vm = await wizard.BuildDetailsAsync(null);
-            vm.SelectedPropertyId = sourcePropertyId;
+            vm.SelectedPropertyId = sourcePropertyId > 0 ? sourcePropertyId : null;
             vm.FilePhase = filePhase;
             return View(vm);
         }
