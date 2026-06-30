@@ -6075,6 +6075,9 @@ button.rl-profile-nav-item {
     background: rgba(255, 255, 255, 0.22);
     color: #fff;
 }
+.rl-public-hero-badge-pill.is-complete i {
+    color: #4ADE80;
+}
 .rl-public-hero-badge-pill i { font-size: .72rem; }
 
 .rl-public-actions--split {
