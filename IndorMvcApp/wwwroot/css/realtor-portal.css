@@ -1953,17 +1953,21 @@ a.rl-invite-cancel {
 
 .rl-file-drop {
     position: relative;
-    border: 2px dashed #93C5FD;
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    border: 1.5px solid #E2E8F0;
     border-radius: 16px;
     background: linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 100%);
     margin-bottom: 16px;
     cursor: pointer;
-    transition: border-color .2s ease, background .2s ease;
+    transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
 }
 
 .rl-file-drop:hover {
     border-color: #0066CC;
     background: #F8FBFF;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
 }
 
 .rl-file-drop-input {
