@@ -321,6 +321,11 @@ public class RealtorController(
 
         await ProcessListingPhotoUploadAsync(realtor, model, photoPdfFile, cancellationToken);
 
+        if (model.SaveAsDraft)
+        {
+            ModelState.Remove(nameof(model.PropertySubtype));
+        }
+
         if (!ModelState.IsValid)
         {
             await ApplyListingFormShellAsync(realtor, model, cancellationToken);
@@ -381,6 +386,11 @@ public class RealtorController(
         }
 
         await ProcessListingPhotoUploadAsync(realtor, model, photoPdfFile, cancellationToken);
+
+        if (model.SaveAsDraft)
+        {
+            ModelState.Remove(nameof(model.PropertySubtype));
+        }
 
         if (!ModelState.IsValid || model.ItemId is not > 0)
         {

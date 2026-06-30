@@ -120,6 +120,8 @@ public class RealtorNetworkListingFormViewModel : RealtorPortalShellViewModel
     public int? SquareFeet { get; set; }
     public int? YearBuilt { get; set; }
     public string ListingType { get; set; } = "sale";
+
+    [Required(ErrorMessage = "Please select a property subtype.")]
     public string? PropertySubtype { get; set; }
 
     [MaxLength(500)]
