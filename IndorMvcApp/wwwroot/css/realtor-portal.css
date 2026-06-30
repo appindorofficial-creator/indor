@@ -7272,3 +7272,193 @@ a.rl-profile-nav-item {
     gap: 5px;
     flex-shrink: 0;
 }
+
+/* ===== Network listing detail (View Home) ===== */
+.rl-listing-detail-page {
+    padding: 16px 16px 110px;
+    max-width: 720px;
+    margin: 0 auto;
+}
+.rl-listing-detail-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+}
+.rl-listing-detail-back {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: 1px solid #E2E8F0;
+    background: #fff;
+    color: #0F172A;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+}
+.rl-listing-detail-head-copy h1 {
+    margin: 0;
+    font-size: 1rem;
+    color: #0F172A;
+}
+.rl-listing-detail-head-copy p {
+    margin: 2px 0 0;
+    font-size: .75rem;
+    color: #64748B;
+}
+.rl-listing-detail-hero {
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-bottom: 16px;
+}
+.rl-listing-detail-hero-img {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    display: block;
+}
+.rl-listing-detail-hero .rl-network-card-badge {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+}
+.rl-listing-detail-summary,
+.rl-listing-detail-card {
+    background: #fff;
+    border: 1px solid #E8EEF5;
+    border-radius: 18px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+.rl-listing-detail-summary-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    align-items: flex-start;
+}
+.rl-listing-detail-type {
+    display: block;
+    font-size: .72rem;
+    font-weight: 700;
+    color: #0066CC;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-bottom: 4px;
+}
+.rl-listing-detail-price {
+    display: block;
+    font-size: 1.45rem;
+    color: #0F172A;
+    line-height: 1.1;
+}
+.rl-listing-detail-address {
+    margin: 8px 0 6px;
+    font-size: .92rem;
+    font-weight: 600;
+    color: #334155;
+    line-height: 1.35;
+}
+.rl-listing-detail-distance {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: .76rem;
+    color: #64748B;
+}
+.rl-listing-detail-openhouse {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #ECFDF3;
+    color: #166534;
+    font-size: .8rem;
+    font-weight: 600;
+}
+.rl-listing-detail-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 8px;
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid #EEF2F7;
+}
+.rl-listing-detail-stats strong {
+    display: block;
+    font-size: .95rem;
+    color: #0F172A;
+}
+.rl-listing-detail-stats span {
+    display: block;
+    font-size: .68rem;
+    color: #64748B;
+    margin-top: 2px;
+}
+.rl-listing-detail-subtype,
+.rl-listing-detail-specs {
+    margin: 12px 0 0;
+    font-size: .78rem;
+    color: #64748B;
+}
+.rl-listing-detail-card h3 {
+    margin: 0 0 10px;
+    font-size: .9rem;
+    color: #0F172A;
+}
+.rl-listing-detail-card p {
+    margin: 0;
+    font-size: .84rem;
+    line-height: 1.55;
+    color: #475569;
+}
+.rl-listing-detail-highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.rl-listing-detail-highlight {
+    padding: 7px 11px;
+    border-radius: 999px;
+    background: #EFF6FF;
+    color: #1D4ED8;
+    font-size: .74rem;
+    font-weight: 600;
+}
+.rl-listing-detail-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+}
+.rl-listing-detail-gallery img {
+    width: 100%;
+    height: 110px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+.rl-listing-detail-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #0066CC;
+    text-decoration: none;
+}
+.rl-listing-detail-map {
+    width: 100%;
+    height: 180px;
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    background: #EEF2F7;
+}
+.rl-listing-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+}

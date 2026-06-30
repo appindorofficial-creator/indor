@@ -1462,7 +1462,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             StatusBadge = item.StatusBadge ?? item.BadgeLabel,
             ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl) ? null : item.ImageUrl,
             SpecsLabel = item.SpecsLabel ?? BuildSpecsLabel(item.Bedrooms, item.Bathrooms, item.SquareFeet),
-            ViewUrl = $"/Realtor/EditNetworkListing/{item.Id}"
+            ViewUrl = $"/Realtor/ViewNetworkListing/{item.Id}"
         };
     }
 
@@ -1474,7 +1474,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             Address = item.Subtitle ?? "",
             MetaLabel = item.MetaLabel,
             ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl) ? null : item.ImageUrl,
-            ViewUrl = $"/Realtor/EditNetworkListing/{item.Id}"
+            ViewUrl = $"/Realtor/ViewNetworkListing/{item.Id}"
         };
 
     private static RealtorPublicSharedPackageViewModel MapPublicPackage(IndorRealtorSharedPackage package)

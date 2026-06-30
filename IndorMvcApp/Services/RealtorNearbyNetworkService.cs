@@ -245,6 +245,68 @@ public class RealtorNearbyNetworkService(
         return model;
     }
 
+    public async Task<RealtorNetworkListingDetailViewModel?> BuildListingDetailAsync(
+        IndorRealtor realtor,
+        int itemId,
+        CancellationToken ct = default)
+    {
+        var shell = await portalService.BuildShellAsync(realtor, ct);
+        var settings = await EnsureSettingsAsync(realtor, ct);
+
+        var item = await db.IndorNearbyNetworkItems
+            .AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == itemId, ct);
+
+        if (item == null || !CanViewListing(item, realtor.Id, settings))
+        {
+            return null;
+        }
+
+        var extras = ParseListingExtras(item.TagsJson);
+        var isOwned = item.OwnerRealtorId == realtor.Id && item.IsOwnedListing;
+        var isOpenHouse = item.CardType == NearbyNetworkCardTypes.OpenHouse;
+        var photos = BuildPhotoList(item.ImageUrl, extras.AdditionalPhotoUrls);
+        var highlightLabels = ResolveHighlightLabels(extras.Highlights);
+
+        return new RealtorNetworkListingDetailViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            ItemId = item.Id,
+            IsOwned = isOwned,
+            IsOpenHouse = isOpenHouse,
+            ListingBadgeLabel = ResolveListingBadgeLabel(item, isOwned),
+            ListingBadgeCss = item.BadgeCss,
+            StatusBadge = item.StatusBadge ?? "",
+            StatusCss = item.StatusCss,
+            PriceLabel = item.Price is > 0 ? FormatCurrency(item.Price.Value) : item.Title,
+            Title = item.Title,
+            Address = item.Subtitle ?? "",
+            SpecsLabel = item.SpecsLabel,
+            DistanceLabel = item.DistanceMiles is > 0 ? $"{item.DistanceMiles:0.#} mi away" : null,
+            ListingTypeLabel = extras.ListingType == "rent" ? "For Rent" : "For Sale",
+            PropertySubtypeLabel = ResolvePropertySubtypeLabel(extras.PropertySubtype),
+            Description = extras.Description,
+            OpenHouseMeta = item.MetaLabel,
+            PhotoUrls = photos,
+            HighlightLabels = highlightLabels,
+            PhotoGalleryLink = extras.PhotoGalleryLink,
+            PhotoPdfUrl = extras.PhotoPdfUrl,
+            PhotoPdfFileName = extras.PhotoPdfFileName,
+            Latitude = item.Latitude is not null ? (double)item.Latitude.Value : null,
+            Longitude = item.Longitude is not null ? (double)item.Longitude.Value : null,
+            GoogleMapsApiKey = _googleMaps.BrowserApiKey,
+            Bedrooms = item.Bedrooms,
+            Bathrooms = item.Bathrooms,
+            SquareFeet = item.SquareFeet,
+            YearBuilt = extras.YearBuilt
+        };
+    }
+
     public async Task<(string? Url, string? Error)> SaveListingPhotoPdfAsync(
         int realtorId,
         IFormFile file,
@@ -418,7 +480,7 @@ public class RealtorNearbyNetworkService(
 
         await db.SaveChangesAsync(ct);
 
-        item.PrimaryActionUrl = $"/Realtor/EditNetworkListing/{item.Id}";
+        item.PrimaryActionUrl = $"/Realtor/ViewNetworkListing/{item.Id}";
         item.SecondaryActionUrl = isOpenHouse
             ? "/Realtor/PublicProfile"
             : $"/Realtor/EditNetworkListing/{item.Id}";
@@ -574,60 +636,22 @@ public class RealtorNearbyNetworkService(
                 break;
 
             case "openhouse":
-                if (isOwned)
-                {
-                    if (NeedsActionUrl(primary))
-                    {
-                        primary = $"/Realtor/EditNetworkListing/{item.Id}";
-                    }
-
-                    if (NeedsActionUrl(secondary))
-                    {
-                        secondary = "/Realtor/PublicProfile";
-                    }
-                }
-                else
-                {
-                    if (NeedsActionUrl(primary))
-                    {
-                        primary = "/Realtor/Network?filter=OpenHouses";
-                    }
-
-                    if (NeedsActionUrl(secondary))
-                    {
-                        secondary = "/Realtor/PublicProfile";
-                    }
-                }
-
+                primary = $"/Realtor/ViewNetworkListing/{item.Id}";
+                secondary = isOwned
+                    ? "/Realtor/PublicProfile"
+                    : "/Realtor/PublicProfile";
                 break;
 
             default:
                 if (isOwned)
                 {
-                    if (NeedsActionUrl(primary))
-                    {
-                        primary = $"/Realtor/EditNetworkListing/{item.Id}";
-                    }
-
-                    if (NeedsActionUrl(secondary))
-                    {
-                        secondary = $"/Realtor/EditNetworkListing/{item.Id}";
-                    }
+                    primary = $"/Realtor/ViewNetworkListing/{item.Id}";
+                    secondary = $"/Realtor/EditNetworkListing/{item.Id}";
                 }
                 else
                 {
-                    if (NeedsActionUrl(primary))
-                    {
-                        var listingSearch = !string.IsNullOrWhiteSpace(item.Subtitle)
-                            ? item.Subtitle.Trim()
-                            : item.Title.Trim();
-                        primary = $"/Realtor/Network?filter=Homes&q={Uri.EscapeDataString(listingSearch)}";
-                    }
-
-                    if (NeedsActionUrl(secondary))
-                    {
-                        secondary = "/RealtorInviteClient/New";
-                    }
+                    primary = $"/Realtor/ViewNetworkListing/{item.Id}";
+                    secondary = "/RealtorInviteClient/New";
                 }
 
                 break;
@@ -635,6 +659,21 @@ public class RealtorNearbyNetworkService(
 
         return (primary, secondary);
     }
+
+    private static (string Primary, string? Secondary) ResolveFeedActionLabels(
+        IndorNearbyNetworkItem item,
+        string cardType,
+        bool isOwned) =>
+        cardType switch
+        {
+            "openhouse" => ("View Details", "Share"),
+            "lead" => ("View Lead", "Contact Buyer"),
+            "provider" => ("View Offer", null),
+            "promotion" => ("Ask for Info", "Request Service"),
+            "emergency" => ("Call Now", null),
+            _ when isOwned => ("View Home", "Edit Listing"),
+            _ => ("View Listing", "I'm Interested")
+        };
 
     private static bool NeedsActionUrl(string? url) =>
         string.IsNullOrWhiteSpace(url) || url == "#";
@@ -653,6 +692,8 @@ public class RealtorNearbyNetworkService(
 
         var isOwned = item.OwnerRealtorId == currentRealtorId && item.IsOwnedListing;
         var (primaryUrl, secondaryUrl) = ResolveFeedActionUrls(item, cardType, isOwned);
+        var (primaryLabel, secondaryLabel) = ResolveFeedActionLabels(item, cardType, isOwned);
+        var badgeLabel = ResolveListingBadgeLabel(item, isOwned);
 
         var imageUrl = NearbyNetworkImageResolver.ResolveFeedImage(item);
         if (cardType is "lead" or "emergency")
@@ -664,7 +705,7 @@ public class RealtorNearbyNetworkService(
         {
             ItemId = item.Id,
             CardType = cardType,
-            BadgeLabel = item.BadgeLabel,
+            BadgeLabel = badgeLabel,
             BadgeCss = item.BadgeCss,
             ImageUrl = imageUrl,
             IconClass = NearbyNetworkImageResolver.ResolveIconClass(item, imageUrl),
@@ -683,9 +724,9 @@ public class RealtorNearbyNetworkService(
                 : "Nearby",
             StatusBadge = item.StatusBadge,
             StatusCss = item.StatusCss ?? "active",
-            PrimaryActionLabel = item.PrimaryActionLabel,
+            PrimaryActionLabel = primaryLabel,
             PrimaryActionUrl = primaryUrl,
-            SecondaryActionLabel = item.SecondaryActionLabel,
+            SecondaryActionLabel = secondaryLabel,
             SecondaryActionUrl = secondaryUrl
         };
     }
@@ -1045,4 +1086,83 @@ public class RealtorNearbyNetworkService(
 
     private static string FormatCurrency(decimal amount) =>
         amount.ToString("C0", CultureInfo.GetCultureInfo("en-US"));
+
+    private static string ListingViewUrl(int itemId) => $"/Realtor/ViewNetworkListing/{itemId}";
+
+    private static string ResolveListingBadgeLabel(IndorNearbyNetworkItem item, bool isOwned) =>
+        !isOwned && string.Equals(item.BadgeLabel, "MY LISTING", StringComparison.OrdinalIgnoreCase)
+            ? "HOME FOR SALE"
+            : item.BadgeLabel;
+
+    private static bool CanViewListing(IndorNearbyNetworkItem item, int realtorId, IndorNearbyNetworkSetting settings)
+    {
+        if (!item.IsActive && item.OwnerRealtorId != realtorId)
+        {
+            return false;
+        }
+
+        if (item.OwnerRealtorId == realtorId)
+        {
+            return true;
+        }
+
+        return item.DistanceMiles == null || item.DistanceMiles <= settings.RadiusMiles;
+    }
+
+    private static List<string> BuildPhotoList(string? coverUrl, string? additionalUrls)
+    {
+        var photos = new List<string>();
+        if (!string.IsNullOrWhiteSpace(coverUrl))
+        {
+            photos.Add(coverUrl.Trim());
+        }
+
+        if (!string.IsNullOrWhiteSpace(additionalUrls))
+        {
+            foreach (var url in additionalUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            {
+                if (!photos.Contains(url, StringComparer.OrdinalIgnoreCase))
+                {
+                    photos.Add(url);
+                }
+            }
+        }
+
+        return photos;
+    }
+
+    private static List<string> ResolveHighlightLabels(string? highlightsCsv)
+    {
+        if (string.IsNullOrWhiteSpace(highlightsCsv))
+        {
+            return [];
+        }
+
+        var labels = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["updated-kitchen"] = "Updated Kitchen",
+            ["big-backyard"] = "Big Backyard",
+            ["new-roof"] = "New Roof",
+            ["move-in-ready"] = "Move-in Ready",
+            ["corner-lot"] = "Corner Lot",
+            ["gated-community"] = "Gated Community"
+        };
+
+        return highlightsCsv
+            .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            .Select(value => labels.TryGetValue(value, out var label) ? label : value)
+            .ToList();
+    }
+
+    private static string? ResolvePropertySubtypeLabel(string? subtype) =>
+        subtype switch
+        {
+            "single-family" => "Single Family",
+            "townhouse" => "Townhouse",
+            "condo" => "Condo",
+            "multi-family" => "Multi-Family",
+            "land" => "Land / Lot",
+            "other" => "Other",
+            _ => null
+        };
 }

@@ -332,6 +332,21 @@ public class RealtorController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> ViewNetworkListing(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildListingDetailAsync(realtor, id, cancellationToken);
+        return model == null
+            ? NotFound()
+            : View("NetworkListing/Detail", model);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> EditNetworkListing(int id, CancellationToken cancellationToken)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
