@@ -198,6 +198,13 @@
     color: #B91C1C;
 }
 .rl-error-banner i { margin-top: 2px; flex-shrink: 0; }
+.rl-error-banner.is-hidden { display: none; }
+.rl-doc-upload.is-error .rl-file-picker,
+.rl-doc-upload.is-error .rl-file-attached,
+.rl-doc-upload.is-error .rl-file-pending {
+    border: 1px solid #F87171;
+    border-radius: 12px;
+}
 .rl-error-list {
     margin: 8px 0 0;
     padding-left: 18px;

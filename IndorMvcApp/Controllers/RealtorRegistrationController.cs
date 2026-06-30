@@ -224,6 +224,19 @@ public class RealtorRegistrationController(
                 TempData["VerificationError"] = string.Join(" ", continueErrors);
                 return RedirectToAction(nameof(Verification));
             }
+
+            var slots = await registration.GetDocumentSlotsAsync();
+            var missingRequired = slots
+                .Where(s => s.Required && !s.Uploaded)
+                .Select(s => s.Label)
+                .ToList();
+            if (missingRequired.Count > 0)
+            {
+                TempData["VerificationError"] = missingRequired.Count == 1
+                    ? $"Please attach your {missingRequired[0].ToLower()} before continuing, or choose Skip for now."
+                    : "No required documents attached. Please upload your license photo and government ID, or choose Skip for now.";
+                return RedirectToAction(nameof(Verification));
+            }
         }
 
         await registration.CompleteVerificationAsync(skipped);

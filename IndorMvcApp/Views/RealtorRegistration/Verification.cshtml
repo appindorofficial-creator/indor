@@ -31,6 +31,10 @@
         <span>@verificationError</span>
     </div>
 }
+<div class="rl-error-banner is-hidden" id="verificationClientError" role="alert">
+    <i class="fas fa-triangle-exclamation"></i>
+    <span id="verificationClientErrorText"></span>
+</div>
 
 @foreach (var slot in slots)
 {
@@ -61,7 +65,7 @@
                 || slot.FileUrl.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
                 || slot.FileUrl.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 
-        <div class="rl-doc-upload" data-doc-type="@field.DocumentType">
+        <div class="rl-doc-upload" data-doc-type="@field.DocumentType" data-required="@(slot?.Required == true ? "true" : "false")">
             <span class="rl-doc-upload-label">@field.Label</span>
 
             <div class="rl-file-attached @(uploaded ? null : "is-hidden")" data-role="attached">
@@ -298,6 +302,88 @@
                     showEmptyPicker(uploadBlock);
                 }
             });
+        });
+
+        var form = document.getElementById('rlVerificationForm');
+        var clientError = document.getElementById('verificationClientError');
+        var clientErrorText = document.getElementById('verificationClientErrorText');
+
+        function hideClientError() {
+            if (clientError) {
+                clientError.classList.add('is-hidden');
+            }
+            if (clientErrorText) {
+                clientErrorText.textContent = '';
+            }
+            document.querySelectorAll('.rl-doc-upload.is-error').forEach(function (block) {
+                block.classList.remove('is-error');
+            });
+        }
+
+        function showClientError(message) {
+            if (clientErrorText) {
+                clientErrorText.textContent = message;
+            }
+            if (clientError) {
+                clientError.classList.remove('is-hidden');
+                clientError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        }
+
+        function hasDocumentAttached(uploadBlock) {
+            if (!uploadBlock) {
+                return false;
+            }
+
+            var attached = uploadBlock.querySelector('[data-role="attached"]');
+            if (attached && !attached.classList.contains('is-hidden')) {
+                return true;
+            }
+
+            var pending = uploadBlock.querySelector('[data-role="pending"]');
+            if (pending && !pending.classList.contains('is-hidden')) {
+                return true;
+            }
+
+            var input = uploadBlock.querySelector('.rl-file-picker-input');
+            return !!(input && input.files && input.files.length > 0);
+        }
+
+        function validateContinue() {
+            hideClientError();
+            var missing = [];
+            document.querySelectorAll('.rl-doc-upload[data-required="true"]').forEach(function (block) {
+                if (!hasDocumentAttached(block)) {
+                    missing.push(block);
+                }
+            });
+
+            if (!missing.length) {
+                return true;
+            }
+
+            missing.forEach(function (block) {
+                block.classList.add('is-error');
+            });
+            showClientError(
+                missing.length === 1
+                    ? 'Please attach your ' + (missing[0].querySelector('.rl-doc-upload-label')?.textContent?.trim().toLowerCase() || 'document') + ' before continuing, or choose Skip for now.'
+                    : 'No required documents attached. Please upload your license photo and government ID, or choose Skip for now.'
+            );
+            return false;
+        }
+
+        if (form) {
+            form.addEventListener('submit', function (e) {
+                var submitter = e.submitter;
+                if (submitter && submitter.name === 'action' && submitter.value === 'continue' && !validateContinue()) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        document.querySelectorAll('.rl-file-picker-input').forEach(function (input) {
+            input.addEventListener('change', hideClientError);
         });
     })();
 </script>
