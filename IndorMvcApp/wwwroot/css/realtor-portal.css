@@ -2006,6 +2006,10 @@ a.rl-invite-cancel {
     color: #64748B;
 }
 
+.rl-file-drop-remove[hidden] {
+    display: none !important;
+}
+
 .rl-file-drop-remove {
     position: absolute;
     top: 10px;
