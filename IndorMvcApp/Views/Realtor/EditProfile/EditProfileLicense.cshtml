@@ -13,17 +13,17 @@
 
 <form asp-action="EditProfileLicense" method="post" enctype="multipart/form-data" class="rl-ep-form" id="rlEditProfileLicenseForm" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary"></div>
 
     <div class="rl-ep-form-card">
         <div class="rl-ep-field-grid-2">
             <label class="rl-ep-field rl-ep-field--stacked">
-                <span>License Number</span>
+                <span>License Number <span class="rl-required" aria-hidden="true">*</span></span>
                 <input asp-for="LicenseNumber" id="LicenseNumber" placeholder="SL3456789" autocomplete="off" aria-required="true" />
             </label>
             <label class="rl-ep-field rl-ep-field--stacked">
-                <span>State</span>
-                <select asp-for="LicenseState">
+                <span>State <span class="rl-required" aria-hidden="true">*</span></span>
+                <select asp-for="LicenseState" aria-required="true">
                     <option value="">Select state</option>
                     @foreach (var st in Model.LicenseStates)
                     {
@@ -36,8 +36,8 @@
         <span asp-validation-for="LicenseState" class="rl-field-error"></span>
 
         <label class="rl-ep-field rl-ep-field--stacked">
-            <span>Years of Experience</span>
-            <select asp-for="YearsOfExperience">
+            <span>Years of Experience <span class="rl-required" aria-hidden="true">*</span></span>
+            <select asp-for="YearsOfExperience" aria-required="true">
                 <option value="">Select experience</option>
                 @foreach (var level in Model.ExperienceOptions)
                 {
@@ -45,9 +45,10 @@
                 }
             </select>
         </label>
+        <span asp-validation-for="YearsOfExperience" class="rl-field-error"></span>
 
-        <div class="rl-ep-specialties">
-            <span class="rl-ep-specialties-label">Specialties <small>(select up to 3)</small></span>
+        <div class="rl-ep-specialties" id="rlSpecialtiesBlock">
+            <span class="rl-ep-specialties-label">Specialties <span class="rl-required" aria-hidden="true">*</span> <small>(select up to 3)</small></span>
             <div class="rl-ep-specialty-chips">
                 @foreach (var specialty in Model.SpecialtyOptions)
                 {
@@ -66,6 +67,7 @@
                     </label>
                 }
             </div>
+            <span asp-validation-for="SelectedSpecialties" class="rl-field-error" id="rlSpecialtiesError"></span>
         </div>
 
         <label class="rl-ep-field rl-ep-field--stacked">
@@ -109,7 +111,7 @@
         </div>
         <label class="rl-ep-upload-btn">
             Upload
-            <input type="file" name="licensePhotoFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
+            <input type="file" id="licensePhotoFile" name="licensePhotoFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
         </label>
         @{
             var licenseSlot = Model.DocumentSlots.FirstOrDefault(d => d.DocumentType == IndorMvcApp.Models.RealtorDocumentTypes.LicensePhoto);
@@ -134,31 +136,123 @@
             var form = document.getElementById('rlEditProfileLicenseForm');
             var licenseInput = document.getElementById('LicenseNumber');
             var stateInput = document.getElementById('LicenseState');
-            var validateLicense = window.IndorRealtorLicense
-                ? window.IndorRealtorLicense.attach(licenseInput, {
-                    errorEl: document.querySelector('[data-valmsg-for="LicenseNumber"]')
-                })
-                : null;
+            var experienceInput = document.getElementById('YearsOfExperience');
+            var licenseErrorEl = document.querySelector('[data-valmsg-for="LicenseNumber"]');
+            var stateErrorEl = document.querySelector('[data-valmsg-for="LicenseState"]');
+            var experienceErrorEl = document.querySelector('[data-valmsg-for="YearsOfExperience"]');
+            var specialtiesErrorEl = document.getElementById('rlSpecialtiesError');
+            var specialtiesBlock = document.getElementById('rlSpecialtiesBlock');
+
+            function setInlineError(errorEl, field, message) {
+                if (errorEl) {
+                    errorEl.textContent = message || '';
+                    errorEl.classList.toggle('field-validation-error', !!message);
+                    errorEl.classList.toggle('field-validation-valid', !message);
+                }
+                if (field) {
+                    field.classList.toggle('input-validation-error', !!message);
+                    field.closest('.rl-ep-field')?.classList.toggle('is-error', !!message);
+                }
+                return !!message;
+            }
+
+            function setSpecialtiesError(message) {
+                if (specialtiesErrorEl) {
+                    specialtiesErrorEl.textContent = message || '';
+                }
+                if (specialtiesBlock) {
+                    specialtiesBlock.classList.toggle('is-error', !!message);
+                }
+                return !!message;
+            }
+
+            function scrollToFirstError() {
+                var firstError = form?.querySelector('.field-validation-error:not(:empty), .rl-field-error:not(:empty)');
+                var target = firstError
+                    || form?.querySelector('.rl-ep-field.is-error input, .rl-ep-field.is-error select')
+                    || (specialtiesBlock?.classList.contains('is-error') ? specialtiesBlock : null);
+                if (target) {
+                    (target.closest('.rl-ep-field') || target).scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            if (licenseInput && window.IndorRealtorLicense) {
+                window.IndorRealtorLicense.attach(licenseInput, {
+                    errorEl: licenseErrorEl,
+                    validateOnLoad: false
+                });
+            }
+
+            [licenseInput, stateInput, experienceInput].forEach(function (input) {
+                if (!input) {
+                    return;
+                }
+                input.addEventListener('input', function () {
+                    if (input === licenseInput) {
+                        setInlineError(licenseErrorEl, licenseInput, '');
+                    } else if (input === stateInput) {
+                        setInlineError(stateErrorEl, stateInput, '');
+                    } else {
+                        setInlineError(experienceErrorEl, experienceInput, '');
+                    }
+                });
+                input.addEventListener('change', function () {
+                    if (input === stateInput) {
+                        setInlineError(stateErrorEl, stateInput, '');
+                    } else if (input === experienceInput) {
+                        setInlineError(experienceErrorEl, experienceInput, '');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.rl-ep-specialty-input').forEach(function (input) {
+                input.addEventListener('change', function () {
+                    if (document.querySelectorAll('.rl-ep-specialty-input:checked').length > 0) {
+                        setSpecialtiesError('');
+                    }
+                });
+            });
+
+            scrollToFirstError();
 
             if (!form) {
                 return;
             }
 
             form.addEventListener('submit', function (e) {
+                var hasError = false;
+                setInlineError(licenseErrorEl, licenseInput, '');
+                setInlineError(stateErrorEl, stateInput, '');
+                setInlineError(experienceErrorEl, experienceInput, '');
+                setSpecialtiesError('');
+
                 var licenseMessage = window.IndorRealtorLicense && licenseInput
                     ? window.IndorRealtorLicense.validate(licenseInput.value)
                     : '';
                 if (licenseMessage) {
-                    e.preventDefault();
-                    if (validateLicense) {
-                        validateLicense();
-                    }
-                    licenseInput?.focus();
-                    return;
+                    hasError = setInlineError(licenseErrorEl, licenseInput, licenseMessage) || hasError;
                 }
+
                 if (stateInput && !stateInput.value.trim()) {
+                    hasError = setInlineError(stateErrorEl, stateInput, 'License state is required.') || hasError;
+                }
+
+                if (experienceInput && !experienceInput.value.trim()) {
+                    hasError = setInlineError(experienceErrorEl, experienceInput, 'Years of experience is required.') || hasError;
+                }
+
+                if (!document.querySelectorAll('.rl-ep-specialty-input:checked').length) {
+                    hasError = setSpecialtiesError('Select at least one specialty.') || hasError;
+                }
+
+                var fileInput = document.getElementById('licensePhotoFile');
+                if (fileInput && (!fileInput.files || !fileInput.files.length)) {
+                    fileInput.removeAttribute('name');
+                }
+
+                if (hasError) {
                     e.preventDefault();
-                    stateInput.focus();
+                    scrollToFirstError();
                 }
             });
         })();

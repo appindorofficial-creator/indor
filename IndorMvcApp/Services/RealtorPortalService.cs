@@ -1168,10 +1168,10 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
 
         entity.LicenseNumber = input.LicenseNumber.Trim();
         entity.LicenseState = input.LicenseState.Trim();
-        entity.YearsOfExperience = input.YearsOfExperience.Trim();
+        entity.YearsOfExperience = input.YearsOfExperience?.Trim() ?? "";
         entity.SpecialtiesJson = SerializeStringList(input.SelectedSpecialties.Take(3).ToList());
-        entity.TeamName = input.TeamName.Trim();
-        entity.BrokerInCharge = input.BrokerInCharge.Trim();
+        entity.TeamName = input.TeamName?.Trim() ?? "";
+        entity.BrokerInCharge = input.BrokerInCharge?.Trim() ?? "";
         entity.FechaActualizacion = DateTime.UtcNow;
 
         await db.SaveChangesAsync(ct);

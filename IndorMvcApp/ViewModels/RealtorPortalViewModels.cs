@@ -374,10 +374,14 @@ public class RealtorEditProfileLicenseViewModel : RealtorEditProfileWizardViewMo
     [Display(Name = "License State")]
     [Required(ErrorMessage = "License state is required.")]
     public string LicenseState { get; set; } = "";
+
+    [Display(Name = "Years of Experience")]
+    [Required(ErrorMessage = "Years of experience is required.")]
     public string YearsOfExperience { get; set; } = "";
+
     public List<string> SelectedSpecialties { get; set; } = [];
-    public string TeamName { get; set; } = "";
-    public string BrokerInCharge { get; set; } = "";
+    public string? TeamName { get; set; }
+    public string? BrokerInCharge { get; set; }
     public List<RealtorDocumentSlotViewModel> DocumentSlots { get; set; } = [];
     public List<RealtorEditProfileVerificationItemViewModel> VerificationItems { get; set; } = [];
     public IReadOnlyList<string> SpecialtyOptions { get; set; } = [];

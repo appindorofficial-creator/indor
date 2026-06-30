@@ -538,8 +538,34 @@ public class RealtorController(
             return RedirectToAction("Profile", "RealtorRegistration");
         }
 
+        if (string.IsNullOrWhiteSpace(model.BusinessName))
+        {
+            ModelState.AddModelError(nameof(model.BusinessName), "Business Name is required.");
+        }
+
+        if (!BrokerageNameAttribute.IsValidBrokerageName(model.BrokerageName, out var brokerageError, "Brokerage Name"))
+        {
+            ModelState.AddModelError(nameof(model.BrokerageName), brokerageError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Email))
+        {
+            ModelState.AddModelError(nameof(model.Email), "Email is required.");
+        }
+
+        if (!RealtorSupportedLanguages.TryNormalize(model.LanguagesCsv, out _, out var languagesError))
+        {
+            ModelState.AddModelError(nameof(model.LanguagesCsv), languagesError!);
+        }
+
         if (!ModelState.IsValid)
         {
+            var messages = CollectModelStateErrors();
+            if (messages.Count > 0)
+            {
+                TempData["EditProfileError"] = string.Join(" ", messages);
+            }
+
             await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
             model.LicenseStates = registration.GetLicenseStates();
             return View("EditProfile/EditProfileContact", model);
@@ -585,13 +611,53 @@ public class RealtorController(
             .Take(3)
             .ToList() ?? [];
 
+        ModelState.Remove(nameof(licensePhotoFile));
+        ModelState.Remove(nameof(model.TeamName));
+        ModelState.Remove(nameof(model.BrokerInCharge));
+
+        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(model.LicenseNumber, out var licenseError))
+        {
+            ModelState.AddModelError(nameof(model.LicenseNumber), licenseError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.LicenseState))
+        {
+            ModelState.AddModelError(nameof(model.LicenseState), "License state is required.");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.YearsOfExperience))
+        {
+            ModelState.AddModelError(nameof(model.YearsOfExperience), "Years of experience is required.");
+        }
+
+        if (model.SelectedSpecialties.Count == 0)
+        {
+            ModelState.AddModelError(nameof(model.SelectedSpecialties), "Select at least one specialty.");
+        }
+
         if (!ModelState.IsValid)
         {
+            var messages = CollectModelStateErrors();
+            if (messages.Count > 0)
+            {
+                TempData["EditProfileError"] = string.Join(" ", messages);
+            }
+
             var viewModel = await MergeEditProfileLicenseAsync(realtor, model, cancellationToken);
             return View("EditProfile/EditProfileLicense", viewModel);
         }
 
-        await portalService.SaveEditProfileLicenseAsync(realtor, model, cancellationToken);
+        try
+        {
+            await portalService.SaveEditProfileLicenseAsync(realtor, model, cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["EditProfileError"] = ex.Message;
+            var viewModel = await MergeEditProfileLicenseAsync(realtor, model, cancellationToken);
+            return View("EditProfile/EditProfileLicense", viewModel);
+        }
+
         await SaveLicenseDocumentAsync(realtor, licensePhotoFile, cancellationToken);
         return RedirectToAction(nameof(EditProfileReview));
     }
@@ -674,6 +740,14 @@ public class RealtorController(
     private static bool HasValidStoredLicense(IndorRealtor realtor) =>
         !string.IsNullOrWhiteSpace(realtor.LicenseState)
         && RealtorLicenseNumberAttribute.IsValidLicenseNumber(realtor.LicenseNumber, out _);
+
+    private List<string> CollectModelStateErrors() =>
+        ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .Where(m => !string.IsNullOrWhiteSpace(m))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
 
     private IActionResult RedirectToEditProfileLicenseForInvalidLicense()
     {
