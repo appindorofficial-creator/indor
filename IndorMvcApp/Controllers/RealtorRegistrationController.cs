@@ -80,6 +80,7 @@ public class RealtorRegistrationController(
         bool professionalTermsAccepted)
     {
         var state = await registration.GetAsync();
+        professionalTermsAccepted = Request.Form["professionalTermsAccepted"].Contains("true");
 
         if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError, "Brokerage / Company Name"))
         {
