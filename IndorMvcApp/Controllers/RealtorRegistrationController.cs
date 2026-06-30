@@ -64,7 +64,7 @@ public class RealtorRegistrationController(
 
         return View(StepVm(2, "Realtor Verification",
             "Enter your license information so we can verify your realtor profile.",
-            state, Url.Action("SelectRole", "Account"),
+            state, "",
             registration.GetLicenseStates()));
     }
 
@@ -141,7 +141,7 @@ public class RealtorRegistrationController(
 
             return View(StepVm(2, "Realtor Verification",
                 "Enter your license information so we can verify your realtor profile.",
-                state, Url.Action("SelectRole", "Account"),
+                state, "",
                 registration.GetLicenseStates()));
         }
 

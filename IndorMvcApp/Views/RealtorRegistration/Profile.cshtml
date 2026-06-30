@@ -326,11 +326,27 @@
         return setFieldError('licenseNumberError', 'input[name="licenseNumber"]', message);
     }
 
-    function validateProfileForm() {
-        var hasError = false;
+    function clearAllFieldErrors() {
+        setFieldError('brokerageNameError', 'input[name="brokerageName"]', '');
+        setLicenseError('');
+        setFieldError('licenseStateError', 'select[name="licenseState"]', '');
+        setFieldError('serviceAreasError', 'input[name="serviceAreas"]', '');
+        setFieldError('officeAddressError', 'input[name="officeAddress"]', '');
         setLanguagesError('');
         setTermsError('');
-        setLicenseError('');
+    }
+
+    function validateProfileForm() {
+        var hasError = false;
+        clearAllFieldErrors();
+
+        var brokerage = form.querySelector('input[name="brokerageName"]');
+        if (!brokerage || !brokerage.value.trim()) {
+            hasError = setFieldError(
+                'brokerageNameError',
+                'input[name="brokerageName"]',
+                'Brokerage / Company Name is required.') || hasError;
+        }
 
         var licenseInput = form.querySelector('input[name="licenseNumber"]');
         if (licenseInput && window.IndorRealtorLicense) {
@@ -338,6 +354,32 @@
             if (licenseMessage) {
                 hasError = setLicenseError(licenseMessage) || hasError;
             }
+        } else if (licenseInput && !licenseInput.value.trim()) {
+            hasError = setLicenseError('License number is required.') || hasError;
+        }
+
+        var licenseState = form.querySelector('select[name="licenseState"]');
+        if (!licenseState || !licenseState.value.trim()) {
+            hasError = setFieldError(
+                'licenseStateError',
+                'select[name="licenseState"]',
+                'Please select your license state.') || hasError;
+        }
+
+        var serviceAreas = form.querySelector('input[name="serviceAreas"]');
+        if (!serviceAreas || !serviceAreas.value.trim()) {
+            hasError = setFieldError(
+                'serviceAreasError',
+                'input[name="serviceAreas"]',
+                'City / market area is required.') || hasError;
+        }
+
+        var officeAddress = form.querySelector('input[name="officeAddress"]');
+        if (!officeAddress || !officeAddress.value.trim()) {
+            hasError = setFieldError(
+                'officeAddressError',
+                'input[name="officeAddress"]',
+                'Office address is required.') || hasError;
         }
 
         var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
@@ -366,7 +408,34 @@
 
     var licenseInput = form.querySelector('input[name="licenseNumber"]');
     if (licenseInput && window.IndorRealtorLicense) {
-        window.IndorRealtorLicense.attach(licenseInput, { errorEl: document.getElementById('licenseNumberError') });
+        window.IndorRealtorLicense.attach(licenseInput, {
+            errorEl: document.getElementById('licenseNumberError'),
+            validateOnLoad: false
+        });
+    }
+
+    [
+        'input[name="brokerageName"]',
+        'input[name="serviceAreas"]',
+        'input[name="officeAddress"]',
+        'select[name="licenseState"]'
+    ].forEach(function (selector) {
+        var input = form.querySelector(selector);
+        if (!input) {
+            return;
+        }
+        var errorId = input.name === 'licenseState'
+            ? 'licenseStateError'
+            : input.name + 'Error';
+        input.addEventListener('input', function () {
+            setFieldError(errorId, selector, '');
+        });
+        input.addEventListener('change', function () {
+            setFieldError(errorId, selector, '');
+        });
+    });
+
+    if (licenseInput) {
         licenseInput.addEventListener('input', function () {
             setLicenseError('');
         });

@@ -33,6 +33,7 @@
 
         options = options || {};
         input.dataset.licenseBound = 'true';
+        var validateOnLoad = options.validateOnLoad !== false;
 
         var errorEl = options.errorEl
             || (input.id ? document.getElementById(input.id + 'Error') : null)
@@ -55,7 +56,9 @@
 
         input.addEventListener('input', sync);
         input.addEventListener('blur', sync);
-        sync();
+        if (validateOnLoad) {
+            sync();
+        }
         return sync;
     }
 
