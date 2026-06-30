@@ -1051,7 +1051,7 @@ public class PropertyAdministratorPortalService(
                 : url.Action(item.LinkAction, item.LinkController) ?? "#";
         }
 
-        return url.Action("RequestService", "Administrador", new { service = item.ServiceSlug }) ?? "#";
+        return url.Action("Services", "Administrador") ?? "#";
     }
 
     private static PropertyAdministratorPropertyItemViewModel MapPropertyListItem(
@@ -1244,13 +1244,13 @@ public class PropertyAdministratorPortalService(
                 ? request.TechnicianRating.Value.ToString("0.0")
                 : "4.8",
             LastServiceLabel = request.Title,
-            RequestUrl = url.Action("RequestService", "Administrador") ?? "#"
+            RequestUrl = url.Action("Services", "Administrador") ?? "#"
         };
     }
 
     private static List<PropertyAdministratorSavedProviderViewModel> BuildSampleSavedProviders(IUrlHelper url)
     {
-        var requestUrl = url.Action("RequestService", "Administrador") ?? "#";
+        var requestUrl = url.Action("Services", "Administrador") ?? "#";
         return
         [
             new()

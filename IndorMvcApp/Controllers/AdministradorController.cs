@@ -92,7 +92,7 @@ public class AdministradorController(
         if (model.NetworkView == "map")
         {
             var centerAddress = model.ViewingProperty?.Location;
-            var servicesUrl = Url.Action(nameof(RequestService), "Administrador") ?? "#";
+            var servicesUrl = Url.Action(nameof(Services), "Administrador") ?? "#";
             var messageUrl = Url.Action(nameof(Services), "Administrador") ?? "#";
             model.NearbyMap = await nearbyNetwork.BuildMapForAddressAsync(
                 centerAddress,
@@ -2033,9 +2033,7 @@ public class AdministradorController(
             return redirect;
         }
 
-        ViewBag.NavActive = "services";
-        ViewBag.ServiceSlug = service;
-        return View();
+        return RedirectToAction(nameof(Services));
     }
 
     [HttpGet]

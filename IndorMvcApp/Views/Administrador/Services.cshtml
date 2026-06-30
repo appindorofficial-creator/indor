@@ -39,7 +39,7 @@
             <strong><i class="fas fa-phone"></i> Help is available 24/7</strong>
             <p>Call now to connect with an emergency service pro.</p>
         </div>
-        <a asp-controller="Administrador" asp-action="RequestService" class="pa-emergency-btn">Call now</a>
+        <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">View emergency services</a>
     </div>
 
     @foreach (var category in Model.Categories)
