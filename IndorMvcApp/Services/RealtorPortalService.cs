@@ -2,6 +2,7 @@ using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -1153,6 +1154,16 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         RealtorEditProfileLicenseViewModel input,
         CancellationToken ct = default)
     {
+        if (string.IsNullOrWhiteSpace(input.LicenseState))
+        {
+            throw new InvalidOperationException("License state is required.");
+        }
+
+        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(input.LicenseNumber, out var licenseError))
+        {
+            throw new InvalidOperationException(licenseError ?? "Enter a valid license number.");
+        }
+
         var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
 
         entity.LicenseNumber = input.LicenseNumber.Trim();

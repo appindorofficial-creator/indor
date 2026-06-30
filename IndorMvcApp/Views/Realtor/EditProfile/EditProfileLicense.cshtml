@@ -3,7 +3,15 @@
     ViewData["Title"] = "License & Professional Details";
 }
 
-<form asp-action="EditProfileLicense" method="post" enctype="multipart/form-data" class="rl-ep-form" novalidate>
+@if (TempData["EditProfileError"] is string editProfileError && !string.IsNullOrWhiteSpace(editProfileError))
+{
+    <div class="rl-error-banner" role="alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>@editProfileError</span>
+    </div>
+}
+
+<form asp-action="EditProfileLicense" method="post" enctype="multipart/form-data" class="rl-ep-form" id="rlEditProfileLicenseForm" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
 
@@ -11,7 +19,7 @@
         <div class="rl-ep-field-grid-2">
             <label class="rl-ep-field rl-ep-field--stacked">
                 <span>License Number</span>
-                <input asp-for="LicenseNumber" placeholder="SL3456789" autocomplete="off" />
+                <input asp-for="LicenseNumber" id="LicenseNumber" placeholder="SL3456789" autocomplete="off" aria-required="true" />
             </label>
             <label class="rl-ep-field rl-ep-field--stacked">
                 <span>State</span>
@@ -119,5 +127,40 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/realtor-license-number.js" asp-append-version="true"></script>
     <script src="~/js/realtor-edit-profile.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var form = document.getElementById('rlEditProfileLicenseForm');
+            var licenseInput = document.getElementById('LicenseNumber');
+            var stateInput = document.getElementById('LicenseState');
+            var validateLicense = window.IndorRealtorLicense
+                ? window.IndorRealtorLicense.attach(licenseInput, {
+                    errorEl: document.querySelector('[data-valmsg-for="LicenseNumber"]')
+                })
+                : null;
+
+            if (!form) {
+                return;
+            }
+
+            form.addEventListener('submit', function (e) {
+                var licenseMessage = window.IndorRealtorLicense && licenseInput
+                    ? window.IndorRealtorLicense.validate(licenseInput.value)
+                    : '';
+                if (licenseMessage) {
+                    e.preventDefault();
+                    if (validateLicense) {
+                        validateLicense();
+                    }
+                    licenseInput?.focus();
+                    return;
+                }
+                if (stateInput && !stateInput.value.trim()) {
+                    e.preventDefault();
+                    stateInput.focus();
+                }
+            });
+        })();
+    </script>
 }

@@ -585,24 +585,10 @@ public class RealtorController(
             .Take(3)
             .ToList() ?? [];
 
-        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(model.LicenseNumber, out var licenseError))
-        {
-            ModelState.AddModelError(nameof(model.LicenseNumber), licenseError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(model.LicenseState))
-        {
-            ModelState.AddModelError(nameof(model.LicenseState), "License state is required.");
-        }
-
         if (!ModelState.IsValid)
         {
-            await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
-            model.SpecialtyOptions = RealtorEditProfileOptions.Specialties;
-            model.ExperienceOptions = RealtorEditProfileOptions.ExperienceLevels;
-            model.LicenseStates = registration.GetLicenseStates();
-            model.DocumentSlots = (await registration.GetDocumentSlotsAsync(cancellationToken)).ToList();
-            return View("EditProfile/EditProfileLicense", model);
+            var viewModel = await MergeEditProfileLicenseAsync(realtor, model, cancellationToken);
+            return View("EditProfile/EditProfileLicense", viewModel);
         }
 
         await portalService.SaveEditProfileLicenseAsync(realtor, model, cancellationToken);
@@ -619,6 +605,11 @@ public class RealtorController(
             return RedirectToAction("Profile", "RealtorRegistration");
         }
 
+        if (!HasValidStoredLicense(realtor))
+        {
+            return RedirectToEditProfileLicenseForInvalidLicense();
+        }
+
         var model = await portalService.BuildEditProfileReviewAsync(realtor, cancellationToken);
         return View("EditProfile/EditProfileReview", model);
     }
@@ -632,6 +623,11 @@ public class RealtorController(
         if (realtor == null)
         {
             return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (!HasValidStoredLicense(realtor))
+        {
+            return RedirectToEditProfileLicenseForInvalidLicense();
         }
 
         await portalService.FinalizeEditProfileAsync(realtor, cancellationToken);
@@ -673,6 +669,36 @@ public class RealtorController(
 
         var model = await build(realtor);
         return View(model);
+    }
+
+    private static bool HasValidStoredLicense(IndorRealtor realtor) =>
+        !string.IsNullOrWhiteSpace(realtor.LicenseState)
+        && RealtorLicenseNumberAttribute.IsValidLicenseNumber(realtor.LicenseNumber, out _);
+
+    private IActionResult RedirectToEditProfileLicenseForInvalidLicense()
+    {
+        TempData["EditProfileError"] =
+            "Enter a valid license number (4–20 characters, at least one letter) to continue.";
+        return RedirectToAction(nameof(EditProfileLicense));
+    }
+
+    private async Task<RealtorEditProfileLicenseViewModel> MergeEditProfileLicenseAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileLicenseViewModel posted,
+        CancellationToken cancellationToken)
+    {
+        var model = await portalService.BuildEditProfileLicenseAsync(
+            realtor,
+            registration.GetLicenseStates(),
+            cancellationToken);
+
+        model.LicenseNumber = posted.LicenseNumber;
+        model.LicenseState = posted.LicenseState;
+        model.YearsOfExperience = posted.YearsOfExperience;
+        model.SelectedSpecialties = posted.SelectedSpecialties;
+        model.TeamName = posted.TeamName;
+        model.BrokerInCharge = posted.BrokerInCharge;
+        return model;
     }
 
     private async Task ApplyEditProfileShellAsync(

@@ -367,7 +367,12 @@ public class RealtorEditProfileContactViewModel : RealtorEditProfileWizardViewMo
 
 public class RealtorEditProfileLicenseViewModel : RealtorEditProfileWizardViewModel
 {
+    [Display(Name = "License Number")]
+    [RealtorLicenseNumber]
     public string LicenseNumber { get; set; } = "";
+
+    [Display(Name = "License State")]
+    [Required(ErrorMessage = "License state is required.")]
     public string LicenseState { get; set; } = "";
     public string YearsOfExperience { get; set; } = "";
     public List<string> SelectedSpecialties { get; set; } = [];
