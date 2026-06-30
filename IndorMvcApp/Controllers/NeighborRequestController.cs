@@ -200,11 +200,12 @@ public class NeighborRequestController(
         {
             TempData["NeighborRequestError"] = "We could not publish your job. Please try again.";
             var invalidVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
-            if (invalidVm != null)
+            if (invalidVm == null)
             {
-                await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
+                return RestartWizard(model.PropiedadId);
             }
 
+            await wizardService.ApplyPortalHomeUrlsAsync(invalidVm, userId, Url, cancellationToken);
             return View(invalidVm);
         }
 

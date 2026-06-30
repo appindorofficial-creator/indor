@@ -57,9 +57,14 @@
         <span class="si-text"><strong>Notification Preferences</strong><small>Choose what updates and alerts you receive.</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
-    <a class="pf-settings-item" asp-controller="Perfil" asp-action="Pagos">
+    <a class="pf-settings-item" asp-controller="Account" asp-action="Privacy" asp-route-from="homeowner-profile">
         <span class="si-icon"><i class="fas fa-lock"></i></span>
-        <span class="si-text"><strong>Privacy Settings</strong><small>Manage your privacy and data preferences.</small></span>
+        <span class="si-text"><strong>Privacy Policy</strong><small>Review how we collect, use, and protect your data.</small></span>
+        <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
+    </a>
+    <a class="pf-settings-item" href="#delete-account">
+        <span class="si-icon"><i class="fas fa-user-xmark"></i></span>
+        <span class="si-text"><strong>Delete Account</strong><small>Permanently delete your account and associated data.</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
 </nav>
@@ -127,3 +132,20 @@
         <i class="fas fa-right-from-bracket"></i> Sign out
     </button>
 </form>
+
+<div class="pf-card" id="delete-account" style="border:1px solid #FCA5A5;margin-top:16px;">
+    <h3 style="color:#B91C1C;"><i class="fas fa-triangle-exclamation"></i> Delete account</h3>
+    <p style="font-size:.85rem;color:#6B7280;line-height:1.45;margin:0 0 12px;">
+        This permanently deletes your INDOR account along with your homes, requests, documents,
+        and service history. This action cannot be undone. To confirm, type your account email
+        (<strong>@usr?.Email</strong>) below.
+    </p>
+    <form class="pf-form" method="post" asp-controller="Perfil" asp-action="EliminarCuenta"
+          onsubmit="return confirm('This will permanently delete your account and all associated data. Continue?');">
+        @Html.AntiForgeryToken()
+        <input type="email" name="confirmEmail" placeholder="Enter your account email" required autocomplete="off" />
+        <button type="submit" class="pf-btn danger" style="width:100%;">
+            <i class="fas fa-user-xmark"></i> Permanently delete my account
+        </button>
+    </form>
+</div>

@@ -35,7 +35,7 @@
         <section class="prv-pro-lead-section">
             <div class="prv-pro-panel-head">
                 <h3>Before &amp; After Photos</h3>
-                <a href="#">View all (@Model.Photos.Count)</a>
+                <span class="prv-pro-count-muted">@Model.Photos.Count total</span>
             </div>
             <div class="prv-pro-report-photos">
                 @foreach (var photo in Model.Photos)
@@ -66,7 +66,7 @@
                     <li>@material.Name <span>x@material.Quantity</span></li>
                 }
             </ul>
-            <a href="#" class="prv-pro-link-more">View all materials (@Model.Materials.Count)</a>
+            <span class="prv-pro-count-muted">@Model.Materials.Count total</span>
         </div>
         @if (!string.IsNullOrWhiteSpace(Model.LaborWarranty))
         {

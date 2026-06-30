@@ -180,6 +180,11 @@ public class AccountController : Controller
             return Url.Action("SupportAccount", "Realtor");
         }
 
+        if (from == "homeowner-profile")
+        {
+            return Url.Action("Opciones", "Perfil");
+        }
+
         return Url.Action(nameof(Welcome));
     }
 

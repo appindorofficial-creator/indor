@@ -957,6 +957,39 @@ public class PerfilController : Controller
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EliminarCuenta(string? confirmEmail)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        if (!string.Equals(confirmEmail?.Trim(), user.Email, StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["PerfilError"] = "Enter your account email exactly to confirm account deletion.";
+            return RedirectToAction(nameof(Opciones));
+        }
+
+        var result = await _userManager.DeleteAsync(user);
+        if (!result.Succeeded)
+        {
+            _logger.LogWarning(
+                "Account deletion failed for {UserId}: {Errors}",
+                user.Id,
+                string.Join("; ", result.Errors.Select(e => e.Description)));
+            TempData["PerfilError"] = "We could not delete your account right now. Please contact support.";
+            return RedirectToAction(nameof(Opciones));
+        }
+
+        await _signInManager.SignOutAsync();
+        HttpContext.Session.Clear();
+        TempData["AccountDeleted"] = "Your account and associated data have been permanently deleted.";
+        return RedirectToAction("Welcome", "Account");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> AgregarMetodoPago(string tipo, string marca, string ultimos4, string titular, string expiracion, bool predeterminado)
     {
         var userId = _userManager.GetUserId(User);
