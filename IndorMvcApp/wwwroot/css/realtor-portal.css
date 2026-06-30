@@ -177,6 +177,11 @@
     font-size: .84rem;
     font-weight: 600;
     color: #15803D;
+    white-space: nowrap;
+}
+.rl-success-banner span {
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .rl-error-banner {
