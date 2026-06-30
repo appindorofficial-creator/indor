@@ -256,10 +256,11 @@ public class RealtorInspectionUploadWizardService(
             ReportFileName = draft.ReportFileName ?? "Home Inspection Report",
             ReportPageCount = draft.ReportPageCount > 0 ? draft.ReportPageCount : 1,
             UploadedLabel = $"Uploaded {draft.FechaCreacion.ToLocalTime():MMM d, yyyy}",
+            UploadMethod = string.IsNullOrWhiteSpace(draft.UploadMethod) ? "Pdf" : draft.UploadMethod,
             AnalysisProgress = progress,
             AnalysisStatus = status,
             AnalysisSummary = draft.AnalysisSummary,
-            Tasks = BuildAnalysisTasks(progress, status, draft.ReportPageCount, findingCount),
+            Tasks = BuildAnalysisTasks(progress, status, draft.ReportPageCount, findingCount, draft.UploadMethod),
             DetectedCategories = await BuildDetectedCategoriesAsync(progress, draft.Id, cancellationToken)
         };
     }
@@ -1069,16 +1070,23 @@ public class RealtorInspectionUploadWizardService(
     }
 
     private static List<RealtorInspectionAnalyzeTaskViewModel> BuildAnalysisTasks(
-        int progress, string status, int pageCount, int findingCount)
+        int progress, string status, int pageCount, int findingCount, string? uploadMethod)
     {
         var pages = pageCount > 0 ? pageCount : 1;
         var pagesRead = progress >= 20 ? pages : Math.Max(1, (int)(pages * progress / 20.0));
+        var method = string.IsNullOrWhiteSpace(uploadMethod) ? "Pdf" : uploadMethod;
+        var (readLabel, unit) = method switch
+        {
+            "Scan" => ("Reading scanned pages", pages == 1 ? "page" : "pages"),
+            "Photos" => ("Reading report photos", pages == 1 ? "photo" : "photos"),
+            _ => ("Reading report pages", pages == 1 ? "page" : "pages")
+        };
         return
         [
             new()
             {
-                Label = "Reading report pages",
-                Detail = $"{pagesRead} / {pages} pages",
+                Label = readLabel,
+                Detail = $"{pagesRead} / {pages} {unit}",
                 Status = progress >= 20 ? "Done" : progress >= 8 ? "InProgress" : "Pending"
             },
             new()

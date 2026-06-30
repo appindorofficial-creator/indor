@@ -14,7 +14,7 @@
 
     <i class="fas fa-wand-magic-sparkles"></i>
 
-    <p>OpenAI is analyzing your real inspection report. Large PDFs (like 74 pages) are processed in sections and may take several minutes — keep this screen open.</p>
+    <p>@Model.AnalysisIntroMessage</p>
 
 </div>
 
@@ -36,7 +36,7 @@
 
         <span>@Model.PropertyDisplay</span>
 
-        <span>@Model.ReportPageCount pages · @Model.UploadedLabel</span>
+        <span>@Model.ReportCountLabel · @Model.UploadedLabel</span>
 
     </div>
 
@@ -130,7 +130,7 @@
     {
         <div class="rl-analyze-running">
             <i class="fas fa-wand-magic-sparkles fa-spin"></i>
-            <p>OpenAI is reading your PDF and extracting repair issues by trade and urgency…</p>
+            <p>@Model.AnalysisRunningMessage</p>
         </div>
         <form asp-action="Analyze" method="post" class="rl-analyze-secondary">
             @Html.AntiForgeryToken()
