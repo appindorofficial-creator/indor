@@ -64,18 +64,32 @@
             <span class="rl-ep-field-icon"><i class="fas fa-location-dot"></i></span>
             <label class="rl-ep-field">
                 <span>Office Address</span>
-                <input asp-for="OfficeAddress" placeholder="123 Business Ave, Suite 101" autocomplete="street-address" />
+                <input asp-for="OfficeAddress"
+                       placeholder="123 Business Ave, Suite 101"
+                       autocomplete="off"
+                       data-address-autocomplete
+                       data-ac-street-only="true"
+                       data-ac-city="OfficeCity"
+                       data-ac-state="OfficeState"
+                       data-ac-zip="OfficeZip" />
             </label>
         </div>
 
         <div class="rl-ep-address-grid">
             <label class="rl-ep-field rl-ep-field--compact">
                 <span>City</span>
-                <input asp-for="OfficeCity" placeholder="City" />
+                <input asp-for="OfficeCity"
+                       placeholder="City"
+                       autocomplete="off"
+                       data-city-autocomplete
+                       data-ac-state="OfficeState"
+                       data-ac-zip="OfficeZip" />
             </label>
             <label class="rl-ep-field rl-ep-field--compact">
                 <span>State</span>
-                <select asp-for="OfficeState">
+                <select asp-for="OfficeState"
+                        data-ac-zip="OfficeZip"
+                        data-ac-city="OfficeCity">
                     <option value="">State</option>
                     @foreach (var st in Model.LicenseStates)
                     {
@@ -85,9 +99,15 @@
             </label>
             <label class="rl-ep-field rl-ep-field--compact">
                 <span>ZIP</span>
-                <input asp-for="OfficeZip" placeholder="ZIP" inputmode="numeric" />
+                <input asp-for="OfficeZip"
+                       placeholder="ZIP"
+                       autocomplete="postal-code"
+                       maxlength="10"
+                       data-zip-input
+                       data-zip-required="false" />
             </label>
         </div>
+        <span class="rl-field-hint" id="ep-office-zip-hint" data-ac-zip-hint-for="OfficeZip" hidden>Suggested from city and state. Change it if your office uses a different ZIP.</span>
 
         <div class="rl-ep-languages">
             <span class="rl-ep-languages-label">Languages Spoken</span>
@@ -119,5 +139,15 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/zip-input.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
     <script src="~/js/realtor-edit-profile.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var zipInput = document.getElementById('OfficeZip');
+            if (zipInput && window.IndorZipInput) {
+                window.IndorZipInput.attach(zipInput, { required: false });
+            }
+        })();
+    </script>
 }
