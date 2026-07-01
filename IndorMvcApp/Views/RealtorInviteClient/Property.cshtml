@@ -76,15 +76,18 @@
         }
     }
 
-    <h2 class="rl-invite-section-title">Or Add New Property</h2>
-    <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
-        <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
-        <div>
-            <strong>Create New Property</strong>
-            <span>Add a new property for this client</span>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-    </a>
+    @if (Model.Properties.Count > 0 || string.IsNullOrWhiteSpace(Model.SearchQuery))
+    {
+        <h2 class="rl-invite-section-title">Or Add New Property</h2>
+        <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
+            <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
+            <div>
+                <strong>Create New Property</strong>
+                <span>Add a new property for this client</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    }
 
     <div class="rl-info-box">
         <i class="fas fa-shield-halved"></i>
