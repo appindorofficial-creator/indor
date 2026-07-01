@@ -1,0 +1,127 @@
+@model IndorMvcApp.ViewModels.RealtorClientDetailViewModel
+@{
+    ViewData["Title"] = Model.FullName;
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "clients";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <div class="rl-page-header rl-page-header--stack">
+        <a asp-controller="Realtor" asp-action="Clients" class="rl-back-link"><i class="fas fa-chevron-left"></i> Clients</a>
+        <h1 class="rl-page-title">@Model.FullName</h1>
+        <p class="rl-page-subtitle">@Model.ClientRole client profile</p>
+    </div>
+
+    <div class="rl-client-detail-hero">
+        <div class="rl-client-detail-head">
+            @if (!string.IsNullOrWhiteSpace(Model.ProfileImageUrl))
+            {
+                <img src="@Model.ProfileImageUrl" alt="" class="rl-client-avatar" />
+            }
+            else
+            {
+                <span class="rl-client-avatar rl-client-avatar--placeholder">@Model.Initials</span>
+            }
+            <div class="rl-client-detail-identity">
+                <strong>@Model.FullName</strong>
+                <span class="rl-role-label">@Model.ClientRole</span>
+                <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusBadge</span>
+            </div>
+        </div>
+        <div class="rl-client-detail-meta">
+            @if (!string.IsNullOrWhiteSpace(Model.Email))
+            {
+                <div class="rl-client-detail-meta--full">
+                    <span>Email</span>
+                    <strong>@Model.Email</strong>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Phone))
+            {
+                <div class="rl-client-detail-meta--full">
+                    <span>Phone</span>
+                    <strong>@Model.Phone</strong>
+                </div>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.PropertyAddress))
+            {
+                <div class="rl-client-detail-meta--full">
+                    <span>Property</span>
+                    <strong>@Model.PropertyAddress</strong>
+                </div>
+            }
+            <div><span>Connected</span><strong>@Model.ConnectedLabel.Replace("Connected ", "")</strong></div>
+            <div><span>Last active</span><strong>@Model.LastActiveLabel</strong></div>
+            <div><span>Files</span><strong>@Model.FilesCount</strong></div>
+            <div><span>Quotes</span><strong>@Model.QuotesCount</strong></div>
+        </div>
+    </div>
+
+    <div class="rl-client-detail-actions">
+        <a href="@Model.CreateFileUrl" class="ob-btn ob-btn-primary">
+            <i class="fas fa-folder-plus"></i> Create File
+        </a>
+        @if (Model.FilesCount > 0)
+        {
+            <a href="@Model.ViewFilesUrl" class="rl-btn-outline">
+                <i class="fas fa-folder-open"></i> View All Files
+            </a>
+        }
+    </div>
+
+    <section class="rl-dash-section">
+        <div class="rl-dash-section-head">
+            <h2>Property Files</h2>
+        </div>
+        @if (Model.Files.Count == 0)
+        {
+            <div class="rl-dash-empty">No property files yet. Create one to start organizing inspections, quotes, and documents.</div>
+        }
+        else
+        {
+            @foreach (var file in Model.Files)
+            {
+                <article class="rl-file-card-v2 rl-file-card-v2--compact">
+                    <img src="@(file.PhotoUrl ?? "/welcome-house.png")" alt="" />
+                    <div class="rl-file-card-body">
+                        <div class="rl-file-card-top">
+                            <div>
+                                <strong>@file.Address</strong>
+                                @if (!string.IsNullOrWhiteSpace(file.CityRegion))
+                                {
+                                    <span class="rl-premium-muted">@file.CityRegion</span>
+                                }
+                            </div>
+                            <span class="rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusBadge</span>
+                        </div>
+                        <span class="rl-file-code">@file.FileCode</span>
+                        <span class="rl-file-updated">@file.UpdatedLabel</span>
+                    </div>
+                    <a href="@file.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@file.ActionLabel</a>
+                </article>
+            }
+        }
+    </section>
+
+    @if (Model.QuotesCount > 0)
+    {
+        <section class="rl-dash-section">
+            <div class="rl-dash-section-head">
+                <h2>Quotes</h2>
+            </div>
+            @foreach (var quote in Model.Quotes)
+            {
+                <article class="rl-client-quote-row">
+                    <div>
+                        <strong>@quote.Address</strong>
+                        <span class="rl-premium-muted">@quote.ServiceType · @quote.QuoteCode</span>
+                    </div>
+                    <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
+                    <a href="@quote.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">View</a>
+                </article>
+            }
+        </section>
+    }
+</div>

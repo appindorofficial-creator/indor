@@ -185,7 +185,14 @@
                             }
                         </div>
                         <div class="rl-client-card-foot">
-                            <a href="@client.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@client.ActionLabel</a>
+                            @if (string.IsNullOrWhiteSpace(client.ActionUrl) || client.ActionUrl == "#")
+                            {
+                                <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Not available">@client.ActionLabel</span>
+                            }
+                            else
+                            {
+                                <a href="@client.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@client.ActionLabel</a>
+                            }
                         </div>
                     </div>
                 </article>

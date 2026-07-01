@@ -49,6 +49,19 @@ public class RealtorController(
         await PortalPageAsync(r => portalService.BuildClientsAsync(r, q, filter, cancellationToken), cancellationToken);
 
     [HttpGet]
+    public async Task<IActionResult> ClientDetail(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildClientDetailAsync(realtor, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Files(string? q, string? filter, CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildFilesAsync(r, q, filter, cancellationToken), cancellationToken);
 

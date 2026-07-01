@@ -3593,6 +3593,87 @@ button.rl-premium-link {
 .rl-client-metrics i { color: #0066CC; margin-right: 4px; }
 .rl-client-card-foot { margin-top: 8px; }
 
+.rl-client-detail-hero {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 14px;
+}
+.rl-client-detail-head {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+}
+.rl-client-detail-identity {
+    flex: 1;
+    min-width: 0;
+}
+.rl-client-detail-identity strong {
+    display: block;
+    font-size: .95rem;
+    line-height: 1.3;
+    word-break: break-word;
+}
+.rl-client-detail-identity .rl-role-label {
+    display: block;
+    margin-top: 2px;
+}
+.rl-client-detail-identity .rl-status-pill {
+    margin-top: 8px;
+}
+.rl-client-detail-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+.rl-client-detail-meta > div {
+    min-width: 0;
+}
+.rl-client-detail-meta span {
+    display: block;
+    font-size: .65rem;
+    color: #64748B;
+    margin-bottom: 2px;
+}
+.rl-client-detail-meta strong {
+    display: block;
+    font-size: .76rem;
+    color: #0F172A;
+    line-height: 1.35;
+    word-break: break-word;
+}
+.rl-client-detail-meta--full {
+    grid-column: 1 / -1;
+}
+.rl-client-detail-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 18px;
+}
+.rl-client-detail-actions .ob-btn,
+.rl-client-detail-actions .rl-btn-outline {
+    flex: 1 1 160px;
+    justify-content: center;
+    text-align: center;
+}
+.rl-file-card-v2--compact { margin-bottom: 10px; }
+.rl-client-quote-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto;
+    gap: 10px;
+    align-items: center;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+}
+.rl-client-quote-row strong { display: block; font-size: .86rem; }
+.rl-client-quote-row .rl-premium-muted { display: block; font-size: .72rem; margin-top: 2px; }
+
 .rl-next-steps { padding-top: 4px; }
 .rl-next-step {
     position: relative;
