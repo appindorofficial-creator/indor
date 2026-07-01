@@ -73,7 +73,7 @@
             <h2 class="nr-edit-section-title">Preferred date</h2>
             <label class="nr-edit-picker nr-edit-picker--date">
                 <span class="nr-edit-picker-icon"><i class="far fa-calendar"></i></span>
-                <input asp-for="NeededByDate" type="date" class="nr-edit-picker-native nr-edit-picker-native--date" min="@Model.MinNeededByDateIso" />
+                <input asp-for="NeededByDate" type="date" class="nr-edit-picker-native nr-edit-picker-native--date" data-min-date="@Model.MinNeededByDateIso" />
                 <span class="nr-edit-picker-label" id="nrPreferredDateLabel">
                     @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? "Select a date")
                 </span>

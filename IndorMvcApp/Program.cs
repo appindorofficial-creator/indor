@@ -64,8 +64,9 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(connectionString));
-builder.Services.AddDbContextFactory<AppDbContext>(options =>
-    options.UseSqlServer(connectionString));
+builder.Services.AddDbContextFactory<AppDbContext>(
+    options => options.UseSqlServer(connectionString),
+    ServiceLifetime.Scoped);
 
 builder.Services.AddScoped<HomeIndexQueryService>();
 builder.Services.AddScoped<AccountDeletionService>();

@@ -32,7 +32,7 @@
         </div>
         <div class="nr-pick-date" id="nrPickDateWrap" hidden>
             <label asp-for="NeededByDate">Pick a date</label>
-            <input asp-for="NeededByDate" type="date" class="nr-input" min="@Model.MinNeededByDateIso" />
+            <input asp-for="NeededByDate" type="date" class="nr-input" data-min-date="@Model.MinNeededByDateIso" />
             <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
         </div>
     </section>

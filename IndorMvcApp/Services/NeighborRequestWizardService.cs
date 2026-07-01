@@ -32,7 +32,7 @@ public class NeighborRequestWizardService(
     public static IReadOnlyList<(string Value, string Label)> GetTimeWindowOptions() =>
         TimeWindowPresets.Select(p => (p.Value, p.Label)).ToList();
 
-    public static DateTime MinimumNeededByDate => DateTime.UtcNow.Date;
+    public static DateTime MinimumNeededByDate => DateTime.Today;
 
     public static bool IsNeededByDateAllowed(DateTime? date) =>
         date == null || date.Value.Date >= MinimumNeededByDate;
