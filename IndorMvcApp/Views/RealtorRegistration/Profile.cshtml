@@ -525,7 +525,7 @@
         var officeCity = form.querySelector('input[name="officeCity"]');
         var officeState = form.querySelector('select[name="officeState"]');
         var officeZip = form.querySelector('input[name="officeZip"]');
-        var officeAddressMessage = 'Enter a valid US street address with a street number (e.g. 123 Main St).';
+        var officeAddressMessage = 'Enter a complete street address with street name and type (e.g. 123 Main St).';
 
         function isValidStreetAddress(value) {
             var line = String(value || '').trim();
@@ -536,7 +536,7 @@
             var hasDigit = /\d/.test(line);
             var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
             if (!hasDigit) return false;
-            if (wordParts < 1) return false;
+            if (wordParts < 2) return false;
             return true;
         }
 

@@ -11,6 +11,11 @@ public static class RealtorInviteCreatePropertyValidation
         {
             errors["Address"] = "Property address is required.";
         }
+        else if (!ValidStreetAddressAttribute.IsValidStreetAddress(
+                     address, out var addressError, requireCityOrZip: false, requireStreetNumber: true))
+        {
+            errors["Address"] = addressError!;
+        }
 
         if (string.IsNullOrWhiteSpace(city))
         {
