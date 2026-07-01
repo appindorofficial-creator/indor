@@ -211,9 +211,11 @@
                 @foreach (var step in Model.NextSteps)
                 {
                     <a href="@(step.Url ?? "#")" class="rl-next-step rl-next-step--@step.ColorClass">
-                        <span class="rl-next-step-icon"><i class="fas @step.Icon"></i></span>
-                        <span>@step.Text</span>
-                        <i class="fas fa-chevron-right"></i>
+                        <span class="rl-next-step-main">
+                            <span class="rl-next-step-icon"><i class="fas @step.Icon" aria-hidden="true"></i></span>
+                            <span class="rl-next-step-text">@step.Text</span>
+                        </span>
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
                     </a>
                 }
             </div>

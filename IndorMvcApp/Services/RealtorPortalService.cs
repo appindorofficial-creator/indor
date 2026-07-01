@@ -1967,7 +1967,9 @@ public class RealtorPortalService(
         {
             steps.Add(new()
             {
-                Text = $"{pendingInvites} client{(pendingInvites == 1 ? "" : "s")} need invitations",
+                Text = pendingInvites == 1
+                    ? "1 client needs an invitation"
+                    : $"{pendingInvites} clients need invitations",
                 Icon = "fa-user-plus",
                 ColorClass = "blue",
                 Url = "/RealtorInviteClient/New"
