@@ -2,7 +2,7 @@
 <header class="iw-wizard-top">
     @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
     {
-        <a href="@Model.BackUrl" class="iw-wizard-nav-btn" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <a href="@Model.BackUrl" class="iw-wizard-nav-btn" data-smart-back aria-label="Back"><i class="fas fa-arrow-left"></i></a>
     }
     else
     {

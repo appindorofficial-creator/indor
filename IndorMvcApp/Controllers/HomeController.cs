@@ -19,100 +19,73 @@ public class HomeController : Controller
     private readonly ILogger<HomeController> _logger;
     private readonly IConfiguration _configuration;
     private readonly HomeownerNearbyNetworkService _nearbyNetworkService;
+    private readonly HomeCatalogCache _catalogCache;
 
     public HomeController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         ILogger<HomeController> logger,
         IConfiguration configuration,
-        HomeownerNearbyNetworkService nearbyNetworkService)
+        HomeownerNearbyNetworkService nearbyNetworkService,
+        HomeCatalogCache catalogCache)
     {
         _db = db;
         _userManager = userManager;
         _logger = logger;
         _configuration = configuration;
         _nearbyNetworkService = nearbyNetworkService;
+        _catalogCache = catalogCache;
     }
 
     [Authorize]
     public async Task<IActionResult> Index(string? view, string? filter, string? q)
     {
+        // Index is read-only: it loads data for display and never persists changes on
+        // this context, so disable EF change tracking for the whole action. This avoids
+        // building change-tracking entries for the hundreds of rows loaded below
+        // (inspections/emergencies with their file collections), cutting CPU and memory.
+        _db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+
         var userId = _userManager.GetUserId(User);
         var usuario = await _userManager.GetUserAsync(User);
         ViewBag.UsuarioActual = usuario;
 
+        // Shared, near-static catalog tables (identical for every user) are served
+        // from an in-memory snapshot instead of hitting the DB on every request.
+        var catalog = await _catalogCache.GetAsync(_db);
+
         var propiedades = await _db.Propiedades
+            .AsNoTracking()
             .Where(p => p.UserId == userId && p.Activo)
             .OrderByDescending(p => p.FechaCreacion)
             .ToListAsync();
 
         ViewBag.PrimaryPropiedadId = propiedades.FirstOrDefault()?.Id;
 
-        var microservicios = await _db.Microservicios
-            .Where(m => m.Activo)
-            .OrderBy(m => m.Id)
-            .ToListAsync();
-        ViewBag.Microservicios = microservicios;
+        ViewBag.Microservicios = catalog.Microservicios;
+        ViewBag.Servicios = catalog.Servicios;
+        ViewBag.HomeCarePriorityIds = catalog.HomeCarePriorityIds;
+        ViewBag.Inspecciones = catalog.Inspecciones;
+        ViewBag.ServiciosEmergencia = catalog.ServiciosEmergencia;
 
-        var servicios = await _db.Servicios
-            .Where(s => s.Activo)
-            .OrderBy(s => s.Orden)
-            .ThenBy(s => s.Id)
-            .ToListAsync();
-        ViewBag.Servicios = servicios;
-
-        ViewBag.HomeCarePriorityIds = await _db.HomeCarePriorities
-            .Where(p => p.Activo)
-            .AsNoTracking()
-            .ToDictionaryAsync(p => p.Nombre.Trim(), p => p.Id, StringComparer.OrdinalIgnoreCase);
-
-        var inspecciones = await _db.Inspecciones
-            .Where(i => i.Activo)
-            .OrderBy(i => i.Orden)
-            .ThenBy(i => i.Id)
-            .ToListAsync();
-        ViewBag.Inspecciones = inspecciones;
-
-        ViewBag.ServiciosEmergencia = await _db.ServiciosEmergencia
-            .Where(s => s.Activo)
-            .OrderBy(s => s.Orden)
-            .ThenBy(s => s.Id)
-            .ToListAsync();
-
-        var movingConfig = await _db.MovingSetupConfig.FirstOrDefaultAsync(c => c.Activo);
-        var movingServicios = await _db.MovingSetupServicios
-            .Where(s => s.Activo)
-            .OrderBy(s => s.Orden)
-            .ToListAsync();
-        var movingEnlaces = await _db.MovingSetupEnlacesRapidos
-            .Where(e => e.Activo)
-            .OrderBy(e => e.Orden)
-            .ToListAsync();
         ViewBag.MovingSetupSection = MovingSetupDisplayService.Build(
-            movingConfig,
-            movingServicios,
-            movingEnlaces,
+            catalog.MovingConfig,
+            catalog.MovingServicios,
+            catalog.MovingEnlaces,
             Url);
 
-        var prioritiesConfig = await _db.HomeCarePrioritiesConfig.FirstOrDefaultAsync(c => c.Activo);
-        var prioritiesItems = await _db.HomeCarePriorities
-            .Where(p => p.Activo)
-            .OrderBy(p => p.Orden)
-            .ThenBy(p => p.Id)
-            .ToListAsync();
+        var prioritiesItems = catalog.HomeCarePriorities;
         ViewBag.HomeCarePrioritiesSection = HomeCarePrioritiesDisplayService.Build(
-            prioritiesConfig,
+            catalog.PrioritiesConfig,
             prioritiesItems,
             propiedades.FirstOrDefault()?.Id,
             Url);
 
         // === Datos para sección "More" ===
-        ViewBag.Planes = await _db.PlanesMembresia
-            .Where(p => p.Activo)
-            .OrderBy(p => p.Orden)
-            .ToListAsync();
+        ViewBag.Planes = catalog.PlanesMembresia;
 
         var membresiaActual = await _db.MembresiasUsuario
+            .AsNoTracking()
             .Include(m => m.Plan)
             .Where(m => m.UserId == userId && m.Activa)
             .OrderByDescending(m => m.FechaInicio)
@@ -129,27 +102,28 @@ public class HomeController : Controller
             usuario, membresiaActual, propiedades.Count, docCount, serviceCount, Url);
 
         ViewBag.MetodosPago = await _db.MetodosPago
+            .AsNoTracking()
             .Where(m => m.UserId == userId && m.Activo)
             .OrderByDescending(m => m.EsPredeterminado)
             .ThenByDescending(m => m.FechaCreacion)
             .ToListAsync();
 
         ViewBag.Pagos = await _db.Pagos
+            .AsNoTracking()
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.FechaCreacion)
             .ToListAsync();
 
-        ViewBag.PlanesInternet = await _db.PlanesInternet
-            .Where(p => p.Activo)
-            .OrderBy(p => p.Orden)
-            .ToListAsync();
+        ViewBag.PlanesInternet = catalog.PlanesInternet;
 
         ViewBag.Historial = await _db.HistorialServicios
+            .AsNoTracking()
             .Where(h => h.UserId == userId)
             .OrderByDescending(h => h.Fecha)
             .ToListAsync();
 
         ViewBag.MensajesSoporte = await _db.MensajesSoporte
+            .AsNoTracking()
             .Where(m => m.UserId == userId)
             .OrderBy(m => m.Fecha)
             .ToListAsync();

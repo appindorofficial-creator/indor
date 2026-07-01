@@ -26,6 +26,7 @@ builder.Services.AddSingleton<IAppVersionService, AppVersionService>();
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<PropertyEnrichmentCache>();
+builder.Services.AddSingleton<HomeCatalogCache>();
 
 builder.Services.AddRequestTimeouts(options =>
 {

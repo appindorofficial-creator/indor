@@ -4,3 +4,27 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+<script>
+    // Smart back: navigate via the browser history (instant, restored from the
+    // back/forward cache) when the user arrived from within the app; otherwise
+    // fall back to the anchor's href so deep links and direct entry still work.
+    // Elements that carry their own back handler are excluded.
+    (function () {
+        if (window.__indorSmartBack) return;
+        window.__indorSmartBack = true;
+        function internalReferrer() {
+            try { return !!document.referrer && new URL(document.referrer).origin === location.origin; }
+            catch (e) { return false; }
+        }
+        document.addEventListener('click', function (e) {
+            if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+            if (!e.target || !e.target.closest) return;
+            var el = e.target.closest('a[aria-label="Back"]:not([data-nr-history-back]):not(.nr-wizard-nav-btn), a[data-smart-back]');
+            if (!el) return;
+            if (window.history.length > 1 && internalReferrer()) {
+                e.preventDefault();
+                window.history.back();
+            }
+        });
+    })();
+</script>

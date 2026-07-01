@@ -1032,7 +1032,9 @@ public class HomeownerNearbyNetworkService(
                     continue;
                 }
 
-                var tracked = await db.IndorProveedores.FirstOrDefaultAsync(p => p.Id == provider.Id, ct);
+                // Explicit tracking so the geocode we apply below is persisted by
+                // SaveChangesAsync even when the caller set NoTracking as the context default.
+                var tracked = await db.IndorProveedores.AsTracking().FirstOrDefaultAsync(p => p.Id == provider.Id, ct);
                 if (tracked == null)
                 {
                     continue;
