@@ -427,18 +427,27 @@
         });
     }
 
+    function formatStreetOnlyLine(components, place, fallback) {
+        var num = getComponent(components, 'street_number', false);
+        var route = getComponent(components, 'route', false);
+        var line = [num, route].filter(Boolean).join(' ').trim();
+        if (line) {
+            return line;
+        }
+
+        if (place.formatted_address) {
+            return place.formatted_address.split(',')[0].trim();
+        }
+
+        return fallback;
+    }
+
     function applyPlace(input, place) {
         if (!place) return;
         var components = place.address_components || null;
 
         if (input.dataset.acStreetOnly === 'true' && components) {
-            var num = getComponent(components, 'street_number', false);
-            var route = getComponent(components, 'route', false);
-            if (num) {
-                fillLinkedField(input, 'HouseNumber', num);
-            }
-            var street = route || (num ? '' : (place.formatted_address || input.value));
-            input.value = street.trim() || input.value;
+            input.value = formatStreetOnlyLine(components, place, input.value);
         } else if (place.formatted_address) {
             input.value = place.formatted_address;
         }
@@ -489,7 +498,11 @@
             });
 
             ac.addListener('place_changed', function () {
-                applyPlace(input, ac.getPlace());
+                var place = ac.getPlace();
+                if (!place || !place.address_components || !place.address_components.length) {
+                    return;
+                }
+                applyPlace(input, place);
             });
 
             // Don't let Enter submit the form while a suggestion list is open.
