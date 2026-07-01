@@ -26,6 +26,7 @@ public class PerfilController : Controller
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly IWebHostEnvironment _env;
     private readonly IHomeownerPropertyService _homeownerPropertyService;
+    private readonly AccountDeletionService _accountDeletion;
     private readonly ILogger<PerfilController> _logger;
 
     public PerfilController(AppDbContext db,
@@ -33,6 +34,7 @@ public class PerfilController : Controller
                             SignInManager<ApplicationUser> signInManager,
                             IWebHostEnvironment env,
                             IHomeownerPropertyService homeownerPropertyService,
+                            AccountDeletionService accountDeletion,
                             ILogger<PerfilController> logger)
     {
         _db = db;
@@ -40,6 +42,7 @@ public class PerfilController : Controller
         _signInManager = signInManager;
         _env = env;
         _homeownerPropertyService = homeownerPropertyService;
+        _accountDeletion = accountDeletion;
         _logger = logger;
     }
 
@@ -1053,13 +1056,9 @@ public class PerfilController : Controller
             return RedirectToAction(nameof(Opciones));
         }
 
-        var result = await _userManager.DeleteAsync(user);
-        if (!result.Succeeded)
+        var deleted = await _accountDeletion.DeleteAccountAsync(user);
+        if (!deleted)
         {
-            _logger.LogWarning(
-                "Account deletion failed for {UserId}: {Errors}",
-                user.Id,
-                string.Join("; ", result.Errors.Select(e => e.Description)));
             TempData["PerfilError"] = "We could not delete your account right now. Please contact support.";
             return RedirectToAction(nameof(Opciones));
         }

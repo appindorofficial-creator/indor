@@ -15,6 +15,7 @@ namespace IndorMvcApp.Controllers;
 public class HomeController : Controller
 {
     private readonly AppDbContext _db;
+    private readonly IDbContextFactory<AppDbContext> _dbFactory;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly ILogger<HomeController> _logger;
     private readonly IConfiguration _configuration;
@@ -24,6 +25,7 @@ public class HomeController : Controller
 
     public HomeController(
         AppDbContext db,
+        IDbContextFactory<AppDbContext> dbFactory,
         UserManager<ApplicationUser> userManager,
         ILogger<HomeController> logger,
         IConfiguration configuration,
@@ -32,6 +34,7 @@ public class HomeController : Controller
         HomeIndexQueryService homeIndexQueries)
     {
         _db = db;
+        _dbFactory = dbFactory;
         _userManager = userManager;
         _logger = logger;
         _configuration = configuration;
@@ -88,10 +91,13 @@ public class HomeController : Controller
         ViewBag.Planes = catalog.PlanesMembresia;
 
         var propIds = propiedades.Select(p => p.Id).ToList();
-        var userPageData = await _homeIndexQueries.LoadAsync(userId!, propIds);
+        // Home/Index only renders the "More" stats and the bell notifications, so load just
+        // those instead of the full inspection/emergency/payment/history dataset (which is only
+        // used by the Perfil pages). This avoids ~40 wasted DB round-trips per Home load.
+        var homeEssentials = await _homeIndexQueries.LoadHomeEssentialsAsync(userId!, propIds);
 
         ViewBag.PlanesInternet = catalog.PlanesInternet;
-        HomeIndexViewDataApplier.ApplyToViewBag(ViewBag, userPageData, usuario, propiedades.Count, Url);
+        HomeIndexViewDataApplier.ApplyEssentialsToViewBag(ViewBag, homeEssentials, usuario, propiedades.Count, Url);
 
         var homeReturnUrl = Url.Action(nameof(Index), "Home") + "#section-myhome";
         if (HttpContext.Session.GetString(HouseFactPreviewContext.ReturnUrlSessionKey) != homeReturnUrl)
@@ -104,7 +110,7 @@ public class HomeController : Controller
         HouseFactProfileViewModel? houseFactProfile = null;
         var houseFactPreview = false;
         HomeDashboardData? primaryDashboardData = null;
-        var scheduleTask = ScheduleDisplayService.BuildAsync(_db, userId!, primaryPropiedad?.Id, Url);
+        var scheduleTask = ScheduleDisplayService.BuildAsync(_dbFactory, userId!, primaryPropiedad?.Id, Url);
 
         if (primaryPropiedad != null)
         {

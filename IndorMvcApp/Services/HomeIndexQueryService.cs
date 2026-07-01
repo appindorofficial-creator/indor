@@ -13,6 +13,46 @@ namespace IndorMvcApp.Services;
 /// </summary>
 public sealed class HomeIndexQueryService(IDbContextFactory<AppDbContext> dbFactory)
 {
+    /// <summary>
+    /// Loads ONLY the data that the Home/Index page actually renders: the schedule reminders
+    /// (bell notifications) plus the counts/membership used by the "More" section stats.
+    /// The full <see cref="LoadAsync"/> also loads inspection/emergency/payment/history data,
+    /// but Home/Index never displays those (they are only used by the Perfil pages), so running
+    /// them here was ~40 wasted DB round-trips per page load. Use this lightweight loader for Home.
+    /// </summary>
+    public async Task<HomeEssentialsData> LoadHomeEssentialsAsync(string userId, IReadOnlyList<int> propIds, CancellationToken ct = default)
+    {
+        var membresiaTask = RunAsync(db => db.MembresiasUsuario
+            .Include(m => m.Plan)
+            .Where(m => m.UserId == userId && m.Activa)
+            .OrderByDescending(m => m.FechaInicio)
+            .FirstOrDefaultAsync(ct));
+
+        var programacionesTask = RunAsync(db => db.ProgramacionesMicroservicio
+            .Include(p => p.Microservicio)
+            .Include(p => p.Propiedad)
+            .Where(p => p.UserId == userId && p.Estado == "Scheduled")
+            .OrderBy(p => p.FechaProgramada)
+            .ToListAsync(ct));
+
+        var docCountTask = propIds.Count == 0
+            ? Task.FromResult(0)
+            : RunAsync(db => db.PropiedadDocumentos.CountAsync(d => propIds.Contains(d.PropiedadId), ct));
+
+        var historialCountTask = RunAsync(db => db.HistorialServicios.CountAsync(h => h.UserId == userId, ct));
+        var programacionCountTask = RunAsync(db => db.ProgramacionesMicroservicio.CountAsync(p => p.UserId == userId, ct));
+
+        await Task.WhenAll(membresiaTask, programacionesTask, docCountTask, historialCountTask, programacionCountTask);
+
+        return new HomeEssentialsData
+        {
+            MembresiaActual = await membresiaTask,
+            ProgramacionesMicroservicio = await programacionesTask,
+            DocCount = await docCountTask,
+            ServiceCount = await historialCountTask + await programacionCountTask
+        };
+    }
+
     public async Task<HomeIndexUserPageData> LoadAsync(string userId, IReadOnlyList<int> propIds, CancellationToken ct = default)
     {
         var membresiaTask = RunAsync(db => db.MembresiasUsuario
@@ -252,6 +292,14 @@ public sealed class HomeIndexQueryService(IDbContextFactory<AppDbContext> dbFact
                         && EF.Property<TimeSpan?>(s, "HoraCitaProgramada") != null)
             .ToListAsync(ct);
     }
+}
+
+public sealed class HomeEssentialsData
+{
+    public MembresiaUsuario? MembresiaActual { get; init; }
+    public List<ProgramacionMicroservicio> ProgramacionesMicroservicio { get; init; } = [];
+    public int DocCount { get; init; }
+    public int ServiceCount { get; init; }
 }
 
 public sealed class HomeIndexUserPageData

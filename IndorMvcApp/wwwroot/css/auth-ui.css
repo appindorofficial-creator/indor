@@ -1192,3 +1192,88 @@ form .btn-primary[type="submit"] .btn-label {
     height: 1px;
     background: #E5E7EB;
 }
+
+/* ============================================================
+   Sign-in form: compact layout so everything fits on one screen
+   without scrolling and there is no large empty gap at the top.
+   Scoped to .login-container--signin so other auth pages are
+   unaffected.
+   ============================================================ */
+.auth-page:has(.login-container--signin) {
+    align-items: center;
+    min-height: 100dvh;
+    padding: 16px 20px;
+}
+
+.login-container--signin {
+    justify-content: center;
+}
+
+.login-container--signin .top-bar {
+    margin-bottom: 4px;
+}
+
+.login-container--signin .logo-container {
+    margin-bottom: 2px;
+}
+
+.login-container--signin .smart-home-logo--login {
+    width: min(78%, 250px);
+}
+
+.login-container--signin .brand-section {
+    margin-bottom: 14px;
+}
+
+.login-container--signin .brand-title--login {
+    font-size: 1.45rem;
+    margin-bottom: 4px;
+}
+
+.login-container--signin .brand-section .brand-tagline {
+    font-size: 0.9rem;
+}
+
+.login-container--signin .form-card {
+    padding: 18px 18px 16px;
+}
+
+.login-container--signin .input-group {
+    margin-bottom: 12px;
+}
+
+.login-container--signin .row-options {
+    margin-bottom: 4px;
+}
+
+.login-container--signin .auth-or {
+    margin: 12px 0 2px;
+}
+
+.login-container--signin form .btn-primary[type="submit"],
+.login-container--signin .btn-primary--submit {
+    margin-top: 4px;
+    padding: 14px 22px;
+}
+
+@media (max-height: 720px) {
+    .login-container--signin .logo-container {
+        margin-bottom: 0;
+    }
+
+    .login-container--signin .smart-home-logo--login {
+        width: min(62%, 200px);
+    }
+
+    .login-container--signin .brand-section {
+        margin-bottom: 10px;
+    }
+
+    .login-container--signin .brand-title--login {
+        font-size: 1.3rem;
+    }
+
+    .login-container--signin .input-group {
+        margin-bottom: 10px;
+    }
+}

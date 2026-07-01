@@ -20,6 +20,7 @@ public class AccountController : Controller
     private readonly IRealtorRegistrationService _realtorRegistration;
     private readonly IPropertyAdministratorRegistrationService _propertyAdministratorRegistration;
     private readonly IPasswordResetEmailSender _passwordResetEmail;
+    private readonly AccountDeletionService _accountDeletion;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -29,7 +30,8 @@ public class AccountController : Controller
         IProviderRegistrationService registration,
         IRealtorRegistrationService realtorRegistration,
         IPropertyAdministratorRegistrationService propertyAdministratorRegistration,
-        IPasswordResetEmailSender passwordResetEmail)
+        IPasswordResetEmailSender passwordResetEmail,
+        AccountDeletionService accountDeletion)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -39,6 +41,7 @@ public class AccountController : Controller
         _realtorRegistration = realtorRegistration;
         _propertyAdministratorRegistration = propertyAdministratorRegistration;
         _passwordResetEmail = passwordResetEmail;
+        _accountDeletion = accountDeletion;
     }
 
     [HttpPost]
@@ -246,6 +249,60 @@ public class AccountController : Controller
     public async Task<IActionResult> Logout()
     {
         await _signInManager.SignOutAsync();
+        return RedirectToAction(nameof(Welcome));
+    }
+
+    [HttpGet]
+    [Authorize]
+    [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
+    public async Task<IActionResult> DeleteAccount()
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction(nameof(LoginForm));
+        }
+
+        ViewBag.OnboardingTitle = "Delete account";
+        ViewBag.OnboardingShowBack = true;
+        ViewBag.Email = user.Email;
+        return View();
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize]
+    [ActionName("DeleteAccount")]
+    public async Task<IActionResult> DeleteAccountConfirmed(string? confirmEmail)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return RedirectToAction(nameof(LoginForm));
+        }
+
+        if (!string.Equals(confirmEmail?.Trim(), user.Email, StringComparison.OrdinalIgnoreCase))
+        {
+            ViewBag.OnboardingTitle = "Delete account";
+            ViewBag.OnboardingShowBack = true;
+            ViewBag.Email = user.Email;
+            ModelState.AddModelError(string.Empty, "Enter your account email exactly to confirm account deletion.");
+            return View("DeleteAccount");
+        }
+
+        var deleted = await _accountDeletion.DeleteAccountAsync(user);
+        if (!deleted)
+        {
+            ViewBag.OnboardingTitle = "Delete account";
+            ViewBag.OnboardingShowBack = true;
+            ViewBag.Email = user.Email;
+            ModelState.AddModelError(string.Empty, "We could not delete your account right now. Please contact support.");
+            return View("DeleteAccount");
+        }
+
+        await _signInManager.SignOutAsync();
+        HttpContext.Session.Clear();
+        TempData["AccountDeleted"] = "Your account and associated data have been permanently deleted.";
         return RedirectToAction(nameof(Welcome));
     }
 

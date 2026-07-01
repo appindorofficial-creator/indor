@@ -11,6 +11,23 @@ public static class ScheduleDisplayService
 {
     private static readonly StringComparer NameComparer = StringComparer.OrdinalIgnoreCase;
 
+    /// <summary>
+    /// Builds the schedule section on its OWN short-lived DbContext. Home/Index starts this
+    /// concurrently with other queries, so it must not share the request-scoped AppDbContext
+    /// (EF Core throws "A second operation was started on this context" when a context is used
+    /// by two operations at once).
+    /// </summary>
+    public static async Task<ScheduleSectionViewModel> BuildAsync(
+        IDbContextFactory<AppDbContext> dbFactory,
+        string userId,
+        int? propiedadId,
+        IUrlHelper url)
+    {
+        await using var db = await dbFactory.CreateDbContextAsync();
+        db.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
+        return await BuildAsync(db, userId, propiedadId, url);
+    }
+
     public static async Task<ScheduleSectionViewModel> BuildAsync(
         AppDbContext db,
         string userId,

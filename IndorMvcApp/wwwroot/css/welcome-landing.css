@@ -32,7 +32,11 @@
     width: 100%;
     max-width: 430px;
     margin: 0 auto;
-    padding: 0 20px calc(env(safe-area-inset-bottom, 0px) + 22px);
+    padding: 0 20px calc(env(safe-area-inset-bottom, 0px) + 18px);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
 /* Header — sits on the light page background, above the house photo */
@@ -43,11 +47,11 @@
     padding: calc(env(safe-area-inset-top, 0px) + 10px) 16px 0;
 }
 
-/* Hero — below header CTAs; shorter so login/signup stay above the fold */
+/* Hero — below header; shorter so everything fits without scrolling */
 .wl-hero {
     position: relative;
-    margin: 12px -20px 0;
-    min-height: clamp(200px, 32vh, 360px);
+    margin: 10px -20px 0;
+    min-height: clamp(150px, 22vh, 240px);
     overflow: hidden;
     border-radius: 0 0 46% 46% / 0 0 13% 13%;
     background:
@@ -143,7 +147,7 @@
 .wl-badge-row {
     display: flex;
     justify-content: center;
-    margin: 18px 0 14px;
+    margin: 14px 0 12px;
 }
 
 .wl-badge {
@@ -227,13 +231,13 @@
     gap: 10px;
 }
 
-.wl-actions--top {
-    margin-top: 14px;
-    padding: 0 2px;
+.wl-actions--bottom {
+    margin-top: auto;
+    padding: 16px 2px 0;
 }
 
-.wl-actions--top .wl-btn {
-    padding: 14px 20px;
+.wl-actions--bottom .wl-btn {
+    padding: 15px 22px;
     font-size: 1rem;
 }
 

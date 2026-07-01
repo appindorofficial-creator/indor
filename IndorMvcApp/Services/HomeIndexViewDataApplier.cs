@@ -6,6 +6,23 @@ namespace IndorMvcApp.Services;
 
 public static class HomeIndexViewDataApplier
 {
+    /// <summary>
+    /// Applies only the ViewBag values that Home/Index actually renders: the "More" section
+    /// profile stats and the schedule reminders used for the bell notifications.
+    /// </summary>
+    public static void ApplyEssentialsToViewBag(
+        dynamic viewBag,
+        HomeEssentialsData data,
+        ApplicationUser? usuario,
+        int propertyCount,
+        IUrlHelper url)
+    {
+        viewBag.MembresiaActual = data.MembresiaActual;
+        viewBag.MoreProfile = ProfileDisplayService.Build(
+            usuario, data.MembresiaActual, propertyCount, data.DocCount, data.ServiceCount, url);
+        viewBag.ProgramacionesMicroservicio = data.ProgramacionesMicroservicio;
+    }
+
     public static void ApplyToViewBag(
         dynamic viewBag,
         HomeIndexUserPageData data,

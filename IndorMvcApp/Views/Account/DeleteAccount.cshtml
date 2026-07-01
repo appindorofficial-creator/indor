@@ -1,0 +1,64 @@
+@{
+    ViewData["Title"] = "Delete account - INDOR";
+    Layout = "_LayoutAuth";
+    var email = ViewBag.Email as string;
+}
+
+<div class="login-container">
+    <div class="top-bar">
+        <a href="javascript:history.back()" class="back-btn" aria-label="Back">
+            <i class="fas fa-arrow-left"></i>
+        </a>
+        <div style="width:44px;"></div>
+    </div>
+
+    <div class="brand-section">
+        <h1 class="brand-title brand-title--login" style="color:#B91C1C;">
+            <i class="fas fa-triangle-exclamation"></i> Delete account
+        </h1>
+        <p class="brand-tagline">
+            This <span class="highlight">permanently deletes</span> your INDOR account and cannot be undone.
+        </p>
+    </div>
+
+    <div class="form-card">
+        <div asp-validation-summary="ModelOnly" class="validation-error"></div>
+
+        <p style="font-size:.9rem;color:#374151;line-height:1.5;margin:0 0 14px;">
+            Deleting your account will permanently remove:
+        </p>
+        <ul style="font-size:.88rem;color:#4B5563;line-height:1.6;margin:0 0 18px;padding-left:20px;">
+            <li>Your profile, email and contact information</li>
+            <li>Your homes, documents and property data</li>
+            <li>All service, inspection and emergency requests</li>
+            <li>Your membership, payment methods and service history</li>
+        </ul>
+
+        <form asp-controller="Account" asp-action="DeleteAccount" method="post"
+              onsubmit="return confirm('This will permanently delete your account and all associated data. This cannot be undone. Continue?');">
+            @Html.AntiForgeryToken()
+
+            <div class="input-group">
+                <label class="input-label" for="confirmEmail">
+                    To confirm, type your account email@(string.IsNullOrEmpty(email) ? "" : $" ({email})")
+                </label>
+                <div class="input-wrapper">
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input id="confirmEmail" name="confirmEmail" type="email" class="form-input"
+                           placeholder="you@email.com" autocomplete="off" required />
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-primary--submit"
+                    style="background:#DC2626;border-color:#DC2626;">
+                <span class="btn-label"><i class="fas fa-user-xmark"></i> Permanently delete my account</span>
+            </button>
+
+            <div class="auth-or"><span>or</span></div>
+
+            <div class="signup-link">
+                Changed your mind? <a href="javascript:history.back()">Keep my account</a>
+            </div>
+        </form>
+    </div>
+</div>

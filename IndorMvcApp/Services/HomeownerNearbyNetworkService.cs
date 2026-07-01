@@ -1021,35 +1021,18 @@ public class HomeownerNearbyNetworkService(
             .ToDictionaryAsync(c => c.Id, c => c.LabelEn, ct);
 
         var results = new List<RealtorNetworkMapProviderViewModel>();
-        var geocodeBudget = 6;
 
         foreach (var provider in providers)
         {
+            // Providers are geocoded when they register/update their profile
+            // (ProviderRegistrationService / ProviderProDataService). We intentionally do
+            // NOT geocode here: doing external HTTP geocoding + SaveChanges inside the
+            // Home/Index render made the page slow (up to 6 external calls + writes on a
+            // read-only GET). Providers without coordinates are simply skipped until they
+            // are geocoded through their own flow.
             if (provider.Latitude is null || provider.Longitude is null)
             {
-                if (geocodeBudget <= 0)
-                {
-                    continue;
-                }
-
-                // Explicit tracking so the geocode we apply below is persisted by
-                // SaveChangesAsync even when the caller set NoTracking as the context default.
-                var tracked = await db.IndorProveedores.AsTracking().FirstOrDefaultAsync(p => p.Id == provider.Id, ct);
-                if (tracked == null)
-                {
-                    continue;
-                }
-
-                await ProviderGeolocationHelper.ApplyGeocodeAsync(tracked, addressLookup, ct);
-                geocodeBudget--;
-                if (tracked.Latitude is null || tracked.Longitude is null)
-                {
-                    continue;
-                }
-
-                await db.SaveChangesAsync(ct);
-                provider.Latitude = tracked.Latitude;
-                provider.Longitude = tracked.Longitude;
+                continue;
             }
 
             var lat = (double)provider.Latitude!.Value;
