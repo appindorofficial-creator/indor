@@ -4070,6 +4070,15 @@ button.rl-profile-nav-item {
     color: #64748B;
     border-bottom: 1px solid #F8FAFC;
 }
+.rl-perf-row > span:first-child {
+    flex: 1;
+    min-width: 0;
+}
+.rl-perf-row > div {
+    text-align: right;
+    margin-left: 8px;
+    flex-shrink: 0;
+}
 .rl-perf-row strong {
     display: block;
     font-size: .95rem;
