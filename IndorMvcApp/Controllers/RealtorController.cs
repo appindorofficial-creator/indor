@@ -530,6 +530,53 @@ public class RealtorController(
         RedirectToAction(nameof(EditProfileContact), new { from = "public" });
 
     [HttpGet]
+    public async Task<IActionResult> EditProfileServiceArea(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildEditProfileServiceAreaAsync(realtor, cancellationToken);
+        return View("EditProfile/EditProfileServiceArea", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfileServiceArea(
+        RealtorEditProfileServiceAreaViewModel model,
+        CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.ServiceAreas))
+        {
+            ModelState.AddModelError(nameof(model.ServiceAreas), "City / market area is required.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
+            model.ServiceAreas = model.ServiceAreas?.Trim() ?? "";
+            return View("EditProfile/EditProfileServiceArea", model);
+        }
+
+        await portalService.SaveEditProfileServiceAreaAsync(realtor, model, cancellationToken);
+        TempData["ServiceAreaSaved"] = true;
+        return RedirectToAction(nameof(Profile));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> BusinessInformation(CancellationToken cancellationToken)
     {
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);

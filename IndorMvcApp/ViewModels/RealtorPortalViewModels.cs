@@ -367,6 +367,13 @@ public class RealtorEditProfileContactViewModel : RealtorEditProfileWizardViewMo
     public IReadOnlyList<string> LicenseStates { get; set; } = [];
 }
 
+public class RealtorEditProfileServiceAreaViewModel : RealtorEditProfileWizardViewModel
+{
+    [Display(Name = "City / Market Area")]
+    [Required(ErrorMessage = "City / market area is required.")]
+    public string ServiceAreas { get; set; } = "";
+}
+
 public class RealtorEditProfileLicenseViewModel : RealtorEditProfileWizardViewModel
 {
     [Display(Name = "License Number")]

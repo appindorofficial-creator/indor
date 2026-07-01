@@ -1,0 +1,37 @@
+@model IndorMvcApp.ViewModels.RealtorEditProfileServiceAreaViewModel
+@{
+    ViewData["Title"] = "Service Area / Market Area";
+}
+
+@if (TempData["EditProfileError"] is string editProfileError && !string.IsNullOrWhiteSpace(editProfileError))
+{
+    <div class="rl-error-banner" role="alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>@editProfileError</span>
+    </div>
+}
+
+<form asp-action="EditProfileServiceArea" method="post" class="rl-ep-form" id="rlEditProfileServiceAreaForm" novalidate>
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="ob-summary"></div>
+
+    <div class="rl-ep-form-card">
+        <div class="rl-ep-field-row">
+            <span class="rl-ep-field-icon"><i class="fas fa-map-location-dot"></i></span>
+            <label class="rl-ep-field">
+                <span>City / Market Area <span class="rl-required" aria-hidden="true">*</span></span>
+                <input asp-for="ServiceAreas" placeholder="Charlotte, NC or Miami-Dade, Broward" autocomplete="off" aria-required="true" />
+            </label>
+        </div>
+        <span asp-validation-for="ServiceAreas" class="rl-field-error"></span>
+        <p class="rl-field-hint">List the cities, counties, or neighborhoods you serve. Separate multiple areas with commas.</p>
+    </div>
+
+    <footer class="rl-ep-footer">
+        <button type="submit" class="rl-ep-btn-primary">Save Changes</button>
+    </footer>
+</form>
+
+@section Scripts {
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+}

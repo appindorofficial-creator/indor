@@ -35,4 +35,5 @@ public static class RealtorEditProfileActions
     public const string EditProfileContact = "EditProfileContact";
     public const string EditProfileLicense = "EditProfileLicense";
     public const string EditProfileReview = "EditProfileReview";
+    public const string EditProfileServiceArea = "EditProfileServiceArea";
 }

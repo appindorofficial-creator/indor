@@ -1138,6 +1138,45 @@ public class RealtorPortalService(
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task<RealtorEditProfileServiceAreaViewModel> BuildEditProfileServiceAreaAsync(
+        IndorRealtor realtor,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+        var entity = await db.IndorRealtors.AsNoTracking()
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        return new RealtorEditProfileServiceAreaViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
+            DisplayStep = 1,
+            TotalSteps = 1,
+            Title = "Service Area / Market Area",
+            Subtitle = "Define the cities and neighborhoods where you work with clients.",
+            HeaderBadge = "",
+            BackAction = "Profile",
+            BackController = "Realtor",
+            ServiceAreas = entity.ServiceAreas ?? ""
+        };
+    }
+
+    public async Task SaveEditProfileServiceAreaAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileServiceAreaViewModel input,
+        CancellationToken ct = default)
+    {
+        var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
+        entity.ServiceAreas = input.ServiceAreas.Trim();
+        entity.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task<RealtorEditProfileLicenseViewModel> BuildEditProfileLicenseAsync(
         IndorRealtor realtor,
         IReadOnlyList<string> licenseStates,
