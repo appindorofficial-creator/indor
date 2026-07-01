@@ -33,7 +33,7 @@
     <div class="rl-cp-card">
         <div class="rl-cp-field rl-cp-field--address @(addressError.Length > 0 ? "is-error" : null)">
             <label for="cp-address">Property address <span class="rl-cp-req">*</span></label>
-            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="House number and street name" autocomplete="address-line1" data-address-autocomplete data-ac-street-only="true" aria-required="true" aria-invalid="@(addressError.Length > 0)" /></div>
+            <div class="rl-cp-input"><i class="fas fa-location-dot"></i><input type="text" id="cp-address" name="Address" value="@Model.Address" placeholder="House number and street name" autocomplete="address-line1" data-address-autocomplete data-ac-street-only="true" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(addressError.Length > 0)" /></div>
             <span class="rl-field-error" id="addressError" data-client-error="Address">@addressError</span>
         </div>
 
