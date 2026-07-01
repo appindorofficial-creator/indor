@@ -1,4 +1,4 @@
-﻿@model IndorMvcApp.ViewModels.EmergencySmokeDetectorReviewViewModel
+@model IndorMvcApp.ViewModels.EmergencySmokeDetectorReviewViewModel
 @{
     ViewData["Title"] = "Smoke & CO Details - INDOR";
     ViewData["WizardTitle"] = "Smoke & CO Details";
@@ -10,7 +10,6 @@ var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.
 
 }
 
-<a asp-action="EmergencySmokeDetectorYourInfo" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
     <strong style="display:block;margin-bottom:4px;">Smoke &amp; CO Details</strong>
 
     

@@ -1,126 +1,121 @@
-@model IndorMvcApp.ViewModels.SchoolProfileViewModel
-@{
-    ViewData["Title"] = "School Profile";
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var school = Model.School;
-}
-@section Head {
-    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
-}
-
-<div class="sch-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="sch-brand-row"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
-<div class="sch-page-head">
-    <div>
-        <h1 class="sch-page-title">School Profile</h1>
-        <p class="sch-page-sub">Detailed information about @school.Name from your saved House Fact data.</p>
-    </div>
-</div>
-
-<div class="sch-profile-hero sch-tone-@school.Tone">
-    <div class="sch-card-icon"><i class="fas @school.Icon"></i></div>
-    <div>
-        <div class="sch-card-name">@school.Name</div>
-        <div class="sch-card-meta">@school.Subtitle</div>
-        @if (school.IsAssigned)
-        {
-            <span class="sch-pill-assigned">Assigned</span>
-        }
-    </div>
-    @if (!string.IsNullOrWhiteSpace(school.RatingValue))
-    {
-        <div class="sch-rating">
-            <span class="star"><i class="fas fa-star"></i> @school.RatingValue</span>
-            @(school.RatingLabel ?? "Rated")
-        </div>
-    }
-</div>
-
-<div class="sch-contact-card">
-    @if (!string.IsNullOrWhiteSpace(school.Address))
-    {
-        <div class="row"><i class="fas fa-location-dot"></i><div>@school.Address</div></div>
-    }
-    else
-    {
-        <div class="row"><i class="fas fa-location-dot"></i><div>@Model.Address</div></div>
-    }
-    @if (!string.IsNullOrWhiteSpace(school.District))
-    {
-        <div class="row"><i class="fas fa-landmark"></i><div>@school.District</div></div>
-    }
-    @if (!string.IsNullOrWhiteSpace(school.Phone))
-    {
-        <div class="row"><i class="fas fa-phone"></i><div>@school.Phone</div></div>
-    }
-    @if (!string.IsNullOrWhiteSpace(school.Website))
-    {
-        <div class="row"><i class="fas fa-globe"></i><div><a href="@school.Website" target="_blank" rel="noopener noreferrer" style="color:#0066CC;">@school.Website</a></div></div>
-    }
-    <div class="sch-card-actions" style="border-top:1px solid #EEF2F7;margin-top:8px;">
-        @if (!string.IsNullOrWhiteSpace(school.Website))
-        {
-            <a href="@school.Website" target="_blank" rel="noopener noreferrer">Visit website <i class="fas fa-arrow-up-right-from-square"></i></a>
-        }
-        else if (hfPreview)
-        {
-            <a asp-controller="HouseFactPreview" asp-action="Schools">Back to schools</a>
-        }
-        else
-        {
-            <a asp-action="Index" asp-route-id="@Model.PropiedadId">Back to schools</a>
-        }
-        @if (hfPreview)
-        {
-            <a asp-controller="HouseFactPreview" asp-action="SchoolsMap">Open in maps <i class="fas fa-map"></i></a>
-        }
-        else
-        {
-            <a asp-action="Map" asp-route-id="@Model.PropiedadId">Open in maps <i class="fas fa-map"></i></a>
-        }
-    </div>
-</div>
-
-<div class="sch-section-head"><h3>Programs & Highlights</h3></div>
-<div class="sch-program-grid">
-    @foreach (var program in school.Programs)
-    {
-        <div class="sch-program">
-            <div class="icon sch-tone-@program.Tone sch-card-icon" style="width:36px;height:36px;"><i class="fas @program.Icon"></i></div>
-            <h4>@program.Title</h4>
-            <p>@program.Description</p>
-        </div>
-    }
-</div>
-
-<div class="sch-section-head"><h3>At a glance</h3></div>
-<div class="sch-glance-grid">
-    @foreach (var item in school.AtAGlance)
-    {
-        <div class="sch-glance">
-            <div class="k"><i class="fas @item.Icon"></i> @item.Label</div>
-            <div class="v">@item.Value</div>
-        </div>
-    }
-</div>
-
-<div class="sch-info-banner">
-    <i class="fas fa-circle-info main"></i>
-    <div>Information comes from your saved OpenAI House Fact profile. School details, boundaries, and programs can change. Confirm with your district for the most up-to-date information.</div>
-</div>
-
-@if (hfPreview)
-{
-    <a asp-controller="HouseFactPreview" asp-action="SchoolsCompare" class="sch-btn-primary">
-        <i class="fas fa-table-columns"></i> Compare assigned schools
-    </a>
-}
-else
-{
-    <a asp-action="Compare" asp-route-id="@Model.PropiedadId" class="sch-btn-primary">
-        <i class="fas fa-table-columns"></i> Compare assigned schools
-    </a>
-}
+@model IndorMvcApp.ViewModels.SchoolProfileViewModel
+@{
+    ViewData["Title"] = "School Profile";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var school = Model.School;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
+}
+
+<div class="sch-page-head">
+    <div>
+        <h1 class="sch-page-title">School Profile</h1>
+        <p class="sch-page-sub">Detailed information about @school.Name from your saved House Fact data.</p>
+    </div>
+</div>
+
+<div class="sch-profile-hero sch-tone-@school.Tone">
+    <div class="sch-card-icon"><i class="fas @school.Icon"></i></div>
+    <div>
+        <div class="sch-card-name">@school.Name</div>
+        <div class="sch-card-meta">@school.Subtitle</div>
+        @if (school.IsAssigned)
+        {
+            <span class="sch-pill-assigned">Assigned</span>
+        }
+    </div>
+    @if (!string.IsNullOrWhiteSpace(school.RatingValue))
+    {
+        <div class="sch-rating">
+            <span class="star"><i class="fas fa-star"></i> @school.RatingValue</span>
+            @(school.RatingLabel ?? "Rated")
+        </div>
+    }
+</div>
+
+<div class="sch-contact-card">
+    @if (!string.IsNullOrWhiteSpace(school.Address))
+    {
+        <div class="row"><i class="fas fa-location-dot"></i><div>@school.Address</div></div>
+    }
+    else
+    {
+        <div class="row"><i class="fas fa-location-dot"></i><div>@Model.Address</div></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(school.District))
+    {
+        <div class="row"><i class="fas fa-landmark"></i><div>@school.District</div></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(school.Phone))
+    {
+        <div class="row"><i class="fas fa-phone"></i><div>@school.Phone</div></div>
+    }
+    @if (!string.IsNullOrWhiteSpace(school.Website))
+    {
+        <div class="row"><i class="fas fa-globe"></i><div><a href="@school.Website" target="_blank" rel="noopener noreferrer" style="color:#0066CC;">@school.Website</a></div></div>
+    }
+    <div class="sch-card-actions" style="border-top:1px solid #EEF2F7;margin-top:8px;">
+        @if (!string.IsNullOrWhiteSpace(school.Website))
+        {
+            <a href="@school.Website" target="_blank" rel="noopener noreferrer">Visit website <i class="fas fa-arrow-up-right-from-square"></i></a>
+        }
+        else if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="Schools">Back to schools</a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId">Back to schools</a>
+        }
+        @if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="SchoolsMap">Open in maps <i class="fas fa-map"></i></a>
+        }
+        else
+        {
+            <a asp-action="Map" asp-route-id="@Model.PropiedadId">Open in maps <i class="fas fa-map"></i></a>
+        }
+    </div>
+</div>
+
+<div class="sch-section-head"><h3>Programs & Highlights</h3></div>
+<div class="sch-program-grid">
+    @foreach (var program in school.Programs)
+    {
+        <div class="sch-program">
+            <div class="icon sch-tone-@program.Tone sch-card-icon" style="width:36px;height:36px;"><i class="fas @program.Icon"></i></div>
+            <h4>@program.Title</h4>
+            <p>@program.Description</p>
+        </div>
+    }
+</div>
+
+<div class="sch-section-head"><h3>At a glance</h3></div>
+<div class="sch-glance-grid">
+    @foreach (var item in school.AtAGlance)
+    {
+        <div class="sch-glance">
+            <div class="k"><i class="fas @item.Icon"></i> @item.Label</div>
+            <div class="v">@item.Value</div>
+        </div>
+    }
+</div>
+
+<div class="sch-info-banner">
+    <i class="fas fa-circle-info main"></i>
+    <div>Information comes from your saved OpenAI House Fact profile. School details, boundaries, and programs can change. Confirm with your district for the most up-to-date information.</div>
+</div>
+
+@if (hfPreview)
+{
+    <a asp-controller="HouseFactPreview" asp-action="SchoolsCompare" class="sch-btn-primary">
+        <i class="fas fa-table-columns"></i> Compare assigned schools
+    </a>
+}
+else
+{
+    <a asp-action="Compare" asp-route-id="@Model.PropiedadId" class="sch-btn-primary">
+        <i class="fas fa-table-columns"></i> Compare assigned schools
+    </a>
+}

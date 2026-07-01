@@ -1,4 +1,4 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyWaterHeaterReviewViewModel
+@model IndorMvcApp.ViewModels.EmergencyWaterHeaterReviewViewModel
 @{
     ViewData["Title"] = "Review - INDOR";
     ViewData["WizardTitle"] = "Review";
@@ -10,7 +10,6 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
 
 }
 
-<a asp-action="EmergencyWaterHeaterUpload" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
 
     <div class="title-row">
         <h1>Emergency Water Heater</h1>

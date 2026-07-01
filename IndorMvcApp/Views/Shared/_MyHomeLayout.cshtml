@@ -3,7 +3,14 @@
     Layout = null;
     var propiedadId = ViewBag.PropiedadId as int? ?? 0;
     var activeNav = ViewBag.MyHomeNav as string ?? "summary";
-    var backUrl = ViewBag.MyHomeBackUrl as string ?? HomeNavigationUrls.HouseFactsTab(Url);
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var backUrl = HomeNavigationUrls.ResolveHouseFactBackUrl(
+        Url,
+        Context.Session,
+        ViewBag.MyHomeBackUrl as string,
+        ViewBag.HouseFactReturnUrl as string,
+        hfPreview,
+        propiedadId);
 }
 <!DOCTYPE html>
 <html lang="en">

@@ -1,4 +1,4 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyTreeDamageReviewViewModel
+@model IndorMvcApp.ViewModels.EmergencyTreeDamageReviewViewModel
 @{
     ViewData["Title"] = "Tree Damage Details - INDOR";
     ViewData["WizardTitle"] = "Tree Damage Details";
@@ -10,7 +10,6 @@ var isDanger = string.Equals(Model.PeligroInmediatoResumen, "Yes", StringCompari
 
 }
 
-<a asp-action="EmergencyTreeDamagePhotos" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
     <strong style="display:block;margin-bottom:4px;">Tree Damage Details</strong>
     <div class="step-sub">Step 3 of 3 &middot; Review and dispatch</div>
 

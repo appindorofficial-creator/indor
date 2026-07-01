@@ -2,22 +2,13 @@
 @{
     ViewData["Title"] = Model.Title;
     var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    ViewBag.MyHomeBackUrl = hfPreview
+        ? Url.Action("Documents", "HouseFactPreview")
+        : Url.Action("Index", "Documents", new { id = Model.PropiedadId });
 }
 @section Head {
     <link rel="stylesheet" href="~/css/documents.css" asp-append-version="true" />
 }
-
-<div class="doc-back-row">
-    @if (hfPreview)
-    {
-        <a asp-controller="HouseFactPreview" asp-action="Documents"><i class="fas fa-chevron-left"></i></a>
-    }
-    else
-    {
-        <a asp-action="Index" asp-route-id="@Model.PropiedadId"><i class="fas fa-chevron-left"></i></a>
-    }
-    <div class="doc-brand"><i class="fas fa-house"></i> House Facts</div>
-</div>
 
 <div class="doc-head">
     <h1 class="doc-title">@Model.Title</h1>

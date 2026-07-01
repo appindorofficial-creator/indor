@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -29,6 +30,7 @@ public class SystemsProfileController : Controller
 
         ViewBag.PropiedadId = id;
         ViewBag.MyHomeNav = "summary";
+        HouseFactPreviewContext.ApplyReturnUrlToView(this);
         return View(SystemsProfileDisplayService.BuildIndex(bundle.Value.Propiedad, bundle.Value.Info, filter));
     }
 
@@ -40,6 +42,7 @@ public class SystemsProfileController : Controller
 
         ViewBag.PropiedadId = id;
         ViewBag.MyHomeNav = "summary";
+        HouseFactPreviewContext.ApplyReturnUrlToView(this);
         return View(SystemsProfileDisplayService.BuildVerification(bundle.Value.Propiedad, bundle.Value.Info));
     }
 
@@ -54,6 +57,7 @@ public class SystemsProfileController : Controller
 
         ViewBag.PropiedadId = id;
         ViewBag.MyHomeNav = "summary";
+        HouseFactPreviewContext.ApplyReturnUrlToView(this);
         return View(model);
     }
 

@@ -4,9 +4,9 @@
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "maintenance";
+    ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
 }
 <div class="hf-title-row">
-    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">Maintenance details</h1>
 </div>
 <div class="hf-card">

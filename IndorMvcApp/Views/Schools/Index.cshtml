@@ -1,151 +1,146 @@
-@model IndorMvcApp.ViewModels.SchoolsFlowViewModel
-@{
-    ViewData["Title"] = "Schools";
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-}
-@section Head {
-    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
-}
-
-<div class="sch-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="sch-brand-row"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
-<div class="sch-page-head">
-    <div>
-        <h1 class="sch-page-title">Schools</h1>
-        <p class="sch-page-sub">Explore assigned and nearby schools for your home.</p>
-    </div>
-    @if (hfPreview)
-    {
-        <a asp-controller="HouseFactPreview" asp-action="SchoolsMap" class="sch-filter-btn" aria-label="Map and district">
-            <i class="fas fa-sliders"></i>
-        </a>
-    }
-    else
-    {
-        <a asp-controller="Schools" asp-action="Map" asp-route-id="@Model.PropiedadId" class="sch-filter-btn" aria-label="Map and district">
-            <i class="fas fa-sliders"></i>
-        </a>
-    }
-</div>
-
-<div class="sch-tabs">
-    @if (hfPreview)
-    {
-        <a class="sch-tab @(Model.ActiveTab == "assigned" ? "active" : "")" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="assigned">Assigned</a>
-        <a class="sch-tab @(Model.ActiveTab == "nearby" ? "active" : "")" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">Nearby</a>
-        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="SchoolsCompare">Compare</a>
-        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="SchoolsMap">District</a>
-    }
-    else
-    {
-        <a class="sch-tab @(Model.ActiveTab == "assigned" ? "active" : "")" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="assigned">Assigned</a>
-        <a class="sch-tab @(Model.ActiveTab == "nearby" ? "active" : "")" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">Nearby</a>
-        <a class="sch-tab" asp-action="Compare" asp-route-id="@Model.PropiedadId">Compare</a>
-        <a class="sch-tab" asp-action="Map" asp-route-id="@Model.PropiedadId">District</a>
-    }
-</div>
-
-<div class="sch-location-card">
-    <div class="sch-location-icon"><i class="fas fa-school"></i></div>
-    <div class="sch-location-address">@Model.Address</div>
-    @if (!string.IsNullOrWhiteSpace(Model.DistrictName))
-    {
-        <div class="sch-location-district">
-            <div class="k">School district</div>
-            <div class="v">@Model.DistrictName</div>
-        </div>
-    }
-</div>
-
-@if (!Model.HasData)
-{
-    <div class="sch-empty">
-        <i class="fas fa-graduation-cap" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
-        <div>No school data found in your saved House Fact profile.</div>
-        @if (hfPreview)
-        {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="sch-btn-primary" style="margin-top:16px;">
-                Refresh property data
-            </a>
-        }
-        else
-        {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sch-btn-primary" style="margin-top:16px;">
-                Refresh property data
-            </a>
-        }
-    </div>
-}
-else if (Model.ActiveTab == "nearby")
-{
-    <div class="sch-section-head">
-        <h3>Nearby schools</h3>
-        @if (hfPreview)
-        {
-            <a asp-controller="HouseFactPreview" asp-action="SchoolsMap">See all</a>
-        }
-        else
-        {
-            <a asp-action="Map" asp-route-id="@Model.PropiedadId">See all</a>
-        }
-    </div>
-    @if (Model.NearbySchools.Count == 0)
-    {
-        <div class="sch-empty">No nearby schools were listed in the saved property data.</div>
-    }
-    else
-    {
-        <div class="sch-grid-2">
-            @foreach (var school in Model.NearbySchools)
-            {
-                @await Html.PartialAsync("_SchoolCard", school, new ViewDataDictionary(ViewData) { { "Compact", true } })
-            }
-        </div>
-    }
-}
-else
-{
-    <div class="sch-section-head">
-        <h3>Assigned schools</h3>
-    </div>
-    @if (Model.AssignedSchools.Count == 0)
-    {
-        <div class="sch-empty">No assigned schools were confirmed in the saved property data.</div>
-    }
-    else
-    {
-        foreach (var school in Model.AssignedSchools)
-        {
-            @await Html.PartialAsync("_SchoolCard", school)
-        }
-    }
-
-    @if (Model.NearbySchools.Count > 0)
-    {
-        <div class="sch-section-head">
-            <h3>Nearby schools</h3>
-            @if (hfPreview)
-            {
-                <a asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">See all</a>
-            }
-            else
-            {
-                <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">See all</a>
-            }
-        </div>
-        <div class="sch-grid-2">
-            @foreach (var school in Model.NearbySchools.Take(2))
-            {
-                @await Html.PartialAsync("_SchoolCard", school, new ViewDataDictionary(ViewData) { { "Compact", true } })
-            }
-        </div>
-    }
-}
-
-<div class="sch-info-banner">
-    <i class="fas fa-circle-info main"></i>
-    <div>School assignments are based on your home address and public data saved from OpenAI research. Boundaries may change. Please verify with your district.</div>
-</div>
+@model IndorMvcApp.ViewModels.SchoolsFlowViewModel
+@{
+    ViewData["Title"] = "Schools";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
+}
+
+<div class="sch-page-head">
+    <div>
+        <h1 class="sch-page-title">Schools</h1>
+        <p class="sch-page-sub">Explore assigned and nearby schools for your home.</p>
+    </div>
+    @if (hfPreview)
+    {
+        <a asp-controller="HouseFactPreview" asp-action="SchoolsMap" class="sch-filter-btn" aria-label="Map and district">
+            <i class="fas fa-sliders"></i>
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Schools" asp-action="Map" asp-route-id="@Model.PropiedadId" class="sch-filter-btn" aria-label="Map and district">
+            <i class="fas fa-sliders"></i>
+        </a>
+    }
+</div>
+
+<div class="sch-tabs">
+    @if (hfPreview)
+    {
+        <a class="sch-tab @(Model.ActiveTab == "assigned" ? "active" : "")" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="assigned">Assigned</a>
+        <a class="sch-tab @(Model.ActiveTab == "nearby" ? "active" : "")" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">Nearby</a>
+        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="SchoolsCompare">Compare</a>
+        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="SchoolsMap">District</a>
+    }
+    else
+    {
+        <a class="sch-tab @(Model.ActiveTab == "assigned" ? "active" : "")" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="assigned">Assigned</a>
+        <a class="sch-tab @(Model.ActiveTab == "nearby" ? "active" : "")" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">Nearby</a>
+        <a class="sch-tab" asp-action="Compare" asp-route-id="@Model.PropiedadId">Compare</a>
+        <a class="sch-tab" asp-action="Map" asp-route-id="@Model.PropiedadId">District</a>
+    }
+</div>
+
+<div class="sch-location-card">
+    <div class="sch-location-icon"><i class="fas fa-school"></i></div>
+    <div class="sch-location-address">@Model.Address</div>
+    @if (!string.IsNullOrWhiteSpace(Model.DistrictName))
+    {
+        <div class="sch-location-district">
+            <div class="k">School district</div>
+            <div class="v">@Model.DistrictName</div>
+        </div>
+    }
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="sch-empty">
+        <i class="fas fa-graduation-cap" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No school data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="sch-btn-primary" style="margin-top:16px;">
+                Refresh property data
+            </a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="sch-btn-primary" style="margin-top:16px;">
+                Refresh property data
+            </a>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "nearby")
+{
+    <div class="sch-section-head">
+        <h3>Nearby schools</h3>
+        @if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="SchoolsMap">See all</a>
+        }
+        else
+        {
+            <a asp-action="Map" asp-route-id="@Model.PropiedadId">See all</a>
+        }
+    </div>
+    @if (Model.NearbySchools.Count == 0)
+    {
+        <div class="sch-empty">No nearby schools were listed in the saved property data.</div>
+    }
+    else
+    {
+        <div class="sch-grid-2">
+            @foreach (var school in Model.NearbySchools)
+            {
+                @await Html.PartialAsync("_SchoolCard", school, new ViewDataDictionary(ViewData) { { "Compact", true } })
+            }
+        </div>
+    }
+}
+else
+{
+    <div class="sch-section-head">
+        <h3>Assigned schools</h3>
+    </div>
+    @if (Model.AssignedSchools.Count == 0)
+    {
+        <div class="sch-empty">No assigned schools were confirmed in the saved property data.</div>
+    }
+    else
+    {
+        foreach (var school in Model.AssignedSchools)
+        {
+            @await Html.PartialAsync("_SchoolCard", school)
+        }
+    }
+
+    @if (Model.NearbySchools.Count > 0)
+    {
+        <div class="sch-section-head">
+            <h3>Nearby schools</h3>
+            @if (hfPreview)
+            {
+                <a asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">See all</a>
+            }
+            else
+            {
+                <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">See all</a>
+            }
+        </div>
+        <div class="sch-grid-2">
+            @foreach (var school in Model.NearbySchools.Take(2))
+            {
+                @await Html.PartialAsync("_SchoolCard", school, new ViewDataDictionary(ViewData) { { "Compact", true } })
+            }
+        </div>
+    }
+}
+
+<div class="sch-info-banner">
+    <i class="fas fa-circle-info main"></i>
+    <div>School assignments are based on your home address and public data saved from OpenAI research. Boundaries may change. Please verify with your district.</div>
+</div>

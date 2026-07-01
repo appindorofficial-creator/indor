@@ -1,4 +1,4 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyFloodReviewViewModel
+@model IndorMvcApp.ViewModels.EmergencyFloodReviewViewModel
 @{
     ViewData["Title"] = "Review - INDOR";
     ViewData["WizardTitle"] = "Review";
@@ -9,7 +9,6 @@ var hasPhotos = !Model.ArchivosResumen.StartsWith("None", StringComparison.Ordin
 
 }
 
-<a asp-action="EmergencyFloodUpload" asp-route-id="@Model.SolicitudId" class="back-btn"><i class="fas fa-arrow-left"></i></a>
 
     <div class="title-row">
         <h1>Flood Details</h1>

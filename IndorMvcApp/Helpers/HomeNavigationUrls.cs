@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace IndorMvcApp.Helpers;
@@ -25,6 +26,47 @@ public static class HomeNavigationUrls
 
     public static string MoreTab(IUrlHelper url) =>
         $"{(url.Action("Index", "Home") ?? "/").TrimEnd('/')}#{MoreTabSection}";
+
+    /// <summary>
+    /// Resolves the back URL for House Facts / MyHome layout pages.
+    /// Views may override via <see cref="ViewBag.MyHomeBackUrl"/>.
+    /// </summary>
+    public static string ResolveHouseFactBackUrl(
+        IUrlHelper url,
+        ISession? session,
+        string? myHomeBackUrl,
+        string? houseFactReturnUrl,
+        bool hfPreview,
+        int propiedadId)
+    {
+        if (!string.IsNullOrWhiteSpace(myHomeBackUrl))
+        {
+            return myHomeBackUrl;
+        }
+
+        if (!string.IsNullOrWhiteSpace(houseFactReturnUrl))
+        {
+            return houseFactReturnUrl;
+        }
+
+        var sessionReturn = session != null ? HouseFactPreviewContext.GetReturnUrl(session) : null;
+        if (!string.IsNullOrWhiteSpace(sessionReturn))
+        {
+            return sessionReturn;
+        }
+
+        if (hfPreview)
+        {
+            return url.Action("PropertyDetails", "Propietario") ?? HouseFactsTab(url);
+        }
+
+        if (propiedadId > 0)
+        {
+            return url.Action("Details", "MyHome", new { id = propiedadId, tab = "attom" }) ?? HouseFactsTab(url);
+        }
+
+        return HouseFactsTab(url);
+    }
 
     /// <summary>
     /// Resolves back navigation for MyHome sub-pages (History, Documents, Providers, Maintenance).

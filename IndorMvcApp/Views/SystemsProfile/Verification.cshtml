@@ -1,125 +1,120 @@
-@model IndorMvcApp.ViewModels.SystemsVerificationViewModel
-@{
-    ViewData["Title"] = "System Verification Center";
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-}
-@section Head {
-    <link rel="stylesheet" href="~/css/systems-profile.css" asp-append-version="true" />
-}
-
-<div class="sp-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="sp-brand"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
-<div class="sp-head">
-    <h1 class="sp-title">System Verification Center</h1>
-    <p class="sp-sub">Complete missing system details in one place.</p>
-</div>
-
-<div class="sp-progress-head">
-    <span>Systems accuracy progress</span>
-    <span style="color:#0066CC;">@Model.VerifiedCount of @Model.TotalCount systems verified</span>
-</div>
-<div class="sp-progress-bar">
-    <div class="sp-progress-fill" style="width:@Model.ProgressPercent%;"></div>
-</div>
-
-@foreach (var item in Model.Items)
-{
-    if (hfPreview)
-    {
-        <a class="sp-verify-item"
-           asp-controller="HouseFactPreview" asp-action="SystemsDetail"
-           asp-route-systemId="@item.SystemId">
-            <div class="sp-system-icon"><i class="fas @item.Icon"></i></div>
-            <div class="sp-system-body">
-                <div class="sp-system-name">@item.Title</div>
-                <div class="sp-system-sub">@item.Subtitle</div>
-            </div>
-            <span class="sp-status @item.StatusTone">@item.Status</span>
-            <i class="fas fa-chevron-right sp-chev"></i>
-        </a>
-    }
-    else
-    {
-        <a class="sp-verify-item"
-           asp-action="Detail"
-           asp-route-id="@Model.PropiedadId"
-           asp-route-systemId="@item.SystemId">
-            <div class="sp-system-icon"><i class="fas @item.Icon"></i></div>
-            <div class="sp-system-body">
-                <div class="sp-system-name">@item.Title</div>
-                <div class="sp-system-sub">@item.Subtitle</div>
-            </div>
-            <span class="sp-status @item.StatusTone">@item.Status</span>
-            <i class="fas fa-chevron-right sp-chev"></i>
-        </a>
-    }
-}
-
-<div class="sp-banner">
-    <i class="fas fa-circle-info"></i>
-    <div>Adding documents improves confidence. Complete more items to increase accuracy and reduce missing information.</div>
-</div>
-
-<div class="sp-section-title">Quick actions</div>
-<div class="sp-quick-grid">
-    @if (hfPreview)
-    {
-        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
-            <i class="fas fa-camera"></i>
-            <div class="t">Upload photo</div>
-            <div class="s">Add photos of equipment</div>
-        </a>
-        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <div class="t">Add invoice</div>
-            <div class="s">Upload receipts or invoices</div>
-        </a>
-        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
-            <i class="fas fa-bell"></i>
-            <div class="t">Set reminders</div>
-            <div class="s">Never miss important tasks</div>
-        </a>
-        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
-            <i class="fas fa-headset"></i>
-            <div class="t">Request help</div>
-            <div class="s">Get expert assistance</div>
-        </a>
-    }
-    else
-    {
-        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
-            <i class="fas fa-camera"></i>
-            <div class="t">Upload photo</div>
-            <div class="s">Add photos of equipment</div>
-        </a>
-        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
-            <i class="fas fa-file-invoice-dollar"></i>
-            <div class="t">Add invoice</div>
-            <div class="s">Upload receipts or invoices</div>
-        </a>
-        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
-            <i class="fas fa-bell"></i>
-            <div class="t">Set reminders</div>
-            <div class="s">Never miss important tasks</div>
-        </a>
-        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
-            <i class="fas fa-headset"></i>
-            <div class="t">Request help</div>
-            <div class="s">Get expert assistance</div>
-        </a>
-    }
-</div>
-
-@if (hfPreview)
-{
-    <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="sp-btn-primary">Finish systems review</a>
-    <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="sp-btn-secondary">Back to Systems Profile</a>
-}
-else
-{
-    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="sp-btn-primary">Finish systems review</a>
-    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="sp-btn-secondary">Back to Systems Profile</a>
-}
+@model IndorMvcApp.ViewModels.SystemsVerificationViewModel
+@{
+    ViewData["Title"] = "System Verification Center";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/systems-profile.css" asp-append-version="true" />
+}
+
+<div class="sp-head">
+    <h1 class="sp-title">System Verification Center</h1>
+    <p class="sp-sub">Complete missing system details in one place.</p>
+</div>
+
+<div class="sp-progress-head">
+    <span>Systems accuracy progress</span>
+    <span style="color:#0066CC;">@Model.VerifiedCount of @Model.TotalCount systems verified</span>
+</div>
+<div class="sp-progress-bar">
+    <div class="sp-progress-fill" style="width:@Model.ProgressPercent%;"></div>
+</div>
+
+@foreach (var item in Model.Items)
+{
+    if (hfPreview)
+    {
+        <a class="sp-verify-item"
+           asp-controller="HouseFactPreview" asp-action="SystemsDetail"
+           asp-route-systemId="@item.SystemId">
+            <div class="sp-system-icon"><i class="fas @item.Icon"></i></div>
+            <div class="sp-system-body">
+                <div class="sp-system-name">@item.Title</div>
+                <div class="sp-system-sub">@item.Subtitle</div>
+            </div>
+            <span class="sp-status @item.StatusTone">@item.Status</span>
+            <i class="fas fa-chevron-right sp-chev"></i>
+        </a>
+    }
+    else
+    {
+        <a class="sp-verify-item"
+           asp-action="Detail"
+           asp-route-id="@Model.PropiedadId"
+           asp-route-systemId="@item.SystemId">
+            <div class="sp-system-icon"><i class="fas @item.Icon"></i></div>
+            <div class="sp-system-body">
+                <div class="sp-system-name">@item.Title</div>
+                <div class="sp-system-sub">@item.Subtitle</div>
+            </div>
+            <span class="sp-status @item.StatusTone">@item.Status</span>
+            <i class="fas fa-chevron-right sp-chev"></i>
+        </a>
+    }
+}
+
+<div class="sp-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>Adding documents improves confidence. Complete more items to increase accuracy and reduce missing information.</div>
+</div>
+
+<div class="sp-section-title">Quick actions</div>
+<div class="sp-quick-grid">
+    @if (hfPreview)
+    {
+        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
+            <i class="fas fa-camera"></i>
+            <div class="t">Upload photo</div>
+            <div class="s">Add photos of equipment</div>
+        </a>
+        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <div class="t">Add invoice</div>
+            <div class="s">Upload receipts or invoices</div>
+        </a>
+        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
+            <i class="fas fa-bell"></i>
+            <div class="t">Set reminders</div>
+            <div class="s">Never miss important tasks</div>
+        </a>
+        <a class="sp-quick" asp-controller="Propietario" asp-action="PropertyDetails">
+            <i class="fas fa-headset"></i>
+            <div class="t">Request help</div>
+            <div class="s">Get expert assistance</div>
+        </a>
+    }
+    else
+    {
+        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
+            <i class="fas fa-camera"></i>
+            <div class="t">Upload photo</div>
+            <div class="s">Add photos of equipment</div>
+        </a>
+        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
+            <i class="fas fa-file-invoice-dollar"></i>
+            <div class="t">Add invoice</div>
+            <div class="s">Upload receipts or invoices</div>
+        </a>
+        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
+            <i class="fas fa-bell"></i>
+            <div class="t">Set reminders</div>
+            <div class="s">Never miss important tasks</div>
+        </a>
+        <a class="sp-quick" asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom">
+            <i class="fas fa-headset"></i>
+            <div class="t">Request help</div>
+            <div class="s">Get expert assistance</div>
+        </a>
+    }
+</div>
+
+@if (hfPreview)
+{
+    <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="sp-btn-primary">Finish systems review</a>
+    <a asp-controller="HouseFactPreview" asp-action="SystemsProfile" class="sp-btn-secondary">Back to Systems Profile</a>
+}
+else
+{
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="sp-btn-primary">Finish systems review</a>
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="sp-btn-secondary">Back to Systems Profile</a>
+}

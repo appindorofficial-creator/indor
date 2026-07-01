@@ -66,12 +66,14 @@
         <input type="hidden" asp-for="MicroservicioId" />
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="RecordatorioActivo" id="RecordatorioActivo" value="@(Model.RecordatorioActivo ? "true" : "false")" />
-        <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-sliders"></i> @Model.CtaTexto <i class="fas fa-chevron-right"></i>
-        </button>
-        <button type="submit" name="action" value="remindOnly" class="btn-outline" style="margin-top:10px;">
-            <i class="fas fa-bell"></i> @Model.RemindOnlyCtaTexto
-        </button>
+        <div class="sticky-footer">
+            <button type="submit" name="action" value="continue" class="btn-primary">
+                <i class="fas fa-sliders"></i> @Model.CtaTexto <i class="fas fa-chevron-right"></i>
+            </button>
+            <button type="submit" name="action" value="remindOnly" class="btn-outline">
+                <i class="fas fa-bell"></i> @Model.RemindOnlyCtaTexto
+            </button>
+        </div>
     </form>
 
     @if (!string.IsNullOrWhiteSpace(Model.InfoBoxTexto))

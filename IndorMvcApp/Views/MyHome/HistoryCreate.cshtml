@@ -5,9 +5,11 @@
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
+    ViewBag.MyHomeBackUrl = isEdit
+        ? Url.Action("HistoryDetail", "MyHome", new { id = Model.Id })
+        : Url.Action("History", "MyHome", new { id = Model.PropiedadId });
 }
 <div class="hf-title-row">
-    <a asp-action="@(isEdit ? "HistoryDetail" : "History")" asp-route-id="@(isEdit ? Model.Id : Model.PropiedadId)" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">@(isEdit ? "Edit record" : "Add record")</h1>
 </div>
 <form asp-action="@(isEdit ? "HistoryEdit" : "HistoryCreate")" method="post">

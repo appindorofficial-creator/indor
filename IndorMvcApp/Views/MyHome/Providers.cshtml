@@ -6,7 +6,6 @@
     ViewBag.MyHomeNav = "summary";
 }
 <div class="hf-title-row">
-    <a href="@(ViewBag.MyHomeBackUrl as string ?? HomeNavigationUrls.HouseFactsTab(Url))" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">Providers</h1>
     <a asp-action="ProviderCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">+ Add</a>
 </div>

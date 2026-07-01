@@ -1,114 +1,109 @@
-@model IndorMvcApp.ViewModels.SchoolsCompareViewModel
-@{
-    ViewData["Title"] = "Compare Schools";
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-}
-@section Head {
-    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
-}
-
-<div class="sch-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="sch-brand-row"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
-<div class="sch-page-head">
-    <div>
-        <h1 class="sch-page-title">Compare Schools</h1>
-        <p class="sch-page-sub">Compare your assigned schools side by side.</p>
-    </div>
-</div>
-
-<div class="sch-tabs">
-    @if (hfPreview)
-    {
-        <a class="sch-tab active" asp-controller="HouseFactPreview" asp-action="SchoolsCompare">Assigned</a>
-        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">Nearby</a>
-        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="Schools">Saved</a>
-    }
-    else
-    {
-        <a class="sch-tab active" asp-action="Compare" asp-route-id="@Model.PropiedadId">Assigned</a>
-        <a class="sch-tab" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">Nearby</a>
-        <a class="sch-tab" asp-action="Index" asp-route-id="@Model.PropiedadId">Saved</a>
-    }
-</div>
-
-@if (Model.AssignedSchools.Count == 0)
-{
-    <div class="sch-empty">No assigned schools available to compare in the saved property data.</div>
-}
-else
-{
-    <div class="sch-compare-table">
-        <table>
-            <thead>
-                <tr>
-                    <th></th>
-                    @foreach (var school in Model.AssignedSchools)
-                    {
-                        <th class="sch-compare-school-head">
-                            <div class="icon sch-tone-@school.Tone sch-card-icon"><i class="fas @school.Icon"></i></div>
-                            <div class="name">@school.Name</div>
-                        </th>
-                    }
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th><i class="fas fa-users"></i> Grades</th>
-                    @foreach (var school in Model.AssignedSchools) { <td>@school.Grades</td> }
-                </tr>
-                <tr>
-                    <th><i class="fas fa-school"></i> Type</th>
-                    @foreach (var school in Model.AssignedSchools) { <td>@school.SchoolType</td> }
-                </tr>
-                <tr>
-                    <th><i class="fas fa-location-dot"></i> Distance</th>
-                    @foreach (var school in Model.AssignedSchools) { <td>@(school.Distance ?? "—")</td> }
-                </tr>
-                <tr>
-                    <th><i class="fas fa-star"></i> Rating</th>
-                    @foreach (var school in Model.AssignedSchools)
-                    {
-                        <td>
-                            @if (!string.IsNullOrWhiteSpace(school.RatingValue))
-                            {
-                                <span class="sch-rating" style="display:inline-block;"><span class="star"><i class="fas fa-star"></i> @school.RatingValue</span>@(school.RatingLabel ?? "")</span>
-                            }
-                            else
-                            {
-                                <span>—</span>
-                            }
-                        </td>
-                    }
-                </tr>
-                <tr>
-                    <th><i class="fas fa-landmark"></i> District</th>
-                    @foreach (var school in Model.AssignedSchools) { <td>@(school.District ?? Model.DistrictName ?? "—")</td> }
-                </tr>
-            </tbody>
-        </table>
-    </div>
-}
-
-<div class="sch-info-banner">
-    <i class="fas fa-wand-magic-sparkles main"></i>
-    <div>
-        <strong>Quick takeaway.</strong> @Model.QuickTakeaway
-        <div style="margin-top:8px;font-size:.78rem;">Tap any school in the Schools screen to view details from your saved House Fact profile.</div>
-    </div>
-</div>
-
-@if (hfPreview)
-{
-    <a asp-controller="HouseFactPreview" asp-action="Schools" class="sch-btn-primary">
-        <i class="fas fa-bookmark"></i> Back to schools summary
-    </a>
-}
-else
-{
-    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="sch-btn-primary">
-        <i class="fas fa-bookmark"></i> Back to schools summary
-    </a>
-}
+@model IndorMvcApp.ViewModels.SchoolsCompareViewModel
+@{
+    ViewData["Title"] = "Compare Schools";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
+}
+
+<div class="sch-page-head">
+    <div>
+        <h1 class="sch-page-title">Compare Schools</h1>
+        <p class="sch-page-sub">Compare your assigned schools side by side.</p>
+    </div>
+</div>
+
+<div class="sch-tabs">
+    @if (hfPreview)
+    {
+        <a class="sch-tab active" asp-controller="HouseFactPreview" asp-action="SchoolsCompare">Assigned</a>
+        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">Nearby</a>
+        <a class="sch-tab" asp-controller="HouseFactPreview" asp-action="Schools">Saved</a>
+    }
+    else
+    {
+        <a class="sch-tab active" asp-action="Compare" asp-route-id="@Model.PropiedadId">Assigned</a>
+        <a class="sch-tab" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">Nearby</a>
+        <a class="sch-tab" asp-action="Index" asp-route-id="@Model.PropiedadId">Saved</a>
+    }
+</div>
+
+@if (Model.AssignedSchools.Count == 0)
+{
+    <div class="sch-empty">No assigned schools available to compare in the saved property data.</div>
+}
+else
+{
+    <div class="sch-compare-table">
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    @foreach (var school in Model.AssignedSchools)
+                    {
+                        <th class="sch-compare-school-head">
+                            <div class="icon sch-tone-@school.Tone sch-card-icon"><i class="fas @school.Icon"></i></div>
+                            <div class="name">@school.Name</div>
+                        </th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th><i class="fas fa-users"></i> Grades</th>
+                    @foreach (var school in Model.AssignedSchools) { <td>@school.Grades</td> }
+                </tr>
+                <tr>
+                    <th><i class="fas fa-school"></i> Type</th>
+                    @foreach (var school in Model.AssignedSchools) { <td>@school.SchoolType</td> }
+                </tr>
+                <tr>
+                    <th><i class="fas fa-location-dot"></i> Distance</th>
+                    @foreach (var school in Model.AssignedSchools) { <td>@(school.Distance ?? "—")</td> }
+                </tr>
+                <tr>
+                    <th><i class="fas fa-star"></i> Rating</th>
+                    @foreach (var school in Model.AssignedSchools)
+                    {
+                        <td>
+                            @if (!string.IsNullOrWhiteSpace(school.RatingValue))
+                            {
+                                <span class="sch-rating" style="display:inline-block;"><span class="star"><i class="fas fa-star"></i> @school.RatingValue</span>@(school.RatingLabel ?? "")</span>
+                            }
+                            else
+                            {
+                                <span>—</span>
+                            }
+                        </td>
+                    }
+                </tr>
+                <tr>
+                    <th><i class="fas fa-landmark"></i> District</th>
+                    @foreach (var school in Model.AssignedSchools) { <td>@(school.District ?? Model.DistrictName ?? "—")</td> }
+                </tr>
+            </tbody>
+        </table>
+    </div>
+}
+
+<div class="sch-info-banner">
+    <i class="fas fa-wand-magic-sparkles main"></i>
+    <div>
+        <strong>Quick takeaway.</strong> @Model.QuickTakeaway
+        <div style="margin-top:8px;font-size:.78rem;">Tap any school in the Schools screen to view details from your saved House Fact profile.</div>
+    </div>
+</div>
+
+@if (hfPreview)
+{
+    <a asp-controller="HouseFactPreview" asp-action="Schools" class="sch-btn-primary">
+        <i class="fas fa-bookmark"></i> Back to schools summary
+    </a>
+}
+else
+{
+    <a asp-action="Index" asp-route-id="@Model.PropiedadId" class="sch-btn-primary">
+        <i class="fas fa-bookmark"></i> Back to schools summary
+    </a>
+}

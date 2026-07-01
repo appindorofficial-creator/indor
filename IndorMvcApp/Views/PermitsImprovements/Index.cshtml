@@ -1,246 +1,241 @@
-@model IndorMvcApp.ViewModels.PermitsImprovementsIndexViewModel
-@{
-    ViewData["Title"] = "Permits & Improvements";
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var tabs = new[] { ("permits", "Permits"), ("improvements", "Improvements"), ("missing-docs", "Missing Docs") };
-}
-@section Head {
-    <link rel="stylesheet" href="~/css/permits-improvements.css" asp-append-version="true" />
-}
-
-<div class="pi-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="pi-brand"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
-<div class="pi-head">
-    <h1 class="pi-title">Permits &amp; Improvements</h1>
-    <p class="pi-sub">@Model.PageSubtitle</p>
-</div>
-
-<div class="pi-tabs">
-    @foreach (var (key, label) in tabs)
-    {
-        if (hfPreview)
-        {
-            <a class="pi-tab @(Model.ActiveTab == key ? "active" : "")"
-               asp-controller="HouseFactPreview" asp-action="PermitsImprovements"
-               asp-route-tab="@key">@label</a>
-        }
-        else
-        {
-            <a class="pi-tab @(Model.ActiveTab == key ? "active" : "")"
-               asp-action="Index"
-               asp-route-id="@Model.PropiedadId"
-               asp-route-tab="@key">@label</a>
-        }
-    }
-</div>
-
-<div class="pi-property-card">
-    <div class="pi-property-top">
-        <div class="pi-thumb"><i class="fas fa-house"></i></div>
-        <div class="pi-address">@Model.Address</div>
-        @if (!string.IsNullOrWhiteSpace(Model.MissingDocsBadge))
-        {
-            <span class="pi-review-badge"><i class="fas fa-triangle-exclamation"></i> @Model.MissingDocsBadge</span>
-        }
-    </div>
-    @if (Model.Stats.Count > 0)
-    {
-        <div class="pi-stats">
-            @foreach (var stat in Model.Stats)
-            {
-                <div class="pi-stat">
-                    <i class="fas @stat.Icon"></i>
-                    <div class="k">@stat.Label</div>
-                    <div class="v">@stat.Value</div>
-                </div>
-            }
-        </div>
-    }
-</div>
-
-@if (!Model.HasData)
-{
-    <div class="pi-empty-note">
-        <i class="fas fa-file-lines" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
-        <div>No permit or improvement data found in your saved House Fact profile.</div>
-        @if (hfPreview)
-        {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary" style="margin-top:16px;">Refresh property data</a>
-        }
-        else
-        {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary" style="margin-top:16px;">Refresh property data</a>
-        }
-    </div>
-}
-else if (Model.ActiveTab == "missing-docs")
-{
-    <div class="pi-section-title">Needed for verification</div>
-    @foreach (var item in Model.NeededItems)
-    {
-        if (hfPreview)
-        {
-            <a class="pi-list-item"
-               asp-controller="HouseFactPreview" asp-action="PermitsDetail"
-               asp-route-permitId="@item.Id">
-                <div class="pi-list-icon warn"><i class="fas @item.Icon"></i></div>
-                <div class="pi-list-body">
-                    <div class="pi-list-title">@item.Title</div>
-                </div>
-                <span class="pi-status @item.StatusTone">@item.Status</span>
-                <i class="fas fa-chevron-right pi-chev"></i>
-            </a>
-        }
-        else
-        {
-            <a class="pi-list-item"
-               asp-action="Detail"
-               asp-route-id="@Model.PropiedadId"
-               asp-route-permitId="@item.Id">
-                <div class="pi-list-icon warn"><i class="fas @item.Icon"></i></div>
-                <div class="pi-list-body">
-                    <div class="pi-list-title">@item.Title</div>
-                </div>
-                <span class="pi-status @item.StatusTone">@item.Status</span>
-                <i class="fas fa-chevron-right pi-chev"></i>
-            </a>
-        }
-    }
-
-    <div class="pi-section-title">Helpful extras</div>
-    @foreach (var item in Model.HelpfulItems)
-    {
-        <div class="pi-list-item">
-            <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
-            <div class="pi-list-body">
-                <div class="pi-list-title">@item.Title</div>
-            </div>
-            <span class="pi-status @item.StatusTone">@item.Status</span>
-            <i class="fas fa-chevron-right pi-chev"></i>
-        </div>
-    }
-}
-else
-{
-    @foreach (var item in Model.Items)
-    {
-        if (item.LinkToDetail)
-        {
-            if (hfPreview)
-            {
-                <a class="pi-list-item"
-                   asp-controller="HouseFactPreview" asp-action="PermitsDetail"
-                   asp-route-permitId="@item.Id">
-                    <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
-                    <div class="pi-list-body">
-                        <div class="pi-list-title">@item.Title</div>
-                        <div class="pi-list-sub">@item.Subtitle</div>
-                    </div>
-                    <span class="pi-status @item.StatusTone">@item.Status</span>
-                    <i class="fas fa-chevron-right pi-chev"></i>
-                </a>
-            }
-            else
-            {
-                <a class="pi-list-item"
-                   asp-action="Detail"
-                   asp-route-id="@Model.PropiedadId"
-                   asp-route-permitId="@item.Id">
-                    <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
-                    <div class="pi-list-body">
-                        <div class="pi-list-title">@item.Title</div>
-                        <div class="pi-list-sub">@item.Subtitle</div>
-                    </div>
-                    <span class="pi-status @item.StatusTone">@item.Status</span>
-                    <i class="fas fa-chevron-right pi-chev"></i>
-                </a>
-            }
-        }
-        else
-        {
-            <div class="pi-list-item">
-                <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
-                <div class="pi-list-body">
-                    <div class="pi-list-title">@item.Title</div>
-                    <div class="pi-list-sub">@item.Subtitle</div>
-                </div>
-                <span class="pi-status @item.StatusTone">@item.Status</span>
-                <i class="fas fa-chevron-right pi-chev"></i>
-            </div>
-        }
-    }
-
-    @if (Model.RecordedNotes.Count > 0)
-    {
-        <div class="pi-section-title">Recorded notes</div>
-        <div class="pi-notes-grid">
-            @foreach (var note in Model.RecordedNotes)
-            {
-                <div class="pi-note">
-                    <i class="fas @note.Icon"></i>
-                    <div class="t">@note.Title</div>
-                    <div class="s">@note.Subtitle</div>
-                </div>
-            }
-        </div>
-    }
-}
-
-<div class="pi-banner">
-    <i class="fas fa-circle-info"></i>
-    <div>@Model.InfoBanner</div>
-</div>
-
-<div class="pi-btn-row">
-    @if (hfPreview)
-    {
-        <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary">
-            <i class="fas fa-file-circle-plus"></i> Add documents
-        </a>
-        @if (Model.ActiveTab == "improvements")
-        {
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-secondary">
-                <i class="fas fa-folder-open"></i> Open documents
-            </a>
-        }
-        else if (Model.ActiveTab == "missing-docs")
-        {
-            <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements" asp-route-tab="permits" class="pi-btn-secondary">
-                <i class="fas fa-clock"></i> Mark later
-            </a>
-        }
-        else
-        {
-            <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements" asp-route-tab="improvements" class="pi-btn-secondary">
-                <i class="fas fa-clock-rotate-left"></i> View improvement history
-            </a>
-        }
-    }
-    else
-    {
-        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary">
-            <i class="fas fa-file-circle-plus"></i> Add documents
-        </a>
-        @if (Model.ActiveTab == "improvements")
-        {
-            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-secondary">
-                <i class="fas fa-folder-open"></i> Open documents
-            </a>
-        }
-        else if (Model.ActiveTab == "missing-docs")
-        {
-            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="permits" class="pi-btn-secondary">
-                <i class="fas fa-clock"></i> Mark later
-            </a>
-        }
-        else
-        {
-            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="improvements" class="pi-btn-secondary">
-                <i class="fas fa-clock-rotate-left"></i> View improvement history
-            </a>
-        }
-    }
-</div>
+@model IndorMvcApp.ViewModels.PermitsImprovementsIndexViewModel
+@{
+    ViewData["Title"] = "Permits & Improvements";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var tabs = new[] { ("permits", "Permits"), ("improvements", "Improvements"), ("missing-docs", "Missing Docs") };
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/permits-improvements.css" asp-append-version="true" />
+}
+
+<div class="pi-head">
+    <h1 class="pi-title">Permits &amp; Improvements</h1>
+    <p class="pi-sub">@Model.PageSubtitle</p>
+</div>
+
+<div class="pi-tabs">
+    @foreach (var (key, label) in tabs)
+    {
+        if (hfPreview)
+        {
+            <a class="pi-tab @(Model.ActiveTab == key ? "active" : "")"
+               asp-controller="HouseFactPreview" asp-action="PermitsImprovements"
+               asp-route-tab="@key">@label</a>
+        }
+        else
+        {
+            <a class="pi-tab @(Model.ActiveTab == key ? "active" : "")"
+               asp-action="Index"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-tab="@key">@label</a>
+        }
+    }
+</div>
+
+<div class="pi-property-card">
+    <div class="pi-property-top">
+        <div class="pi-thumb"><i class="fas fa-house"></i></div>
+        <div class="pi-address">@Model.Address</div>
+        @if (!string.IsNullOrWhiteSpace(Model.MissingDocsBadge))
+        {
+            <span class="pi-review-badge"><i class="fas fa-triangle-exclamation"></i> @Model.MissingDocsBadge</span>
+        }
+    </div>
+    @if (Model.Stats.Count > 0)
+    {
+        <div class="pi-stats">
+            @foreach (var stat in Model.Stats)
+            {
+                <div class="pi-stat">
+                    <i class="fas @stat.Icon"></i>
+                    <div class="k">@stat.Label</div>
+                    <div class="v">@stat.Value</div>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@if (!Model.HasData)
+{
+    <div class="pi-empty-note">
+        <i class="fas fa-file-lines" style="font-size:2rem;color:#94A3B8;margin-bottom:10px;"></i>
+        <div>No permit or improvement data found in your saved House Fact profile.</div>
+        @if (hfPreview)
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary" style="margin-top:16px;">Refresh property data</a>
+        }
+        else
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary" style="margin-top:16px;">Refresh property data</a>
+        }
+    </div>
+}
+else if (Model.ActiveTab == "missing-docs")
+{
+    <div class="pi-section-title">Needed for verification</div>
+    @foreach (var item in Model.NeededItems)
+    {
+        if (hfPreview)
+        {
+            <a class="pi-list-item"
+               asp-controller="HouseFactPreview" asp-action="PermitsDetail"
+               asp-route-permitId="@item.Id">
+                <div class="pi-list-icon warn"><i class="fas @item.Icon"></i></div>
+                <div class="pi-list-body">
+                    <div class="pi-list-title">@item.Title</div>
+                </div>
+                <span class="pi-status @item.StatusTone">@item.Status</span>
+                <i class="fas fa-chevron-right pi-chev"></i>
+            </a>
+        }
+        else
+        {
+            <a class="pi-list-item"
+               asp-action="Detail"
+               asp-route-id="@Model.PropiedadId"
+               asp-route-permitId="@item.Id">
+                <div class="pi-list-icon warn"><i class="fas @item.Icon"></i></div>
+                <div class="pi-list-body">
+                    <div class="pi-list-title">@item.Title</div>
+                </div>
+                <span class="pi-status @item.StatusTone">@item.Status</span>
+                <i class="fas fa-chevron-right pi-chev"></i>
+            </a>
+        }
+    }
+
+    <div class="pi-section-title">Helpful extras</div>
+    @foreach (var item in Model.HelpfulItems)
+    {
+        <div class="pi-list-item">
+            <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
+            <div class="pi-list-body">
+                <div class="pi-list-title">@item.Title</div>
+            </div>
+            <span class="pi-status @item.StatusTone">@item.Status</span>
+            <i class="fas fa-chevron-right pi-chev"></i>
+        </div>
+    }
+}
+else
+{
+    @foreach (var item in Model.Items)
+    {
+        if (item.LinkToDetail)
+        {
+            if (hfPreview)
+            {
+                <a class="pi-list-item"
+                   asp-controller="HouseFactPreview" asp-action="PermitsDetail"
+                   asp-route-permitId="@item.Id">
+                    <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
+                    <div class="pi-list-body">
+                        <div class="pi-list-title">@item.Title</div>
+                        <div class="pi-list-sub">@item.Subtitle</div>
+                    </div>
+                    <span class="pi-status @item.StatusTone">@item.Status</span>
+                    <i class="fas fa-chevron-right pi-chev"></i>
+                </a>
+            }
+            else
+            {
+                <a class="pi-list-item"
+                   asp-action="Detail"
+                   asp-route-id="@Model.PropiedadId"
+                   asp-route-permitId="@item.Id">
+                    <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
+                    <div class="pi-list-body">
+                        <div class="pi-list-title">@item.Title</div>
+                        <div class="pi-list-sub">@item.Subtitle</div>
+                    </div>
+                    <span class="pi-status @item.StatusTone">@item.Status</span>
+                    <i class="fas fa-chevron-right pi-chev"></i>
+                </a>
+            }
+        }
+        else
+        {
+            <div class="pi-list-item">
+                <div class="pi-list-icon"><i class="fas @item.Icon"></i></div>
+                <div class="pi-list-body">
+                    <div class="pi-list-title">@item.Title</div>
+                    <div class="pi-list-sub">@item.Subtitle</div>
+                </div>
+                <span class="pi-status @item.StatusTone">@item.Status</span>
+                <i class="fas fa-chevron-right pi-chev"></i>
+            </div>
+        }
+    }
+
+    @if (Model.RecordedNotes.Count > 0)
+    {
+        <div class="pi-section-title">Recorded notes</div>
+        <div class="pi-notes-grid">
+            @foreach (var note in Model.RecordedNotes)
+            {
+                <div class="pi-note">
+                    <i class="fas @note.Icon"></i>
+                    <div class="t">@note.Title</div>
+                    <div class="s">@note.Subtitle</div>
+                </div>
+            }
+        </div>
+    }
+}
+
+<div class="pi-banner">
+    <i class="fas fa-circle-info"></i>
+    <div>@Model.InfoBanner</div>
+</div>
+
+<div class="pi-btn-row">
+    @if (hfPreview)
+    {
+        <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-primary">
+            <i class="fas fa-file-circle-plus"></i> Add documents
+        </a>
+        @if (Model.ActiveTab == "improvements")
+        {
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="pi-btn-secondary">
+                <i class="fas fa-folder-open"></i> Open documents
+            </a>
+        }
+        else if (Model.ActiveTab == "missing-docs")
+        {
+            <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements" asp-route-tab="permits" class="pi-btn-secondary">
+                <i class="fas fa-clock"></i> Mark later
+            </a>
+        }
+        else
+        {
+            <a asp-controller="HouseFactPreview" asp-action="PermitsImprovements" asp-route-tab="improvements" class="pi-btn-secondary">
+                <i class="fas fa-clock-rotate-left"></i> View improvement history
+            </a>
+        }
+    }
+    else
+    {
+        <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-primary">
+            <i class="fas fa-file-circle-plus"></i> Add documents
+        </a>
+        @if (Model.ActiveTab == "improvements")
+        {
+            <a asp-controller="MyHome" asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="pi-btn-secondary">
+                <i class="fas fa-folder-open"></i> Open documents
+            </a>
+        }
+        else if (Model.ActiveTab == "missing-docs")
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="permits" class="pi-btn-secondary">
+                <i class="fas fa-clock"></i> Mark later
+            </a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="improvements" class="pi-btn-secondary">
+                <i class="fas fa-clock-rotate-left"></i> View improvement history
+            </a>
+        }
+    }
+</div>

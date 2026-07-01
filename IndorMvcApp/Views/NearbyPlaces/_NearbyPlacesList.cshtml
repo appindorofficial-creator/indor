@@ -7,11 +7,6 @@
     var line2 = addressParts.Length > 1 ? addressParts[1].Trim() : string.Empty;
 }
 
-<div class="np-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="np-brand"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
 <div class="np-head">
     <h1 class="np-title">@Model.PageTitle</h1>
     <p class="np-sub">@Model.PageSubtitle</p>

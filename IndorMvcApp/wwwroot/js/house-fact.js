@@ -11,6 +11,19 @@
         var detailSections = root.querySelectorAll(".hf-detail-section");
         var openButtons = root.querySelectorAll("[data-hf-open-category]");
         var backBtn = root.querySelector("[data-hf-back-overview]");
+        var layoutBackButtons = function () {
+            return document.querySelectorAll(".hf-top .app-back-btn, .app-header .app-back-btn");
+        };
+
+        function setLayoutBackVisible(visible) {
+            layoutBackButtons().forEach(function (button) {
+                if (button.getAttribute("aria-hidden") === "true") {
+                    return;
+                }
+
+                button.hidden = !visible;
+            });
+        }
 
         function sectionMatchesCategory(section, categoryKey, sectionIds) {
             if (sectionIds && sectionIds.length > 0) {
@@ -26,6 +39,7 @@
 
         function expandAllSections() {
             if (!detailScreen || !overviewScreen) return;
+            setLayoutBackVisible(false);
             overviewScreen.hidden = true;
             detailScreen.hidden = false;
             if (detailTitle) {
@@ -43,6 +57,7 @@
         function openCategory(categoryKey, title, sectionIds) {
             if (!detailScreen || !overviewScreen) return;
 
+            setLayoutBackVisible(false);
             overviewScreen.hidden = true;
             detailScreen.hidden = false;
 
@@ -62,6 +77,7 @@
 
         function backToOverview() {
             if (!detailScreen || !overviewScreen) return;
+            setLayoutBackVisible(true);
             detailScreen.hidden = true;
             overviewScreen.hidden = false;
             detailSections.forEach(function (section) {

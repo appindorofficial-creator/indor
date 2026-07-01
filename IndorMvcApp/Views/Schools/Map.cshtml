@@ -1,133 +1,128 @@
-@model IndorMvcApp.ViewModels.SchoolsMapViewModel
-@{
-    ViewData["Title"] = "School Map & District";
-    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
-    var pinPositions = new[] {
-        ("18%", "22%", "green"),
-        ("72%", "18%", "purple"),
-        ("76%", "68%", "blue")
-    };
-}
-@section Head {
-    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
-}
-
-<div class="sch-back-row">
-    @await Html.PartialAsync("_HouseFactFlowBack")
-    <div class="sch-brand-row"><i class="fas fa-house"></i> House Facts</div>
-</div>
-
-<div class="sch-page-head">
-    <div>
-        <h1 class="sch-page-title">School Map & District</h1>
-        <p class="sch-page-sub">See where your assigned schools are located and which district your home belongs to.</p>
-    </div>
-</div>
-
-<div class="sch-seg-tabs">
-    <span class="sch-seg-tab active">Map</span>
-    @if (hfPreview)
-    {
-        <a class="sch-seg-tab" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="district">Boundary</a>
-        <a class="sch-seg-tab" asp-controller="HouseFactPreview" asp-action="SchoolsCompare">Commute</a>
-    }
-    else
-    {
-        <a class="sch-seg-tab" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="district">Boundary</a>
-        <a class="sch-seg-tab" asp-action="Compare" asp-route-id="@Model.PropiedadId">Commute</a>
-    }
-</div>
-
-<div class="sch-map-wrap">
-    <div class="sch-map-grid"></div>
-    <div class="sch-map-home"><i class="fas fa-house"></i></div>
-    @{
-        var i = 0;
-        foreach (var school in Model.AssignedSchools.Take(3))
-        {
-            var pos = i < pinPositions.Length ? pinPositions[i] : ("50%", "20%", "blue");
-            <div class="sch-map-pin @pos.Item3" style="left:@pos.Item1;top:@pos.Item2;">
-                <div class="dot"><i class="fas @school.Icon"></i></div>
-                <div>@school.Name</div>
-                <div>@(school.Distance ?? "—") @(school.CommuteTime != null ? $"• {school.CommuteTime}" : "")</div>
-            </div>
-            i++;
-        }
-    }
-</div>
-
-@if (Model.AssignedSchools.Count > 0)
-{
-    <div class="sch-map-cards">
-        @foreach (var school in Model.AssignedSchools.Take(3))
-        {
-            if (hfPreview)
-            {
-                <a class="sch-map-card" asp-controller="HouseFactPreview" asp-action="SchoolsProfile" asp-route-schoolId="@school.Id">
-                    <div class="icon sch-tone-@school.Tone sch-card-icon" style="width:34px;height:34px;margin:0 auto 6px;"><i class="fas @school.Icon"></i></div>
-                    <div class="name">@school.Name</div>
-                    <div class="meta">@school.Grades</div>
-                    <div class="meta"><i class="fas fa-car"></i> @(school.Distance ?? "—") @(school.CommuteTime != null ? $"• {school.CommuteTime}" : "")</div>
-                </a>
-            }
-            else
-            {
-                <a class="sch-map-card" asp-action="Profile" asp-route-id="@Model.PropiedadId" asp-route-schoolId="@school.Id">
-                    <div class="icon sch-tone-@school.Tone sch-card-icon" style="width:34px;height:34px;margin:0 auto 6px;"><i class="fas @school.Icon"></i></div>
-                    <div class="name">@school.Name</div>
-                    <div class="meta">@school.Grades</div>
-                    <div class="meta"><i class="fas fa-car"></i> @(school.Distance ?? "—") @(school.CommuteTime != null ? $"• {school.CommuteTime}" : "")</div>
-                </a>
-            }
-        }
-    </div>
-}
-
-@if (hfPreview)
-{
-    <a class="sch-district-card" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="assigned">
-        <div class="sch-location-icon"><i class="fas fa-landmark"></i></div>
-        <div style="flex:1;">
-            <div class="sch-card-name">@(Model.DistrictName ?? "School district")</div>
-            <div class="sch-card-meta">@(Model.DistrictNote ?? "Verify district assignment with official sources.")</div>
-        </div>
-        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
-    </a>
-}
-else
-{
-    <a class="sch-district-card" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="assigned">
-        <div class="sch-location-icon"><i class="fas fa-landmark"></i></div>
-        <div style="flex:1;">
-            <div class="sch-card-name">@(Model.DistrictName ?? "School district")</div>
-            <div class="sch-card-meta">@(Model.DistrictNote ?? "Verify district assignment with official sources.")</div>
-        </div>
-        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
-    </a>
-}
-
-@if (Model.NearbySchools.Count > 0)
-{
-    <div class="sch-section-head">
-        <h3>Nearby options</h3>
-        @if (hfPreview)
-        {
-            <a asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">See all</a>
-        }
-        else
-        {
-            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">See all</a>
-        }
-    </div>
-    <div class="sch-grid-2">
-        @foreach (var school in Model.NearbySchools.Take(2))
-        {
-            @await Html.PartialAsync("_SchoolCard", school, new ViewDataDictionary(ViewData) { { "Compact", true } })
-        }
-    </div>
-}
-
-<div class="sch-info-banner">
-    <i class="fas fa-circle-info main"></i>
-    <div>Map distances are estimated from saved public listing and district data. Confirm routes and assignments with official district tools.</div>
-</div>
+@model IndorMvcApp.ViewModels.SchoolsMapViewModel
+@{
+    ViewData["Title"] = "School Map & District";
+    var hfPreview = ViewBag.HouseFactPreview as bool? == true;
+    var pinPositions = new[] {
+        ("18%", "22%", "green"),
+        ("72%", "18%", "purple"),
+        ("76%", "68%", "blue")
+    };
+}
+@section Head {
+    <link rel="stylesheet" href="~/css/schools.css" asp-append-version="true" />
+}
+
+<div class="sch-page-head">
+    <div>
+        <h1 class="sch-page-title">School Map & District</h1>
+        <p class="sch-page-sub">See where your assigned schools are located and which district your home belongs to.</p>
+    </div>
+</div>
+
+<div class="sch-seg-tabs">
+    <span class="sch-seg-tab active">Map</span>
+    @if (hfPreview)
+    {
+        <a class="sch-seg-tab" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="district">Boundary</a>
+        <a class="sch-seg-tab" asp-controller="HouseFactPreview" asp-action="SchoolsCompare">Commute</a>
+    }
+    else
+    {
+        <a class="sch-seg-tab" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="district">Boundary</a>
+        <a class="sch-seg-tab" asp-action="Compare" asp-route-id="@Model.PropiedadId">Commute</a>
+    }
+</div>
+
+<div class="sch-map-wrap">
+    <div class="sch-map-grid"></div>
+    <div class="sch-map-home"><i class="fas fa-house"></i></div>
+    @{
+        var i = 0;
+        foreach (var school in Model.AssignedSchools.Take(3))
+        {
+            var pos = i < pinPositions.Length ? pinPositions[i] : ("50%", "20%", "blue");
+            <div class="sch-map-pin @pos.Item3" style="left:@pos.Item1;top:@pos.Item2;">
+                <div class="dot"><i class="fas @school.Icon"></i></div>
+                <div>@school.Name</div>
+                <div>@(school.Distance ?? "—") @(school.CommuteTime != null ? $"• {school.CommuteTime}" : "")</div>
+            </div>
+            i++;
+        }
+    }
+</div>
+
+@if (Model.AssignedSchools.Count > 0)
+{
+    <div class="sch-map-cards">
+        @foreach (var school in Model.AssignedSchools.Take(3))
+        {
+            if (hfPreview)
+            {
+                <a class="sch-map-card" asp-controller="HouseFactPreview" asp-action="SchoolsProfile" asp-route-schoolId="@school.Id">
+                    <div class="icon sch-tone-@school.Tone sch-card-icon" style="width:34px;height:34px;margin:0 auto 6px;"><i class="fas @school.Icon"></i></div>
+                    <div class="name">@school.Name</div>
+                    <div class="meta">@school.Grades</div>
+                    <div class="meta"><i class="fas fa-car"></i> @(school.Distance ?? "—") @(school.CommuteTime != null ? $"• {school.CommuteTime}" : "")</div>
+                </a>
+            }
+            else
+            {
+                <a class="sch-map-card" asp-action="Profile" asp-route-id="@Model.PropiedadId" asp-route-schoolId="@school.Id">
+                    <div class="icon sch-tone-@school.Tone sch-card-icon" style="width:34px;height:34px;margin:0 auto 6px;"><i class="fas @school.Icon"></i></div>
+                    <div class="name">@school.Name</div>
+                    <div class="meta">@school.Grades</div>
+                    <div class="meta"><i class="fas fa-car"></i> @(school.Distance ?? "—") @(school.CommuteTime != null ? $"• {school.CommuteTime}" : "")</div>
+                </a>
+            }
+        }
+    </div>
+}
+
+@if (hfPreview)
+{
+    <a class="sch-district-card" asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="assigned">
+        <div class="sch-location-icon"><i class="fas fa-landmark"></i></div>
+        <div style="flex:1;">
+            <div class="sch-card-name">@(Model.DistrictName ?? "School district")</div>
+            <div class="sch-card-meta">@(Model.DistrictNote ?? "Verify district assignment with official sources.")</div>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+    </a>
+}
+else
+{
+    <a class="sch-district-card" asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="assigned">
+        <div class="sch-location-icon"><i class="fas fa-landmark"></i></div>
+        <div style="flex:1;">
+            <div class="sch-card-name">@(Model.DistrictName ?? "School district")</div>
+            <div class="sch-card-meta">@(Model.DistrictNote ?? "Verify district assignment with official sources.")</div>
+        </div>
+        <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
+    </a>
+}
+
+@if (Model.NearbySchools.Count > 0)
+{
+    <div class="sch-section-head">
+        <h3>Nearby options</h3>
+        @if (hfPreview)
+        {
+            <a asp-controller="HouseFactPreview" asp-action="Schools" asp-route-tab="nearby">See all</a>
+        }
+        else
+        {
+            <a asp-action="Index" asp-route-id="@Model.PropiedadId" asp-route-tab="nearby">See all</a>
+        }
+    </div>
+    <div class="sch-grid-2">
+        @foreach (var school in Model.NearbySchools.Take(2))
+        {
+            @await Html.PartialAsync("_SchoolCard", school, new ViewDataDictionary(ViewData) { { "Compact", true } })
+        }
+    </div>
+}
+
+<div class="sch-info-banner">
+    <i class="fas fa-circle-info main"></i>
+    <div>Map distances are estimated from saved public listing and district data. Confirm routes and assignments with official district tools.</div>
+</div>

@@ -4,11 +4,11 @@
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
+    ViewBag.MyHomeBackUrl = Url.Action("History", "MyHome", new { id = Model.PropiedadId });
     var warrantyActive = string.Equals(Model.WarrantyStatus, "Active", StringComparison.OrdinalIgnoreCase)
         || string.Equals(Model.WarrantyStatus, "Vigente", StringComparison.OrdinalIgnoreCase);
 }
 <div class="hf-title-row">
-    <a asp-action="History" asp-route-id="@Model.PropiedadId" class="app-back-btn"><i class="fas fa-chevron-left"></i></a>
     <h1 class="hf-title">Record details</h1>
 </div>
 <div class="hf-card">

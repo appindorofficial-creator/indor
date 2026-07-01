@@ -23,6 +23,14 @@
     padding: 0 16px var(--indor-page-footer-scroll, calc(96px + env(safe-area-inset-bottom, 0)));
 }
 
+.iw-wizard-page .iw-wizard-shell:has(.sticky-footer > *:nth-child(2)) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
+.iw-wizard-page .iw-wizard-shell:has(.sticky-footer > *:nth-child(3)) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + 2 * (var(--indor-action-h) + var(--indor-action-gap)));
+}
+
 /* ── Header ─────────────────────────────────────────────── */
 .iw-wizard-top,
 .nr-wizard-top {
@@ -372,9 +380,24 @@ body:has(.prv-pro-bottom-nav) {
     padding-bottom: var(--indor-page-footer-scroll);
 }
 
-.iw-wizard-page .iw-wizard-shell form:has(.sticky-footer > button[type="submit"]:nth-last-child(2)),
-.iw-wizard-page .iw-wizard-shell form:has(.cl-form-actions > button[type="submit"]:nth-last-child(2)) {
+.iw-wizard-page .iw-wizard-shell form:has(.sticky-footer > *:nth-child(2)),
+.iw-wizard-page .iw-wizard-shell form:has(.cl-form-actions > *:nth-child(2)) {
     padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
+}
+
+.iw-wizard-page .iw-wizard-shell form:has(.sticky-footer > *:nth-child(3)),
+.iw-wizard-page .iw-wizard-shell form:has(.cl-form-actions > *:nth-child(3)) {
+    padding-bottom: calc(var(--indor-page-footer-scroll) + 2 * (var(--indor-action-h) + var(--indor-action-gap)));
+}
+
+.iw-wizard-page .sticky-footer > .btn-primary,
+.iw-wizard-page .sticky-footer > .btn-outline,
+.iw-wizard-page .sticky-footer > button,
+.iw-wizard-page .sticky-footer > a {
+    width: 100%;
+    max-width: 448px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 /* Legacy .cl-form-actions wrapper (Moving/Cleaning steps before sticky-footer migration) */
@@ -420,42 +443,41 @@ body:has(.prv-pro-bottom-nav) {
     padding-bottom: var(--indor-page-footer-scroll);
 }
 
+/* Fallback before wizard-footer.js runs — prefer .sticky-footer wrapper */
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(:has(.cl-form-actions)) > button[type="submit"],
 .iw-wizard-page form.cl-form-actions > button[type="submit"],
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > button.hvac-save-btn[type="submit"],
-.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > a.hvac-save-btn.indor-page-cta {
-    position: fixed;
-    left: 16px;
-    right: 16px;
-    width: auto;
-    max-width: 448px;
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > a.hvac-save-btn.indor-page-cta,
+.iw-wizard-page form.cl-form-actions > .btn-primary,
+.iw-wizard-page form.cl-form-actions > .btn-outline {
+    position: fixed !important;
+    left: 16px !important;
+    right: 16px !important;
+    width: auto !important;
+    max-width: 448px !important;
     margin-left: auto !important;
     margin-right: auto !important;
-    z-index: 41;
+    z-index: 41 !important;
     margin-top: 0 !important;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
 }
 
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"]:last-child,
 .iw-wizard-page form.cl-form-actions > button[type="submit"]:last-child,
+.iw-wizard-page form.cl-form-actions > .btn-outline:last-child,
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)) > button.hvac-save-btn[type="submit"]:last-child {
-    bottom: var(--indor-page-footer-bottom);
+    bottom: var(--indor-page-footer-bottom) !important;
 }
 
 .iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"]:nth-last-child(2),
-.iw-wizard-page form.cl-form-actions > button[type="submit"]:nth-last-child(2) {
-    bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap));
+.iw-wizard-page form.cl-form-actions > button[type="submit"]:nth-last-child(2),
+.iw-wizard-page form.cl-form-actions > .btn-primary:nth-last-child(2) {
+    bottom: calc(var(--indor-page-footer-bottom) + var(--indor-action-h) + var(--indor-action-gap)) !important;
 }
 
-/* Three stacked submit buttons (e.g. Continue / Skip / Back) */
-.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions) > button[type="submit"]:nth-last-child(3),
-.iw-wizard-page form.cl-form-actions > button[type="submit"]:nth-last-child(3) {
-    bottom: calc(var(--indor-page-footer-bottom) + 2 * (var(--indor-action-h) + var(--indor-action-gap)));
-}
-
-/* Reserve extra scroll space when a third action button is stacked */
-.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions):has(> button[type="submit"]:nth-last-child(3)),
-.iw-wizard-page form.cl-form-actions:has(> button[type="submit"]:nth-last-child(3)) {
+.iw-wizard-page .iw-wizard-shell form:not(:has(.sticky-footer)):not(.cl-form-actions):has(> button[type="submit"]:nth-last-child(2)),
+.iw-wizard-page form.cl-form-actions:has(> button[type="submit"]:nth-last-child(2)),
+.iw-wizard-page form.cl-form-actions:has(> .btn-outline) {
     padding-bottom: calc(var(--indor-page-footer-scroll) + var(--indor-action-h) + var(--indor-action-gap));
 }
 

@@ -15,7 +15,7 @@
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-<form asp-action="MovingService" method="post" class="cl-form-actions">
+<form asp-action="MovingService" method="post">
     <input type="hidden" asp-for="MovingSetupServicioId" />
     <input type="hidden" asp-for="SolicitudId" />
     <input type="hidden" asp-for="NombreServicio" />
@@ -77,10 +77,12 @@
         </div>
     </div>
 
-    <button type="submit" name="action" value="continue" class="btn-primary">
-        @Model.CtaContinueTexto <i class="fas fa-chevron-right"></i>
-    </button>
-    <button type="submit" name="action" value="estimate" class="btn-outline">@Model.CtaEstimateTexto</button>
+    <div class="sticky-footer">
+        <button type="submit" name="action" value="continue" class="btn-primary">
+            @Model.CtaContinueTexto <i class="fas fa-chevron-right"></i>
+        </button>
+        <button type="submit" name="action" value="estimate" class="btn-outline">@Model.CtaEstimateTexto</button>
+    </div>
 </form>
 
 @section Scripts {
