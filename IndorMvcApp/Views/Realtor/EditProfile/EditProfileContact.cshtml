@@ -4,7 +4,15 @@
     ViewData["Title"] = "Company & Contact Details";
 }
 
-<form asp-action="EditProfileContact" method="post" class="rl-ep-form" novalidate>
+@if (TempData["EditProfileError"] is string editProfileError && !string.IsNullOrWhiteSpace(editProfileError))
+{
+    <div class="rl-error-banner" role="alert">
+        <i class="fas fa-triangle-exclamation"></i>
+        <span>@editProfileError</span>
+    </div>
+}
+
+<form asp-action="EditProfileContact" method="post" class="rl-ep-form" id="rlEditProfileContactForm" novalidate>
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -12,8 +20,8 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-store"></i></span>
             <label class="rl-ep-field">
-                <span>Business Name</span>
-                <input asp-for="BusinessName" placeholder="Business name" autocomplete="organization" />
+                <span>Business Name <span class="rl-required" aria-hidden="true">*</span></span>
+                <input asp-for="BusinessName" placeholder="Business name" autocomplete="organization" aria-required="true" />
             </label>
         </div>
         <span asp-validation-for="BusinessName" class="rl-field-error"></span>
@@ -21,7 +29,7 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-user-group"></i></span>
             <label class="rl-ep-field">
-                <span>Display Name (Public)</span>
+                <span>Display Name (Public) <small>(Optional)</small></span>
                 <input asp-for="PublicDisplayName" placeholder="Public display name" />
             </label>
         </div>
@@ -29,8 +37,8 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-building"></i></span>
             <label class="rl-ep-field">
-                <span>Brokerage Name</span>
-                <input asp-for="BrokerageName" placeholder="Brokerage name" autocomplete="organization" />
+                <span>Brokerage Name <span class="rl-required" aria-hidden="true">*</span></span>
+                <input asp-for="BrokerageName" placeholder="Brokerage name" autocomplete="organization" aria-required="true" />
             </label>
         </div>
         <span asp-validation-for="BrokerageName" class="rl-field-error"></span>
@@ -38,7 +46,7 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-briefcase"></i></span>
             <label class="rl-ep-field">
-                <span>Realtor Title</span>
+                <span>Realtor Title <small>(Optional)</small></span>
                 <input asp-for="RealtorTitle" placeholder="Realtor®" />
             </label>
         </div>
@@ -46,8 +54,8 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-envelope"></i></span>
             <label class="rl-ep-field">
-                <span>Email</span>
-                <input asp-for="Email" type="email" placeholder="Email" autocomplete="email" />
+                <span>Email <span class="rl-required" aria-hidden="true">*</span></span>
+                <input asp-for="Email" type="email" placeholder="Email" autocomplete="email" aria-required="true" />
             </label>
         </div>
         <span asp-validation-for="Email" class="rl-field-error"></span>
@@ -55,7 +63,7 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-globe"></i></span>
             <label class="rl-ep-field">
-                <span>Website</span>
+                <span>Website <small>(Optional)</small></span>
                 <input asp-for="Website" placeholder="www.example.com" autocomplete="url" />
             </label>
         </div>
@@ -63,19 +71,33 @@
         <div class="rl-ep-field-row">
             <span class="rl-ep-field-icon"><i class="fas fa-location-dot"></i></span>
             <label class="rl-ep-field">
-                <span>Office Address</span>
-                <input asp-for="OfficeAddress" placeholder="123 Business Ave, Suite 101" autocomplete="street-address" />
+                <span>Office Address <small>(Optional)</small></span>
+                <input asp-for="OfficeAddress"
+                       placeholder="123 Business Ave, Suite 101"
+                       autocomplete="off"
+                       data-address-autocomplete
+                       data-ac-street-only="true"
+                       data-ac-city="OfficeCity"
+                       data-ac-state="OfficeState"
+                       data-ac-zip="OfficeZip" />
             </label>
         </div>
 
         <div class="rl-ep-address-grid">
             <label class="rl-ep-field rl-ep-field--compact">
                 <span>City</span>
-                <input asp-for="OfficeCity" placeholder="City" />
+                <input asp-for="OfficeCity"
+                       placeholder="City"
+                       autocomplete="off"
+                       data-city-autocomplete
+                       data-ac-state="OfficeState"
+                       data-ac-zip="OfficeZip" />
             </label>
             <label class="rl-ep-field rl-ep-field--compact">
                 <span>State</span>
-                <select asp-for="OfficeState">
+                <select asp-for="OfficeState"
+                        data-ac-zip="OfficeZip"
+                        data-ac-city="OfficeCity">
                     <option value="">State</option>
                     @foreach (var st in Model.LicenseStates)
                     {
@@ -85,12 +107,18 @@
             </label>
             <label class="rl-ep-field rl-ep-field--compact">
                 <span>ZIP</span>
-                <input asp-for="OfficeZip" placeholder="ZIP" inputmode="numeric" />
+                <input asp-for="OfficeZip"
+                       placeholder="ZIP"
+                       autocomplete="postal-code"
+                       maxlength="10"
+                       data-zip-input
+                       data-zip-required="false" />
             </label>
         </div>
+        <span class="rl-field-hint" id="ep-office-zip-hint" data-ac-zip-hint-for="OfficeZip" hidden>Suggested from city and state. Change it if your office uses a different ZIP.</span>
 
-        <div class="rl-ep-languages">
-            <span class="rl-ep-languages-label">Languages Spoken</span>
+        <div class="rl-ep-languages" id="rlLanguagesBlock">
+            <span class="rl-ep-languages-label">Languages Spoken <span class="rl-required" aria-hidden="true">*</span></span>
             <div class="rl-ep-language-chips" id="rlLanguageChips">
                 @foreach (var lang in RealtorEditProfileOptions.SupportedLanguages)
                 {
@@ -104,6 +132,7 @@
                 }
             </div>
             <input type="hidden" asp-for="LanguagesCsv" id="rlLanguagesInput" />
+            <span asp-validation-for="LanguagesCsv" class="rl-field-error" id="rlLanguagesError"></span>
         </div>
     </div>
 
@@ -119,5 +148,116 @@
 
 @section Scripts {
     @{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+    <script src="~/js/zip-input.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
     <script src="~/js/realtor-edit-profile.js" asp-append-version="true"></script>
+    <script>
+        (function () {
+            var zipInput = document.getElementById('OfficeZip');
+            if (zipInput && window.IndorZipInput) {
+                window.IndorZipInput.attach(zipInput, { required: false });
+            }
+
+            var form = document.getElementById('rlEditProfileContactForm');
+            if (!form) {
+                return;
+            }
+
+            function setFieldError(fieldName, message) {
+                var errorEl = form.querySelector('[data-valmsg-for="' + fieldName + '"]');
+                var field = document.getElementById(fieldName);
+                if (errorEl) {
+                    errorEl.textContent = message || '';
+                    errorEl.classList.toggle('field-validation-error', !!message);
+                    errorEl.classList.toggle('field-validation-valid', !message);
+                }
+                if (field) {
+                    field.classList.toggle('input-validation-error', !!message);
+                    field.closest('.rl-ep-field')?.classList.toggle('is-error', !!message);
+                }
+                return !!message;
+            }
+
+            function scrollToFirstError() {
+                var firstError = form.querySelector('.field-validation-error:not(:empty), .rl-field-error:not(:empty)');
+                var target = firstError
+                    || form.querySelector('.rl-ep-field.is-error input, .rl-ep-field.is-error select')
+                    || (document.getElementById('rlLanguagesBlock')?.classList.contains('is-error')
+                        ? document.getElementById('rlLanguagesBlock')
+                        : null);
+                if (target) {
+                    (target.closest('.rl-ep-field-row') || target.closest('.rl-ep-field') || target)
+                        .scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+
+            ['BusinessName', 'BrokerageName', 'Email'].forEach(function (fieldName) {
+                var field = document.getElementById(fieldName);
+                if (!field) {
+                    return;
+                }
+                field.addEventListener('input', function () {
+                    setFieldError(fieldName, '');
+                });
+            });
+
+            function setLanguagesError(message) {
+                var errorEl = document.getElementById('rlLanguagesError');
+                var block = document.getElementById('rlLanguagesBlock');
+                if (errorEl) {
+                    errorEl.textContent = message || '';
+                }
+                if (block) {
+                    block.classList.toggle('is-error', !!message);
+                }
+                return !!message;
+            }
+
+            var languagesChips = document.getElementById('rlLanguageChips');
+            if (languagesChips) {
+                languagesChips.addEventListener('click', function () {
+                    window.setTimeout(function () {
+                        setLanguagesError('');
+                    }, 0);
+                });
+            }
+
+            scrollToFirstError();
+
+            form.addEventListener('submit', function (e) {
+                var hasError = false;
+                setFieldError('BusinessName', '');
+                setFieldError('BrokerageName', '');
+                setFieldError('Email', '');
+                setLanguagesError('');
+
+                var businessName = document.getElementById('BusinessName');
+                if (!businessName || !businessName.value.trim()) {
+                    hasError = setFieldError('BusinessName', 'Business Name is required.') || hasError;
+                }
+
+                var brokerageName = document.getElementById('BrokerageName');
+                if (!brokerageName || !brokerageName.value.trim()) {
+                    hasError = setFieldError('BrokerageName', 'Brokerage Name is required.') || hasError;
+                }
+
+                var email = document.getElementById('Email');
+                if (!email || !email.value.trim()) {
+                    hasError = setFieldError('Email', 'Email is required.') || hasError;
+                } else if (!/^[^\s@@]+@@[^\s@@]+\.[^\s@@]+$/.test(email.value.trim())) {
+                    hasError = setFieldError('Email', 'Enter a valid Email address.') || hasError;
+                }
+
+                var languagesInput = document.getElementById('rlLanguagesInput');
+                if (!languagesInput || !languagesInput.value.trim()) {
+                    hasError = setLanguagesError('Select at least one language.') || hasError;
+                }
+
+                if (hasError) {
+                    e.preventDefault();
+                    scrollToFirstError();
+                }
+            });
+        })();
+    </script>
 }

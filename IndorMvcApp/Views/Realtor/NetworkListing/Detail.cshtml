@@ -1,0 +1,193 @@
+@model IndorMvcApp.ViewModels.RealtorNetworkListingDetailViewModel
+@{
+    ViewData["Title"] = Model.PriceLabel;
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "network";
+    var heroPhoto = Model.PhotoUrls.FirstOrDefault() ?? "/inspeccion2.jpeg";
+    var extraPhotos = Model.PhotoUrls.Skip(1).ToList();
+    var mapsQuery = !string.IsNullOrWhiteSpace(Model.Address)
+        ? Uri.EscapeDataString(Model.Address)
+        : Model.Latitude is not null && Model.Longitude is not null
+            ? $"{Model.Latitude},{Model.Longitude}"
+            : null;
+}
+
+<div class="rl-dash-shell rl-listing-detail-page">
+    <header class="rl-listing-detail-head">
+        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-listing-detail-back" aria-label="Back to Nearby Network">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div class="rl-listing-detail-head-copy">
+            <h1>@(Model.IsOwned ? "My Listing" : "Property Details")</h1>
+            <p>Nearby Network</p>
+        </div>
+    </header>
+
+    <section class="rl-listing-detail-hero">
+        <img src="@Url.Content("~" + heroPhoto)" alt="" class="rl-listing-detail-hero-img" />
+        <span class="rl-network-card-badge rl-network-card-badge--@Model.ListingBadgeCss">@Model.ListingBadgeLabel</span>
+    </section>
+
+    <section class="rl-listing-detail-summary">
+        <div class="rl-listing-detail-summary-top">
+            <div>
+                <span class="rl-listing-detail-type">@Model.ListingTypeLabel</span>
+                <strong class="rl-listing-detail-price">@Model.PriceLabel</strong>
+                <h2 class="rl-listing-detail-address">@Model.Address</h2>
+                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                {
+                    <span class="rl-listing-detail-distance"><i class="fas fa-location-dot"></i> @Model.DistanceLabel</span>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
+            {
+                <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.OpenHouseMeta))
+        {
+            <div class="rl-listing-detail-openhouse">
+                <i class="fas fa-calendar-days"></i>
+                <span>@Model.OpenHouseMeta</span>
+            </div>
+        }
+
+        <div class="rl-listing-detail-stats">
+            <div>
+                <strong>@(Model.Bedrooms?.ToString("0.#") ?? "—")</strong>
+                <span>Beds</span>
+            </div>
+            <div>
+                <strong>@(Model.Bathrooms?.ToString("0.#") ?? "—")</strong>
+                <span>Baths</span>
+            </div>
+            <div>
+                <strong>@(Model.SquareFeet is > 0 ? Model.SquareFeet.Value.ToString("N0") : "—")</strong>
+                <span>Sq Ft</span>
+            </div>
+            <div>
+                <strong>@(Model.YearBuilt?.ToString() ?? "—")</strong>
+                <span>Year Built</span>
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(Model.PropertySubtypeLabel))
+        {
+            <p class="rl-listing-detail-subtype">@Model.PropertySubtypeLabel</p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Model.SpecsLabel))
+        {
+            <p class="rl-listing-detail-specs">@Model.SpecsLabel</p>
+        }
+    </section>
+
+    @if (!string.IsNullOrWhiteSpace(Model.Description))
+    {
+        <section class="rl-listing-detail-card">
+            <h3>About this home</h3>
+            <p>@Model.Description</p>
+        </section>
+    }
+
+    @if (Model.HighlightLabels.Count > 0)
+    {
+        <section class="rl-listing-detail-card">
+            <h3>Highlights</h3>
+            <div class="rl-listing-detail-highlights">
+                @foreach (var highlight in Model.HighlightLabels)
+                {
+                    <span class="rl-listing-detail-highlight">@highlight</span>
+                }
+            </div>
+        </section>
+    }
+
+    @if (extraPhotos.Count > 0)
+    {
+        <section class="rl-listing-detail-card">
+            <h3>More photos</h3>
+            <div class="rl-listing-detail-gallery">
+                @foreach (var photo in extraPhotos)
+                {
+                    <img src="@Url.Content("~" + photo)" alt="" />
+                }
+            </div>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.PhotoGalleryLink))
+    {
+        <section class="rl-listing-detail-card">
+            <h3>Photo gallery</h3>
+            <a href="@Model.PhotoGalleryLink" target="_blank" rel="noopener" class="rl-listing-detail-link">
+                <i class="fas fa-images"></i> View full gallery
+            </a>
+        </section>
+    }
+
+    @if (!string.IsNullOrWhiteSpace(Model.PhotoPdfUrl))
+    {
+        <section class="rl-listing-detail-card">
+            <h3>Property brochure</h3>
+            <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" class="rl-listing-detail-link">
+                <i class="fas fa-file-pdf"></i> @(Model.PhotoPdfFileName ?? "Download PDF")
+            </a>
+        </section>
+    }
+
+    @if (mapsQuery is not null)
+    {
+        <section class="rl-listing-detail-card">
+            <h3>Location</h3>
+            @if (Model.HasGoogleMaps && Model.Latitude is not null && Model.Longitude is not null)
+            {
+                <div class="rl-listing-detail-map" id="rlListingDetailMap"
+                     data-lat="@Model.Latitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+                     data-lng="@Model.Longitude.Value.ToString(System.Globalization.CultureInfo.InvariantCulture)"></div>
+            }
+            <a href="https://www.google.com/maps/search/?api=1&query=@mapsQuery" target="_blank" rel="noopener" class="rl-listing-detail-link">
+                <i class="fas fa-map-location-dot"></i> Open in Google Maps
+            </a>
+        </section>
+    }
+
+    <div class="rl-listing-detail-actions">
+        @if (Model.IsOwned)
+        {
+            <a asp-action="EditNetworkListing" asp-route-id="@Model.ItemId" class="rl-btn-primary rl-btn-primary--sm">
+                <i class="fas fa-pen"></i> Edit Listing
+            </a>
+        }
+        else
+        {
+            <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary rl-btn-primary--sm">
+                <i class="fas fa-handshake"></i> I'm Interested
+            </a>
+        }
+        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-btn-outline rl-btn-outline--sm">Back to Feed</a>
+    </div>
+</div>
+
+@if (Model.HasGoogleMaps && Model.Latitude is not null && Model.Longitude is not null)
+{
+    @section Scripts {
+        <script>
+            function rlInitListingDetailMap() {
+                var el = document.getElementById('rlListingDetailMap');
+                if (!el || !window.google || !google.maps) return;
+                var lat = parseFloat(el.getAttribute('data-lat'));
+                var lng = parseFloat(el.getAttribute('data-lng'));
+                var map = new google.maps.Map(el, {
+                    center: { lat: lat, lng: lng },
+                    zoom: 15,
+                    disableDefaultUI: true,
+                    zoomControl: true
+                });
+                new google.maps.Marker({ position: { lat: lat, lng: lng }, map: map });
+            }
+        </script>
+        <script async defer src="https://maps.googleapis.com/maps/api/js?key=@Model.GoogleMapsApiKey&amp;callback=rlInitListingDetailMap"></script>
+    }
+}

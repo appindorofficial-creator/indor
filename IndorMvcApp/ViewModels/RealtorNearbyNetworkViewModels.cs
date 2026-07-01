@@ -120,6 +120,8 @@ public class RealtorNetworkListingFormViewModel : RealtorPortalShellViewModel
     public int? SquareFeet { get; set; }
     public int? YearBuilt { get; set; }
     public string ListingType { get; set; } = "sale";
+
+    [Required(ErrorMessage = "Please select a property subtype.")]
     public string? PropertySubtype { get; set; }
 
     [MaxLength(500)]
@@ -181,4 +183,37 @@ public class RealtorNetworkListingFormViewModel : RealtorPortalShellViewModel
         string.IsNullOrWhiteSpace(Highlights)
             ? []
             : Highlights.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+
+public class RealtorNetworkListingDetailViewModel : RealtorPortalShellViewModel
+{
+    public int ItemId { get; set; }
+    public bool IsOwned { get; set; }
+    public bool IsOpenHouse { get; set; }
+    public string ListingBadgeLabel { get; set; } = "";
+    public string ListingBadgeCss { get; set; } = "listing";
+    public string StatusBadge { get; set; } = "";
+    public string StatusCss { get; set; } = "active";
+    public string PriceLabel { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string? SpecsLabel { get; set; }
+    public string? DistanceLabel { get; set; }
+    public string ListingTypeLabel { get; set; } = "For Sale";
+    public string? PropertySubtypeLabel { get; set; }
+    public string? Description { get; set; }
+    public string? OpenHouseMeta { get; set; }
+    public List<string> PhotoUrls { get; set; } = [];
+    public List<string> HighlightLabels { get; set; } = [];
+    public string? PhotoGalleryLink { get; set; }
+    public string? PhotoPdfUrl { get; set; }
+    public string? PhotoPdfFileName { get; set; }
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public string? GoogleMapsApiKey { get; set; }
+    public bool HasGoogleMaps => !string.IsNullOrWhiteSpace(GoogleMapsApiKey);
+    public decimal? Bedrooms { get; set; }
+    public decimal? Bathrooms { get; set; }
+    public int? SquareFeet { get; set; }
+    public int? YearBuilt { get; set; }
 }

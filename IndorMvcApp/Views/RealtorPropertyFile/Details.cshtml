@@ -1,6 +1,14 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileDetailsViewModel
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
+}
 
-<h2 class="rl-invite-section-title">Property</h2>
+<h2 class="rl-invite-section-title">Property <span class="rl-required" aria-hidden="true">*</span></h2>
 
 <form asp-action="Details" method="get" class="rl-search-form">
     <div class="rl-search-bar">
@@ -9,9 +17,25 @@
     </div>
 </form>
 
-<form id="propFileForm" asp-action="Details" method="post" class="rl-invite-form">
+<form id="propFileForm" asp-action="Details" method="post" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert" id="propFileDetailsFormErrors">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Please fix the following to continue:</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
 
     @if (Model.Properties.Count == 0)
     {
@@ -52,7 +76,7 @@
         }
     }
 
-    <h2 class="rl-invite-section-title">File Type</h2>
+    <h2 class="rl-invite-section-title">File Type <span class="rl-required" aria-hidden="true">*</span></h2>
     <div class="rl-file-type-list">
         @foreach (var opt in Model.FilePhaseOptions)
         {
@@ -89,13 +113,13 @@
 
 @section Scripts {
 <script>
-    document.querySelectorAll('.rl-property-pick input, .rl-file-type-option input').forEach(r => {
-        r.addEventListener('change', () => {
-            const card = r.closest('.rl-property-pick, .rl-file-type-option');
-            const group = card?.classList.contains('rl-property-pick') ? '.rl-property-pick' : '.rl-file-type-option';
-            document.querySelectorAll(group).forEach(p => p.classList.remove('is-selected'));
-            card?.classList.add('is-selected');
-        });
-    });
+    (function () {
+        var banner = document.getElementById('propFileDetailsFormErrors');
+        var summary = document.querySelector('#propFileForm .ob-summary:not(.validation-summary-valid)');
+        var scrollTarget = banner || summary;
+        if (scrollTarget) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    })();
 </script>
 }

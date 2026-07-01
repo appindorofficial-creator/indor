@@ -353,7 +353,7 @@ window.rlListingWizardInit = function (config) {
         }
 
         function clearStepErrors() {
-            ['rlAddressError', 'rlPriceError'].forEach(function (id) {
+            ['rlAddressError', 'rlPriceError', 'rlSubtypeError'].forEach(function (id) {
                 var el = document.getElementById(id);
                 if (el) {
                     el.hidden = true;
@@ -362,22 +362,35 @@ window.rlListingWizardInit = function (config) {
         }
 
         function validateStep(step) {
-            if (step !== 2) {
-                return true;
+            if (step === 2) {
+                var ok = true;
+                clearStepErrors();
+                if (addressInput && !addressInput.value.trim()) {
+                    var ae = document.getElementById('rlAddressError');
+                    if (ae) { ae.hidden = false; }
+                    ok = false;
+                }
+                if (priceInput && !priceInput.value) {
+                    var pe = document.getElementById('rlPriceError');
+                    if (pe) { pe.hidden = false; }
+                    ok = false;
+                }
+                return ok;
             }
-            var ok = true;
-            clearStepErrors();
-            if (addressInput && !addressInput.value.trim()) {
-                var ae = document.getElementById('rlAddressError');
-                if (ae) { ae.hidden = false; }
-                ok = false;
+
+            if (step === 3) {
+                var subtypeInput = document.getElementById('PropertySubtype');
+                var subtypeOk = true;
+                clearStepErrors();
+                if (subtypeInput && !subtypeInput.value.trim()) {
+                    var se = document.getElementById('rlSubtypeError');
+                    if (se) { se.hidden = false; }
+                    subtypeOk = false;
+                }
+                return subtypeOk;
             }
-            if (priceInput && !priceInput.value) {
-                var pe = document.getElementById('rlPriceError');
-                if (pe) { pe.hidden = false; }
-                ok = false;
-            }
-            return ok;
+
+            return true;
         }
 
         function setStep(step, skipValidation) {

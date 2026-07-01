@@ -2,15 +2,20 @@ using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Services;
 
-public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpContextAccessor)
+public class RealtorPortalService(
+    AppDbContext db,
+    IHttpContextAccessor httpContextAccessor,
+    RealtorPropertyFileInspectionBackfillService inspectionBackfill)
 {
     private const string NotificationSessionKeyPrefix = "realtor-notify-";
+    private const string NotificationsViewedSessionKeyPrefix = "realtor-notify-viewed-";
 
     private static RealtorNotificationPreferencesInput DefaultNotificationPreferences() => new();
     public async Task<RealtorHomeViewModel> BuildHomeAsync(IndorRealtor realtor, CancellationToken ct = default)
@@ -45,6 +50,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             Stats = stats,
             QuickActions =
             [
@@ -53,7 +59,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
                 new() { Label = "Upload inspection report", Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
                 new() { Label = "Urgent quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
             ],
-            PropertyFiles = properties.Select(MapPropertyCard).ToList(),
+            PropertyFiles = properties.Select(p => MapPropertyCard(p)).ToList(),
             PendingQuotes = quotes.Select(MapQuoteCard).ToList(),
             SharedPackages = packages.Select(MapPackageCard).ToList(),
             Insights = await BuildHomeInsightsAsync(realtor.Id, ct)
@@ -145,6 +151,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
             HasAnyClients = hasAnyClients,
@@ -159,6 +166,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
     public async Task<RealtorFilesViewModel> BuildFilesAsync(
         IndorRealtor realtor, string? search, string? filter, CancellationToken ct = default)
     {
+        await inspectionBackfill.BackfillAsync(realtor.Id, ct);
+
         var shell = await BuildShellCoreAsync(realtor, ct);
         var activeFilter = NormalizeFileFilter(filter);
 
@@ -181,7 +190,9 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         query = activeFilter switch
         {
             "Active" => query.Where(p => p.Status == "Active"),
-            "Inspection" => query.Where(p => p.FilePhase == "Repair Review" || p.RepairItemsCount > 0),
+            "Inspection" => query.Where(p =>
+                p.RepairItemsCount > 0 ||
+                p.Items.Any(i => i.CategoryType == RealtorPropertyFileCategoryTypes.InspectionReports)),
             "Quotes" => query.Where(p => p.QuotesReceivedCount > 0),
             "Shared" => query.Where(p => p.FilePhase == "Transfer"),
             "Closed" => query.Where(p => p.Status == "Archived"),
@@ -189,9 +200,24 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         };
 
         var files = await query
+            .Include(p => p.Items)
             .OrderByDescending(p => p.UpdatedUtc ?? p.FechaCreacion)
             .Take(20)
             .ToListAsync(ct);
+
+        var propertyIds = files.Select(f => f.Id).ToList();
+        var pendingDrafts = await db.IndorRealtorInspectionUploadDrafts.AsNoTracking()
+            .Where(d => d.RealtorId == realtor.Id &&
+                        d.Status == RealtorInspectionUploadDraftStatuses.Draft &&
+                        d.PropertyFileId != null &&
+                        propertyIds.Contains(d.PropertyFileId.Value))
+            .ToListAsync(ct);
+
+        var draftByPropertyId = pendingDrafts
+            .GroupBy(d => d.PropertyFileId!.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(d => d.FechaActualizacion ?? d.FechaCreacion).First());
 
         var activities = await db.IndorRealtorActivities.AsNoTracking()
             .Where(a => a.RealtorId == realtor.Id &&
@@ -208,10 +234,11 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
             Stats = await BuildFileStatsAsync(realtor.Id, ct),
-            ActiveFiles = files.Select(MapFile).ToList(),
+            ActiveFiles = files.Select(f => MapFile(f, draftByPropertyId.GetValueOrDefault(f.Id))).ToList(),
             RecentActivity = activities.Select(MapActivity).ToList(),
             Insights = await BuildFileInsightsAsync(realtor.Id, ct),
             HasAnyFiles = hasAnyFiles
@@ -252,6 +279,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             QuoteId = quote.Id,
             QuoteStatus = quote.Status,
             QuoteCode = FormatQuoteCode(quote.QuoteCode),
@@ -412,6 +440,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
             Stats = quoteStats,
@@ -484,6 +513,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             QuoteId = quote.Id,
             BidId = bid.Id,
             Address = quote.Address,
@@ -560,6 +590,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             QuoteId = quote.Id,
             Address = quote.Address,
             PhotoUrl = string.IsNullOrWhiteSpace(quote.PhotoUrl) ? "/welcome-house.png" : quote.PhotoUrl,
@@ -606,6 +637,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             QuoteId = quote.Id,
             BidId = bid.Id,
             Address = quote.Address,
@@ -722,6 +754,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             Email = realtor.Email ?? "",
             Phone = realtor.Phone ?? "",
             BrokerageName = realtor.BrokerageName ?? "",
@@ -1005,6 +1038,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             DisplayStep = 1,
             TotalSteps = 4,
             Title = "Business Information",
@@ -1034,6 +1068,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             DisplayStep = 2,
             TotalSteps = 4,
             Title = "Company & Contact Details",
@@ -1122,6 +1157,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             DisplayStep = 3,
             TotalSteps = 4,
             Title = "License & Professional Details",
@@ -1153,14 +1189,24 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         RealtorEditProfileLicenseViewModel input,
         CancellationToken ct = default)
     {
+        if (string.IsNullOrWhiteSpace(input.LicenseState))
+        {
+            throw new InvalidOperationException("License state is required.");
+        }
+
+        if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(input.LicenseNumber, out var licenseError))
+        {
+            throw new InvalidOperationException(licenseError ?? "Enter a valid license number.");
+        }
+
         var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
 
         entity.LicenseNumber = input.LicenseNumber.Trim();
         entity.LicenseState = input.LicenseState.Trim();
-        entity.YearsOfExperience = input.YearsOfExperience.Trim();
+        entity.YearsOfExperience = input.YearsOfExperience?.Trim() ?? "";
         entity.SpecialtiesJson = SerializeStringList(input.SelectedSpecialties.Take(3).ToList());
-        entity.TeamName = input.TeamName.Trim();
-        entity.BrokerInCharge = input.BrokerInCharge.Trim();
+        entity.TeamName = input.TeamName?.Trim() ?? "";
+        entity.BrokerInCharge = input.BrokerInCharge?.Trim() ?? "";
         entity.FechaActualizacion = DateTime.UtcNow;
 
         await db.SaveChangesAsync(ct);
@@ -1215,6 +1261,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             DisplayStep = 4,
             TotalSteps = 4,
             Title = "Review & Save",
@@ -1383,6 +1430,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             IsOwnProfile = true,
             FullName = !string.IsNullOrWhiteSpace(realtor.PublicDisplayName)
                 ? realtor.PublicDisplayName.Trim()
@@ -1451,7 +1499,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             StatusBadge = item.StatusBadge ?? item.BadgeLabel,
             ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl) ? null : item.ImageUrl,
             SpecsLabel = item.SpecsLabel ?? BuildSpecsLabel(item.Bedrooms, item.Bathrooms, item.SquareFeet),
-            ViewUrl = $"/Realtor/EditNetworkListing/{item.Id}"
+            ViewUrl = $"/Realtor/ViewNetworkListing/{item.Id}"
         };
     }
 
@@ -1463,7 +1511,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             Address = item.Subtitle ?? "",
             MetaLabel = item.MetaLabel,
             ImageUrl = string.IsNullOrWhiteSpace(item.ImageUrl) ? null : item.ImageUrl,
-            ViewUrl = $"/Realtor/EditNetworkListing/{item.Id}"
+            ViewUrl = $"/Realtor/ViewNetworkListing/{item.Id}"
         };
 
     private static RealtorPublicSharedPackageViewModel MapPublicPackage(IndorRealtorSharedPackage package)
@@ -1553,6 +1601,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             BadgeLabel = shell.BadgeLabel,
             IsVerified = shell.IsVerified,
             HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             SearchQuery = search,
             ActiveFilter = activeFilter,
             Providers = providers.Select(p => new RealtorQuoteProviderCardViewModel
@@ -1576,9 +1625,15 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
 
     private async Task<RealtorPortalShellViewModel> BuildShellCoreAsync(IndorRealtor realtor, CancellationToken ct)
     {
-        var hasNotifications = await db.IndorRealtorActivities.AsNoTracking()
-            .AnyAsync(a => a.RealtorId == realtor.Id &&
-                           a.OccurredUtc >= DateTime.UtcNow.AddDays(-1), ct);
+        var recentNotifications = await db.IndorRealtorActivities.AsNoTracking()
+            .Where(a => a.RealtorId == realtor.Id)
+            .OrderByDescending(a => a.OccurredUtc)
+            .Take(8)
+            .ToListAsync(ct);
+
+        var mappedNotifications = recentNotifications.Select(MapActivity).ToList();
+        var lastViewedUtc = LoadNotificationsLastViewedUtc(realtor.Id);
+        var hasUnreadNotifications = recentNotifications.Any(a => a.OccurredUtc > lastViewedUtc);
 
         var firstName = (realtor.DisplayName ?? "Realtor").Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
                         ?? "Realtor";
@@ -1594,9 +1649,44 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
                 ? "Verified Realtor"
                 : "Realtor Basic",
             IsVerified = realtor.RegistrationStatus == RealtorRegistrationStatuses.Verified,
-            HasNotifications = hasNotifications
+            HasNotifications = hasUnreadNotifications,
+            RecentNotifications = mappedNotifications
         };
     }
+
+    public void MarkNotificationsViewed(int realtorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return;
+        }
+
+        session.SetString(
+            NotificationsViewedSessionKey(realtorId),
+            DateTime.UtcNow.ToString("O"));
+    }
+
+    private DateTime LoadNotificationsLastViewedUtc(int realtorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return DateTime.MinValue;
+        }
+
+        var raw = session.GetString(NotificationsViewedSessionKey(realtorId));
+        return DateTime.TryParse(
+            raw,
+            CultureInfo.InvariantCulture,
+            DateTimeStyles.RoundtripKind,
+            out var parsed)
+            ? parsed.ToUniversalTime()
+            : DateTime.MinValue;
+    }
+
+    private static string NotificationsViewedSessionKey(int realtorId) =>
+        NotificationsViewedSessionKeyPrefix + realtorId;
 
     private async Task<List<RealtorStatItemViewModel>> BuildHomeStatsAsync(int realtorId, CancellationToken ct)
     {
@@ -1948,10 +2038,13 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             _ => filter
         };
 
-    private static RealtorPropertyFileCardViewModel MapPropertyCard(IndorRealtorPropertyFile file)
+    private static RealtorPropertyFileCardViewModel MapPropertyCard(
+        IndorRealtorPropertyFile file,
+        IndorRealtorInspectionUploadDraft? pendingDraft = null)
     {
-        var (badge, css) = DeriveFileStatus(file);
-        var (actionLabel, _) = DeriveFileAction(file);
+        var context = new RealtorPropertyFileActionContext(file, pendingDraft);
+        var (badge, css) = RealtorPropertyFileActions.DeriveStatus(context);
+        var (actionLabel, actionUrl, _) = RealtorPropertyFileActions.DeriveListAction(context);
 
         return new RealtorPropertyFileCardViewModel
         {
@@ -1968,7 +2061,7 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             StatusLabel = badge,
             StatusCss = css,
             ActionLabel = actionLabel,
-            ActionUrl = DeriveFileActionUrl(file, actionLabel)
+            ActionUrl = actionUrl
         };
     }
 
@@ -2067,10 +2160,13 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         };
     }
 
-    private static RealtorFileCardViewModel MapFile(IndorRealtorPropertyFile file)
+    private static RealtorFileCardViewModel MapFile(
+        IndorRealtorPropertyFile file,
+        IndorRealtorInspectionUploadDraft? pendingDraft = null)
     {
-        var (badge, css) = DeriveFileStatus(file);
-        var (actionLabel, detailNote) = DeriveFileAction(file);
+        var context = new RealtorPropertyFileActionContext(file, pendingDraft);
+        var (badge, css) = RealtorPropertyFileActions.DeriveStatus(context);
+        var (actionLabel, actionUrl, detailNote) = RealtorPropertyFileActions.DeriveListAction(context);
 
         return new RealtorFileCardViewModel
         {
@@ -2087,8 +2183,8 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             QuotesReceivedCount = file.QuotesReceivedCount,
             UpdatedLabel = $"Last updated {FormatRelativeTime(file.UpdatedUtc ?? file.FechaCreacion)}",
             ActionLabel = actionLabel,
-            ActionUrl = DeriveFileActionUrl(file, actionLabel),
-            DetailNote = detailNote
+            ActionUrl = actionUrl,
+            DetailNote = detailNote ?? ""
         };
     }
 
@@ -2180,44 +2276,6 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
         if (file.Baths.HasValue) specs.Add($"{file.Baths:0.#} bath");
         if (file.SqFt.HasValue) specs.Add($"{file.SqFt:N0} sq ft");
         return string.Join(" · ", specs);
-    }
-
-    private static (string Badge, string Css) DeriveFileStatus(IndorRealtorPropertyFile file)
-    {
-        if (file.FilePhase == "Transfer")
-            return ("Shared Package", "shared");
-        if (file.QuotesReceivedCount > 0)
-            return ("Quotes Pending", "quotes");
-        if (file.RepairItemsCount > 0 || file.FilePhase == "Repair Review")
-            return ("Inspection Uploaded", "inspection");
-        if (file.Status == "Archived")
-            return ("Closed", "closed");
-        return ("Active", "active");
-    }
-
-    private static (string Action, string Detail) DeriveFileAction(IndorRealtorPropertyFile file)
-    {
-        if (file.FilePhase == "Transfer")
-            return ("View Package", "Shared with client");
-        if (file.RepairItemsCount > 0 && file.QuotesReceivedCount == 0)
-            return ("Request Quotes", $"Repair items: {file.RepairItemsCount}");
-        if (file.RepairItemsCount == 0 && file.FilePhase == "Pre-Closing")
-            return ("Upload Report", "Awaiting inspection report");
-        if (file.QuotesReceivedCount > 0)
-            return ("Open File", $"Quotes received: {file.QuotesReceivedCount}");
-        return ("Open File", file.RepairItemsCount > 0 ? $"Repair items: {file.RepairItemsCount}" : "");
-    }
-
-    private static string DeriveFileActionUrl(IndorRealtorPropertyFile file, string actionLabel)
-    {
-        var id = file.Id;
-        return actionLabel switch
-        {
-            "Request Quotes" => $"/RealtorQuoteRequest/Start?propertyFileId={id}",
-            "Upload Report" => $"/RealtorInspectionUpload/Upload?propertyFileId={id}",
-            "View Package" => $"/RealtorPropertyFile/View?id={id}",
-            _ => $"/RealtorPropertyFile/View?id={id}"
-        };
     }
 
     private static (string Label, string Css) DeriveQuoteStatus(IndorRealtorQuote quote) =>
@@ -2429,7 +2487,40 @@ public class RealtorPortalService(AppDbContext db, IHttpContextAccessor httpCont
             ActivityType = activity.ActivityType,
             Description = activity.Description,
             OccurredLabel = FormatRelativeTime(activity.OccurredUtc),
-            CategoryTag = activity.CategoryTag
+            CategoryTag = activity.CategoryTag,
+            TargetUrl = MapActivityTargetUrl(activity.CategoryTag),
+            IconClass = MapActivityIcon(activity.ActivityType),
+            TagCssClass = MapActivityTagCss(activity.CategoryTag)
+        };
+
+    private static string MapActivityIcon(string activityType) => activityType.ToLowerInvariant() switch
+    {
+        "view" => "fa-eye",
+        "quote" => "fa-file-invoice-dollar",
+        "link" or "check" => "fa-user-plus",
+        "upload" or "file" => "fa-folder-open",
+        "job" => "fa-circle-check",
+        "share" => "fa-share-nodes",
+        _ => "fa-circle-info"
+    };
+
+    private static string MapActivityTagCss(string categoryTag) => categoryTag.ToLowerInvariant() switch
+    {
+        "files" or "properties" => "rl-notify-tag--files",
+        "quotes" => "rl-notify-tag--quotes",
+        "clients" => "rl-notify-tag--clients",
+        "providers" => "rl-notify-tag--providers",
+        _ => ""
+    };
+
+    private static string? MapActivityTargetUrl(string categoryTag) =>
+        categoryTag.ToLowerInvariant() switch
+        {
+            "quotes" => "/Realtor/Quotes",
+            "files" or "properties" => "/Realtor/Files",
+            "clients" => "/Realtor/Clients",
+            "providers" => "/Realtor/ProviderNetwork",
+            _ => "/Realtor/Dashboard"
         };
 
     private static string FormatQuoteCode(string code) =>

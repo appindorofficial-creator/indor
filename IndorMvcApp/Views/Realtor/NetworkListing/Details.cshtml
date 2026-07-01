@@ -193,7 +193,7 @@
             </div>
 
             <div class="rl-lw-actions">
-                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue <i class="fas fa-arrow-right rl-lw-next-arrow"></i></button>
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue</button>
             </div>
         </section>
 
@@ -201,9 +201,16 @@
         <section class="rl-lw-step" data-step="3">
             <section class="rl-listing-section rl-lw-card">
                 <div class="rl-form-field">
-                    <label asp-for="PropertySubtype" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> Property Subtype</label>
-                    <select asp-for="PropertySubtype" class="rl-form-input">
-                        <option value="">Select subtype</option>
+                    <label asp-for="PropertySubtype" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> Property Subtype <span class="rl-required" aria-hidden="true">*</span></label>
+                    <select asp-for="PropertySubtype" class="rl-form-input" id="PropertySubtype" aria-required="true">
+                        @if (string.IsNullOrWhiteSpace(Model.PropertySubtype))
+                        {
+                            <option value="" disabled hidden selected>Select subtype</option>
+                        }
+                        else
+                        {
+                            <option value="" disabled hidden>Select subtype</option>
+                        }
                         @foreach (var subtype in Model.PropertySubtypes)
                         {
                             if (Model.PropertySubtype == subtype.Value)
@@ -216,6 +223,8 @@
                             }
                         }
                     </select>
+                    <span asp-validation-for="PropertySubtype" class="text-danger" data-step-error="3"></span>
+                    <p class="rl-lw-inline-error" id="rlSubtypeError" hidden>Please select a property subtype.</p>
                 </div>
             </section>
 
@@ -273,7 +282,7 @@
             </section>
 
             <div class="rl-lw-actions">
-                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue <i class="fas fa-arrow-right rl-lw-next-arrow"></i></button>
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue</button>
             </div>
         </section>
 

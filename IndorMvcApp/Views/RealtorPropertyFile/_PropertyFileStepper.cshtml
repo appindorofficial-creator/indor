@@ -9,7 +9,7 @@
         _ => 4
     };
 }
-@await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+@await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
 <div class="rl-invite-head">
     <h1>@Model.Title</h1>

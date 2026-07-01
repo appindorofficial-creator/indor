@@ -91,6 +91,63 @@ public class RealtorInspectionUploadWizardService(
         httpContextAccessor.HttpContext?.Session.Remove(DraftIdSessionKey);
     }
 
+    public async Task ResetToUploadAsync(CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+        var draftId = httpContextAccessor.HttpContext?.Session.GetInt32(DraftIdSessionKey) ?? 0;
+        if (draftId <= 0)
+        {
+            throw new InvalidOperationException("Draft not found.");
+        }
+
+        var draft = await db.IndorRealtorInspectionUploadDrafts
+            .Include(d => d.Findings)
+            .Include(d => d.TradeProviders)
+            .FirstOrDefaultAsync(d => d.Id == draftId
+                && d.RealtorId == realtor.Id
+                && d.Status == RealtorInspectionUploadDraftStatuses.Draft, cancellationToken)
+            ?? throw new InvalidOperationException("Draft not found.");
+
+        ActiveAnalyses.TryRemove(draft.Id, out _);
+
+        if (!string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            var fullPath = ResolveReportFullPath(draft.ReportFileUrl);
+            if (!string.IsNullOrEmpty(fullPath) && File.Exists(fullPath))
+            {
+                try
+                {
+                    File.Delete(fullPath);
+                }
+                catch (IOException)
+                {
+                    // Another process may still be reading the file during analysis.
+                }
+            }
+        }
+
+        if (draft.Findings.Count > 0)
+        {
+            db.IndorRealtorInspectionUploadFindings.RemoveRange(draft.Findings);
+        }
+
+        if (draft.TradeProviders.Count > 0)
+        {
+            db.IndorRealtorInspectionDraftProviders.RemoveRange(draft.TradeProviders);
+        }
+
+        draft.CurrentStep = 1;
+        draft.ReportFileUrl = null;
+        draft.ReportFileName = null;
+        draft.ReportPageCount = 0;
+        draft.AnalysisProgress = 0;
+        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.Pending;
+        draft.AnalysisSummary = null;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public string ResolveResumeAction(int currentStep) => currentStep switch
     {
         <= 1 => "Upload",
@@ -234,6 +291,85 @@ public class RealtorInspectionUploadWizardService(
         draft.CurrentStep = 2;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            await SyncInspectionReportToPropertyFileAsync(
+                property.Id,
+                draft.ReportFileUrl,
+                draft.ReportFileName ?? "Inspection Report",
+                cancellationToken);
+        }
+    }
+
+    public async Task<bool> TryResumeDraftForPropertyAsync(int propertyFileId, CancellationToken cancellationToken = default)
+    {
+        if (propertyFileId <= 0)
+        {
+            return false;
+        }
+
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return false;
+        }
+
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return false;
+        }
+
+        var draft = await db.IndorRealtorInspectionUploadDrafts
+            .Where(d => d.RealtorId == realtor.Id &&
+                        d.PropertyFileId == propertyFileId &&
+                        d.Status == RealtorInspectionUploadDraftStatuses.Draft)
+            .OrderByDescending(d => d.FechaActualizacion ?? d.FechaCreacion)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (draft == null)
+        {
+            return false;
+        }
+
+        session.SetInt32(DraftIdSessionKey, draft.Id);
+        return true;
+    }
+
+    private async Task SyncInspectionReportToPropertyFileAsync(
+        int propertyFileId,
+        string reportUrl,
+        string reportFileName,
+        CancellationToken cancellationToken)
+    {
+        var property = await db.IndorRealtorPropertyFiles
+            .Include(p => p.Items)
+            .FirstOrDefaultAsync(p => p.Id == propertyFileId, cancellationToken);
+
+        if (property == null)
+        {
+            return;
+        }
+
+        var existing = property.Items.FirstOrDefault(i =>
+            string.Equals(i.CategoryType, RealtorPropertyFileCategoryTypes.InspectionReports, StringComparison.OrdinalIgnoreCase));
+
+        if (existing != null)
+        {
+            existing.ItemLabel = reportFileName;
+            existing.FileUrl = reportUrl;
+            existing.UploadedUtc = DateTime.UtcNow;
+        }
+        else
+        {
+            RealtorPropertyFileInspectionSync.UpsertInspectionReport(db, property, reportUrl, reportFileName);
+        }
+
+        RealtorPropertyFileInspectionSync.NormalizeEmptyRepairReviewPhase(property);
+
+        property.UpdatedUtc = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<RealtorInspectionAnalyzeViewModel> BuildAnalyzeAsync(CancellationToken cancellationToken = default)
@@ -256,10 +392,11 @@ public class RealtorInspectionUploadWizardService(
             ReportFileName = draft.ReportFileName ?? "Home Inspection Report",
             ReportPageCount = draft.ReportPageCount > 0 ? draft.ReportPageCount : 1,
             UploadedLabel = $"Uploaded {draft.FechaCreacion.ToLocalTime():MMM d, yyyy}",
+            UploadMethod = string.IsNullOrWhiteSpace(draft.UploadMethod) ? "Pdf" : draft.UploadMethod,
             AnalysisProgress = progress,
             AnalysisStatus = status,
             AnalysisSummary = draft.AnalysisSummary,
-            Tasks = BuildAnalysisTasks(progress, status, draft.ReportPageCount, findingCount),
+            Tasks = BuildAnalysisTasks(progress, status, draft.ReportPageCount, findingCount, draft.UploadMethod),
             DetectedCategories = await BuildDetectedCategoriesAsync(progress, draft.Id, cancellationToken)
         };
     }
@@ -273,6 +410,43 @@ public class RealtorInspectionUploadWizardService(
         {
             return;
         }
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed)
+        {
+            return;
+        }
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.InProgress
+            && draft.AnalysisProgress >= 30
+            && draft.AnalysisProgress < 100)
+        {
+            return;
+        }
+
+        if (!ActiveAnalyses.TryAdd(draft.Id, 0))
+        {
+            return;
+        }
+
+        draft.AnalysisProgress = 20;
+        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.InProgress;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+
+        StartAnalysisWorker(draft.Id);
+    }
+
+    public async Task RetryAnalysisAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Draft not found.");
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete)
+        {
+            return;
+        }
+
+        ActiveAnalyses.TryRemove(draft.Id, out _);
 
         if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed)
         {
@@ -308,7 +482,11 @@ public class RealtorInspectionUploadWizardService(
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
 
-        var draftId = draft.Id;
+        StartAnalysisWorker(draft.Id);
+    }
+
+    private void StartAnalysisWorker(int draftId)
+    {
         _ = Task.Run(async () =>
         {
             try
@@ -337,7 +515,7 @@ public class RealtorInspectionUploadWizardService(
     {
         var draft = await scopedDb.IndorRealtorInspectionUploadDrafts
             .FirstOrDefaultAsync(d => d.Id == draftId);
-        if (draft == null)
+        if (draft == null || draft.CurrentStep < 2 || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
         {
             return;
         }
@@ -351,6 +529,11 @@ public class RealtorInspectionUploadWizardService(
         var result = await scopedAnalysis.AnalyzeReportAsync(address, reportPath, CancellationToken.None);
 
         draft = await scopedDb.IndorRealtorInspectionUploadDrafts.FirstAsync(d => d.Id == draftId);
+        if (draft.CurrentStep < 2 || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            return;
+        }
+
         draft.AnalysisProgress = 75;
         await scopedDb.SaveChangesAsync();
 
@@ -979,7 +1162,7 @@ public class RealtorInspectionUploadWizardService(
             ClientName = string.IsNullOrWhiteSpace(clientName) ? null : clientName.Trim(),
             PhotoUrl = photoUrl ?? "/welcome-house.png",
             Status = "Active",
-            FilePhase = RealtorPropertyFilePhases.RepairReview,
+            FilePhase = RealtorPropertyFilePhases.PreClosing,
             UpdatedUtc = DateTime.UtcNow,
             FechaCreacion = DateTime.UtcNow
         };
@@ -1069,16 +1252,23 @@ public class RealtorInspectionUploadWizardService(
     }
 
     private static List<RealtorInspectionAnalyzeTaskViewModel> BuildAnalysisTasks(
-        int progress, string status, int pageCount, int findingCount)
+        int progress, string status, int pageCount, int findingCount, string? uploadMethod)
     {
         var pages = pageCount > 0 ? pageCount : 1;
         var pagesRead = progress >= 20 ? pages : Math.Max(1, (int)(pages * progress / 20.0));
+        var method = string.IsNullOrWhiteSpace(uploadMethod) ? "Pdf" : uploadMethod;
+        var (readLabel, unit) = method switch
+        {
+            "Scan" => ("Reading scanned pages", pages == 1 ? "page" : "pages"),
+            "Photos" => ("Reading report photos", pages == 1 ? "photo" : "photos"),
+            _ => ("Reading report pages", pages == 1 ? "page" : "pages")
+        };
         return
         [
             new()
             {
-                Label = "Reading report pages",
-                Detail = $"{pagesRead} / {pages} pages",
+                Label = readLabel,
+                Detail = $"{pagesRead} / {pages} {unit}",
                 Status = progress >= 20 ? "Done" : progress >= 8 ? "InProgress" : "Pending"
             },
             new()

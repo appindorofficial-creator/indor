@@ -4,8 +4,74 @@
         <i class="fas fa-house"></i> INDOR
     </a>
     <div class="rl-portal-topbar-actions">
-        <a asp-controller="Realtor" asp-action="Profile" class="rl-portal-icon-btn @(Model.HasNotifications ? "has-dot" : "")" aria-label="Profile and notifications">
-            <i class="fas fa-bell"></i>
-        </a>
+        @if (!Model.HideNotifications)
+        {
+        <div class="rl-notify-wrap" id="rlNotifyWrap" data-mark-viewed-url="@Url.Action("MarkNotificationsViewed", "Realtor")">
+            @Html.AntiForgeryToken()
+            <button type="button"
+                    class="rl-portal-icon-btn @(Model.HasNotifications ? "has-dot" : "")"
+                    id="rlNotifyBtn"
+                    aria-label="Notifications"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="rlNotifyPanel">
+                <i class="fas fa-bell"></i>
+            </button>
+            <div class="rl-notify-panel" id="rlNotifyPanel" role="dialog" aria-label="Recent activity" hidden>
+                <div class="rl-notify-panel-head">
+                    <strong>Notifications</strong>
+                    @if (Model.HasNotifications)
+                    {
+                        <span class="rl-notify-badge" id="rlNotifyNewBadge">New</span>
+                    }
+                </div>
+                @if (Model.RecentNotifications.Count == 0)
+                {
+                    <div class="rl-notify-empty">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No recent activity yet.</p>
+                        <span>Upload a report, invite a client, or request a quote to see updates here.</span>
+                    </div>
+                }
+                else
+                {
+                    <ul class="rl-notify-list">
+                        @foreach (var item in Model.RecentNotifications)
+                        {
+                            <li>
+                                @if (!string.IsNullOrWhiteSpace(item.TargetUrl))
+                                {
+                                    <a href="@item.TargetUrl" class="rl-notify-item">
+                                        <span class="rl-notify-item-icon"><i class="fas @item.IconClass"></i></span>
+                                        <span class="rl-notify-item-body">
+                                            <span class="rl-notify-item-text">@item.Description</span>
+                                            <span class="rl-notify-item-time">@item.OccurredLabel</span>
+                                        </span>
+                                        <span class="rl-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="rl-notify-item">
+                                        <span class="rl-notify-item-icon"><i class="fas @item.IconClass"></i></span>
+                                        <span class="rl-notify-item-body">
+                                            <span class="rl-notify-item-text">@item.Description</span>
+                                            <span class="rl-notify-item-time">@item.OccurredLabel</span>
+                                        </span>
+                                        <span class="rl-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
+                }
+                <div class="rl-notify-panel-foot">
+                    <a asp-controller="Realtor" asp-action="Profile" class="rl-notify-settings-link">
+                        <i class="fas fa-gear"></i> Notification settings
+                    </a>
+                </div>
+            </div>
+        </div>
+        }
     </div>
 </header>

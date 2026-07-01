@@ -64,7 +64,7 @@ public class RealtorRegistrationController(
 
         return View(StepVm(2, "Realtor Verification",
             "Enter your license information so we can verify your realtor profile.",
-            state, Url.Action("SelectRole", "Account"),
+            state, "",
             registration.GetLicenseStates()));
     }
 
@@ -80,6 +80,7 @@ public class RealtorRegistrationController(
         bool professionalTermsAccepted)
     {
         var state = await registration.GetAsync();
+        professionalTermsAccepted = Request.Form["professionalTermsAccepted"].Contains("true");
 
         if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError, "Brokerage / Company Name"))
         {
@@ -141,7 +142,7 @@ public class RealtorRegistrationController(
 
             return View(StepVm(2, "Realtor Verification",
                 "Enter your license information so we can verify your realtor profile.",
-                state, Url.Action("SelectRole", "Account"),
+                state, "",
                 registration.GetLicenseStates()));
         }
 
@@ -221,6 +222,19 @@ public class RealtorRegistrationController(
             if (continueErrors.Count > 0)
             {
                 TempData["VerificationError"] = string.Join(" ", continueErrors);
+                return RedirectToAction(nameof(Verification));
+            }
+
+            var slots = await registration.GetDocumentSlotsAsync();
+            var missingRequired = slots
+                .Where(s => s.Required && !s.Uploaded)
+                .Select(s => s.Label)
+                .ToList();
+            if (missingRequired.Count > 0)
+            {
+                TempData["VerificationError"] = missingRequired.Count == 1
+                    ? $"Please attach your {missingRequired[0].ToLower()} before continuing, or choose Skip for now."
+                    : "No required documents attached. Please upload your license photo and government ID, or choose Skip for now.";
                 return RedirectToAction(nameof(Verification));
             }
         }

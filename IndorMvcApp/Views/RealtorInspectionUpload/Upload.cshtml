@@ -99,18 +99,20 @@
         </label>
     </div>
 
-    <label class="rl-file-drop" id="rlFileDrop" for="reportFileInput">
-        <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
-        <div class="rl-file-drop-body">
-            <i class="fas fa-cloud-arrow-up"></i>
-            <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
-            <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
-            <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
-        </div>
+    <div class="rl-file-drop-wrap">
+        <label class="rl-file-drop" id="rlFileDrop" for="reportFileInput">
+            <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
+            <div class="rl-file-drop-body">
+                <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
+                <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
+                <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
+                <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
+            </div>
+        </label>
         <button type="button" id="rlFileRemove" class="rl-file-drop-remove" hidden aria-label="Remove selected file">
             <i class="fas fa-xmark"></i>
         </button>
-    </label>
+    </div>
 
     <div class="rl-info-box rl-info-box--ai">
         <i class="fas fa-wand-magic-sparkles"></i>
@@ -135,7 +137,9 @@
         const form = document.getElementById('inspUploadForm');
         const fileInput = document.getElementById('reportFileInput');
         const fileNameEl = document.getElementById('rlFileDropName');
+        const fileTitleEl = document.getElementById('rlFileDropTitle');
         const fileHintEl = document.getElementById('rlFileDropHint');
+        const fileDropIcon = document.getElementById('rlFileDropIcon');
         const fileRemoveBtn = document.getElementById('rlFileRemove');
         const clientError = document.getElementById('inspClientError');
         const continueBtn = document.getElementById('inspContinueBtn');
@@ -147,6 +151,36 @@
         const methodRadios = form.querySelectorAll('.rl-upload-method--picker input[type=radio]');
         const maxFileBytes = @maxFileBytes;
         const maxFileLabel = '@maxFileLabel';
+        const methodCopy = {
+            Pdf: {
+                title: 'Tap to choose your inspection report',
+                hint: `PDF recommended • Up to ${maxFileLabel}`,
+                icon: 'fa-cloud-arrow-up'
+            },
+            Scan: {
+                title: 'Tap to scan a page with your camera',
+                hint: `Use your rear camera • Up to ${maxFileLabel}`,
+                icon: 'fa-camera'
+            },
+            Photos: {
+                title: 'Tap to add report photos',
+                hint: `Select one or more images • Up to ${maxFileLabel}`,
+                icon: 'fa-image'
+            }
+        };
+
+        function getUploadMethod() {
+            return form.querySelector('input[name="uploadMethod"]:checked')?.value || 'Pdf';
+        }
+
+        function updateMethodCopy() {
+            const copy = methodCopy[getUploadMethod()] || methodCopy.Pdf;
+            if (fileTitleEl) fileTitleEl.textContent = copy.title;
+            if (fileDropIcon) fileDropIcon.className = `fas ${copy.icon}`;
+            if (!fileInput.files?.length && fileHintEl) {
+                fileHintEl.textContent = copy.hint;
+            }
+        }
 
         function showClientError(message) {
             clientError.textContent = message;
@@ -160,7 +194,7 @@
         }
 
         function updateFileAccept() {
-            const method = form.querySelector('input[name="uploadMethod"]:checked')?.value || 'Pdf';
+            const method = getUploadMethod();
             if (method === 'Pdf') {
                 fileInput.accept = '.pdf,application/pdf';
                 fileInput.removeAttribute('multiple');
@@ -176,6 +210,7 @@
                 fileInput.setAttribute('multiple', 'multiple');
                 fileInput.removeAttribute('capture');
             }
+            updateMethodCopy();
         }
 
         function updateFileLabel() {
@@ -195,7 +230,7 @@
                 if (fileRemoveBtn) fileRemoveBtn.hidden = false;
             } else {
                 fileNameEl.hidden = true;
-                fileHintEl.textContent = `PDF recommended • Up to ${maxFileLabel}`;
+                updateMethodCopy();
                 document.getElementById('rlFileDrop')?.classList.remove('has-file');
                 if (fileRemoveBtn) fileRemoveBtn.hidden = true;
             }
@@ -203,6 +238,9 @@
 
         function clearSelectedFile() {
             fileInput.value = '';
+            if (fileNameEl) {
+                fileNameEl.textContent = '';
+            }
             updateFileLabel();
             clearClientError();
         }
@@ -238,6 +276,10 @@
         fileInput.addEventListener('change', () => {
             updateFileLabel();
             clearClientError();
+        });
+
+        fileRemoveBtn?.addEventListener('mousedown', (e) => {
+            e.preventDefault();
         });
 
         fileRemoveBtn?.addEventListener('click', (e) => {
@@ -288,6 +330,7 @@
 
         updateFileAccept();
         updateFileLabel();
+        updateMethodCopy();
     })();
 </script>
 }

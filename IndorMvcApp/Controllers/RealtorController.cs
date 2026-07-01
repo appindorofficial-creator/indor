@@ -321,6 +321,11 @@ public class RealtorController(
 
         await ProcessListingPhotoUploadAsync(realtor, model, photoPdfFile, cancellationToken);
 
+        if (model.SaveAsDraft)
+        {
+            ModelState.Remove(nameof(model.PropertySubtype));
+        }
+
         if (!ModelState.IsValid)
         {
             await ApplyListingFormShellAsync(realtor, model, cancellationToken);
@@ -329,6 +334,21 @@ public class RealtorController(
 
         await nearbyNetworkService.SaveListingAsync(realtor, model, cancellationToken);
         return RedirectToAction(nameof(Network), new { filter = "Homes", scope = "mine" });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewNetworkListing(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildListingDetailAsync(realtor, id, cancellationToken);
+        return model == null
+            ? NotFound()
+            : View("NetworkListing/Detail", model);
     }
 
     [HttpGet]
@@ -366,6 +386,11 @@ public class RealtorController(
         }
 
         await ProcessListingPhotoUploadAsync(realtor, model, photoPdfFile, cancellationToken);
+
+        if (model.SaveAsDraft)
+        {
+            ModelState.Remove(nameof(model.PropertySubtype));
+        }
 
         if (!ModelState.IsValid || model.ItemId is not > 0)
         {
@@ -422,6 +447,7 @@ public class RealtorController(
         model.BadgeLabel = shell.BadgeLabel;
         model.IsVerified = shell.IsVerified;
         model.HasNotifications = shell.HasNotifications;
+        model.RecentNotifications = shell.RecentNotifications;
         ViewBag.ListingWizardPage = "details";
     }
 
@@ -481,6 +507,20 @@ public class RealtorController(
         return RedirectToAction(nameof(Profile), new { saved = true });
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkNotificationsViewed(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return Unauthorized();
+        }
+
+        portalService.MarkNotificationsViewed(realtor.Id);
+        return Ok(new { hasNotifications = false });
+    }
+
     [HttpGet]
     public IActionResult EditProfile() =>
         RedirectToAction(nameof(EditProfileContact), new { from = "public" });
@@ -538,8 +578,34 @@ public class RealtorController(
             return RedirectToAction("Profile", "RealtorRegistration");
         }
 
+        if (string.IsNullOrWhiteSpace(model.BusinessName))
+        {
+            ModelState.AddModelError(nameof(model.BusinessName), "Business Name is required.");
+        }
+
+        if (!BrokerageNameAttribute.IsValidBrokerageName(model.BrokerageName, out var brokerageError, "Brokerage Name"))
+        {
+            ModelState.AddModelError(nameof(model.BrokerageName), brokerageError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Email))
+        {
+            ModelState.AddModelError(nameof(model.Email), "Email is required.");
+        }
+
+        if (!RealtorSupportedLanguages.TryNormalize(model.LanguagesCsv, out _, out var languagesError))
+        {
+            ModelState.AddModelError(nameof(model.LanguagesCsv), languagesError!);
+        }
+
         if (!ModelState.IsValid)
         {
+            var messages = CollectModelStateErrors();
+            if (messages.Count > 0)
+            {
+                TempData["EditProfileError"] = string.Join(" ", messages);
+            }
+
             await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
             model.LicenseStates = registration.GetLicenseStates();
             return View("EditProfile/EditProfileContact", model);
@@ -585,6 +651,10 @@ public class RealtorController(
             .Take(3)
             .ToList() ?? [];
 
+        ModelState.Remove(nameof(licensePhotoFile));
+        ModelState.Remove(nameof(model.TeamName));
+        ModelState.Remove(nameof(model.BrokerInCharge));
+
         if (!RealtorLicenseNumberAttribute.IsValidLicenseNumber(model.LicenseNumber, out var licenseError))
         {
             ModelState.AddModelError(nameof(model.LicenseNumber), licenseError!);
@@ -595,17 +665,39 @@ public class RealtorController(
             ModelState.AddModelError(nameof(model.LicenseState), "License state is required.");
         }
 
-        if (!ModelState.IsValid)
+        if (string.IsNullOrWhiteSpace(model.YearsOfExperience))
         {
-            await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
-            model.SpecialtyOptions = RealtorEditProfileOptions.Specialties;
-            model.ExperienceOptions = RealtorEditProfileOptions.ExperienceLevels;
-            model.LicenseStates = registration.GetLicenseStates();
-            model.DocumentSlots = (await registration.GetDocumentSlotsAsync(cancellationToken)).ToList();
-            return View("EditProfile/EditProfileLicense", model);
+            ModelState.AddModelError(nameof(model.YearsOfExperience), "Years of experience is required.");
         }
 
-        await portalService.SaveEditProfileLicenseAsync(realtor, model, cancellationToken);
+        if (model.SelectedSpecialties.Count == 0)
+        {
+            ModelState.AddModelError(nameof(model.SelectedSpecialties), "Select at least one specialty.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            var messages = CollectModelStateErrors();
+            if (messages.Count > 0)
+            {
+                TempData["EditProfileError"] = string.Join(" ", messages);
+            }
+
+            var viewModel = await MergeEditProfileLicenseAsync(realtor, model, cancellationToken);
+            return View("EditProfile/EditProfileLicense", viewModel);
+        }
+
+        try
+        {
+            await portalService.SaveEditProfileLicenseAsync(realtor, model, cancellationToken);
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["EditProfileError"] = ex.Message;
+            var viewModel = await MergeEditProfileLicenseAsync(realtor, model, cancellationToken);
+            return View("EditProfile/EditProfileLicense", viewModel);
+        }
+
         await SaveLicenseDocumentAsync(realtor, licensePhotoFile, cancellationToken);
         return RedirectToAction(nameof(EditProfileReview));
     }
@@ -617,6 +709,11 @@ public class RealtorController(
         if (realtor == null)
         {
             return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (!HasValidStoredLicense(realtor))
+        {
+            return RedirectToEditProfileLicenseForInvalidLicense();
         }
 
         var model = await portalService.BuildEditProfileReviewAsync(realtor, cancellationToken);
@@ -632,6 +729,11 @@ public class RealtorController(
         if (realtor == null)
         {
             return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (!HasValidStoredLicense(realtor))
+        {
+            return RedirectToEditProfileLicenseForInvalidLicense();
         }
 
         await portalService.FinalizeEditProfileAsync(realtor, cancellationToken);
@@ -675,6 +777,44 @@ public class RealtorController(
         return View(model);
     }
 
+    private static bool HasValidStoredLicense(IndorRealtor realtor) =>
+        !string.IsNullOrWhiteSpace(realtor.LicenseState)
+        && RealtorLicenseNumberAttribute.IsValidLicenseNumber(realtor.LicenseNumber, out _);
+
+    private List<string> CollectModelStateErrors() =>
+        ModelState.Values
+            .SelectMany(v => v.Errors)
+            .Select(e => e.ErrorMessage)
+            .Where(m => !string.IsNullOrWhiteSpace(m))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+    private IActionResult RedirectToEditProfileLicenseForInvalidLicense()
+    {
+        TempData["EditProfileError"] =
+            "Enter a valid license number (4–20 characters, at least one letter) to continue.";
+        return RedirectToAction(nameof(EditProfileLicense));
+    }
+
+    private async Task<RealtorEditProfileLicenseViewModel> MergeEditProfileLicenseAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileLicenseViewModel posted,
+        CancellationToken cancellationToken)
+    {
+        var model = await portalService.BuildEditProfileLicenseAsync(
+            realtor,
+            registration.GetLicenseStates(),
+            cancellationToken);
+
+        model.LicenseNumber = posted.LicenseNumber;
+        model.LicenseState = posted.LicenseState;
+        model.YearsOfExperience = posted.YearsOfExperience;
+        model.SelectedSpecialties = posted.SelectedSpecialties;
+        model.TeamName = posted.TeamName;
+        model.BrokerInCharge = posted.BrokerInCharge;
+        return model;
+    }
+
     private async Task ApplyEditProfileShellAsync(
         IndorRealtor realtor,
         RealtorEditProfileWizardViewModel model,
@@ -687,6 +827,7 @@ public class RealtorController(
         model.BadgeLabel = shell.BadgeLabel;
         model.IsVerified = shell.IsVerified;
         model.HasNotifications = shell.HasNotifications;
+        model.RecentNotifications = shell.RecentNotifications;
     }
 
     private async Task SaveLicenseDocumentAsync(

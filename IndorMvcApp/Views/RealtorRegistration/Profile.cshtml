@@ -17,24 +17,12 @@
     var languagesError = FieldError("languages");
 
     var termsError = FieldError("professionalTermsAccepted");
+    var serviceAreasError = FieldError("serviceAreas");
+    var officeAddressError = FieldError("officeAddress");
 
     var selectedLanguages = (s.Languages ?? "")
-
         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-
         .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
-    var formErrors = ViewData.ModelState
-
-        .Where(x => x.Value?.Errors.Count > 0)
-
-        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
-
-        .Where(m => !string.IsNullOrWhiteSpace(m))
-
-        .Distinct()
-
-        .ToList();
 
 }
 
@@ -51,42 +39,6 @@
 <form asp-action="Profile" method="post" class="rl-reg-form" id="rlRegProfileForm" novalidate>
 
     @Html.AntiForgeryToken()
-
-    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
-
-
-
-    @if (formErrors.Count > 0)
-
-    {
-
-        <div class="rl-error-banner" role="alert" id="rlProfileFormErrors">
-
-            <i class="fas fa-circle-exclamation"></i>
-
-            <div>
-
-                <strong>Please fix the following to continue:</strong>
-
-                <ul class="rl-error-list">
-
-                    @foreach (var msg in formErrors)
-
-                    {
-
-                        <li>@msg</li>
-
-                    }
-
-                </ul>
-
-            </div>
-
-        </div>
-
-    }
-
-
 
     <div class="rl-field-block">
 
@@ -114,14 +66,7 @@
 
         </label>
 
-        @if (brokerageError.Length > 0)
-
-        {
-
-            <span class="rl-field-error" id="brokerageNameError">@brokerageError</span>
-
-        }
-
+        <span class="rl-field-error" id="brokerageNameError">@brokerageError</span>
     </div>
 
 
@@ -154,14 +99,7 @@
 
         </label>
 
-        @if (licenseError.Length > 0)
-
-        {
-
-            <span class="rl-field-error" id="licenseNumberError">@licenseError</span>
-
-        }
-
+        <span class="rl-field-error" id="licenseNumberError">@licenseError</span>
     </div>
 
 
@@ -196,60 +134,38 @@
 
         </label>
 
-        @if (licenseStateError.Length > 0)
-
-        {
-
-            <span class="rl-field-error" id="licenseStateError">@licenseStateError</span>
-
-        }
-
+        <span class="rl-field-error" id="licenseStateError">@licenseStateError</span>
     </div>
 
-
-
     <div class="rl-field-block">
-
-        <span class="rl-field-label">City / Market Area</span>
-
-        <label class="rl-field">
-
+        <span class="rl-field-label">City / Market Area <span class="rl-required" aria-hidden="true">*</span></span>
+        <label class="rl-field @(serviceAreasError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-map"></i>
-
             <input type="text"
-
                    name="serviceAreas"
-
                    value="@s.ServiceAreas"
-
-                   placeholder="Charlotte, NC" />
-
+                   placeholder="Charlotte, NC"
+                   aria-required="true"
+                   aria-invalid="@(serviceAreasError.Length > 0)"
+                   @(serviceAreasError.Length > 0 ? Html.Raw("aria-describedby=\"serviceAreasError\"") : null) />
         </label>
-
+        <span class="rl-field-error" id="serviceAreasError">@serviceAreasError</span>
     </div>
 
-
-
     <div class="rl-field-block">
-
-        <span class="rl-field-label">Office Address</span>
-
-        <label class="rl-field">
-
+        <span class="rl-field-label">Office Address <span class="rl-required" aria-hidden="true">*</span></span>
+        <label class="rl-field @(officeAddressError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-location-dot"></i>
-
             <input type="text"
-
                    name="officeAddress"
-
                    value="@s.OfficeAddress"
-
                    placeholder="123 Business Ave, Miami, FL 33131"
-
-                   autocomplete="street-address" />
-
+                   autocomplete="street-address"
+                   aria-required="true"
+                   aria-invalid="@(officeAddressError.Length > 0)"
+                   @(officeAddressError.Length > 0 ? Html.Raw("aria-describedby=\"officeAddressError\"") : null) />
         </label>
-
+        <span class="rl-field-error" id="officeAddressError">@officeAddressError</span>
     </div>
 
 
@@ -292,22 +208,7 @@
 
         </div>
 
-        @if (languagesError.Length > 0)
-
-        {
-
-            <span class="rl-field-error" id="languagesError">@languagesError</span>
-
-        }
-
-        else
-
-        {
-
-            <span class="rl-field-error" id="languagesError"></span>
-
-        }
-
+        <span class="rl-field-error" id="languagesError">@languagesError</span>
     </div>
 
 
@@ -330,8 +231,6 @@
 
     <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
 
-        <input type="hidden" name="professionalTermsAccepted" value="false" />
-
         <input type="checkbox"
 
                name="professionalTermsAccepted"
@@ -350,21 +249,7 @@
 
     </label>
 
-    @if (termsError.Length > 0)
-
-    {
-
-        <span class="rl-field-error rl-field-error--terms" id="termsError">@termsError</span>
-
-    }
-
-    else
-
-    {
-
-        <span class="rl-field-error rl-field-error--terms" id="termsError"></span>
-
-    }
+    <span class="rl-field-error rl-field-error--terms" id="termsError">@termsError</span>
 
 
 
@@ -375,20 +260,24 @@
 
 
 @section Scripts {
+<script src="~/js/realtor-license-number.js" asp-append-version="true"></script>
 <script>
 (function () {
-    var banner = document.getElementById('rlProfileFormErrors');
-    var summary = document.querySelector('#rlRegProfileForm .ob-summary:not(.validation-summary-valid)');
-    var firstFieldError = document.querySelector('#rlRegProfileForm .rl-field-error, #rlRegProfileForm .rl-field.is-error, #rlRegProfileForm .rl-terms.is-error, #rlRegProfileForm .rl-lang-options.is-error');
-    var scrollTarget = banner || summary || firstFieldError;
-    if (scrollTarget) {
-        scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
     var form = document.getElementById('rlRegProfileForm');
     if (!form) {
         return;
     }
+
+    function scrollToFirstError() {
+        var firstFieldError = form.querySelector('.rl-field-error:not(:empty)');
+        var scrollTarget = firstFieldError
+            || form.querySelector('.rl-field.is-error, .rl-terms.is-error, .rl-lang-options.is-error');
+        if (scrollTarget) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    scrollToFirstError();
 
     var supportedRoot = document.getElementById('rlSupportedLanguages');
     var supported = (supportedRoot?.dataset.supportedLanguages || 'English,Spanish')
@@ -396,31 +285,16 @@
         .map(function (item) { return item.trim(); })
         .filter(Boolean);
 
-    function showBanner(messages) {
-        var existing = document.getElementById('rlProfileClientErrors');
-        if (existing) {
-            existing.remove();
+    function setFieldError(errorId, fieldSelector, message) {
+        var errorEl = document.getElementById(errorId);
+        var field = form.querySelector(fieldSelector)?.closest('.rl-field');
+        if (errorEl) {
+            errorEl.textContent = message || '';
         }
-        if (!messages.length) {
-            return;
+        if (field) {
+            field.classList.toggle('is-error', !!message);
         }
-        var el = document.createElement('div');
-        el.className = 'rl-error-banner';
-        el.id = 'rlProfileClientErrors';
-        el.setAttribute('role', 'alert');
-        el.innerHTML =
-            '<i class="fas fa-circle-exclamation"></i>' +
-            '<div><strong>Please fix the following to continue:</strong>' +
-            '<ul class="rl-error-list">' +
-            messages.map(function (msg) { return '<li>' + msg + '</li>'; }).join('') +
-            '</ul></div>';
-        var summaryEl = form.querySelector('.ob-summary');
-        if (summaryEl && summaryEl.nextSibling) {
-            form.insertBefore(el, summaryEl.nextSibling);
-        } else {
-            form.insertBefore(el, form.firstChild.nextSibling);
-        }
-        el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return !!message;
     }
 
     function setLanguagesError(message) {
@@ -431,6 +305,7 @@
         if (supportedRoot) {
             supportedRoot.classList.toggle('is-error', !!message);
         }
+        return !!message;
     }
 
     function setTermsError(message) {
@@ -442,41 +317,126 @@
         if (terms) {
             terms.classList.toggle('is-error', !!message);
         }
+        return !!message;
+    }
+
+    function setLicenseError(message) {
+        return setFieldError('licenseNumberError', 'input[name="licenseNumber"]', message);
+    }
+
+    function clearAllFieldErrors() {
+        setFieldError('brokerageNameError', 'input[name="brokerageName"]', '');
+        setLicenseError('');
+        setFieldError('licenseStateError', 'select[name="licenseState"]', '');
+        setFieldError('serviceAreasError', 'input[name="serviceAreas"]', '');
+        setFieldError('officeAddressError', 'input[name="officeAddress"]', '');
+        setLanguagesError('');
+        setTermsError('');
     }
 
     function validateProfileForm() {
-        var errors = [];
-        setLanguagesError('');
-        setTermsError('');
+        var hasError = false;
+        clearAllFieldErrors();
+
+        var brokerage = form.querySelector('input[name="brokerageName"]');
+        if (!brokerage || !brokerage.value.trim()) {
+            hasError = setFieldError(
+                'brokerageNameError',
+                'input[name="brokerageName"]',
+                'Brokerage / Company Name is required.') || hasError;
+        }
+
+        var licenseInput = form.querySelector('input[name="licenseNumber"]');
+        if (licenseInput && window.IndorRealtorLicense) {
+            var licenseMessage = window.IndorRealtorLicense.validate(licenseInput.value);
+            if (licenseMessage) {
+                hasError = setLicenseError(licenseMessage) || hasError;
+            }
+        } else if (licenseInput && !licenseInput.value.trim()) {
+            hasError = setLicenseError('License number is required.') || hasError;
+        }
+
+        var licenseState = form.querySelector('select[name="licenseState"]');
+        if (!licenseState || !licenseState.value.trim()) {
+            hasError = setFieldError(
+                'licenseStateError',
+                'select[name="licenseState"]',
+                'Please select your license state.') || hasError;
+        }
+
+        var serviceAreas = form.querySelector('input[name="serviceAreas"]');
+        if (!serviceAreas || !serviceAreas.value.trim()) {
+            hasError = setFieldError(
+                'serviceAreasError',
+                'input[name="serviceAreas"]',
+                'City / market area is required.') || hasError;
+        }
+
+        var officeAddress = form.querySelector('input[name="officeAddress"]');
+        if (!officeAddress || !officeAddress.value.trim()) {
+            hasError = setFieldError(
+                'officeAddressError',
+                'input[name="officeAddress"]',
+                'Office address is required.') || hasError;
+        }
 
         var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
         if (!checkedLanguages.length) {
-            var languageError = 'Select at least one language.';
-            setLanguagesError(languageError);
-            errors.push(languageError);
+            hasError = setLanguagesError('Select at least one language.') || hasError;
         } else {
             checkedLanguages.forEach(function (input) {
                 if (supported.indexOf(input.value) === -1) {
-                    var invalidError = 'Only English and Spanish are supported.';
-                    setLanguagesError(invalidError);
-                    errors.push(invalidError);
+                    hasError = setLanguagesError('Only English and Spanish are supported.') || hasError;
                 }
             });
         }
 
         var terms = form.querySelector('input[name="professionalTermsAccepted"][type="checkbox"]');
         if (!terms || !terms.checked) {
-            var termsError = 'Please check the authorization box to verify your license before continuing.';
-            setTermsError(termsError);
-            errors.push(termsError);
+            hasError = setTermsError('Please check the authorization box to verify your license before continuing.') || hasError;
         }
 
-        if (errors.length) {
-            showBanner(errors);
+        if (hasError) {
+            scrollToFirstError();
             return false;
         }
 
         return true;
+    }
+
+    var licenseInput = form.querySelector('input[name="licenseNumber"]');
+    if (licenseInput && window.IndorRealtorLicense) {
+        window.IndorRealtorLicense.attach(licenseInput, {
+            errorEl: document.getElementById('licenseNumberError'),
+            validateOnLoad: false
+        });
+    }
+
+    [
+        'input[name="brokerageName"]',
+        'input[name="serviceAreas"]',
+        'input[name="officeAddress"]',
+        'select[name="licenseState"]'
+    ].forEach(function (selector) {
+        var input = form.querySelector(selector);
+        if (!input) {
+            return;
+        }
+        var errorId = input.name === 'licenseState'
+            ? 'licenseStateError'
+            : input.name + 'Error';
+        input.addEventListener('input', function () {
+            setFieldError(errorId, selector, '');
+        });
+        input.addEventListener('change', function () {
+            setFieldError(errorId, selector, '');
+        });
+    });
+
+    if (licenseInput) {
+        licenseInput.addEventListener('input', function () {
+            setLicenseError('');
+        });
     }
 
     form.addEventListener('submit', function (e) {

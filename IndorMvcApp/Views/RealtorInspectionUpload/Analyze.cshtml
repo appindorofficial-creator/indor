@@ -14,7 +14,7 @@
 
     <i class="fas fa-wand-magic-sparkles"></i>
 
-    <p>OpenAI is analyzing your real inspection report. Large PDFs (like 74 pages) are processed in sections and may take several minutes — keep this screen open.</p>
+    <p>@Model.AnalysisIntroMessage</p>
 
 </div>
 
@@ -26,7 +26,7 @@
 
         <span>@Model.AnalysisProgress%</span>
 
-        <small>Analyzing</small>
+        <small>@(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Failed ? "Stopped" : "Analyzing")</small>
 
     </div>
 
@@ -36,7 +36,7 @@
 
         <span>@Model.PropertyDisplay</span>
 
-        <span>@Model.ReportPageCount pages · @Model.UploadedLabel</span>
+        <span>@Model.ReportCountLabel · @Model.UploadedLabel</span>
 
     </div>
 
@@ -105,6 +105,7 @@
 
 
 <div class="rl-analyze-actions" id="analyzeActions">
+    @await Html.PartialAsync("_ChangeInspectionDocument")
     @if (Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Complete)
     {
         <form asp-action="Analyze" method="post">
@@ -130,7 +131,7 @@
     {
         <div class="rl-analyze-running">
             <i class="fas fa-wand-magic-sparkles fa-spin"></i>
-            <p>OpenAI is reading your PDF and extracting repair issues by trade and urgency…</p>
+            <p>@Model.AnalysisRunningMessage</p>
         </div>
         <form asp-action="Analyze" method="post" class="rl-analyze-secondary">
             @Html.AntiForgeryToken()
@@ -146,33 +147,69 @@
     <script>
         (function () {
             var isComplete = @(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Complete ? "true" : "false");
-            var isFailed = @(Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Failed ? "true" : "false");
             if (isComplete) return;
 
             var token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
             var pollMs = 4000;
+            var actionsEl = document.getElementById('analyzeActions');
+            var runningHtml = actionsEl
+                ? actionsEl.querySelector('.rl-analyze-running')?.outerHTML
+                    || '<div class="rl-analyze-running"><i class="fas fa-wand-magic-sparkles fa-spin"></i><p>INDOR AI is reading your report and extracting repair items.</p></div>'
+                : '';
 
-            function runAnalysis() {
-                return fetch('@Url.Action("RunAnalysis", "RealtorInspectionUpload")', {
+            function updateProgress(progress) {
+                var ring = document.querySelector('.rl-analyze-progress-ring');
+                var label = ring && ring.querySelector('span');
+                var status = ring && ring.querySelector('small');
+                if (ring && typeof progress === 'number') {
+                    ring.style.setProperty('--progress', progress);
+                }
+                if (label) label.textContent = progress + '%';
+                if (status) status.textContent = 'Analyzing';
+            }
+
+            function showRunningState() {
+                var errorBox = document.getElementById('analyzeErrorBox');
+                var retryBtn = document.getElementById('analyzeRetryBtn');
+                if (errorBox) errorBox.remove();
+                if (retryBtn) retryBtn.remove();
+                if (actionsEl && !actionsEl.querySelector('.rl-analyze-running')) {
+                    actionsEl.insertAdjacentHTML('beforeend', runningHtml);
+                }
+                updateProgress(10);
+            }
+
+            function postAnalysis(url) {
+                return fetch(url, {
                     method: 'POST',
                     headers: {
                         'RequestVerificationToken': token,
                         'Content-Type': 'application/x-www-form-urlencoded'
                     },
                     body: '__RequestVerificationToken=' + encodeURIComponent(token || '')
-                }).then(function (r) { return r.json(); });
+                }).then(function (r) {
+                    if (!r.ok) {
+                        throw new Error('Analysis request failed (' + r.status + ')');
+                    }
+                    return r.json();
+                });
+            }
+
+            function runAnalysis() {
+                return postAnalysis('@Url.Action("RunAnalysis", "RealtorInspectionUpload")');
+            }
+
+            function retryAnalysis() {
+                return postAnalysis('@Url.Action("RetryAnalysis", "RealtorInspectionUpload")');
             }
 
             function poll() {
                 runAnalysis()
                 .then(function (data) {
-                    var ring = document.querySelector('.rl-analyze-progress-ring span');
-                    if (ring && data.progress) ring.textContent = data.progress + '%';
-                    if (data.complete) {
-                        window.location.reload();
-                        return;
+                    if (typeof data.progress === 'number') {
+                        updateProgress(data.progress);
                     }
-                    if (data.failed) {
+                    if (data.complete || data.failed) {
                         window.location.reload();
                         return;
                     }
@@ -185,14 +222,32 @@
             if (retryBtn) {
                 retryBtn.addEventListener('click', function () {
                     retryBtn.disabled = true;
-                    runAnalysis().then(function () { window.location.reload(); });
+                    showRunningState();
+                    retryAnalysis()
+                        .then(function (data) {
+                            if (typeof data.progress === 'number') {
+                                updateProgress(data.progress);
+                            }
+                            if (data.complete || data.failed) {
+                                window.location.reload();
+                                return;
+                            }
+                            setTimeout(poll, pollMs);
+                        })
+                        .catch(function () {
+                            retryBtn.disabled = false;
+                            if (actionsEl && !document.getElementById('analyzeErrorBox')) {
+                                actionsEl.insertAdjacentHTML('afterbegin',
+                                    '<div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox"><i class="fas fa-triangle-exclamation"></i><p>Could not restart analysis. Please try again.</p></div>');
+                            }
+                            var running = actionsEl && actionsEl.querySelector('.rl-analyze-running');
+                            if (running) running.remove();
+                        });
                 });
                 return;
             }
 
-            if (!isFailed) {
-                setTimeout(poll, 800);
-            }
+            setTimeout(poll, 800);
         })();
     </script>
 }

@@ -52,13 +52,13 @@
                 }
             </div>
         </div>
-        @if (Model.HeroBadges.Count > 0)
+        @if (Model.HeroBadges.Any(b => b.IsComplete))
         {
             <div class="rl-public-hero-badges">
-                @foreach (var badge in Model.HeroBadges)
+                @foreach (var badge in Model.HeroBadges.Where(b => b.IsComplete))
                 {
-                    <span class="rl-public-hero-badge-pill @(badge.IsComplete ? "is-complete" : "")">
-                        <i class="fas @(badge.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
+                    <span class="rl-public-hero-badge-pill is-complete">
+                        <i class="fas fa-circle-check" aria-hidden="true"></i>
                         @badge.Label
                     </span>
                 }

@@ -11,6 +11,8 @@ public class RealtorPortalShellViewModel
     public string BadgeLabel { get; set; } = "Realtor Basic";
     public bool IsVerified { get; set; }
     public bool HasNotifications { get; set; }
+    public bool HideNotifications { get; set; }
+    public List<RealtorActivityItemViewModel> RecentNotifications { get; set; } = [];
 }
 
 public class RealtorStatItemViewModel
@@ -367,12 +369,21 @@ public class RealtorEditProfileContactViewModel : RealtorEditProfileWizardViewMo
 
 public class RealtorEditProfileLicenseViewModel : RealtorEditProfileWizardViewModel
 {
+    [Display(Name = "License Number")]
+    [RealtorLicenseNumber]
     public string LicenseNumber { get; set; } = "";
+
+    [Display(Name = "License State")]
+    [Required(ErrorMessage = "License state is required.")]
     public string LicenseState { get; set; } = "";
+
+    [Display(Name = "Years of Experience")]
+    [Required(ErrorMessage = "Years of experience is required.")]
     public string YearsOfExperience { get; set; } = "";
+
     public List<string> SelectedSpecialties { get; set; } = [];
-    public string TeamName { get; set; } = "";
-    public string BrokerInCharge { get; set; } = "";
+    public string? TeamName { get; set; }
+    public string? BrokerInCharge { get; set; }
     public List<RealtorDocumentSlotViewModel> DocumentSlots { get; set; } = [];
     public List<RealtorEditProfileVerificationItemViewModel> VerificationItems { get; set; } = [];
     public IReadOnlyList<string> SpecialtyOptions { get; set; } = [];
@@ -480,6 +491,9 @@ public class RealtorActivityItemViewModel
     public string Description { get; set; } = "";
     public string OccurredLabel { get; set; } = "";
     public string CategoryTag { get; set; } = "";
+    public string? TargetUrl { get; set; }
+    public string IconClass { get; set; } = "fa-circle-info";
+    public string TagCssClass { get; set; } = "";
 }
 
 // Shared card types (used on Home)

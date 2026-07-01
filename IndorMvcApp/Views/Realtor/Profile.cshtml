@@ -3,6 +3,8 @@
     ViewData["Title"] = "Profile";
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "profile";
+    var profileCardController = Model.IsVerified ? "Realtor" : "RealtorRegistration";
+    var profileCardAction = Model.IsVerified ? "PublicProfile" : "Verification";
 }
 
 <div class="rl-dash-shell rl-dash-shell--profile">
@@ -21,7 +23,7 @@
     </section>
 
     <section class="rl-profile-card-v2 rl-profile-card-v2--overlap">
-        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-profile-card-link">
+        <a asp-controller="@profileCardController" asp-action="@profileCardAction" class="rl-profile-card-link">
             <div class="rl-profile-photo-wrap">
                 @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
                 {

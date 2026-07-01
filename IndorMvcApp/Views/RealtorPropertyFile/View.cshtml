@@ -40,17 +40,32 @@
         </div>
     </div>
 
-    <div class="rl-file-view-actions">
-        <a href="@Model.PrimaryActionUrl" class="ob-btn ob-btn-primary">@Model.PrimaryActionLabel</a>
-        @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel) && !string.IsNullOrWhiteSpace(Model.SecondaryActionUrl))
-        {
-            <a href="@Model.SecondaryActionUrl" class="rl-btn-outline">@Model.SecondaryActionLabel</a>
-        }
-    </div>
+    @if (!string.IsNullOrWhiteSpace(Model.PrimaryActionLabel) || !string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
+    {
+        <div class="rl-file-view-actions">
+            @if (!string.IsNullOrWhiteSpace(Model.PrimaryActionLabel) && !string.IsNullOrWhiteSpace(Model.PrimaryActionUrl))
+            {
+                <a href="@Model.PrimaryActionUrl" class="ob-btn ob-btn-primary">@Model.PrimaryActionLabel</a>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel) && !string.IsNullOrWhiteSpace(Model.SecondaryActionUrl))
+            {
+                <a href="@Model.SecondaryActionUrl" class="rl-btn-outline">@Model.SecondaryActionLabel</a>
+            }
+        </div>
+    }
 
     @if (Model.Sections.Count == 0)
     {
-        <div class="rl-dash-empty">No items in this file yet. Upload an inspection report or add content to get started.</div>
+        <div class="rl-dash-empty">
+            @if (string.Equals(Model.PrimaryActionLabel, "Continue Inspection", StringComparison.Ordinal))
+            {
+                <span>Inspection report uploaded. Continue analysis to add findings to this file.</span>
+            }
+            else
+            {
+                <span>No items in this file yet. Upload an inspection report or add content to get started.</span>
+            }
+        </div>
     }
     else
     {

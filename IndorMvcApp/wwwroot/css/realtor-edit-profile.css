@@ -168,6 +168,7 @@
 
 .rl-ep-languages { margin-top: 12px; }
 .rl-ep-languages-label { display: block; font-size: .74rem; font-weight: 600; color: #475569; margin-bottom: 8px; }
+.rl-ep-languages-label .rl-required { color: inherit; font-weight: inherit; }
 .rl-ep-language-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
 .rl-ep-language-chip {
     display: inline-flex; align-items: center; gap: 6px;
@@ -187,6 +188,7 @@
 
 .rl-ep-specialties { margin: 12px 0; }
 .rl-ep-specialties-label { display: block; font-size: .74rem; font-weight: 600; color: #475569; margin-bottom: 8px; }
+.rl-ep-specialties-label .rl-required { color: inherit; font-weight: inherit; }
 .rl-ep-specialties-label small { font-weight: 500; color: #94A3B8; }
 .rl-ep-specialty-chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .rl-ep-specialty-chip {

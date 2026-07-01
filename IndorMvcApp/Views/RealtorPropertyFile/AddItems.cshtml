@@ -1,4 +1,12 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileAddItemsViewModel
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
+}
 
 <div class="rl-prop-summary-card">
     <img src="@(Model.PhotoUrl ?? "/welcome-house.png")" alt="" />
@@ -10,11 +18,27 @@
     </div>
 </div>
 
-<form id="addItemsForm" asp-action="AddItems" method="post" class="rl-invite-form">
+<form id="addItemsForm" asp-action="AddItems" method="post" class="rl-invite-form" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-    <h2 class="rl-invite-section-title">Select what to add</h2>
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert" id="propFileAddItemsFormErrors">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Please fix the following to continue:</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
+
+    <h2 class="rl-invite-section-title">Select what to add <span class="rl-required" aria-hidden="true">*</span></h2>
     <div class="rl-category-grid">
         @foreach (var cat in Model.Categories)
         {
@@ -41,8 +65,13 @@
 
 @section Scripts {
 <script>
-    document.querySelectorAll('.rl-category-card input').forEach(c => {
-        c.addEventListener('change', () => c.closest('.rl-category-card')?.classList.toggle('is-selected', c.checked));
-    });
+    (function () {
+        var banner = document.getElementById('propFileAddItemsFormErrors');
+        var summary = document.querySelector('#addItemsForm .ob-summary:not(.validation-summary-valid)');
+        var scrollTarget = banner || summary;
+        if (scrollTarget) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    })();
 </script>
 }

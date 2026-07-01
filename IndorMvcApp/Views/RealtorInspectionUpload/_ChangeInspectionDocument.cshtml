@@ -1,0 +1,7 @@
+<form asp-action="ChangeDocument" method="post" class="rl-analyze-change-doc">
+    @Html.AntiForgeryToken()
+    <button type="submit" class="rl-analyze-change-doc-btn">
+        <i class="fas fa-arrow-left" aria-hidden="true"></i> Change document
+    </button>
+    <p class="rl-analyze-change-doc-hint">Go back to upload a different PDF, scan, or photo.</p>
+</form>

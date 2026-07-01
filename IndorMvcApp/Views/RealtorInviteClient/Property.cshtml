@@ -1,4 +1,12 @@
 @model IndorMvcApp.ViewModels.RealtorInvitePropertyViewModel
+@{
+    var formErrors = ViewData.ModelState
+        .Where(x => x.Value?.Errors.Count > 0)
+        .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
+}
 
 <h2 class="rl-invite-section-title">Select Property</h2>
 
@@ -9,10 +17,26 @@
     </div>
 </form>
 
-<form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm">
+<form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm" data-create-url="@Url.Action("CreateProperty")" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" name="q" id="invitePropertySearchHidden" value="@Model.SearchQuery" />
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
+
+    @if (formErrors.Count > 0)
+    {
+        <div class="rl-error-banner" role="alert" id="invitePropertyFormErrors">
+            <i class="fas fa-circle-exclamation"></i>
+            <div>
+                <strong>Please fix the following to continue:</strong>
+                <ul class="rl-error-list">
+                    @foreach (var msg in formErrors)
+                    {
+                        <li>@msg</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    }
 
     @if (Model.Properties.Count == 0)
     {
@@ -52,15 +76,18 @@
         }
     }
 
-    <h2 class="rl-invite-section-title">Or Add New Property</h2>
-    <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
-        <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
-        <div>
-            <strong>Create New Property</strong>
-            <span>Add a new property for this client</span>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-    </a>
+    @if (Model.Properties.Count > 0 || string.IsNullOrWhiteSpace(Model.SearchQuery))
+    {
+        <h2 class="rl-invite-section-title">Or Add New Property</h2>
+        <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
+            <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
+            <div>
+                <strong>Create New Property</strong>
+                <span>Add a new property for this client</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </a>
+    }
 
     <div class="rl-info-box">
         <i class="fas fa-shield-halved"></i>
@@ -77,38 +104,11 @@
 @section Scripts {
 <script>
     (function () {
-        var searchInput = document.getElementById('invitePropertySearch');
-        var searchHidden = document.getElementById('invitePropertySearchHidden');
-        var form = document.getElementById('invitePropertyForm');
-        var nextBtn = document.getElementById('invitePropertyNextBtn');
-        var createUrl = '@Url.Action("CreateProperty")';
-
-        if (searchInput && searchHidden) {
-            searchInput.addEventListener('input', function () {
-                searchHidden.value = searchInput.value;
-            });
-        }
-
-        document.querySelectorAll('.rl-property-pick input').forEach(function (r) {
-            r.addEventListener('change', function () {
-                document.querySelectorAll('.rl-property-pick').forEach(function (p) {
-                    p.classList.remove('is-selected');
-                });
-                r.closest('.rl-property-pick')?.classList.add('is-selected');
-            });
-        });
-
-        if (form && nextBtn) {
-            form.addEventListener('submit', function (e) {
-                var selected = form.querySelector('input[name="propertyFileId"]:checked');
-                var query = (searchInput?.value || searchHidden?.value || '').trim();
-                var hasOptions = form.querySelectorAll('input[name="propertyFileId"]').length > 0;
-
-                if (!selected && !hasOptions && query.length > 0) {
-                    e.preventDefault();
-                    window.location.href = createUrl + '?address=' + encodeURIComponent(query);
-                }
-            });
+        var banner = document.getElementById('invitePropertyFormErrors');
+        var summary = document.querySelector('#invitePropertyForm .ob-summary:not(.validation-summary-valid)');
+        var scrollTarget = banner || summary;
+        if (scrollTarget) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     })();
 </script>

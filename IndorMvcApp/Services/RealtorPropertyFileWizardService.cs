@@ -462,13 +462,44 @@ public class RealtorPropertyFileWizardService(
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
             ?? throw new InvalidOperationException("Realtor profile not found.");
 
-        var file = await db.IndorRealtorPropertyFiles.AsNoTracking()
+        var file = await db.IndorRealtorPropertyFiles
             .Include(f => f.Items)
             .FirstOrDefaultAsync(f => f.Id == propertyFileId && f.RealtorId == realtor.Id, cancellationToken)
             ?? throw new InvalidOperationException("Property file not found.");
 
-        var (badge, css) = DeriveFileStatus(file);
-        var (primaryLabel, primaryUrl, secondaryLabel, secondaryUrl) = DeriveFileActions(file);
+        var pendingDraft = await db.IndorRealtorInspectionUploadDrafts
+            .Include(d => d.Findings)
+            .Where(d => d.RealtorId == realtor.Id &&
+                        d.PropertyFileId == propertyFileId &&
+                        d.Status == RealtorInspectionUploadDraftStatuses.Draft)
+            .OrderByDescending(d => d.FechaActualizacion ?? d.FechaCreacion)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (pendingDraft != null &&
+            !string.IsNullOrWhiteSpace(pendingDraft.ReportFileUrl) &&
+            !RealtorPropertyFileActions.HasInspectionReport(file))
+        {
+            RealtorPropertyFileInspectionSync.UpsertInspectionReport(
+                db,
+                file,
+                pendingDraft.ReportFileUrl,
+                pendingDraft.ReportFileName ?? "Inspection Report");
+
+            if (string.Equals(pendingDraft.AnalysisStatus, RealtorInspectionAnalysisStatuses.Complete, StringComparison.Ordinal) &&
+                pendingDraft.Findings.Count > 0)
+            {
+                await db.Entry(pendingDraft).Collection(d => d.Findings).LoadAsync(cancellationToken);
+                RealtorPropertyFileInspectionSync.UpsertRepairItemsFromFindings(db, file, pendingDraft.Findings);
+            }
+
+            RealtorPropertyFileInspectionSync.NormalizeEmptyRepairReviewPhase(file);
+            file.UpdatedUtc = DateTime.UtcNow;
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
+        var context = new RealtorPropertyFileActionContext(file, pendingDraft, OnViewPage: true);
+        var (badge, css) = RealtorPropertyFileActions.DeriveStatus(context);
+        var (primaryLabel, primaryUrl, secondaryLabel, secondaryUrl) = RealtorPropertyFileActions.DeriveViewActions(context);
         var firstName = (realtor.DisplayName ?? "Realtor").Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()
                         ?? "Realtor";
 
@@ -580,71 +611,5 @@ public class RealtorPropertyFileWizardService(
         }
 
         return local.ToString("MMM d, yyyy");
-    }
-
-    private static (string Badge, string Css) DeriveFileStatus(IndorRealtorPropertyFile file)
-    {
-        if (file.FilePhase == "Transfer")
-        {
-            return ("Shared Package", "shared");
-        }
-
-        if (file.QuotesReceivedCount > 0)
-        {
-            return ("Quotes Pending", "quotes");
-        }
-
-        if (file.RepairItemsCount > 0 || file.FilePhase == "Repair Review")
-        {
-            return ("Inspection Uploaded", "inspection");
-        }
-
-        if (file.Status == "Archived")
-        {
-            return ("Closed", "closed");
-        }
-
-        return ("Active", "active");
-    }
-
-    private static (string Label, string Url, string? SecondaryLabel, string? SecondaryUrl) DeriveFileActions(
-        IndorRealtorPropertyFile file)
-    {
-        var id = file.Id;
-        var viewUrl = $"/RealtorPropertyFile/View?id={id}";
-
-        if (file.FilePhase == "Transfer")
-        {
-            return ("View Package", viewUrl, null, null);
-        }
-
-        if (file.RepairItemsCount > 0 && file.QuotesReceivedCount == 0)
-        {
-            return (
-                "Request Quotes",
-                $"/RealtorQuoteRequest/Start?propertyFileId={id}",
-                "View Inspection",
-                viewUrl);
-        }
-
-        if (file.RepairItemsCount == 0 && file.FilePhase == "Pre-Closing")
-        {
-            return (
-                "Upload Report",
-                $"/RealtorInspectionUpload/Upload?propertyFileId={id}",
-                null,
-                null);
-        }
-
-        if (file.QuotesReceivedCount > 0)
-        {
-            return (
-                "View Quotes",
-                "/Realtor/Quotes",
-                "Open File",
-                viewUrl);
-        }
-
-        return ("Open File", viewUrl, null, null);
     }
 }
