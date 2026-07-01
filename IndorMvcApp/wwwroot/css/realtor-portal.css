@@ -1372,6 +1372,19 @@ button.rl-network-btn {
 }
 .rl-profile-row--danger { color: #DC2626; }
 .rl-profile-row--danger i { margin-right: 8px; }
+.rl-profile-row--center {
+    justify-content: center;
+    position: relative;
+}
+.rl-profile-row--center span:first-child {
+    flex: 0;
+    text-align: center;
+    white-space: nowrap;
+}
+.rl-profile-row--center > .fa-chevron-right {
+    position: absolute;
+    right: 14px;
+}
 .rl-signout-form { margin: 0; }
 
 /* Invite Client wizard */
