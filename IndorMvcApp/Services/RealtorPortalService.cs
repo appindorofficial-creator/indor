@@ -245,6 +245,29 @@ public class RealtorPortalService(
         };
     }
 
+    public async Task<RealtorSharedPackagesViewModel> BuildSharedPackagesAsync(
+        IndorRealtor realtor, CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+
+        var packages = await db.IndorRealtorSharedPackages.AsNoTracking()
+            .Where(p => p.RealtorId == realtor.Id)
+            .OrderByDescending(p => p.SharedUtc)
+            .ToListAsync(ct);
+
+        return new RealtorSharedPackagesViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
+            Packages = packages.Select(MapPackageCard).ToList()
+        };
+    }
+
     public async Task<RealtorQuoteDetailViewModel?> BuildQuoteDetailAsync(
         IndorRealtor realtor, int quoteId, CancellationToken ct = default)
     {

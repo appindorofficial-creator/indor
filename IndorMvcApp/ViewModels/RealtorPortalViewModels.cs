@@ -545,6 +545,11 @@ public class RealtorSharedPackageCardViewModel
     public string ActionLabel { get; set; } = "Open Package";
 }
 
+public class RealtorSharedPackagesViewModel : RealtorPortalShellViewModel
+{
+    public List<RealtorSharedPackageCardViewModel> Packages { get; set; } = [];
+}
+
 public class RealtorPublicProfileViewModel : RealtorPortalShellViewModel
 {
     public bool IsOwnProfile { get; set; } = true;

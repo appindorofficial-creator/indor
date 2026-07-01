@@ -21,9 +21,10 @@ public partial class ProviderRegistrationController
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Entry(string? path, bool termsAccepted, string? action)
+    public async Task<IActionResult> Entry(string? path, string? action)
     {
         var state = await registration.GetAsync();
+        var termsAccepted = IsCheckboxChecked("termsAccepted");
 
         if (string.Equals(action, "later", StringComparison.OrdinalIgnoreCase))
         {
@@ -53,6 +54,7 @@ public partial class ProviderRegistrationController
     [HttpGet]
     public async Task<IActionResult> CompanyInfo()
     {
+        await registration.LinkCurrentUserAsync();
         var state = await registration.GetAsync();
         if (!state.UsesNewWizard)
         {
@@ -79,10 +81,10 @@ public partial class ProviderRegistrationController
         string? serviceAreas,
         string? website,
         string? einNumber,
-        bool termsAccepted,
         string? action)
     {
         var state = await registration.GetAsync();
+        var termsAccepted = IsCheckboxChecked("termsAccepted");
 
         if (string.Equals(action, "later", StringComparison.OrdinalIgnoreCase))
         {
@@ -152,6 +154,8 @@ public partial class ProviderRegistrationController
         {
             return BadRequest();
         }
+
+        termsAccepted = IsCheckboxChecked("termsAccepted");
 
         ApplyCompanyInfoFields(
             state,

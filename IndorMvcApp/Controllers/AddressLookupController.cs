@@ -9,17 +9,31 @@ namespace IndorMvcApp.Controllers;
 public class AddressLookupController(IAddressLookupService addressLookup) : Controller
 {
     [HttpGet]
-    public async Task<IActionResult> Zip(string city, string state, CancellationToken cancellationToken)
+    public async Task<IActionResult> Zip(string city, string state, string? street, CancellationToken cancellationToken)
     {
         city = city?.Trim() ?? string.Empty;
         state = state?.Trim() ?? string.Empty;
+        street = street?.Trim();
 
         if (string.IsNullOrWhiteSpace(city) || string.IsNullOrWhiteSpace(state))
         {
             return BadRequest(new { message = "City and state are required." });
         }
 
-        var zip = await addressLookup.LookupPrimaryZipForCityAsync(city, state, cancellationToken);
+        string? zip = null;
+
+        if (!string.IsNullOrWhiteSpace(street))
+        {
+            var fullAddress = $"{street}, {city}, {state}, USA";
+            var geocoded = await addressLookup.GetGeocodedPropertyAsync(fullAddress, cancellationToken);
+            zip = geocoded?.PostalCode?.Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(zip))
+        {
+            zip = await addressLookup.LookupPrimaryZipForCityAsync(city, state, cancellationToken);
+        }
+
         if (string.IsNullOrWhiteSpace(zip))
         {
             var propertyInfo = await addressLookup.GetGeocodedPropertyAsync($"{city}, {state}, USA", cancellationToken);

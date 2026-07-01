@@ -1,4 +1,6 @@
 (function () {
+    var DATE_MIN_MESSAGE = 'Choose today or a future date.';
+
     function isPlainLeftClick(e) {
         return !e.defaultPrevented && e.button === 0 && !e.metaKey && !e.ctrlKey && !e.shiftKey && !e.altKey;
     }
@@ -33,6 +35,10 @@
                 return 'Please enter a number.';
             }
 
+            if (field.type === 'date') {
+                return 'Please choose a date.';
+            }
+
             return 'Please fill out this field.';
         }
 
@@ -47,10 +53,18 @@
         }
 
         if (field.validity.rangeUnderflow) {
+            if (field.type === 'date') {
+                return DATE_MIN_MESSAGE;
+            }
+
             return 'Please enter a higher value.';
         }
 
         if (field.validity.rangeOverflow) {
+            if (field.type === 'date') {
+                return DATE_MIN_MESSAGE;
+            }
+
             return 'Please enter a lower value.';
         }
 
@@ -68,10 +82,40 @@
     }
 
     function bindEnglishFormValidation(form) {
-        form.querySelectorAll('input, select, textarea').forEach(function (field) {
-            field.addEventListener('invalid', function () {
-                field.setCustomValidity(englishValidityMessage(field));
+        if (form.dataset.nrEnglishValidation === 'true') {
+            return;
+        }
+
+        form.dataset.nrEnglishValidation = 'true';
+        form.setAttribute('novalidate', 'novalidate');
+
+        form.addEventListener('submit', function (e) {
+            var fields = form.querySelectorAll('input, select, textarea');
+            var firstInvalid = null;
+
+            fields.forEach(function (field) {
+                clearFieldValidity(field);
             });
+
+            fields.forEach(function (field) {
+                if (!firstInvalid && !field.checkValidity()) {
+                    firstInvalid = field;
+                }
+            });
+
+            if (!firstInvalid) {
+                return;
+            }
+
+            e.preventDefault();
+            firstInvalid.setCustomValidity(englishValidityMessage(firstInvalid));
+            firstInvalid.reportValidity();
+            if (typeof firstInvalid.focus === 'function') {
+                firstInvalid.focus({ preventScroll: true });
+            }
+        });
+
+        form.querySelectorAll('input, select, textarea').forEach(function (field) {
             field.addEventListener('input', function () {
                 clearFieldValidity(field);
             });
@@ -98,7 +142,7 @@
         });
     });
 
-    document.querySelectorAll('.nr-step-form').forEach(bindEnglishFormValidation);
+    document.querySelectorAll('.nr-step-form, .nr-edit-form').forEach(bindEnglishFormValidation);
 
     window.addEventListener('pageshow', clearBusy);
 })();

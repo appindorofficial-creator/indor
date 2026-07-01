@@ -1,6 +1,7 @@
 @{
     var cancelAction = (ViewBag.CreateJobCancelAction as string) ?? "Jobs";
-    var cancelLabel = cancelAction == "Dashboard" ? "Home" : "Jobs";
+    var cancelLabel = (ViewBag.CreateJobCancelLabel as string)
+        ?? (cancelAction == "Dashboard" ? "Home" : "Jobs hub");
     var stepLine = ViewBag.WizardStepLine as string;
     var title = ViewBag.WizardTitle as string ?? "Create Job";
 }

@@ -1111,7 +1111,7 @@ public class HomeownerNearbyNetworkService(
             ? url.Action("Mine", "NeighborRequest", new { propiedadId }) ?? "#"
             : url.Action("EditarPerfil", "Perfil") + "#home";
         var servicesUrl = (url.Action("Index", "Home") ?? "/") + "#section-services";
-        var myHomeUrl = (url.Action("Index", "Home") ?? "/") + "#section-mydashboard";
+        var houseFactsUrl = (url.Action("Index", "Home") ?? "/") + "#section-myhome";
 
         return activeFilter switch
         {
@@ -1126,10 +1126,10 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
-                    Label = "My Home",
-                    Subtitle = "View your home profile",
-                    Icon = "fa-house-chimney",
-                    Url = myHomeUrl
+                    Label = "House Facts",
+                    Subtitle = "Property overview and details",
+                    Icon = "fa-house-circle-check",
+                    Url = houseFactsUrl
                 },
                 new()
                 {
@@ -1202,10 +1202,10 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
-                    Label = "My Home",
-                    Subtitle = "View your home profile",
-                    Icon = "fa-house-chimney",
-                    Url = myHomeUrl
+                    Label = "House Facts",
+                    Subtitle = "Property overview and details",
+                    Icon = "fa-house-circle-check",
+                    Url = houseFactsUrl
                 }
             ],
             NearbyNetworkHomeownerFilters.Emergency =>
@@ -1253,10 +1253,10 @@ public class HomeownerNearbyNetworkService(
                 },
                 new()
                 {
-                    Label = "My Home",
-                    Subtitle = "View your home profile",
-                    Icon = "fa-house-chimney",
-                    Url = myHomeUrl
+                    Label = "House Facts",
+                    Subtitle = "Property overview and details",
+                    Icon = "fa-house-circle-check",
+                    Url = houseFactsUrl
                 },
                 new()
                 {

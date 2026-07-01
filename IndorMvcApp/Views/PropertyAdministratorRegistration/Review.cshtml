@@ -7,78 +7,98 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="Review" method="post" id="paReviewForm" class="pa-validate" novalidate>
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
-
-    <div class="pa-review-card">
-        <div class="pa-review-illus" aria-hidden="true">
-            <span class="pa-review-cloud pa-review-cloud--1"></span>
-            <span class="pa-review-cloud pa-review-cloud--2"></span>
-            <div class="pa-review-building">
-                <div class="pa-review-building-block">
-                    <div class="pa-review-building-tower"></div>
-                </div>
-                <div class="pa-review-building-block">
-                    <div class="pa-review-building-base">
-                        <span></span><span></span><span></span>
-                        <span></span><span></span><span></span>
-                    </div>
+<div class="pa-review-card">
+    <div class="pa-review-illus" aria-hidden="true">
+        <span class="pa-review-cloud pa-review-cloud--1"></span>
+        <span class="pa-review-cloud pa-review-cloud--2"></span>
+        <div class="pa-review-building">
+            <div class="pa-review-building-block">
+                <div class="pa-review-building-tower"></div>
+            </div>
+            <div class="pa-review-building-block">
+                <div class="pa-review-building-base">
+                    <span></span><span></span><span></span>
+                    <span></span><span></span><span></span>
                 </div>
             </div>
-            <span class="pa-review-check"><i class="fas fa-check"></i></span>
         </div>
-
-        <div class="pa-review-line">
-            <span class="pa-review-line-label"><i class="fas fa-user"></i> Profile</span>
-            <strong>@s.DisplayName</strong>
-        </div>
-        <div class="pa-review-line">
-            <span class="pa-review-line-label"><i class="fas fa-briefcase"></i> Portfolio type</span>
-            <strong>@Model.PortfolioTypeLabel</strong>
-        </div>
-        <div class="pa-review-line">
-            <span class="pa-review-line-label"><i class="fas fa-house"></i> Properties</span>
-            <strong>@Model.PropertyCount</strong>
-        </div>
-        <div class="pa-review-line">
-            <span class="pa-review-line-label"><i class="fas fa-globe"></i> Markets</span>
-            <strong>@s.PrimaryMarket</strong>
-        </div>
-        <div class="pa-review-line">
-            <span class="pa-review-line-label"><i class="fas fa-gear"></i> Management style</span>
-            <strong>@Model.ManagementStyleLabel</strong>
-        </div>
+        <span class="pa-review-check"><i class="fas fa-check"></i></span>
     </div>
 
-    <div class="pa-checklist">
-        @if (Model.AccountCreated)
-        {
-            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Account created</div>
-        }
-        @if (Model.PortfolioDetailsAdded)
-        {
-            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Portfolio details added</div>
-        }
-        @if (Model.PropertiesAdded)
-        {
-            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Properties added</div>
-        }
-        @if (Model.ToolsSelected)
-        {
-            <div class="pa-check-item"><i class="fas fa-circle-check"></i> Tools selected</div>
-        }
+    <div class="pa-review-line">
+        <span class="pa-review-line-label"><i class="fas fa-user"></i> Profile</span>
+        <strong>@s.DisplayName</strong>
     </div>
+    <div class="pa-review-line">
+        <span class="pa-review-line-label"><i class="fas fa-briefcase"></i> Portfolio type</span>
+        <strong>@Model.PortfolioTypeLabel</strong>
+    </div>
+    <div class="pa-review-line">
+        <span class="pa-review-line-label"><i class="fas fa-house"></i> Properties</span>
+        <strong>@Model.PropertyCount</strong>
+    </div>
+    <div class="pa-review-line">
+        <span class="pa-review-line-label"><i class="fas fa-globe"></i> Markets</span>
+        <strong>@s.PrimaryMarket</strong>
+    </div>
+    <div class="pa-review-line">
+        <span class="pa-review-line-label"><i class="fas fa-gear"></i> Management style</span>
+        <strong>@Model.ManagementStyleLabel</strong>
+    </div>
+</div>
 
-    <a asp-action="InviteTeam" class="pa-action-row pa-action-row--review-invite">
-        <span><i class="fas fa-user-plus"></i> Invite team members</span>
-        <i class="fas fa-chevron-right"></i>
-    </a>
+<div class="pa-checklist">
+    @if (Model.AccountCreated)
+    {
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Account created</div>
+    }
+    @if (Model.PortfolioDetailsAdded)
+    {
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Portfolio details added</div>
+    }
+    @if (Model.PropertiesAdded)
+    {
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Properties added</div>
+    }
+    @if (Model.ToolsSelected)
+    {
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Tools selected</div>
+    }
+</div>
+
+<a asp-action="InviteTeam" class="pa-action-row pa-action-row--review-invite" aria-label="Invite team members">
+    <span>
+        <i class="fas fa-user-plus"></i>
+        Invite team members
+        @if (Model.PendingTeamInviteCount > 0)
+        {
+            <small class="pa-action-row-meta">(@Model.PendingTeamInviteCount added)</small>
+        }
+    </span>
+    <i class="fas fa-chevron-right" aria-hidden="true"></i>
+</a>
+
+<form asp-action="Review" method="post" id="paReviewForm" class="pa-validate" novalidate>
+    @Html.AntiForgeryToken()
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="pa-summary-error" role="alert"></div>
+    }
 
     <label class="pa-terms">
-        <input type="checkbox" id="platformTermsAccepted" name="platformTermsAccepted" value="true" data-pa-required="true" data-field-label="Please agree to INDOR's platform terms." />
+        <input type="hidden" name="platformTermsAccepted" value="false" />
+        <input type="checkbox"
+               id="platformTermsAccepted"
+               name="platformTermsAccepted"
+               value="true"
+               data-pa-required="true"
+               data-field-label="INDOR's platform terms" />
         <span>I agree to <a asp-controller="Account" asp-action="Terms">INDOR's platform terms</a></span>
     </label>
+    @if (ViewData.ModelState.TryGetValue("platformTermsAccepted", out var platformTermsState) && platformTermsState.Errors.Count > 0)
+    {
+        <div class="pa-inline-error" role="alert">@platformTermsState.Errors[0].ErrorMessage</div>
+    }
 </form>
 
 @{

@@ -120,3 +120,32 @@
 .rl-bottom-nav a.is-active {
     color: #0066CC;
 }
+
+/* Create-property / invite composite inputs — wrapper owns the focus ring */
+.rl-cp-input input,
+.rl-cp-input input:focus,
+.rl-cp-input input:focus-visible,
+.rl-cp-input input:active,
+.rl-cp-input select,
+.rl-cp-input select:focus,
+.rl-cp-input select:focus-visible,
+.rl-cp-input select:active {
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+}
+
+/* Clients hero — white CTA must beat global .rl-btn-primary gradient/text rules */
+.rl-clients-hero .rl-clients-add {
+    background: #fff !important;
+    color: #0066CC !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
+    filter: none !important;
+}
+.rl-clients-hero .rl-clients-add:hover,
+.rl-clients-hero .rl-clients-add:focus-visible,
+.rl-clients-hero .rl-clients-add:active {
+    filter: none !important;
+}

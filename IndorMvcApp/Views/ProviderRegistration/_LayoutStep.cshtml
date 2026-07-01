@@ -42,16 +42,23 @@
 
     <script>
         (function () {
+            var inner = document.querySelector('.ob-shell-inner');
+            var footer = document.querySelector('.prv-wiz-footer, .prv-exam-nav');
+
             function fitFooter() {
-                var footer = document.querySelector('.prv-wiz-footer, .prv-exam-nav');
-                var inner = document.querySelector('.ob-shell-inner');
                 if (!footer || !inner) return;
                 inner.style.paddingBottom = (footer.offsetHeight + 24) + 'px';
             }
+
             window.addEventListener('load', fitFooter);
             window.addEventListener('resize', fitFooter);
             window.addEventListener('orientationchange', fitFooter);
+            window.addEventListener('pageshow', fitFooter);
             setTimeout(fitFooter, 0);
+
+            if (footer && inner && typeof ResizeObserver !== 'undefined') {
+                new ResizeObserver(fitFooter).observe(footer);
+            }
         })();
     </script>
 

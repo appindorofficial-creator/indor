@@ -356,7 +356,8 @@
     background: linear-gradient(180deg, #F8FAFC 0%, #fff 100%) !important;
 }
 
-.rl-network-btn:not(.rl-soon) {
+.rl-network-btn:not(.rl-soon),
+a.rl-network-banner--link .rl-network-btn {
     background: var(--indor-grad-primary) !important;
     border: none !important;
     box-shadow: var(--indor-shadow-primary) !important;

@@ -25,7 +25,7 @@
         }
     </ul>
 </div>
-<form asp-action="Scope" method="post">
+<form asp-action="Scope" method="post" id="prvScopeForm">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
     <label class="prv-check-row">
@@ -36,7 +36,8 @@
         <input type="checkbox" name="scopeStandardsAgreed" value="true" required />
         <span>I agree to INDOR provider standards and verification.</span>
     </label>
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Submit qualification</button>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvScopeForm" class="ob-btn ob-btn-primary">Submit qualification</button>
+</div>

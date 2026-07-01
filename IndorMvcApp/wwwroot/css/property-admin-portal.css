@@ -94,7 +94,11 @@
 .pa-check-item i{color:#0066CC}
 .pa-check-item--later{color:#64748B}
 .pa-check-item--later i{color:#94A3B8}
-.pa-action-row--review-invite{margin:6px 0 18px}
+.pa-action-row--review-invite{margin:6px 0 18px;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pa-action-row--review-invite:active{border-color:#0066CC;box-shadow:0 0 0 3px rgba(0,102,204,.12)}
+.pa-action-row--property-option{cursor:pointer;-webkit-tap-highlight-color:transparent}
+.pa-action-row--property-option:active{border-color:#0066CC;box-shadow:0 0 0 3px rgba(0,102,204,.12)}
+.pa-action-row-meta{margin-left:6px;color:#64748B;font-weight:500;font-size:.78rem}
 
 .pa-dashboard-hero{background:linear-gradient(135deg,#0A2540,#0066CC);color:#fff;border-radius:18px;padding:20px;margin-bottom:18px}
 .pa-dashboard-hero h1{font-size:1.35rem;margin:0 0 6px}
@@ -129,6 +133,9 @@
 .pa-page .pa-reg-actions .ob-btn-primary{flex:1;max-width:220px;margin:0;padding:15px 20px;border-radius:14px;font-size:.95rem;font-weight:700}
 .pa-page.ob-page .ob-shell-inner{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))}
 .pa-summary-error{background:#FEF2F2;color:#B91C1C;border-radius:10px;padding:10px 12px;font-size:.82rem;margin-bottom:14px}
+.pa-summary-error ul{margin:0;padding-left:18px}
+.pa-summary-error li{margin-bottom:4px}
+.pa-summary-error li:last-child{margin-bottom:0}
 .pa-inline-error{color:#B91C1C;font-size:.78rem;font-weight:600;margin:-8px 0 12px 2px}
 .pa-field.pa-invalid{border-color:#F87171;box-shadow:0 0 0 3px rgba(248,113,113,.15)}
 .pa-terms.pa-invalid{color:#B91C1C}
@@ -360,6 +367,8 @@
 .pa-field-row{display:grid;gap:10px;margin-bottom:14px}
 .pa-field-row--2{grid-template-columns:repeat(2,minmax(0,1fr))}
 .pa-field-row--3{grid-template-columns:minmax(0,1.3fr) minmax(0,.85fr) minmax(0,.85fr)}
+.pa-field-row--state-zip .pa-field--compact input,
+.pa-field-row--state-zip .pa-field--compact select{min-width:0}
 .pa-field-row .pa-field{margin-bottom:0;min-width:0;padding:12px 12px;gap:8px}
 .pa-field-row .pa-field i{width:14px}
 .pa-field--compact{padding-left:10px;padding-right:10px}

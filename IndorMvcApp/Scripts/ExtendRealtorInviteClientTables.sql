@@ -24,21 +24,21 @@ IF COL_LENGTH('dbo.IndorRealtorInvitations', 'PropertyCityRegion') IS NULL
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'PropertyStatusLabel') IS NULL
     ALTER TABLE dbo.IndorRealtorInvitations ADD PropertyStatusLabel NVARCHAR(40) NULL;
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'AccessPropertyOverview') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessPropertyOverview BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccOverview DEFAULT (1);
+    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessPropertyOverview BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccOverview DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'AccessFilesReports') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessFilesReports BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccFiles DEFAULT (1);
+    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessFilesReports BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccFiles DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'AccessQuotesEstimates') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessQuotesEstimates BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccQuotes DEFAULT (1);
+    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessQuotesEstimates BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccQuotes DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'AccessMessages') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessMessages BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccMsg DEFAULT (1);
+    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessMessages BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccMsg DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'AccessProjectUpdates') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessProjectUpdates BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccUpdates DEFAULT (1);
+    ALTER TABLE dbo.IndorRealtorInvitations ADD AccessProjectUpdates BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccUpdates DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'AccessPayments') IS NULL
     ALTER TABLE dbo.IndorRealtorInvitations ADD AccessPayments BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_AccPay DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'CollaborationLevel') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD CollaborationLevel NVARCHAR(30) NOT NULL CONSTRAINT DF_IndorRealtorInv_Collab DEFAULT (N'CanComment');
+    ALTER TABLE dbo.IndorRealtorInvitations ADD CollaborationLevel NVARCHAR(30) NOT NULL CONSTRAINT DF_IndorRealtorInv_Collab DEFAULT (N'');
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'DeliveryEmail') IS NULL
-    ALTER TABLE dbo.IndorRealtorInvitations ADD DeliveryEmail BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_DelEmail DEFAULT (1);
+    ALTER TABLE dbo.IndorRealtorInvitations ADD DeliveryEmail BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_DelEmail DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'DeliveryText') IS NULL
     ALTER TABLE dbo.IndorRealtorInvitations ADD DeliveryText BIT NOT NULL CONSTRAINT DF_IndorRealtorInv_DelText DEFAULT (0);
 IF COL_LENGTH('dbo.IndorRealtorInvitations', 'WelcomeMessage') IS NULL
@@ -65,3 +65,19 @@ IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'UX_IndorRealtorInv_Token
 GO
 
 PRINT 'IndorRealtorInvitations extended for Invite Client wizard.';
+
+-- In-progress drafts should not carry pre-selected access defaults from older schema.
+UPDATE dbo.IndorRealtorInvitations
+SET
+    AccessPropertyOverview = 0,
+    AccessFilesReports = 0,
+    AccessQuotesEstimates = 0,
+    AccessMessages = 0,
+    AccessProjectUpdates = 0,
+    AccessPayments = 0,
+    CollaborationLevel = N'',
+    DeliveryEmail = 0,
+    DeliveryText = 0
+WHERE Status = N'Draft'
+  AND CurrentStep < 4;
+GO

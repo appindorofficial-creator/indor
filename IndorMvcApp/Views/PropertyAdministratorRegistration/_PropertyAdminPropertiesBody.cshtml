@@ -76,7 +76,9 @@ else if (TempData["PropertyAdminError"] is string err)
         <span><i class="fas fa-house"></i> Add property manually</span>
         <i class="fas fa-chevron-up"></i>
     </summary>
-    <form asp-action="AddProperty" method="post" id="pa-manual-property-form" class="pa-add-property-form pa-properties-step-form">
+    <form asp-action="AddProperty" method="post" id="pa-manual-property-form" class="pa-add-property-form pa-properties-step-form"
+          data-pa-default-city="@defaultCity"
+          data-pa-default-state="@defaultState">
         @Html.AntiForgeryToken()
 
         <div class="pa-field-row pa-field-row--2">
@@ -98,7 +100,7 @@ else if (TempData["PropertyAdminError"] is string err)
                        name="streetName"
                        value="@formStreetName"
                        placeholder="Street name"
-                       autocomplete="address-line1"
+                       autocomplete="off"
                        required
                        data-address-autocomplete
                        data-ac-street-only="true"
@@ -109,7 +111,7 @@ else if (TempData["PropertyAdminError"] is string err)
             </label>
         </div>
 
-        <div class="pa-field-row pa-field-row--3">
+        <div class="pa-field-row">
             <label class="pa-field">
                 <i class="fas fa-city"></i>
                 <input type="text"
@@ -117,15 +119,23 @@ else if (TempData["PropertyAdminError"] is string err)
                        name="city"
                        value="@formCity"
                        placeholder="City"
-                       autocomplete="address-level2"
+                       autocomplete="off"
                        required
                        data-city-autocomplete
                        data-ac-state="pa-prop-state"
                        data-ac-zip="pa-prop-zip" />
             </label>
+        </div>
+
+        <div class="pa-field-row pa-field-row--2 pa-field-row--state-zip">
             <label class="pa-field pa-field--compact">
                 <i class="fas fa-map"></i>
-                <select id="pa-prop-state" name="state" required>
+                <select id="pa-prop-state"
+                        name="state"
+                        required
+                        data-ac-zip="pa-prop-zip"
+                        data-ac-city="pa-prop-city"
+                        aria-label="State">
                     @if (string.IsNullOrWhiteSpace(formState))
                     {
                         <option value="" disabled selected>State</option>
@@ -153,13 +163,19 @@ else if (TempData["PropertyAdminError"] is string err)
                        id="pa-prop-zip"
                        name="zipCode"
                        value="@formZipCode"
-                       placeholder="ZIP"
+                       placeholder="ZIP code"
                        inputmode="numeric"
                        autocomplete="postal-code"
                        maxlength="10"
+                       data-zip-input
+                       data-zip-required="true"
+                       aria-label="ZIP code"
                        required />
             </label>
         </div>
+        <p class="pa-form-hint" data-ac-zip-hint-for="pa-prop-zip" hidden>
+            ZIP was filled from your address. You can edit it if needed.
+        </p>
 
         <label class="pa-field">
             <i class="fas fa-tag"></i>
@@ -195,81 +211,11 @@ else if (TempData["PropertyAdminError"] is string err)
     </form>
 </details>
 
-<details class="pa-add-property-panel">
-    <summary class="pa-add-property-summary">
-        <span><i class="fas fa-file-import"></i> Import portfolio</span>
-        <i class="fas fa-chevron-up"></i>
-    </summary>
-    <form asp-action="ImportPortfolio" method="post" enctype="multipart/form-data" id="pa-import-portfolio-form" class="pa-add-property-form pa-properties-step-form">
-        @Html.AntiForgeryToken()
-        <p class="pa-form-hint">Upload a CSV with one property per row. Required columns: houseNumber, streetName, city, state, zipCode, propertyType. Optional: propertyNickname.</p>
-        <div class="pa-file-picker">
-            <input type="file"
-                   id="pa-csv-file"
-                   class="pa-file-picker-input"
-                   name="csvFile"
-                   accept=".csv,text/csv"
-                   data-empty-label="No file selected" />
-            <label for="pa-csv-file" class="pa-file-picker-btn">Choose file</label>
-            <span class="pa-file-picker-name" data-pa-file-name-for="pa-csv-file">No file selected</span>
-            <button type="button"
-                    class="pa-file-picker-clear"
-                    data-pa-file-clear-for="pa-csv-file"
-                    aria-label="Remove file"
-                    hidden>
-                <i class="fas fa-trash" aria-hidden="true"></i>
-            </button>
-        </div>
-        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Import properties</button>
-    </form>
-</details>
-
-<details class="pa-add-property-panel" @(Model.CanUploadDocuments ? null : "open")>
-    <summary class="pa-add-property-summary">
-        <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
-        <i class="fas fa-chevron-up"></i>
-    </summary>
-    <form asp-action="UploadPropertyDocument" method="post" enctype="multipart/form-data" id="pa-upload-document-form" class="pa-add-property-form pa-properties-step-form">
-        @Html.AntiForgeryToken()
-        @if (!Model.CanUploadDocuments)
-        {
-            <p class="pa-form-hint">Add at least one property before uploading lease files, inspection reports, or other documents.</p>
-        }
-        else
-        {
-            <p class="pa-form-hint">Attach a document to one of your properties. Supported formats: PDF, JPG, PNG, HEIC, DOC, DOCX.</p>
-            <label class="pa-field">
-                <i class="fas fa-building"></i>
-                <select id="pa-doc-property" name="portfolioPropertyId">
-                    <option value="" disabled selected hidden>Property</option>
-                    @foreach (var property in Model.Properties.Where(p => p.PropiedadId is > 0))
-                    {
-                        <option value="@property.Id">@property.PropertyName — @property.Location</option>
-                    }
-                </select>
-            </label>
-            <label class="pa-field">
-                <i class="fas fa-pen"></i>
-                <input type="text" name="documentTitle" placeholder="Document title (optional)" maxlength="200" />
-            </label>
-            <div class="pa-file-picker">
-                <input type="file"
-                       id="pa-document-file"
-                       class="pa-file-picker-input"
-                       name="documentFile"
-                       accept=".pdf,.jpg,.jpeg,.png,.heic,.doc,.docx,application/pdf,image/*"
-                       data-empty-label="No file selected" />
-                <label for="pa-document-file" class="pa-file-picker-btn">Choose file</label>
-                <span class="pa-file-picker-name" data-pa-file-name-for="pa-document-file">No file selected</span>
-                <button type="button"
-                        class="pa-file-picker-clear"
-                        data-pa-file-clear-for="pa-document-file"
-                        aria-label="Remove file"
-                        hidden>
-                    <i class="fas fa-trash" aria-hidden="true"></i>
-                </button>
-            </div>
-            <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Upload document</button>
-        }
-    </form>
-</details>
+<a asp-action="ImportPortfolio" class="pa-action-row pa-action-row--property-option">
+    <span><i class="fas fa-file-import"></i> Import portfolio</span>
+    <i class="fas fa-chevron-right"></i>
+</a>
+<a asp-action="UploadPropertyDocuments" class="pa-action-row pa-action-row--property-option">
+    <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
+    <i class="fas fa-chevron-right"></i>
+</a>

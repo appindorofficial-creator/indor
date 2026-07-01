@@ -1,0 +1,55 @@
+@model IndorMvcApp.ViewModels.RealtorSharedPackagesViewModel
+@{
+    ViewData["Title"] = "Shared Packages";
+    Layout = "_RealtorLayout";
+    ViewBag.NavActive = "profile";
+}
+
+<div class="rl-dash-shell">
+    @await Html.PartialAsync("_RealtorTopbar", Model)
+
+    <div class="rl-page-header">
+        <div>
+            <h1 class="rl-page-title">Shared Packages</h1>
+            <p class="rl-page-subtitle">Packages you've shared with clients, and their view status.</p>
+        </div>
+    </div>
+
+    <section class="rl-dash-section">
+        @if (Model.Packages.Count == 0)
+        {
+            <div class="rl-dash-empty">
+                <i class="fas fa-share-nodes" aria-hidden="true"></i>
+                <p>No shared packages yet.</p>
+                <span class="rl-page-subtitle">Share a property file package with a client and it will appear here.</span>
+            </div>
+        }
+        else
+        {
+            <div class="rl-package-list">
+                @foreach (var pkg in Model.Packages)
+                {
+                    <article class="rl-premium-card rl-premium-card--package">
+                        <span class="rl-pkg-folder rl-pkg-folder--@pkg.IconColor"><i class="fas fa-folder"></i></span>
+                        <div class="rl-premium-card-body">
+                            <strong>@pkg.PackageTitle</strong>
+                            <span class="rl-premium-muted">Shared with @pkg.ClientName</span>
+                            <span class="rl-status-pill rl-status-pill--@pkg.StatusCss">
+                                @if (pkg.StatusCss == "viewed")
+                                {
+                                    <i class="fas fa-circle-check"></i>
+                                }
+                                else
+                                {
+                                    <i class="fas fa-clock"></i>
+                                }
+                                @pkg.StatusLabel
+                            </span>
+                            <span class="rl-premium-muted rl-premium-date">@pkg.SharedLabel</span>
+                        </div>
+                    </article>
+                }
+            </div>
+        }
+    </section>
+</div>

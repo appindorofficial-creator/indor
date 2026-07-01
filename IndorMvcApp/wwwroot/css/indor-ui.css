@@ -198,9 +198,9 @@ select.form-control,
 .hf-input:focus,
 .hf-textarea:focus,
 .ob-input:focus,
-input:focus,
-textarea:focus,
-select:focus {
+input:focus:not(.rl-field input):not(.rl-cp-input input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input),
+textarea:focus:not(.rl-field textarea),
+select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select) {
     outline: none;
     border-color: #93C5FD !important;
     box-shadow: 0 0 0 3px rgba(46, 139, 255, .15) !important;

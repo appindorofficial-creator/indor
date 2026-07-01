@@ -35,6 +35,21 @@
 .prv-doc-upload { margin-bottom: 14px; }
 .prv-verification-form { margin-bottom: 0; }
 .prv-verification-note { margin-bottom: 12px; }
+.prv-verification-step { padding-bottom: 8px; }
+.prv-verification-step .prv-doc-form {
+    margin-top: 16px;
+    margin-bottom: 8px;
+    scroll-margin-bottom: calc(var(--indor-page-footer-scroll, 140px) + 16px);
+}
+.prv-verification-step .prv-doc-upload {
+    margin-bottom: 14px;
+    scroll-margin-bottom: calc(var(--indor-page-footer-scroll, 140px) + 16px);
+}
+.prv-verification-upload { margin-bottom: 4px; }
+.prv-verification-footer {
+    pointer-events: auto;
+    touch-action: manipulation;
+}
 .prv-doc-label { display: block; font-size: .78rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
 .prv-doc-upload input[type="file"] { width: 100%; font-size: .82rem; }
 .prv-doc-form .ob-btn-outline { margin-bottom: 10px; width: 100%; }
@@ -118,7 +133,17 @@
 .prv-wiz-logo { height: 34px; width: auto; display: block; margin: 0 auto; }
 .prv-wiz-step-label { font-size: .78rem; font-weight: 700; color: #0066CC; margin-bottom: 8px; }
 .prv-wiz-stack { display: flex; flex-direction: column; gap: 12px; }
+.prv-entry-options { display: flex; flex-direction: column; gap: 12px; position: relative; z-index: 12; }
+.prv-entry-hint { margin: -4px 0 0; font-size: .74rem; color: #64748B; text-align: center; }
 .prv-wiz-card { display: flex; gap: 12px; align-items: flex-start; background: #fff; border: 1px solid #E2E8F0; border-radius: 16px; padding: 14px; box-shadow: 0 4px 14px rgba(10,37,64,.05); }
+button.prv-wiz-card--selectable {
+    width: 100%;
+    text-align: left;
+    appearance: none;
+    -webkit-appearance: none;
+    font: inherit;
+    color: inherit;
+}
 .prv-wiz-card--selectable {
     cursor: pointer;
     position: relative;

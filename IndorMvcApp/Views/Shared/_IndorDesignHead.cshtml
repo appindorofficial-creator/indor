@@ -5,24 +5,62 @@
 <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
 <script>
-    // Smart back: navigate via the browser history (instant, restored from the
-    // back/forward cache) when the user arrived from within the app; otherwise
-    // fall back to the anchor's href so deep links and direct entry still work.
-    // Elements that carry their own back handler are excluded.
+    // Smart back + navigation recovery (see PreventWebViewCacheMiddleware: no-store is
+    // avoided so bfcache can restore pages instantly when the browser allows it).
     (function () {
         if (window.__indorSmartBack) return;
         window.__indorSmartBack = true;
+
         function internalReferrer() {
             try { return !!document.referrer && new URL(document.referrer).origin === location.origin; }
             catch (e) { return false; }
         }
+
+        function isHomeHref(href) {
+            if (!href) return false;
+            try {
+                var url = new URL(href, location.origin);
+                var path = url.pathname.replace(/\/+$/, '').toLowerCase();
+                return path === '' || path === '/home' || path === '/home/index';
+            } catch (e) { return false; }
+        }
+
+        function clearNavigationBusyState() {
+            document.querySelectorAll('.nr-wizard-nav-btn.is-busy, .app-back-btn.is-busy').forEach(function (el) {
+                el.classList.remove('is-busy');
+                el.removeAttribute('aria-busy');
+            });
+
+            document.body.classList.remove('prl-loading');
+            var overlay = document.getElementById('propertyResearchLoading');
+            if (overlay) {
+                overlay.classList.remove('is-visible');
+                overlay.setAttribute('hidden', 'hidden');
+            }
+        }
+
+        window.addEventListener('pageshow', clearNavigationBusyState);
+        document.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'visible') {
+                clearNavigationBusyState();
+            }
+        });
+
         document.addEventListener('click', function (e) {
             if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
             if (!e.target || !e.target.closest) return;
             var el = e.target.closest('a[aria-label="Back"]:not([data-nr-history-back]):not(.nr-wizard-nav-btn), a[data-smart-back]');
             if (!el) return;
+
+            var href = el.getAttribute('href') || '';
+            if (isHomeHref(href)) {
+                return;
+            }
+
             if (window.history.length > 1 && internalReferrer()) {
                 e.preventDefault();
+                el.classList.add('is-busy');
+                el.setAttribute('aria-busy', 'true');
                 window.history.back();
             }
         });

@@ -46,6 +46,125 @@ public static class MyHomeDisplayService
         return info;
     }
 
+    public static AddPropertyViewModel BuildAddressFormForEdit(Propiedad propiedad, PropertyInfoViewModel? info)
+    {
+        var form = new AddPropertyViewModel
+        {
+            Unit = info?.Unit
+        };
+
+        var street = ResolveStreetLine(info);
+        if (!string.IsNullOrWhiteSpace(street))
+        {
+            form.StreetAddress = street;
+        }
+
+        if (!string.IsNullOrWhiteSpace(info?.City))
+        {
+            form.City = info.City.Trim();
+        }
+
+        if (!string.IsNullOrWhiteSpace(info?.State))
+        {
+            form.State = info.State.Trim().ToUpperInvariant();
+        }
+
+        if (!string.IsNullOrWhiteSpace(info?.PostalCode))
+        {
+            form.ZipCode = info.PostalCode.Trim();
+        }
+
+        if (IsAddressFormComplete(form))
+        {
+            form.Address = form.BuildLookupAddress();
+            return form;
+        }
+
+        foreach (var candidate in new[]
+                 {
+                     info?.FormattedAddress,
+                     propiedad.Direccion
+                 })
+        {
+            if (string.IsNullOrWhiteSpace(candidate))
+            {
+                continue;
+            }
+
+            if (!PropertyAdministratorCatalog.TryParsePropertyLocation(
+                    candidate,
+                    out var parsedStreet,
+                    out var parsedCity,
+                    out var parsedState,
+                    out var parsedZip))
+            {
+                continue;
+            }
+
+            if (string.IsNullOrWhiteSpace(form.StreetAddress))
+            {
+                form.StreetAddress = parsedStreet;
+            }
+
+            if (string.IsNullOrWhiteSpace(form.City))
+            {
+                form.City = parsedCity;
+            }
+
+            if (string.IsNullOrWhiteSpace(form.State))
+            {
+                form.State = parsedState;
+            }
+
+            if (string.IsNullOrWhiteSpace(form.ZipCode))
+            {
+                form.ZipCode = parsedZip;
+            }
+
+            break;
+        }
+
+        if (string.IsNullOrWhiteSpace(form.StreetAddress)
+            && !string.IsNullOrWhiteSpace(propiedad.Direccion))
+        {
+            form.StreetAddress = propiedad.Direccion.Trim();
+        }
+
+        form.Address = IsAddressFormComplete(form)
+            ? form.BuildLookupAddress()
+            : propiedad.Direccion ?? info?.FormattedAddress ?? string.Empty;
+
+        return form;
+    }
+
+    private static string? ResolveStreetLine(PropertyInfoViewModel? info)
+    {
+        if (info == null)
+        {
+            return null;
+        }
+
+        if (!string.IsNullOrWhiteSpace(info.Street))
+        {
+            var street = info.Street.Trim();
+            if (!string.IsNullOrWhiteSpace(info.HouseNumber)
+                && !street.StartsWith(info.HouseNumber.Trim(), StringComparison.Ordinal))
+            {
+                return PropertyAdministratorCatalog.BuildStreetLine(info.HouseNumber, street);
+            }
+
+            return street;
+        }
+
+        return string.IsNullOrWhiteSpace(info.HouseNumber) ? null : info.HouseNumber.Trim();
+    }
+
+    private static bool IsAddressFormComplete(AddPropertyViewModel form) =>
+        !string.IsNullOrWhiteSpace(form.StreetAddress)
+        && !string.IsNullOrWhiteSpace(form.City)
+        && !string.IsNullOrWhiteSpace(form.State)
+        && !string.IsNullOrWhiteSpace(form.ZipCode);
+
     public static MyHomeSummaryViewModel BuildSummary(Propiedad propiedad, PropertyInfoViewModel? info)
     {
         var details = info?.PropertyDetails;

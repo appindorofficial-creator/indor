@@ -24,7 +24,7 @@
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
-<form asp-action="Business" method="post" class="ob-form-card">
+<form asp-action="Business" method="post" id="prvBusinessForm" class="ob-form-card">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
     <input type="hidden" name="ProviderType" id="providerType" value="@providerType" />
@@ -824,18 +824,19 @@
         </div>
     }
 
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
-        @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance)
-        {
-            <a href="@Model.BackUrl" class="prv-save-later">Save and finish later</a>
-        }
-        else
-        {
-            <a asp-action="Categories" class="prv-save-later">Back</a>
-        }
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvBusinessForm" class="ob-btn ob-btn-primary">Continue</button>
+    @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isRoofing || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance)
+    {
+        <a href="@Model.BackUrl" class="prv-save-later">Save and finish later</a>
+    }
+    else
+    {
+        <a asp-action="Categories" class="prv-save-later">Back</a>
+    }
+</div>
 @section Scripts {
 <script>
 document.querySelectorAll('[data-provider-type]').forEach(btn => {

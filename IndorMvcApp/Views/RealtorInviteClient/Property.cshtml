@@ -10,33 +10,34 @@
 
 <h2 class="rl-invite-section-title">Select Property</h2>
 
-<form asp-action="Property" method="get" class="rl-search-form" id="invitePropertySearchForm">
-    <div class="rl-search-bar">
-        <i class="fas fa-magnifying-glass"></i>
-        <input type="search" name="q" id="invitePropertySearch" value="@Model.SearchQuery" placeholder="Search address or property name" />
-    </div>
-</form>
-
-<form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm" data-create-url="@Url.Action("CreateProperty")" novalidate>
+<form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm" data-create-url="@Url.Action("CreateProperty")" data-search-url="@Url.Action("Property")" novalidate>
     @Html.AntiForgeryToken()
-    <input type="hidden" name="q" id="invitePropertySearchHidden" value="@Model.SearchQuery" />
     <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-    @if (formErrors.Count > 0)
-    {
-        <div class="rl-error-banner" role="alert" id="invitePropertyFormErrors">
-            <i class="fas fa-circle-exclamation"></i>
-            <div>
-                <strong>Please fix the following to continue:</strong>
-                <ul class="rl-error-list">
-                    @foreach (var msg in formErrors)
-                    {
-                        <li>@msg</li>
-                    }
-                </ul>
-            </div>
+    <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" role="alert" id="invitePropertyFormErrors">
+        <i class="fas fa-circle-exclamation"></i>
+        <div>
+            <strong>Please fix the following to continue:</strong>
+            <ul class="rl-error-list" id="invitePropertyFormErrorList">
+                @foreach (var msg in formErrors)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
         </div>
-    }
+    </div>
+
+    <label class="rl-search-bar" for="invitePropertySearch">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="search"
+               name="q"
+               id="invitePropertySearch"
+               value="@Model.SearchQuery"
+               placeholder="Search address or property name"
+               autocomplete="off"
+               enterkeyhint="search" />
+    </label>
+    <p class="rl-field-hint">Enter an address and tap Next to create a new property, or search to pick an existing one.</p>
 
     @if (Model.Properties.Count == 0)
     {
@@ -76,39 +77,38 @@
         }
     }
 
-    @if (Model.Properties.Count > 0 || string.IsNullOrWhiteSpace(Model.SearchQuery))
-    {
-        <h2 class="rl-invite-section-title">Or Add New Property</h2>
-        <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
-            <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
-            <div>
-                <strong>Create New Property</strong>
-                <span>Add a new property for this client</span>
-            </div>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-    }
+    <h2 class="rl-invite-section-title">Or Add New Property</h2>
+    <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
+        <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
+        <div>
+            <strong>Create New Property</strong>
+            <span>Add a new property for this client</span>
+        </div>
+        <i class="fas fa-chevron-right"></i>
+    </a>
 
     <div class="rl-info-box">
         <i class="fas fa-shield-halved"></i>
         <p>You can invite the client to an existing property or create a new shared property record.</p>
     </div>
 
+    <div class="rl-invite-actions">
+        <a asp-action="BackToClientInfo" class="rl-invite-cancel">Back</a>
+        <button type="submit" id="invitePropertyNextBtn" class="ob-btn ob-btn-primary">Next</button>
+    </div>
 </form>
-
-<div class="rl-invite-actions">
-    <a asp-action="ClientInfo" asp-route-edit="true" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="invitePropertyForm" class="ob-btn ob-btn-primary" id="invitePropertyNextBtn">Next</button>
-</div>
 
 @section Scripts {
 <script>
     (function () {
         var banner = document.getElementById('invitePropertyFormErrors');
+        if (banner && !banner.classList.contains('is-hidden')) {
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
         var summary = document.querySelector('#invitePropertyForm .ob-summary:not(.validation-summary-valid)');
-        var scrollTarget = banner || summary;
-        if (scrollTarget) {
-            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        if (summary) {
+            summary.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
     })();
 </script>

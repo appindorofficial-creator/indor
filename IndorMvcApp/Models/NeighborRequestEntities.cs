@@ -266,11 +266,12 @@ public class NeighborRequestDraftState
     public DateTime? NeededByDate { get; set; }
     public TimeOnly? TimeWindowStart { get; set; }
     public TimeOnly? TimeWindowEnd { get; set; }
-    public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.Today;
-    public string PreferredTimeCode { get; set; } = NeighborRequestPreferredTimeCodes.Flexible;
-    public int HelperCount { get; set; } = 1;
-    public string DurationCode { get; set; } = NeighborRequestDurationCodes.TwoHours;
-    public string PayTypeCode { get; set; } = NeighborRequestPayTypeCodes.Hourly;
+    public string TimelineCode { get; set; } = string.Empty;
+    public string PreferredTimeCode { get; set; } = string.Empty;
+    public int HelperCount { get; set; }
+    public string DurationCode { get; set; } = string.Empty;
+    public string PayTypeCode { get; set; } = string.Empty;
+    public bool ScheduleConfigured { get; set; }
     public string AudienceCode { get; set; } = NeighborRequestAudienceCodes.Neighbors;
     public decimal? BudgetAmount { get; set; }
     public List<string> PhotoPaths { get; set; } = [];

@@ -4992,6 +4992,8 @@ public class ProviderProDataService(
         ProviderProEditProfileInput input,
         CancellationToken cancellationToken = default)
     {
+        await ProviderDatabaseSchemaInitializer.EnsureEditProfileColumnsAsync(db, logger, cancellationToken);
+
         var entity = await db.IndorProveedores
             .FirstOrDefaultAsync(p => p.Id == proveedorId, cancellationToken);
 
@@ -5031,7 +5033,11 @@ public class ProviderProDataService(
         }
         catch (DbUpdateException ex)
         {
-            logger.LogError(ex, "Failed to save provider profile for provider {ProviderId}.", proveedorId);
+            logger.LogError(
+                ex,
+                "Failed to save provider profile for provider {ProviderId}. {Detail}",
+                proveedorId,
+                ex.InnerException?.Message ?? ex.Message);
             return false;
         }
     }

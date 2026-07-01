@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.RegularExpressions;
 
 namespace IndorMvcApp.Models;
 
@@ -412,6 +413,50 @@ public static class PropertyAdministratorCatalog
         return string.IsNullOrWhiteSpace(streetAddress)
             ? cityLine
             : $"{streetAddress.Trim()}, {cityLine}";
+    }
+
+    /// <summary>
+    /// Parses addresses produced by <see cref="FormatPropertyLocation"/> or common US comma formats.
+    /// </summary>
+    public static bool TryParsePropertyLocation(
+        string? formatted,
+        out string streetAddress,
+        out string city,
+        out string state,
+        out string zipCode)
+    {
+        streetAddress = string.Empty;
+        city = string.Empty;
+        state = string.Empty;
+        zipCode = string.Empty;
+
+        if (string.IsNullOrWhiteSpace(formatted))
+        {
+            return false;
+        }
+
+        var text = formatted.Trim();
+        var match = Regex.Match(
+            text,
+            @"^(?<street>.+?),\s*(?<city>[^,]+?),\s*(?<state>[A-Za-z]{2})\s*(?<zip>\d{5}(?:-\d{4})?)?\s*$",
+            RegexOptions.CultureInvariant);
+
+        if (!match.Success)
+        {
+            return false;
+        }
+
+        streetAddress = match.Groups["street"].Value.Trim();
+        city = match.Groups["city"].Value.Trim();
+        state = match.Groups["state"].Value.Trim().ToUpperInvariant();
+        zipCode = match.Groups["zip"].Value.Trim();
+
+        if (string.IsNullOrWhiteSpace(streetAddress) || string.IsNullOrWhiteSpace(city))
+        {
+            return false;
+        }
+
+        return UsStateCodes.Contains(state, StringComparer.OrdinalIgnoreCase);
     }
 
     public static string BuildStreetLine(string? houseNumber, string streetName)

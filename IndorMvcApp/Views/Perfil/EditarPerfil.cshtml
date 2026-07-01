@@ -142,7 +142,7 @@
             <input asp-for="AddressForm.StreetAddress"
                    id="ep-street"
                    placeholder="House number and street name"
-                   autocomplete="address-line1"
+                   autocomplete="off"
                    data-address-autocomplete
                    data-ac-street-only="true"
                    data-ac-city="ep-city"
@@ -156,7 +156,7 @@
                 <input asp-for="AddressForm.City"
                        id="ep-city"
                        placeholder="City"
-                       autocomplete="address-level2"
+                       autocomplete="off"
                        data-city-autocomplete
                        data-ac-state="ep-state"
                        data-ac-zip="ep-zip" />
@@ -165,7 +165,9 @@
                 <span>State</span>
                 <select asp-for="AddressForm.State"
                         id="ep-state"
-                        autocomplete="address-level1">
+                        autocomplete="address-level1"
+                        data-ac-zip="ep-zip"
+                        data-ac-city="ep-city">
                     <option value="">State</option>
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {

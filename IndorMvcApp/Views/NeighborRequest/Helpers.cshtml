@@ -33,12 +33,11 @@
 </header>
 
 <div class="nr-helper-list">
-    @for (var i = 0; i < Model.Helpers.Count; i++)
+    @foreach (var card in Model.Helpers)
     {
-        var card = Model.Helpers[i];
         <article class="nr-helper-card">
             <label class="nr-helper-select">
-                <input type="checkbox" name="SelectedHelpers" value="@card.ProviderId" @(i == 0 ? "checked" : null) />
+                <input type="checkbox" name="SelectedHelpers" value="@card.ProviderId" data-nr-helper-checkbox="true" />
                 <span class="nr-helper-check"></span>
             </label>
             <div class="nr-helper-avatar">
@@ -79,7 +78,7 @@
                 <small>@card.MinHoursLabel</small>
                 <div class="nr-helper-actions">
                     <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
-                    <button type="button" class="nr-btn-primary nr-btn-primary--sm">Invite</button>
+                    <button type="button" class="nr-btn-primary nr-btn-primary--sm" data-nr-helper-invite="true">Invite</button>
                 </div>
             </div>
         </article>
@@ -95,13 +94,60 @@
 </div>
 
 @section WizardFooter {
-    @{
-        ViewData["NrWizardContinueHref"] = Model.DetailUrl;
-        ViewData["NrWizardContinueLabel"] = "Invite selected helpers (1)";
-        ViewData["NrWizardContinueIconBefore"] = "fa-user-group";
-        ViewData["NrWizardContinueIconAfter"] = null;
-    }
-    @await Html.PartialAsync("_NrWizardFooter")
+    <div class="nr-wizard-footer">
+        <div class="nr-wizard-footer-inner">
+            <a href="@Model.DetailUrl" class="nr-btn-primary" id="nrInviteHelpersBtn">
+                <i class="fas fa-user-group"></i>
+                <span id="nrInviteHelpersLabel">Invite selected helpers (0)</span>
+            </a>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        (function () {
+            var label = document.getElementById('nrInviteHelpersLabel');
+
+            function selectedCount() {
+                return document.querySelectorAll('[data-nr-helper-checkbox]:checked').length;
+            }
+
+            function inviteLabel(count) {
+                if (count === 0) {
+                    return 'Continue without inviting';
+                }
+                if (count === 1) {
+                    return 'Invite selected helper (1)';
+                }
+                return 'Invite selected helpers (' + count + ')';
+            }
+
+            function updateInviteLabel() {
+                if (!label) {
+                    return;
+                }
+                label.textContent = inviteLabel(selectedCount());
+            }
+
+            document.querySelectorAll('[data-nr-helper-checkbox]').forEach(function (checkbox) {
+                checkbox.addEventListener('change', updateInviteLabel);
+            });
+
+            document.querySelectorAll('[data-nr-helper-invite]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var checkbox = button.closest('.nr-helper-card')?.querySelector('[data-nr-helper-checkbox]');
+                    if (!checkbox) {
+                        return;
+                    }
+                    checkbox.checked = true;
+                    updateInviteLabel();
+                });
+            });
+
+            updateInviteLabel();
+        })();
+    </script>
 }
 
 <p class="nr-helpers-footnote"><i class="fas fa-lock"></i> Helpers will be notified and can accept your job.</p>

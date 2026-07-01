@@ -19,7 +19,7 @@
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
-<form asp-action="Services" method="post">
+<form asp-action="Services" method="post" id="prvServicesForm">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
     @if (isHvac || isHandyman || isConstruction || isBathroom || isKitchen || isPainting || isFlooring || isCleaning || isLandscaping || isPest || isAppliance || isRoofing)
@@ -129,8 +129,9 @@
             <span>You will only receive HVAC jobs that match your approved specialties.</span>
         </div>
     }
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">Save and finish later</a>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvServicesForm" class="ob-btn ob-btn-primary">Continue</button>
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">Save and finish later</a>
+</div>

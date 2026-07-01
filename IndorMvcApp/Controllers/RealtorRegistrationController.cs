@@ -76,11 +76,10 @@ public class RealtorRegistrationController(
         string? licenseState,
         string? serviceAreas,
         string? officeAddress,
-        string[]? languages,
-        bool professionalTermsAccepted)
+        string[]? languages)
     {
         var state = await registration.GetAsync();
-        professionalTermsAccepted = Request.Form["professionalTermsAccepted"].Contains("true");
+        var professionalTermsAccepted = IsCheckboxChecked("professionalTermsAccepted");
 
         if (!BrokerageNameAttribute.IsValidBrokerageName(brokerageName, out var brokerageError, "Brokerage / Company Name"))
         {
@@ -325,6 +324,16 @@ public class RealtorRegistrationController(
 
         var relativeUrl = $"/uploads/realtor-docs/{realtor.Id}/{fileName}";
         await registration.RegisterDocumentUploadAsync(documentType, relativeUrl);
+    }
+
+    private bool IsCheckboxChecked(string fieldName)
+    {
+        if (!Request.Form.TryGetValue(fieldName, out var values) || values.Count == 0)
+        {
+            return false;
+        }
+
+        return values.Any(v => string.Equals(v, "true", StringComparison.OrdinalIgnoreCase));
     }
 
     private void DeleteUploadedFile(string relativeUrl)

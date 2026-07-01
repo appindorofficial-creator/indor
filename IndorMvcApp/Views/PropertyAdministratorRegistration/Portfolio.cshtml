@@ -10,7 +10,10 @@
 
 <form asp-action="Portfolio" method="post" id="portfolioForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="pa-summary-error" role="alert"></div>
+    }
 
     <p class="ob-label">Number of properties</p>
     <div class="pa-choice-grid">

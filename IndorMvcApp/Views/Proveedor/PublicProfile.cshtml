@@ -5,6 +5,7 @@
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
     var allServices = Model.Categories.Concat(Model.Services).Distinct().ToList();
+    var publicProfileUrl = Url.Action("PublicProfile", "Proveedor", null, Context.Request.Scheme);
     var aboutText = !string.IsNullOrWhiteSpace(Model.SpecialtiesSummary) && Model.SpecialtiesSummary != "Services pending"
         ? $"Professional services including {Model.SpecialtiesSummary.ToLowerInvariant()}."
         : "Trusted local service provider on INDOR.";
@@ -53,9 +54,16 @@
             <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-btn prv-pro-btn--primary">
                 <i class="fas fa-pen"></i> Edit Profile
             </a>
-            <button type="button" class="prv-pro-btn prv-pro-btn--ghost" id="prvPublicShareBtn">
+            <a href="@publicProfileUrl"
+               class="prv-pro-btn prv-pro-btn--ghost"
+               id="prvPublicShareBtn"
+               data-provider-share
+               data-share-url="@publicProfileUrl"
+               data-share-title="@Model.CompanyName - INDOR PRO"
+               data-share-text="View my provider profile on INDOR"
+               role="button">
                 <i class="fas fa-share-nodes"></i> Share
-            </button>
+            </a>
         </div>
     </section>
 
@@ -131,43 +139,5 @@
 <div id="prvProfileToast" class="prv-pro-profile-toast" hidden role="status"></div>
 
 @section Scripts {
-<script>
-(function () {
-    var shareBtn = document.getElementById('prvPublicShareBtn');
-    var toast = document.getElementById('prvProfileToast');
-    var toastTimer = null;
-
-    function showToast(message) {
-        if (!toast) return;
-        toast.textContent = message;
-        toast.hidden = false;
-        toast.classList.add('is-visible');
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () {
-            toast.classList.remove('is-visible');
-            toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
-        }, 2400);
-    }
-
-    if (shareBtn) {
-        var shareUrl = window.location.origin + '@Url.Action("PublicProfile", "Proveedor")';
-        shareBtn.addEventListener('click', async function () {
-            var payload = {
-                title: '@Model.CompanyName - INDOR PRO',
-                text: 'View my provider profile on INDOR',
-                url: shareUrl
-            };
-            if (navigator.share) {
-                try { await navigator.share(payload); return; } catch (_) { }
-            }
-            try {
-                await navigator.clipboard.writeText(shareUrl);
-                showToast('Profile link copied to clipboard.');
-            } catch (_) {
-                window.prompt('Copy profile link:', shareUrl);
-            }
-        });
-    }
-})();
-</script>
+<script src="~/js/provider-profile.js" asp-append-version="true"></script>
 }

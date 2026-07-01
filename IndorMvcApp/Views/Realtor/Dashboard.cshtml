@@ -46,14 +46,14 @@
 
     @await Html.PartialAsync("_RealtorStatsRow", Model.Stats)
 
-    <section class="rl-network-banner rl-network-banner--home">
+    <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-network-banner rl-network-banner--home rl-network-banner--link">
         <div>
             <strong>Grow with INDOR's Provider Network</strong>
             <p>Connect with trusted inspectors, contractors and more.</p>
-            <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-network-btn">Browse Network <i class="fas fa-chevron-right"></i></a>
+            <span class="rl-network-btn">Browse Network <i class="fas fa-chevron-right"></i></span>
         </div>
-        <span class="rl-network-icon"><i class="fas fa-people-group"></i></span>
-    </section>
+        <span class="rl-network-icon" aria-hidden="true"><i class="fas fa-people-group"></i></span>
+    </a>
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">

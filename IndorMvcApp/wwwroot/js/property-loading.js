@@ -34,6 +34,19 @@
         }, 280);
     }
 
+    function hideLoading() {
+        const overlay = getOverlay();
+        if (overlay) {
+            overlay.classList.remove("is-visible");
+            overlay.setAttribute("hidden", "hidden");
+        }
+        document.body.classList.remove("prl-loading");
+        if (stepTimer) {
+            window.clearInterval(stepTimer);
+            stepTimer = null;
+        }
+    }
+
     function showLoading(submitBtn) {
         const overlay = getOverlay();
         if (!overlay) return;
@@ -96,4 +109,6 @@
     } else {
         bindForms();
     }
+
+    window.addEventListener("pageshow", hideLoading);
 })();

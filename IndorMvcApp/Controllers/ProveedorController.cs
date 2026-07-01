@@ -1652,7 +1652,7 @@ public class ProveedorController(
         var saved = await proData.SaveEditProfileAsync(proveedor.Entity!.Id, input, cancellationToken);
         if (!saved)
         {
-            ModelState.AddModelError(string.Empty, "We couldn't save your profile. Please try again.");
+            ModelState.AddModelError(string.Empty, "We couldn't save your profile. Please try again in a moment.");
             var failedModel = await proData.GetEditProfileAsync(proveedor.Entity!, input, cancellationToken);
             return View(failedModel);
         }
@@ -2972,13 +2972,14 @@ public class ProveedorController(
             CustomerMessage = draft.CustomerMessage
         };
 
+        var navOrigin = draft.NavOrigin;
         var jobId = await jobWorkflow.CreateJobAsync(proveedor.Entity!.Id, jobInput, cancellationToken);
         ClearCreateJobDraft();
-        return RedirectToAction(nameof(CreateJobSuccess), new { id = jobId });
+        return RedirectToAction(nameof(CreateJobSuccess), new { id = jobId, from = navOrigin });
     }
 
     [HttpGet]
-    public async Task<IActionResult> CreateJobSuccess(int id, CancellationToken cancellationToken)
+    public async Task<IActionResult> CreateJobSuccess(int id, string? from, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -2992,6 +2993,9 @@ public class ProveedorController(
             return RedirectToAction(nameof(Jobs));
         }
 
+        var navOrigin = NormalizeCreateJobNavOrigin(from);
+        ViewBag.NavActive = navOrigin;
+        ViewBag.CreateJobFrom = navOrigin;
         return View(model);
     }
 
@@ -3189,6 +3193,8 @@ public class ProveedorController(
 
         ViewBag.NavActive = draft.NavOrigin;
         ViewBag.CreateJobCancelAction = draft.NavOrigin == "home" ? "Dashboard" : "Jobs";
+        ViewBag.CreateJobFrom = draft.NavOrigin;
+        ViewBag.CreateJobCancelLabel = draft.NavOrigin == "home" ? "Home" : "Jobs hub";
         ViewBag.HideBottomNav = true;
     }
 

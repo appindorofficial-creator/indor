@@ -53,6 +53,10 @@ public class RealtorController(
         await PortalPageAsync(r => portalService.BuildFilesAsync(r, q, filter, cancellationToken), cancellationToken);
 
     [HttpGet]
+    public async Task<IActionResult> SharedPackages(CancellationToken cancellationToken) =>
+        await PortalPageAsync(r => portalService.BuildSharedPackagesAsync(r, cancellationToken), cancellationToken);
+
+    [HttpGet]
     public async Task<IActionResult> Quotes(string? q, string? filter, CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildQuotesAsync(r, q, filter, cancellationToken), cancellationToken);
 

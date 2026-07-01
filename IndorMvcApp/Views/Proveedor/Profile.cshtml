@@ -8,6 +8,7 @@
     var initial = Model.CompanyInitial;
     ViewBag.CompanyInitial = initial;
     var allServices = Model.Categories.Concat(Model.Services).Distinct().ToList();
+    var publicProfileUrl = Url.Action("PublicProfile", "Proveedor", null, Context.Request.Scheme);
 }
 
 <div class="prv-pro-shell prv-pro-shell--profile">
@@ -93,13 +94,22 @@
 
     <section class="prv-pro-profile-quick">
         <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</a>
-        <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-globe"></i> Public Profile</a>
-        <button type="button" class="prv-pro-profile-quick-btn" id="prvProfileShareBtn"><i class="fas fa-share-nodes"></i> Share</button>
+        <a href="@publicProfileUrl" asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-globe"></i> Public Profile</a>
+        <a href="@publicProfileUrl"
+           class="prv-pro-profile-quick-btn prv-pro-profile-quick-btn--share"
+           id="prvProfileShareBtn"
+           data-provider-share
+           data-share-url="@publicProfileUrl"
+           data-share-title="@Model.CompanyName - INDOR PRO"
+           data-share-text="View my provider profile on INDOR"
+           role="button">
+            <i class="fas fa-share-nodes"></i> Share
+        </a>
         <a asp-controller="Proveedor" asp-action="Settings" class="prv-pro-profile-quick-btn"><i class="fas fa-gear"></i> Settings</a>
     </section>
 
     <div class="prv-pro-profile-grid">
-        <a asp-controller="Proveedor" asp-action="EditProfile" asp-route-section="business" class="prv-pro-profile-card prv-pro-profile-card--link">
+        <a asp-controller="Proveedor" asp-action="EditProfile" asp-route-section="business" class="prv-pro-profile-card prv-pro-profile-card--link" aria-label="Edit business information">
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-building"></i> Business Information</h3><i class="fas fa-chevron-right"></i></header>
             @if (!string.IsNullOrWhiteSpace(Model.BusinessName) || !string.IsNullOrWhiteSpace(Model.DbaName))
             {
@@ -118,7 +128,7 @@
             }
         </a>
 
-        <a asp-controller="Proveedor" asp-action="EditProfile" asp-route-section="areas" class="prv-pro-profile-card prv-pro-profile-card--link">
+        <a asp-controller="Proveedor" asp-action="EditProfile" asp-route-section="areas" class="prv-pro-profile-card prv-pro-profile-card--link" aria-label="Edit service areas">
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-map-location-dot"></i> Service Areas</h3><i class="fas fa-chevron-right"></i></header>
             @if (Model.ServiceAreas.Count == 0)
             {
@@ -133,7 +143,7 @@
             }
         </a>
 
-        <a asp-controller="Proveedor" asp-action="EditProfileServices" class="prv-pro-profile-card prv-pro-profile-card--link">
+        <a asp-controller="Proveedor" asp-action="EditProfileServices" class="prv-pro-profile-card prv-pro-profile-card--link" aria-label="Edit services offered">
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-wrench"></i> Services Offered</h3><i class="fas fa-chevron-right"></i></header>
             @if (allServices.Count == 0)
             {
@@ -150,7 +160,7 @@
             }
         </a>
 
-        <a asp-controller="Proveedor" asp-action="EditProfileVerification" class="prv-pro-profile-card prv-pro-profile-card--link">
+        <a asp-controller="Proveedor" asp-action="EditProfileVerification" class="prv-pro-profile-card prv-pro-profile-card--link" aria-label="Edit verification and documents">
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-shield-halved"></i> Verification &amp; Documents</h3><i class="fas fa-chevron-right"></i></header>
             @foreach (var item in Model.VerificationItems)
             {
@@ -161,7 +171,7 @@
             }
         </a>
 
-        <a asp-controller="Proveedor" asp-action="EditProfilePayments" class="prv-pro-profile-card prv-pro-profile-card--link">
+        <a asp-controller="Proveedor" asp-action="EditProfilePayments" class="prv-pro-profile-card prv-pro-profile-card--link" aria-label="Edit payments and banking">
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-credit-card"></i> Payments &amp; Banking</h3><i class="fas fa-chevron-right"></i></header>
             <div class="prv-pro-profile-kv-row">
                 <span>Payout Account</span>
@@ -205,7 +215,7 @@
         </section>
 
         <section class="prv-pro-profile-card">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-robot"></i> Automation &amp; Tools</h3><i class="fas fa-chevron-right"></i></header>
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-robot"></i> Automation &amp; Tools</h3></header>
             <div class="prv-pro-profile-kv-row">
                 <span>Auto reminders</span>
                 <strong class="@(Model.AutoRemindersOn ? "prv-pro-status-ok" : "")">@(Model.AutoRemindersOn ? "ON" : "OFF")</strong>
@@ -225,7 +235,7 @@
         </section>
 
         <section class="prv-pro-profile-card">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-chart-line"></i> Performance</h3><i class="fas fa-chevron-right"></i></header>
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-chart-line"></i> Performance</h3></header>
             <div class="prv-pro-profile-perf-grid">
                 <div><strong>@Model.Performance.AvgResponseTime</strong><span>Avg. Response Time</span></div>
                 <div><strong>@Model.Performance.CompletionRate</strong><span>Completion Rate</span></div>
@@ -269,14 +279,23 @@
             }
         </section>
 
-        <section class="prv-pro-profile-card">
-            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-life-ring"></i> Support &amp; Account</h3><i class="fas fa-chevron-right"></i></header>
-            <a asp-controller="Proveedor" asp-action="HelpCenter" class="prv-pro-profile-link-row"><i class="fas fa-book"></i> Help Center <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i></a>
+        <section class="prv-pro-profile-card prv-pro-profile-card--support">
+            <header class="prv-pro-profile-card-head"><h3><i class="fas fa-life-ring"></i> Support &amp; Account</h3></header>
+            <a asp-controller="Proveedor" asp-action="HelpCenter" class="prv-pro-profile-link-row">
+                <i class="fas fa-book"></i>
+                <span>Help Center</span>
+                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+            </a>
             <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-profile-link-row prv-pro-profile-link-row--plan">
                 <span><i class="fas fa-crown"></i> Subscription / Plan</span>
                 <strong class="prv-pro-status-plan">@Model.SubscriptionPlan</strong>
+                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
             </a>
-            <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-profile-link-row"><i class="fas fa-bell"></i> Notifications <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i></a>
+            <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-profile-link-row">
+                <i class="fas fa-bell"></i>
+                <span>Notifications</span>
+                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+            </a>
             <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="prv-pro-profile-logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
@@ -299,43 +318,5 @@
 <div id="prvProfileToast" class="prv-pro-profile-toast" hidden role="status"></div>
 
 @section Scripts {
-<script>
-(function () {
-    var shareBtn = document.getElementById('prvProfileShareBtn');
-    var toast = document.getElementById('prvProfileToast');
-    var toastTimer = null;
-
-    function showToast(message) {
-        if (!toast) return;
-        toast.textContent = message;
-        toast.hidden = false;
-        toast.classList.add('is-visible');
-        if (toastTimer) clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () {
-            toast.classList.remove('is-visible');
-            toastTimer = setTimeout(function () { toast.hidden = true; }, 250);
-        }, 2400);
-    }
-
-    if (shareBtn) {
-        var shareUrl = window.location.origin + '@Url.Action("PublicProfile", "Proveedor")';
-        shareBtn.addEventListener('click', async function () {
-            var payload = {
-                title: '@Model.CompanyName - INDOR PRO',
-                text: 'View my provider profile on INDOR',
-                url: shareUrl
-            };
-            if (navigator.share) {
-                try { await navigator.share(payload); return; } catch (_) { }
-            }
-            try {
-                await navigator.clipboard.writeText(shareUrl);
-                showToast('Profile link copied to clipboard.');
-            } catch (_) {
-                window.prompt('Copy profile link:', shareUrl);
-            }
-        });
-    }
-})();
-</script>
+<script src="~/js/provider-profile.js" asp-append-version="true"></script>
 }

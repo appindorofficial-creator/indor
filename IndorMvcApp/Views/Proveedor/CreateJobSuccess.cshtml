@@ -2,7 +2,8 @@
 @{
     ViewData["Title"] = "Job Created - INDOR PRO";
     Layout = "_ProviderProLayout";
-    ViewBag.NavActive = "home";
+    var createJobFrom = (ViewBag.CreateJobFrom as string) ?? "jobs";
+    ViewBag.NavActive = createJobFrom;
 }
 
 <div class="prv-pro-shell prv-pro-shell--create-job prv-pro-shell--job-success">
@@ -33,7 +34,7 @@
         <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block">
             View Job Details
         </a>
-        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
+        <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="@createJobFrom" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
             Create Another Job
         </a>
     </div>

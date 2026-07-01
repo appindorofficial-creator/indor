@@ -574,6 +574,11 @@ body:has(.prv-pro-bottom-nav) {
     flex-direction: column;
     align-items: center;
     gap: var(--indor-action-gap);
+    pointer-events: none;
+}
+
+.prv-page .prv-wiz-footer > * {
+    pointer-events: auto;
 }
 
 .prv-page .prv-wiz-footer > .ob-btn,
@@ -588,11 +593,21 @@ body:has(.prv-pro-bottom-nav) {
     margin: 0;
 }
 
-.prv-page .prv-wiz-stack button[type="submit"] {
+.prv-page .prv-wiz-stack button[type="submit"],
+.prv-page .ob-shell-inner > form > button[type="submit"],
+.prv-page .ob-form-card > button[type="submit"] {
     position: static !important;
     left: auto !important;
     right: auto !important;
     bottom: auto !important;
+    top: auto !important;
+    transform: none !important;
+}
+
+.prv-page .ob-shell-inner > .prv-wiz-footer {
+    max-width: 470px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .prv-page .prv-wiz-footer > .prv-save-later {
@@ -605,7 +620,8 @@ body:has(.prv-pro-bottom-nav) {
 .prv-pro-body .prv-pro-report-footer,
 .prv-pro-body .prv-pro-estimate-footer,
 .prv-pro-body .prv-pro-lead-footer,
-.prv-pro-body .prv-pro-invoice-details-footer {
+.prv-pro-body .prv-pro-invoice-details-footer,
+.prv-pro-body .prv-pro-edit-profile-footer {
     position: fixed !important;
     left: 0;
     right: 0;
@@ -622,6 +638,7 @@ body:has(.prv-pro-bottom-nav) {
 
 .prv-pro-body:has(.prv-pro-bottom-nav) .prv-pro-shell--workflow,
 .prv-pro-body:has(.prv-pro-bottom-nav) .prv-pro-shell--lead-details,
+.prv-pro-body:has(.prv-pro-bottom-nav) .prv-pro-shell--edit-profile,
 .prv-pro-body .prv-pro-shell--workflow {
     padding-bottom: var(--indor-page-footer-scroll, 120px);
 }

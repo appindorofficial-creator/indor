@@ -120,8 +120,15 @@
             function bindCounter(selector, counterId, max) {
                 var field = document.querySelector(selector);
                 var counter = document.getElementById(counterId);
+                var counterWrap = counter ? counter.closest('.nr-char-count') : null;
                 if (!field || !counter) return;
-                var update = function () { counter.textContent = String(field.value.length); };
+                var update = function () {
+                    var length = field.value.length;
+                    counter.textContent = String(length);
+                    if (counterWrap) {
+                        counterWrap.classList.toggle('is-over-limit', length > max);
+                    }
+                };
                 field.addEventListener('input', update);
                 update();
             }

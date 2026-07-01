@@ -74,12 +74,12 @@ public class NeighborRequestDescribeStepViewModel : NeighborRequestWizardShellVi
 
 public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShellViewModel, IValidatableObject
 {
-    public string WhenCode { get; set; } = NeighborRequestTimelineCodes.Today;
-    public string PreferredTimeCode { get; set; } = NeighborRequestPreferredTimeCodes.Flexible;
-    public int HelperCount { get; set; } = 1;
-    public string DurationCode { get; set; } = NeighborRequestDurationCodes.TwoHours;
-    public string PayTypeCode { get; set; } = NeighborRequestPayTypeCodes.Hourly;
-    public string TimelineCode { get; set; } = NeighborRequestTimelineCodes.Today;
+    public string WhenCode { get; set; } = string.Empty;
+    public string PreferredTimeCode { get; set; } = string.Empty;
+    public int HelperCount { get; set; }
+    public string DurationCode { get; set; } = string.Empty;
+    public string PayTypeCode { get; set; } = string.Empty;
+    public string TimelineCode { get; set; } = string.Empty;
     public string AudienceCode { get; set; } = NeighborRequestAudienceCodes.Neighbors;
     public List<string> SelectedAudiences { get; set; } = [];
     public decimal? BudgetAmount { get; set; }
@@ -96,7 +96,37 @@ public class NeighborRequestPreferencesStepViewModel : NeighborRequestWizardShel
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (IsEditMode || WhenCode != NeighborRequestTimelineCodes.PickDate)
+        if (IsEditMode)
+        {
+            yield break;
+        }
+
+        if (string.IsNullOrWhiteSpace(WhenCode))
+        {
+            yield return new ValidationResult("Choose when you need help.", [nameof(WhenCode)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(PreferredTimeCode))
+        {
+            yield return new ValidationResult("Choose a preferred time.", [nameof(PreferredTimeCode)]);
+        }
+
+        if (HelperCount <= 0)
+        {
+            yield return new ValidationResult("Choose how many helpers you need.", [nameof(HelperCount)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(DurationCode))
+        {
+            yield return new ValidationResult("Choose an estimated duration.", [nameof(DurationCode)]);
+        }
+
+        if (string.IsNullOrWhiteSpace(PayTypeCode))
+        {
+            yield return new ValidationResult("Choose how you want to pay.", [nameof(PayTypeCode)]);
+        }
+
+        if (WhenCode != NeighborRequestTimelineCodes.PickDate)
         {
             yield break;
         }

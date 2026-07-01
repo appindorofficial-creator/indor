@@ -216,19 +216,19 @@
 
 </div>
 
-<form asp-action="ExamIntro" method="post" class="prv-exam-intro-actions">
+<form asp-action="ExamIntro" method="post" id="prvExamIntroForm" class="prv-exam-intro-actions">
 
     @Html.AntiForgeryToken()
 
-    <div class="prv-wiz-footer">
-        <button type="submit" name="action" value="start" class="ob-btn ob-btn-primary">Start exam</button>
-        <button type="submit" name="action" value="review" class="ob-btn ob-btn-outline">Review topics</button>
-        <a href="@Model.BackUrl" class="prv-save-later">Back</a>
-        @if (Model.State.UsesNewWizard)
-        {
-            <a asp-action="ActivationCall" class="prv-save-later">Skip for Now</a>
-        }
-    </div>
-
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvExamIntroForm" name="action" value="start" class="ob-btn ob-btn-primary">Start exam</button>
+    <button type="submit" form="prvExamIntroForm" name="action" value="review" class="ob-btn ob-btn-outline">Review topics</button>
+    <a href="@Model.BackUrl" class="prv-save-later">Back</a>
+    @if (Model.State.UsesNewWizard)
+    {
+        <a asp-action="ActivationCall" class="prv-save-later">Skip for Now</a>
+    }
+</div>
 

@@ -267,14 +267,22 @@
 
 .nr-field--count .nr-input,
 .nr-field--count .nr-textarea {
-    padding-bottom: 28px;
+    display: block;
+    width: 100%;
 }
 
-.nr-char-count {
+.nr-field--count .nr-char-count {
+    display: block;
     text-align: right;
     font-size: .72rem;
     color: #94A3B8;
-    margin-top: 4px;
+    margin: 6px 4px 0 0;
+    line-height: 1.2;
+}
+
+.nr-field--count .nr-char-count.is-over-limit {
+    color: #DC2626;
+    font-weight: 700;
 }
 
 .nr-photo-actions {
@@ -1011,6 +1019,7 @@
 
 .nr-edit-field { margin-bottom: 10px; }
 .nr-edit-field:last-child { margin-bottom: 0; }
+.nr-edit-field.nr-field--count .nr-char-count { margin-top: 6px; }
 
 .nr-edit-input,
 .nr-edit-textarea {
@@ -1306,8 +1315,12 @@
 .nr-cat-tip strong { color: #0A2540; }
 .nr-cat-tip-icon { color: #0066CC; flex-shrink: 0; margin-top: 1px; }
 
-.nr-field--count { position: relative; }
-.nr-field--count .nr-char-count { position: absolute; right: 12px; bottom: 10px; margin: 0; }
+.nr-char-count {
+    text-align: right;
+    font-size: .72rem;
+    color: #94A3B8;
+    margin-top: 4px;
+}
 
 .nr-location-picker {
     display: flex; align-items: center; gap: 10px;

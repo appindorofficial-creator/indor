@@ -1,5 +1,6 @@
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -74,9 +75,13 @@ public class PropertyAdministratorRegistrationController(
         bool termsAccepted,
         bool marketingOptIn)
     {
+        await registration.LinkCurrentUserAsync();
+        termsAccepted = IsCheckboxChecked("termsAccepted");
+        marketingOptIn = IsCheckboxChecked("marketingOptIn");
+
         if (!termsAccepted)
         {
-            ModelState.AddModelError(string.Empty, "Please agree to the Terms to continue.");
+            ModelState.AddModelError(nameof(termsAccepted), "Please agree to the Terms to continue.");
         }
 
         if (!ModelState.IsValid)
@@ -124,6 +129,8 @@ public class PropertyAdministratorRegistrationController(
         string primaryMarket,
         string managementStyle)
     {
+        await registration.LinkCurrentUserAsync();
+
         if (string.IsNullOrWhiteSpace(propertyCountRange))
         {
             ModelState.AddModelError(nameof(propertyCountRange), "Please select how many properties you manage.");
@@ -189,6 +196,14 @@ public class PropertyAdministratorRegistrationController(
             model.FormSuccess = success;
         }
 
+        if (TempData["PropertyAdminImportErrors"] is string importErrorsRaw
+            && !string.IsNullOrWhiteSpace(importErrorsRaw))
+        {
+            model.ImportErrors = importErrorsRaw
+                .Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .ToList();
+        }
+
         return View(model);
     }
 
@@ -227,58 +242,70 @@ public class PropertyAdministratorRegistrationController(
         return RedirectAfterPropertyChange("Property saved successfully.");
     }
 
+    [HttpGet]
+    public async Task<IActionResult> ImportPortfolio()
+    {
+        if (!await CanAccessPropertiesStepAsync())
+        {
+            return RedirectToAction(nameof(Portfolio));
+        }
+
+        return View(await BuildImportPortfolioViewModelAsync());
+    }
+
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ImportPortfolio(IFormFile? csvFile)
+    public async Task<IActionResult> ImportPortfolio(IFormFile? csvFile, IFormFile? portfolioFile)
     {
-        if (csvFile == null || csvFile.Length == 0)
+        var file = csvFile ?? portfolioFile;
+        if (file == null || file.Length == 0)
         {
-            var emptyModel = await BuildPropertiesViewModelAsync();
+            var emptyModel = await BuildImportPortfolioViewModelAsync();
             emptyModel.FormError = "Choose a CSV file to import.";
-            return View(nameof(Properties), emptyModel);
+            return View(emptyModel);
         }
 
-        if (csvFile.Length > 1024 * 1024)
+        if (file.Length > 1024 * 1024)
         {
-            var largeModel = await BuildPropertiesViewModelAsync();
+            var largeModel = await BuildImportPortfolioViewModelAsync();
             largeModel.FormError = "CSV files must be 1 MB or smaller.";
-            return View(nameof(Properties), largeModel);
+            return View(largeModel);
         }
 
-        var extension = Path.GetExtension(csvFile.FileName);
+        var extension = Path.GetExtension(file.FileName);
         if (!string.Equals(extension, ".csv", StringComparison.OrdinalIgnoreCase)
-            && !string.Equals(csvFile.ContentType, "text/csv", StringComparison.OrdinalIgnoreCase))
+            && !string.Equals(file.ContentType, "text/csv", StringComparison.OrdinalIgnoreCase))
         {
-            var typeModel = await BuildPropertiesViewModelAsync();
+            var typeModel = await BuildImportPortfolioViewModelAsync();
             typeModel.FormError = "Upload a .csv file.";
-            return View(nameof(Properties), typeModel);
+            return View(typeModel);
         }
 
         PropertyAdministratorPortfolioImportResult result;
-        await using (var stream = csvFile.OpenReadStream())
+        await using (var stream = file.OpenReadStream())
         {
             result = await registration.ImportPortfolioFromCsvAsync(stream);
         }
 
-        var model = await BuildPropertiesViewModelAsync();
-        model.ImportErrors = result.Errors;
-        if (result.ImportedCount > 0)
-        {
-            model.FormSuccess = result.ImportedCount == 1
-                ? "1 property imported from CSV."
-                : $"{result.ImportedCount} properties imported from CSV.";
-        }
-
         if (result.ImportedCount == 0)
         {
-            model.FormError = result.Errors.FirstOrDefault() ?? "No properties were imported.";
-        }
-        else if (result.Errors.Count > 0)
-        {
-            model.FormSuccess += $" {result.Errors.Count} row(s) were skipped.";
+            var failedModel = await BuildImportPortfolioViewModelAsync();
+            failedModel.FormError = result.Errors.FirstOrDefault() ?? "No properties were imported.";
+            return View(failedModel);
         }
 
-        return View(nameof(Properties), model);
+        var successMessage = result.ImportedCount == 1
+            ? "1 property imported from CSV."
+            : $"{result.ImportedCount} properties imported from CSV.";
+        if (result.Errors.Count > 0)
+        {
+            successMessage += $" {result.Errors.Count} row(s) were skipped.";
+        }
+
+        TempData["PropertyAdminImportErrors"] = result.Errors.Count > 0
+            ? string.Join('\n', result.Errors)
+            : null;
+        return RedirectAfterPropertyChange(successMessage);
     }
 
     [HttpPost]
@@ -546,32 +573,46 @@ public class PropertyAdministratorRegistrationController(
         }
 
         var email = inviteEmail?.Trim() ?? "";
+        var name = inviteName?.Trim() ?? "";
+
         if (string.IsNullOrWhiteSpace(email))
         {
-            var invalid = await BuildInviteTeamViewModelAsync();
-            invalid.FormError = "Please enter an email address.";
-            return View(invalid);
+            return await InviteTeamInvalidAsync(name, email, "Please enter an email address.");
         }
 
-        if (!email.Contains('@') || !email.Contains('.'))
+        if (!ValidEmailAttribute.IsValidAddress(email, out var emailError))
         {
-            var invalid = await BuildInviteTeamViewModelAsync();
-            invalid.FormError = "Please enter a valid email address.";
-            return View(invalid);
+            return await InviteTeamInvalidAsync(name, email, emailError ?? "Please enter a valid email address.");
         }
 
-        var display = string.IsNullOrWhiteSpace(inviteName) ? email : $"{inviteName.Trim()} <{email}>";
+        var display = string.IsNullOrWhiteSpace(name) ? email : $"{name} <{email}>";
         var invites = GetPendingTeamInvites();
-        if (!invites.Any(i => i.Equals(display, StringComparison.OrdinalIgnoreCase)))
+        if (InviteListContainsEmail(invites, email))
         {
-            invites.Add(display);
-            SavePendingTeamInvites(invites);
+            return await InviteTeamInvalidAsync(name, email, "This email is already on your invite list.");
         }
+
+        invites.Add(display);
+        SavePendingTeamInvites(invites);
 
         var model = await BuildInviteTeamViewModelAsync();
-        model.FormSuccess = $"Invite added for {email}.";
+        model.FormSuccess = $"Invite added for {email}. Add another teammate or go back to review.";
         return View(model);
     }
+
+    private async Task<IActionResult> InviteTeamInvalidAsync(string? name, string? email, string message)
+    {
+        var invalid = await BuildInviteTeamViewModelAsync();
+        invalid.InviteName = name ?? "";
+        invalid.InviteEmail = email ?? "";
+        invalid.FormError = message;
+        return View(invalid);
+    }
+
+    private static bool InviteListContainsEmail(IEnumerable<string> invites, string email) =>
+        invites.Any(invite =>
+            invite.Equals(email, StringComparison.OrdinalIgnoreCase)
+            || invite.EndsWith($"<{email}>", StringComparison.OrdinalIgnoreCase));
 
     [HttpGet]
     public async Task<IActionResult> Review()
@@ -584,6 +625,7 @@ public class PropertyAdministratorRegistrationController(
 
         var model = await registration.GetReviewViewModelAsync();
         model.BackUrl = Url.Action(nameof(Tools))!;
+        model.PendingTeamInviteCount = GetPendingTeamInvites().Count;
         return View(model);
     }
 
@@ -591,11 +633,15 @@ public class PropertyAdministratorRegistrationController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Review(bool platformTermsAccepted)
     {
+        await registration.LinkCurrentUserAsync();
+        platformTermsAccepted = IsCheckboxChecked("platformTermsAccepted");
+
         if (!platformTermsAccepted)
         {
-            ModelState.AddModelError(string.Empty, "Please agree to INDOR's platform terms.");
+            ModelState.AddModelError(nameof(platformTermsAccepted), "Please agree to INDOR's platform terms.");
             var model = await registration.GetReviewViewModelAsync();
             model.BackUrl = Url.Action(nameof(Tools))!;
+            model.PendingTeamInviteCount = GetPendingTeamInvites().Count;
             return View(model);
         }
 
@@ -611,6 +657,20 @@ public class PropertyAdministratorRegistrationController(
     {
         var state = await registration.GetAsync();
         return !string.IsNullOrWhiteSpace(state.PortfolioType);
+    }
+
+    private async Task<PropertyAdministratorImportPortfolioViewModel> BuildImportPortfolioViewModelAsync()
+    {
+        var state = await registration.GetAsync();
+        return new PropertyAdministratorImportPortfolioViewModel
+        {
+            DisplayStep = 3,
+            TotalSteps = 5,
+            Title = "Import portfolio",
+            Subtitle = "Upload a CSV file to add multiple properties at once.",
+            BackUrl = Url.Action(nameof(Properties))!,
+            State = state
+        };
     }
 
     private async Task<PropertyAdministratorUploadDocumentsViewModel> BuildUploadDocumentsViewModelAsync()
@@ -741,6 +801,16 @@ public class PropertyAdministratorRegistrationController(
         };
     }
 
+    private bool IsCheckboxChecked(string fieldName)
+    {
+        if (!Request.Form.TryGetValue(fieldName, out var values) || values.Count == 0)
+        {
+            return false;
+        }
+
+        return values.Any(v => string.Equals(v, "true", StringComparison.OrdinalIgnoreCase));
+    }
+
     private static PropertyAdministratorRegistrationStepViewModel StepVm(
         int displayStep,
         string title,
@@ -829,6 +899,10 @@ public class PropertyAdministratorRegistrationController(
         {
             missingFields.Add("ZIP");
         }
+        else if (!UsZipCodeAttribute.IsValidRequired(draft.ZipCode, out _))
+        {
+            missingFields.Add("a valid ZIP code");
+        }
 
         if (string.IsNullOrWhiteSpace(draft.PropertyType) ||
             !PropertyAdministratorCatalog.IsValidPropertyType(draft.PropertyType))
@@ -854,7 +928,7 @@ public class PropertyAdministratorRegistrationController(
             StreetAddress = streetLine,
             City = draft.City,
             State = draft.State,
-            ZipCode = draft.ZipCode,
+            ZipCode = UsZipCodeAttribute.NormalizeToStorage(draft.ZipCode) ?? draft.ZipCode?.Trim(),
             Location = PropertyAdministratorCatalog.FormatPropertyLocation(
                 draft.City, draft.State, streetLine, draft.ZipCode),
             PropertyType = draft.PropertyType

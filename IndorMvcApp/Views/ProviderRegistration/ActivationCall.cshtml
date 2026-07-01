@@ -26,7 +26,7 @@
     </div>
 </div>
 
-<form asp-action="ActivationCall" method="post" class="prv-wiz-stack">
+<form asp-action="ActivationCall" method="post" id="prvActivationCallForm" class="prv-wiz-stack">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -68,12 +68,12 @@
         <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) required />
         <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-activation">Terms &amp; Conditions</a></span>
     </label>
-
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Schedule Call</button>
-        <button type="submit" name="action" value="enter-pro" class="prv-save-later">Enter INDOR Pro</button>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvActivationCallForm" class="ob-btn ob-btn-primary">Schedule Call</button>
+    <button type="submit" form="prvActivationCallForm" name="action" value="enter-pro" class="prv-save-later">Enter INDOR Pro</button>
+</div>
 
 <div class="prv-wiz-info">
     <i class="fas fa-circle-info"></i>

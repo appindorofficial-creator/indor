@@ -19,6 +19,10 @@ public interface IRealtorInviteClientService
     Task<RealtorInviteCreatePropertyViewModel> BuildCreatePropertyAsync(string? prefillAddress = null, CancellationToken cancellationToken = default);
     Task<int> CreatePropertyAsync(RealtorInviteCreatePropertyViewModel model, CancellationToken cancellationToken = default);
 
+    Task PrepareAccessStepAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToAccessAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToPropertyAsync(CancellationToken cancellationToken = default);
+    Task PrepareBackToClientInfoAsync(CancellationToken cancellationToken = default);
     Task<RealtorInviteAccessViewModel> BuildAccessAsync(CancellationToken cancellationToken = default);
     Task SaveAccessAsync(RealtorInviteAccessViewModel model, CancellationToken cancellationToken = default);
 

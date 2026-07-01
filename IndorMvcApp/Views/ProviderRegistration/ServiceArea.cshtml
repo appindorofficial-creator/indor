@@ -6,7 +6,7 @@
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
 </div>
-<form asp-action="ServiceArea" method="post">
+<form asp-action="ServiceArea" method="post" id="prvServiceAreaForm">
     @Html.AntiForgeryToken()
     <div class="ob-field">
         <label class="ob-label">Primary city</label>
@@ -24,7 +24,8 @@
         <input type="checkbox" name="SameDayJobs" value="true" @(s.SameDayJobs ? "checked" : "") />
         <span>Same-day jobs</span>
     </label>
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvServiceAreaForm" class="ob-btn ob-btn-primary">Continue</button>
+</div>

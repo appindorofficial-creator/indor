@@ -63,16 +63,48 @@
     </div>
 
     <label class="prv-wiz-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
-        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-company-info" onclick="event.stopPropagation();">Terms &amp; Conditions</a></span>
+        <input type="hidden" name="termsAccepted" value="false" />
+        <input type="checkbox"
+               id="prvCompanyTermsAccepted"
+               name="termsAccepted"
+               value="true"
+               @(s.TermsAccepted ? "checked" : null)
+               data-pa-required="true"
+               data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-company-info">Terms &amp; Conditions</a></span>
     </label>
-
-    <div class="prv-wiz-footer">
-        <button type="submit" class="ob-btn ob-btn-primary">Save &amp; Continue</button>
-        <button type="submit" name="action" value="later" class="prv-save-later" formnovalidate>I'll do this later</button>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvCompanyInfoForm" id="prvCompanyInfoContinueBtn" class="ob-btn ob-btn-primary">Save &amp; Continue</button>
+    <button type="submit" form="prvCompanyInfoForm" name="action" value="later" class="prv-save-later" formnovalidate>I'll do this later</button>
+</div>
 
 @section Scripts {
     @await Html.PartialAsync("_PropertyAdminStepValidation")
+    <script>
+        (function () {
+            var form = document.getElementById('prvCompanyInfoForm');
+            var continueBtn = document.getElementById('prvCompanyInfoContinueBtn');
+            if (!form || !continueBtn) {
+                return;
+            }
+
+            continueBtn.addEventListener('click', function (e) {
+                if (typeof window.validatePaForm !== 'function') {
+                    return;
+                }
+
+                if (!window.validatePaForm(form)) {
+                    e.preventDefault();
+                    return;
+                }
+
+                if (typeof form.requestSubmit === 'function') {
+                    e.preventDefault();
+                    form.requestSubmit(continueBtn);
+                }
+            });
+        })();
+    </script>
 }

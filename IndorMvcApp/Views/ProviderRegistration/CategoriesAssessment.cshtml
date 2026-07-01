@@ -19,7 +19,7 @@
     <p>@Model.Subtitle</p>
 </div>
 
-<form asp-action="CategoriesAssessment" method="post" class="prv-wiz-stack">
+<form asp-action="CategoriesAssessment" method="post" id="prvCategoriesAssessmentForm" class="prv-wiz-stack">
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
@@ -53,9 +53,9 @@
             <p>If you skip this step, you can still use the software, but your profile will not be available for INDOR jobs until you complete the assessment and activation call.</p>
         </div>
     </div>
-
-    <div class="prv-wiz-footer">
-        <button type="submit" name="action" value="take-assessment" class="ob-btn ob-btn-primary">Take Assessment</button>
-        <button type="submit" name="action" value="skip" class="ob-btn ob-btn-outline">Skip for Now</button>
-    </div>
 </form>
+
+<div class="prv-wiz-footer">
+    <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="take-assessment" class="ob-btn ob-btn-primary">Take Assessment</button>
+    <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="skip" class="ob-btn ob-btn-outline">Skip for Now</button>
+</div>

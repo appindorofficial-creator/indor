@@ -125,18 +125,18 @@
             <div class="prv-pro-edit-profile-toggles">
                 <label class="prv-pro-toggle-row">
                     <input type="hidden" name="EmergencyService" value="false" />
-                    <input type="checkbox" name="EmergencyService" value="true" checked="@Model.EmergencyService" />
+                    <input type="checkbox" name="EmergencyService" value="true" @(Model.EmergencyService ? "checked" : null) />
                     <span>Emergency service available</span>
                 </label>
                 <label class="prv-pro-toggle-row">
                     <input type="hidden" name="SameDayJobs" value="false" />
-                    <input type="checkbox" name="SameDayJobs" value="true" checked="@Model.SameDayJobs" />
+                    <input type="checkbox" name="SameDayJobs" value="true" @(Model.SameDayJobs ? "checked" : null) />
                     <span>Same-day jobs available</span>
                 </label>
             </div>
         </section>
 
-        <footer class="prv-pro-edit-profile-actions">
+        <footer class="prv-pro-edit-profile-actions prv-pro-edit-profile-footer">
             <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
                 <i class="fas fa-floppy-disk"></i> Save profile
@@ -160,6 +160,11 @@
         if (focusInput) {
             focusInput.focus({ preventScroll: true });
         }
+    }
+
+    var errorAlert = document.querySelector('.prv-pro-edit-profile-alert--error');
+    if (errorAlert) {
+        errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
 
     input?.addEventListener('change', function () {

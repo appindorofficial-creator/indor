@@ -9,7 +9,10 @@
 
 <form asp-action="Profile" method="post" id="paProfileForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
-    <div asp-validation-summary="ModelOnly" class="pa-summary-error"></div>
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class="pa-summary-error" role="alert"></div>
+    }
 
     <div class="pa-field pa-field-readonly">
         <i class="fas fa-user"></i>
@@ -33,11 +36,17 @@
     </label>
 
     <label class="pa-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="Please agree to the Terms to continue." />
+        <input type="hidden" name="termsAccepted" value="false" />
+        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="the Terms" />
         <span>I agree to the <a asp-controller="Account" asp-action="Terms">Terms</a></span>
     </label>
+    @if (ViewData.ModelState.TryGetValue("termsAccepted", out var termsState) && termsState.Errors.Count > 0)
+    {
+        <div class="pa-inline-error" role="alert">@termsState.Errors[0].ErrorMessage</div>
+    }
 
     <label class="pa-terms">
+        <input type="hidden" name="marketingOptIn" value="false" />
         <input type="checkbox" name="marketingOptIn" value="true" @(s.MarketingOptIn ? "checked" : null) />
         <span>Send me product updates and tips</span>
     </label>

@@ -17,21 +17,18 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-    @if (formErrors.Count > 0)
-    {
-        <div class="rl-error-banner" role="alert" id="inviteClientFormErrors">
-            <i class="fas fa-circle-exclamation"></i>
-            <div>
-                <strong>Please fix the following to continue:</strong>
-                <ul class="rl-error-list">
-                    @foreach (var msg in formErrors)
-                    {
-                        <li>@msg</li>
-                    }
-                </ul>
-            </div>
+    <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" role="alert" id="inviteClientFormErrors">
+        <i class="fas fa-circle-exclamation"></i>
+        <div>
+            <strong>Please fix the following to continue:</strong>
+            <ul class="rl-error-list" id="inviteClientFormErrorList">
+                @foreach (var msg in formErrors)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
         </div>
-    }
+    </div>
 
     <h2 class="rl-invite-section-title">Client Information</h2>
 
@@ -117,9 +114,13 @@
 <script>
 (function () {
     var banner = document.getElementById('inviteClientFormErrors');
+    if (banner && !banner.classList.contains('is-hidden')) {
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
     var summary = document.querySelector('#inviteClientForm .ob-summary:not(.validation-summary-valid)');
     var firstFieldError = document.querySelector('#inviteClientForm .rl-field-error:not(:empty), #inviteClientForm .rl-field.is-error');
-    var scrollTarget = banner || summary || firstFieldError;
+    var scrollTarget = summary || firstFieldError;
     if (scrollTarget) {
         scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }

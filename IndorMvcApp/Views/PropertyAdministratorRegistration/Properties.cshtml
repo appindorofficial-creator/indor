@@ -47,69 +47,122 @@ else
 
     <form asp-action="ContinueFromProperties" method="post" id="paPropertiesContinueForm">
         @Html.AntiForgeryToken()
+        <input type="hidden" name="houseNumber" id="pa-continue-house" value="" />
+        <input type="hidden" name="streetName" id="pa-continue-street" value="" />
+        <input type="hidden" name="city" id="pa-continue-city" value="" />
+        <input type="hidden" name="state" id="pa-continue-state" value="" />
+        <input type="hidden" name="zipCode" id="pa-continue-zip" value="" />
+        <input type="hidden" name="propertyType" id="pa-continue-type" value="" />
+        <input type="hidden" name="propertyNickname" id="pa-continue-nickname" value="" />
     </form>
 
     @await Html.PartialAsync("_PropertyAdminStepActions")
 }
 
 @await Html.PartialAsync("_AddressAutocompleteScripts")
+<script src="~/js/zip-input.js" asp-append-version="true"></script>
 
 <script>
 (function () {
-    function bindFilePickers() {
-        document.querySelectorAll('.pa-file-picker-input').forEach(function (input) {
-            var label = document.querySelector('[data-pa-file-name-for="' + input.id + '"]');
-            var clearBtn = document.querySelector('[data-pa-file-clear-for="' + input.id + '"]');
-            var emptyLabel = input.getAttribute('data-empty-label') || 'No file selected';
+    var manualPropertyFields = [
+        { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
+        { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
+        { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
+        { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
+        { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
+        { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
+    ];
 
-            function syncName() {
-                var file = input.files && input.files[0];
-                if (label) {
-                    label.textContent = file ? file.name : emptyLabel;
-                    label.classList.toggle('is-selected', !!file);
-                }
-                if (clearBtn) {
-                    clearBtn.hidden = !file;
-                }
+    function fieldValue(form, name) {
+        var el = form.querySelector('[name="' + name + '"]');
+        return el && el.value ? String(el.value).trim() : '';
+    }
+
+    function isManualDraftStarted(manualForm) {
+        if (!manualForm) return false;
+
+        var defaultCity = (manualForm.dataset.paDefaultCity || '').trim();
+        var defaultState = (manualForm.dataset.paDefaultState || '').trim();
+
+        if (fieldValue(manualForm, 'houseNumber')) return true;
+        if (fieldValue(manualForm, 'streetName')) return true;
+        if (fieldValue(manualForm, 'zipCode')) return true;
+        if (fieldValue(manualForm, 'propertyType')) return true;
+        if (fieldValue(manualForm, 'propertyNickname')) return true;
+
+        var city = fieldValue(manualForm, 'city');
+        var state = fieldValue(manualForm, 'state');
+        if (city && city.toLowerCase() !== defaultCity.toLowerCase()) return true;
+        if (state && state.toLowerCase() !== defaultState.toLowerCase()) return true;
+
+        return false;
+    }
+
+    function syncContinueHiddenFields(manualForm, continueForm) {
+        [
+            ['houseNumber', 'pa-continue-house'],
+            ['streetName', 'pa-continue-street'],
+            ['city', 'pa-continue-city'],
+            ['state', 'pa-continue-state'],
+            ['zipCode', 'pa-continue-zip'],
+            ['propertyType', 'pa-continue-type'],
+            ['propertyNickname', 'pa-continue-nickname']
+        ].forEach(function (pair) {
+            var src = manualForm.querySelector('[name="' + pair[0] + '"]');
+            var dest = document.getElementById(pair[1]);
+            if (src && dest) {
+                dest.value = src.value || '';
             }
+        });
+    }
 
-            input.addEventListener('change', syncName);
-            if (clearBtn) {
-                clearBtn.addEventListener('click', function () {
-                    input.value = '';
-                    syncName();
-                    input.dispatchEvent(new Event('change', { bubbles: true }));
-                });
+    function syncFieldValidity(field) {
+        if (!field.el || field.el.disabled) return;
+
+        if (field.el.id === 'pa-prop-zip' && window.IndorZipInput) {
+            var zipError = window.IndorZipInput.validateRequired(field.el.value);
+            field.el.setCustomValidity(zipError || '');
+            return;
+        }
+
+        var empty = !field.el.value || !String(field.el.value).trim();
+        field.el.setCustomValidity(empty ? field.message : '');
+    }
+
+    function validateManualPropertyForm(manualForm) {
+        var panel = manualForm.closest('details');
+        if (panel && !panel.open) {
+            panel.open = true;
+        }
+
+        var firstInvalid = null;
+        manualPropertyFields.forEach(function (field) {
+            syncFieldValidity(field);
+            if (!field.el || field.el.disabled || firstInvalid) return;
+            if (!field.el.checkValidity()) {
+                firstInvalid = field.el;
             }
-            syncName();
         });
-    }
 
-    function disableOtherForms(activeForm) {
-        var disabled = [];
-        document.querySelectorAll('.pa-properties-step-form').forEach(function (other) {
-            if (other === activeForm) return;
-            other.querySelectorAll('input, select, textarea, button').forEach(function (el) {
-                if (!el.disabled) {
-                    el.disabled = true;
-                    disabled.push(el);
-                }
-            });
-        });
-        return disabled;
-    }
+        if (firstInvalid) {
+            firstInvalid.reportValidity();
+            return false;
+        }
 
-    function restoreDisabled(disabled) {
-        disabled.forEach(function (el) {
-            el.disabled = false;
-        });
+        return true;
     }
-
     function bindRequiredFields(form, fields) {
         if (!form) return;
 
         function syncValidity(field) {
             if (!field.el || field.el.disabled) return;
+
+            if (field.el.id === 'pa-prop-zip' && window.IndorZipInput) {
+                var zipError = window.IndorZipInput.validateRequired(field.el.value);
+                field.el.setCustomValidity(zipError || '');
+                return;
+            }
+
             var empty = field.kind === 'file'
                 ? !(field.el.files && field.el.files.length)
                 : !field.el.value || !String(field.el.value).trim();
@@ -124,7 +177,6 @@ else
         });
 
         form.addEventListener('submit', function (e) {
-            var temporarilyDisabled = disableOtherForms(form);
             var firstInvalid = null;
 
             fields.forEach(function (field) {
@@ -137,39 +189,30 @@ else
 
             if (firstInvalid) {
                 e.preventDefault();
-                restoreDisabled(temporarilyDisabled);
                 firstInvalid.reportValidity();
             }
         });
     }
 
-    bindFilePickers();
-
     bindRequiredFields(
         document.getElementById('pa-manual-property-form'),
-        [
-            { el: document.getElementById('pa-prop-house'), message: 'Enter a house number.' },
-            { el: document.getElementById('pa-prop-street'), message: 'Enter a street name.' },
-            { el: document.getElementById('pa-prop-city'), message: 'Enter a city.' },
-            { el: document.getElementById('pa-prop-state'), message: 'Select a state.' },
-            { el: document.getElementById('pa-prop-zip'), message: 'Enter a ZIP code.' },
-            { el: document.getElementById('pa-prop-type'), message: 'Select a property type.' }
-        ]
+        manualPropertyFields
     );
 
-    bindRequiredFields(
-        document.getElementById('pa-import-portfolio-form'),
-        [
-            { el: document.getElementById('pa-csv-file'), kind: 'file', message: 'Choose a CSV file.' }
-        ]
-    );
+    var continueForm = document.getElementById('paPropertiesContinueForm');
+    var manualForm = document.getElementById('pa-manual-property-form');
+    if (continueForm && manualForm) {
+        continueForm.addEventListener('submit', function (e) {
+            if (!isManualDraftStarted(manualForm)) {
+                return;
+            }
 
-    bindRequiredFields(
-        document.getElementById('pa-upload-document-form'),
-        [
-            { el: document.getElementById('pa-doc-property'), message: 'Select a property.' },
-            { el: document.getElementById('pa-document-file'), kind: 'file', message: 'Choose a document to upload.' }
-        ]
-    );
+            syncContinueHiddenFields(manualForm, continueForm);
+
+            if (!validateManualPropertyForm(manualForm)) {
+                e.preventDefault();
+            }
+        });
+    }
 })();
 </script>

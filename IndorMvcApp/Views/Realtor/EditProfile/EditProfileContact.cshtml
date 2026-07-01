@@ -97,7 +97,8 @@
                 <span>State</span>
                 <select asp-for="OfficeState"
                         data-ac-zip="OfficeZip"
-                        data-ac-city="OfficeCity">
+                        data-ac-city="OfficeCity"
+                        data-ac-address="OfficeAddress">
                     <option value="">State</option>
                     @foreach (var st in Model.LicenseStates)
                     {

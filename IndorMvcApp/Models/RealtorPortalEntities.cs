@@ -1136,7 +1136,7 @@ public class IndorRealtorInvitation
     public bool AccessPayments { get; set; }
 
     [Required, MaxLength(30)]
-    public string CollaborationLevel { get; set; } = RealtorCollaborationLevels.ViewOnly;
+    public string CollaborationLevel { get; set; } = string.Empty;
 
     public bool DeliveryEmail { get; set; }
 

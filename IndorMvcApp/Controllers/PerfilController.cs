@@ -161,6 +161,10 @@ public class PerfilController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
+        await RestoreSavedAddressWhenFormIncompleteAsync(user.Id, model);
+        ModelState.Clear();
+        TryValidateModel(model);
+
         if (!ModelState.IsValid)
         {
             TempData["PerfilError"] = "Please complete your street address, city, state, and ZIP code.";
@@ -783,22 +787,54 @@ public class PerfilController : Controller
             && (PropertyEnrichmentMapper.HasMeaningfulDetails(info?.PropertyDetails ?? new PropertyDetailsInfo())
                 || model.HouseFactFieldCount > 3);
 
-        model.AddressForm = new AddPropertyViewModel
-        {
-            StreetAddress = info?.Street ?? string.Empty,
-            City = info?.City ?? string.Empty,
-            State = info?.State ?? string.Empty,
-            ZipCode = info?.PostalCode ?? string.Empty,
-            Unit = info?.Unit
-        };
-
-        if (string.IsNullOrWhiteSpace(model.AddressForm.StreetAddress)
-            && !string.IsNullOrWhiteSpace(model.HomeAddress))
-        {
-            model.AddressForm.Address = model.HomeAddress;
-        }
+        model.AddressForm = MyHomeDisplayService.BuildAddressFormForEdit(propiedad, info);
 
         return model;
+    }
+
+    private async Task RestoreSavedAddressWhenFormIncompleteAsync(string userId, AddPropertyViewModel model)
+    {
+        if (!string.IsNullOrWhiteSpace(model.StreetAddress)
+            && !string.IsNullOrWhiteSpace(model.City)
+            && !string.IsNullOrWhiteSpace(model.State)
+            && !string.IsNullOrWhiteSpace(model.ZipCode))
+        {
+            return;
+        }
+
+        var propiedad = await _homeownerPropertyService.GetPrimaryPropertyAsync(userId);
+        if (propiedad == null)
+        {
+            return;
+        }
+
+        var info = MyHomeDisplayService.DeserializeProperty(propiedad);
+        var saved = MyHomeDisplayService.BuildAddressFormForEdit(propiedad, info);
+
+        if (string.IsNullOrWhiteSpace(model.StreetAddress) && !string.IsNullOrWhiteSpace(saved.StreetAddress))
+        {
+            model.StreetAddress = saved.StreetAddress;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.City) && !string.IsNullOrWhiteSpace(saved.City))
+        {
+            model.City = saved.City;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.State) && !string.IsNullOrWhiteSpace(saved.State))
+        {
+            model.State = saved.State;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.ZipCode) && !string.IsNullOrWhiteSpace(saved.ZipCode))
+        {
+            model.ZipCode = saved.ZipCode;
+        }
+
+        if (string.IsNullOrWhiteSpace(model.Unit) && !string.IsNullOrWhiteSpace(saved.Unit))
+        {
+            model.Unit = saved.Unit;
+        }
     }
 
     private async Task<string?> TrySaveHomeownerPhotoAsync(ApplicationUser user, IFormFile? foto)

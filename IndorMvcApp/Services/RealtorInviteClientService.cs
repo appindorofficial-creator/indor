@@ -46,6 +46,7 @@ public class RealtorInviteClientService(
             WelcomeMessage = DefaultWelcomeMessage,
             FechaCreacion = DateTime.UtcNow
         };
+        ClearAccessSelections(entity);
 
         db.IndorRealtorInvitations.Add(entity);
         await db.SaveChangesAsync(cancellationToken);
@@ -116,6 +117,12 @@ public class RealtorInviteClientService(
         string fullName, string email, string? phone, string clientRole, string? quickNote,
         CancellationToken cancellationToken = default)
     {
+        var errors = RealtorInviteClientValidation.Validate(fullName, email, phone, clientRole);
+        if (errors.Count > 0)
+        {
+            throw new InvalidOperationException(errors.Values.First());
+        }
+
         var draft = await EnsureDraftAsync(cancellationToken);
         draft.FullName = fullName.Trim();
         draft.Email = email.Trim();
@@ -132,10 +139,7 @@ public class RealtorInviteClientService(
         var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
             ?? throw new InvalidOperationException("Realtor profile not found.");
         var draft = await GetDraftAsync(cancellationToken);
-        if (draft == null || string.IsNullOrWhiteSpace(draft.FullName))
-        {
-            throw new InvalidOperationException("Complete client info first.");
-        }
+        RequireValidClientInfoDraft(draft);
 
         var query = db.IndorRealtorPropertyFiles.AsNoTracking()
             .Where(p => p.RealtorId == realtor.Id);
@@ -189,6 +193,10 @@ public class RealtorInviteClientService(
         draft.PropertyCityRegion = property.CityRegion;
         draft.PropertyLabel = MapPropertyLabel(property);
         draft.PropertyStatusLabel = property.FilePhase ?? property.Status;
+        if (!IsAccessConfigured(draft))
+        {
+            ClearAccessSelections(draft);
+        }
         draft.CurrentStep = 3;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
@@ -199,10 +207,7 @@ public class RealtorInviteClientService(
         CancellationToken cancellationToken = default)
     {
         var draft = await GetDraftAsync(cancellationToken);
-        if (draft == null || string.IsNullOrWhiteSpace(draft.FullName))
-        {
-            throw new InvalidOperationException("Complete client info first.");
-        }
+        RequireValidClientInfoDraft(draft);
 
         var model = new RealtorInviteCreatePropertyViewModel
         {
@@ -286,6 +291,10 @@ public class RealtorInviteClientService(
             draft.PropertyCityRegion = property.CityRegion;
             draft.PropertyLabel = MapPropertyLabel(property);
             draft.PropertyStatusLabel = property.FilePhase ?? property.Status;
+            if (!IsAccessConfigured(draft))
+            {
+                ClearAccessSelections(draft);
+            }
             draft.CurrentStep = 3;
             draft.FechaActualizacion = DateTime.UtcNow;
             await db.SaveChangesAsync(cancellationToken);
@@ -304,6 +313,58 @@ public class RealtorInviteClientService(
         return property.Id;
     }
 
+    public async Task PrepareAccessStepAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || IsAccessConfigured(draft))
+        {
+            return;
+        }
+
+        ClearAccessSelections(draft);
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToAccessAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 4)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 3;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToPropertyAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 3)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 2;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToClientInfoAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 2)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 1;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public async Task<RealtorInviteAccessViewModel> BuildAccessAsync(CancellationToken cancellationToken = default)
     {
         var draft = await GetDraftAsync(cancellationToken);
@@ -312,7 +373,7 @@ public class RealtorInviteClientService(
             throw new InvalidOperationException("Select a property first.");
         }
 
-        var accessSaved = draft.CurrentStep >= 4;
+        var accessSaved = IsAccessConfigured(draft);
 
         return new RealtorInviteAccessViewModel
         {
@@ -719,5 +780,30 @@ public class RealtorInviteClientService(
             model.StateCode = match.Groups[1].Value.ToUpperInvariant();
             model.PostalCode = match.Groups[2].Value;
         }
+    }
+
+    private static void RequireValidClientInfoDraft(IndorRealtorInvitation? draft)
+    {
+        if (draft == null ||
+            !RealtorInviteClientValidation.IsValid(draft.FullName, draft.Email, draft.Phone, draft.ClientRole))
+        {
+            throw new InvalidOperationException("Complete client info first.");
+        }
+    }
+
+    private static bool IsAccessConfigured(IndorRealtorInvitation draft) =>
+        !string.IsNullOrWhiteSpace(draft.CollaborationLevel);
+
+    private static void ClearAccessSelections(IndorRealtorInvitation draft)
+    {
+        draft.AccessPropertyOverview = false;
+        draft.AccessFilesReports = false;
+        draft.AccessQuotesEstimates = false;
+        draft.AccessMessages = false;
+        draft.AccessProjectUpdates = false;
+        draft.AccessPayments = false;
+        draft.CollaborationLevel = string.Empty;
+        draft.DeliveryEmail = false;
+        draft.DeliveryText = false;
     }
 }

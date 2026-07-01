@@ -86,7 +86,6 @@ public class NeighborRequestWizardService(
             PropiedadId = propiedad.Id,
             CategoryId = categoryId,
             LocationAddress = await ResolveDefaultAddressAsync(propiedad, ct),
-            TimelineCode = NeighborRequestTimelineCodes.Today,
             AudienceCode = NeighborRequestAudienceCodes.Neighbors
         };
         SaveDraft(session, draft);
@@ -280,15 +279,11 @@ public class NeighborRequestWizardService(
             StepLabels = isEdit
                 ? ["Details", "Preferences", "Review"]
                 : ["Details", "Schedule", "Extras", "Helpers"],
-            WhenCode = draft.TimelineCode,
-            PreferredTimeCode = draft.PreferredTimeCode,
-            HelperCount = draft.HelperCount is > 0 ? draft.HelperCount : 1,
-            DurationCode = string.IsNullOrWhiteSpace(draft.DurationCode)
-                ? NeighborRequestDurationCodes.TwoHours
-                : draft.DurationCode,
-            PayTypeCode = string.IsNullOrWhiteSpace(draft.PayTypeCode)
-                ? NeighborRequestPayTypeCodes.Hourly
-                : draft.PayTypeCode,
+            WhenCode = isEdit || draft.ScheduleConfigured ? draft.TimelineCode : string.Empty,
+            PreferredTimeCode = isEdit || draft.ScheduleConfigured ? draft.PreferredTimeCode : string.Empty,
+            HelperCount = isEdit || draft.ScheduleConfigured ? draft.HelperCount : 0,
+            DurationCode = isEdit || draft.ScheduleConfigured ? draft.DurationCode : string.Empty,
+            PayTypeCode = isEdit || draft.ScheduleConfigured ? draft.PayTypeCode : string.Empty,
             TimelineCode = draft.TimelineCode,
             AudienceCode = draft.AudienceCode,
             SelectedAudiences = ExpandAudienceCode(draft.AudienceCode),
@@ -755,7 +750,8 @@ public class NeighborRequestWizardService(
             AudienceCode = request.AudienceCode,
             BudgetAmount = request.BudgetAmount,
             PhotoPaths = request.Photos.OrderBy(p => p.SortOrder).Select(p => p.FilePath).ToList(),
-            EditingRequestId = request.Id
+            EditingRequestId = request.Id,
+            ScheduleConfigured = true
         });
 
         return request.PropiedadId;
@@ -1214,10 +1210,11 @@ public class NeighborRequestWizardService(
 
         draft.TimelineCode = NormalizeWhenCode(model.WhenCode);
         draft.PreferredTimeCode = NormalizePreferredTimeCode(model.PreferredTimeCode);
-        draft.HelperCount = model.HelperCount is > 0 ? model.HelperCount : 1;
+        draft.HelperCount = model.HelperCount;
         draft.DurationCode = NormalizeDurationCode(model.DurationCode);
         draft.PayTypeCode = NormalizePayTypeCode(model.PayTypeCode);
         draft.BudgetAmount = model.BudgetAmount is > 0 ? model.BudgetAmount : null;
+        draft.ScheduleConfigured = true;
 
         var today = DateTime.UtcNow.Date;
         draft.NeededByDate = draft.TimelineCode switch
@@ -1579,7 +1576,6 @@ public class NeighborRequestWizardService(
         {
             PropiedadId = propiedad.Id,
             LocationAddress = await ResolveDefaultAddressAsync(propiedad, ct),
-            TimelineCode = NeighborRequestTimelineCodes.Today,
             AudienceCode = NeighborRequestAudienceCodes.Neighbors
         });
     }
@@ -2042,15 +2038,16 @@ public class NeighborRequestWizardService(
         DateTime now,
         CancellationToken ct)
     {
-        if (draft.PhotoPaths.Count == 0)
-        {
-            return;
-        }
-
         var permanentDir = Path.Combine(webHostEnvironment.WebRootPath, "uploads", "neighbor-requests", request.Id.ToString());
         Directory.CreateDirectory(permanentDir);
 
         db.IndorNeighborRequestPhotos.RemoveRange(request.Photos);
+
+        if (draft.PhotoPaths.Count == 0)
+        {
+            await db.SaveChangesAsync(ct);
+            return;
+        }
 
         var sort = 0;
         foreach (var photoPath in draft.PhotoPaths.Take(MaxPhotos))
@@ -2062,7 +2059,21 @@ public class NeighborRequestWizardService(
             }
 
             var destFileName = $"photo-{++sort}{extension}";
+            var destWebPath = $"/uploads/neighbor-requests/{request.Id}/{destFileName}";
             var destPath = Path.Combine(permanentDir, destFileName);
+
+            if (IsRequestPhotoAlreadyAtDestination(photoPath, request.Id, destFileName))
+            {
+                db.IndorNeighborRequestPhotos.Add(new IndorNeighborRequestPhoto
+                {
+                    RequestId = request.Id,
+                    FilePath = NormalizeRequestPhotoWebPath(photoPath),
+                    SortOrder = sort,
+                    CreatedUtc = now
+                });
+                continue;
+            }
+
             if (!TryCopyDraftPhoto(photoPath, destPath))
             {
                 continue;
@@ -2071,7 +2082,7 @@ public class NeighborRequestWizardService(
             db.IndorNeighborRequestPhotos.Add(new IndorNeighborRequestPhoto
             {
                 RequestId = request.Id,
-                FilePath = $"/uploads/neighbor-requests/{request.Id}/{destFileName}",
+                FilePath = destWebPath,
                 SortOrder = sort,
                 CreatedUtc = now
             });
@@ -2080,22 +2091,85 @@ public class NeighborRequestWizardService(
         await db.SaveChangesAsync(ct);
     }
 
-    private bool TryCopyDraftPhoto(string photoPath, string destPath)
+    private static bool IsRequestPhotoAlreadyAtDestination(string photoPath, int requestId, string destFileName)
     {
-        var normalized = photoPath.Trim();
+        var normalized = NormalizeRequestPhotoWebPath(photoPath).TrimStart('/');
+        var expected = $"uploads/neighbor-requests/{requestId}/{destFileName}";
+        return normalized.Equals(expected, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private static string NormalizeRequestPhotoWebPath(string photoPath)
+    {
+        var normalized = photoPath.Trim().Replace('\\', '/');
+        if (!normalized.StartsWith('/'))
+        {
+            normalized = "/" + normalized;
+        }
+
+        return normalized;
+    }
+
+    private string? ResolvePhysicalPhotoPath(string photoPath)
+    {
+        var normalized = photoPath.Trim().Replace('\\', '/');
         if (normalized.StartsWith('/'))
         {
             normalized = normalized[1..];
         }
 
-        var sourcePath = Path.Combine(webHostEnvironment.WebRootPath, normalized.Replace('/', Path.DirectorySeparatorChar));
-        if (!File.Exists(sourcePath))
+        if (normalized.StartsWith("wwwroot/", StringComparison.OrdinalIgnoreCase))
+        {
+            normalized = normalized["wwwroot/".Length..];
+        }
+
+        return Path.Combine(
+            webHostEnvironment.WebRootPath,
+            normalized.Replace('/', Path.DirectorySeparatorChar));
+    }
+
+    private bool TryCopyDraftPhoto(string photoPath, string destPath)
+    {
+        var sourcePath = ResolvePhysicalPhotoPath(photoPath);
+        if (sourcePath == null || !File.Exists(sourcePath))
         {
             return false;
         }
 
-        File.Copy(sourcePath, destPath, overwrite: true);
-        return true;
+        var fullSource = Path.GetFullPath(sourcePath);
+        var fullDest = Path.GetFullPath(destPath);
+
+        if (string.Equals(fullSource, fullDest, StringComparison.OrdinalIgnoreCase))
+        {
+            return true;
+        }
+
+        Directory.CreateDirectory(Path.GetDirectoryName(fullDest)!);
+
+        for (var attempt = 0; attempt < 3; attempt++)
+        {
+            try
+            {
+                CopyPhotoFile(fullSource, fullDest);
+                return true;
+            }
+            catch (IOException) when (attempt < 2)
+            {
+                Thread.Sleep(50 * (attempt + 1));
+            }
+            catch (IOException)
+            {
+                return false;
+            }
+        }
+
+        return false;
+    }
+
+    private static void CopyPhotoFile(string sourcePath, string destPath)
+    {
+        using var source = new FileStream(sourcePath, FileMode.Open, FileAccess.Read, FileShare.ReadWrite);
+        using var dest = new FileStream(destPath, FileMode.Create, FileAccess.Write, FileShare.None);
+        source.CopyTo(dest);
     }
 
     private async Task<List<NeighborRequestHelperCardViewModel>> LoadNearbyHelperCardsAsync(

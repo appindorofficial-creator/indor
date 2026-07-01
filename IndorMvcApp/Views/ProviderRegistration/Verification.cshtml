@@ -5,69 +5,157 @@
     var slots = ViewBag.DocumentSlots as IReadOnlyList<ProviderDocumentSlot> ?? Array.Empty<ProviderDocumentSlot>();
     var hasDocuments = ViewBag.HasDocuments as bool? == true;
 }
-<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
-<div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
-</div>
 
-<div class="prv-wiz-card">
-    <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-display"></i></span>
-    <span class="prv-wiz-card-body">
-        <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Active</span>
-        <strong>INDOR Pro Access</strong>
-        <ul class="prv-wiz-bullets">
-            <li>Clients &amp; CRM</li>
-            <li>Jobs &amp; photos</li>
-            <li>Estimates &amp; invoices</li>
-            <li>Reports &amp; property history</li>
-        </ul>
-    </span>
-</div>
+<div class="prv-verification-step">
+    <div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+    <div class="ob-head-block">
+        <h1>@Model.Title</h1>
+        <p>@Model.Subtitle</p>
+    </div>
 
-<div class="prv-wiz-card">
-    <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-list"></i></span>
-    <span class="prv-wiz-card-body">
-        <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Pending</span>
-        <strong>Requirements to Receive INDOR Jobs</strong>
-        <ul class="prv-wiz-checklist">
-            <li><i class="far fa-circle"></i> Business license or registration</li>
-            <li><i class="far fa-circle"></i> Insurance (if applicable)</li>
-            <li><i class="far fa-circle"></i> Government ID</li>
-            <li><i class="far fa-circle"></i> Activation call with INDOR</li>
-        </ul>
-    </span>
-</div>
+    <div class="prv-wiz-card">
+        <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-display"></i></span>
+        <span class="prv-wiz-card-body">
+            <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Active</span>
+            <strong>INDOR Pro Access</strong>
+            <ul class="prv-wiz-bullets">
+                <li>Clients &amp; CRM</li>
+                <li>Jobs &amp; photos</li>
+                <li>Estimates &amp; invoices</li>
+                <li>Reports &amp; property history</li>
+            </ul>
+        </span>
+    </div>
 
-<form asp-action="Verification" method="post" enctype="multipart/form-data" id="prvVerificationForm" class="prv-wiz-stack prv-verification-form">
-    @Html.AntiForgeryToken()
-    <div asp-validation-summary="All" class="ob-summary"></div>
+    <div class="prv-wiz-card">
+        <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-list"></i></span>
+        <span class="prv-wiz-card-body">
+            <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Pending</span>
+            <strong>Requirements to Receive INDOR Jobs</strong>
+            <ul class="prv-wiz-checklist">
+                <li><i class="far fa-circle"></i> Business license or registration</li>
+                <li><i class="far fa-circle"></i> Insurance (if applicable)</li>
+                <li><i class="far fa-circle"></i> Government ID</li>
+                <li><i class="far fa-circle"></i> Activation call with INDOR</li>
+            </ul>
+        </span>
+    </div>
 
-    @if (slots.Count > 0)
-    {
-        <div class="prv-doc-form">
-            <div class="prv-doc-upload"><label>Government ID</label><input type="file" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
-            <div class="prv-doc-upload"><label>Business license</label><input type="file" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
-            <div class="prv-doc-upload"><label>Insurance certificate</label><input type="file" name="insuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
-            <div class="prv-doc-upload"><label>Business registration</label><input type="file" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp" /></div>
-            <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline"><i class="fas fa-upload"></i> Upload Documents</button>
+    <form asp-action="Verification"
+          method="post"
+          enctype="multipart/form-data"
+          id="prvVerificationForm"
+          class="prv-wiz-stack prv-verification-form">
+        @Html.AntiForgeryToken()
+        <div asp-validation-summary="All" class="ob-summary"></div>
+
+        @if (slots.Count > 0)
+        {
+            <div class="prv-doc-form">
+                <div class="prv-doc-upload">
+                    <label class="prv-doc-label" for="prvGovernmentIdFile">Government ID</label>
+                    <input type="file"
+                           id="prvGovernmentIdFile"
+                           name="governmentIdFile"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
+                </div>
+                <div class="prv-doc-upload">
+                    <label class="prv-doc-label" for="prvLicenseFile">Business license</label>
+                    <input type="file"
+                           id="prvLicenseFile"
+                           name="licenseFile"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
+                </div>
+                <div class="prv-doc-upload">
+                    <label class="prv-doc-label" for="prvInsuranceFile">Insurance certificate</label>
+                    <input type="file"
+                           id="prvInsuranceFile"
+                           name="insuranceFile"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
+                </div>
+                <div class="prv-doc-upload">
+                    <label class="prv-doc-label" for="prvBusinessRegistrationFile">Business registration</label>
+                    <input type="file"
+                           id="prvBusinessRegistrationFile"
+                           name="businessRegistrationFile"
+                           accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
+                </div>
+                <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline prv-verification-upload">
+                    <i class="fas fa-upload"></i> Upload Documents
+                </button>
+            </div>
+        }
+    </form>
+
+    <div class="prv-wiz-info prv-verification-note">
+        <i class="fas fa-circle-info"></i>
+        <div>
+            <p>You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads.</p>
         </div>
-    }
-</form>
+    </div>
 
-<div class="prv-wiz-info prv-verification-note">
-    <i class="fas fa-circle-info"></i>
-    <div>
-        <p>You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads.</p>
+    @if (hasDocuments)
+    {
+        <p class="prv-wiz-note"><i class="fas fa-check text-success"></i> Documents uploaded</p>
+    }
+
+    <div class="prv-wiz-footer prv-verification-footer">
+        <button type="submit"
+                form="prvVerificationForm"
+                name="action"
+                value="continue"
+                id="prvVerificationContinueBtn"
+                class="ob-btn ob-btn-primary">
+            Continue with Verification
+        </button>
+        <button type="submit"
+                form="prvVerificationForm"
+                name="action"
+                value="pro-only"
+                id="prvVerificationProOnlyBtn"
+                class="ob-btn ob-btn-outline">
+            Use Only INDOR Pro for Now
+        </button>
     </div>
 </div>
 
-@if (hasDocuments)
-{
-    <p class="prv-wiz-note"><i class="fas fa-check text-success"></i> Documents uploaded</p>
-}
+@section Scripts {
+<script>
+    (function () {
+        var form = document.getElementById('prvVerificationForm');
+        var continueBtn = document.getElementById('prvVerificationContinueBtn');
+        var proOnlyBtn = document.getElementById('prvVerificationProOnlyBtn');
+        if (!form) {
+            return;
+        }
 
-<div class="prv-wiz-footer">
-    <button type="submit" form="prvVerificationForm" class="ob-btn ob-btn-primary">Continue with Verification</button>
-    <button type="submit" form="prvVerificationForm" name="action" value="pro-only" class="ob-btn ob-btn-outline">Use Only INDOR Pro for Now</button>
-</div>
+        function submitLinkedForm(button) {
+            if (!button || button.disabled) {
+                return;
+            }
+
+            if (typeof form.requestSubmit === 'function') {
+                form.requestSubmit(button);
+                return;
+            }
+
+            form.submit();
+        }
+
+        [continueBtn, proOnlyBtn].forEach(function (button) {
+            if (!button) {
+                return;
+            }
+
+            button.addEventListener('click', function (e) {
+                if (button.getAttribute('form') !== form.id) {
+                    return;
+                }
+
+                e.preventDefault();
+                submitLinkedForm(button);
+            });
+        });
+    })();
+</script>
+}

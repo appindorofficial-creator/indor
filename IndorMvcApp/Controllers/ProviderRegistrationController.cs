@@ -1501,4 +1501,14 @@ public partial class ProviderRegistrationController(
             State = state,
             BackUrl = backUrl,
         };
+
+    private bool IsCheckboxChecked(string fieldName)
+    {
+        if (!Request.Form.TryGetValue(fieldName, out var values) || values.Count == 0)
+        {
+            return false;
+        }
+
+        return values.Any(v => string.Equals(v, "true", StringComparison.OrdinalIgnoreCase));
+    }
 }

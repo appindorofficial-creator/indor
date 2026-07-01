@@ -160,9 +160,21 @@
     line-height: 1.45;
     margin-bottom: 16px;
     color: #334155;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.rl-terms input[type="checkbox"] {
+    width: 22px;
+    height: 22px;
+    min-width: 22px;
+    margin-top: 1px;
+    accent-color: #0066CC;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 .rl-terms.is-error { color: #B91C1C; }
 .rl-terms.is-error input[type="checkbox"] { outline: 2px solid #F87171; outline-offset: 2px; }
+.rl-reg-form .rl-terms { scroll-margin-bottom: calc(var(--indor-page-footer-scroll, 120px) + 12px); }
 .rl-terms a { color: #0066CC; font-weight: 600; }
 
 .rl-success-banner {
@@ -214,7 +226,7 @@
 }
 .rl-error-list li { margin: 0 0 4px; }
 .rl-required { color: #DC2626; font-weight: 800; }
-.rl-field-error--terms { margin: -8px 0 16px 28px; }
+.rl-field-error--terms { margin: 4px 0 16px 28px; }
 
 .rl-doc-card {
     display: flex;
@@ -986,6 +998,20 @@ button.rl-quick-action {
     margin-top: 0;
     margin-bottom: 20px;
 }
+a.rl-network-banner--link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: box-shadow .15s ease, transform .15s ease;
+}
+a.rl-network-banner--link:hover,
+a.rl-network-banner--link:focus-visible {
+    box-shadow: 0 10px 24px rgba(0, 102, 204, .14);
+    transform: translateY(-1px);
+}
+a.rl-network-banner--link:active {
+    transform: translateY(0);
+}
 .rl-network-banner strong { display: block; font-size: .88rem; margin-bottom: 4px; }
 .rl-network-banner p { font-size: .75rem; color: #475569; margin: 0 0 10px; }
 .rl-network-btn {
@@ -998,14 +1024,19 @@ button.rl-quick-action {
     text-decoration: none;
     touch-action: manipulation;
 }
-a.rl-network-btn:not(.rl-soon) {
+a.rl-network-btn:not(.rl-soon),
+a.rl-network-banner--link .rl-network-btn {
     padding: 8px 14px;
     border-radius: 12px;
     background: linear-gradient(135deg, #2E8BFF 0%, #0066CC 100%);
     color: #fff;
     box-shadow: 0 8px 18px rgba(0, 102, 204, .26);
 }
-a.rl-network-btn:not(.rl-soon) .fa-chevron-right { font-size: .62rem; opacity: .95; }
+a.rl-network-btn:not(.rl-soon) .fa-chevron-right,
+a.rl-network-banner--link .rl-network-btn .fa-chevron-right {
+    font-size: .62rem;
+    opacity: .95;
+}
 button.rl-network-btn {
     border: none;
     background: transparent;
@@ -1462,10 +1493,14 @@ a.rl-invite-cancel {
     border-radius: 12px;
     padding: 0 12px;
     background: #fff;
-    overflow: hidden;
 }
 .rl-cp-input:focus-within { border-color: #0066CC; box-shadow: 0 0 0 3px rgba(0,102,204,.12); }
-.rl-cp-input i { color: #94A3B8; font-size: .85rem; flex-shrink: 0; }
+.rl-cp-input i {
+    color: #94A3B8;
+    font-size: .85rem;
+    flex-shrink: 0;
+    pointer-events: none;
+}
 .rl-cp-input input,
 .rl-cp-input select {
     flex: 1;
@@ -1473,7 +1508,7 @@ a.rl-invite-cancel {
     border: 0 !important;
     border-width: 0 !important;
     border-color: transparent !important;
-    outline: none;
+    outline: none !important;
     background: transparent;
     padding: 12px 0;
     font-size: .88rem;
@@ -1484,6 +1519,7 @@ a.rl-invite-cancel {
     border-radius: 0 !important;
     -webkit-appearance: none;
     appearance: none;
+    -webkit-tap-highlight-color: transparent;
 }
 .rl-cp-input input:focus,
 .rl-cp-input input:focus-visible,
@@ -3210,6 +3246,16 @@ a.rl-invite-cancel {
     scrollbar-width: none;
 }
 .rl-hscroll::-webkit-scrollbar { display: none; }
+
+.rl-package-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.rl-package-list .rl-premium-card {
+    flex: 1 1 auto;
+    width: 100%;
+}
 
 .rl-premium-card {
     flex: 0 0 260px;
@@ -7269,6 +7315,8 @@ a.rl-profile-nav-item {
     background: linear-gradient(135deg, #37A0FF 0%, #0F7BEF 45%, #0057C8 82%, #063E8C 125%);
     box-shadow: 0 16px 38px rgba(0, 86, 200, .28);
     color: #fff;
+    position: relative;
+    isolation: isolate;
 }
 .rl-clients-hero .rl-portal-topbar { margin-bottom: 10px; }
 .rl-clients-hero .rl-portal-logo { color: #fff; }
@@ -7280,34 +7328,45 @@ a.rl-profile-nav-item {
     color: #0066CC;
 }
 .rl-clients-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
-.rl-clients-hero .rl-page-header { margin-bottom: 16px; position: relative; z-index: 2; }
+.rl-clients-hero .rl-page-header { margin-bottom: 16px; position: relative; z-index: 3; }
 .rl-page-header--clients { align-items: center; }
 .rl-page-header-copy { min-width: 0; flex: 1; }
 .rl-clients-hero .rl-page-title { color: #fff; }
 .rl-clients-hero .rl-page-subtitle { color: rgba(255, 255, 255, .85); }
 .rl-clients-hero .rl-clients-add {
-    background: #fff;
-    border: none;
-    color: #0066CC;
-    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: #fff !important;
+    border: none !important;
+    color: #0066CC !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
+    filter: none !important;
     position: relative;
-    z-index: 4;
+    z-index: 5;
     min-height: 44px;
+    min-width: 44px;
     padding: 10px 14px;
     cursor: pointer;
+    pointer-events: auto;
+    touch-action: manipulation;
+    text-decoration: none;
     -webkit-tap-highlight-color: transparent;
     transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 .rl-clients-hero .rl-clients-add:hover,
 .rl-clients-hero .rl-clients-add:focus-visible {
-    background: #F0F7FF;
-    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+    background: #F0F7FF !important;
+    color: #0057C8 !important;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18) !important;
+    filter: none !important;
 }
 .rl-clients-hero .rl-clients-add:active {
     transform: scale(0.97);
-    background: #E8F1FB;
+    background: #E8F1FB !important;
 }
-@media (max-width: 420px) {
+@media (max-width: 480px) {
     .rl-page-header--clients {
         flex-wrap: wrap;
         gap: 10px;
@@ -7317,7 +7376,7 @@ a.rl-profile-nav-item {
         justify-content: center;
     }
 }
-.rl-clients-hero .rl-search-form { margin-bottom: 0; }
+.rl-clients-hero .rl-search-form { margin-bottom: 0; position: relative; z-index: 1; }
 .rl-clients-hero .rl-search-bar { margin-bottom: 12px; border-color: transparent; }
 .rl-clients-hero .rl-filter-btn {
     background: rgba(255, 255, 255, .95);

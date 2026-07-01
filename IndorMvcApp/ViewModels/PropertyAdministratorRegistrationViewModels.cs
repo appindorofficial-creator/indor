@@ -122,11 +122,14 @@ public class PropertyAdministratorReviewViewModel : PropertyAdministratorRegistr
     public bool PortfolioDetailsAdded { get; set; }
     public bool PropertiesAdded { get; set; }
     public bool ToolsSelected { get; set; }
+    public int PendingTeamInviteCount { get; set; }
 }
 
 public class PropertyAdministratorInviteTeamViewModel : PropertyAdministratorRegistrationStepViewModel
 {
     public IReadOnlyList<string> PendingInvites { get; set; } = [];
+    public string? InviteName { get; set; }
+    public string? InviteEmail { get; set; }
     public string? FormError { get; set; }
     public string? FormSuccess { get; set; }
 }

@@ -24,6 +24,13 @@
         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
         .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
+    var formErrors = ViewData.ModelState.Values
+        .SelectMany(v => v.Errors)
+        .Select(e => e.ErrorMessage)
+        .Where(m => !string.IsNullOrWhiteSpace(m))
+        .Distinct()
+        .ToList();
+
 }
 
 <div class="ob-head-block">
@@ -34,7 +41,18 @@
 
 </div>
 
-
+<div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" id="profileFormErrorBanner" role="alert">
+    <i class="fas fa-triangle-exclamation"></i>
+    <div>
+        <span id="profileFormErrorSummary">@(formErrors.Count > 0 ? "Please fix the following before continuing:" : "")</span>
+        <ul class="rl-error-list" id="profileFormErrorList">
+            @foreach (var msg in formErrors)
+            {
+                <li>@msg</li>
+            }
+        </ul>
+    </div>
+</div>
 
 <form asp-action="Profile" method="post" class="rl-reg-form" id="rlRegProfileForm" novalidate>
 
@@ -196,7 +214,7 @@
 
                            value="@lang"
 
-                           checked="@selectedLanguages.Contains(lang)" />
+                           @(selectedLanguages.Contains(lang) ? "checked" : null) />
 
                     <i class="fas fa-globe"></i>
 
@@ -231,7 +249,11 @@
 
     <label class="rl-terms @(termsError.Length > 0 ? "is-error" : "")">
 
+        <input type="hidden" name="professionalTermsAccepted" value="false" />
+
         <input type="checkbox"
+
+               id="professionalTermsAccepted"
 
                name="professionalTermsAccepted"
 
@@ -253,7 +275,7 @@
 
 
 
-    <button type="submit" class="ob-btn ob-btn-primary">Continue</button>
+    <button type="submit" id="rlRegProfileContinueBtn" class="ob-btn ob-btn-primary">Continue</button>
 
 </form>
 
@@ -269,11 +291,57 @@
     }
 
     function scrollToFirstError() {
+        var banner = document.getElementById('profileFormErrorBanner');
+        if (banner && !banner.classList.contains('is-hidden')) {
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
         var firstFieldError = form.querySelector('.rl-field-error:not(:empty)');
         var scrollTarget = firstFieldError
             || form.querySelector('.rl-field.is-error, .rl-terms.is-error, .rl-lang-options.is-error');
         if (scrollTarget) {
             scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function showFormErrorBanner(messages) {
+        var banner = document.getElementById('profileFormErrorBanner');
+        var summary = document.getElementById('profileFormErrorSummary');
+        var list = document.getElementById('profileFormErrorList');
+        if (!banner || !list) {
+            return;
+        }
+
+        list.innerHTML = '';
+        var seen = {};
+        messages.forEach(function (message) {
+            if (!message || seen[message]) {
+                return;
+            }
+            seen[message] = true;
+            var item = document.createElement('li');
+            item.textContent = message;
+            list.appendChild(item);
+        });
+
+        if (summary) {
+            summary.textContent = messages.length === 1
+                ? 'Please fix this before continuing:'
+                : 'Please fix the following before continuing:';
+        }
+
+        banner.classList.remove('is-hidden');
+    }
+
+    function hideFormErrorBanner() {
+        var banner = document.getElementById('profileFormErrorBanner');
+        var list = document.getElementById('profileFormErrorList');
+        if (banner) {
+            banner.classList.add('is-hidden');
+        }
+        if (list) {
+            list.innerHTML = '';
         }
     }
 
@@ -336,14 +404,15 @@
 
     function validateProfileForm() {
         var hasError = false;
+        var messages = [];
         clearAllFieldErrors();
+        hideFormErrorBanner();
 
         var brokerage = form.querySelector('input[name="brokerageName"]');
         if (!brokerage || !brokerage.value.trim()) {
-            hasError = setFieldError(
-                'brokerageNameError',
-                'input[name="brokerageName"]',
-                'Brokerage / Company Name is required.') || hasError;
+            var message = 'Brokerage / Company Name is required.';
+            hasError = setFieldError('brokerageNameError', 'input[name="brokerageName"]', message) || hasError;
+            messages.push(message);
         }
 
         var licenseInput = form.querySelector('input[name="licenseNumber"]');
@@ -351,52 +420,59 @@
             var licenseMessage = window.IndorRealtorLicense.validate(licenseInput.value);
             if (licenseMessage) {
                 hasError = setLicenseError(licenseMessage) || hasError;
+                messages.push(licenseMessage);
             }
         } else if (licenseInput && !licenseInput.value.trim()) {
-            hasError = setLicenseError('License number is required.') || hasError;
+            var licenseRequired = 'License number is required.';
+            hasError = setLicenseError(licenseRequired) || hasError;
+            messages.push(licenseRequired);
         }
 
         var licenseState = form.querySelector('select[name="licenseState"]');
         if (!licenseState || !licenseState.value.trim()) {
-            hasError = setFieldError(
-                'licenseStateError',
-                'select[name="licenseState"]',
-                'Please select your license state.') || hasError;
+            var stateMessage = 'Please select your license state.';
+            hasError = setFieldError('licenseStateError', 'select[name="licenseState"]', stateMessage) || hasError;
+            messages.push(stateMessage);
         }
 
         var serviceAreas = form.querySelector('input[name="serviceAreas"]');
         if (!serviceAreas || !serviceAreas.value.trim()) {
-            hasError = setFieldError(
-                'serviceAreasError',
-                'input[name="serviceAreas"]',
-                'City / market area is required.') || hasError;
+            var areaMessage = 'City / market area is required.';
+            hasError = setFieldError('serviceAreasError', 'input[name="serviceAreas"]', areaMessage) || hasError;
+            messages.push(areaMessage);
         }
 
         var officeAddress = form.querySelector('input[name="officeAddress"]');
         if (!officeAddress || !officeAddress.value.trim()) {
-            hasError = setFieldError(
-                'officeAddressError',
-                'input[name="officeAddress"]',
-                'Office address is required.') || hasError;
+            var addressMessage = 'Office address is required.';
+            hasError = setFieldError('officeAddressError', 'input[name="officeAddress"]', addressMessage) || hasError;
+            messages.push(addressMessage);
         }
 
         var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
         if (!checkedLanguages.length) {
-            hasError = setLanguagesError('Select at least one language.') || hasError;
+            var languagesMessage = 'Select at least one language.';
+            hasError = setLanguagesError(languagesMessage) || hasError;
+            messages.push(languagesMessage);
         } else {
             checkedLanguages.forEach(function (input) {
                 if (supported.indexOf(input.value) === -1) {
-                    hasError = setLanguagesError('Only English and Spanish are supported.') || hasError;
+                    var unsupportedMessage = 'Only English and Spanish are supported.';
+                    hasError = setLanguagesError(unsupportedMessage) || hasError;
+                    messages.push(unsupportedMessage);
                 }
             });
         }
 
-        var terms = form.querySelector('input[name="professionalTermsAccepted"][type="checkbox"]');
+        var terms = document.getElementById('professionalTermsAccepted');
         if (!terms || !terms.checked) {
-            hasError = setTermsError('Please check the authorization box to verify your license before continuing.') || hasError;
+            var termsMessage = 'Please check the authorization box to verify your license before continuing.';
+            hasError = setTermsError(termsMessage) || hasError;
+            messages.push(termsMessage);
         }
 
         if (hasError) {
+            showFormErrorBanner(messages);
             scrollToFirstError();
             return false;
         }
@@ -427,15 +503,18 @@
             : input.name + 'Error';
         input.addEventListener('input', function () {
             setFieldError(errorId, selector, '');
+            hideFormErrorBanner();
         });
         input.addEventListener('change', function () {
             setFieldError(errorId, selector, '');
+            hideFormErrorBanner();
         });
     });
 
     if (licenseInput) {
         licenseInput.addEventListener('input', function () {
             setLicenseError('');
+            hideFormErrorBanner();
         });
     }
 
@@ -445,16 +524,33 @@
         }
     });
 
+    var continueBtn = document.getElementById('rlRegProfileContinueBtn');
+    if (continueBtn) {
+        continueBtn.addEventListener('click', function (e) {
+            if (!validateProfileForm()) {
+                e.preventDefault();
+                return;
+            }
+
+            if (typeof form.requestSubmit === 'function') {
+                e.preventDefault();
+                form.requestSubmit(continueBtn);
+            }
+        });
+    }
+
     form.querySelectorAll('input[name="languages"]').forEach(function (input) {
         input.addEventListener('change', function () {
             setLanguagesError('');
+            hideFormErrorBanner();
         });
     });
 
-    var termsCheckbox = form.querySelector('input[name="professionalTermsAccepted"][type="checkbox"]');
+    var termsCheckbox = document.getElementById('professionalTermsAccepted');
     if (termsCheckbox) {
         termsCheckbox.addEventListener('change', function () {
             setTermsError('');
+            hideFormErrorBanner();
         });
     }
 })();

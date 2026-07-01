@@ -68,28 +68,9 @@ public class RealtorInviteClientController(
     public async Task<IActionResult> ClientInfo(
         string fullName, string email, string? phone, string clientRole, string? quickNote)
     {
-        if (!PersonNameAttribute.IsValidName(fullName, out var nameError))
+        foreach (var (field, message) in RealtorInviteClientValidation.Validate(fullName, email, phone, clientRole))
         {
-            ModelState.AddModelError(nameof(fullName), nameError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(email))
-        {
-            ModelState.AddModelError(nameof(email), "Email address is required.");
-        }
-        else if (!ValidEmailAttribute.IsValidAddress(email, out var emailError))
-        {
-            ModelState.AddModelError(nameof(email), emailError!);
-        }
-
-        if (!RealtorClientRoles.All.Contains(clientRole ?? "", StringComparer.OrdinalIgnoreCase))
-        {
-            ModelState.AddModelError(nameof(clientRole), "Please select a client role.");
-        }
-
-        if (!UsPhoneRequiredAttribute.IsValidRequired(phone, out var phoneError))
-        {
-            ModelState.AddModelError(nameof(phone), phoneError!);
+            ModelState.AddModelError(field, message);
         }
 
         if (!ModelState.IsValid)
@@ -115,6 +96,11 @@ public class RealtorInviteClientController(
         if (draft == null || draft.CurrentStep < 2)
         {
             return RedirectToAction(nameof(ClientInfo));
+        }
+
+        if (!RealtorInviteClientValidation.IsValid(draft.FullName, draft.Email, draft.Phone, draft.ClientRole))
+        {
+            return RedirectToAction(nameof(ClientInfo), new { edit = true });
         }
 
         if (!edit && draft.CurrentStep > 2)
@@ -167,24 +153,10 @@ public class RealtorInviteClientController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateProperty(RealtorInviteCreatePropertyViewModel model)
     {
-        if (string.IsNullOrWhiteSpace(model.Address))
+        foreach (var (field, message) in RealtorInviteCreatePropertyValidation.Validate(
+            model.Address, model.City, model.StateCode, model.PostalCode))
         {
-            ModelState.AddModelError(nameof(model.Address), "Property address is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(model.City))
-        {
-            ModelState.AddModelError(nameof(model.City), "City is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(model.StateCode))
-        {
-            ModelState.AddModelError(nameof(model.StateCode), "State is required.");
-        }
-
-        if (!UsZipCodeAttribute.IsValidRequired(model.PostalCode, out var zipError))
-        {
-            ModelState.AddModelError(nameof(model.PostalCode), zipError!);
+            ModelState.AddModelError(field, message);
         }
 
         if (ModelState.IsValid)
@@ -219,6 +191,27 @@ public class RealtorInviteClientController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> BackToAccess()
+    {
+        await inviteService.PrepareBackToAccessAsync();
+        return RedirectToAction(nameof(Access));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToProperty()
+    {
+        await inviteService.PrepareBackToPropertyAsync();
+        return RedirectToAction(nameof(Property));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToClientInfo()
+    {
+        await inviteService.PrepareBackToClientInfoAsync();
+        return RedirectToAction(nameof(ClientInfo));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Access(bool edit = false)
     {
         var draft = await inviteService.GetDraftAsync();
@@ -230,6 +223,11 @@ public class RealtorInviteClientController(
         if (!edit && draft.CurrentStep > 3)
         {
             return RedirectToAction(nameof(Review));
+        }
+
+        if (!edit)
+        {
+            await inviteService.PrepareAccessStepAsync();
         }
 
         return View(await inviteService.BuildAccessAsync());
@@ -297,23 +295,13 @@ public class RealtorInviteClientController(
             return RedirectToAction(nameof(ClientInfo));
         }
 
-        if (!PersonNameAttribute.IsValidName(draft.FullName, out var nameError))
+        if (!RealtorInviteClientValidation.IsValid(draft.FullName, draft.Email, draft.Phone, draft.ClientRole))
         {
-            ModelState.AddModelError(string.Empty, nameError!);
-        }
-
-        if (string.IsNullOrWhiteSpace(draft.Email))
-        {
-            ModelState.AddModelError(string.Empty, "Email address is required.");
-        }
-        else if (!ValidEmailAttribute.IsValidAddress(draft.Email, out var emailError))
-        {
-            ModelState.AddModelError(string.Empty, emailError!);
-        }
-
-        if (!UsPhoneRequiredAttribute.IsValidRequired(draft.Phone, out var phoneError))
-        {
-            ModelState.AddModelError(string.Empty, phoneError!);
+            foreach (var (_, message) in RealtorInviteClientValidation.Validate(
+                draft.FullName, draft.Email, draft.Phone, draft.ClientRole))
+            {
+                ModelState.AddModelError(string.Empty, message);
+            }
         }
 
         if (!ModelState.IsValid)

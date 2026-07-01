@@ -30,6 +30,8 @@
 
     var geocodeTimers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
     var stateSelectSnapshots = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+    var zipFetchControllers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+    var geocodeGenerations = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
 
     function ensureStateSelectSnapshot(select) {
         if (!stateSelectSnapshots || stateSelectSnapshots.has(select)) {
@@ -109,6 +111,9 @@
             return;
         }
         zipEl.dataset.manualZipBound = 'true';
+        zipEl.addEventListener('focus', function () {
+            scrollFieldIntoView(zipEl);
+        });
         zipEl.addEventListener('input', function () {
             if (zipEl.value.trim()) {
                 delete zipEl.dataset.autoZip;
@@ -120,7 +125,15 @@
         if (!zipEl || !zip) {
             return;
         }
-        zipEl.value = zip;
+
+        var normalized = window.IndorZipInput
+            ? window.IndorZipInput.normalize(zip)
+            : String(zip).trim();
+        if (window.IndorZipInput && !window.IndorZipInput.isValidRequired(normalized)) {
+            return;
+        }
+
+        zipEl.value = normalized;
         markAutoZip(zipEl);
         zipEl.dispatchEvent(new Event('input', { bubbles: true }));
         zipEl.dispatchEvent(new Event('change', { bubbles: true }));
@@ -137,18 +150,33 @@
         }
     }
 
-    function runServerZipLookup(city, state, zipEl) {
+    function runServerZipLookup(city, state, zipEl, street) {
         if (!city || !state || !zipEl || !shouldReplaceZip(zipEl)) {
             return;
         }
 
         var url = '/AddressLookup/Zip?city=' + encodeURIComponent(city)
             + '&state=' + encodeURIComponent(state);
+        if (street) {
+            url += '&street=' + encodeURIComponent(street);
+        }
 
-        fetch(url, {
+        var fetchOptions = {
             headers: { 'Accept': 'application/json' },
             credentials: 'same-origin'
-        }).then(function (response) {
+        };
+
+        if (zipFetchControllers) {
+            var previous = zipFetchControllers.get(zipEl);
+            if (previous) {
+                previous.abort();
+            }
+            var controller = new AbortController();
+            zipFetchControllers.set(zipEl, controller);
+            fetchOptions.signal = controller.signal;
+        }
+
+        fetch(url, fetchOptions).then(function (response) {
             if (!response.ok || !shouldReplaceZip(zipEl)) {
                 return null;
             }
@@ -158,9 +186,75 @@
                 return;
             }
             setZipValue(zipEl, payload.zip);
-        }).catch(function () {
+        }).catch(function (err) {
+            if (err && err.name === 'AbortError') {
+                return;
+            }
             // Ignore lookup failures; the user can enter ZIP manually.
         });
+    }
+
+    function findLinkedStreet(stateEl) {
+        if (!stateEl || !stateEl.id) {
+            return '';
+        }
+
+        var addressId = stateEl.dataset.acAddress;
+        if (addressId) {
+            var addressInput = document.getElementById(addressId);
+            if (addressInput && addressInput.value.trim()) {
+                return addressInput.value.trim();
+            }
+        }
+
+        var street = '';
+        document.querySelectorAll('[data-ac-state="' + stateEl.id + '"][data-address-autocomplete]').forEach(function (input) {
+            if (input.value.trim()) {
+                street = input.value.trim();
+            }
+        });
+        return street;
+    }
+
+    function lookupZipFromStateSelect(stateEl) {
+        if (!stateEl) {
+            return;
+        }
+
+        var state = stateEl.value.trim();
+        if (!state) {
+            return;
+        }
+
+        var zipId = stateEl.dataset.acZip;
+        var zipEl = zipId ? document.getElementById(zipId) : null;
+        if (!zipEl || !shouldReplaceZip(zipEl)) {
+            return;
+        }
+
+        bindManualZipEdit(zipEl);
+
+        var cityId = stateEl.dataset.acCity;
+        var cityEl = cityId ? document.getElementById(cityId) : null;
+        var city = cityEl ? cityEl.value.trim() : '';
+        var street = findLinkedStreet(stateEl);
+
+        if (!city && !street) {
+            return;
+        }
+
+        if (city) {
+            runServerZipLookup(city, state, zipEl, street);
+        }
+
+        if (window.google && google.maps && google.maps.Geocoder) {
+            var address = street && city
+                ? street + ', ' + city + ', ' + state + ', USA'
+                : (city ? city + ', ' + state + ', USA' : null);
+            if (address) {
+                runGeocode(stateEl, address, zipEl);
+            }
+        }
     }
 
     function resolveLinkedAddressFields(sourceInput) {
@@ -202,7 +296,7 @@
         }
 
         if (fields.city) {
-            runServerZipLookup(fields.city, state, fields.zipEl);
+            runServerZipLookup(fields.city, state, fields.zipEl, fields.street);
         }
 
         if (window.google && google.maps && google.maps.Geocoder) {
@@ -219,6 +313,19 @@
         lookupLinkedZip(sourceInput);
     }
 
+    function shouldRunInitialZipLookup(sourceInput) {
+        var fields = resolveLinkedAddressFields(sourceInput);
+        if (!fields || !shouldReplaceZip(fields.zipEl)) {
+            return false;
+        }
+
+        if (!fields.stateEl.value.trim()) {
+            return false;
+        }
+
+        return !!(fields.city || fields.street);
+    }
+
     function runGeocode(sourceInput, address, zipEl) {
         if (!shouldReplaceZip(zipEl)) return;
 
@@ -226,11 +333,20 @@
             return;
         }
 
+        var generation = 0;
+        if (geocodeGenerations) {
+            generation = (geocodeGenerations.get(zipEl) || 0) + 1;
+            geocodeGenerations.set(zipEl, generation);
+        }
+
         var geocoder = new google.maps.Geocoder();
         geocoder.geocode({
             address: address,
             componentRestrictions: { country: 'US' }
         }, function (results, status) {
+            if (geocodeGenerations && geocodeGenerations.get(zipEl) !== generation) {
+                return;
+            }
             if (status !== 'OK' || !results || !results.length) {
                 return;
             }
@@ -262,15 +378,204 @@
         });
     }
 
-    function debounceGeocode(sourceInput) {
-        if (geocodeTimers) {
-            clearTimeout(geocodeTimers.get(sourceInput));
-            geocodeTimers.set(sourceInput, setTimeout(function () {
-                tryGeocodeLinkedZip(sourceInput);
-            }, 400));
-        } else {
-            tryGeocodeLinkedZip(sourceInput);
+    function dismissPacDropdown(activeInput) {
+        document.querySelectorAll('.pac-container').forEach(function (pac) {
+            pac.style.display = 'none';
+            pac.style.visibility = 'hidden';
+            pac.style.pointerEvents = 'none';
+            pac.classList.add('pac-container--dismissed');
+        });
+
+        if (activeInput && typeof activeInput.blur === 'function') {
+            activeInput.blur();
         }
+    }
+
+    var pacDismissSuppressed = false;
+    var lastAutocompleteInput = null;
+
+    function resetPacContainerStyles(pac) {
+        pac.classList.remove('pac-container--dismissed');
+        pac.style.removeProperty('display');
+        pac.style.removeProperty('visibility');
+        pac.style.removeProperty('pointer-events');
+    }
+
+    function hideStalePacContainers(activeInput) {
+        var containers = Array.from(document.querySelectorAll('.pac-container'));
+        if (containers.length === 0) {
+            return;
+        }
+
+        if (!activeInput) {
+            dismissPacDropdown(null);
+            return;
+        }
+
+        if (containers.length === 1) {
+            var single = containers[0];
+            if (single.classList.contains('pac-container--dismissed')) {
+                resetPacContainerStyles(single);
+            }
+            return;
+        }
+
+        containers.forEach(function (pac, index) {
+            if (index < containers.length - 1) {
+                pac.style.display = 'none';
+                pac.style.visibility = 'hidden';
+                pac.style.pointerEvents = 'none';
+                pac.classList.add('pac-container--dismissed');
+            } else {
+                resetPacContainerStyles(pac);
+            }
+        });
+    }
+
+    function isAutocompleteInput(el) {
+        return !!(el && el.matches && (el.matches('[data-address-autocomplete]') || el.matches('[data-city-autocomplete]')));
+    }
+
+    function setActiveAutocompleteInput(input) {
+        if (!isAutocompleteInput(input)) {
+            return;
+        }
+
+        if (lastAutocompleteInput && lastAutocompleteInput !== input) {
+            dismissPacDropdown(null);
+        }
+
+        lastAutocompleteInput = input;
+        hideStalePacContainers(input);
+    }
+
+    function suppressPacDismiss(ms) {
+        pacDismissSuppressed = true;
+        window.setTimeout(function () {
+            pacDismissSuppressed = false;
+        }, ms || 350);
+    }
+
+    function finalizeAutocompleteSelection(input) {
+        suppressPacDismiss(400);
+        dismissPacDropdown(input);
+        window.setTimeout(function () {
+            dismissPacDropdown(input);
+        }, 120);
+        window.setTimeout(function () {
+            dismissPacDropdown(null);
+        }, 350);
+        window.setTimeout(function () {
+            dismissPacDropdown(null);
+        }, 700);
+    }
+
+    function handlePacItemInteraction() {
+        var active = document.activeElement;
+        finalizeAutocompleteSelection(
+            active && (active.matches('[data-address-autocomplete]') || active.matches('[data-city-autocomplete]'))
+                ? active
+                : null
+        );
+    }
+
+    function bindAutocompleteDismissHandlers(input) {
+        if (input.dataset.pacDismissBound === 'true') {
+            return;
+        }
+        input.dataset.pacDismissBound = 'true';
+
+        input.addEventListener('focus', function () {
+            setActiveAutocompleteInput(input);
+            scrollFieldIntoView(input);
+        });
+
+        input.addEventListener('input', function () {
+            setActiveAutocompleteInput(input);
+            hideStalePacContainers(input);
+        });
+
+        input.addEventListener('blur', function () {
+            window.setTimeout(function () {
+                if (!pacDismissSuppressed) {
+                    if (lastAutocompleteInput === input) {
+                        lastAutocompleteInput = null;
+                    }
+                    dismissPacDropdown(null);
+                }
+            }, 180);
+        });
+    }
+
+    function observePacContainers() {
+        if (!window.MutationObserver || document.documentElement.dataset.pacObserverBound === 'true') {
+            return;
+        }
+
+        document.documentElement.dataset.pacObserverBound = 'true';
+        var observer = new MutationObserver(function (mutations) {
+            var addedPac = false;
+            mutations.forEach(function (mutation) {
+                mutation.addedNodes.forEach(function (node) {
+                    if (node.nodeType === 1 && node.classList && node.classList.contains('pac-container')) {
+                        addedPac = true;
+                    }
+                });
+            });
+
+            if (addedPac) {
+                hideStalePacContainers(lastAutocompleteInput || document.activeElement);
+            }
+        });
+
+        observer.observe(document.body, { childList: true, subtree: true });
+    }
+
+    function bindPacDismissHandlers() {
+        if (document.documentElement.dataset.pacDismissBound === 'true') {
+            return;
+        }
+        document.documentElement.dataset.pacDismissBound = 'true';
+
+        ['mousedown', 'touchstart', 'touchend', 'pointerup', 'click'].forEach(function (eventName) {
+            document.addEventListener(eventName, function (e) {
+                if (!e.target.closest('.pac-item')) {
+                    return;
+                }
+                handlePacItemInteraction();
+            }, true);
+        });
+
+        document.addEventListener('focusin', function (e) {
+            if (pacDismissSuppressed) {
+                return;
+            }
+            if (e.target.closest('.pac-container')) {
+                return;
+            }
+            dismissPacDropdown(null);
+        }, true);
+
+        document.addEventListener('scroll', function () {
+            if (pacDismissSuppressed) {
+                return;
+            }
+            dismissPacDropdown(null);
+        }, true);
+    }
+
+    function scrollFieldIntoView(input) {
+        if (!input || typeof input.scrollIntoView !== 'function') {
+            return;
+        }
+
+        window.setTimeout(function () {
+            try {
+                input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            } catch (e) {
+                input.scrollIntoView(true);
+            }
+        }, 300);
     }
 
     function bindStateSelectZipLookup() {
@@ -298,9 +603,17 @@
             stateEl.dataset.zipLookupBound = 'true';
 
             stateEl.addEventListener('change', function () {
-                document.querySelectorAll('[data-ac-state="' + stateId + '"]').forEach(function (input) {
-                    lookupLinkedZip(input);
-                });
+                lookupZipFromStateSelect(stateEl);
+            });
+        });
+
+        document.querySelectorAll('select[data-ac-zip][data-ac-city]').forEach(function (select) {
+            if (!select.id || select.dataset.zipLookupBound === 'true') {
+                return;
+            }
+            select.dataset.zipLookupBound = 'true';
+            select.addEventListener('change', function () {
+                lookupZipFromStateSelect(select);
             });
         });
     }
@@ -319,7 +632,6 @@
         if (cityEl) {
             cityEl.addEventListener('change', function () { tryGeocodeLinkedZip(sourceInput); });
             cityEl.addEventListener('blur', function () { tryGeocodeLinkedZip(sourceInput); });
-            cityEl.addEventListener('input', function () { debounceGeocode(sourceInput); });
         }
 
         if (stateEl) {
@@ -343,7 +655,15 @@
         });
 
         document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete]').forEach(function (input) {
-            tryGeocodeLinkedZip(input);
+            if (shouldRunInitialZipLookup(input)) {
+                tryGeocodeLinkedZip(input);
+            }
+        });
+
+        document.querySelectorAll('select[data-ac-zip][data-ac-city]').forEach(function (select) {
+            if (select.value.trim()) {
+                lookupZipFromStateSelect(select);
+            }
         });
     }
 
@@ -405,7 +725,10 @@
 
             ac.addListener('place_changed', function () {
                 applyCityPlace(input, ac.getPlace());
+                finalizeAutocompleteSelection(input);
             });
+
+            bindAutocompleteDismissHandlers(input);
 
             input.addEventListener('input', function () {
                 if (!input.value.trim() && stateEl) {
@@ -430,11 +753,14 @@
         if (input.dataset.acStreetOnly === 'true' && components) {
             var num = getComponent(components, 'street_number', false);
             var route = getComponent(components, 'route', false);
-            if (num) {
+            var houseNumberEl = getLinkedElement(input, 'HouseNumber');
+            if (houseNumberEl && num) {
                 fillLinkedField(input, 'HouseNumber', num);
+                input.value = (route || input.value).trim();
+            } else {
+                var streetLine = [num, route].filter(function (part) { return !!part; }).join(' ').trim();
+                input.value = streetLine || place.formatted_address || input.value;
             }
-            var street = route || (num ? '' : (place.formatted_address || input.value));
-            input.value = street.trim() || input.value;
         } else if (place.formatted_address) {
             input.value = place.formatted_address;
         }
@@ -467,6 +793,8 @@
     }
 
     function initAddressAutocomplete() {
+        bindPacDismissHandlers();
+        observePacContainers();
         initZipGeocodeLinking();
 
         if (!(window.google && google.maps && google.maps.places && google.maps.places.Autocomplete)) {
@@ -478,6 +806,11 @@
             input.dataset.acInitialized = 'true';
             input.setAttribute('autocomplete', 'off');
 
+            var stateEl = getLinkedElement(input, 'State');
+            if (stateEl) {
+                ensureStateSelectSnapshot(stateEl);
+            }
+
             var ac = new google.maps.places.Autocomplete(input, {
                 types: ['address'],
                 componentRestrictions: { country: ['us'] },
@@ -486,7 +819,10 @@
 
             ac.addListener('place_changed', function () {
                 applyPlace(input, ac.getPlace());
+                finalizeAutocompleteSelection(input);
             });
+
+            bindAutocompleteDismissHandlers(input);
 
             // Don't let Enter submit the form while a suggestion list is open.
             input.addEventListener('keydown', function (e) {

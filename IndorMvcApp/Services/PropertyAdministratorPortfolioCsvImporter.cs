@@ -1,5 +1,6 @@
 using System.Text;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Services;
@@ -158,6 +159,10 @@ public static class PropertyAdministratorPortfolioCsvImporter
         if (string.IsNullOrWhiteSpace(input.ZipCode))
         {
             missingFields.Add("ZIP");
+        }
+        else if (!UsZipCodeAttribute.IsValidRequired(input.ZipCode, out _))
+        {
+            missingFields.Add("a valid ZIP code");
         }
 
         if (string.IsNullOrWhiteSpace(input.PropertyType)

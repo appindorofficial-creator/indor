@@ -19,15 +19,30 @@ document.querySelectorAll('.prv-wiz-card--selectable').forEach(card => {
     const form = document.getElementById('prvEntryForm');
     if (!form) return;
 
-    form.querySelectorAll('.prv-wiz-card--selectable').forEach(card => {
-        card.addEventListener('click', (e) => {
-            if (e.target.closest('a')) return;
+    const pathInput = document.getElementById('prvEntryPath');
+    const cards = form.querySelectorAll('.prv-wiz-card--selectable[data-path]');
 
-            const radio = card.querySelector('input[type="radio"]');
-            if (!radio) return;
+    function selectPath(path, activeCard) {
+        if (pathInput) {
+            pathInput.value = path;
+        }
 
-            radio.checked = true;
-            syncSelectableCards(radio.name);
+        cards.forEach(card => {
+            const selected = card === activeCard;
+            card.classList.toggle('is-selected', selected);
+            card.setAttribute('aria-checked', selected ? 'true' : 'false');
+        });
+    }
+
+    cards.forEach(card => {
+        card.addEventListener('click', () => {
+            selectPath(card.dataset.path, card);
+        });
+
+        card.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            e.preventDefault();
+            selectPath(card.dataset.path, card);
         });
     });
 })();
@@ -83,8 +98,12 @@ wireChipSearch('serviceSearch', 'serviceGrid');
         return form.querySelector('[name="' + name + '"]');
     }
 
+    function termsCheckbox() {
+        return form.querySelector('input[type="checkbox"][name="termsAccepted"]');
+    }
+
     function collectDraft() {
-        var terms = field('termsAccepted');
+        var terms = termsCheckbox();
         return {
             businessName: field('businessName')?.value ?? '',
             primaryContact: field('primaryContact')?.value ?? '',
@@ -96,6 +115,20 @@ wireChipSearch('serviceSearch', 'serviceGrid');
             einNumber: field('einNumber')?.value ?? '',
             termsAccepted: !!(terms && terms.checked)
         };
+    }
+
+    function draftHasContent(draft) {
+        if (!draft) return false;
+        return !!(
+            draft.businessName ||
+            draft.primaryContact ||
+            draft.phone ||
+            draft.email ||
+            draft.primaryCategoryId ||
+            draft.serviceAreas ||
+            draft.website ||
+            draft.einNumber
+        );
     }
 
     function applyDraft(draft) {
@@ -115,7 +148,7 @@ wireChipSearch('serviceSearch', 'serviceGrid');
         });
         var category = field('primaryCategoryId');
         if (category && draft.primaryCategoryId) category.value = draft.primaryCategoryId;
-        var terms = field('termsAccepted');
+        var terms = termsCheckbox();
         if (terms) terms.checked = !!draft.termsAccepted;
     }
 
@@ -131,6 +164,11 @@ wireChipSearch('serviceSearch', 'serviceGrid');
         } catch (_) { }
     }
 
+    function buildDraftBody() {
+        var body = new URLSearchParams(new FormData(form));
+        return body.toString();
+    }
+
     function saveDraftToServer() {
         var url = form.getAttribute('data-save-draft-url');
         if (!url) return Promise.resolve();
@@ -138,17 +176,29 @@ wireChipSearch('serviceSearch', 'serviceGrid');
         var token = form.querySelector('input[name="__RequestVerificationToken"]')?.value;
         if (!token) return Promise.resolve();
 
-        var body = new URLSearchParams(new FormData(form));
         return fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
                 'RequestVerificationToken': token
             },
-            body: body.toString(),
+            body: buildDraftBody(),
             credentials: 'same-origin',
             keepalive: true
         }).catch(function () { });
+    }
+
+    function sendDraftBeacon() {
+        var url = form.getAttribute('data-save-draft-url');
+        if (!url || typeof navigator.sendBeacon !== 'function') {
+            return false;
+        }
+
+        try {
+            return navigator.sendBeacon(url, new FormData(form));
+        } catch (_) {
+            return false;
+        }
     }
 
     function saveDraftAndSync() {
@@ -156,22 +206,43 @@ wireChipSearch('serviceSearch', 'serviceGrid');
         return saveDraftToServer();
     }
 
-    try {
-        var raw = sessionStorage.getItem(key);
-        if (raw) applyDraft(JSON.parse(raw));
-    } catch (_) { }
+    function restoreDraftFromStorage() {
+        try {
+            var raw = sessionStorage.getItem(key);
+            if (!raw) return;
+            var draft = JSON.parse(raw);
+            if (draftHasContent(draft)) {
+                applyDraft(draft);
+            }
+        } catch (_) { }
+    }
+
+    restoreDraftFromStorage();
 
     form.addEventListener('input', saveDraft);
     form.addEventListener('change', saveDraft);
     form.addEventListener('submit', clearDraft);
+
     form.querySelectorAll('a[href*="Terms"], a[href*="Privacy"]').forEach(function (link) {
         link.addEventListener('click', function (e) {
+            e.preventDefault();
             e.stopPropagation();
-            saveDraftAndSync();
+            saveDraft();
+            var href = link.href;
+            saveDraftToServer().finally(function () {
+                window.location.assign(href);
+            });
         });
     });
 
     window.addEventListener('pagehide', function () {
-        saveDraftAndSync();
+        saveDraft();
+        if (!sendDraftBeacon()) {
+            saveDraftToServer();
+        }
+    });
+
+    window.addEventListener('pageshow', function () {
+        restoreDraftFromStorage();
     });
 })();

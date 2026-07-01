@@ -14,27 +14,39 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary"></div>
 
-    <label class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "pro" ? "is-selected" : "")">
-        <input type="radio" name="path" value="pro" @(selectedPath == "pro" ? "checked" : null) />
-        <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-chart-line"></i></span>
-        <span class="prv-wiz-card-body">
-            <strong>Use INDOR Pro</strong>
-            <small>Run your business with INDOR Pro. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place.</small>
-            <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Available now</span>
-        </span>
-        <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
-    </label>
+    <input type="hidden" name="path" id="prvEntryPath" value="@selectedPath" />
 
-    <label class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "apply" ? "is-selected" : "")">
-        <input type="radio" name="path" value="apply" @(selectedPath == "apply" ? "checked" : null) />
-        <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-check"></i></span>
-        <span class="prv-wiz-card-body">
-            <strong>Apply to Become an INDOR Provider</strong>
-            <small>Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile.</small>
-            <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Requires verification</span>
-        </span>
-        <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
-    </label>
+    <div class="prv-entry-options" role="radiogroup" aria-label="Choose how you want to get started with INDOR">
+        <button type="button"
+                class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "pro" ? "is-selected" : "")"
+                data-path="pro"
+                role="radio"
+                aria-checked="@(selectedPath == "pro" ? "true" : "false")">
+            <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-chart-line"></i></span>
+            <span class="prv-wiz-card-body">
+                <strong>Use INDOR Pro</strong>
+                <small>Run your business with INDOR Pro. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place.</small>
+                <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Available now</span>
+            </span>
+            <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
+        </button>
+
+        <button type="button"
+                class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "apply" ? "is-selected" : "")"
+                data-path="apply"
+                role="radio"
+                aria-checked="@(selectedPath == "apply" ? "true" : "false")">
+            <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-check"></i></span>
+            <span class="prv-wiz-card-body">
+                <strong>Apply to Become an INDOR Provider</strong>
+                <small>Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile.</small>
+                <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Requires verification</span>
+            </span>
+            <span class="prv-wiz-card-chevron"><i class="fas fa-chevron-right"></i></span>
+        </button>
+    </div>
+
+    <p class="prv-entry-hint">Tap an option to select it. Both paths are available.</p>
 
     <div class="prv-wiz-info">
         <i class="fas fa-circle-info"></i>
@@ -45,7 +57,14 @@
     </div>
 
     <label class="prv-wiz-terms">
-        <input type="checkbox" name="termsAccepted" value="true" @(s.TermsAccepted ? "checked" : null) data-pa-required="true" data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
+        <input type="hidden" name="termsAccepted" value="false" />
+        <input type="checkbox"
+               id="prvEntryTermsAccepted"
+               name="termsAccepted"
+               value="true"
+               @(s.TermsAccepted ? "checked" : null)
+               data-pa-required="true"
+               data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
         <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-entry">Terms &amp; Conditions</a></span>
     </label>
 </form>

@@ -18,7 +18,7 @@
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="RequestId" />
 
-    <div asp-validation-summary="ModelOnly" class="validation-summary-errors"></div>
+    <div asp-validation-summary="All" class="validation-summary-errors"></div>
 
     <div class="nr-edit-panel">
         <section class="nr-edit-section">
@@ -59,11 +59,13 @@
 
         <section class="nr-edit-section">
             <h2 class="nr-edit-section-title">Details</h2>
-            <div class="nr-edit-field">
-                <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="2 bedrooms, 2 bathrooms, 1 cat" maxlength="200" />
+            <div class="nr-edit-field nr-field--count">
+                <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="2 bedrooms, 2 bathrooms, 1 cat" maxlength="200" aria-describedby="nrEditSummaryCount" />
+                <span class="nr-char-count" id="nrEditSummaryCount"><span id="nrEditSummaryCountValue">0</span>/200</span>
             </div>
-            <div class="nr-edit-field">
-                <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy."></textarea>
+            <div class="nr-edit-field nr-field--count">
+                <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy." aria-describedby="nrEditDescCount"></textarea>
+                <span class="nr-char-count" id="nrEditDescCount"><span id="nrEditDescCountValue">0</span>/1000</span>
             </div>
         </section>
 
@@ -177,6 +179,29 @@
                     });
                 });
             });
+
+            function bindCharCounter(fieldSelector, counterSelector, max) {
+                var field = document.querySelector(fieldSelector);
+                var counter = document.querySelector(counterSelector);
+                var counterWrap = counter ? counter.closest('.nr-char-count') : null;
+                if (!field || !counter) {
+                    return;
+                }
+
+                var update = function () {
+                    var length = field.value.length;
+                    counter.textContent = String(length);
+                    if (counterWrap) {
+                        counterWrap.classList.toggle('is-over-limit', length > max);
+                    }
+                };
+
+                field.addEventListener('input', update);
+                update();
+            }
+
+            bindCharCounter('[name="DetailsSummary"]', '#nrEditSummaryCountValue', 200);
+            bindCharCounter('[name="Description"]', '#nrEditDescCountValue', 1000);
         })();
     </script>
 }

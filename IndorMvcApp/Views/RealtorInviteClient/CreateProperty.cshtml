@@ -17,21 +17,18 @@
     @Html.AntiForgeryToken()
     <div asp-validation-summary="All" class="ob-summary" role="alert"></div>
 
-    @if (formErrors.Count > 0)
-    {
-        <div class="rl-error-banner" role="alert" id="createPropertyFormErrors">
-            <i class="fas fa-circle-exclamation"></i>
-            <div>
-                <strong>Please fix the following to continue:</strong>
-                <ul class="rl-error-list">
-                    @foreach (var msg in formErrors)
-                    {
-                        <li>@msg</li>
-                    }
-                </ul>
-            </div>
+    <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" role="alert" id="createPropertyFormErrors">
+        <i class="fas fa-circle-exclamation"></i>
+        <div>
+            <strong>Please fix the following to continue:</strong>
+            <ul class="rl-error-list" id="createPropertyFormErrorList">
+                @foreach (var msg in formErrors)
+                {
+                    <li>@msg</li>
+                }
+            </ul>
         </div>
-    }
+    </div>
 
     <div class="rl-cp-card">
         <div class="rl-cp-field @(addressError.Length > 0 ? "is-error" : null)">
@@ -54,7 +51,7 @@
             <div class="rl-cp-field @(stateError.Length > 0 ? "is-error" : null)">
                 <label for="cp-state">State <span class="rl-cp-req">*</span></label>
                 <div class="rl-cp-input rl-cp-input--select">
-                    <select id="cp-state" name="StateCode" data-ac-zip="cp-postal-code" data-ac-city="cp-city" aria-required="true" aria-invalid="@(stateError.Length > 0)">
+                    <select id="cp-state" name="StateCode" data-ac-zip="cp-postal-code" data-ac-city="cp-city" data-ac-address="cp-address" aria-required="true" aria-invalid="@(stateError.Length > 0)">
                         <option value="">Select state</option>
                         @foreach (var state in Model.States)
                         {
@@ -69,8 +66,8 @@
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(zipError.Length > 0 ? "is-error" : null)">
                 <label for="cp-postal-code">ZIP code <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter 5-digit ZIP code" inputmode="numeric" autocomplete="postal-code" maxlength="10" data-zip-input aria-required="true" aria-invalid="@(zipError.Length > 0)" /></div>
-                <span class="rl-field-hint" id="cp-zip-hint" data-ac-zip-hint-for="cp-postal-code" hidden>Suggested from city and state. Change it if your property uses a different ZIP.</span>
+                <div class="rl-cp-input"><input type="text" id="cp-postal-code" name="PostalCode" value="@Model.PostalCode" placeholder="Enter 5-digit ZIP code" inputmode="numeric" autocomplete="postal-code" maxlength="10" minlength="5" pattern="\d{5}(-\d{4})?" data-zip-input aria-required="true" aria-invalid="@(zipError.Length > 0)" /></div>
+                <span class="rl-field-hint" id="cp-zip-hint" data-ac-zip-hint-for="cp-postal-code" hidden>Suggested from city and state when you select a state. Change it if your property uses a different ZIP.</span>
                 <span class="rl-field-error" id="postalCodeError" data-client-error="PostalCode">@zipError</span>
             </div>
             <div class="rl-cp-field">
@@ -119,21 +116,24 @@
         </div>
     </div>
 
+    <div class="rl-invite-actions">
+        <a asp-action="BackToProperty" class="rl-invite-cancel">Back</a>
+        <button type="submit" id="createPropertySubmitBtn" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
+    </div>
 </form>
-
-<div class="rl-invite-actions">
-    <a asp-action="Property" asp-route-edit="true" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="createPropertyForm" id="createPropertySubmitBtn" class="ob-btn ob-btn-primary">Save &amp; Add Property</button>
-</div>
 
 @section Scripts {
 @await Html.PartialAsync("_AddressAutocompleteScripts")
 <script>
 (function () {
     var banner = document.getElementById('createPropertyFormErrors');
+    if (banner && !banner.classList.contains('is-hidden')) {
+        banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
     var summary = document.querySelector('#createPropertyForm .ob-summary:not(.validation-summary-valid)');
     var firstFieldError = document.querySelector('#createPropertyForm .rl-field-error:not(:empty), #createPropertyForm .rl-cp-field.is-error');
-    var scrollTarget = banner || summary || firstFieldError;
+    var scrollTarget = summary || firstFieldError;
     if (scrollTarget) {
         scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }

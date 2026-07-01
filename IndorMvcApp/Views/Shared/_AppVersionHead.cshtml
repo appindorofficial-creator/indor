@@ -1,5 +1,6 @@
 @inject IndorMvcApp.Services.IAppVersionService AppVersion
+@* Cache headers are set by PreventWebViewCacheMiddleware ("no-cache, must-revalidate").
+   We intentionally do NOT emit a "no-store" meta here: no-store disables the browser
+   back/forward cache (bfcache), which forced a full server round-trip (re-running the
+   whole Home/Index action) on every "Back" and made navigation feel slow. *@
 <meta name="app-version" content="@AppVersion.Version" />
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />

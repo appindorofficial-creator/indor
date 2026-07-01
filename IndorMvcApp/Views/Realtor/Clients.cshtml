@@ -14,8 +14,10 @@
                 <h1 class="rl-page-title">Clients</h1>
                 <p class="rl-page-subtitle">Manage buyers, sellers, homeowners, and invitations.</p>
             </div>
-            <a href="@Url.Action("New", "RealtorInviteClient")"
+            <a asp-controller="RealtorInviteClient"
+               asp-action="New"
                class="rl-btn-primary rl-btn-primary--sm rl-clients-add"
+               id="rlClientsAddBtn"
                aria-label="Add client — start invite wizard">
                 <i class="fas fa-plus" aria-hidden="true"></i> Add Client
             </a>

@@ -159,6 +159,11 @@ public class NeighborRequestController(
             return RestartWizard(propiedadId);
         }
 
+        if (draft.EditingRequestId is null && !draft.ScheduleConfigured)
+        {
+            return RedirectToAction(nameof(Preferences), new { propiedadId });
+        }
+
         var vm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
         if (vm == null)
         {
