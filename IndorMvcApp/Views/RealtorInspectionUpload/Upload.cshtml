@@ -99,18 +99,20 @@
         </label>
     </div>
 
-    <label class="rl-file-drop" id="rlFileDrop" for="reportFileInput">
-        <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
-        <div class="rl-file-drop-body">
-            <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
-            <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
-            <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
-            <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
-        </div>
+    <div class="rl-file-drop-wrap">
+        <label class="rl-file-drop" id="rlFileDrop" for="reportFileInput">
+            <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
+            <div class="rl-file-drop-body">
+                <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
+                <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
+                <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
+                <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
+            </div>
+        </label>
         <button type="button" id="rlFileRemove" class="rl-file-drop-remove" hidden aria-label="Remove selected file">
             <i class="fas fa-xmark"></i>
         </button>
-    </label>
+    </div>
 
     <div class="rl-info-box rl-info-box--ai">
         <i class="fas fa-wand-magic-sparkles"></i>
@@ -236,6 +238,9 @@
 
         function clearSelectedFile() {
             fileInput.value = '';
+            if (fileNameEl) {
+                fileNameEl.textContent = '';
+            }
             updateFileLabel();
             clearClientError();
         }
@@ -271,6 +276,10 @@
         fileInput.addEventListener('change', () => {
             updateFileLabel();
             clearClientError();
+        });
+
+        fileRemoveBtn?.addEventListener('mousedown', (e) => {
+            e.preventDefault();
         });
 
         fileRemoveBtn?.addEventListener('click', (e) => {

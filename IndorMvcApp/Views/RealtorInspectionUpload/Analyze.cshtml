@@ -105,6 +105,7 @@
 
 
 <div class="rl-analyze-actions" id="analyzeActions">
+    @await Html.PartialAsync("_ChangeInspectionDocument")
     @if (Model.AnalysisStatus == IndorMvcApp.Models.RealtorInspectionAnalysisStatuses.Complete)
     {
         <form asp-action="Analyze" method="post">

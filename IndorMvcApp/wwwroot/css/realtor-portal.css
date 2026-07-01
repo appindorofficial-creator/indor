@@ -1951,6 +1951,11 @@ a.rl-invite-cancel {
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
 }
 
+.rl-file-drop-wrap {
+    position: relative;
+    margin-bottom: 16px;
+}
+
 .rl-file-drop {
     position: relative;
     display: block;
@@ -1959,7 +1964,7 @@ a.rl-invite-cancel {
     border: 1.5px solid #E2E8F0;
     border-radius: 16px;
     background: linear-gradient(180deg, #F0F7FF 0%, #FFFFFF 100%);
-    margin-bottom: 16px;
+    margin-bottom: 0;
     cursor: pointer;
     transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
 }
@@ -2018,7 +2023,7 @@ a.rl-invite-cancel {
     position: absolute;
     top: 10px;
     right: 10px;
-    z-index: 2;
+    z-index: 5;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -2041,6 +2046,10 @@ a.rl-invite-cancel {
     margin-top: 8px !important;
     font-weight: 700 !important;
     color: #0066CC !important;
+}
+
+.rl-file-drop-name[hidden] {
+    display: none !important;
 }
 
 .rl-analyze-card {
@@ -2092,6 +2101,34 @@ a.rl-invite-cancel {
 .rl-analyze-running i { font-size: 1.6rem; color: #0066CC; }
 .rl-analyze-running p { margin: 0; font-size: .82rem; color: #475569; line-height: 1.45; max-width: 280px; }
 .rl-analyze-secondary { margin-top: 10px; }
+.rl-analyze-change-doc {
+    margin-bottom: 4px;
+    text-align: center;
+}
+.rl-analyze-change-doc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #0066CC;
+    font-weight: 600;
+    font-size: .8rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+.rl-analyze-change-doc-btn:hover {
+    text-decoration: underline;
+}
+.rl-analyze-change-doc-hint {
+    margin: 6px 0 0;
+    font-size: .68rem;
+    color: #64748B;
+    line-height: 1.4;
+    text-align: center;
+}
 
 .rl-trade-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
 .rl-trade-chip {
@@ -2675,6 +2712,9 @@ a.rl-invite-cancel {
     margin-top: 20px;
     padding-top: 16px;
     border-top: 1px solid #E2E8F0;
+}
+.rl-insp-change-doc-wrap {
+    margin-top: 12px;
 }
 .rl-insp-send-btn {
     flex: 1;

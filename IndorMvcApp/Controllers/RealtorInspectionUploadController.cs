@@ -46,10 +46,10 @@ public class RealtorInspectionUploadController(
     public IActionResult Index() => RedirectToAction(nameof(Upload));
 
     [HttpGet]
-    public async Task<IActionResult> Upload(string? q, int? propertyFileId)
+    public async Task<IActionResult> Upload(string? q, int? propertyFileId, bool edit = false)
     {
         var draft = await wizard.GetDraftAsync();
-        if (draft != null && draft.CurrentStep > 1)
+        if (!edit && draft != null && draft.CurrentStep > 1)
         {
             return RedirectToAction(wizard.ResolveResumeAction(draft.CurrentStep));
         }
@@ -248,6 +248,22 @@ public class RealtorInspectionUploadController(
             };
             ModelState.AddModelError(string.Empty, message);
             return View("Review", await wizard.BuildReviewAsync());
+        }
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> ChangeDocument()
+    {
+        try
+        {
+            await wizard.ResetToUploadAsync();
+            return RedirectToAction(nameof(Upload), new { edit = true });
+        }
+        catch (InvalidOperationException ex)
+        {
+            TempData["AnalysisError"] = ex.Message;
+            return RedirectToAction(nameof(Upload));
         }
     }
 

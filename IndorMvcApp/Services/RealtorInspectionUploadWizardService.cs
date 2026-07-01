@@ -91,6 +91,63 @@ public class RealtorInspectionUploadWizardService(
         httpContextAccessor.HttpContext?.Session.Remove(DraftIdSessionKey);
     }
 
+    public async Task ResetToUploadAsync(CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Realtor profile not found.");
+        var draftId = httpContextAccessor.HttpContext?.Session.GetInt32(DraftIdSessionKey) ?? 0;
+        if (draftId <= 0)
+        {
+            throw new InvalidOperationException("Draft not found.");
+        }
+
+        var draft = await db.IndorRealtorInspectionUploadDrafts
+            .Include(d => d.Findings)
+            .Include(d => d.TradeProviders)
+            .FirstOrDefaultAsync(d => d.Id == draftId
+                && d.RealtorId == realtor.Id
+                && d.Status == RealtorInspectionUploadDraftStatuses.Draft, cancellationToken)
+            ?? throw new InvalidOperationException("Draft not found.");
+
+        ActiveAnalyses.TryRemove(draft.Id, out _);
+
+        if (!string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            var fullPath = ResolveReportFullPath(draft.ReportFileUrl);
+            if (!string.IsNullOrEmpty(fullPath) && File.Exists(fullPath))
+            {
+                try
+                {
+                    File.Delete(fullPath);
+                }
+                catch (IOException)
+                {
+                    // Another process may still be reading the file during analysis.
+                }
+            }
+        }
+
+        if (draft.Findings.Count > 0)
+        {
+            db.IndorRealtorInspectionUploadFindings.RemoveRange(draft.Findings);
+        }
+
+        if (draft.TradeProviders.Count > 0)
+        {
+            db.IndorRealtorInspectionDraftProviders.RemoveRange(draft.TradeProviders);
+        }
+
+        draft.CurrentStep = 1;
+        draft.ReportFileUrl = null;
+        draft.ReportFileName = null;
+        draft.ReportPageCount = 0;
+        draft.AnalysisProgress = 0;
+        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.Pending;
+        draft.AnalysisSummary = null;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
     public string ResolveResumeAction(int currentStep) => currentStep switch
     {
         <= 1 => "Upload",
@@ -338,7 +395,7 @@ public class RealtorInspectionUploadWizardService(
     {
         var draft = await scopedDb.IndorRealtorInspectionUploadDrafts
             .FirstOrDefaultAsync(d => d.Id == draftId);
-        if (draft == null)
+        if (draft == null || draft.CurrentStep < 2 || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
         {
             return;
         }
@@ -352,6 +409,11 @@ public class RealtorInspectionUploadWizardService(
         var result = await scopedAnalysis.AnalyzeReportAsync(address, reportPath, CancellationToken.None);
 
         draft = await scopedDb.IndorRealtorInspectionUploadDrafts.FirstAsync(d => d.Id == draftId);
+        if (draft.CurrentStep < 2 || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            return;
+        }
+
         draft.AnalysisProgress = 75;
         await scopedDb.SaveChangesAsync();
 
