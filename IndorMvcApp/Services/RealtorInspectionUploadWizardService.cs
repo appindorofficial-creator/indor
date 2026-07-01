@@ -291,6 +291,85 @@ public class RealtorInspectionUploadWizardService(
         draft.CurrentStep = 2;
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
+
+        if (!string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            await SyncInspectionReportToPropertyFileAsync(
+                property.Id,
+                draft.ReportFileUrl,
+                draft.ReportFileName ?? "Inspection Report",
+                cancellationToken);
+        }
+    }
+
+    public async Task<bool> TryResumeDraftForPropertyAsync(int propertyFileId, CancellationToken cancellationToken = default)
+    {
+        if (propertyFileId <= 0)
+        {
+            return false;
+        }
+
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return false;
+        }
+
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return false;
+        }
+
+        var draft = await db.IndorRealtorInspectionUploadDrafts
+            .Where(d => d.RealtorId == realtor.Id &&
+                        d.PropertyFileId == propertyFileId &&
+                        d.Status == RealtorInspectionUploadDraftStatuses.Draft)
+            .OrderByDescending(d => d.FechaActualizacion ?? d.FechaCreacion)
+            .FirstOrDefaultAsync(cancellationToken);
+
+        if (draft == null)
+        {
+            return false;
+        }
+
+        session.SetInt32(DraftIdSessionKey, draft.Id);
+        return true;
+    }
+
+    private async Task SyncInspectionReportToPropertyFileAsync(
+        int propertyFileId,
+        string reportUrl,
+        string reportFileName,
+        CancellationToken cancellationToken)
+    {
+        var property = await db.IndorRealtorPropertyFiles
+            .Include(p => p.Items)
+            .FirstOrDefaultAsync(p => p.Id == propertyFileId, cancellationToken);
+
+        if (property == null)
+        {
+            return;
+        }
+
+        var existing = property.Items.FirstOrDefault(i =>
+            string.Equals(i.CategoryType, RealtorPropertyFileCategoryTypes.InspectionReports, StringComparison.OrdinalIgnoreCase));
+
+        if (existing != null)
+        {
+            existing.ItemLabel = reportFileName;
+            existing.FileUrl = reportUrl;
+            existing.UploadedUtc = DateTime.UtcNow;
+        }
+        else
+        {
+            RealtorPropertyFileInspectionSync.UpsertInspectionReport(db, property, reportUrl, reportFileName);
+        }
+
+        RealtorPropertyFileInspectionSync.NormalizeEmptyRepairReviewPhase(property);
+
+        property.UpdatedUtc = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
     }
 
     public async Task<RealtorInspectionAnalyzeViewModel> BuildAnalyzeAsync(CancellationToken cancellationToken = default)
@@ -334,6 +413,43 @@ public class RealtorInspectionUploadWizardService(
 
         if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed)
         {
+            return;
+        }
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.InProgress
+            && draft.AnalysisProgress >= 30
+            && draft.AnalysisProgress < 100)
+        {
+            return;
+        }
+
+        if (!ActiveAnalyses.TryAdd(draft.Id, 0))
+        {
+            return;
+        }
+
+        draft.AnalysisProgress = 20;
+        draft.AnalysisStatus = RealtorInspectionAnalysisStatuses.InProgress;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+
+        StartAnalysisWorker(draft.Id);
+    }
+
+    public async Task RetryAnalysisAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken)
+            ?? throw new InvalidOperationException("Draft not found.");
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete)
+        {
+            return;
+        }
+
+        ActiveAnalyses.TryRemove(draft.Id, out _);
+
+        if (draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Failed)
+        {
             var staleFindings = await db.IndorRealtorInspectionUploadFindings
                 .Where(f => f.DraftId == draft.Id)
                 .ToListAsync(cancellationToken);
@@ -366,7 +482,11 @@ public class RealtorInspectionUploadWizardService(
         draft.FechaActualizacion = DateTime.UtcNow;
         await db.SaveChangesAsync(cancellationToken);
 
-        var draftId = draft.Id;
+        StartAnalysisWorker(draft.Id);
+    }
+
+    private void StartAnalysisWorker(int draftId)
+    {
         _ = Task.Run(async () =>
         {
             try
@@ -1042,7 +1162,7 @@ public class RealtorInspectionUploadWizardService(
             ClientName = string.IsNullOrWhiteSpace(clientName) ? null : clientName.Trim(),
             PhotoUrl = photoUrl ?? "/welcome-house.png",
             Status = "Active",
-            FilePhase = RealtorPropertyFilePhases.RepairReview,
+            FilePhase = RealtorPropertyFilePhases.PreClosing,
             UpdatedUtc = DateTime.UtcNow,
             FechaCreacion = DateTime.UtcNow
         };

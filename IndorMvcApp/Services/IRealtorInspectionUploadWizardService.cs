@@ -10,6 +10,7 @@ public interface IRealtorInspectionUploadWizardService
     Task<IndorRealtorInspectionUploadDraft?> GetDraftAsync(CancellationToken cancellationToken = default);
     Task CancelDraftAsync(CancellationToken cancellationToken = default);
     Task ResetToUploadAsync(CancellationToken cancellationToken = default);
+    Task<bool> TryResumeDraftForPropertyAsync(int propertyFileId, CancellationToken cancellationToken = default);
     string ResolveResumeAction(int currentStep);
 
     Task<RealtorInspectionUploadViewModel> BuildUploadAsync(string? search, CancellationToken cancellationToken = default);
@@ -24,6 +25,7 @@ public interface IRealtorInspectionUploadWizardService
 
     Task<RealtorInspectionAnalyzeViewModel> BuildAnalyzeAsync(CancellationToken cancellationToken = default);
     Task RunAnalysisAsync(CancellationToken cancellationToken = default);
+    Task RetryAnalysisAsync(CancellationToken cancellationToken = default);
     Task AdvanceAnalysisAsync(CancellationToken cancellationToken = default);
     Task CompleteAnalysisAsync(CancellationToken cancellationToken = default);
 

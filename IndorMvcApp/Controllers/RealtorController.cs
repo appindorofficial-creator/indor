@@ -447,6 +447,7 @@ public class RealtorController(
         model.BadgeLabel = shell.BadgeLabel;
         model.IsVerified = shell.IsVerified;
         model.HasNotifications = shell.HasNotifications;
+        model.RecentNotifications = shell.RecentNotifications;
         ViewBag.ListingWizardPage = "details";
     }
 
@@ -504,6 +505,20 @@ public class RealtorController(
         }
 
         return RedirectToAction(nameof(Profile), new { saved = true });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkNotificationsViewed(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return Unauthorized();
+        }
+
+        portalService.MarkNotificationsViewed(realtor.Id);
+        return Ok(new { hasNotifications = false });
     }
 
     [HttpGet]
@@ -812,6 +827,7 @@ public class RealtorController(
         model.BadgeLabel = shell.BadgeLabel;
         model.IsVerified = shell.IsVerified;
         model.HasNotifications = shell.HasNotifications;
+        model.RecentNotifications = shell.RecentNotifications;
     }
 
     private async Task SaveLicenseDocumentAsync(

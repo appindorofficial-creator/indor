@@ -6,7 +6,7 @@
 }
 
 <div class="rl-dash-shell">
-    @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel())
+    @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
     <section class="rl-success-hero">
         <div class="rl-success-icon-wrap">

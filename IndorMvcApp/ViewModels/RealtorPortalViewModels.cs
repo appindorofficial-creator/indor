@@ -11,6 +11,8 @@ public class RealtorPortalShellViewModel
     public string BadgeLabel { get; set; } = "Realtor Basic";
     public bool IsVerified { get; set; }
     public bool HasNotifications { get; set; }
+    public bool HideNotifications { get; set; }
+    public List<RealtorActivityItemViewModel> RecentNotifications { get; set; } = [];
 }
 
 public class RealtorStatItemViewModel
@@ -489,6 +491,9 @@ public class RealtorActivityItemViewModel
     public string Description { get; set; } = "";
     public string OccurredLabel { get; set; } = "";
     public string CategoryTag { get; set; } = "";
+    public string? TargetUrl { get; set; }
+    public string IconClass { get; set; } = "fa-circle-info";
+    public string TagCssClass { get; set; } = "";
 }
 
 // Shared card types (used on Home)

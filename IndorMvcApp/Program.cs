@@ -156,6 +156,7 @@ builder.Services.AddScoped<IPropertyAdministratorPestControlService, PropertyAdm
 builder.Services.AddScoped<IPropertyAdministratorPoolHotTubService, PropertyAdministratorPoolHotTubService>();
 builder.Services.AddScoped<IHomeownerPropertyService, HomeownerPropertyService>();
 builder.Services.AddScoped<RealtorPortalService>();
+builder.Services.AddScoped<RealtorPropertyFileInspectionBackfillService>();
 builder.Services.AddScoped<RealtorNearbyNetworkService>();
 builder.Services.AddScoped<HomeownerNearbyNetworkService>();
 builder.Services.AddScoped<LawnCatalogService>();
@@ -273,6 +274,20 @@ app.MapGet("/healthz", async (AppDbContext db, CancellationToken ct) =>
         return Results.Text("starting");
     }
 }).AllowAnonymous();
+
+if (args.Contains("--backfill-property-inspections", StringComparer.OrdinalIgnoreCase))
+{
+    await using var scope = app.Services.CreateAsyncScope();
+    var backfill = scope.ServiceProvider.GetRequiredService<RealtorPropertyFileInspectionBackfillService>();
+    var result = await backfill.BackfillAsync();
+    app.Logger.LogInformation(
+        "Property inspection backfill complete: drafts={Drafts}, reports={Reports}, repairItems={Repairs}, phasesFixed={Phases}",
+        result.DraftsProcessed,
+        result.ReportsSynced,
+        result.RepairItemsSynced,
+        result.PhasesFixed);
+    return;
+}
 
 app.Run();
 
