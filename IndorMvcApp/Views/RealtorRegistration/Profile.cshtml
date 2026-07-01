@@ -19,6 +19,9 @@
     var termsError = FieldError("professionalTermsAccepted");
     var serviceAreasError = FieldError("serviceAreas");
     var officeAddressError = FieldError("officeAddress");
+    var officeCityError = FieldError("officeCity");
+    var officeStateError = FieldError("officeState");
+    var officeZipError = FieldError("officeZip");
 
     var selectedLanguages = (s.Languages ?? "")
         .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
@@ -152,20 +155,91 @@
         <span class="rl-field-error" id="serviceAreasError">@serviceAreasError</span>
     </div>
 
-    <div class="rl-field-block">
+    <div class="rl-field-block rl-field-block--address">
         <span class="rl-field-label">Office Address <span class="rl-required" aria-hidden="true">*</span></span>
         <label class="rl-field @(officeAddressError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-location-dot"></i>
             <input type="text"
+                   id="rr-office-address"
                    name="officeAddress"
                    value="@s.OfficeAddress"
-                   placeholder="123 Business Ave, Miami, FL 33131"
-                   autocomplete="street-address"
+                   placeholder="House number and street name"
+                   autocomplete="address-line1"
+                   data-address-autocomplete
+                   data-ac-street-only="true"
+                   data-ac-city="rr-office-city"
+                   data-ac-state="rr-office-state"
+                   data-ac-zip="rr-office-zip"
                    aria-required="true"
                    aria-invalid="@(officeAddressError.Length > 0)"
                    @(officeAddressError.Length > 0 ? Html.Raw("aria-describedby=\"officeAddressError\"") : null) />
         </label>
+        <p class="rl-field-hint">As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available.</p>
         <span class="rl-field-error" id="officeAddressError">@officeAddressError</span>
+
+        <div class="rl-reg-office-grid">
+            <div class="rl-field-block rl-field-block--compact">
+                <span class="rl-field-label">City <span class="rl-required" aria-hidden="true">*</span></span>
+                <label class="rl-field @(officeCityError.Length > 0 ? "is-error" : "")">
+                    <i class="fas fa-building"></i>
+                    <input type="text"
+                           id="rr-office-city"
+                           name="officeCity"
+                           value="@s.OfficeCity"
+                           placeholder="City"
+                           autocomplete="address-level2"
+                           data-city-autocomplete
+                           data-ac-state="rr-office-state"
+                           data-ac-zip="rr-office-zip"
+                           aria-required="true"
+                           aria-invalid="@(officeCityError.Length > 0)"
+                           @(officeCityError.Length > 0 ? Html.Raw("aria-describedby=\"officeCityError\"") : null) />
+                </label>
+                <span class="rl-field-error" id="officeCityError">@officeCityError</span>
+            </div>
+
+            <div class="rl-field-block rl-field-block--compact">
+                <span class="rl-field-label">State <span class="rl-required" aria-hidden="true">*</span></span>
+                <label class="rl-field @(officeStateError.Length > 0 ? "is-error" : "")">
+                    <i class="fas fa-map"></i>
+                    <select id="rr-office-state"
+                            name="officeState"
+                            data-ac-zip="rr-office-zip"
+                            data-ac-city="rr-office-city"
+                            aria-required="true"
+                            aria-invalid="@(officeStateError.Length > 0)"
+                            @(officeStateError.Length > 0 ? Html.Raw("aria-describedby=\"officeStateError\"") : null)>
+                        <option value="">State</option>
+                        @foreach (var st in Model.LicenseStates)
+                        {
+                            <option value="@st" selected="@(s.OfficeState == st)">@st</option>
+                        }
+                    </select>
+                </label>
+                <span class="rl-field-error" id="officeStateError">@officeStateError</span>
+            </div>
+
+            <div class="rl-field-block rl-field-block--compact">
+                <span class="rl-field-label">ZIP <span class="rl-required" aria-hidden="true">*</span></span>
+                <label class="rl-field @(officeZipError.Length > 0 ? "is-error" : "")">
+                    <i class="fas fa-envelope"></i>
+                    <input type="text"
+                           id="rr-office-zip"
+                           name="officeZip"
+                           value="@s.OfficeZip"
+                           placeholder="ZIP"
+                           inputmode="numeric"
+                           autocomplete="postal-code"
+                           maxlength="10"
+                           data-zip-input
+                           aria-required="true"
+                           aria-invalid="@(officeZipError.Length > 0)"
+                           @(officeZipError.Length > 0 ? Html.Raw("aria-describedby=\"officeZipError\"") : null) />
+                </label>
+                <span class="rl-field-hint" id="rr-office-zip-hint" data-ac-zip-hint-for="rr-office-zip" hidden>Suggested from city and state. Change it if your office uses a different ZIP.</span>
+                <span class="rl-field-error" id="officeZipError">@officeZipError</span>
+            </div>
+        </div>
     </div>
 
 
@@ -261,6 +335,8 @@
 
 @section Scripts {
 <script src="~/js/realtor-license-number.js" asp-append-version="true"></script>
+<script src="~/js/zip-input.js" asp-append-version="true"></script>
+@await Html.PartialAsync("_AddressAutocompleteScripts")
 <script>
 (function () {
     var form = document.getElementById('rlRegProfileForm');
@@ -330,6 +406,9 @@
         setFieldError('licenseStateError', 'select[name="licenseState"]', '');
         setFieldError('serviceAreasError', 'input[name="serviceAreas"]', '');
         setFieldError('officeAddressError', 'input[name="officeAddress"]', '');
+        setFieldError('officeCityError', 'input[name="officeCity"]', '');
+        setFieldError('officeStateError', 'select[name="officeState"]', '');
+        setFieldError('officeZipError', 'input[name="officeZip"]', '');
         setLanguagesError('');
         setTermsError('');
     }
@@ -373,11 +452,65 @@
         }
 
         var officeAddress = form.querySelector('input[name="officeAddress"]');
+        var officeCity = form.querySelector('input[name="officeCity"]');
+        var officeState = form.querySelector('select[name="officeState"]');
+        var officeZip = form.querySelector('input[name="officeZip"]');
+        var officeAddressMessage = 'Enter a valid US street address with a street number (e.g. 123 Main St).';
+
+        function isValidStreetAddress(value) {
+            var line = String(value || '').trim();
+            if (line.length < 5) return false;
+            if (!/\p{L}/u.test(line)) return false;
+            if (/^[\d\s.,#-]+$/.test(line)) return false;
+            var tokens = line.split(/\s+/).filter(Boolean);
+            var hasDigit = /\d/.test(line);
+            var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
+            if (!hasDigit) return false;
+            if (wordParts < 1) return false;
+            return true;
+        }
+
         if (!officeAddress || !officeAddress.value.trim()) {
             hasError = setFieldError(
                 'officeAddressError',
                 'input[name="officeAddress"]',
                 'Office address is required.') || hasError;
+        } else if (!isValidStreetAddress(officeAddress.value)) {
+            hasError = setFieldError(
+                'officeAddressError',
+                'input[name="officeAddress"]',
+                officeAddressMessage) || hasError;
+        }
+
+        if (!officeCity || !officeCity.value.trim()) {
+            hasError = setFieldError(
+                'officeCityError',
+                'input[name="officeCity"]',
+                'City is required.') || hasError;
+        }
+
+        if (!officeState || !officeState.value.trim()) {
+            hasError = setFieldError(
+                'officeStateError',
+                'select[name="officeState"]',
+                'State is required.') || hasError;
+        }
+
+        if (!officeZip || !officeZip.value.trim()) {
+            hasError = setFieldError(
+                'officeZipError',
+                'input[name="officeZip"]',
+                'ZIP code is required.') || hasError;
+        } else if (window.IndorZipInput && !window.IndorZipInput.isValidRequired(officeZip.value)) {
+            hasError = setFieldError(
+                'officeZipError',
+                'input[name="officeZip"]',
+                'Enter a valid 5-digit ZIP code (e.g. 77002).') || hasError;
+        } else if (!/^\d{5}(-\d{4})?$/.test(officeZip.value.trim())) {
+            hasError = setFieldError(
+                'officeZipError',
+                'input[name="officeZip"]',
+                'Enter a valid 5-digit ZIP code (e.g. 77002).') || hasError;
         }
 
         var checkedLanguages = form.querySelectorAll('input[name="languages"]:checked');
@@ -416,7 +549,10 @@
         'input[name="brokerageName"]',
         'input[name="serviceAreas"]',
         'input[name="officeAddress"]',
-        'select[name="licenseState"]'
+        'input[name="officeCity"]',
+        'input[name="officeZip"]',
+        'select[name="licenseState"]',
+        'select[name="officeState"]'
     ].forEach(function (selector) {
         var input = form.querySelector(selector);
         if (!input) {
@@ -424,6 +560,8 @@
         }
         var errorId = input.name === 'licenseState'
             ? 'licenseStateError'
+            : input.name === 'officeState'
+                ? 'officeStateError'
             : input.name + 'Error';
         input.addEventListener('input', function () {
             setFieldError(errorId, selector, '');
@@ -456,6 +594,11 @@
         termsCheckbox.addEventListener('change', function () {
             setTermsError('');
         });
+    }
+
+    var officeZipInput = document.getElementById('rr-office-zip');
+    if (officeZipInput && window.IndorZipInput) {
+        window.IndorZipInput.attach(officeZipInput, { required: true });
     }
 })();
 </script>

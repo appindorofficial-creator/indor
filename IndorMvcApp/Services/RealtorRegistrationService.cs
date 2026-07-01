@@ -54,6 +54,9 @@ public class RealtorRegistrationService(
         entity.LicenseState = state.LicenseState.Trim();
         entity.ServiceAreas = state.ServiceAreas.Trim();
         entity.OfficeAddress = state.OfficeAddress.Trim();
+        entity.OfficeCity = state.OfficeCity.Trim();
+        entity.OfficeState = state.OfficeState.Trim();
+        entity.OfficeZip = state.OfficeZip.Trim();
 
         if (!RealtorSupportedLanguages.TryNormalize(state.Languages, out var normalizedLanguages, out var languagesError))
         {
@@ -352,6 +355,9 @@ public class RealtorRegistrationService(
             LicenseState = entity.LicenseState ?? "",
             ServiceAreas = entity.ServiceAreas ?? "",
             OfficeAddress = entity.OfficeAddress ?? "",
+            OfficeCity = entity.OfficeCity ?? "",
+            OfficeState = entity.OfficeState ?? "",
+            OfficeZip = entity.OfficeZip ?? "",
             Languages = FormatLanguages(entity.LanguagesJson),
             ProfessionalTermsAccepted = entity.ProfessionalTermsAccepted,
             VerificationSkipped = entity.VerificationSkipped,

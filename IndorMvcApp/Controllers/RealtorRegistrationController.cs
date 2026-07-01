@@ -76,6 +76,9 @@ public class RealtorRegistrationController(
         string? licenseState,
         string? serviceAreas,
         string? officeAddress,
+        string? officeCity,
+        string? officeState,
+        string? officeZip,
         string[]? languages,
         bool professionalTermsAccepted)
     {
@@ -118,6 +121,31 @@ public class RealtorRegistrationController(
         {
             ModelState.AddModelError(nameof(officeAddress), "Office address is required.");
         }
+        else if (!ValidStreetAddressAttribute.IsValidStreetAddress(
+                     officeAddress, out var officeAddressError, requireStreetNumber: true))
+        {
+            ModelState.AddModelError(nameof(officeAddress), officeAddressError!);
+        }
+
+        if (string.IsNullOrWhiteSpace(officeCity))
+        {
+            ModelState.AddModelError(nameof(officeCity), "City is required.");
+        }
+
+        var allowedStates = registration.GetLicenseStates();
+        if (string.IsNullOrWhiteSpace(officeState))
+        {
+            ModelState.AddModelError(nameof(officeState), "State is required.");
+        }
+        else if (!allowedStates.Contains(officeState.Trim(), StringComparer.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(nameof(officeState), "Select a valid US state.");
+        }
+
+        if (!UsZipCodeAttribute.IsValidRequired(officeZip, out var officeZipError))
+        {
+            ModelState.AddModelError(nameof(officeZip), officeZipError!);
+        }
 
         if (string.IsNullOrWhiteSpace(languagesCsv))
         {
@@ -137,6 +165,9 @@ public class RealtorRegistrationController(
             state.LicenseState = licenseState?.Trim() ?? "";
             state.ServiceAreas = serviceAreas?.Trim() ?? "";
             state.OfficeAddress = officeAddress?.Trim() ?? "";
+            state.OfficeCity = officeCity?.Trim() ?? "";
+            state.OfficeState = officeState?.Trim() ?? "";
+            state.OfficeZip = officeZip?.Trim() ?? "";
             state.Languages = languagesCsv;
             state.ProfessionalTermsAccepted = professionalTermsAccepted;
 
@@ -151,6 +182,9 @@ public class RealtorRegistrationController(
         state.LicenseState = licenseState.Trim();
         state.ServiceAreas = serviceAreas?.Trim() ?? "";
         state.OfficeAddress = officeAddress?.Trim() ?? "";
+        state.OfficeCity = officeCity?.Trim() ?? "";
+        state.OfficeState = officeState?.Trim().ToUpperInvariant() ?? "";
+        state.OfficeZip = UsZipCodeAttribute.NormalizeToStorage(officeZip) ?? "";
         state.Languages = normalizedLanguages;
         state.ProfessionalTermsAccepted = professionalTermsAccepted;
 

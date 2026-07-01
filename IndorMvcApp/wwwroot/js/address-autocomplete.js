@@ -336,13 +336,17 @@
             bindCityZipGeocode(input);
         });
 
+        document.querySelectorAll('input[data-ac-zip][data-ac-state]:not([data-city-autocomplete]):not([data-address-autocomplete])').forEach(function (input) {
+            bindCityZipGeocode(input);
+        });
+
         bindStateSelectZipLookup();
 
         document.querySelectorAll('[data-ac-state]').forEach(function (input) {
             bindManualZipEdit(getLinkedElement(input, 'Zip'));
         });
 
-        document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete]').forEach(function (input) {
+        document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete], input[data-ac-zip][data-ac-state]:not([data-city-autocomplete]):not([data-address-autocomplete])').forEach(function (input) {
             tryGeocodeLinkedZip(input);
         });
     }

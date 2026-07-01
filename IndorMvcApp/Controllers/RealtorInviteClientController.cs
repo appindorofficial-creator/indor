@@ -167,24 +167,11 @@ public class RealtorInviteClientController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CreateProperty(RealtorInviteCreatePropertyViewModel model)
     {
-        if (string.IsNullOrWhiteSpace(model.Address))
+        var allowedStates = registration.GetLicenseStates();
+        if (!string.IsNullOrWhiteSpace(model.StateCode)
+            && !allowedStates.Contains(model.StateCode, StringComparer.OrdinalIgnoreCase))
         {
-            ModelState.AddModelError(nameof(model.Address), "Property address is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(model.City))
-        {
-            ModelState.AddModelError(nameof(model.City), "City is required.");
-        }
-
-        if (string.IsNullOrWhiteSpace(model.StateCode))
-        {
-            ModelState.AddModelError(nameof(model.StateCode), "State is required.");
-        }
-
-        if (!UsZipCodeAttribute.IsValidRequired(model.PostalCode, out var zipError))
-        {
-            ModelState.AddModelError(nameof(model.PostalCode), zipError!);
+            ModelState.AddModelError(nameof(model.StateCode), "Select a valid US state.");
         }
 
         if (ModelState.IsValid)

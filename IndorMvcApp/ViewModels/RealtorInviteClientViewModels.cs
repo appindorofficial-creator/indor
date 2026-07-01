@@ -1,5 +1,8 @@
 namespace IndorMvcApp.ViewModels;
 
+using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Validation;
+
 public class RealtorInviteStepViewModel
 {
     public int DisplayStep { get; set; } = 1;
@@ -38,10 +41,20 @@ public class RealtorInvitePropertyViewModel : RealtorInviteStepViewModel
 
 public class RealtorInviteCreatePropertyViewModel : RealtorInviteStepViewModel
 {
+    [Required(ErrorMessage = "Property address is required.")]
+    [ValidStreetAddress(RequireStreetNumber = true)]
     public string? Address { get; set; }
+
     public string? Unit { get; set; }
+
+    [Required(ErrorMessage = "City is required.")]
     public string? City { get; set; }
+
+    [Required(ErrorMessage = "State is required.")]
     public string? StateCode { get; set; }
+
+    [Required(ErrorMessage = "ZIP code is required.")]
+    [UsZipCode]
     public string? PostalCode { get; set; }
     public string? Nickname { get; set; }
     public string PropertyType { get; set; } = "Single-family";
