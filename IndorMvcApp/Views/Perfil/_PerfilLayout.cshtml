@@ -64,4 +64,5 @@
     ViewBag.BottomNavActive ??= "more";
 }
 @await Html.PartialAsync("_AppBottomNav", ViewBag.BottomNavActive as string ?? "more")
+<script src="~/js/phone-input.js" asp-append-version="true"></script>
 @await RenderSectionAsync("Scripts", required: false)

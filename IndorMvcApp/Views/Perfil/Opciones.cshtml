@@ -75,7 +75,8 @@
         @Html.AntiForgeryToken()
         <input type="hidden" name="nombre" value="@usr?.Nombre" />
         <input type="hidden" name="apellidos" value="@usr?.Apellidos" />
-        <input type="text" name="telefono" placeholder="Mobile phone" value="@usr?.Telefono" />
+        <input type="tel" name="telefono" placeholder="5551234567" value="@usr?.Telefono"
+               data-phone-input required autocomplete="tel" />
         <p style="font-size:.78rem;color:#6B7280;">Email: @usr?.Email (managed by your account sign-in)</p>
         <button type="submit" class="pf-btn"><i class="fas fa-save"></i> Save phone</button>
     </form>

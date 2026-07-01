@@ -48,16 +48,17 @@
             <div class="pf-row">
                 <label class="pf-field">
                     <span>First name</span>
-                    <input type="text" name="nombre" value="@Model.Nombre" placeholder="First name" autocomplete="given-name" />
+                    <input type="text" name="nombre" value="@Model.Nombre" placeholder="First name" autocomplete="given-name" required />
                 </label>
                 <label class="pf-field">
                     <span>Last name</span>
-                    <input type="text" name="apellidos" value="@Model.Apellidos" placeholder="Last name" autocomplete="family-name" />
+                    <input type="text" name="apellidos" value="@Model.Apellidos" placeholder="Last name" autocomplete="family-name" required />
                 </label>
             </div>
             <label class="pf-field">
                 <span>Phone</span>
-                <input type="tel" name="telefono" value="@Model.Telefono" placeholder="Mobile phone" autocomplete="tel" />
+                <input type="tel" name="telefono" value="@Model.Telefono" placeholder="5551234567" autocomplete="tel"
+                       data-phone-input required />
             </label>
             <label class="pf-field">
                 <span>Email</span>
