@@ -159,6 +159,13 @@ public class RealtorInviteClientController(
             ModelState.AddModelError(field, message);
         }
 
+        var allowedStates = registration.GetLicenseStates();
+        if (!string.IsNullOrWhiteSpace(model.StateCode)
+            && !allowedStates.Contains(model.StateCode, StringComparer.OrdinalIgnoreCase))
+        {
+            ModelState.AddModelError(nameof(model.StateCode), "Select a valid US state.");
+        }
+
         if (ModelState.IsValid)
         {
             try

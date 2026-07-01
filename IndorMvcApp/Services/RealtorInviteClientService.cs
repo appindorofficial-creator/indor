@@ -238,6 +238,12 @@ public class RealtorInviteClientService(
             throw new InvalidOperationException("Property address is required.");
         }
 
+        if (!ValidStreetAddressAttribute.IsValidStreetAddress(
+                address, out var addressError, requireCityOrZip: false, requireStreetNumber: true))
+        {
+            throw new InvalidOperationException(addressError ?? "Enter a valid US street address.");
+        }
+
         if (string.IsNullOrWhiteSpace(city))
         {
             throw new InvalidOperationException("City is required.");

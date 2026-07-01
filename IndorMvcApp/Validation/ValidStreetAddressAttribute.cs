@@ -27,12 +27,21 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
     /// </summary>
     public bool RequireCityOrZip { get; set; }
 
+    /// <summary>
+    /// When true, the address must include a street number (e.g. 123 Main St).
+    /// </summary>
+    public bool RequireStreetNumber { get; set; }
+
     public ValidStreetAddressAttribute()
         : base("Please enter a valid street address (e.g. 123 Main St, Charlotte, NC).")
     {
     }
 
-    public static bool IsValidStreetAddress(string? value, out string? errorMessage, bool requireCityOrZip = false)
+    public static bool IsValidStreetAddress(
+        string? value,
+        out string? errorMessage,
+        bool requireCityOrZip = false,
+        bool requireStreetNumber = false)
     {
         errorMessage = null;
         if (string.IsNullOrWhiteSpace(value))
@@ -69,6 +78,12 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             return false;
         }
 
+        if (requireStreetNumber && !hasDigit)
+        {
+            errorMessage = "Enter a street number (e.g. 123 Main St).";
+            return false;
+        }
+
         if (requireCityOrZip)
         {
             // A bare street line ("9713 Falling Stream Dr") lacks any city/state hint.
@@ -92,7 +107,7 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             return ValidationResult.Success;
         }
 
-        return IsValidStreetAddress(text, out var message, RequireCityOrZip)
+        return IsValidStreetAddress(text, out var message, RequireCityOrZip, RequireStreetNumber)
             ? ValidationResult.Success
             : new ValidationResult(message ?? ErrorMessage ?? "Please enter a valid street address.");
     }

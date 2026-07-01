@@ -248,22 +248,42 @@ public class PerfilController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
 
-        if (!string.IsNullOrWhiteSpace(nombre)) user.Nombre = nombre.Trim();
-        if (!string.IsNullOrWhiteSpace(apellidos)) user.Apellidos = apellidos.Trim();
-        if (!string.IsNullOrWhiteSpace(telefono))
+        nombre = nombre?.Trim() ?? string.Empty;
+        apellidos = apellidos?.Trim() ?? string.Empty;
+        telefono = telefono?.Trim() ?? string.Empty;
+
+        if (string.IsNullOrWhiteSpace(nombre)
+            || string.IsNullOrWhiteSpace(apellidos)
+            || string.IsNullOrWhiteSpace(telefono))
         {
-            user.Telefono = telefono.Trim();
-            user.PhoneNumber = telefono.Trim();
+            return await ReturnEditProfileViewAsync(
+                user,
+                "First name, last name, and phone are required.",
+                nombre,
+                apellidos,
+                telefono);
         }
+
+        if (!UsPhoneOptionalAttribute.IsValidOptional(telefono))
+        {
+            return await ReturnEditProfileViewAsync(
+                user,
+                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).",
+                nombre,
+                apellidos,
+                telefono);
+        }
+
+        user.Nombre = nombre;
+        user.Apellidos = apellidos;
+        var phone = UsPhoneOptionalAttribute.NormalizeToStorage(telefono) ?? telefono;
+        user.Telefono = phone;
+        user.PhoneNumber = phone;
 
         var photoError = await TrySaveHomeownerPhotoAsync(user, foto);
         if (!string.IsNullOrWhiteSpace(photoError))
         {
-            TempData["PerfilError"] = photoError;
-            ViewData["Title"] = "Edit Profile";
-            ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
-            SetMoreSectionBackUrl(Request.Query["from"].ToString());
-            return View(await MapEditProfileViewModelAsync(user));
+            return await ReturnEditProfileViewAsync(user, photoError, nombre, apellidos, telefono);
         }
 
         await _userManager.UpdateAsync(user);
@@ -735,6 +755,24 @@ public class PerfilController : Controller
         return View();
     }
 
+    private async Task<IActionResult> ReturnEditProfileViewAsync(
+        ApplicationUser user,
+        string error,
+        string nombre,
+        string apellidos,
+        string telefono)
+    {
+        TempData["PerfilError"] = error;
+        ViewData["Title"] = "Edit Profile";
+        ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+        SetMoreSectionBackUrl(Request.Query["from"].ToString());
+        var model = await MapEditProfileViewModelAsync(user);
+        model.Nombre = nombre;
+        model.Apellidos = apellidos;
+        model.Telefono = telefono;
+        return View(model);
+    }
+
     private async Task<HomeownerEditProfileViewModel> MapEditProfileViewModelAsync(ApplicationUser user)
     {
         var fullName = UserDisplayName.Format(user);
@@ -930,8 +968,16 @@ public class PerfilController : Controller
         if (!string.IsNullOrWhiteSpace(apellidos)) user.Apellidos = apellidos.Trim();
         if (!string.IsNullOrWhiteSpace(telefono))
         {
-            user.Telefono = telefono.Trim();
-            user.PhoneNumber = telefono.Trim();
+            telefono = telefono.Trim();
+            if (!UsPhoneOptionalAttribute.IsValidOptional(telefono))
+            {
+                TempData["PerfilError"] = "Enter a valid 10-digit US phone number (e.g. 555 123 4567).";
+                return RedirectToAction(nameof(Opciones));
+            }
+
+            var phone = UsPhoneOptionalAttribute.NormalizeToStorage(telefono) ?? telefono;
+            user.Telefono = phone;
+            user.PhoneNumber = phone;
         }
 
         await _userManager.UpdateAsync(user);

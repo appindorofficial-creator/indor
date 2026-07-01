@@ -54,6 +54,17 @@
 
 .rl-reg-form .ob-btn { width: 100%; margin-top: 8px; }
 .rl-field-block { margin-bottom: 14px; }
+.rl-field-block--address { position: relative; z-index: 3; }
+.rl-field-block--compact { margin-bottom: 0; }
+.rl-reg-office-grid {
+    display: grid;
+    grid-template-columns: 1fr 88px 108px;
+    gap: 10px;
+    margin-top: 10px;
+}
+@media (max-width: 560px) {
+    .rl-reg-office-grid { grid-template-columns: 1fr; }
+}
 .rl-field-label {
     display: block;
     font-size: .82rem;
@@ -1478,6 +1489,8 @@ a.rl-invite-cancel {
     gap: 12px;
 }
 .rl-cp-field { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.rl-cp-field--address { position: relative; z-index: 3; }
+.pac-container { z-index: 10050 !important; }
 .rl-cp-field > label {
     font-size: .82rem;
     font-weight: 700;

@@ -648,13 +648,17 @@
             bindCityZipGeocode(input);
         });
 
+        document.querySelectorAll('input[data-ac-zip][data-ac-state]:not([data-city-autocomplete]):not([data-address-autocomplete])').forEach(function (input) {
+            bindCityZipGeocode(input);
+        });
+
         bindStateSelectZipLookup();
 
         document.querySelectorAll('[data-ac-state]').forEach(function (input) {
             bindManualZipEdit(getLinkedElement(input, 'Zip'));
         });
 
-        document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete]').forEach(function (input) {
+        document.querySelectorAll('input[data-city-autocomplete], input[data-address-autocomplete], input[data-ac-zip][data-ac-state]:not([data-city-autocomplete]):not([data-address-autocomplete])').forEach(function (input) {
             if (shouldRunInitialZipLookup(input)) {
                 tryGeocodeLinkedZip(input);
             }
@@ -746,6 +750,21 @@
         });
     }
 
+    function formatStreetOnlyLine(components, place, fallback) {
+        var num = getComponent(components, 'street_number', false);
+        var route = getComponent(components, 'route', false);
+        var line = [num, route].filter(Boolean).join(' ').trim();
+        if (line) {
+            return line;
+        }
+
+        if (place.formatted_address) {
+            return place.formatted_address.split(',')[0].trim();
+        }
+
+        return fallback;
+    }
+
     function applyPlace(input, place) {
         if (!place) return;
         var components = place.address_components || null;
@@ -758,8 +777,7 @@
                 fillLinkedField(input, 'HouseNumber', num);
                 input.value = (route || input.value).trim();
             } else {
-                var streetLine = [num, route].filter(function (part) { return !!part; }).join(' ').trim();
-                input.value = streetLine || place.formatted_address || input.value;
+                input.value = formatStreetOnlyLine(components, place, input.value);
             }
         } else if (place.formatted_address) {
             input.value = place.formatted_address;
@@ -818,7 +836,11 @@
             });
 
             ac.addListener('place_changed', function () {
-                applyPlace(input, ac.getPlace());
+                var place = ac.getPlace();
+                if (!place || !place.address_components || !place.address_components.length) {
+                    return;
+                }
+                applyPlace(input, place);
                 finalizeAutocompleteSelection(input);
             });
 

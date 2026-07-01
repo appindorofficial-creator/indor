@@ -7,9 +7,10 @@
         return digits.slice(0, 10);
     }
 
-    function isValidOptionalPhone(value) {
+    function isValidOptionalPhone(value, minDigits) {
+        minDigits = minDigits == null ? 10 : minDigits;
         var digits = normalizePhoneDigits(value);
-        return !digits || digits.length === 10;
+        return !digits || (digits.length >= minDigits && digits.length <= 10);
     }
 
     function attachPhoneInput(input, options) {
@@ -18,13 +19,25 @@
         }
 
         options = options || {};
-        var required = options.required === true;
+        var required = options.required === true
+            || input.hasAttribute('required')
+            || input.dataset.phoneRequired === 'true';
+        var minDigits = options.minDigits;
+        if (minDigits == null && input.dataset.phoneMinDigits) {
+            minDigits = parseInt(input.dataset.phoneMinDigits, 10);
+        }
+        if (minDigits == null || isNaN(minDigits)) {
+            minDigits = 10;
+        }
         input.dataset.phoneBound = 'true';
         input.setAttribute('inputmode', 'numeric');
         input.setAttribute('autocomplete', input.getAttribute('autocomplete') || 'tel');
         input.setAttribute('maxlength', '10');
 
-        var invalidMessage = options.invalidMessage || 'Enter a valid 10-digit US phone number.';
+        var invalidMessage = options.invalidMessage
+            || (minDigits >= 10
+                ? 'Enter a valid 10-digit US phone number.'
+                : 'Enter a valid phone number (1–10 digits).');
         var requiredMessage = options.requiredMessage || 'Phone number is required.';
 
         function syncValue() {
@@ -38,7 +51,9 @@
                 return;
             }
 
-            input.setCustomValidity(digits.length === 10 ? '' : invalidMessage);
+            input.setCustomValidity(
+                digits.length >= minDigits && digits.length <= 10 ? '' : invalidMessage
+            );
         }
 
         input.addEventListener('beforeinput', function (e) {
@@ -90,7 +105,13 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('[data-phone-input]').forEach(function (input) {
-            attachPhoneInput(input);
+            var minDigits = input.dataset.phoneMinDigits
+                ? parseInt(input.dataset.phoneMinDigits, 10)
+                : undefined;
+            attachPhoneInput(input, {
+                minDigits: minDigits,
+                required: input.hasAttribute('required') || input.dataset.phoneRequired === 'true'
+            });
         });
     });
 })();

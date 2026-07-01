@@ -238,10 +238,27 @@
         var city = cityInput ? cityInput.value.trim() : '';
         var state = stateInput ? stateInput.value.trim() : '';
         var zip = zipInput ? zipInput.value.trim() : '';
+        var addressMessage = 'Enter a valid US street address with a street number (e.g. 123 Main St).';
+
+        function isValidStreetAddress(value) {
+            var line = String(value || '').trim();
+            if (line.length < 5) return false;
+            if (!/\p{L}/u.test(line)) return false;
+            if (/^[\d\s.,#-]+$/.test(line)) return false;
+            var tokens = line.split(/\s+/).filter(Boolean);
+            var hasDigit = /\d/.test(line);
+            var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
+            if (!hasDigit) return false;
+            if (wordParts < 1) return false;
+            return true;
+        }
 
         if (!address) {
             setFormFieldError('createPropertyForm', 'Address', 'Property address is required.');
             errors.push('Property address is required.');
+        } else if (!isValidStreetAddress(address)) {
+            setFormFieldError('createPropertyForm', 'Address', addressMessage);
+            errors.push(addressMessage);
         }
         if (!city) {
             setFormFieldError('createPropertyForm', 'City', 'City is required.');
