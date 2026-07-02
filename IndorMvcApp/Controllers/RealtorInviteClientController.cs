@@ -331,6 +331,6 @@ public class RealtorInviteClientController(
     public async Task<IActionResult> Cancel()
     {
         await inviteService.CancelDraftAsync();
-        return RedirectToAction("Clients", "Realtor");
+        return RedirectToAction("Dashboard", "Realtor");
     }
 }

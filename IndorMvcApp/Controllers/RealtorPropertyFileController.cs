@@ -272,6 +272,6 @@ public class RealtorPropertyFileController(
     public async Task<IActionResult> Cancel()
     {
         await wizard.CancelDraftAsync();
-        return RedirectToAction("Files", "Realtor");
+        return RedirectToAction("Dashboard", "Realtor");
     }
 }
