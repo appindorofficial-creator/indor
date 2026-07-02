@@ -85,6 +85,32 @@ public class HomeownerPropertyService(
         return propertyInfo;
     }
 
+    public async Task<int?> SaveHomeAddressAsync(
+        AddPropertyViewModel model,
+        string userId,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(model.StreetAddress)
+            || string.IsNullOrWhiteSpace(model.City)
+            || string.IsNullOrWhiteSpace(model.State)
+            || string.IsNullOrWhiteSpace(model.ZipCode))
+        {
+            return null;
+        }
+
+        var existing = await GetPrimaryPropertyAsync(userId, cancellationToken);
+        var lookupAddress = model.BuildLookupAddress();
+        var propertyInfo = await addressLookupService.GetGeocodedPropertyAsync(lookupAddress, cancellationToken)
+            ?? BuildPropertyInfoFromForm(model);
+        if (propertyInfo == null)
+        {
+            return null;
+        }
+
+        ApplyAddressFields(propertyInfo, model);
+        return await SaveOrUpdatePropertyAsync(propertyInfo, userId, existing?.Id, cancellationToken);
+    }
+
     public async Task<int> SaveOrUpdatePropertyAsync(
         PropertyInfoViewModel propertyInfo,
         string userId,
@@ -276,9 +302,15 @@ public class HomeownerPropertyService(
             propertyInfo.City = model.City.Trim();
         }
 
-        if (string.IsNullOrWhiteSpace(propertyInfo.State))
+        if (!string.IsNullOrWhiteSpace(model.State))
         {
-            propertyInfo.State = model.State.Trim().ToUpperInvariant();
+            propertyInfo.State = PropertyAdministratorCatalog.NormalizeUsStateCode(model.State.Trim())
+                ?? model.State.Trim().ToUpperInvariant();
+        }
+        else if (!string.IsNullOrWhiteSpace(propertyInfo.State))
+        {
+            propertyInfo.State = PropertyAdministratorCatalog.NormalizeUsStateCode(propertyInfo.State)
+                ?? propertyInfo.State.Trim().ToUpperInvariant();
         }
 
         if (string.IsNullOrWhiteSpace(propertyInfo.PostalCode))

@@ -81,27 +81,53 @@
         });
     }
 
+    function shouldShowResearchLoading(form, submitter) {
+        if (form.hasAttribute("data-property-research-loading")) {
+            return true;
+        }
+
+        return !!(submitter && submitter.getAttribute("data-trigger-research-loading") === "true");
+    }
+
+    function handleResearchSubmit(event) {
+        const form = event.target;
+        if (!(form instanceof HTMLFormElement)) {
+            return;
+        }
+
+        const submitter = event.submitter;
+        if (!shouldShowResearchLoading(form, submitter)) {
+            return;
+        }
+
+        if (form.dataset.prlSubmitted === "true") {
+            return;
+        }
+
+        if (typeof form.reportValidity === "function" && !form.reportValidity()) {
+            return;
+        }
+
+        event.preventDefault();
+        form.dataset.prlSubmitted = "true";
+
+        const submitBtn = submitter || form.querySelector('[type="submit"]');
+        submitAfterPaint(form, submitBtn);
+    }
+
     function bindForms() {
         document.querySelectorAll("[data-property-research-loading]").forEach(function (form) {
             if (form.dataset.prlBound === "true") return;
             form.dataset.prlBound = "true";
-
-            form.addEventListener("submit", function (event) {
-                if (form.dataset.prlSubmitted === "true") {
-                    return;
-                }
-
-                if (typeof form.reportValidity === "function" && !form.reportValidity()) {
-                    return;
-                }
-
-                event.preventDefault();
-                form.dataset.prlSubmitted = "true";
-
-                const submitBtn = form.querySelector('[type="submit"]');
-                submitAfterPaint(form, submitBtn);
-            });
+            form.addEventListener("submit", handleResearchSubmit);
         });
+
+        if (document.body.dataset.prlDocumentBound === "true") {
+            return;
+        }
+
+        document.body.dataset.prlDocumentBound = "true";
+        document.addEventListener("submit", handleResearchSubmit, true);
     }
 
     if (document.readyState === "loading") {

@@ -18,6 +18,11 @@ public interface IHomeownerPropertyService
         int? existingPropertyId = null,
         CancellationToken cancellationToken = default);
 
+    Task<int?> SaveHomeAddressAsync(
+        AddPropertyViewModel model,
+        string userId,
+        CancellationToken cancellationToken = default);
+
     Task<PropertyMaintenancePlanViewModel> TryGenerateMaintenanceAsync(
         PropertyInfoViewModel propertyInfo,
         CancellationToken cancellationToken = default);

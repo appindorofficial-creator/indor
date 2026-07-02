@@ -33,6 +33,31 @@
     var zipFetchControllers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
     var geocodeGenerations = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
 
+    function isUsStateCode(value) {
+        return typeof value === 'string' && /^[A-Z]{2}$/i.test(value.trim());
+    }
+
+    function captureInitialStateSelectValues() {
+        document.querySelectorAll('select[data-ac-zip][data-ac-city]').forEach(function (select) {
+            var current = select.value.trim();
+            if (current && isUsStateCode(current)) {
+                select.dataset.initialState = current.toUpperCase();
+            }
+        });
+    }
+
+    function restoreInitialStateSelectValues() {
+        document.querySelectorAll('select[data-ac-zip][data-ac-city]').forEach(function (select) {
+            var initial = select.dataset.initialState;
+            if (!initial || !isUsStateCode(initial) || select.value.trim()) {
+                return;
+            }
+
+            restoreStateSelect(select);
+            select.value = initial.toUpperCase();
+        });
+    }
+
     function ensureStateSelectSnapshot(select) {
         if (!stateSelectSnapshots || stateSelectSnapshots.has(select)) {
             return;
@@ -45,6 +70,13 @@
     }
 
     function filterStateSelect(select, stateCode) {
+        if (stateCode) {
+            stateCode = stateCode.trim().toUpperCase();
+            if (!isUsStateCode(stateCode)) {
+                return;
+            }
+        }
+
         ensureStateSelectSnapshot(select);
         var snapshot = stateSelectSnapshots.get(select);
         if (!snapshot) {
@@ -817,6 +849,7 @@
     }
 
     function initAddressAutocomplete() {
+        captureInitialStateSelectValues();
         bindPacDismissHandlers();
         observePacContainers();
         initZipGeocodeLinking();
@@ -863,6 +896,7 @@
         });
 
         initCityAutocomplete();
+        restoreInitialStateSelectValues();
     }
 
     // Google Maps JS calls this global callback once it finishes loading.

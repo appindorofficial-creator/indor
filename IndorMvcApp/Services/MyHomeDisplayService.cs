@@ -7,6 +7,11 @@ namespace IndorMvcApp.Services;
 
 public static class MyHomeDisplayService
 {
+    private static readonly JsonSerializerOptions PropertyJsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     public static PropertyInfoViewModel? DeserializeProperty(Propiedad propiedad)
     {
         PropertyInfoViewModel? info = null;
@@ -15,7 +20,7 @@ public static class MyHomeDisplayService
         {
             try
             {
-                info = JsonSerializer.Deserialize<PropertyInfoViewModel>(propiedad.DatosJson);
+                info = JsonSerializer.Deserialize<PropertyInfoViewModel>(propiedad.DatosJson, PropertyJsonOptions);
             }
             catch
             {
@@ -66,12 +71,19 @@ public static class MyHomeDisplayService
 
         if (!string.IsNullOrWhiteSpace(info?.State))
         {
-            form.State = info.State.Trim().ToUpperInvariant();
+            form.State = PropertyAdministratorCatalog.NormalizeUsStateCode(info.State)
+                ?? info.State.Trim().ToUpperInvariant();
         }
 
         if (!string.IsNullOrWhiteSpace(info?.PostalCode))
         {
             form.ZipCode = info.PostalCode.Trim();
+        }
+
+        if (string.IsNullOrWhiteSpace(form.State))
+        {
+            form.State = PropertyAdministratorCatalog.TryExtractStateFromAddress(info?.FormattedAddress)
+                ?? PropertyAdministratorCatalog.TryExtractStateFromAddress(propiedad.Direccion);
         }
 
         if (IsAddressFormComplete(form))
