@@ -72,7 +72,24 @@
     }
 
     function submitAfterPaint(form, submitBtn) {
+        // form.submit() ignores the submitter, so a button's formaction/formmethod
+        // (e.g. the "Discover with AI" button posting to EnriquecerPropiedad) would
+        // be lost and the request would hit the form's default action ("save
+        // profile") instead — which is why the button appeared to do nothing.
+        // Copy the button's overrides onto the form before submitting.
+        if (submitBtn) {
+            var formAction = submitBtn.getAttribute("formaction");
+            if (formAction) {
+                form.setAttribute("action", formAction);
+            }
+            var formMethod = submitBtn.getAttribute("formmethod");
+            if (formMethod) {
+                form.setAttribute("method", formMethod);
+            }
+        }
+
         showLoading(submitBtn);
+
         // Let the browser paint the overlay before the long POST starts.
         window.requestAnimationFrame(function () {
             window.requestAnimationFrame(function () {
