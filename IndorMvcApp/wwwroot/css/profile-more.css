@@ -1895,7 +1895,7 @@
     color: #0066CC;
     text-decoration: none;
 }
-.pf-home-address-form { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+.pf-home-address-form { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 10px; }
 .pf-home-address-form label.pf-field {
     display: flex;
     flex-direction: column;
@@ -1931,6 +1931,13 @@
     line-height: 1.45;
 }
 .pf-home-hint i { color: #0066CC; margin-top: 2px; }
+.pf-home-zip-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: .72rem;
+    color: #64748B;
+    line-height: 1.4;
+}
 .pf-home-ai-btn {
     width: 100%;
     display: flex;

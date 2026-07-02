@@ -7,6 +7,7 @@
 }
 
 <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/address-autocomplete.css" asp-append-version="true" />
 
 @if (TempData["PerfilOk"] is string okMessage)
 {
@@ -135,7 +136,7 @@
     }
 
     <form asp-controller="Perfil" asp-action="EnriquecerPropiedad" method="post"
-          class="pf-home-address-form" data-property-research-loading autocomplete="on">
+          class="pf-home-address-form" data-property-research-loading autocomplete="off">
         @Html.AntiForgeryToken()
 
         <label class="pf-field">
@@ -143,7 +144,7 @@
             <input asp-for="AddressForm.StreetAddress"
                    id="ep-street"
                    placeholder="House number and street name"
-                   autocomplete="off"
+                   autocomplete="address-line1"
                    data-address-autocomplete
                    data-ac-street-only="true"
                    data-ac-city="ep-city"
@@ -156,9 +157,9 @@
                 <span>City</span>
                 <input asp-for="AddressForm.City"
                        id="ep-city"
-                       placeholder="City"
-                       autocomplete="off"
-                       data-city-autocomplete
+                       placeholder="Enter city"
+                       autocomplete="address-level2"
+                       data-ac-city="ep-city"
                        data-ac-state="ep-state"
                        data-ac-zip="ep-zip" />
             </label>
@@ -168,8 +169,9 @@
                         id="ep-state"
                         autocomplete="address-level1"
                         data-ac-zip="ep-zip"
-                        data-ac-city="ep-city">
-                    <option value="">State</option>
+                        data-ac-city="ep-city"
+                        data-ac-address="ep-street">
+                    <option value="">Select state</option>
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
                         <option value="@stateCode">@stateCode</option>
@@ -183,12 +185,17 @@
                 <span>ZIP code</span>
                 <input asp-for="AddressForm.ZipCode"
                        id="ep-zip"
-                       placeholder="ZIP"
+                       placeholder="Enter 5-digit ZIP code"
                        autocomplete="postal-code"
                        inputmode="numeric"
                        maxlength="10"
+                       minlength="5"
                        pattern="\d{5}(-\d{4})?"
-                       title="Enter a 5-digit ZIP code or ZIP+4 (e.g. 28269 or 28269-1234)" />
+                       title="Enter a 5-digit ZIP code or ZIP+4 (e.g. 28269 or 28269-1234)"
+                       data-zip-input />
+                <small class="pf-home-zip-hint" id="ep-zip-hint" data-ac-zip-hint-for="ep-zip" hidden>
+                    Suggested from city and state when you select a state. Change it if your property uses a different ZIP.
+                </small>
             </label>
             <label class="pf-field">
                 <span>Unit <small class="pf-optional">(optional)</small></span>
@@ -215,6 +222,8 @@
 @await Html.PartialAsync("_PropertyResearchLoading")
 
 @section Scripts {
+    <script src="~/js/zip-input.js" asp-append-version="true"></script>
+    @await Html.PartialAsync("_AddressAutocompleteScripts")
     <script>
         (function () {
             var input = document.getElementById('fotoInput');
@@ -242,5 +251,4 @@
             }
         })();
     </script>
-    @await Html.PartialAsync("_AddressAutocompleteScripts")
 }
