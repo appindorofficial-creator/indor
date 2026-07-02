@@ -1733,6 +1733,7 @@
 .pf-edit-upload-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 10px 14px;
     border-radius: 10px;
@@ -1741,6 +1742,7 @@
     color: #0A2540;
     font-size: .82rem;
     font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
 }
 
