@@ -189,6 +189,10 @@
             flex-shrink: 0;
         }
 
+        body.top-bar-no-bell #bellToggle {
+            display: none;
+        }
+
         /* === Sections === */
         .section { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
         .section.active { display: block; }
