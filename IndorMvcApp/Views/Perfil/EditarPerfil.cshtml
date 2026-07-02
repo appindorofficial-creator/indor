@@ -167,6 +167,7 @@
                 <select asp-for="AddressForm.State"
                         id="ep-state"
                         autocomplete="address-level1"
+                        data-ac-address="ep-street"
                         data-ac-zip="ep-zip"
                         data-ac-city="ep-city">
                     <option value="">State</option>
@@ -242,5 +243,6 @@
             }
         })();
     </script>
+    <script src="~/js/zip-input.js" asp-append-version="true"></script>
     @await Html.PartialAsync("_AddressAutocompleteScripts")
 }

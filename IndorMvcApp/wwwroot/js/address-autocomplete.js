@@ -23,6 +23,10 @@
         if (!value) return;
         var target = getLinkedElement(input, suffix);
         if (!target) return;
+        if (suffix === 'State' && target.tagName === 'SELECT') {
+            ensureStateSelectSnapshot(target);
+            filterStateSelect(target, value);
+        }
         target.value = value;
         target.dispatchEvent(new Event('input', { bubbles: true }));
         target.dispatchEvent(new Event('change', { bubbles: true }));
@@ -378,6 +382,27 @@
         });
     }
 
+    function isPacVisible() {
+        return Array.from(document.querySelectorAll('.pac-container')).some(function (pac) {
+            if (pac.classList.contains('pac-container--dismissed')) {
+                return false;
+            }
+            if (pac.style.display === 'none' || pac.style.visibility === 'hidden') {
+                return false;
+            }
+            return pac.offsetParent !== null || pac.getClientRects().length > 0;
+        });
+    }
+
+    function isAutocompleteFieldFocused() {
+        var active = document.activeElement;
+        return !!(active && isAutocompleteInput(active));
+    }
+
+    function shouldKeepPacOpen() {
+        return isPacVisible() && (isAutocompleteFieldFocused() || !!lastAutocompleteInput);
+    }
+
     function dismissPacDropdown(activeInput) {
         document.querySelectorAll('.pac-container').forEach(function (pac) {
             pac.style.display = 'none';
@@ -471,12 +496,8 @@
     }
 
     function handlePacItemInteraction() {
-        var active = document.activeElement;
-        finalizeAutocompleteSelection(
-            active && (active.matches('[data-address-autocomplete]') || active.matches('[data-city-autocomplete]'))
-                ? active
-                : null
-        );
+        // Let Google Places finish the selection before we blur/close the list.
+        suppressPacDismiss(1200);
     }
 
     function bindAutocompleteDismissHandlers(input) {
@@ -553,11 +574,17 @@
             if (e.target.closest('.pac-container')) {
                 return;
             }
+            if (isAutocompleteInput(e.target)) {
+                return;
+            }
             dismissPacDropdown(null);
         }, true);
 
         document.addEventListener('scroll', function () {
             if (pacDismissSuppressed) {
+                return;
+            }
+            if (shouldKeepPacOpen()) {
                 return;
             }
             dismissPacDropdown(null);
@@ -569,6 +596,7 @@
             return;
         }
 
+        suppressPacDismiss(900);
         window.setTimeout(function () {
             try {
                 input.scrollIntoView({ block: 'center', behavior: 'smooth' });

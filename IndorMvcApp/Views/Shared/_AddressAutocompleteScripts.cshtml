@@ -8,5 +8,31 @@
 <link rel="stylesheet" href="~/css/address-autocomplete.css" asp-append-version="true" />
 @if (hasBrowserKey)
 {
-    <script async src="https://maps.googleapis.com/maps/api/js?key=@browserApiKey&amp;libraries=places&amp;loading=async&amp;callback=indorInitAddressAutocomplete"></script>
+    <script>
+        (function () {
+            function bootPlacesAutocomplete() {
+                if (typeof window.indorInitAddressAutocomplete === 'function') {
+                    window.indorInitAddressAutocomplete();
+                }
+            }
+
+            window.indorGoogleMapsReady = bootPlacesAutocomplete;
+
+            if (window.google && google.maps && google.maps.places) {
+                bootPlacesAutocomplete();
+                return;
+            }
+
+            if (document.getElementById('indor-google-maps-loader')) {
+                return;
+            }
+
+            var script = document.createElement('script');
+            script.id = 'indor-google-maps-loader';
+            script.src = 'https://maps.googleapis.com/maps/api/js?key=@browserApiKey&amp;libraries=places&amp;callback=indorGoogleMapsReady';
+            script.async = true;
+            script.defer = true;
+            document.head.appendChild(script);
+        })();
+    </script>
 }
