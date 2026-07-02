@@ -1,12 +1,12 @@
 (function () {
-    function bindSelectedCards(selector) {
-        document.querySelectorAll(selector + ' input').forEach(function (input) {
+    function bindSelectedCards(containerSelector) {
+        document.querySelectorAll(containerSelector + ' input').forEach(function (input) {
             input.addEventListener('change', function () {
-                var group = input.closest(selector.replace(' input', '')) || input.closest('.rr-need-grid, .rr-time-row, .rr-home-grid, .rr-chip-row, .rr-icon-row, .rr-contact-row, .rr-rent-grid');
-                if (!group) {
-                    document.querySelectorAll(selector.split(' ')[0]).forEach(function (c) { c.classList.remove('selected'); });
-                } else {
+                var group = input.closest('.rr-need-grid, .rr-time-row, .rr-home-grid, .rr-chip-row, .rr-icon-row, .rr-contact-row, .rr-rent-grid');
+                if (group) {
                     group.querySelectorAll('label').forEach(function (c) { c.classList.remove('selected'); });
+                } else {
+                    document.querySelectorAll(containerSelector).forEach(function (c) { c.classList.remove('selected'); });
                 }
                 var label = input.closest('label');
                 if (label) label.classList.add('selected');
@@ -14,12 +14,12 @@
         });
     }
 
-    bindSelectedCards('.rr-need-card input');
-    bindSelectedCards('.rr-time-btn input');
-    bindSelectedCards('.rr-chip-btn input');
-    bindSelectedCards('.rr-home-card input');
-    bindSelectedCards('.rr-icon-card input');
-    bindSelectedCards('.rr-contact-btn input');
+    bindSelectedCards('.rr-need-card');
+    bindSelectedCards('.rr-time-btn');
+    bindSelectedCards('.rr-chip-btn');
+    bindSelectedCards('.rr-home-card');
+    bindSelectedCards('.rr-icon-card');
+    bindSelectedCards('.rr-contact-btn');
 
     document.querySelectorAll('.rr-rent-grid .rr-chip-btn input').forEach(function (radio) {
         radio.addEventListener('change', function () {
@@ -53,10 +53,4 @@
         update();
     }
 
-    document.querySelectorAll('.rr-need-card input').forEach(function (radio) {
-        radio.addEventListener('change', function () {
-            document.querySelectorAll('.rr-need-card').forEach(function (c) { c.classList.remove('selected'); });
-            radio.closest('.rr-need-card').classList.add('selected');
-        });
-    });
 })();
