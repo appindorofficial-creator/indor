@@ -563,6 +563,8 @@
         input.addEventListener('input', function () {
             setActiveAutocompleteInput(input);
             hideStalePacContainers(input);
+            positionPacContainer(input);
+            window.requestAnimationFrame(function () { positionPacContainer(input); });
         });
 
         input.addEventListener('blur', function () {
@@ -589,12 +591,16 @@
                 mutation.addedNodes.forEach(function (node) {
                     if (node.nodeType === 1 && node.classList && node.classList.contains('pac-container')) {
                         addedPac = true;
+                        watchPacContainer(node);
                     }
                 });
             });
 
             if (addedPac) {
-                hideStalePacContainers(lastAutocompleteInput || document.activeElement);
+                var activeInput = lastAutocompleteInput || document.activeElement;
+                hideStalePacContainers(activeInput);
+                positionPacContainer(activeInput);
+                window.requestAnimationFrame(function () { positionPacContainer(activeInput); });
             }
         });
 
@@ -623,14 +629,86 @@
         }, true);
 
         document.addEventListener('scroll', function () {
-            if (pacDismissSuppressed) {
+            if (shouldKeepPacOpen()) {
+                positionPacContainer(lastAutocompleteInput);
                 return;
             }
-            if (shouldKeepPacOpen()) {
+            if (pacDismissSuppressed) {
                 return;
             }
             dismissPacDropdown(null, false);
         }, true);
+
+        window.addEventListener('resize', function () {
+            if (shouldKeepPacOpen()) {
+                positionPacContainer(lastAutocompleteInput);
+            }
+        });
+    }
+
+    var pacStyleObservers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+
+    function resolvePacAnchor(input) {
+        return input && isAutocompleteInput(input) ? input : lastAutocompleteInput;
+    }
+
+    function applyPacPosition(pac, input) {
+        if (!pac || pac.classList.contains('pac-container--dismissed')) {
+            return;
+        }
+
+        var target = resolvePacAnchor(input);
+        if (!target || typeof target.getBoundingClientRect !== 'function') {
+            return;
+        }
+
+        var rect = target.getBoundingClientRect();
+        if (!rect.width && !rect.height) {
+            return;
+        }
+
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
+        var scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
+        var desiredTop = Math.round(rect.bottom + scrollY) + 'px';
+        var desiredLeft = Math.round(rect.left + scrollX) + 'px';
+        var desiredWidth = Math.round(rect.width) + 'px';
+
+        // Skip rewriting when already correct — prevents the style observer from looping.
+        if (pac.style.position === 'absolute'
+            && pac.style.top === desiredTop
+            && pac.style.left === desiredLeft
+            && pac.style.width === desiredWidth) {
+            return;
+        }
+
+        pac.style.setProperty('position', 'absolute', 'important');
+        pac.style.setProperty('top', desiredTop, 'important');
+        pac.style.setProperty('left', desiredLeft, 'important');
+        pac.style.setProperty('width', desiredWidth, 'important');
+        pac.style.setProperty('margin-top', '0', 'important');
+    }
+
+    // Google repositions the dropdown on its own timers; re-correct whenever it does.
+    function watchPacContainer(pac) {
+        if (!window.MutationObserver || !pacStyleObservers || pacStyleObservers.has(pac)) {
+            return;
+        }
+        var observer = new MutationObserver(function () {
+            if (!shouldKeepPacOpen()) {
+                return;
+            }
+            applyPacPosition(pac, lastAutocompleteInput);
+        });
+        observer.observe(pac, { attributes: true, attributeFilter: ['style'] });
+        pacStyleObservers.set(pac, observer);
+    }
+
+    function positionPacContainer(input) {
+        var anchor = resolvePacAnchor(input);
+        document.querySelectorAll('.pac-container').forEach(function (pac) {
+            watchPacContainer(pac);
+            applyPacPosition(pac, anchor);
+        });
     }
 
     function scrollFieldIntoView(input) {
@@ -645,6 +723,7 @@
             } catch (e) {
                 input.scrollIntoView(true);
             }
+            window.setTimeout(function () { positionPacContainer(input); }, 320);
         }, 300);
     }
 

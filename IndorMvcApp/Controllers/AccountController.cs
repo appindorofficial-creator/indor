@@ -102,7 +102,7 @@ public class AccountController : Controller
         ViewBag.OnboardingTitle = "Create Account";
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
-        return View();
+        return View(new RegisterViewModel());
     }
 
     private static void SplitFullName(RegisterViewModel model)
