@@ -558,13 +558,14 @@
         input.addEventListener('focus', function () {
             setActiveAutocompleteInput(input);
             scrollFieldIntoView(input);
+            startPacPositionLoop();
         });
 
         input.addEventListener('input', function () {
             setActiveAutocompleteInput(input);
             hideStalePacContainers(input);
             positionPacContainer(input);
-            window.requestAnimationFrame(function () { positionPacContainer(input); });
+            startPacPositionLoop();
         });
 
         input.addEventListener('blur', function () {
@@ -591,7 +592,6 @@
                 mutation.addedNodes.forEach(function (node) {
                     if (node.nodeType === 1 && node.classList && node.classList.contains('pac-container')) {
                         addedPac = true;
-                        watchPacContainer(node);
                     }
                 });
             });
@@ -600,7 +600,7 @@
                 var activeInput = lastAutocompleteInput || document.activeElement;
                 hideStalePacContainers(activeInput);
                 positionPacContainer(activeInput);
-                window.requestAnimationFrame(function () { positionPacContainer(activeInput); });
+                startPacPositionLoop();
             }
         });
 
@@ -646,7 +646,7 @@
         });
     }
 
-    var pacStyleObservers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+    var pacPositionRafId = null;
 
     function resolvePacAnchor(input) {
         return input && isAutocompleteInput(input) ? input : lastAutocompleteInput;
@@ -667,48 +667,54 @@
             return;
         }
 
-        var scrollY = window.pageYOffset || document.documentElement.scrollTop || 0;
-        var scrollX = window.pageXOffset || document.documentElement.scrollLeft || 0;
-        var desiredTop = Math.round(rect.bottom + scrollY) + 'px';
-        var desiredLeft = Math.round(rect.left + scrollX) + 'px';
+        // Fixed positioning uses viewport coordinates directly — no scroll math,
+        // which avoids the "dropdown jumps to the top of the page" bug.
+        var desiredTop = Math.round(rect.bottom) + 'px';
+        var desiredLeft = Math.round(rect.left) + 'px';
         var desiredWidth = Math.round(rect.width) + 'px';
 
-        // Skip rewriting when already correct — prevents the style observer from looping.
-        if (pac.style.position === 'absolute'
+        if (pac.style.position === 'fixed'
             && pac.style.top === desiredTop
             && pac.style.left === desiredLeft
             && pac.style.width === desiredWidth) {
             return;
         }
 
-        pac.style.setProperty('position', 'absolute', 'important');
+        pac.style.setProperty('position', 'fixed', 'important');
         pac.style.setProperty('top', desiredTop, 'important');
         pac.style.setProperty('left', desiredLeft, 'important');
         pac.style.setProperty('width', desiredWidth, 'important');
         pac.style.setProperty('margin-top', '0', 'important');
-    }
-
-    // Google repositions the dropdown on its own timers; re-correct whenever it does.
-    function watchPacContainer(pac) {
-        if (!window.MutationObserver || !pacStyleObservers || pacStyleObservers.has(pac)) {
-            return;
-        }
-        var observer = new MutationObserver(function () {
-            if (!shouldKeepPacOpen()) {
-                return;
-            }
-            applyPacPosition(pac, lastAutocompleteInput);
-        });
-        observer.observe(pac, { attributes: true, attributeFilter: ['style'] });
-        pacStyleObservers.set(pac, observer);
+        pac.style.setProperty('z-index', '100000', 'important');
     }
 
     function positionPacContainer(input) {
         var anchor = resolvePacAnchor(input);
         document.querySelectorAll('.pac-container').forEach(function (pac) {
-            watchPacContainer(pac);
             applyPacPosition(pac, anchor);
         });
+    }
+
+    // Re-apply the position every animation frame while the field is engaged so
+    // Google's own repositioning can never leave the dropdown stranded at the top.
+    // Keeps running while the input is focused (Google reuses one hidden container
+    // and only toggles it), and while any suggestions remain visible.
+    function pacPositionTick() {
+        var active = lastAutocompleteInput;
+        var keepRunning = !!active && (document.activeElement === active || isPacVisible());
+        if (keepRunning) {
+            positionPacContainer(active);
+            pacPositionRafId = window.requestAnimationFrame(pacPositionTick);
+        } else {
+            pacPositionRafId = null;
+        }
+    }
+
+    function startPacPositionLoop() {
+        if (pacPositionRafId !== null || typeof window.requestAnimationFrame !== 'function') {
+            return;
+        }
+        pacPositionRafId = window.requestAnimationFrame(pacPositionTick);
     }
 
     function scrollFieldIntoView(input) {
