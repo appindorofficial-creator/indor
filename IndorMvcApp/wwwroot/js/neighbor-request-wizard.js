@@ -81,6 +81,37 @@
         }
     }
 
+    function bindDateMinValidation(form) {
+        form.querySelectorAll('input[type="date"]').forEach(function (input) {
+            if (input.dataset.nrDateMinBound === 'true') {
+                return;
+            }
+
+            var minDate = input.getAttribute('data-min-date') || input.getAttribute('min');
+            if (!minDate) {
+                return;
+            }
+
+            input.dataset.nrDateMinBound = 'true';
+            input.setAttribute('data-min-date', minDate);
+            input.removeAttribute('min');
+
+            function syncDateMinValidity() {
+                if (!input.value) {
+                    input.setCustomValidity('');
+                    return;
+                }
+
+                input.setCustomValidity(input.value < minDate ? DATE_MIN_MESSAGE : '');
+            }
+
+            input.addEventListener('input', syncDateMinValidity);
+            input.addEventListener('change', syncDateMinValidity);
+            input.addEventListener('blur', syncDateMinValidity);
+            syncDateMinValidity();
+        });
+    }
+
     function bindEnglishFormValidation(form) {
         if (form.dataset.nrEnglishValidation === 'true') {
             return;
@@ -88,6 +119,7 @@
 
         form.dataset.nrEnglishValidation = 'true';
         form.setAttribute('novalidate', 'novalidate');
+        bindDateMinValidation(form);
 
         form.addEventListener('submit', function (e) {
             var fields = form.querySelectorAll('input, select, textarea');
@@ -95,6 +127,13 @@
 
             fields.forEach(function (field) {
                 clearFieldValidity(field);
+            });
+
+            form.querySelectorAll('input[type="date"][data-min-date]').forEach(function (input) {
+                var minDate = input.getAttribute('data-min-date');
+                if (input.value && minDate && input.value < minDate) {
+                    input.setCustomValidity(DATE_MIN_MESSAGE);
+                }
             });
 
             fields.forEach(function (field) {

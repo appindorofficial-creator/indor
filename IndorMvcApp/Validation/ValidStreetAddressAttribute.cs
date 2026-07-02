@@ -84,6 +84,12 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             return false;
         }
 
+        if (requireStreetNumber && wordParts < 2)
+        {
+            errorMessage = "Enter a complete street address with street name and type (e.g. 123 Main St).";
+            return false;
+        }
+
         if (requireCityOrZip)
         {
             // A bare street line ("9713 Falling Stream Dr") lacks any city/state hint.

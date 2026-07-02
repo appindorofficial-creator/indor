@@ -459,6 +459,77 @@ public static class PropertyAdministratorCatalog
         return UsStateCodes.Contains(state, StringComparer.OrdinalIgnoreCase);
     }
 
+    public static string? NormalizeUsStateCode(string? state)
+    {
+        if (string.IsNullOrWhiteSpace(state))
+        {
+            return null;
+        }
+
+        var trimmed = state.Trim();
+        if (trimmed.StartsWith("US-", StringComparison.OrdinalIgnoreCase) && trimmed.Length == 5)
+        {
+            trimmed = trimmed[3..];
+        }
+
+        var upper = trimmed.ToUpperInvariant();
+        if (UsStateCodes.Contains(upper, StringComparer.Ordinal))
+        {
+            return upper;
+        }
+
+        return UsStateNameToCode.TryGetValue(upper, out var code) ? code : null;
+    }
+
+    public static string? TryExtractStateFromAddress(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return null;
+        }
+
+        var codeMatch = Regex.Match(
+            text,
+            @",\s*([A-Za-z]{2})\s*(?:,|\s+\d{5})",
+            RegexOptions.CultureInvariant);
+        if (codeMatch.Success)
+        {
+            var code = codeMatch.Groups[1].Value.ToUpperInvariant();
+            if (UsStateCodes.Contains(code, StringComparer.Ordinal))
+            {
+                return code;
+            }
+        }
+
+        foreach (var (name, code) in UsStateNameToCode)
+        {
+            if (text.Contains(name, StringComparison.OrdinalIgnoreCase))
+            {
+                return code;
+            }
+        }
+
+        return null;
+    }
+
+    private static readonly Dictionary<string, string> UsStateNameToCode =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["ALABAMA"] = "AL", ["ALASKA"] = "AK", ["ARIZONA"] = "AZ", ["ARKANSAS"] = "AR",
+            ["CALIFORNIA"] = "CA", ["COLORADO"] = "CO", ["CONNECTICUT"] = "CT", ["DELAWARE"] = "DE",
+            ["FLORIDA"] = "FL", ["GEORGIA"] = "GA", ["HAWAII"] = "HI", ["IDAHO"] = "ID",
+            ["ILLINOIS"] = "IL", ["INDIANA"] = "IN", ["IOWA"] = "IA", ["KANSAS"] = "KS",
+            ["KENTUCKY"] = "KY", ["LOUISIANA"] = "LA", ["MAINE"] = "ME", ["MARYLAND"] = "MD",
+            ["MASSACHUSETTS"] = "MA", ["MICHIGAN"] = "MI", ["MINNESOTA"] = "MN", ["MISSISSIPPI"] = "MS",
+            ["MISSOURI"] = "MO", ["MONTANA"] = "MT", ["NEBRASKA"] = "NE", ["NEVADA"] = "NV",
+            ["NEW HAMPSHIRE"] = "NH", ["NEW JERSEY"] = "NJ", ["NEW MEXICO"] = "NM", ["NEW YORK"] = "NY",
+            ["NORTH CAROLINA"] = "NC", ["NORTH DAKOTA"] = "ND", ["OHIO"] = "OH", ["OKLAHOMA"] = "OK",
+            ["OREGON"] = "OR", ["PENNSYLVANIA"] = "PA", ["RHODE ISLAND"] = "RI", ["SOUTH CAROLINA"] = "SC",
+            ["SOUTH DAKOTA"] = "SD", ["TENNESSEE"] = "TN", ["TEXAS"] = "TX", ["UTAH"] = "UT",
+            ["VERMONT"] = "VT", ["VIRGINIA"] = "VA", ["WASHINGTON"] = "WA", ["WEST VIRGINIA"] = "WV",
+            ["WISCONSIN"] = "WI", ["WYOMING"] = "WY", ["DISTRICT OF COLUMBIA"] = "DC"
+        };
+
     public static string BuildStreetLine(string? houseNumber, string streetName)
     {
         var street = streetName.Trim();

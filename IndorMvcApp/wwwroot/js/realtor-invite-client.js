@@ -238,7 +238,7 @@
         var city = cityInput ? cityInput.value.trim() : '';
         var state = stateInput ? stateInput.value.trim() : '';
         var zip = zipInput ? zipInput.value.trim() : '';
-        var addressMessage = 'Enter a valid US street address with a street number (e.g. 123 Main St).';
+        var addressMessage = 'Enter a complete street address with street name and type (e.g. 123 Main St).';
 
         function isValidStreetAddress(value) {
             var line = String(value || '').trim();
@@ -249,7 +249,7 @@
             var hasDigit = /\d/.test(line);
             var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
             if (!hasDigit) return false;
-            if (wordParts < 1) return false;
+            if (wordParts < 2) return false;
             return true;
         }
 

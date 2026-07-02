@@ -89,6 +89,39 @@ public class RealtorClientCardViewModel
     public string ActionUrl { get; set; } = "#";
 }
 
+public class RealtorClientDetailViewModel : RealtorPortalShellViewModel
+{
+    public int ClientId { get; set; }
+    public string FullName { get; set; } = "";
+    public string Initials { get; set; } = "";
+    public string ClientRole { get; set; } = "";
+    public string? ProfileImageUrl { get; set; }
+    public string? Email { get; set; }
+    public string? Phone { get; set; }
+    public string? PropertyAddress { get; set; }
+    public string StatusBadge { get; set; } = "";
+    public string StatusCss { get; set; } = "connected";
+    public string ConnectedLabel { get; set; } = "";
+    public string LastActiveLabel { get; set; } = "";
+    public int FilesCount { get; set; }
+    public int QuotesCount { get; set; }
+    public string CreateFileUrl { get; set; } = "";
+    public string ViewFilesUrl { get; set; } = "";
+    public List<RealtorFileCardViewModel> Files { get; set; } = [];
+    public List<RealtorClientQuoteRowViewModel> Quotes { get; set; } = [];
+}
+
+public class RealtorClientQuoteRowViewModel
+{
+    public int Id { get; set; }
+    public string QuoteCode { get; set; } = "";
+    public string Address { get; set; } = "";
+    public string ServiceType { get; set; } = "";
+    public string StatusLabel { get; set; } = "";
+    public string StatusCss { get; set; } = "pending";
+    public string ActionUrl { get; set; } = "#";
+}
+
 public class RealtorInvitationCardViewModel
 {
     public int Id { get; set; }
@@ -365,6 +398,13 @@ public class RealtorEditProfileContactViewModel : RealtorEditProfileWizardViewMo
     [Display(Name = "Languages Spoken")]
     public string? LanguagesCsv { get; set; }
     public IReadOnlyList<string> LicenseStates { get; set; } = [];
+}
+
+public class RealtorEditProfileServiceAreaViewModel : RealtorEditProfileWizardViewModel
+{
+    [Display(Name = "City / Market Area")]
+    [Required(ErrorMessage = "City / market area is required.")]
+    public string ServiceAreas { get; set; } = "";
 }
 
 public class RealtorEditProfileLicenseViewModel : RealtorEditProfileWizardViewModel

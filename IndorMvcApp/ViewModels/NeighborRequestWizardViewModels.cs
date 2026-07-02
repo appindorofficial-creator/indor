@@ -16,7 +16,7 @@ public class NeighborRequestWizardShellViewModel
     public string? BackUrl { get; set; }
     public string CloseUrl { get; set; } = "/Home/Index";
     public IReadOnlyList<string> StepLabels { get; set; } = ["Details", "Schedule", "Extras", "Helpers"];
-    public string MinNeededByDateIso => DateTime.UtcNow.ToString("yyyy-MM-dd");
+    public string MinNeededByDateIso => DateTime.Today.ToString("yyyy-MM-dd");
 }
 
 public class NeighborRequestCategoryStepViewModel : NeighborRequestWizardShellViewModel

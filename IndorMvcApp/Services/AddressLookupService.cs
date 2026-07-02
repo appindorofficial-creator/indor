@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 
 namespace IndorMvcApp.Services;
@@ -324,7 +325,9 @@ public partial class AddressLookupService : IAddressLookupService
             HouseNumber = addressDetails?.HouseNumber,
             City = city,
             County = addressDetails?.County,
-            State = addressDetails?.State,
+            State = PropertyAdministratorCatalog.NormalizeUsStateCode(addressDetails?.StateCode)
+                ?? PropertyAdministratorCatalog.NormalizeUsStateCode(addressDetails?.State)
+                ?? addressDetails?.State,
             PostalCode = addressDetails?.Postcode,
             Country = addressDetails?.Country,
             PlaceType = result.Type,

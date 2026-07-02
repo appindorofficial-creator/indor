@@ -1733,6 +1733,7 @@
 .pf-edit-upload-btn {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
     padding: 10px 14px;
     border-radius: 10px;
@@ -1741,6 +1742,7 @@
     color: #0A2540;
     font-size: .82rem;
     font-weight: 600;
+    white-space: nowrap;
     cursor: pointer;
 }
 
@@ -1749,11 +1751,11 @@
 .pf-edit-profile-actions {
     display: flex;
     gap: 10px;
-    margin-top: 4px;
+    margin-top: 18px;
+    margin-bottom: 8px;
 }
 
 .pf-edit-profile-actions .pf-btn { flex: 1; justify-content: center; }
-.pf-edit-profile-actions .pf-btn.outline { flex: 0 0 auto; min-width: 96px; }
 
 .pf-alert {
     display: flex;
@@ -1895,11 +1897,11 @@
     color: #0066CC;
     text-decoration: none;
 }
-.pf-home-address-form { position: relative; z-index: 1; display: flex; flex-direction: column; gap: 10px; }
+.pf-home-address-form { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 10px; }
 .pf-home-address-form input[data-address-autocomplete],
 .pf-home-address-form input[data-city-autocomplete] {
     position: relative;
-    z-index: 2;
+    z-index: 3;
 }
 .pf-home-address-form label.pf-field {
     display: flex;
@@ -1936,6 +1938,13 @@
     line-height: 1.45;
 }
 .pf-home-hint i { color: #0066CC; margin-top: 2px; }
+.pf-home-zip-hint {
+    display: block;
+    margin-top: 4px;
+    font-size: .72rem;
+    color: #64748B;
+    line-height: 1.4;
+}
 .pf-home-ai-btn {
     width: 100%;
     display: flex;

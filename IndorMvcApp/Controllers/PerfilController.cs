@@ -246,7 +246,11 @@ public class PerfilController : Controller
     [ValidateAntiForgeryToken]
     [RequestSizeLimit(10_000_000)]
     public async Task<IActionResult> EditarPerfil(
-        string nombre, string apellidos, string telefono, IFormFile? foto)
+        string nombre,
+        string apellidos,
+        string telefono,
+        IFormFile? foto,
+        [Bind(Prefix = "AddressForm")] AddPropertyViewModel? addressForm)
     {
         var user = await _userManager.GetUserAsync(User);
         if (user == null) return RedirectToAction("Login", "Account");
@@ -254,6 +258,7 @@ public class PerfilController : Controller
         nombre = nombre?.Trim() ?? string.Empty;
         apellidos = apellidos?.Trim() ?? string.Empty;
         telefono = telefono?.Trim() ?? string.Empty;
+        addressForm ??= new AddPropertyViewModel();
 
         if (string.IsNullOrWhiteSpace(nombre)
             || string.IsNullOrWhiteSpace(apellidos)
@@ -264,7 +269,8 @@ public class PerfilController : Controller
                 "First name, last name, and phone are required.",
                 nombre,
                 apellidos,
-                telefono);
+                telefono,
+                addressForm);
         }
 
         if (!UsPhoneOptionalAttribute.IsValidOptional(telefono))
@@ -274,7 +280,38 @@ public class PerfilController : Controller
                 "Enter a valid 10-digit US phone number (e.g. 555 123 4567).",
                 nombre,
                 apellidos,
-                telefono);
+                telefono,
+                addressForm);
+        }
+
+        if (HasAnyAddressField(addressForm) && !IsAddressFormComplete(addressForm))
+        {
+            return await ReturnEditProfileViewAsync(
+                user,
+                "Complete street address, city, state, and ZIP code to save your home.",
+                nombre,
+                apellidos,
+                telefono,
+                addressForm);
+        }
+
+        if (IsAddressFormComplete(addressForm))
+        {
+            if (!TryValidateModel(addressForm, prefix: "AddressForm"))
+            {
+                var addressError = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage)
+                    .FirstOrDefault(e => !string.IsNullOrWhiteSpace(e))
+                    ?? "Enter a valid home address.";
+                return await ReturnEditProfileViewAsync(
+                    user,
+                    addressError,
+                    nombre,
+                    apellidos,
+                    telefono,
+                    addressForm);
+            }
         }
 
         user.Nombre = nombre;
@@ -286,12 +323,26 @@ public class PerfilController : Controller
         var photoError = await TrySaveHomeownerPhotoAsync(user, foto);
         if (!string.IsNullOrWhiteSpace(photoError))
         {
-            return await ReturnEditProfileViewAsync(user, photoError, nombre, apellidos, telefono);
+            return await ReturnEditProfileViewAsync(user, photoError, nombre, apellidos, telefono, addressForm);
         }
 
         await _userManager.UpdateAsync(user);
-        TempData["PerfilOk"] = "Profile updated successfully.";
-        return RedirectToAction(nameof(Opciones));
+
+        var savedHome = false;
+        if (IsAddressFormComplete(addressForm))
+        {
+            savedHome = await _homeownerPropertyService.SaveHomeAddressAsync(
+                addressForm,
+                user.Id,
+                HttpContext.RequestAborted) is > 0;
+        }
+
+        TempData["PerfilOk"] = savedHome
+            ? "Profile and home address saved successfully."
+            : "Profile updated successfully.";
+        return Redirect(savedHome
+            ? Url.Action(nameof(EditarPerfil)) + "#home"
+            : Url.Action(nameof(Opciones))!);
     }
 
     [HttpGet]
@@ -763,7 +814,8 @@ public class PerfilController : Controller
         string error,
         string nombre,
         string apellidos,
-        string telefono)
+        string telefono,
+        AddPropertyViewModel? addressForm = null)
     {
         TempData["PerfilError"] = error;
         ViewData["Title"] = "Edit Profile";
@@ -773,8 +825,24 @@ public class PerfilController : Controller
         model.Nombre = nombre;
         model.Apellidos = apellidos;
         model.Telefono = telefono;
+        if (addressForm != null)
+        {
+            model.AddressForm = addressForm;
+        }
         return View(model);
     }
+
+    private static bool HasAnyAddressField(AddPropertyViewModel model) =>
+        !string.IsNullOrWhiteSpace(model.StreetAddress)
+        || !string.IsNullOrWhiteSpace(model.City)
+        || !string.IsNullOrWhiteSpace(model.State)
+        || !string.IsNullOrWhiteSpace(model.ZipCode);
+
+    private static bool IsAddressFormComplete(AddPropertyViewModel model) =>
+        !string.IsNullOrWhiteSpace(model.StreetAddress)
+        && !string.IsNullOrWhiteSpace(model.City)
+        && !string.IsNullOrWhiteSpace(model.State)
+        && !string.IsNullOrWhiteSpace(model.ZipCode);
 
     private async Task<HomeownerEditProfileViewModel> MapEditProfileViewModelAsync(ApplicationUser user)
     {

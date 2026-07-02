@@ -163,6 +163,116 @@ public class RealtorPortalService(
         };
     }
 
+    public async Task<RealtorClientDetailViewModel?> BuildClientDetailAsync(
+        IndorRealtor realtor, int clientId, CancellationToken ct = default)
+    {
+        var client = await db.IndorRealtorClients.AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == clientId && c.RealtorId == realtor.Id, ct);
+
+        if (client == null)
+        {
+            return null;
+        }
+
+        var shell = await BuildShellCoreAsync(realtor, ct);
+
+        var invitation = string.IsNullOrWhiteSpace(client.Email)
+            ? null
+            : await db.IndorRealtorInvitations.AsNoTracking()
+                .Where(i => i.RealtorId == realtor.Id && i.Email == client.Email)
+                .OrderByDescending(i => i.SentUtc)
+                .FirstOrDefaultAsync(ct);
+
+        var filesCount = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .CountAsync(p => p.RealtorId == realtor.Id && p.ClientName == client.FullName, ct);
+
+        var quotesCount = await db.IndorRealtorQuotes.AsNoTracking()
+            .CountAsync(q => q.RealtorId == realtor.Id && q.ClientName == client.FullName, ct);
+
+        var files = await db.IndorRealtorPropertyFiles.AsNoTracking()
+            .Where(p => p.RealtorId == realtor.Id && p.ClientName == client.FullName)
+            .Include(p => p.Items)
+            .OrderByDescending(p => p.UpdatedUtc ?? p.FechaCreacion)
+            .Take(10)
+            .ToListAsync(ct);
+
+        var propertyIds = files.Select(f => f.Id).ToList();
+        var pendingDrafts = propertyIds.Count == 0
+            ? []
+            : await db.IndorRealtorInspectionUploadDrafts.AsNoTracking()
+                .Where(d => d.RealtorId == realtor.Id &&
+                            d.Status == RealtorInspectionUploadDraftStatuses.Draft &&
+                            d.PropertyFileId != null &&
+                            propertyIds.Contains(d.PropertyFileId.Value))
+                .ToListAsync(ct);
+
+        var draftByPropertyId = pendingDrafts
+            .GroupBy(d => d.PropertyFileId!.Value)
+            .ToDictionary(
+                g => g.Key,
+                g => g.OrderByDescending(d => d.FechaActualizacion ?? d.FechaCreacion).First());
+
+        var quotes = await db.IndorRealtorQuotes.AsNoTracking()
+            .Where(q => q.RealtorId == realtor.Id && q.ClientName == client.FullName)
+            .OrderByDescending(q => q.RequestedUtc)
+            .Take(10)
+            .ToListAsync(ct);
+
+        var parts = client.FullName.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+        var initials = parts.Length >= 2
+            ? $"{parts[0][0]}{parts[^1][0]}"
+            : client.FullName.Length > 0 ? client.FullName[..1] : "?";
+
+        var (badge, css, _) = DeriveClientStatus(client, filesCount);
+        var search = !string.IsNullOrWhiteSpace(client.PropertyAddress)
+            ? client.PropertyAddress
+            : client.FullName;
+
+        return new RealtorClientDetailViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
+            HideNotifications = true,
+            ClientId = client.Id,
+            FullName = client.FullName,
+            Initials = initials.ToUpperInvariant(),
+            ClientRole = client.ClientRole,
+            ProfileImageUrl = client.ProfileImageUrl,
+            Email = client.Email ?? invitation?.Email,
+            Phone = invitation?.Phone,
+            PropertyAddress = client.PropertyAddress,
+            StatusBadge = badge,
+            StatusCss = css,
+            ConnectedLabel = $"Connected {client.FechaCreacion.ToLocalTime():MMM d, yyyy}",
+            LastActiveLabel = FormatRelativeTime(client.LastActiveUtc),
+            FilesCount = filesCount,
+            QuotesCount = quotesCount,
+            CreateFileUrl = $"/RealtorPropertyFile/Details?q={Uri.EscapeDataString(search)}",
+            ViewFilesUrl = $"/Realtor/Files?q={Uri.EscapeDataString(client.FullName)}",
+            Files = files.Select(f =>
+                MapFile(f, draftByPropertyId.GetValueOrDefault(f.Id))).ToList(),
+            Quotes = quotes.Select(q =>
+            {
+                var (statusLabel, statusCss) = DeriveQuoteStatus(q);
+                return new RealtorClientQuoteRowViewModel
+                {
+                    Id = q.Id,
+                    QuoteCode = FormatQuoteCode(q.QuoteCode),
+                    Address = q.Address,
+                    ServiceType = q.ServiceType,
+                    StatusLabel = statusLabel,
+                    StatusCss = statusCss,
+                    ActionUrl = ResolveQuoteFlowUrl(q) ?? $"/Realtor/QuoteDetail/{q.Id}"
+                };
+            }).ToList()
+        };
+    }
+
     public async Task<RealtorFilesViewModel> BuildFilesAsync(
         IndorRealtor realtor, string? search, string? filter, CancellationToken ct = default)
     {
@@ -1138,6 +1248,45 @@ public class RealtorPortalService(
         await db.SaveChangesAsync(ct);
     }
 
+    public async Task<RealtorEditProfileServiceAreaViewModel> BuildEditProfileServiceAreaAsync(
+        IndorRealtor realtor,
+        CancellationToken ct = default)
+    {
+        var shell = await BuildShellCoreAsync(realtor, ct);
+        var entity = await db.IndorRealtors.AsNoTracking()
+            .FirstAsync(r => r.Id == realtor.Id, ct);
+
+        return new RealtorEditProfileServiceAreaViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
+            DisplayStep = 1,
+            TotalSteps = 1,
+            Title = "Service Area / Market Area",
+            Subtitle = "Define the cities and neighborhoods where you work with clients.",
+            HeaderBadge = "",
+            BackAction = "Profile",
+            BackController = "Realtor",
+            ServiceAreas = entity.ServiceAreas ?? ""
+        };
+    }
+
+    public async Task SaveEditProfileServiceAreaAsync(
+        IndorRealtor realtor,
+        RealtorEditProfileServiceAreaViewModel input,
+        CancellationToken ct = default)
+    {
+        var entity = await db.IndorRealtors.FirstAsync(r => r.Id == realtor.Id, ct);
+        entity.ServiceAreas = input.ServiceAreas.Trim();
+        entity.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(ct);
+    }
+
     public async Task<RealtorEditProfileLicenseViewModel> BuildEditProfileLicenseAsync(
         IndorRealtor realtor,
         IReadOnlyList<string> licenseStates,
@@ -1967,7 +2116,9 @@ public class RealtorPortalService(
         {
             steps.Add(new()
             {
-                Text = $"{pendingInvites} client{(pendingInvites == 1 ? "" : "s")} need invitations",
+                Text = pendingInvites == 1
+                    ? "1 client needs an invitation"
+                    : $"{pendingInvites} clients need invitations",
                 Icon = "fa-user-plus",
                 ColorClass = "blue",
                 Url = "/RealtorInviteClient/New"
@@ -2162,7 +2313,7 @@ public class RealtorPortalService(
             FilesCount = files,
             QuotesCount = quotes,
             ActionLabel = action,
-            ActionUrl = files > 0 ? "/Realtor/Files" : "#"
+            ActionUrl = $"/Realtor/ClientDetail/{client.Id}"
         };
     }
 

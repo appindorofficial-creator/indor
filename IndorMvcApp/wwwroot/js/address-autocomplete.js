@@ -37,6 +37,31 @@
     var zipFetchControllers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
     var geocodeGenerations = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
 
+    function isUsStateCode(value) {
+        return typeof value === 'string' && /^[A-Z]{2}$/i.test(value.trim());
+    }
+
+    function captureInitialStateSelectValues() {
+        document.querySelectorAll('select[data-ac-zip][data-ac-city]').forEach(function (select) {
+            var current = select.value.trim();
+            if (current && isUsStateCode(current)) {
+                select.dataset.initialState = current.toUpperCase();
+            }
+        });
+    }
+
+    function restoreInitialStateSelectValues() {
+        document.querySelectorAll('select[data-ac-zip][data-ac-city]').forEach(function (select) {
+            var initial = select.dataset.initialState;
+            if (!initial || !isUsStateCode(initial) || select.value.trim()) {
+                return;
+            }
+
+            restoreStateSelect(select);
+            select.value = initial.toUpperCase();
+        });
+    }
+
     function ensureStateSelectSnapshot(select) {
         if (!stateSelectSnapshots || stateSelectSnapshots.has(select)) {
             return;
@@ -49,6 +74,13 @@
     }
 
     function filterStateSelect(select, stateCode) {
+        if (stateCode) {
+            stateCode = stateCode.trim().toUpperCase();
+            if (!isUsStateCode(stateCode)) {
+                return;
+            }
+        }
+
         ensureStateSelectSnapshot(select);
         var snapshot = stateSelectSnapshots.get(select);
         if (!snapshot) {
@@ -403,7 +435,7 @@
         return isPacVisible() && (isAutocompleteFieldFocused() || !!lastAutocompleteInput);
     }
 
-    function dismissPacDropdown(activeInput) {
+    function dismissPacDropdown(activeInput, shouldBlur) {
         document.querySelectorAll('.pac-container').forEach(function (pac) {
             pac.style.display = 'none';
             pac.style.visibility = 'hidden';
@@ -411,7 +443,7 @@
             pac.classList.add('pac-container--dismissed');
         });
 
-        if (activeInput && typeof activeInput.blur === 'function') {
+        if (shouldBlur !== false && activeInput && typeof activeInput.blur === 'function') {
             activeInput.blur();
         }
     }
@@ -482,22 +514,39 @@
     }
 
     function finalizeAutocompleteSelection(input) {
-        suppressPacDismiss(400);
-        dismissPacDropdown(input);
+        suppressPacDismiss(600);
+        dismissPacDropdown(null, false);
         window.setTimeout(function () {
-            dismissPacDropdown(input);
-        }, 120);
+            dismissPacDropdown(null, false);
+        }, 200);
         window.setTimeout(function () {
-            dismissPacDropdown(null);
-        }, 350);
-        window.setTimeout(function () {
-            dismissPacDropdown(null);
-        }, 700);
+            if (input && document.activeElement === input) {
+                dismissPacDropdown(input, true);
+            } else {
+                dismissPacDropdown(null, false);
+            }
+        }, 400);
     }
 
-    function handlePacItemInteraction() {
-        // Let Google Places finish the selection before we blur/close the list.
-        suppressPacDismiss(1200);
+    function bindPacSelectionGuards() {
+        ['touchstart', 'mousedown'].forEach(function (eventName) {
+            document.addEventListener(eventName, function (e) {
+                if (!e.target.closest('.pac-container')) {
+                    return;
+                }
+                suppressPacDismiss(1200);
+            }, true);
+        });
+
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('.pac-item')) {
+                return;
+            }
+            suppressPacDismiss(1200);
+            window.setTimeout(function () {
+                finalizeAutocompleteSelection(lastAutocompleteInput);
+            }, 300);
+        }, true);
     }
 
     function bindAutocompleteDismissHandlers(input) {
@@ -522,9 +571,9 @@
                     if (lastAutocompleteInput === input) {
                         lastAutocompleteInput = null;
                     }
-                    dismissPacDropdown(null);
+                    dismissPacDropdown(null, false);
                 }
-            }, 180);
+            }, 350);
         });
     }
 
@@ -558,14 +607,7 @@
         }
         document.documentElement.dataset.pacDismissBound = 'true';
 
-        ['mousedown', 'touchstart', 'touchend', 'pointerup', 'click'].forEach(function (eventName) {
-            document.addEventListener(eventName, function (e) {
-                if (!e.target.closest('.pac-item')) {
-                    return;
-                }
-                handlePacItemInteraction();
-            }, true);
-        });
+        bindPacSelectionGuards();
 
         document.addEventListener('focusin', function (e) {
             if (pacDismissSuppressed) {
@@ -577,7 +619,7 @@
             if (isAutocompleteInput(e.target)) {
                 return;
             }
-            dismissPacDropdown(null);
+            dismissPacDropdown(null, false);
         }, true);
 
         document.addEventListener('scroll', function () {
@@ -587,7 +629,7 @@
             if (shouldKeepPacOpen()) {
                 return;
             }
-            dismissPacDropdown(null);
+            dismissPacDropdown(null, false);
         }, true);
     }
 
@@ -839,6 +881,7 @@
     }
 
     function initAddressAutocomplete() {
+        captureInitialStateSelectValues();
         bindPacDismissHandlers();
         observePacContainers();
         initZipGeocodeLinking();
@@ -885,6 +928,7 @@
         });
 
         initCityAutocomplete();
+        restoreInitialStateSelectValues();
     }
 
     // Google Maps JS calls this global callback once it finishes loading.

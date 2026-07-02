@@ -49,6 +49,19 @@ public class RealtorController(
         await PortalPageAsync(r => portalService.BuildClientsAsync(r, q, filter, cancellationToken), cancellationToken);
 
     [HttpGet]
+    public async Task<IActionResult> ClientDetail(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildClientDetailAsync(realtor, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Files(string? q, string? filter, CancellationToken cancellationToken) =>
         await PortalPageAsync(r => portalService.BuildFilesAsync(r, q, filter, cancellationToken), cancellationToken);
 
@@ -528,6 +541,53 @@ public class RealtorController(
     [HttpGet]
     public IActionResult EditProfile() =>
         RedirectToAction(nameof(EditProfileContact), new { from = "public" });
+
+    [HttpGet]
+    public async Task<IActionResult> EditProfileServiceArea(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await portalService.BuildEditProfileServiceAreaAsync(realtor, cancellationToken);
+        return View("EditProfile/EditProfileServiceArea", model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditProfileServiceArea(
+        RealtorEditProfileServiceAreaViewModel model,
+        CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (string.IsNullOrWhiteSpace(model.ServiceAreas))
+        {
+            ModelState.AddModelError(nameof(model.ServiceAreas), "City / market area is required.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            await ApplyEditProfileShellAsync(realtor, model, cancellationToken);
+            model.ServiceAreas = model.ServiceAreas?.Trim() ?? "";
+            return View("EditProfile/EditProfileServiceArea", model);
+        }
+
+        await portalService.SaveEditProfileServiceAreaAsync(realtor, model, cancellationToken);
+        TempData["ServiceAreaSaved"] = true;
+        return RedirectToAction(nameof(Profile));
+    }
 
     [HttpGet]
     public async Task<IActionResult> BusinessInformation(CancellationToken cancellationToken)
