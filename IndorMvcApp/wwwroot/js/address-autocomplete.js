@@ -668,23 +668,22 @@
         }
 
         // Fixed positioning uses viewport coordinates directly — no scroll math,
-        // which avoids the "dropdown jumps to the top of the page" bug.
-        var desiredTop = Math.round(rect.bottom) + 'px';
+        // which avoids the "dropdown jumps to the top of the page" bug. A 2px gap
+        // sits it just under the input's bottom edge.
+        var desiredTop = Math.round(rect.bottom + 2) + 'px';
         var desiredLeft = Math.round(rect.left) + 'px';
         var desiredWidth = Math.round(rect.width) + 'px';
 
-        if (pac.style.position === 'fixed'
-            && pac.style.top === desiredTop
-            && pac.style.left === desiredLeft
-            && pac.style.width === desiredWidth) {
-            return;
-        }
-
+        // Always re-assert every property: Google flips the list upward (via
+        // transform/bottom) when it thinks the keyboard covers the space below,
+        // which is exactly what pushed the dropdown on top of the input.
         pac.style.setProperty('position', 'fixed', 'important');
         pac.style.setProperty('top', desiredTop, 'important');
+        pac.style.setProperty('bottom', 'auto', 'important');
         pac.style.setProperty('left', desiredLeft, 'important');
         pac.style.setProperty('width', desiredWidth, 'important');
-        pac.style.setProperty('margin-top', '0', 'important');
+        pac.style.setProperty('margin', '0', 'important');
+        pac.style.setProperty('transform', 'none', 'important');
         pac.style.setProperty('z-index', '100000', 'important');
     }
 
