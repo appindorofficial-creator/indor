@@ -16,6 +16,7 @@
             </div>
             <a asp-controller="RealtorInviteClient"
                asp-action="New"
+               asp-route-returnTo="clients"
                class="rl-btn-primary rl-btn-primary--sm rl-clients-add"
                id="rlClientsAddBtn"
                aria-label="Add client — start invite wizard">
@@ -61,12 +62,12 @@
     <section class="rl-dash-section rl-clients-qa-section">
         <h2 class="rl-clients-qa-title">Quick Actions</h2>
         <div class="rl-qa-grid">
-            <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-qa-card">
+            <a asp-controller="RealtorInviteClient" asp-action="New" asp-route-returnTo="clients" class="rl-qa-card">
                 <span class="rl-qa-icon rl-qa-icon--blue"><i class="fas fa-user-plus"></i></span>
                 <span class="rl-qa-label">Invite Client</span>
                 <i class="fas fa-chevron-right rl-qa-chevron"></i>
             </a>
-            <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-qa-card">
+            <a asp-controller="RealtorPropertyFile" asp-action="Details" asp-route-returnTo="clients" class="rl-qa-card">
                 <span class="rl-qa-icon rl-qa-icon--green"><i class="fas fa-folder-plus"></i></span>
                 <span class="rl-qa-label">Create File</span>
                 <i class="fas fa-chevron-right rl-qa-chevron"></i>
@@ -131,7 +132,7 @@
                     </div>
                     <h3>No clients yet</h3>
                     <p>Start by adding your first client or sending an invitation.</p>
-                    <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary">Add First Client</a>
+                    <a asp-controller="RealtorInviteClient" asp-action="New" asp-route-returnTo="clients" class="rl-btn-primary">Add First Client</a>
                 </div>
             }
             else

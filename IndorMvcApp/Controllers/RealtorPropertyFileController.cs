@@ -1,3 +1,4 @@
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -48,8 +49,24 @@ public class RealtorPropertyFileController(
     public IActionResult Index() => RedirectToAction(nameof(Details));
 
     [HttpGet]
-    public async Task<IActionResult> Details(string? q)
+    public async Task<IActionResult> Details(string? q, string? returnTo)
     {
+        if (!string.IsNullOrWhiteSpace(returnTo))
+        {
+            RealtorWizardReturnNavigation.CaptureReturnTo(
+                HttpContext.Session,
+                returnTo,
+                RealtorWizardReturnNavigation.PropertyFileSessionKey,
+                RealtorWizardReturnNavigation.Files);
+        }
+        else
+        {
+            RealtorWizardReturnNavigation.CaptureReturnToIfMissing(
+                HttpContext.Session,
+                RealtorWizardReturnNavigation.PropertyFileSessionKey,
+                RealtorWizardReturnNavigation.Files);
+        }
+
         var draft = await wizard.GetDraftAsync();
         if (draft != null && draft.CurrentStep > 1)
         {
@@ -271,7 +288,14 @@ public class RealtorPropertyFileController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel()
     {
+        var returnTo = RealtorWizardReturnNavigation.GetReturnToken(
+            HttpContext.Session,
+            RealtorWizardReturnNavigation.PropertyFileSessionKey,
+            RealtorWizardReturnNavigation.Files);
         await wizard.CancelDraftAsync();
-        return RedirectToAction("Dashboard", "Realtor");
+        RealtorWizardReturnNavigation.ClearReturnTo(
+            HttpContext.Session,
+            RealtorWizardReturnNavigation.PropertyFileSessionKey);
+        return RealtorWizardReturnNavigation.RedirectTo(this, returnTo);
     }
 }

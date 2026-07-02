@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using IndorMvcApp.Data;
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
@@ -54,8 +55,8 @@ public class RealtorPortalService(
             Stats = stats,
             QuickActions =
             [
-                new() { Label = "Invite client", Icon = "fa-user-plus", Url = "/RealtorInviteClient/New" },
-                new() { Label = "New property file", Icon = "fa-folder-plus", Url = "/RealtorPropertyFile/Details" },
+                new() { Label = "Invite client", Icon = "fa-user-plus", Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorInviteClient/New", RealtorWizardReturnNavigation.Dashboard) },
+                new() { Label = "New property file", Icon = "fa-folder-plus", Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorPropertyFile/Details", RealtorWizardReturnNavigation.Dashboard) },
                 new() { Label = "Upload inspection report", Icon = "fa-cloud-arrow-up", Url = "/RealtorInspectionUpload/Upload" },
                 new() { Label = "Urgent quote", Icon = "fa-comment-dollar", Url = "/RealtorUrgentQuote/Property" }
             ],
@@ -252,7 +253,9 @@ public class RealtorPortalService(
             LastActiveLabel = FormatRelativeTime(client.LastActiveUtc),
             FilesCount = filesCount,
             QuotesCount = quotesCount,
-            CreateFileUrl = $"/RealtorPropertyFile/Details?q={Uri.EscapeDataString(search)}",
+            CreateFileUrl = RealtorWizardReturnNavigation.AppendReturnTo(
+                $"/RealtorPropertyFile/Details?q={Uri.EscapeDataString(search)}",
+                RealtorWizardReturnNavigation.Clients),
             ViewFilesUrl = $"/Realtor/Files?q={Uri.EscapeDataString(client.FullName)}",
             Files = files.Select(f =>
                 MapFile(f, draftByPropertyId.GetValueOrDefault(f.Id))).ToList(),
@@ -2121,7 +2124,7 @@ public class RealtorPortalService(
                     : $"{pendingInvites} clients need invitations",
                 Icon = "fa-user-plus",
                 ColorClass = "blue",
-                Url = "/RealtorInviteClient/New"
+                Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorInviteClient/New", RealtorWizardReturnNavigation.Dashboard)
             });
         }
 

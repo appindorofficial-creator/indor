@@ -1,3 +1,4 @@
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
@@ -45,15 +46,36 @@ public class RealtorInviteClientController(
     public IActionResult Index() => RedirectToAction(nameof(New));
 
     [HttpGet]
-    public async Task<IActionResult> New()
+    public async Task<IActionResult> New(string? returnTo)
     {
         await inviteService.CancelDraftAsync();
+        RealtorWizardReturnNavigation.CaptureReturnTo(
+            HttpContext.Session,
+            returnTo,
+            RealtorWizardReturnNavigation.InviteClientSessionKey,
+            RealtorWizardReturnNavigation.Clients);
         return RedirectToAction(nameof(ClientInfo), new { edit = true });
     }
 
     [HttpGet]
-    public async Task<IActionResult> ClientInfo(bool edit = false)
+    public async Task<IActionResult> ClientInfo(bool edit = false, string? returnTo = null)
     {
+        if (!string.IsNullOrWhiteSpace(returnTo))
+        {
+            RealtorWizardReturnNavigation.CaptureReturnTo(
+                HttpContext.Session,
+                returnTo,
+                RealtorWizardReturnNavigation.InviteClientSessionKey,
+                RealtorWizardReturnNavigation.Clients);
+        }
+        else
+        {
+            RealtorWizardReturnNavigation.CaptureReturnToIfMissing(
+                HttpContext.Session,
+                RealtorWizardReturnNavigation.InviteClientSessionKey,
+                RealtorWizardReturnNavigation.Clients);
+        }
+
         var draft = await inviteService.GetDraftAsync();
         if (!edit && draft != null && draft.CurrentStep > 1)
         {
@@ -330,7 +352,14 @@ public class RealtorInviteClientController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel()
     {
+        var returnTo = RealtorWizardReturnNavigation.GetReturnToken(
+            HttpContext.Session,
+            RealtorWizardReturnNavigation.InviteClientSessionKey,
+            RealtorWizardReturnNavigation.Clients);
         await inviteService.CancelDraftAsync();
-        return RedirectToAction("Dashboard", "Realtor");
+        RealtorWizardReturnNavigation.ClearReturnTo(
+            HttpContext.Session,
+            RealtorWizardReturnNavigation.InviteClientSessionKey);
+        return RealtorWizardReturnNavigation.RedirectTo(this, returnTo);
     }
 }

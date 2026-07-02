@@ -1,3 +1,4 @@
+using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -44,8 +45,24 @@ public class RealtorQuoteRequestController(
     public IActionResult Index() => RedirectToAction(nameof(Property));
 
     [HttpGet]
-    public async Task<IActionResult> Property(string? q)
+    public async Task<IActionResult> Property(string? q, string? returnTo)
     {
+        if (!string.IsNullOrWhiteSpace(returnTo))
+        {
+            RealtorWizardReturnNavigation.CaptureReturnTo(
+                HttpContext.Session,
+                returnTo,
+                RealtorWizardReturnNavigation.QuoteRequestSessionKey,
+                RealtorWizardReturnNavigation.Quotes);
+        }
+        else
+        {
+            RealtorWizardReturnNavigation.CaptureReturnToIfMissing(
+                HttpContext.Session,
+                RealtorWizardReturnNavigation.QuoteRequestSessionKey,
+                RealtorWizardReturnNavigation.Quotes);
+        }
+
         var draft = await quoteRequest.GetDraftAsync();
         if (draft != null && draft.CurrentStep > 1)
         {
@@ -220,7 +237,14 @@ public class RealtorQuoteRequestController(
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> Cancel()
     {
+        var returnTo = RealtorWizardReturnNavigation.GetReturnToken(
+            HttpContext.Session,
+            RealtorWizardReturnNavigation.QuoteRequestSessionKey,
+            RealtorWizardReturnNavigation.Quotes);
         await quoteRequest.CancelDraftAsync();
-        return RedirectToAction("Quotes", "Realtor");
+        RealtorWizardReturnNavigation.ClearReturnTo(
+            HttpContext.Session,
+            RealtorWizardReturnNavigation.QuoteRequestSessionKey);
+        return RealtorWizardReturnNavigation.RedirectTo(this, returnTo);
     }
 }
