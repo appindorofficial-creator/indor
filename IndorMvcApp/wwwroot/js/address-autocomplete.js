@@ -652,44 +652,67 @@
         return input && isAutocompleteInput(input) ? input : lastAutocompleteInput;
     }
 
+    function resolvePacHost(target) {
+        if (!target) {
+            return null;
+        }
+        var host = (typeof target.closest === 'function' && target.closest('.pf-field'))
+            || target.parentElement;
+        return host || null;
+    }
+
     function applyPacPosition(pac, input) {
         if (!pac || pac.classList.contains('pac-container--dismissed')) {
             return;
         }
 
         var target = resolvePacAnchor(input);
-        if (!target || typeof target.getBoundingClientRect !== 'function') {
+        var host = resolvePacHost(target);
+        if (!host) {
             return;
         }
 
-        var rect = target.getBoundingClientRect();
-        if (!rect.width && !rect.height) {
-            return;
+        // Anchor the dropdown to the field itself instead of fighting Google's
+        // body-level positioning (which flips the list on top of the input when
+        // the mobile keyboard is open). Moving it into a position:relative host
+        // and pinning it to top:100% makes it always sit under the input.
+        if (host.style.position !== 'relative' && host.style.position !== 'absolute') {
+            host.style.setProperty('position', 'relative');
+        }
+        if (pac.parentElement !== host) {
+            host.appendChild(pac);
         }
 
-        // Fixed positioning uses viewport coordinates directly — no scroll math,
-        // which avoids the "dropdown jumps to the top of the page" bug. A 2px gap
-        // sits it just under the input's bottom edge.
-        var desiredTop = Math.round(rect.bottom + 2) + 'px';
-        var desiredLeft = Math.round(rect.left) + 'px';
-        var desiredWidth = Math.round(rect.width) + 'px';
-
-        // Always re-assert every property: Google flips the list upward (via
-        // transform/bottom) when it thinks the keyboard covers the space below,
-        // which is exactly what pushed the dropdown on top of the input.
-        pac.style.setProperty('position', 'fixed', 'important');
-        pac.style.setProperty('top', desiredTop, 'important');
+        pac.style.setProperty('position', 'absolute', 'important');
+        pac.style.setProperty('top', '100%', 'important');
+        pac.style.setProperty('left', '0', 'important');
+        pac.style.setProperty('right', 'auto', 'important');
         pac.style.setProperty('bottom', 'auto', 'important');
-        pac.style.setProperty('left', desiredLeft, 'important');
-        pac.style.setProperty('width', desiredWidth, 'important');
-        pac.style.setProperty('margin', '0', 'important');
+        pac.style.setProperty('width', '100%', 'important');
+        pac.style.setProperty('max-width', 'none', 'important');
+        pac.style.setProperty('margin', '2px 0 0', 'important');
         pac.style.setProperty('transform', 'none', 'important');
         pac.style.setProperty('z-index', '100000', 'important');
+    }
+
+    function isPacContainerShowing(pac) {
+        if (pac.classList.contains('pac-container--dismissed')) {
+            return false;
+        }
+        if (pac.style.display === 'none' || pac.style.visibility === 'hidden') {
+            return false;
+        }
+        return pac.getClientRects().length > 0 || pac.querySelector('.pac-item') !== null;
     }
 
     function positionPacContainer(input) {
         var anchor = resolvePacAnchor(input);
         document.querySelectorAll('.pac-container').forEach(function (pac) {
+            // Only relocate the container that is actually showing suggestions so
+            // the street/city dropdowns never get anchored to the wrong field.
+            if (!isPacContainerShowing(pac)) {
+                return;
+            }
             applyPacPosition(pac, anchor);
         });
     }
