@@ -2115,16 +2115,16 @@ public class RealtorPortalService(
         int pendingInvites, List<IndorRealtorClient> clients, Dictionary<string, int> quoteCounts, string activeFilter)
     {
         var steps = new List<RealtorNextStepViewModel>();
-        if (pendingInvites > 0 && activeFilter is "All" or "Invited")
+        if (pendingInvites > 0 && activeFilter == "All")
         {
             steps.Add(new()
             {
                 Text = pendingInvites == 1
-                    ? "1 client needs an invitation"
-                    : $"{pendingInvites} clients need invitations",
-                Icon = "fa-user-plus",
+                    ? "1 invitation pending acceptance"
+                    : $"{pendingInvites} invitations pending acceptance",
+                Icon = "fa-envelope-open-text",
                 ColorClass = "blue",
-                Url = RealtorWizardReturnNavigation.AppendReturnTo("/RealtorInviteClient/New", RealtorWizardReturnNavigation.Dashboard)
+                Url = "/Realtor/Clients?filter=Invited"
             });
         }
 
