@@ -179,8 +179,13 @@ public class PerfilController : Controller
 
         try
         {
+            // Never run the full multi-minute House Fact research inline: Azure App
+            // Service kills any HTTP request that runs past ~230s, which would abort
+            // the request before SaveOrUpdatePropertyAsync and leave nothing saved.
+            // Do the fast enrichment synchronously and let SaveOrUpdatePropertyAsync
+            // queue the full research in the background (BackgroundEnrichmentTimeout).
             var propertyInfo = await _homeownerPropertyService
-                .EnrichAddressAsync(model, requestFullHouseFactResearch: existing?.Id > 0)
+                .EnrichAddressAsync(model, requestFullHouseFactResearch: false)
                 .WaitAsync(AddressLookupTimeout, HttpContext.RequestAborted);
 
             if (propertyInfo == null)
@@ -217,8 +222,20 @@ public class PerfilController : Controller
                     !string.IsNullOrWhiteSpace(propertyInfo.AttomRawJson),
                     propertyInfo.EnrichmentError ?? "none");
 
-                TempData["PerfilOk"] =
-                    "Address saved! AI is researching your home now — refresh this page in about 1 minute to see House Facts.";
+                if (!string.IsNullOrWhiteSpace(propertyInfo.EnrichmentError))
+                {
+                    // Surface the real reason (e.g. "OpenAI property enrichment is not
+                    // configured") so a misconfigured/timed-out server can be diagnosed
+                    // instead of showing a misleading "AI is researching" message.
+                    TempData["PerfilError"] =
+                        $"Address saved, but AI research could not complete: {propertyInfo.EnrichmentError} " +
+                        "Please try again in a moment.";
+                }
+                else
+                {
+                    TempData["PerfilOk"] =
+                        "Address saved! AI is researching your home now — refresh this page in about 1 minute to see House Facts.";
+                }
             }
 
             return Redirect(Url.Action(nameof(EditarPerfil), new { id = propiedadId }) + "#home");
