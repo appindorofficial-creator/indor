@@ -158,12 +158,11 @@
 .pa-portal-page{font-family:'Inter',sans-serif;background:var(--indor-bg-sky,#E9F2FE);background-attachment:fixed;min-height:100vh;min-height:100dvh;padding-bottom:88px}
 .pa-portal-shell{max-width:480px;margin:0 auto;padding:16px}
 .pa-portal-shell--tasks{padding-bottom:88px}
-.pa-portal-topbar{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px;gap:12px}
+.pa-portal-topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
 .pa-portal-logo{display:flex;flex-direction:column;align-items:flex-start;text-decoration:none;line-height:1.1;background:transparent;padding-top:2px}
+.pa-portal-topbar .pa-portal-logo{flex-direction:row;align-items:center;padding-top:0;font-weight:800;font-size:1rem;color:#0066CC;line-height:1}
+.pa-portal-topbar .pa-portal-logo i{margin-right:6px;font-size:1rem}
 .pa-portal-logo-text{font-size:1.2rem;font-weight:800;color:#0A2540;letter-spacing:.02em}
-.pa-portal-logo-sub{margin-top:3px;font-size:.74rem;font-weight:600;letter-spacing:.01em;line-height:1.2;color:#0066CC}
-.pa-portal-logo-sub-home{color:inherit}
-.pa-portal-logo-sub-brand{color:inherit}
 .pa-portal-account-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0}
 .pa-portal-my-account{font-size:.72rem;font-weight:600;color:#0066CC;text-decoration:none;display:inline-flex;align-items:center;gap:4px;padding-right:4px}
 .pa-portal-my-account i{font-size:.58rem}
