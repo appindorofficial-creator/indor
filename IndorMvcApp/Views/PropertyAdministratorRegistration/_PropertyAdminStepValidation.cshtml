@@ -39,12 +39,43 @@
             return field.getAttribute('data-pa-email') === 'true' || field.type === 'email';
         }
 
+        function emailDomainIsValid(value) {
+            var at = value.lastIndexOf('@@');
+            if (at < 1) {
+                return false;
+            }
+
+            var domain = value.slice(at + 1).toLowerCase();
+            var truncatedDomains = {
+                'hotmail.c': true,
+                'hotmail.co': true,
+                'gmail.c': true,
+                'gmail.co': true,
+                'yahoo.c': true,
+                'outlook.c': true,
+                'icloud.c': true
+            };
+            if (truncatedDomains[domain]) {
+                return false;
+            }
+
+            var lastDot = domain.lastIndexOf('.');
+            if (lastDot < 1 || lastDot >= domain.length - 2) {
+                return false;
+            }
+
+            var tld = domain.slice(lastDot + 1);
+            return tld.length >= 2 && /^[a-z]+$/.test(tld);
+        }
+
         function isInvalidEmail(field) {
             var value = (field.value || '').trim();
             if (!value) {
                 return false;
             }
-            return value.length > 254 || !emailFormatRegex.test(value);
+            return value.length > 254
+                || !emailFormatRegex.test(value)
+                || !emailDomainIsValid(value);
         }
 
         function summaryFor(form) {

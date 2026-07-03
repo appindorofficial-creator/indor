@@ -162,9 +162,13 @@
         }
         else
         {
-            <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary rl-btn-primary--sm">
+            <a href="@Model.ExpressInterestUrl" class="rl-btn-primary rl-btn-primary--sm">
                 <i class="fas fa-handshake"></i> I'm Interested
             </a>
+        }
+        @if (Model.InterestSent)
+        {
+            <p class="rl-listing-detail-notice"><i class="fas fa-circle-check"></i> Your interest was sent to the listing agent.</p>
         }
         <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-btn-outline rl-btn-outline--sm">Back to Feed</a>
     </div>

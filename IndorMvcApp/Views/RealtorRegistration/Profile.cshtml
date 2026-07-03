@@ -196,6 +196,7 @@
         <span class="rl-field-error" id="officeAddressError">@officeAddressError</span>
 
         <div class="rl-reg-office-grid">
+            <p class="rl-field-hint rl-field-hint--section">Complete city, state, and ZIP for your office address.</p>
             <div class="rl-field-block rl-field-block--compact">
                 <span class="rl-field-label">City <span class="rl-required" aria-hidden="true">*</span></span>
                 <label class="rl-field @(officeCityError.Length > 0 ? "is-error" : "")">
@@ -347,7 +348,13 @@
 
     <span class="rl-field-error rl-field-error--terms" id="termsError">@termsError</span>
 
-
+    <div class="rl-error-banner rl-error-banner--inline is-hidden" id="profileFormContinueAlert" role="alert" aria-live="polite">
+        <i class="fas fa-triangle-exclamation"></i>
+        <div>
+            <strong id="profileFormContinueAlertTitle">Please complete the required fields above.</strong>
+            <ul class="rl-error-list" id="profileFormContinueAlertList"></ul>
+        </div>
+    </div>
 
     <button type="submit" id="rlRegProfileContinueBtn" class="ob-btn ob-btn-primary">Continue</button>
 
@@ -367,17 +374,59 @@
     }
 
     function scrollToFirstError() {
-        var banner = document.getElementById('profileFormErrorBanner');
-        if (banner && !banner.classList.contains('is-hidden')) {
-            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var firstFieldError = form.querySelector('.rl-field-error:not(:empty), .rl-field.is-error, .rl-terms.is-error, .rl-lang-options.is-error');
+        if (firstFieldError) {
+            var scrollTarget = firstFieldError.closest('.rl-field-block')
+                || firstFieldError.closest('.rl-terms')
+                || firstFieldError.closest('.rl-lang-options')
+                || firstFieldError;
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
 
-        var firstFieldError = form.querySelector('.rl-field-error:not(:empty)');
-        var scrollTarget = firstFieldError
-            || form.querySelector('.rl-field.is-error, .rl-terms.is-error, .rl-lang-options.is-error');
-        if (scrollTarget) {
-            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var banner = document.getElementById('profileFormErrorBanner');
+        if (banner && !banner.classList.contains('is-hidden')) {
+            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+
+    function showContinueAlert(messages) {
+        var alert = document.getElementById('profileFormContinueAlert');
+        var list = document.getElementById('profileFormContinueAlertList');
+        var title = document.getElementById('profileFormContinueAlertTitle');
+        if (!alert || !list) {
+            return;
+        }
+
+        list.innerHTML = '';
+        var seen = {};
+        messages.forEach(function (message) {
+            if (!message || seen[message]) {
+                return;
+            }
+            seen[message] = true;
+            var item = document.createElement('li');
+            item.textContent = message;
+            list.appendChild(item);
+        });
+
+        if (title) {
+            title.textContent = messages.length === 1
+                ? 'Please fix this before continuing:'
+                : 'Please fix the following before continuing:';
+        }
+
+        alert.classList.remove('is-hidden');
+    }
+
+    function hideContinueAlert() {
+        var alert = document.getElementById('profileFormContinueAlert');
+        var list = document.getElementById('profileFormContinueAlertList');
+        if (alert) {
+            alert.classList.add('is-hidden');
+        }
+        if (list) {
+            list.innerHTML = '';
         }
     }
 
@@ -408,6 +457,7 @@
         }
 
         banner.classList.remove('is-hidden');
+        showContinueAlert(messages);
     }
 
     function hideFormErrorBanner() {
@@ -419,9 +469,69 @@
         if (list) {
             list.innerHTML = '';
         }
+        hideContinueAlert();
     }
 
     scrollToFirstError();
+    (function () {
+        var serverList = document.getElementById('profileFormErrorList');
+        if (!serverList || !serverList.children.length) {
+            return;
+        }
+        var serverMessages = Array.prototype.map.call(serverList.children, function (item) {
+            return (item.textContent || '').trim();
+        }).filter(Boolean);
+        if (serverMessages.length) {
+            showContinueAlert(serverMessages);
+        }
+    })();
+
+    var streetSuffixes = {
+        st: true, street: true, rd: true, road: true, ave: true, avenue: true,
+        blvd: true, boulevard: true, dr: true, drive: true, ln: true, lane: true,
+        way: true, ct: true, court: true, cir: true, circle: true, pl: true, place: true,
+        pkwy: true, parkway: true, ter: true, terrace: true, trl: true, trail: true,
+        hwy: true, highway: true, loop: true, pass: true, path: true, row: true,
+        run: true, walk: true, xing: true, crossing: true, pike: true, sq: true,
+        square: true, aly: true, alley: true, cres: true, crescent: true, cv: true,
+        cove: true, bnd: true, bend: true, pt: true, point: true, grv: true, grove: true,
+        vw: true, view: true
+    };
+    var streetDirectionals = {
+        n: true, s: true, e: true, w: true, ne: true, nw: true, se: true, sw: true,
+        north: true, south: true, east: true, west: true
+    };
+
+    function normalizeStreetToken(token) {
+        return token.replace(/^[.,#]+|[.,#]+$/g, '').toLowerCase();
+    }
+
+    function hasCompleteStreetLine(tokens) {
+        var normalized = tokens
+            .map(normalizeStreetToken)
+            .filter(function (token) { return token.length > 0; });
+
+        if (normalized.some(function (token) { return streetSuffixes[token]; })) {
+            return normalized.some(function (token) {
+                return /[a-zA-Z]/.test(token) && !streetDirectionals[token];
+            });
+        }
+
+        var nameTokens = normalized.filter(function (token) {
+            return /[a-zA-Z]/.test(token) && !streetDirectionals[token];
+        });
+        return nameTokens.length >= 2;
+    }
+
+    function isValidStreetAddress(value) {
+        var line = String(value || '').trim();
+        if (line.length < 5) return false;
+        if (!/[a-zA-Z]/.test(line)) return false;
+        if (/^[\d\s.,#-]+$/.test(line)) return false;
+        var tokens = line.split(/\s+/).filter(Boolean);
+        if (!/\d/.test(line)) return false;
+        return hasCompleteStreetLine(tokens);
+    }
 
     var supportedRoot = document.getElementById('rlSupportedLanguages');
     var supported = (supportedRoot?.dataset.supportedLanguages || 'English,Spanish')
@@ -527,19 +637,6 @@
         var officeZip = form.querySelector('input[name="officeZip"]');
         var officeAddressMessage = 'Enter a complete street address with street name and type (e.g. 123 Main St).';
 
-        function isValidStreetAddress(value) {
-            var line = String(value || '').trim();
-            if (line.length < 5) return false;
-            if (!/\p{L}/u.test(line)) return false;
-            if (/^[\d\s.,#-]+$/.test(line)) return false;
-            var tokens = line.split(/\s+/).filter(Boolean);
-            var hasDigit = /\d/.test(line);
-            var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
-            if (!hasDigit) return false;
-            if (wordParts < 2) return false;
-            return true;
-        }
-
         if (!officeAddress || !officeAddress.value.trim()) {
             var addressRequiredMessage = 'Office address is required.';
             hasError = setFieldError('officeAddressError', 'input[name="officeAddress"]', addressRequiredMessage) || hasError;
@@ -635,9 +732,27 @@
             setFieldError(errorId, selector, '');
             hideFormErrorBanner();
         });
-        input.addEventListener('change', function () {
-            setFieldError(errorId, selector, '');
-            hideFormErrorBanner();
+        input.addEventListener('blur', function () {
+            if (input.value.trim()) {
+                return;
+            }
+            var blurMessages = {
+                brokerageName: 'Brokerage / Company Name is required.',
+                serviceAreas: 'City / market area is required.',
+                officeAddress: 'Office address is required.',
+                officeCity: 'City is required.',
+                officeZip: 'ZIP code is required.'
+            };
+            var blurMessage = blurMessages[input.name];
+            if (blurMessage) {
+                setFieldError(errorId, selector, blurMessage);
+            }
+            if (input.name === 'licenseState' && !input.value.trim()) {
+                setFieldError('licenseStateError', 'select[name="licenseState"]', 'Please select your license state.');
+            }
+            if (input.name === 'officeState' && !input.value.trim()) {
+                setFieldError('officeStateError', 'select[name="officeState"]', 'State is required.');
+            }
         });
     });
 

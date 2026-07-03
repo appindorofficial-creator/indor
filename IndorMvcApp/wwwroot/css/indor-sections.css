@@ -368,3 +368,23 @@ a.rl-network-banner--link .rl-network-btn {
     background: rgba(255, 255, 255, .9) !important;
     backdrop-filter: blur(12px);
 }
+
+/* Clients hero — Add Client must stay white + tappable (loads last on realtor pages) */
+.rl-clients-hero a.rl-clients-add {
+    display: flex !important;
+    width: 100% !important;
+    background: #fff !important;
+    color: #0066CC !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
+    filter: none !important;
+    pointer-events: auto !important;
+    position: relative !important;
+    z-index: 4 !important;
+}
+.rl-clients-hero a.rl-clients-add:hover,
+.rl-clients-hero a.rl-clients-add:focus-visible {
+    background: #F0F7FF !important;
+    color: #0057C8 !important;
+    filter: none !important;
+}

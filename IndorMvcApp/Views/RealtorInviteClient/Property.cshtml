@@ -37,7 +37,8 @@
                autocomplete="off"
                enterkeyhint="search" />
     </label>
-    <p class="rl-field-hint">Enter an address and tap Next to create a new property, or search to pick an existing one.</p>
+    <span class="rl-field-error" id="invitePropertySearchError" role="alert"></span>
+    <p class="rl-field-hint">Type an address and tap <strong>Next</strong> to create a new property, or pick one from the list below.</p>
 
     @if (Model.Properties.Count == 0)
     {
@@ -62,7 +63,7 @@
         {
             var selected = Model.SelectedPropertyFileId == prop.Id;
             <label class="rl-property-pick @(selected ? "is-selected" : "")">
-                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) required />
+                <input type="radio" name="propertyFileId" value="@prop.Id" @(selected ? "checked" : null) />
                 <span class="rl-property-pick-icon"><i class="fas @prop.Icon"></i></span>
                 <span class="rl-property-pick-body">
                     <strong>@prop.Address</strong>
@@ -101,9 +102,20 @@
 @section Scripts {
 <script>
     (function () {
+        var formErrors = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(formErrors));
+        var searchError = document.getElementById('invitePropertySearchError');
+        var searchWrap = document.querySelector('#invitePropertyForm .rl-search-bar');
+        if (formErrors.length && searchError) {
+            searchError.textContent = formErrors[0];
+            if (searchWrap) {
+                searchWrap.classList.add('is-error');
+            }
+        }
+
         var banner = document.getElementById('invitePropertyFormErrors');
-        if (banner && !banner.classList.contains('is-hidden')) {
-            banner.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        var scrollTarget = (formErrors.length && searchError) ? searchError : banner;
+        if (scrollTarget && (!banner || !banner.classList.contains('is-hidden'))) {
+            scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
             return;
         }
         var summary = document.querySelector('#invitePropertyForm .ob-summary:not(.validation-summary-valid)');

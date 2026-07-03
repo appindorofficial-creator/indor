@@ -76,6 +76,7 @@ public class RealtorNetworkFeedCardViewModel
     public string PrimaryActionUrl { get; set; } = "#";
     public string? SecondaryActionLabel { get; set; }
     public string? SecondaryActionUrl { get; set; }
+    public bool SecondaryActionOpensShare { get; set; }
     public List<string> Tags { get; set; } = [];
 }
 
@@ -216,4 +217,27 @@ public class RealtorNetworkListingDetailViewModel : RealtorPortalShellViewModel
     public decimal? Bathrooms { get; set; }
     public int? SquareFeet { get; set; }
     public int? YearBuilt { get; set; }
+    public bool InterestSent { get; set; }
+    public string ExpressInterestUrl { get; set; } = "#";
+}
+
+public class RealtorNetworkLeadDetailViewModel : RealtorPortalShellViewModel
+{
+    public int ItemId { get; set; }
+    public string Title { get; set; } = "";
+    public string? Subtitle { get; set; }
+    public string? SpecsLabel { get; set; }
+    public string? MetaLabel { get; set; }
+    public string StatusBadge { get; set; } = "";
+    public string StatusCss { get; set; } = "lead";
+    public string DistanceLabel { get; set; } = "";
+    public bool ShowContactPanel { get; set; }
+    public int? RelatedClientId { get; set; }
+    public string? BuyerName { get; set; }
+    public string? BuyerEmail { get; set; }
+    public string? BuyerPhone { get; set; }
+    public string? ContactUrl { get; set; }
+    public string ContactActionLabel { get; set; } = "Contact Buyer";
+    public bool CanContactBuyer { get; set; }
+    public bool InterestRecorded { get; set; }
 }

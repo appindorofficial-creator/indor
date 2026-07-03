@@ -596,7 +596,7 @@ public class PropertyAdministratorRegistrationController(
         SavePendingTeamInvites(invites);
 
         var model = await BuildInviteTeamViewModelAsync();
-        model.FormSuccess = $"Invite added for {email}. Add another teammate or go back to review.";
+        model.FormSuccess = $"{display} was added to your invite list. Add another teammate below or tap Back to review when you are finished.";
         return View(model);
     }
 

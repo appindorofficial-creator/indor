@@ -372,6 +372,25 @@ public class NeighborRequestController(
         return View(vm);
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> InviteHelpers(int id, string[]? selectedHelpers, CancellationToken cancellationToken)
+    {
+        var userId = userManager.GetUserId(User);
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Account");
+        }
+
+        var redirectUrl = await wizardService.InviteSelectedHelpersAsync(userId, id, selectedHelpers, Url, cancellationToken);
+        if (redirectUrl == null)
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        return Redirect(redirectUrl);
+    }
+
     [HttpGet]
     public async Task<IActionResult> BrowseHelpers(int propiedadId, CancellationToken cancellationToken)
     {

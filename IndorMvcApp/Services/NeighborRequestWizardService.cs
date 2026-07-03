@@ -1154,10 +1154,137 @@ public class NeighborRequestWizardService(
             return null;
         }
 
+        var invitedProviderIds = await LoadInvitedProviderIdsAsync(requestId, ct);
+        var helpers = await BuildHelperCardsForRequestAsync(request, invitedProviderIds, url, ct);
+
+        return new NeighborRequestHelpersStepViewModel
+        {
+            PropiedadId = request.PropiedadId,
+            RequestId = requestId,
+            PageTitle = "Helpers Nearby",
+            DisplayStep = 4,
+            TotalSteps = 4,
+            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
+            JobTitle = request.Title,
+            WhenLabel = FormatWhenLabel(request),
+            TimeLabel = FormatPreferredTimeLabel(request),
+            HelpersLabel = $"{ExtractHelperCount(request.DetailsSummary)} helpers",
+            PayLabel = FormatPayLabel(request.BudgetAmount, request.DetailsSummary?.Contains("Pay:", StringComparison.OrdinalIgnoreCase) == true && request.DetailsSummary.Contains("/hr", StringComparison.OrdinalIgnoreCase) ? NeighborRequestPayTypeCodes.Hourly : NeighborRequestPayTypeCodes.Hourly),
+            LocationAddress = request.LocationAddress ?? string.Empty,
+            CategoryIllustrationClass = ResolveCategoryIllustration(request.Category?.Code ?? string.Empty),
+            Helpers = helpers,
+            DetailUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }) ?? "#",
+            InviteUrl = url.Action("InviteHelpers", "NeighborRequest", new { id = requestId }) ?? "#",
+            BackUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }),
+            CloseUrl = await ResolvePortalHomeUrlAsync(userId, request.PropiedadId, url, ct)
+        };
+    }
+
+    public async Task<string?> InviteSelectedHelpersAsync(
+        string userId,
+        int requestId,
+        IReadOnlyList<string>? selectedKeys,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
+        IndorNeighborRequest? request;
+        try
+        {
+            request = await db.IndorNeighborRequests
+                .Include(r => r.Offers)
+                .Include(r => r.Category)
+                .FirstOrDefaultAsync(r => r.Id == requestId && r.UserId == userId, ct);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return null;
+        }
+
+        if (request == null)
+        {
+            return null;
+        }
+
+        var invitedProviderIds = request.Offers
+            .Where(o => o.OfferType == NeighborRequestOfferTypes.Provider
+                && o.Status == NeighborRequestOfferStatuses.Pending
+                && o.ProviderId != null)
+            .Select(o => o.ProviderId!.Value)
+            .ToHashSet();
+
+        var helperCards = await BuildHelperCardsForRequestAsync(request, invitedProviderIds, url, ct);
+        var selectedSet = new HashSet<string>(selectedKeys ?? [], StringComparer.Ordinal);
+        var cardsToInvite = helperCards
+            .Where(c => selectedSet.Contains(c.SelectionKey))
+            .ToList();
+
+        if (cardsToInvite.Count > 0)
+        {
+            var now = DateTime.UtcNow;
+            foreach (var card in cardsToInvite)
+            {
+                if (invitedProviderIds.Contains(card.ProviderId))
+                {
+                    continue;
+                }
+
+                request.Offers.Add(new IndorNeighborRequestOffer
+                {
+                    RequestId = requestId,
+                    OfferType = NeighborRequestOfferTypes.Provider,
+                    ProviderId = card.ProviderId,
+                    OffererName = card.Name,
+                    OffererPhotoUrl = card.PhotoUrl,
+                    PriceAmount = ParseHelperPriceAmount(card.PriceLabel),
+                    Rating = decimal.TryParse(card.RatingLabel, NumberStyles.Number, CultureInfo.InvariantCulture, out var rating)
+                        ? rating
+                        : null,
+                    ScheduleLabel = "Awaiting response",
+                    IsVerified = card.IsVerified,
+                    Status = NeighborRequestOfferStatuses.Pending,
+                    CreatedUtc = now
+                });
+                invitedProviderIds.Add(card.ProviderId);
+            }
+
+            request.UpdatedUtc = now;
+            await db.SaveChangesAsync(ct);
+        }
+
+        return url.Action("Detail", "NeighborRequest", new { id = requestId });
+    }
+
+    private async Task<HashSet<int>> LoadInvitedProviderIdsAsync(int requestId, CancellationToken ct)
+    {
+        try
+        {
+            var ids = await db.IndorNeighborRequestOffers
+                .AsNoTracking()
+                .Where(o => o.RequestId == requestId
+                    && o.OfferType == NeighborRequestOfferTypes.Provider
+                    && o.Status == NeighborRequestOfferStatuses.Pending
+                    && o.ProviderId != null)
+                .Select(o => o.ProviderId!.Value)
+                .ToListAsync(ct);
+
+            return ids.ToHashSet();
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return [];
+        }
+    }
+
+    private async Task<List<NeighborRequestHelperCardViewModel>> BuildHelperCardsForRequestAsync(
+        IndorNeighborRequest request,
+        IReadOnlySet<int> invitedProviderIds,
+        IUrlHelper url,
+        CancellationToken ct)
+    {
         var suggested = await LoadSuggestedProviderOffersAsync(request, url, ct);
         var helpers = suggested.Select((offer, index) => new NeighborRequestHelperCardViewModel
         {
-            ProviderId = offer.ProviderId ?? index + 1,
+            ProviderId = offer.ProviderId is > 0 ? offer.ProviderId.Value : index + 1,
             Name = offer.OffererName,
             PhotoUrl = offer.OffererPhotoUrl,
             AvatarIconClass = offer.AvatarIconClass,
@@ -1178,26 +1305,29 @@ public class NeighborRequestWizardService(
             helpers = BuildDemoHelperCards(url, request.BudgetAmount);
         }
 
-        return new NeighborRequestHelpersStepViewModel
+        for (var i = 0; i < helpers.Count; i++)
         {
-            PropiedadId = request.PropiedadId,
-            RequestId = requestId,
-            PageTitle = "Helpers Nearby",
-            DisplayStep = 4,
-            TotalSteps = 4,
-            StepLabels = ["Details", "Schedule", "Extras", "Helpers"],
-            JobTitle = request.Title,
-            WhenLabel = FormatWhenLabel(request),
-            TimeLabel = FormatPreferredTimeLabel(request),
-            HelpersLabel = $"{ExtractHelperCount(request.DetailsSummary)} helpers",
-            PayLabel = FormatPayLabel(request.BudgetAmount, request.DetailsSummary?.Contains("Pay:", StringComparison.OrdinalIgnoreCase) == true && request.DetailsSummary.Contains("/hr", StringComparison.OrdinalIgnoreCase) ? NeighborRequestPayTypeCodes.Hourly : NeighborRequestPayTypeCodes.Hourly),
-            LocationAddress = request.LocationAddress ?? string.Empty,
-            CategoryIllustrationClass = ResolveCategoryIllustration(request.Category?.Code ?? string.Empty),
-            Helpers = helpers,
-            DetailUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }) ?? "#",
-            BackUrl = url.Action("Detail", "NeighborRequest", new { id = requestId }),
-            CloseUrl = await ResolvePortalHomeUrlAsync(userId, request.PropiedadId, url, ct)
-        };
+            var helper = helpers[i];
+            helper.SelectionKey = FormatHelperSelectionKey(i, helper.ProviderId);
+            helper.IsSelected = invitedProviderIds.Contains(helper.ProviderId);
+        }
+
+        return helpers;
+    }
+
+    private static string FormatHelperSelectionKey(int index, int providerId) => $"{index}:{providerId}";
+
+    private static decimal? ParseHelperPriceAmount(string priceLabel)
+    {
+        if (string.IsNullOrWhiteSpace(priceLabel))
+        {
+            return null;
+        }
+
+        var digits = new string(priceLabel.Where(c => char.IsDigit(c) || c == '.').ToArray());
+        return decimal.TryParse(digits, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount) && amount > 0
+            ? amount
+            : null;
     }
 
     public void ApplyScheduleToDraft(NeighborRequestDraftState draft, NeighborRequestPreferencesStepViewModel model)

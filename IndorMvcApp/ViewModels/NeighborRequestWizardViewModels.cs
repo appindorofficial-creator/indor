@@ -216,6 +216,7 @@ public class NeighborRequestHelpersStepViewModel : NeighborRequestWizardShellVie
     public string CategoryIllustrationClass { get; set; } = "nr-cat-ill--other";
     public List<NeighborRequestHelperCardViewModel> Helpers { get; set; } = [];
     public string DetailUrl { get; set; } = "#";
+    public string InviteUrl { get; set; } = "#";
 }
 
 public class NeighborRequestBrowseHelpersViewModel
@@ -230,7 +231,9 @@ public class NeighborRequestBrowseHelpersViewModel
 
 public class NeighborRequestHelperCardViewModel
 {
+    public string SelectionKey { get; set; } = string.Empty;
     public int ProviderId { get; set; }
+    public bool IsSelected { get; set; }
     public string Name { get; set; } = string.Empty;
     public string? PhotoUrl { get; set; }
     public string AvatarIconClass { get; set; } = "fa-user";

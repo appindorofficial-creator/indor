@@ -97,7 +97,7 @@
     }
 
     <div class="rl-qview-actions">
-        <form asp-controller="SharedQuote" asp-action="Accept" asp-route-token="@Model.ShareToken" method="post">
+        <form asp-controller="SharedQuote" asp-action="Accept" asp-route-id="@Model.ShareToken" method="post">
             @Html.AntiForgeryToken()
             <button type="submit" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-circle-check"></i> Accept Quote</button>
         </form>

@@ -135,6 +135,70 @@
         return '';
     }
 
+    var streetSuffixes = {
+        st: true, street: true, rd: true, road: true, ave: true, avenue: true,
+        blvd: true, boulevard: true, dr: true, drive: true, ln: true, lane: true,
+        way: true, ct: true, court: true, cir: true, circle: true, pl: true, place: true,
+        pkwy: true, parkway: true, ter: true, terrace: true, trl: true, trail: true,
+        hwy: true, highway: true, loop: true, pass: true, path: true, row: true,
+        run: true, walk: true, xing: true, crossing: true, pike: true, sq: true,
+        square: true, aly: true, alley: true, cres: true, crescent: true, cv: true,
+        cove: true, bnd: true, bend: true, pt: true, point: true, grv: true, grove: true,
+        vw: true, view: true
+    };
+
+    var streetDirectionals = {
+        n: true, s: true, e: true, w: true, ne: true, nw: true, se: true, sw: true,
+        north: true, south: true, east: true, west: true
+    };
+
+    function normalizeStreetToken(token) {
+        return token.replace(/^[.,#]+|[.,#]+$/g, '').toLowerCase();
+    }
+
+    function hasCompleteStreetLine(tokens) {
+        var normalized = tokens
+            .map(normalizeStreetToken)
+            .filter(function (token) { return token.length > 0; });
+
+        if (normalized.some(function (token) { return streetSuffixes[token]; })) {
+            return normalized.some(function (token) {
+                return /[a-zA-Z]/.test(token) && !streetDirectionals[token];
+            });
+        }
+
+        var nameTokens = normalized.filter(function (token) {
+            return /[a-zA-Z]/.test(token) && !streetDirectionals[token];
+        });
+        return nameTokens.length >= 2;
+    }
+
+    function validateStreetAddress(value, requireStreetNumber) {
+        var line = String(value || '').trim();
+        if (!line) {
+            return 'Property address is required.';
+        }
+        if (line.length < 5) {
+            return 'Enter a complete street address.';
+        }
+        if (!/[a-zA-Z]/.test(line)) {
+            return 'Enter a valid street address with a street name.';
+        }
+        if (/^[\d\s.,#-]+$/.test(line)) {
+            return 'Address cannot contain only numbers.';
+        }
+
+        var tokens = line.split(/\s+/).filter(Boolean);
+        var hasDigit = /\d/.test(line);
+        if (requireStreetNumber && !hasDigit) {
+            return 'Enter a street number (e.g. 123 Main St).';
+        }
+        if (requireStreetNumber && !hasCompleteStreetLine(tokens)) {
+            return 'Enter a complete street address with street name and type (e.g. 123 Main St).';
+        }
+        return '';
+    }
+
     function validateInviteClientForm() {
         clearFormErrors('inviteClientForm', ['fullName', 'email', 'phone', 'clientRole'], 'inviteClientFormErrors');
 
@@ -238,27 +302,11 @@
         var city = cityInput ? cityInput.value.trim() : '';
         var state = stateInput ? stateInput.value.trim() : '';
         var zip = zipInput ? zipInput.value.trim() : '';
-        var addressMessage = 'Enter a complete street address with street name and type (e.g. 123 Main St).';
 
-        function isValidStreetAddress(value) {
-            var line = String(value || '').trim();
-            if (line.length < 5) return false;
-            if (!/\p{L}/u.test(line)) return false;
-            if (/^[\d\s.,#-]+$/.test(line)) return false;
-            var tokens = line.split(/\s+/).filter(Boolean);
-            var hasDigit = /\d/.test(line);
-            var wordParts = tokens.filter(function (part) { return /\p{L}/u.test(part); }).length;
-            if (!hasDigit) return false;
-            if (wordParts < 2) return false;
-            return true;
-        }
-
-        if (!address) {
-            setFormFieldError('createPropertyForm', 'Address', 'Property address is required.');
-            errors.push('Property address is required.');
-        } else if (!isValidStreetAddress(address)) {
-            setFormFieldError('createPropertyForm', 'Address', addressMessage);
-            errors.push(addressMessage);
+        var addressError = validateStreetAddress(address, true);
+        if (addressError) {
+            setFormFieldError('createPropertyForm', 'Address', addressError);
+            errors.push(addressError);
         }
         if (!city) {
             setFormFieldError('createPropertyForm', 'City', 'City is required.');
@@ -298,8 +346,7 @@
 
         var selected = form.querySelector('input[name="propertyFileId"]:checked');
         var query = getPropertySearchQuery(searchInput);
-        var hasOptions = form.querySelectorAll('input[name="propertyFileId"]').length > 0;
-        return !selected && !hasOptions && query.length > 0;
+        return !selected && query.length > 0;
     }
 
     function redirectPropertyToCreate(searchInput, createUrl) {
@@ -331,18 +378,37 @@
             return true;
         }
 
-        if (hasOptions && !selected) {
-            errors.push('Please select a property to continue.');
-        } else if (!hasOptions && !query) {
-            errors.push('Enter an address or create a new property to continue.');
+        if (!selected && !query) {
+            if (hasOptions) {
+                errors.push('Select a property from the list, or enter an address to create a new one.');
+            } else {
+                errors.push('Enter an address and tap Next to create a new property.');
+            }
         }
 
         if (errors.length) {
             showFormErrorBanner('invitePropertyForm', 'invitePropertyFormErrors', errors);
+            setPropertySearchError(errors[0]);
+            var scrollTarget = document.getElementById('invitePropertySearchError')
+                || document.getElementById('invitePropertyFormErrors');
+            if (scrollTarget) {
+                scrollTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
             return false;
         }
 
         return true;
+    }
+
+    function setPropertySearchError(message) {
+        var errorEl = document.getElementById('invitePropertySearchError');
+        var searchWrap = document.querySelector('#invitePropertyForm .rl-search-bar');
+        if (errorEl) {
+            errorEl.textContent = message || '';
+        }
+        if (searchWrap) {
+            searchWrap.classList.toggle('is-error', !!message);
+        }
     }
 
     function initInvitePropertyForm() {
@@ -355,6 +421,7 @@
         if (searchInput) {
             searchInput.addEventListener('input', function () {
                 clearFormErrors('invitePropertyForm', [], 'invitePropertyFormErrors');
+                setPropertySearchError('');
             });
 
             searchInput.addEventListener('keydown', function (e) {
@@ -377,6 +444,7 @@
                 });
                 radio.closest('.rl-property-pick')?.classList.add('is-selected');
                 clearFormErrors('invitePropertyForm', [], 'invitePropertyFormErrors');
+                setPropertySearchError('');
             });
         });
 
@@ -554,6 +622,16 @@
                 var zipError = validateZip(zipInput.value);
                 if (zipError) {
                     setFormFieldError('createPropertyForm', 'PostalCode', zipError);
+                }
+            });
+        }
+
+        var addressInput = document.getElementById('cp-address');
+        if (addressInput) {
+            addressInput.addEventListener('blur', function () {
+                var message = validateStreetAddress(addressInput.value, true);
+                if (message) {
+                    setFormFieldError('createPropertyForm', 'Address', message);
                 }
             });
         }

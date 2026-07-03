@@ -1,3 +1,4 @@
+@using System.Globalization
 @using IndorMvcApp.Models
 @using IndorMvcApp.ViewModels
 @model IndorMvcApp.ViewModels.NeighborRequestEditDetailsStepViewModel
@@ -60,12 +61,16 @@
         <section class="nr-edit-section">
             <h2 class="nr-edit-section-title">Details</h2>
             <div class="nr-edit-field nr-field--count">
-                <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="2 bedrooms, 2 bathrooms, 1 cat" maxlength="200" aria-describedby="nrEditSummaryCount" />
-                <span class="nr-char-count" id="nrEditSummaryCount"><span id="nrEditSummaryCountValue">0</span>/200</span>
+                <div class="nr-counted-control">
+                    <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="2 bedrooms, 2 bathrooms, 1 cat" maxlength="200" aria-describedby="nrEditSummaryCount" />
+                    <span class="nr-char-count" id="nrEditSummaryCount"><span id="nrEditSummaryCountValue">0</span>/200</span>
+                </div>
             </div>
             <div class="nr-edit-field nr-field--count">
-                <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy." aria-describedby="nrEditDescCount"></textarea>
-                <span class="nr-char-count" id="nrEditDescCount"><span id="nrEditDescCountValue">0</span>/1000</span>
+                <div class="nr-counted-control">
+                    <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy." aria-describedby="nrEditDescCount"></textarea>
+                    <span class="nr-char-count" id="nrEditDescCount"><span id="nrEditDescCountValue">0</span>/1000</span>
+                </div>
             </div>
         </section>
 
@@ -73,7 +78,12 @@
             <h2 class="nr-edit-section-title">Preferred date</h2>
             <label class="nr-edit-picker nr-edit-picker--date">
                 <span class="nr-edit-picker-icon"><i class="far fa-calendar"></i></span>
-                <input asp-for="NeededByDate" type="date" class="nr-edit-picker-native nr-edit-picker-native--date" data-min-date="@Model.MinNeededByDateIso" />
+                <input name="NeededByDate"
+                       id="NeededByDate"
+                       type="date"
+                       class="nr-edit-picker-native nr-edit-picker-native--date"
+                       data-min-date="@Model.MinNeededByDateIso"
+                       value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")" />
                 <span class="nr-edit-picker-label" id="nrPreferredDateLabel">
                     @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? "Select a date")
                 </span>
@@ -136,7 +146,6 @@
 </form>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
     <script>
         (function () {
             var categorySelect = document.querySelector('[name="CategoryId"]');
@@ -189,6 +198,9 @@
                 }
 
                 var update = function () {
+                    if (field.value.length > max) {
+                        field.value = field.value.slice(0, max);
+                    }
                     var length = field.value.length;
                     counter.textContent = String(length);
                     if (counterWrap) {

@@ -6,6 +6,205 @@
     // (no API key, blocked, offline) the field stays a normal text input and
     // server-side validation still enforces a complete address.
 
+    function getCityFromComponents(components) {
+        if (!components) {
+            return '';
+        }
+
+        return getComponent(components, 'locality', false)
+            || getComponent(components, 'postal_town', false)
+            || getComponent(components, 'sublocality', false)
+            || getComponent(components, 'sublocality_level_1', false)
+            || getComponent(components, 'administrative_area_level_3', false)
+            || getComponent(components, 'neighborhood', false);
+    }
+
+    function applyAddressComponents(sourceInput, components) {
+        if (!components || !components.length || !sourceInput) {
+            return;
+        }
+
+        var city = getCityFromComponents(components);
+        var stateCode = getComponent(components, 'administrative_area_level_1', true);
+        var zipCode = getComponent(components, 'postal_code', false);
+
+        if (city) {
+            fillLinkedField(sourceInput, 'City', city);
+        }
+
+        if (stateCode) {
+            var stateEl = getLinkedElement(sourceInput, 'State');
+            if (stateEl) {
+                ensureStateSelectSnapshot(stateEl);
+                filterStateSelect(stateEl, stateCode);
+                stateEl.value = stateCode;
+                stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+            } else {
+                fillLinkedField(sourceInput, 'State', stateCode);
+            }
+        }
+
+        if (zipCode) {
+            var zipEl = getLinkedElement(sourceInput, 'Zip');
+            if (zipEl) {
+                setZipValue(zipEl, zipCode);
+            }
+        }
+    }
+
+    function needsAddressCompletion(sourceInput) {
+        var cityEl = getLinkedElement(sourceInput, 'City');
+        var stateEl = getLinkedElement(sourceInput, 'State');
+        var zipEl = getLinkedElement(sourceInput, 'Zip');
+
+        return !!(
+            (cityEl && !cityEl.value.trim())
+            || (stateEl && !stateEl.value.trim())
+            || (zipEl && shouldReplaceZip(zipEl))
+        );
+    }
+
+    var streetGeocodeTimers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+    var streetResolveControllers = typeof WeakMap !== 'undefined' ? new WeakMap() : null;
+
+    function runServerAddressResolve(sourceInput, address) {
+        if (!address || !needsAddressCompletion(sourceInput)) {
+            return;
+        }
+
+        var url = '/AddressLookup/Resolve?address=' + encodeURIComponent(address);
+        var fetchOptions = {
+            headers: { 'Accept': 'application/json' },
+            credentials: 'same-origin'
+        };
+
+        if (streetResolveControllers) {
+            var previous = streetResolveControllers.get(sourceInput);
+            if (previous) {
+                previous.abort();
+            }
+            var controller = new AbortController();
+            streetResolveControllers.set(sourceInput, controller);
+            fetchOptions.signal = controller.signal;
+        }
+
+        fetch(url, fetchOptions).then(function (response) {
+            if (!response.ok || !needsAddressCompletion(sourceInput)) {
+                return null;
+            }
+            return response.json();
+        }).then(function (payload) {
+            if (!payload || !needsAddressCompletion(sourceInput)) {
+                return;
+            }
+
+            if (payload.city) {
+                fillLinkedField(sourceInput, 'City', payload.city);
+            }
+            if (payload.state) {
+                var stateEl = getLinkedElement(sourceInput, 'State');
+                if (stateEl) {
+                    ensureStateSelectSnapshot(stateEl);
+                    filterStateSelect(stateEl, payload.state);
+                    stateEl.value = payload.state;
+                    stateEl.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+            if (payload.zip) {
+                var zipEl = getLinkedElement(sourceInput, 'Zip');
+                if (zipEl && shouldReplaceZip(zipEl)) {
+                    setZipValue(zipEl, payload.zip);
+                }
+            }
+        }).catch(function (err) {
+            if (err && err.name === 'AbortError') {
+                return;
+            }
+        });
+    }
+
+    function geocodeFullAddress(sourceInput, address) {
+        if (!address || !needsAddressCompletion(sourceInput)) {
+            return;
+        }
+
+        if (window.google && google.maps && google.maps.Geocoder) {
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({
+                address: address,
+                componentRestrictions: { country: 'US' }
+            }, function (results, status) {
+                if (status !== 'OK' || !results || !results.length) {
+                    runServerAddressResolve(sourceInput, address);
+                    return;
+                }
+
+                if (!needsAddressCompletion(sourceInput)) {
+                    return;
+                }
+
+                applyAddressComponents(sourceInput, results[0].address_components || []);
+                if (needsAddressCompletion(sourceInput)) {
+                    tryGeocodeLinkedZip(sourceInput);
+                }
+            });
+            return;
+        }
+
+        runServerAddressResolve(sourceInput, address);
+    }
+
+    function tryCompleteAddressFromStreet(sourceInput) {
+        var street = sourceInput.value.trim();
+        if (street.length < 4 || !needsAddressCompletion(sourceInput)) {
+            return;
+        }
+
+        var cityEl = getLinkedElement(sourceInput, 'City');
+        var stateEl = getLinkedElement(sourceInput, 'State');
+        var city = cityEl ? cityEl.value.trim() : '';
+        var state = stateEl ? stateEl.value.trim() : '';
+        var address = city && state
+            ? street + ', ' + city + ', ' + state + ', USA'
+            : street + ', USA';
+
+        geocodeFullAddress(sourceInput, address);
+    }
+
+    function scheduleStreetCompletion(sourceInput) {
+        if (streetGeocodeTimers) {
+            clearTimeout(streetGeocodeTimers.get(sourceInput));
+            streetGeocodeTimers.set(sourceInput, setTimeout(function () {
+                tryCompleteAddressFromStreet(sourceInput);
+            }, 700));
+        } else {
+            tryCompleteAddressFromStreet(sourceInput);
+        }
+    }
+
+    function bindStreetAddressCompletion(input) {
+        if (input.dataset.streetCompletionBound === 'true') {
+            return;
+        }
+        input.dataset.streetCompletionBound = 'true';
+
+        input.addEventListener('blur', function () {
+            window.setTimeout(function () {
+                if (document.activeElement && document.activeElement.closest('.pac-container')) {
+                    return;
+                }
+                tryCompleteAddressFromStreet(input);
+            }, 250);
+        });
+
+        input.addEventListener('input', function () {
+            if (!input.value.trim()) {
+                return;
+            }
+            scheduleStreetCompletion(input);
+        });
+    }
+
     function getComponent(components, type, useShort) {
         if (!components) return '';
         var match = components.find(function (c) { return c.types.indexOf(type) !== -1; });
@@ -398,9 +597,7 @@
                 ? sourceInput
                 : (sourceInput ? getLinkedElement(sourceInput, 'City') : null);
             if (cityEl && !cityEl.value.trim()) {
-                var city = getComponent(components, 'locality', false)
-                    || getComponent(components, 'sublocality', false)
-                    || getComponent(components, 'postal_town', false);
+                var city = getCityFromComponents(components);
                 if (city) {
                     if (sourceInput && sourceInput.hasAttribute('data-city-autocomplete')) {
                         cityEl.value = city;
@@ -409,6 +606,17 @@
                     } else if (sourceInput) {
                         fillLinkedField(sourceInput, 'City', city);
                     }
+                }
+            }
+
+            var stateEl = sourceInput ? getLinkedElement(sourceInput, 'State') : null;
+            if (stateEl && !stateEl.value.trim()) {
+                var stateCode = getComponent(components, 'administrative_area_level_1', true);
+                if (stateCode) {
+                    ensureStateSelectSnapshot(stateEl);
+                    filterStateSelect(stateEl, stateCode);
+                    stateEl.value = stateCode;
+                    stateEl.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             }
         });
@@ -529,12 +737,16 @@
     }
 
     function bindPacSelectionGuards() {
-        ['touchstart', 'mousedown'].forEach(function (eventName) {
+        ['touchstart', 'mousedown', 'pointerdown'].forEach(function (eventName) {
             document.addEventListener(eventName, function (e) {
                 if (!e.target.closest('.pac-container')) {
                     return;
                 }
-                suppressPacDismiss(1200);
+                if (e.target.closest('.pac-item') && eventName === 'mousedown') {
+                    // Keep focus on the input until Google applies the selection.
+                    e.preventDefault();
+                }
+                suppressPacDismiss(1500);
             }, true);
         });
 
@@ -542,7 +754,7 @@
             if (!e.target.closest('.pac-item')) {
                 return;
             }
-            suppressPacDismiss(1200);
+            suppressPacDismiss(1500);
             window.setTimeout(function () {
                 finalizeAutocompleteSelection(lastAutocompleteInput);
             }, 300);
@@ -570,13 +782,14 @@
 
         input.addEventListener('blur', function () {
             window.setTimeout(function () {
-                if (!pacDismissSuppressed) {
-                    if (lastAutocompleteInput === input) {
-                        lastAutocompleteInput = null;
-                    }
-                    dismissPacDropdown(null, false);
+                if (pacDismissSuppressed || isPacVisible()) {
+                    return;
                 }
-            }, 350);
+                if (lastAutocompleteInput === input) {
+                    lastAutocompleteInput = null;
+                }
+                dismissPacDropdown(null, false);
+            }, 450);
         });
     }
 
@@ -629,21 +842,28 @@
         }, true);
 
         document.addEventListener('scroll', function () {
-            if (shouldKeepPacOpen()) {
+            if (pacDismissSuppressed || isAutocompleteFieldFocused() || shouldKeepPacOpen()) {
                 positionPacContainer(lastAutocompleteInput);
-                return;
-            }
-            if (pacDismissSuppressed) {
                 return;
             }
             dismissPacDropdown(null, false);
         }, true);
 
         window.addEventListener('resize', function () {
-            if (shouldKeepPacOpen()) {
+            if (isAutocompleteFieldFocused() || shouldKeepPacOpen()) {
                 positionPacContainer(lastAutocompleteInput);
             }
         });
+
+        if (window.visualViewport) {
+            var syncPacWithViewport = function () {
+                if (pacDismissSuppressed || isAutocompleteFieldFocused() || shouldKeepPacOpen()) {
+                    positionPacContainer(lastAutocompleteInput);
+                }
+            };
+            window.visualViewport.addEventListener('resize', syncPacWithViewport);
+            window.visualViewport.addEventListener('scroll', syncPacWithViewport);
+        }
     }
 
     var pacPositionRafId = null;
@@ -652,13 +872,77 @@
         return input && isAutocompleteInput(input) ? input : lastAutocompleteInput;
     }
 
+    function resolvePacField(target) {
+        if (!target || typeof target.closest !== 'function') {
+            return null;
+        }
+
+        return target.closest('.pa-field')
+            || target.closest('.pf-field')
+            || target.closest('.rl-cp-field')
+            || target.closest('.ob-field');
+    }
+
     function resolvePacHost(target) {
         if (!target) {
             return null;
         }
-        var host = (typeof target.closest === 'function' && target.closest('.pf-field'))
-            || target.parentElement;
-        return host || null;
+
+        var field = resolvePacField(target);
+        if (field) {
+            if (field.classList.contains('rl-cp-field--address')) {
+                var card = field.closest('.rl-cp-card');
+                if (card) {
+                    return card;
+                }
+            }
+
+            if (field.querySelector('[data-address-autocomplete]')) {
+                var addressFormHost = field.closest('.pf-home-address-form, .ob-form-card');
+                if (addressFormHost) {
+                    return addressFormHost;
+                }
+            }
+
+            // In multi-column address rows, anchor to the full row so the
+            // dropdown is not squeezed into half the screen on mobile.
+            var row = field.closest('.pa-field-row, .rl-cp-grid, .pf-row');
+            if (row && (row.classList.contains('pa-field-row--2')
+                || row.classList.contains('pa-field-row--3')
+                || row.classList.contains('rl-cp-grid')
+                || row.classList.contains('pf-row'))) {
+                return row;
+            }
+            return field;
+        }
+
+        var searchWrap = typeof target.closest === 'function' && target.closest('.ob-search');
+        if (searchWrap) {
+            return searchWrap.parentElement || searchWrap;
+        }
+
+        return target.parentElement || null;
+    }
+
+    function ensureRelativeHost(host) {
+        if (!host) {
+            return;
+        }
+
+        var position = window.getComputedStyle(host).position;
+        if (position === 'static') {
+            host.style.setProperty('position', 'relative');
+        }
+    }
+
+    function resolvePacTopOffset(host, field) {
+        if (!field || host === field) {
+            return '100%';
+        }
+
+        var fieldRect = field.getBoundingClientRect();
+        var hostRect = host.getBoundingClientRect();
+        return Math.max(0, Math.round(fieldRect.bottom - hostRect.top + 2)) + 'px';
     }
 
     function applyPacPosition(pac, input) {
@@ -668,30 +952,30 @@
 
         var target = resolvePacAnchor(input);
         var host = resolvePacHost(target);
-        if (!host) {
+        if (!host || !target) {
             return;
         }
 
-        // Anchor the dropdown to the field itself instead of fighting Google's
-        // body-level positioning (which flips the list on top of the input when
-        // the mobile keyboard is open). Moving it into a position:relative host
-        // and pinning it to top:100% makes it always sit under the input.
-        if (host.style.position !== 'relative' && host.style.position !== 'absolute') {
-            host.style.setProperty('position', 'relative');
-        }
+        var field = resolvePacField(target);
+
+        // Anchor the dropdown to the field (or its grid row) instead of fighting
+        // Google's body-level positioning, which overlaps inputs on mobile.
+        ensureRelativeHost(host);
         if (pac.parentElement !== host) {
             host.appendChild(pac);
         }
 
         pac.style.setProperty('position', 'absolute', 'important');
-        pac.style.setProperty('top', '100%', 'important');
+        pac.style.setProperty('top', resolvePacTopOffset(host, field), 'important');
         pac.style.setProperty('left', '0', 'important');
         pac.style.setProperty('right', 'auto', 'important');
         pac.style.setProperty('bottom', 'auto', 'important');
         pac.style.setProperty('width', '100%', 'important');
+        pac.style.setProperty('min-width', '100%', 'important');
         pac.style.setProperty('max-width', 'none', 'important');
-        pac.style.setProperty('margin', '2px 0 0', 'important');
+        pac.style.setProperty('margin', '0', 'important');
         pac.style.setProperty('transform', 'none', 'important');
+        pac.style.setProperty('box-sizing', 'border-box', 'important');
         pac.style.setProperty('z-index', '100000', 'important');
     }
 
@@ -707,13 +991,27 @@
 
     function positionPacContainer(input) {
         var anchor = resolvePacAnchor(input);
+        if (!anchor) {
+            return;
+        }
+
+        var activePac = null;
         document.querySelectorAll('.pac-container').forEach(function (pac) {
-            // Only relocate the container that is actually showing suggestions so
-            // the street/city dropdowns never get anchored to the wrong field.
             if (!isPacContainerShowing(pac)) {
                 return;
             }
-            applyPacPosition(pac, anchor);
+
+            if (!activePac) {
+                activePac = pac;
+                resetPacContainerStyles(pac);
+                applyPacPosition(pac, anchor);
+                return;
+            }
+
+            pac.style.display = 'none';
+            pac.style.visibility = 'hidden';
+            pac.style.pointerEvents = 'none';
+            pac.classList.add('pac-container--dismissed');
         });
     }
 
@@ -740,19 +1038,32 @@
     }
 
     function scrollFieldIntoView(input) {
-        if (!input || typeof input.scrollIntoView !== 'function') {
+        if (!input) {
             return;
         }
 
-        suppressPacDismiss(900);
+        suppressPacDismiss(1200);
         window.setTimeout(function () {
-            try {
-                input.scrollIntoView({ block: 'center', behavior: 'smooth' });
-            } catch (e) {
-                input.scrollIntoView(true);
+            if (window.visualViewport && typeof input.getBoundingClientRect === 'function') {
+                var rect = input.getBoundingClientRect();
+                var viewportBottom = window.visualViewport.offsetTop + window.visualViewport.height;
+                var targetBottom = viewportBottom - 96;
+                if (rect.bottom > targetBottom || rect.top < window.visualViewport.offsetTop + 12) {
+                    var scrollBy = rect.bottom - targetBottom;
+                    if (rect.top < window.visualViewport.offsetTop + 12) {
+                        scrollBy = rect.top - (window.visualViewport.offsetTop + 72);
+                    }
+                    window.scrollBy({ top: scrollBy, behavior: 'smooth' });
+                }
+            } else if (typeof input.scrollIntoView === 'function') {
+                try {
+                    input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                } catch (e) {
+                    input.scrollIntoView(true);
+                }
             }
             window.setTimeout(function () { positionPacContainer(input); }, 320);
-        }, 300);
+        }, 280);
     }
 
     function bindStateSelectZipLookup() {
@@ -852,9 +1163,7 @@
         if (!place) return;
         var components = place.address_components || null;
 
-        var city = getComponent(components, 'locality', false)
-            || getComponent(components, 'sublocality', false)
-            || getComponent(components, 'postal_town', false)
+        var city = getCityFromComponents(components)
             || place.name
             || '';
         if (city) {
@@ -961,25 +1270,11 @@
         }
 
         if (components) {
-            var city = getComponent(components, 'locality', false)
-                || getComponent(components, 'sublocality', false)
-                || getComponent(components, 'postal_town', false);
-            fillLinkedField(input, 'City', city);
-            var stateCode = getComponent(components, 'administrative_area_level_1', true);
-            fillLinkedField(input, 'State', stateCode);
-            var zipCode = getComponent(components, 'postal_code', false);
-            if (zipCode) {
-                var zipEl = getLinkedElement(input, 'Zip');
-                if (zipEl) {
-                    setZipValue(zipEl, zipCode);
-                }
-            }
+            applyAddressComponents(input, components);
 
-            var stateEl = getLinkedElement(input, 'State');
-            if (stateEl && stateCode) {
-                ensureStateSelectSnapshot(stateEl);
-                filterStateSelect(stateEl, stateCode);
-                stateEl.value = stateCode;
+            var zipEl = getLinkedElement(input, 'Zip');
+            if (zipEl && shouldReplaceZip(zipEl)) {
+                tryGeocodeLinkedZip(input);
             }
         }
 
@@ -993,7 +1288,12 @@
         observePacContainers();
         initZipGeocodeLinking();
 
+        document.querySelectorAll('input[data-address-autocomplete]').forEach(function (input) {
+            bindStreetAddressCompletion(input);
+        });
+
         if (!(window.google && google.maps && google.maps.places && google.maps.places.Autocomplete)) {
+            restoreInitialStateSelectValues();
             return;
         }
 
@@ -1015,9 +1315,18 @@
 
             ac.addListener('place_changed', function () {
                 var place = ac.getPlace();
-                if (!place || !place.address_components || !place.address_components.length) {
+                if (!place) {
                     return;
                 }
+
+                if (!place.address_components || !place.address_components.length) {
+                    if (place.formatted_address) {
+                        geocodeFullAddress(input, place.formatted_address);
+                    }
+                    finalizeAutocompleteSelection(input);
+                    return;
+                }
+
                 applyPlace(input, place);
                 finalizeAutocompleteSelection(input);
             });
@@ -1041,9 +1350,36 @@
     // Google Maps JS calls this global callback once it finishes loading.
     window.indorInitAddressAutocomplete = initAddressAutocomplete;
 
+    function scheduleGooglePlacesInitRetry() {
+        if (window.__indorAcGoogleRetryStarted) {
+            return;
+        }
+        window.__indorAcGoogleRetryStarted = true;
+
+        var attempts = 0;
+        var timer = window.setInterval(function () {
+            attempts++;
+            var pending = Array.from(document.querySelectorAll('input[data-address-autocomplete], input[data-city-autocomplete]'))
+                .some(function (input) { return input.dataset.acInitialized !== 'true'; });
+
+            if (!pending || attempts > 60) {
+                window.clearInterval(timer);
+                return;
+            }
+
+            if (window.google && google.maps && google.maps.places && google.maps.places.Autocomplete) {
+                initAddressAutocomplete();
+            }
+        }, 250);
+    }
+
     if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initAddressAutocomplete);
+        document.addEventListener('DOMContentLoaded', function () {
+            initAddressAutocomplete();
+            scheduleGooglePlacesInitRetry();
+        });
     } else {
         initAddressAutocomplete();
+        scheduleGooglePlacesInitRetry();
     }
 })();

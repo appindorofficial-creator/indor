@@ -306,8 +306,126 @@ public class RealtorNearbyNetworkService(
             Bedrooms = item.Bedrooms,
             Bathrooms = item.Bathrooms,
             SquareFeet = item.SquareFeet,
-            YearBuilt = extras.YearBuilt
+            YearBuilt = extras.YearBuilt,
+            ExpressInterestUrl = isOwned ? "#" : $"/Realtor/ExpressNetworkInterest/{item.Id}"
         };
+    }
+
+    public async Task<RealtorNetworkLeadDetailViewModel?> BuildLeadDetailAsync(
+        IndorRealtor realtor,
+        int itemId,
+        bool showContact,
+        bool interestRecorded,
+        CancellationToken ct = default)
+    {
+        var shell = await portalService.BuildShellAsync(realtor, ct);
+
+        var item = await db.IndorNearbyNetworkItems.AsNoTracking()
+            .Include(i => i.RelatedClient)
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.IsActive, ct);
+
+        if (item == null ||
+            !string.Equals(item.CardType, NearbyNetworkCardTypes.Lead, StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        var client = item.RelatedClient;
+        var contactUrl = BuildLeadContactUrl(client?.Email, client?.FullName ?? item.Title, item.Subtitle);
+        var canContact = !string.IsNullOrWhiteSpace(contactUrl);
+
+        return new RealtorNetworkLeadDetailViewModel
+        {
+            DisplayName = shell.DisplayName,
+            FullDisplayName = shell.FullDisplayName,
+            ProfilePhotoUrl = shell.ProfilePhotoUrl,
+            BadgeLabel = shell.BadgeLabel,
+            IsVerified = shell.IsVerified,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
+            ItemId = item.Id,
+            Title = item.Title,
+            Subtitle = item.Subtitle,
+            SpecsLabel = item.SpecsLabel,
+            MetaLabel = item.MetaLabel,
+            StatusBadge = item.StatusBadge ?? "LEAD REQUEST",
+            StatusCss = item.StatusCss ?? "lead",
+            DistanceLabel = item.DistanceMiles is > 0 ? $"{item.DistanceMiles:0.#} mi away" : "Nearby",
+            ShowContactPanel = showContact,
+            RelatedClientId = item.RelatedClientId,
+            BuyerName = client?.FullName,
+            BuyerEmail = client?.Email,
+            ContactUrl = contactUrl,
+            ContactActionLabel = canContact ? "Email Buyer" : "Contact Buyer",
+            CanContactBuyer = canContact || item.RelatedClientId is > 0,
+            InterestRecorded = interestRecorded
+        };
+    }
+
+    public async Task<bool> RecordListingInterestAsync(
+        IndorRealtor realtor, int itemId, CancellationToken ct = default)
+    {
+        var item = await db.IndorNearbyNetworkItems.AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.IsActive, ct);
+
+        if (item == null ||
+            item.OwnerRealtorId == realtor.Id ||
+            item.CardType is not (NearbyNetworkCardTypes.Listing or NearbyNetworkCardTypes.OpenHouse))
+        {
+            return false;
+        }
+
+        var address = item.Subtitle ?? item.Title;
+        var now = DateTime.UtcNow;
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "network",
+            Description = $"You expressed interest in {address}",
+            CategoryTag = "Nearby",
+            OccurredUtc = now
+        });
+
+        if (item.OwnerRealtorId is > 0 && item.OwnerRealtorId != realtor.Id)
+        {
+            db.IndorRealtorActivities.Add(new IndorRealtorActivity
+            {
+                RealtorId = item.OwnerRealtorId.Value,
+                ActivityType = "network",
+                Description = $"{realtor.DisplayName ?? "A realtor"} is interested in your listing at {address}",
+                CategoryTag = "Nearby",
+                OccurredUtc = now
+            });
+        }
+
+        await db.SaveChangesAsync(ct);
+        return true;
+    }
+
+    public async Task<bool> RecordLeadContactAsync(
+        IndorRealtor realtor, int itemId, CancellationToken ct = default)
+    {
+        var item = await db.IndorNearbyNetworkItems.AsNoTracking()
+            .FirstOrDefaultAsync(i => i.Id == itemId && i.IsActive, ct);
+
+        if (item == null ||
+            !string.Equals(item.CardType, NearbyNetworkCardTypes.Lead, StringComparison.OrdinalIgnoreCase))
+        {
+            return false;
+        }
+
+        db.IndorRealtorActivities.Add(new IndorRealtorActivity
+        {
+            RealtorId = realtor.Id,
+            ActivityType = "lead",
+            Description = $"Contact initiated for lead: {item.Title}",
+            CategoryTag = "Leads",
+            OccurredUtc = DateTime.UtcNow
+        });
+
+        await db.SaveChangesAsync(ct);
+        return true;
     }
 
     public async Task<(string? Url, string? Error)> SaveListingPhotoPdfAsync(
@@ -486,7 +604,7 @@ public class RealtorNearbyNetworkService(
 
         item.PrimaryActionUrl = $"/Realtor/ViewNetworkListing/{item.Id}";
         item.SecondaryActionUrl = isOpenHouse
-            ? "/Realtor/PublicProfile"
+            ? ListingViewUrl(item.Id)
             : $"/Realtor/EditNetworkListing/{item.Id}";
         await db.SaveChangesAsync(ct);
 
@@ -592,26 +710,18 @@ public class RealtorNearbyNetworkService(
         string cardType,
         bool isOwned)
     {
-        var primary = item.PrimaryActionUrl;
-        var secondary = item.SecondaryActionUrl;
-
         switch (cardType)
         {
             case "lead":
-                if (NeedsActionUrl(primary))
-                {
-                    primary = "/Realtor/Clients?filter=Buyers";
-                }
-
-                if (NeedsActionUrl(secondary))
-                {
-                    secondary = "/RealtorInviteClient/New";
-                }
-
-                break;
+                return (
+                    $"/Realtor/ViewNetworkLead/{item.Id}",
+                    item.RelatedClientId is > 0
+                        ? $"/Realtor/ClientDetail/{item.RelatedClientId}"
+                        : $"/Realtor/ContactNetworkLead/{item.Id}");
 
             case "provider":
             case "promotion":
+            {
                 var providerSearch = !string.IsNullOrWhiteSpace(item.ProviderName)
                     ? item.ProviderName.Trim()
                     : item.Subtitle?.Trim();
@@ -619,49 +729,35 @@ public class RealtorNearbyNetworkService(
                     ? "/Realtor/ProviderNetwork"
                     : $"/Realtor/ProviderNetwork?q={Uri.EscapeDataString(providerSearch)}";
 
-                if (NeedsActionUrl(primary))
-                {
-                    primary = providerUrl;
-                }
-
-                if (NeedsActionUrl(secondary))
-                {
-                    secondary = "/Realtor/Quotes";
-                }
-
-                break;
+                var primary = NeedsActionUrl(item.PrimaryActionUrl) ? providerUrl : item.PrimaryActionUrl;
+                var secondary = NeedsActionUrl(item.SecondaryActionUrl) ? "/Realtor/Quotes" : item.SecondaryActionUrl;
+                return (primary, secondary);
+            }
 
             case "emergency":
-                if (NeedsActionUrl(primary))
-                {
-                    primary = "/Realtor/ProviderNetwork?filter=Verified";
-                }
-
-                break;
+                return (
+                    NeedsActionUrl(item.PrimaryActionUrl)
+                        ? "/Realtor/ProviderNetwork?filter=Verified"
+                        : item.PrimaryActionUrl,
+                    null);
 
             case "openhouse":
-                primary = $"/Realtor/ViewNetworkListing/{item.Id}";
-                secondary = isOwned
-                    ? "/Realtor/PublicProfile"
-                    : "/Realtor/PublicProfile";
-                break;
+                return (
+                    ListingViewUrl(item.Id),
+                    ListingViewUrl(item.Id));
 
             default:
                 if (isOwned)
                 {
-                    primary = $"/Realtor/ViewNetworkListing/{item.Id}";
-                    secondary = $"/Realtor/EditNetworkListing/{item.Id}";
-                }
-                else
-                {
-                    primary = $"/Realtor/ViewNetworkListing/{item.Id}";
-                    secondary = "/RealtorInviteClient/New";
+                    return (
+                        ListingViewUrl(item.Id),
+                        $"/Realtor/EditNetworkListing/{item.Id}");
                 }
 
-                break;
+                return (
+                    ListingViewUrl(item.Id),
+                    $"/Realtor/ExpressNetworkInterest/{item.Id}");
         }
-
-        return (primary, secondary);
     }
 
     private static (string Primary, string? Secondary) ResolveFeedActionLabels(
@@ -731,7 +827,8 @@ public class RealtorNearbyNetworkService(
             PrimaryActionLabel = primaryLabel,
             PrimaryActionUrl = primaryUrl,
             SecondaryActionLabel = secondaryLabel,
-            SecondaryActionUrl = secondaryUrl
+            SecondaryActionUrl = secondaryUrl,
+            SecondaryActionOpensShare = cardType == "openhouse"
         };
     }
 
@@ -1092,6 +1189,20 @@ public class RealtorNearbyNetworkService(
         amount.ToString("C0", CultureInfo.GetCultureInfo("en-US"));
 
     private static string ListingViewUrl(int itemId) => $"/Realtor/ViewNetworkListing/{itemId}";
+
+    private static string? BuildLeadContactUrl(string? email, string buyerName, string? area)
+    {
+        if (string.IsNullOrWhiteSpace(email))
+        {
+            return null;
+        }
+
+        var greeting = buyerName.Split(' ', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "there";
+        var subject = Uri.EscapeDataString("INDOR buyer lead follow-up");
+        var body = Uri.EscapeDataString(
+            $"Hi {greeting}, I saw your home search request{(string.IsNullOrWhiteSpace(area) ? "" : $" for {area}")} on INDOR Nearby and would love to help.");
+        return $"mailto:{email.Trim()}?subject={subject}&body={body}";
+    }
 
     private static string ResolveListingBadgeLabel(IndorNearbyNetworkItem item, bool isOwned) =>
         !isOwned && string.Equals(item.BadgeLabel, "MY LISTING", StringComparison.OrdinalIgnoreCase)

@@ -52,20 +52,14 @@
             return 'Please shorten this text.';
         }
 
-        if (field.validity.rangeUnderflow) {
+        if (field.validity.rangeUnderflow || field.validity.rangeOverflow) {
             if (field.type === 'date') {
                 return DATE_MIN_MESSAGE;
             }
 
-            return 'Please enter a higher value.';
-        }
-
-        if (field.validity.rangeOverflow) {
-            if (field.type === 'date') {
-                return DATE_MIN_MESSAGE;
-            }
-
-            return 'Please enter a lower value.';
+            return field.validity.rangeUnderflow
+                ? 'Please enter a higher value.'
+                : 'Please enter a lower value.';
         }
 
         return 'Please enter a valid value.';
@@ -81,35 +75,54 @@
         }
     }
 
-    function bindDateMinValidation(form) {
-        form.querySelectorAll('input[type="date"]').forEach(function (input) {
-            if (input.dataset.nrDateMinBound === 'true') {
-                return;
-            }
+    function resolveDateMinMessage(input, minDate) {
+        if (minDate && input.value && input.value < minDate) {
+            return DATE_MIN_MESSAGE;
+        }
 
-            var minDate = input.getAttribute('data-min-date') || input.getAttribute('min');
-            if (!minDate) {
-                return;
-            }
+        return englishValidityMessage(input);
+    }
 
-            input.dataset.nrDateMinBound = 'true';
+    function bindSingleDateInput(input) {
+        if (input.dataset.nrDateMinBound === 'true') {
+            return;
+        }
+
+        input.dataset.nrDateMinBound = 'true';
+        input.removeAttribute('min');
+        input.removeAttribute('max');
+
+        var minDate = input.getAttribute('data-min-date') || '';
+        if (minDate) {
             input.setAttribute('data-min-date', minDate);
-            input.removeAttribute('min');
+        }
 
-            function syncDateMinValidity() {
-                if (!input.value) {
-                    input.setCustomValidity('');
-                    return;
-                }
-
-                input.setCustomValidity(input.value < minDate ? DATE_MIN_MESSAGE : '');
+        function syncDateMinValidity() {
+            if (!input.value) {
+                input.setCustomValidity('');
+                return;
             }
 
-            input.addEventListener('input', syncDateMinValidity);
-            input.addEventListener('change', syncDateMinValidity);
-            input.addEventListener('blur', syncDateMinValidity);
-            syncDateMinValidity();
+            input.setCustomValidity(minDate && input.value < minDate ? DATE_MIN_MESSAGE : '');
+        }
+
+        input.addEventListener('invalid', function (event) {
+            event.preventDefault();
+            input.setCustomValidity(resolveDateMinMessage(input, minDate));
         });
+
+        input.addEventListener('input', syncDateMinValidity);
+        input.addEventListener('change', syncDateMinValidity);
+        input.addEventListener('blur', syncDateMinValidity);
+        syncDateMinValidity();
+    }
+
+    function initDateInputs(root) {
+        (root || document).querySelectorAll('.nr-wizard-page input[type="date"]').forEach(bindSingleDateInput);
+    }
+
+    function bindDateMinValidation(form) {
+        form.querySelectorAll('input[type="date"]').forEach(bindSingleDateInput);
     }
 
     function bindEnglishFormValidation(form) {
@@ -118,6 +131,7 @@
         }
 
         form.dataset.nrEnglishValidation = 'true';
+        form.noValidate = true;
         form.setAttribute('novalidate', 'novalidate');
         bindDateMinValidation(form);
 
@@ -147,7 +161,12 @@
             }
 
             e.preventDefault();
-            firstInvalid.setCustomValidity(englishValidityMessage(firstInvalid));
+            if (firstInvalid.type === 'date') {
+                var minDate = firstInvalid.getAttribute('data-min-date') || '';
+                firstInvalid.setCustomValidity(resolveDateMinMessage(firstInvalid, minDate));
+            } else {
+                firstInvalid.setCustomValidity(englishValidityMessage(firstInvalid));
+            }
             firstInvalid.reportValidity();
             if (typeof firstInvalid.focus === 'function') {
                 firstInvalid.focus({ preventScroll: true });
@@ -181,7 +200,11 @@
         });
     });
 
+    initDateInputs();
     document.querySelectorAll('.nr-step-form, .nr-edit-form').forEach(bindEnglishFormValidation);
 
-    window.addEventListener('pageshow', clearBusy);
+    window.addEventListener('pageshow', function () {
+        clearBusy();
+        initDateInputs();
+    });
 })();

@@ -196,6 +196,51 @@
 </div>
 
 @section Scripts {
+    <script>
+        (function () {
+            function resolveShareUrl(path) {
+                if (!path) {
+                    return window.location.href;
+                }
+                if (/^https?:\/\//i.test(path)) {
+                    return path;
+                }
+                return window.location.origin + (path.startsWith('/') ? path : '/' + path);
+            }
+
+            document.querySelectorAll('[data-network-share]').forEach(function (btn) {
+                btn.addEventListener('click', async function () {
+                    var sharePath = btn.getAttribute('data-share-url') || '';
+                    var shareUrl = resolveShareUrl(sharePath);
+                    var payload = {
+                        title: btn.getAttribute('data-share-title') || document.title,
+                        text: btn.getAttribute('data-share-text') || 'View on INDOR',
+                        url: shareUrl
+                    };
+
+                    if (navigator.share) {
+                        try {
+                            await navigator.share(payload);
+                            return;
+                        } catch (err) {
+                            if (err && err.name === 'AbortError') {
+                                return;
+                            }
+                        }
+                    }
+
+                    try {
+                        await navigator.clipboard.writeText(shareUrl);
+                        var original = btn.textContent;
+                        btn.textContent = 'Link copied';
+                        window.setTimeout(function () { btn.textContent = original; }, 2000);
+                    } catch (_) {
+                        window.prompt('Copy link:', shareUrl);
+                    }
+                });
+            });
+        })();
+    </script>
     @if (Model.ActiveView == "map" && Model.HasGoogleMaps)
     {
         <script src="@Url.Content("~/js/realtor-nearby-network-map.js")" asp-append-version="true"></script>

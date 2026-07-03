@@ -363,9 +363,75 @@ public class RealtorController(
         }
 
         var model = await nearbyNetworkService.BuildListingDetailAsync(realtor, id, cancellationToken);
-        return model == null
-            ? NotFound()
-            : View("NetworkListing/Detail", model);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        model.InterestSent = TempData["NetworkInterestSent"] is true;
+        return View("NetworkListing/Detail", model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ViewNetworkLead(int id, bool contact = false, bool recorded = false, CancellationToken cancellationToken = default)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildLeadDetailAsync(realtor, id, contact, recorded, cancellationToken);
+        return model == null ? NotFound() : View("NetworkLead/Detail", model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ExpressNetworkInterest(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var recorded = await nearbyNetworkService.RecordListingInterestAsync(realtor, id, cancellationToken);
+        if (!recorded)
+        {
+            return NotFound();
+        }
+
+        TempData["NetworkInterestSent"] = true;
+        return RedirectToAction(nameof(ViewNetworkListing), new { id });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> ContactNetworkLead(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildLeadDetailAsync(realtor, id, showContact: true, interestRecorded: false, cancellationToken);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        if (model.RelatedClientId is > 0)
+        {
+            return RedirectToAction(nameof(ClientDetail), new { id = model.RelatedClientId });
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.ContactUrl))
+        {
+            await nearbyNetworkService.RecordLeadContactAsync(realtor, id, cancellationToken);
+            return Redirect(model.ContactUrl);
+        }
+
+        await nearbyNetworkService.RecordLeadContactAsync(realtor, id, cancellationToken);
+        return RedirectToAction(nameof(ViewNetworkLead), new { id, contact = true, recorded = true });
     }
 
     [HttpGet]

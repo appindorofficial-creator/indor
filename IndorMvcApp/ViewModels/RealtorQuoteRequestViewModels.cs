@@ -83,6 +83,7 @@ public class RealtorQuoteRequestReviewViewModel : RealtorQuoteRequestStepViewMod
     public bool AllowFullProjectQuote { get; set; } = true;
     public bool AllowItemizedQuote { get; set; } = true;
     public string OptionalMessage { get; set; } = "";
+    public string OptionalMessagePlaceholder { get; set; } = "";
 }
 
 public class RealtorQuoteRequestSuccessViewModel

@@ -17,8 +17,23 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
     private static readonly Regex OnlyDigitsAndSeparatorsRegex = new(@"^[\d\s.,#\-]+$", RegexOptions.Compiled);
     private static readonly Regex ZipTokenRegex = new(@"^\d{5}(-\d{4})?$", RegexOptions.Compiled);
 
-    private const string IncompleteMessage =
-        "Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC).";
+    private static readonly HashSet<string> StreetSuffixes = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "st", "street", "rd", "road", "ave", "avenue", "blvd", "boulevard", "dr", "drive",
+        "ln", "lane", "way", "ct", "court", "cir", "circle", "pl", "place", "pkwy", "parkway",
+        "ter", "terrace", "trl", "trail", "hwy", "highway", "loop", "pass", "path", "row",
+        "run", "walk", "xing", "crossing", "pike", "sq", "square", "aly", "alley", "cres",
+        "crescent", "cv", "cove", "bnd", "bend", "pt", "point", "grv", "grove", "vw", "view"
+    };
+
+    private static readonly HashSet<string> Directionals = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "n", "s", "e", "w", "ne", "nw", "se", "sw",
+        "north", "south", "east", "west"
+    };
+
+    private const string StreetTypeMessage =
+        "Enter a complete street address with street name and type (e.g. 123 Main St).";
 
     /// <summary>
     /// When true, the address must include a city/state hint (a comma separator or a
@@ -84,9 +99,9 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             return false;
         }
 
-        if (requireStreetNumber && wordParts < 2)
+        if (requireStreetNumber && !HasCompleteStreetLine(tokens))
         {
-            errorMessage = "Enter a complete street address with street name and type (e.g. 123 Main St).";
+            errorMessage = StreetTypeMessage;
             return false;
         }
 
@@ -98,13 +113,41 @@ public sealed class ValidStreetAddressAttribute : ValidationAttribute
             var hasZip = tokens.Skip(1).Any(t => ZipTokenRegex.IsMatch(t.Trim(',', '.')));
             if (!hasComma && !hasZip)
             {
-                errorMessage = IncompleteMessage;
+                errorMessage =
+                    "Enter a complete address with city and state (e.g. 123 Main St, Charlotte, NC).";
                 return false;
             }
         }
 
         return true;
     }
+
+    private static bool HasCompleteStreetLine(IReadOnlyList<string> tokens)
+    {
+        if (tokens.Count == 0)
+        {
+            return false;
+        }
+
+        var normalized = tokens
+            .Select(NormalizeStreetToken)
+            .Where(token => token.Length > 0)
+            .ToList();
+
+        if (normalized.Any(StreetSuffixes.Contains))
+        {
+            return normalized.Any(token => token.Any(char.IsLetter) && !Directionals.Contains(token));
+        }
+
+        var nameTokens = normalized
+            .Where(token => token.Any(char.IsLetter) && !Directionals.Contains(token))
+            .ToList();
+
+        return nameTokens.Count >= 2;
+    }
+
+    private static string NormalizeStreetToken(string token) =>
+        token.Trim(',', '.', '#').ToLowerInvariant();
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {

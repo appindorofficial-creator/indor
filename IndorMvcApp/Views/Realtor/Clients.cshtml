@@ -3,6 +3,10 @@
     ViewData["Title"] = "Clients";
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "clients";
+    var showInvitations = Model.ActiveFilter is "Invited" or "Follow-up" or "All";
+    var showClients = Model.ActiveFilter != "Invited";
+    var hasInvitations = showInvitations && Model.PendingInvitations.Count > 0;
+    var hasClients = showClients && Model.ActiveClients.Count > 0;
 }
 
 <div class="rl-dash-shell rl-clients-shell">
@@ -14,14 +18,14 @@
                 <h1 class="rl-page-title">Clients</h1>
                 <p class="rl-page-subtitle">Manage buyers, sellers, homeowners, and invitations.</p>
             </div>
-            <a asp-controller="RealtorInviteClient"
-               asp-action="New"
-               class="rl-btn-primary rl-btn-primary--sm rl-clients-add"
-               id="rlClientsAddBtn"
-               aria-label="Add client — start invite wizard">
-                <i class="fas fa-plus" aria-hidden="true"></i> Add Client
-            </a>
         </div>
+
+        <a href="@Url.Action("New", "RealtorInviteClient")"
+           class="rl-clients-add"
+           id="rlClientsAddBtn"
+           aria-label="Add client — start invite wizard">
+            <i class="fas fa-plus" aria-hidden="true"></i> Add Client
+        </a>
 
         <form asp-action="Clients" method="get" class="rl-search-form">
             <div class="rl-search-row">
@@ -80,76 +84,41 @@
     </section>
 
     <section class="rl-dash-section">
-        @if (Model.ActiveFilter == "Invited")
+        @if (hasInvitations)
         {
-            @if (Model.PendingInvitations.Count == 0)
+            @if (Model.ActiveFilter == "All")
             {
-                if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
-                {
-                    <div class="rl-dash-empty">No invitations match &ldquo;@Model.SearchQuery&rdquo;.</div>
-                }
-                else
-                {
-                    <div class="rl-dash-empty">No pending invitations right now.</div>
-                }
+                <div class="rl-dash-section-head"><h2>Pending Invitations</h2></div>
             }
-            else
+
+            @foreach (var inv in Model.PendingInvitations)
             {
-                @foreach (var inv in Model.PendingInvitations)
-                {
-                    <article class="rl-client-card-v2">
-                        <span class="rl-client-avatar rl-client-avatar--placeholder">@inv.Initials</span>
-                        <div class="rl-client-card-body">
-                            <div class="rl-client-card-top">
-                                <div>
-                                    <strong>@inv.FullName</strong>
-                                    <span class="rl-premium-muted">@inv.Email</span>
-                                </div>
-                                <span class="rl-status-pill rl-status-pill--invited">Invited</span>
+                <article class="rl-client-card-v2">
+                    <span class="rl-client-avatar rl-client-avatar--placeholder">@inv.Initials</span>
+                    <div class="rl-client-card-body">
+                        <div class="rl-client-card-top">
+                            <div>
+                                <strong>@inv.FullName</strong>
+                                <span class="rl-premium-muted">@inv.Email</span>
                             </div>
-                            <span class="rl-premium-muted">Sent @inv.SentLabel</span>
-                            <div class="rl-client-card-foot">
-                                <span class="rl-premium-muted">Invitation pending</span>
-                            </div>
+                            <span class="rl-status-pill rl-status-pill--invited">Invited</span>
                         </div>
-                    </article>
-                }
-            }
-        }
-        else if (Model.ActiveClients.Count == 0)
-        {
-            if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
-            {
-                <div class="rl-dash-empty">No clients match &ldquo;@Model.SearchQuery&rdquo;.</div>
-            }
-            else if (Model.ActiveFilter == "All" && !Model.HasAnyClients)
-            {
-                <div class="rl-clients-empty">
-                    <div class="rl-clients-empty-art">
-                        <i class="fas fa-address-card"></i>
-                        <span class="rl-clients-empty-spark"><i class="fas fa-plus"></i></span>
+                        <span class="rl-premium-muted">Sent @inv.SentLabel</span>
+                        <div class="rl-client-card-foot">
+                            <span class="rl-premium-muted">Awaiting acceptance</span>
+                        </div>
                     </div>
-                    <h3>No clients yet</h3>
-                    <p>Start by adding your first client or sending an invitation.</p>
-                    <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary">Add First Client</a>
-                </div>
-            }
-            else
-            {
-                var emptyMessage = Model.ActiveFilter switch
-                {
-                    "Buyers" => "No buyers yet. Invited buyers will show up here.",
-                    "Sellers" => "No sellers yet. Invited sellers will show up here.",
-                    "Homeowners" => "No homeowners yet. Invited homeowners will show up here.",
-                    "Connect" => "No connected clients yet. Accepted invitations will appear here.",
-                    "Follow-up" => "No follow-ups needed right now.",
-                    _ => "No clients match your filters."
-                };
-                <div class="rl-dash-empty">@emptyMessage</div>
+                </article>
             }
         }
-        else
+
+        @if (hasClients)
         {
+            @if (Model.ActiveFilter == "All" && hasInvitations)
+            {
+                <div class="rl-dash-section-head"><h2>Connected Clients</h2></div>
+            }
+
             @foreach (var client in Model.ActiveClients)
             {
                 <article class="rl-client-card-v2">
@@ -196,6 +165,40 @@
                         </div>
                     </div>
                 </article>
+            }
+        }
+
+        @if (!hasInvitations && !hasClients)
+        {
+            if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
+            {
+                <div class="rl-dash-empty">No clients match &ldquo;@Model.SearchQuery&rdquo;.</div>
+            }
+            else if (Model.ActiveFilter == "All" && !Model.HasAnyClients)
+            {
+                <div class="rl-clients-empty">
+                    <div class="rl-clients-empty-art">
+                        <i class="fas fa-address-card"></i>
+                        <span class="rl-clients-empty-spark"><i class="fas fa-plus"></i></span>
+                    </div>
+                    <h3>No clients yet</h3>
+                    <p>Start by adding your first client or sending an invitation.</p>
+                    <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-btn-primary">Add First Client</a>
+                </div>
+            }
+            else
+            {
+                var emptyMessage = Model.ActiveFilter switch
+                {
+                    "Buyers" => "No buyers yet. Invited buyers will show up here.",
+                    "Sellers" => "No sellers yet. Invited sellers will show up here.",
+                    "Homeowners" => "No homeowners yet. Invited homeowners will show up here.",
+                    "Invited" => "No pending invitations right now.",
+                    "Connect" => "No connected clients yet. Accepted invitations will appear here.",
+                    "Follow-up" => "No follow-ups needed right now.",
+                    _ => "No clients match your filters."
+                };
+                <div class="rl-dash-empty">@emptyMessage</div>
             }
         }
     </section>

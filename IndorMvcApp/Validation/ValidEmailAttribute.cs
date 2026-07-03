@@ -34,7 +34,14 @@ public sealed class ValidEmailAttribute : ValidationAttribute
         ["hotmial.com"] = "hotmail.com",
         ["hotmal.com"] = "hotmail.com",
         ["outlok.com"] = "outlook.com",
-        ["yahooo.com"] = "yahoo.com"
+        ["yahooo.com"] = "yahoo.com",
+        ["hotmail.c"] = "hotmail.com",
+        ["hotmail.co"] = "hotmail.com",
+        ["gmail.c"] = "gmail.com",
+        ["gmail.co"] = "gmail.com",
+        ["yahoo.c"] = "yahoo.com",
+        ["outlook.c"] = "outlook.com",
+        ["icloud.c"] = "icloud.com"
     };
 
     public ValidEmailAttribute()
@@ -80,6 +87,26 @@ public sealed class ValidEmailAttribute : ValidationAttribute
             errorMessage = DomainSuggestions.TryGetValue(domain, out var suggested)
                 ? $"Check your email address. Did you mean @{suggested}?"
                 : "Enter a valid email address with a recognized domain.";
+            return false;
+        }
+
+        if (DomainSuggestions.TryGetValue(domain, out var truncatedSuggestion))
+        {
+            errorMessage = $"Check your email address. Did you mean @{truncatedSuggestion}?";
+            return false;
+        }
+
+        var lastDot = domain.LastIndexOf('.');
+        if (lastDot < 1 || lastDot >= domain.Length - 2)
+        {
+            errorMessage = "Enter a valid email address with a complete domain (e.g. name@email.com).";
+            return false;
+        }
+
+        var tld = domain[(lastDot + 1)..];
+        if (tld.Length < 2 || !tld.All(char.IsLetter))
+        {
+            errorMessage = "Enter a valid email address with a complete domain (e.g. name@email.com).";
             return false;
         }
 

@@ -54,8 +54,10 @@
             <p>Anything else helpers should know before they arrive?</p>
         </header>
         <div class="nr-field nr-field--count">
-            <textarea asp-for="SpecialNotes" class="nr-textarea" maxlength="250" placeholder="Please be careful with the wooden floors..."></textarea>
-            <span class="nr-char-count"><span id="nrNotesCount">0</span>/250</span>
+            <div class="nr-counted-control">
+                <textarea asp-for="SpecialNotes" class="nr-textarea" maxlength="250" placeholder="Please be careful with the wooden floors..."></textarea>
+                <span class="nr-char-count"><span id="nrNotesCount">0</span>/250</span>
+            </div>
         </div>
     </section>
 
@@ -108,8 +110,19 @@
         (function () {
             var textarea = document.querySelector('[name="SpecialNotes"]');
             var counter = document.getElementById('nrNotesCount');
+            var counterWrap = counter ? counter.closest('.nr-char-count') : null;
             if (textarea && counter) {
-                var update = function () { counter.textContent = String(textarea.value.length); };
+                var max = parseInt(textarea.getAttribute('maxlength'), 10) || 250;
+                var update = function () {
+                    if (textarea.value.length > max) {
+                        textarea.value = textarea.value.slice(0, max);
+                    }
+                    var length = textarea.value.length;
+                    counter.textContent = String(length);
+                    if (counterWrap) {
+                        counterWrap.classList.toggle('is-over-limit', length > max);
+                    }
+                };
                 textarea.addEventListener('input', update);
                 update();
             }

@@ -126,7 +126,7 @@ public class RealtorPortalService(
                 i.FullName.Contains(term) || i.Email.Contains(term));
         }
 
-        var invitations = activeFilter is "All" or "Invited"
+        var invitations = activeFilter is "All" or "Invited" or "Follow-up"
             ? await invitationsQuery.OrderByDescending(i => i.SentUtc).Take(10).ToListAsync(ct)
             : [];
 
@@ -1931,7 +1931,7 @@ public class RealtorPortalService(
             [
                 new() { Label = "Clients", Count = clients, Icon = "fa-users", ColorClass = "blue" },
                 new() { Label = "Active Files", Count = activeFiles, Icon = "fa-folder-open", ColorClass = "teal", DetailUrl = "/Realtor/Files?filter=Active" },
-                new() { Label = "Invited", Count = invited, Icon = "fa-envelope", ColorClass = "purple" },
+                new() { Label = "Invited", Count = invited, Icon = "fa-envelope", ColorClass = "purple", DetailUrl = invited > 0 ? "/Realtor/Clients?filter=Invited" : null },
                 new() { Label = "Connect", Count = connect, Icon = "fa-circle-check", ColorClass = "teal" },
                 new() { Label = "Follow-up", Count = followUp, Icon = "fa-clock", ColorClass = "orange" }
             ]
@@ -2112,16 +2112,16 @@ public class RealtorPortalService(
         int pendingInvites, List<IndorRealtorClient> clients, Dictionary<string, int> quoteCounts, string activeFilter)
     {
         var steps = new List<RealtorNextStepViewModel>();
-        if (pendingInvites > 0 && activeFilter is "All" or "Invited")
+        if (pendingInvites > 0 && activeFilter is "All" or "Invited" or "Follow-up")
         {
             steps.Add(new()
             {
                 Text = pendingInvites == 1
-                    ? "1 client needs an invitation"
-                    : $"{pendingInvites} clients need invitations",
-                Icon = "fa-user-plus",
+                    ? "1 invited client awaiting response"
+                    : $"{pendingInvites} invited clients awaiting response",
+                Icon = "fa-envelope",
                 ColorClass = "blue",
-                Url = "/RealtorInviteClient/New"
+                Url = "/Realtor/Clients?filter=Invited"
             });
         }
 

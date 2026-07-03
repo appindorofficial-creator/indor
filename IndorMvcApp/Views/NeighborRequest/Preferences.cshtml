@@ -1,3 +1,4 @@
+@using System.Globalization
 @model IndorMvcApp.ViewModels.NeighborRequestPreferencesStepViewModel
 @{
     ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Post Quick Job";
@@ -31,8 +32,13 @@
             }
         </div>
         <div class="nr-pick-date" id="nrPickDateWrap" hidden>
-            <label asp-for="NeededByDate">Pick a date</label>
-            <input asp-for="NeededByDate" type="date" class="nr-input" data-min-date="@Model.MinNeededByDateIso" />
+            <label for="NeededByDate">Pick a date</label>
+            <input name="NeededByDate"
+                   id="NeededByDate"
+                   type="date"
+                   class="nr-input"
+                   data-min-date="@Model.MinNeededByDateIso"
+                   value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")" />
             <span asp-validation-for="NeededByDate" class="field-validation-error"></span>
         </div>
     </section>

@@ -42,7 +42,6 @@ public class RealtorQuoteRequestService(
             RealtorId = realtor.Id,
             Status = RealtorQuoteRequestDraftStatuses.Draft,
             CurrentStep = 1,
-            OptionalMessage = DefaultOptionalMessage,
             FechaCreacion = DateTime.UtcNow
         };
 
@@ -96,6 +95,45 @@ public class RealtorQuoteRequestService(
         4 => "Review",
         _ => "Property"
     };
+
+    public async Task PrepareBackToPropertyAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 2)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 1;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToRequestDetailsAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 3)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 2;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task PrepareBackToProvidersAsync(CancellationToken cancellationToken = default)
+    {
+        var draft = await GetDraftAsync(cancellationToken);
+        if (draft == null || draft.CurrentStep < 4)
+        {
+            return;
+        }
+
+        draft.CurrentStep = 3;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+    }
 
     public async Task<RealtorQuoteRequestPropertyViewModel> BuildPropertyAsync(string? search, CancellationToken cancellationToken = default)
     {
@@ -378,7 +416,8 @@ public class RealtorQuoteRequestService(
             AllowProviderQuestions = draft.AllowProviderQuestions,
             AllowFullProjectQuote = draft.AllowFullProjectQuote,
             AllowItemizedQuote = draft.AllowItemizedQuote,
-            OptionalMessage = draft.OptionalMessage ?? DefaultOptionalMessage
+            OptionalMessage = ResolveOptionalMessageForInput(draft.OptionalMessage),
+            OptionalMessagePlaceholder = DefaultOptionalMessage
         };
     }
 
@@ -641,4 +680,16 @@ public class RealtorQuoteRequestService(
         !string.IsNullOrWhiteSpace(proveedor.DbaName) ? proveedor.DbaName
         : !string.IsNullOrWhiteSpace(proveedor.BusinessName) ? proveedor.BusinessName
         : "INDOR Provider";
+
+    private static string ResolveOptionalMessageForInput(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+        {
+            return "";
+        }
+
+        return string.Equals(message.Trim(), DefaultOptionalMessage, StringComparison.OrdinalIgnoreCase)
+            ? ""
+            : message.Trim();
+    }
 }

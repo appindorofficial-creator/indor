@@ -80,9 +80,25 @@
     <section class="rl-dash-section">
         <div class="rl-dash-section-head"><h2>Next Actions</h2></div>
         <div class="rl-qview-actions">
-            <button type="button" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-comment-dots"></i> Message Homeowner</button>
-            <a href="@Model.ViewSharedQuoteUrl" target="_blank" class="rl-btn-outline rl-qview-btn"><i class="fas fa-file-lines"></i> View Shared Quote</a>
-            <a asp-controller="Realtor" asp-action="Quotes" class="rl-btn-outline rl-qview-btn"><i class="fas fa-arrow-left"></i> Back to Quotes</a>
+            @if (Model.CanMessageHomeowner)
+            {
+                <a href="@Model.MessageHomeownerUrl" class="ob-btn ob-btn-primary rl-qview-btn">
+                    <i class="fas fa-comment-dots"></i> Message Homeowner
+                </a>
+            }
+            else
+            {
+                <span class="ob-btn ob-btn-primary rl-qview-btn rl-soon" role="button" aria-disabled="true"
+                      title="Add the homeowner phone or email when sharing the quote.">
+                    <i class="fas fa-comment-dots"></i> Message Homeowner
+                </span>
+            }
+            <a href="@Model.ViewSharedQuoteUrl" class="rl-btn-outline rl-qview-btn">
+                <i class="fas fa-file-lines"></i> View Shared Quote
+            </a>
+            <a asp-controller="Realtor" asp-action="Quotes" class="rl-btn-outline rl-qview-btn">
+                <i class="fas fa-arrow-left"></i> Back to Quotes
+            </a>
         </div>
     </section>
 </div>

@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/address-autocomplete.css" asp-append-version="true" />
 
-<form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form" id="editProfileForm" autocomplete="off">
+<form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form" id="editProfileForm">
     @Html.AntiForgeryToken()
 
     <section class="pf-edit-photo-card" id="photo">
@@ -141,9 +141,9 @@
                     <span>City</span>
                     <input asp-for="AddressForm.City"
                            id="ep-city"
-                           placeholder="Enter city"
-                           autocomplete="address-level2"
-                           data-ac-city="ep-city"
+                           placeholder="City"
+                           autocomplete="off"
+                           data-city-autocomplete
                            data-ac-state="ep-state"
                            data-ac-zip="ep-zip" />
                 </label>

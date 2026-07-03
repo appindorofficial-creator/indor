@@ -54,7 +54,7 @@ BEGIN
          0, 20),
 
         (NULL, N'Lead', N'Leads', N'NEW LEAD', N'lead', N'Buyer Interested Nearby', N'Looking for a 3–4 bed home in Charlotte', NULL, NULL, NULL, NULL,
-         N'Budget $450K – $650K', NULL, 1.80, NULL, NULL, N'LEAD REQUEST', N'lead', N'View Lead', N'/Realtor/Clients?filter=Buyers', N'Contact Buyer', N'/RealtorInviteClient/New',
+         N'Budget $450K – $650K', NULL, 1.80, NULL, NULL, N'LEAD REQUEST', N'lead', N'View Lead', N'/Realtor/ViewNetworkLead/3', N'Contact Buyer', N'/Realtor/ViewNetworkLead/3?contact=1',
          0, 30),
 
         (NULL, N'Provider', N'Providers', N'PROVIDER', N'provider', N'AC Tune-Up Special This Week', N'Climate Solutions HVAC', NULL, NULL, NULL, NULL,
@@ -70,7 +70,7 @@ BEGIN
          0, 60),
 
         (NULL, N'Listing', N'Homes', N'HOME FOR SALE', N'listing', N'Stunning Home in Ballantyne', N'7404 Wallace Ln, Charlotte, NC 28212', 725000, 4, 3.5, 2850,
-         N'4 Beds · 3.5 Baths · 2,850 sqft', N'/listing-home-2.png', 1.20, 35.187000, -80.750000, N'NEW', N'new', N'View Listing', N'/Realtor/ViewNetworkListing/7', N'I''m Interested', N'/RealtorInviteClient/New',
+         N'4 Beds · 3.5 Baths · 2,850 sqft', N'/listing-home-2.png', 1.20, 35.187000, -80.750000, N'NEW', N'new', N'View Listing', N'/Realtor/ViewNetworkListing/7', N'I''m Interested', N'/Realtor/ExpressNetworkInterest/7',
          0, 70);
 
     UPDATE dbo.IndorNearbyNetworkItems

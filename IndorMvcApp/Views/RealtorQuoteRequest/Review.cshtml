@@ -157,8 +157,7 @@
     <h2 class="rl-invite-section-title">Optional message</h2>
 
     <textarea name="optionalMessage" class="rl-note-area" maxlength="500" rows="4"
-
-              placeholder="Add a note for providers...">@Model.OptionalMessage</textarea>
+              placeholder="@Model.OptionalMessagePlaceholder">@Model.OptionalMessage</textarea>
 
     <div class="rl-char-count"><span id="msgCount">@Model.OptionalMessage.Length</span> / 500</div>
 
@@ -168,7 +167,7 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="Providers" class="rl-invite-cancel">Back</a>
+    <a asp-action="BackToProviders" class="rl-invite-cancel">Back</a>
 
     <button type="submit" form="quoteReviewForm" class="ob-btn ob-btn-primary">Send Request</button>
 

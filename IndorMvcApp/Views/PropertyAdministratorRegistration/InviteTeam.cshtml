@@ -9,11 +9,11 @@
 
 @if (!string.IsNullOrWhiteSpace(Model.FormError))
 {
-    <div class="pa-summary-error">@Model.FormError</div>
+    <div class="pa-summary-error" role="alert">@Model.FormError</div>
 }
-else if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
+@if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
 {
-    <div class="pa-summary-success">@Model.FormSuccess</div>
+    <div class="pa-summary-success" role="status">@Model.FormSuccess</div>
 }
 
 @if (Model.PendingInvites.Count > 0)
@@ -46,12 +46,26 @@ else if (!string.IsNullOrWhiteSpace(Model.FormSuccess))
                placeholder="Email address"
                inputmode="email"
                autocomplete="email"
+               required
                data-pa-required="true"
                data-pa-email="true"
-               data-field-label="a valid email address" />
+               data-field-label="a valid email address"
+               aria-describedby="inviteEmailHint" />
     </label>
+    <p class="pa-form-hint" id="inviteEmailHint">
+        @if (Model.PendingInvites.Count > 0)
+        {
+            <text>Add another teammate below, or go back to review when you are done.</text>
+        }
+        else
+        {
+            <text>Use a complete email address (e.g. name@email.com).</text>
+        }
+    </p>
 
-    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Send invite</button>
+    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">
+        @(Model.PendingInvites.Count > 0 ? "Add another invite" : "Send invite")
+    </button>
 </form>
 
 <div class="pa-reg-actions" style="margin-top:18px;">

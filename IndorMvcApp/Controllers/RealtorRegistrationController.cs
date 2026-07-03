@@ -148,7 +148,7 @@ public class RealtorRegistrationController(
 
         if (string.IsNullOrWhiteSpace(languagesCsv))
         {
-            ModelState.AddModelError(nameof(languages), "Languages is required.");
+            ModelState.AddModelError(nameof(languages), "Select at least one language.");
         }
 
         if (!professionalTermsAccepted)

@@ -65,6 +65,8 @@ public class RealtorSharedQuoteTrackingViewModel : RealtorPortalShellViewModel
     public List<RealtorSharedQuoteTimelineItemViewModel> Timeline { get; set; } = [];
     public string ViewSharedQuoteUrl { get; set; } = "#";
     public string ShareLink { get; set; } = "";
+    public string MessageHomeownerUrl { get; set; } = "";
+    public bool CanMessageHomeowner { get; set; }
 }
 
 public class RealtorSharedQuoteTimelineItemViewModel

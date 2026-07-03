@@ -201,8 +201,14 @@ public class RealtorSharedQuoteService(AppDbContext db, RealtorPortalService por
             RecentActivityLabel = recent,
             RecentActivityTime = shared.ViewedUtc.HasValue ? "Just now" : "",
             Timeline = timeline,
-            ViewSharedQuoteUrl = $"/SharedQuote/View/{shared.ShareToken}",
-            ShareLink = BuildShareLink(shared.ShareToken)
+            ViewSharedQuoteUrl = BuildShareLink(shared.ShareToken),
+            ShareLink = BuildShareLink(shared.ShareToken),
+            MessageHomeownerUrl = BuildMessageHomeownerUrl(
+                shared.HomeownerPhone,
+                shared.HomeownerEmail,
+                shared.HomeownerName,
+                viewQuote.Address),
+            CanMessageHomeowner = HasHomeownerContact(shared.HomeownerPhone, shared.HomeownerEmail)
         };
     }
 
@@ -427,8 +433,45 @@ public class RealtorSharedQuoteService(AppDbContext db, RealtorPortalService por
     private static string BuildDefaultInternalNotes(IndorRealtorQuote quote) =>
         $"Quote request {quote.QuoteCode} shared from INDOR Realtor portal.";
 
-    private string BuildShareLink(Guid token) =>
+    private static string BuildShareLink(Guid token) =>
         $"/SharedQuote/View/{token}";
+
+    private static bool HasHomeownerContact(string? phone, string? email) =>
+        !string.IsNullOrWhiteSpace(NormalizePhoneDigits(phone))
+        || !string.IsNullOrWhiteSpace(email);
+
+    private static string BuildMessageHomeownerUrl(
+        string? phone, string? email, string homeownerName, string address)
+    {
+        var greetingName = string.IsNullOrWhiteSpace(homeownerName) ? "there" : homeownerName.Split(' ')[0];
+        var body = Uri.EscapeDataString(
+            $"Hi {greetingName}, following up on the quote shared for {address}. ");
+        var subject = Uri.EscapeDataString($"Quote for {address}");
+
+        var digits = NormalizePhoneDigits(phone);
+        if (!string.IsNullOrWhiteSpace(digits))
+        {
+            return $"sms:{digits}?body={body}";
+        }
+
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            return $"mailto:{email.Trim()}?subject={subject}&body={body}";
+        }
+
+        return "";
+    }
+
+    private static string? NormalizePhoneDigits(string? phone)
+    {
+        if (string.IsNullOrWhiteSpace(phone))
+        {
+            return null;
+        }
+
+        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        return digits.Length >= 10 ? digits : null;
+    }
 
     private static string NormalizeDelivery(string method) =>
         method switch

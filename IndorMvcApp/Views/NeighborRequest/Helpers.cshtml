@@ -32,58 +32,65 @@
     <p>Based on your location and job details.</p>
 </header>
 
-<div class="nr-helper-list">
-    @foreach (var card in Model.Helpers)
-    {
-        <article class="nr-helper-card">
-            <label class="nr-helper-select">
-                <input type="checkbox" name="SelectedHelpers" value="@card.ProviderId" data-nr-helper-checkbox="true" />
-                <span class="nr-helper-check"></span>
-            </label>
-            <div class="nr-helper-avatar">
-                @if (!string.IsNullOrWhiteSpace(card.PhotoUrl))
-                {
-                    <img src="@Url.Content("~" + card.PhotoUrl)" alt="" />
-                }
-                else
-                {
-                    <span class="nr-helper-avatar-fallback"><i class="fas @card.AvatarIconClass"></i></span>
-                }
-                @if (card.IsOnline)
-                {
-                    <span class="nr-helper-online" aria-label="Online"></span>
-                }
-            </div>
-            <div class="nr-helper-body">
-                <div class="nr-helper-title-row">
-                    <strong>@card.Name</strong>
-                    @if (card.IsVerified)
+<form id="nrInviteHelpersForm" method="post" action="@Model.InviteUrl" autocomplete="off">
+    @Html.AntiForgeryToken()
+    <div class="nr-helper-list">
+        @foreach (var card in Model.Helpers)
+        {
+            <article class="nr-helper-card">
+                <label class="nr-helper-select">
+                    <input type="checkbox"
+                           name="selectedHelpers"
+                           value="@card.SelectionKey"
+                           data-nr-helper-checkbox="true"
+                           @(card.IsSelected ? "checked" : null) />
+                    <span class="nr-helper-check" aria-hidden="true"></span>
+                </label>
+                <div class="nr-helper-avatar">
+                    @if (!string.IsNullOrWhiteSpace(card.PhotoUrl))
                     {
-                        <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                        <img src="@Url.Content("~" + card.PhotoUrl)" alt="" />
+                    }
+                    else
+                    {
+                        <span class="nr-helper-avatar-fallback"><i class="fas @card.AvatarIconClass"></i></span>
+                    }
+                    @if (card.IsOnline)
+                    {
+                        <span class="nr-helper-online" aria-label="Online"></span>
                     }
                 </div>
-                <div class="nr-helper-meta">
-                    <span><i class="fas fa-star"></i> @card.RatingLabel (@card.ReviewCount)</span>
-                    <span><i class="fas fa-location-dot"></i> @card.DistanceLabel</span>
+                <div class="nr-helper-body">
+                    <div class="nr-helper-title-row">
+                        <strong>@card.Name</strong>
+                        @if (card.IsVerified)
+                        {
+                            <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                        }
+                    </div>
+                    <div class="nr-helper-meta">
+                        <span><i class="fas fa-star"></i> @card.RatingLabel (@card.ReviewCount)</span>
+                        <span><i class="fas fa-location-dot"></i> @card.DistanceLabel</span>
+                    </div>
+                    <div class="nr-helper-tags">
+                        @foreach (var tag in card.SkillTags)
+                        {
+                            <span>@tag</span>
+                        }
+                    </div>
                 </div>
-                <div class="nr-helper-tags">
-                    @foreach (var tag in card.SkillTags)
-                    {
-                        <span>@tag</span>
-                    }
+                <div class="nr-helper-side">
+                    <strong>@card.PriceLabel</strong>
+                    <small>@card.MinHoursLabel</small>
+                    <div class="nr-helper-actions">
+                        <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
+                        <button type="button" class="nr-btn-primary nr-btn-primary--sm" data-nr-helper-invite="true">Invite</button>
+                    </div>
                 </div>
-            </div>
-            <div class="nr-helper-side">
-                <strong>@card.PriceLabel</strong>
-                <small>@card.MinHoursLabel</small>
-                <div class="nr-helper-actions">
-                    <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
-                    <button type="button" class="nr-btn-primary nr-btn-primary--sm" data-nr-helper-invite="true">Invite</button>
-                </div>
-            </div>
-        </article>
-    }
-</div>
+            </article>
+        }
+    </div>
+</form>
 
 <div class="nr-trust-banner">
     <i class="fas fa-shield-halved"></i>
@@ -96,10 +103,10 @@
 @section WizardFooter {
     <div class="nr-wizard-footer">
         <div class="nr-wizard-footer-inner">
-            <a href="@Model.DetailUrl" class="nr-btn-primary" id="nrInviteHelpersBtn">
+            <button type="submit" form="nrInviteHelpersForm" class="nr-btn-primary" id="nrInviteHelpersBtn">
                 <i class="fas fa-user-group"></i>
                 <span id="nrInviteHelpersLabel">Invite selected helpers (0)</span>
-            </a>
+            </button>
         </div>
     </div>
 }
@@ -107,10 +114,14 @@
 @section Scripts {
     <script>
         (function () {
+            var form = document.getElementById('nrInviteHelpersForm');
             var label = document.getElementById('nrInviteHelpersLabel');
+            if (!form || !label) {
+                return;
+            }
 
             function selectedCount() {
-                return document.querySelectorAll('[data-nr-helper-checkbox]:checked').length;
+                return form.querySelectorAll('[data-nr-helper-checkbox]:checked').length;
             }
 
             function inviteLabel(count) {
@@ -124,24 +135,23 @@
             }
 
             function updateInviteLabel() {
-                if (!label) {
-                    return;
-                }
                 label.textContent = inviteLabel(selectedCount());
             }
 
-            document.querySelectorAll('[data-nr-helper-checkbox]').forEach(function (checkbox) {
-                checkbox.addEventListener('change', updateInviteLabel);
+            form.addEventListener('change', function (e) {
+                if (e.target && e.target.matches('[data-nr-helper-checkbox]')) {
+                    updateInviteLabel();
+                }
             });
 
-            document.querySelectorAll('[data-nr-helper-invite]').forEach(function (button) {
+            form.querySelectorAll('[data-nr-helper-invite]').forEach(function (button) {
                 button.addEventListener('click', function () {
                     var checkbox = button.closest('.nr-helper-card')?.querySelector('[data-nr-helper-checkbox]');
                     if (!checkbox) {
                         return;
                     }
-                    checkbox.checked = true;
-                    updateInviteLabel();
+                    checkbox.checked = !checkbox.checked;
+                    checkbox.dispatchEvent(new Event('change', { bubbles: true }));
                 });
             });
 

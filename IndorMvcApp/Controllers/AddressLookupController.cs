@@ -47,4 +47,32 @@ public class AddressLookupController(IAddressLookupService addressLookup) : Cont
 
         return Json(new { zip });
     }
+
+    [HttpGet]
+    public async Task<IActionResult> Resolve(string address, CancellationToken cancellationToken)
+    {
+        address = address?.Trim() ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return BadRequest(new { message = "Address is required." });
+        }
+
+        var lookupAddress = address.Contains("USA", StringComparison.OrdinalIgnoreCase)
+            ? address
+            : $"{address}, USA";
+
+        var resolved = await addressLookup.GetGeocodedPropertyAsync(lookupAddress, cancellationToken);
+        if (resolved == null)
+        {
+            return NotFound(new { message = "Address could not be resolved." });
+        }
+
+        return Json(new
+        {
+            street = resolved.Street,
+            city = resolved.City,
+            state = resolved.State,
+            zip = resolved.PostalCode
+        });
+    }
 }

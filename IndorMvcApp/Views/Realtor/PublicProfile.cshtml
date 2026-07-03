@@ -129,29 +129,30 @@
     @if (Model.IsOwnProfile && Model.ShowVerificationPrompt && Model.VerificationSteps.Count > 0)
     {
         <section class="rl-public-verify-card">
-            <img src="~/welcome-house.png" alt="" class="rl-public-verify-card-art" aria-hidden="true" />
-            <div class="rl-public-verify-card-head">
-                <span class="rl-public-verify-card-icon"><i class="fas fa-shield-check"></i></span>
-                <div>
-                    <h3>Become a Verified Realtor</h3>
+            <div class="rl-public-verify-card-banner" aria-hidden="true">
+                <img src="~/welcome-house.png" alt="" />
+            </div>
+            <div class="rl-public-verify-card-body">
+                <div class="rl-public-verify-card-head">
+                    <h3><i class="fas fa-shield-check" aria-hidden="true"></i> Become a Verified Realtor</h3>
                     <p>Complete your verification to build trust, improve visibility, and unlock more opportunities in INDOR.</p>
                 </div>
+                <ul class="rl-public-verify-steps">
+                    @foreach (var step in Model.VerificationSteps)
+                    {
+                        <li class="@(step.IsComplete ? "is-complete" : "")">
+                            <span class="rl-public-verify-step-label">
+                                <i class="fas @(step.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
+                                @step.Label
+                            </span>
+                            <span class="rl-public-verify-step-status">@step.StatusLabel</span>
+                        </li>
+                    }
+                </ul>
+                <a asp-controller="Realtor" asp-action="EditProfileLicense" class="rl-public-verify-cta">
+                    Start Verification <i class="fas fa-arrow-right"></i>
+                </a>
             </div>
-            <ul class="rl-public-verify-steps">
-                @foreach (var step in Model.VerificationSteps)
-                {
-                    <li class="@(step.IsComplete ? "is-complete" : "")">
-                        <span class="rl-public-verify-step-label">
-                            <i class="fas @(step.IsComplete ? "fa-circle-check" : "fa-circle")"></i>
-                            @step.Label
-                        </span>
-                        <span class="rl-public-verify-step-status">@step.StatusLabel</span>
-                    </li>
-                }
-            </ul>
-            <a asp-controller="Realtor" asp-action="EditProfileLicense" class="rl-public-verify-cta">
-                Start Verification <i class="fas fa-arrow-right"></i>
-            </a>
         </section>
     }
 

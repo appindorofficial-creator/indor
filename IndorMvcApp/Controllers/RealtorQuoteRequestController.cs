@@ -89,6 +89,27 @@ public class RealtorQuoteRequestController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> BackToProperty()
+    {
+        await quoteRequest.PrepareBackToPropertyAsync();
+        return RedirectToAction(nameof(Property));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToRequestDetails()
+    {
+        await quoteRequest.PrepareBackToRequestDetailsAsync();
+        return RedirectToAction(nameof(RequestDetails));
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> BackToProviders()
+    {
+        await quoteRequest.PrepareBackToProvidersAsync();
+        return RedirectToAction(nameof(Providers));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> RequestDetails()
     {
         var draft = await quoteRequest.GetDraftAsync();

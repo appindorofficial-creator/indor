@@ -1897,7 +1897,34 @@
     color: #0066CC;
     text-decoration: none;
 }
-.pf-home-address-form { position: relative; z-index: 2; display: flex; flex-direction: column; gap: 10px; }
+.pf-home-address-form {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow: visible;
+}
+.pf-home-address-form .pf-row {
+    position: relative;
+    overflow: visible;
+}
+.pf-home-address-form label.pf-field:has([data-address-autocomplete]),
+.pf-home-address-form label.pf-field:has([data-city-autocomplete]) {
+    position: relative;
+    overflow: visible;
+    z-index: 1;
+}
+.pf-home-address-form label.pf-field:has([data-address-autocomplete]):focus-within,
+.pf-home-address-form label.pf-field:has([data-city-autocomplete]):focus-within,
+.pf-home-address-form .pf-row:has([data-address-autocomplete]:focus-within),
+.pf-home-address-form .pf-row:has([data-city-autocomplete]:focus-within) {
+    z-index: 31;
+}
+.pf-home-address-form .pac-container {
+    min-width: 100%;
+    box-sizing: border-box;
+}
 .pf-home-address-form input[data-address-autocomplete],
 .pf-home-address-form input[data-city-autocomplete] {
     position: relative;
@@ -1926,6 +1953,12 @@
     font-size: .9rem;
     font-family: inherit;
     background: #fff;
+}
+@media (max-width: 640px) {
+    .pf-home-address-form input,
+    .pf-home-address-form select {
+        scroll-margin-bottom: 120px;
+    }
 }
 .pf-optional { font-weight: 500; color: #94A3B8; }
 .pf-home-hint {

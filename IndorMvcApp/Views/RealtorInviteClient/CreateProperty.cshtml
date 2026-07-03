@@ -45,7 +45,7 @@
         <div class="rl-cp-grid">
             <div class="rl-cp-field @(cityError.Length > 0 ? "is-error" : null)">
                 <label for="cp-city">City <span class="rl-cp-req">*</span></label>
-                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="Enter city" autocomplete="address-level2" data-ac-city="cp-city" data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(cityError.Length > 0)" /></div>
+                <div class="rl-cp-input"><input type="text" id="cp-city" name="City" value="@Model.City" placeholder="City" autocomplete="off" data-city-autocomplete data-ac-state="cp-state" data-ac-zip="cp-postal-code" aria-required="true" aria-invalid="@(cityError.Length > 0)" /></div>
                 <span class="rl-field-error" id="cityError" data-client-error="City">@cityError</span>
             </div>
             <div class="rl-cp-field @(stateError.Length > 0 ? "is-error" : null)">

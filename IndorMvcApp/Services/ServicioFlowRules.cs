@@ -86,7 +86,7 @@ public static class ServicioFlowRules
                 "Home Security",
                 "Seguridad del Hogar",
             ],
-            new ServicioFlowRoute("SmokeDetector", "SmokeDetectorService", "Smoke Detector")
+            RemodelingRoute
         ),
         (
             [
@@ -158,9 +158,8 @@ public static class ServicioFlowRules
 
         route = orden switch
         {
-            1 or 2 or 3 or 4 or 6 or 9 or 10 or 13 => RemodelingRoute,
+            1 or 2 or 3 or 4 or 6 or 9 or 10 or 12 or 13 => RemodelingRoute,
             11 => new ServicioFlowRoute("ExteriorPaint", "ExteriorPaintReview", "Exterior paint"),
-            12 => new ServicioFlowRoute("SmokeDetector", "SmokeDetectorService", "Smoke Detector"),
             7 => new ServicioFlowRoute("HvacMaintenance", "HvacMaintenanceService", "HVAC maintenance"),
             8 => new ServicioFlowRoute("WaterHeaterFlush", "WaterHeaterFlushService", "Water heater flush"),
             5 => new ServicioFlowRoute("PowerWash", "PowerWashService", "Power wash exterior"),
@@ -197,7 +196,6 @@ public static class ServicioFlowRules
             7 => "HVAC maintenance",
             8 => "Water heater flush",
             11 => "Exterior paint",
-            12 => "Smoke Detector",
             _ => null
         };
 

@@ -136,16 +136,16 @@
     -webkit-box-shadow: none !important;
 }
 
-/* Clients hero — white CTA must beat global .rl-btn-primary gradient/text rules */
-.rl-clients-hero .rl-clients-add {
+/* Clients hero — standalone CTA (no .rl-btn-primary) beats global gradient rules */
+.rl-clients-hero a.rl-clients-add {
     background: #fff !important;
     color: #0066CC !important;
     border: none !important;
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
     filter: none !important;
 }
-.rl-clients-hero .rl-clients-add:hover,
-.rl-clients-hero .rl-clients-add:focus-visible,
-.rl-clients-hero .rl-clients-add:active {
+.rl-clients-hero a.rl-clients-add:hover,
+.rl-clients-hero a.rl-clients-add:focus-visible,
+.rl-clients-hero a.rl-clients-add:active {
     filter: none !important;
 }
