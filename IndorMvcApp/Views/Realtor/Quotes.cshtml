@@ -14,8 +14,12 @@
                 <h1 class="rl-page-title">Quotes</h1>
                 <p class="rl-page-subtitle">Request, compare, and select service quotes.</p>
             </div>
-            <a asp-controller="RealtorQuoteRequest" asp-action="Property" asp-route-returnTo="quotes" class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn">
-                <i class="fas fa-plus"></i> Request Quote
+            <a asp-controller="RealtorQuoteRequest"
+               asp-action="Property"
+               asp-route-returnTo="quotes"
+               class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
+               aria-label="Request a new quote">
+                <i class="fas fa-plus" aria-hidden="true"></i> Request Quote
             </a>
         </div>
 
