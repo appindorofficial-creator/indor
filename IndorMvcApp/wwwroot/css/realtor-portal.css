@@ -7556,37 +7556,31 @@ a.rl-profile-nav-item {
     color: #0066CC;
 }
 .rl-portal-page-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
-.rl-portal-page-hero .rl-page-header { margin-bottom: 12px; position: relative; z-index: 2; }
-.rl-page-header--hero { align-items: flex-start; }
+.rl-portal-page-hero .rl-page-header { margin-bottom: 16px; position: relative; z-index: 3; }
+.rl-page-header--hero { align-items: center; }
 .rl-page-header-copy { min-width: 0; flex: 1; }
 .rl-portal-page-hero .rl-page-title { color: #fff; }
 .rl-portal-page-hero .rl-page-subtitle { color: rgba(255, 255, 255, .85); }
-.rl-portal-page-hero .rl-clients-add,
 .rl-portal-page-hero .rl-page-hero-btn {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    width: 100%;
-    margin: 0 0 14px;
+    gap: 6px;
     background: #fff !important;
     border: none !important;
     color: #0066CC !important;
     box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14) !important;
     filter: none !important;
     position: relative;
-    z-index: 4;
+    z-index: 5;
     min-height: 44px;
-    padding: 11px 16px;
-    border-radius: 12px;
-    font-size: .82rem;
-    font-weight: 700;
+    min-width: 44px;
+    padding: 10px 14px;
     cursor: pointer;
     pointer-events: auto;
     touch-action: manipulation;
     text-decoration: none;
-    white-space: nowrap;
-    -webkit-tap-highlight-color: rgba(0, 102, 204, .12);
+    -webkit-tap-highlight-color: transparent;
     transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 .rl-portal-page-hero .rl-page-hero-btn:hover,
@@ -7596,9 +7590,8 @@ a.rl-profile-nav-item {
     box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18) !important;
     filter: none !important;
 }
-.rl-portal-page-hero .rl-clients-add:active,
 .rl-portal-page-hero .rl-page-hero-btn:active {
-    transform: scale(0.98);
+    transform: scale(0.97);
     background: #E8F1FB !important;
 }
 @media (max-width: 480px) {
@@ -7606,8 +7599,7 @@ a.rl-profile-nav-item {
         flex-wrap: wrap;
         gap: 10px;
     }
-    .rl-portal-page-hero .rl-page-hero-btn,
-    .rl-portal-page-hero .rl-clients-add {
+    .rl-page-header--hero .rl-page-hero-btn {
         width: 100%;
         justify-content: center;
     }

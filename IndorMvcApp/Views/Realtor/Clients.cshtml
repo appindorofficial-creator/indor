@@ -18,14 +18,15 @@
                 <h1 class="rl-page-title">Clients</h1>
                 <p class="rl-page-subtitle">Manage buyers, sellers, homeowners, and invitations.</p>
             </div>
+            <a asp-controller="RealtorInviteClient"
+               asp-action="New"
+               asp-route-returnTo="clients"
+               class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
+               id="rlClientsAddBtn"
+               aria-label="Add client — start invite wizard">
+                <i class="fas fa-plus" aria-hidden="true"></i> Add Client
+            </a>
         </div>
-
-        <a href="@Url.Action("New", "RealtorInviteClient")"
-           class="rl-clients-add"
-           id="rlClientsAddBtn"
-           aria-label="Add client — start invite wizard">
-            <i class="fas fa-plus" aria-hidden="true"></i> Add Client
-        </a>
 
         <form asp-action="Clients" method="get" class="rl-search-form">
             <div class="rl-search-row">

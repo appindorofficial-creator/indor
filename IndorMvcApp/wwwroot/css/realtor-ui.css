@@ -137,8 +137,7 @@
 }
 
 /* Portal page hero — white CTA must beat global .rl-btn-primary gradient/text rules */
-.rl-portal-page-hero .rl-page-hero-btn,
-.rl-portal-page-hero a.rl-clients-add {
+.rl-portal-page-hero .rl-page-hero-btn {
     background: #fff !important;
     color: #0066CC !important;
     border: none !important;
@@ -147,9 +146,6 @@
 }
 .rl-portal-page-hero .rl-page-hero-btn:hover,
 .rl-portal-page-hero .rl-page-hero-btn:focus-visible,
-.rl-portal-page-hero .rl-page-hero-btn:active,
-.rl-portal-page-hero a.rl-clients-add:hover,
-.rl-portal-page-hero a.rl-clients-add:focus-visible,
-.rl-portal-page-hero a.rl-clients-add:active {
+.rl-portal-page-hero .rl-page-hero-btn:active {
     filter: none !important;
 }
