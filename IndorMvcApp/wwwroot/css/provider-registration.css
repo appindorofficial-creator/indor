@@ -64,7 +64,16 @@
 .prv-save-later { display: block; width: 100%; text-align: center; margin-top: 12px; padding: 6px; color: #0066CC; font-weight: 700; font-size: .86rem; text-decoration: none; background: none; border: none; cursor: pointer; -webkit-appearance: none; appearance: none; font-family: inherit; }
 .prv-field-icon { display: flex; align-items: center; gap: 10px; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 4px 12px; margin-bottom: 12px; background: #fff; }
 .prv-field-icon i { color: #0066CC; width: 18px; text-align: center; }
-.prv-field-icon .ob-control { border: none; padding: 10px 0; flex: 1; }
+.prv-field-icon .ob-control { border: none; padding: 10px 0; flex: 1; box-shadow: none !important; outline: none !important; }
+.prv-field-icon:focus-within { border-color: #E2E8F0 !important; box-shadow: none !important; }
+.prv-field-icon .ob-control:focus,
+.prv-field-icon .ob-control:focus-visible,
+.prv-field-icon select.ob-control:focus,
+.prv-field-icon select.ob-control:focus-visible {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
 .prv-field-label { font-size: .82rem; font-weight: 700; color: #334155; margin: 8px 0; }
 .prv-provider-type-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .prv-type-card { border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 12px 8px; background: #fff; cursor: pointer; text-align: center; font-size: .68rem; font-weight: 700; color: #64748B; }
@@ -182,7 +191,9 @@ button.prv-wiz-card--selectable {
 .prv-wiz-terms { display: flex; align-items: flex-start; gap: 10px; font-size: .78rem; color: #334155; margin: 4px 0; }
 .prv-wiz-terms a { color: #0066CC; font-weight: 700; text-decoration: none; }
 .pa-inline-error { color: #B91C1C; font-size: .78rem; font-weight: 600; margin: -8px 0 12px 2px; }
-.ob-field.pa-invalid .ob-control { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+.ob-field.pa-invalid:not(.prv-field-icon) .ob-control { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+.ob-field.pa-invalid.prv-field-icon { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+.ob-field.pa-invalid.prv-field-icon .ob-control { border: none !important; box-shadow: none !important; }
 .prv-wiz-terms.pa-invalid { color: #B91C1C; }
 .prv-wiz-bullets { margin: 8px 0 0; padding-left: 18px; font-size: .78rem; color: #475569; }
 .prv-wiz-checklist { list-style: none; margin: 8px 0 0; padding: 0; }

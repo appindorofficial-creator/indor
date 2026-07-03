@@ -181,7 +181,9 @@ select.form-control,
 .pa-search-bar input,
 .hn-search-bar input,
 .pa-field input,
-.pa-field select {
+.pa-field select,
+.prv-field-icon .ob-control,
+.prv-field-icon select.ob-control {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -199,9 +201,9 @@ select.form-control,
 .hf-input:focus,
 .hf-textarea:focus,
 .ob-input:focus,
-input:focus:not(.rl-field input):not(.rl-cp-input input):not(.nr-location-picker-input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input),
+input:focus:not(.rl-field input):not(.rl-cp-input input):not(.nr-location-picker-input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input):not(.prv-field-icon .ob-control),
 textarea:focus:not(.rl-field textarea),
-select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select) {
+select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select):not(.prv-field-icon select.ob-control) {
     outline: none;
     border-color: #93C5FD !important;
     box-shadow: 0 0 0 3px rgba(46, 139, 255, .15) !important;
@@ -237,7 +239,11 @@ select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select
 .pa-field select:focus,
 .pa-field select:focus-visible,
 .rl-field-icon input:focus,
-.rl-field-icon input:focus-visible {
+.rl-field-icon input:focus-visible,
+.prv-field-icon .ob-control:focus,
+.prv-field-icon .ob-control:focus-visible,
+.prv-field-icon select.ob-control:focus,
+.prv-field-icon select.ob-control:focus-visible {
     border: none !important;
     border-width: 0 !important;
     border-color: transparent !important;
