@@ -5052,21 +5052,6 @@ a.prv-pro-profile-quick-btn--share { cursor: pointer; }
     box-shadow: 0 -8px 32px rgba(15, 23, 42, 0.08);
     padding-top: 10px;
 }
-.prv-pro-bottom-nav a.is-active {
-    position: relative;
-    color: #0056D2;
-}
-.prv-pro-bottom-nav a.is-active::before {
-    content: "";
-    position: absolute;
-    top: -2px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 32px;
-    height: 3px;
-    background: #0056D2;
-    border-radius: 0 0 4px 4px;
-}
 
 @media (min-width: 768px) {
     .prv-pro-home-metrics {
