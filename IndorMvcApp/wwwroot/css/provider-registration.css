@@ -51,7 +51,51 @@
     touch-action: manipulation;
 }
 .prv-doc-label { display: block; font-size: .78rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
-.prv-doc-upload input[type="file"] { width: 100%; font-size: .82rem; }
+.prv-file-picker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+}
+.prv-file-picker-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.prv-file-picker-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #334155;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+.prv-file-picker-name {
+    font-size: .82rem;
+    color: #64748B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.prv-file-picker.has-file .prv-file-picker-name {
+    color: #0F172A;
+    font-weight: 600;
+}
 .prv-doc-form .ob-btn-outline { margin-bottom: 10px; width: 100%; }
 .prv-chip-grid--single .prv-chip { position: relative; }
 .prv-chip-check { position: absolute; top: 8px; right: 8px; color: #0066CC; font-size: .85rem; }
