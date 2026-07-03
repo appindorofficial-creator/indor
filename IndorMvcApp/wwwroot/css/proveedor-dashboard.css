@@ -1173,13 +1173,14 @@ a.prv-pro-profile-btn { text-decoration: none; }
 .prv-pro-edit-profile-upload-btn input { display: none; }
 .prv-pro-edit-profile-fields {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 12px;
 }
 .prv-pro-edit-profile-fields label {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 .prv-pro-edit-profile-fields label span {
     font-size: .72rem;
@@ -1188,13 +1189,23 @@ a.prv-pro-profile-btn { text-decoration: none; }
 }
 .prv-pro-edit-profile-fields input,
 .prv-pro-edit-profile-fields textarea {
+    width: 100%;
+    box-sizing: border-box;
+    min-width: 0;
     border: 1px solid #E2E8F0;
     border-radius: 12px;
     padding: 10px 12px;
     font-size: .84rem;
     font-family: inherit;
+    background: #fff;
 }
 .prv-pro-edit-profile-field--wide { grid-column: 1 / -1; }
+
+@media (max-width: 640px) {
+    .prv-pro-edit-profile-fields {
+        grid-template-columns: 1fr;
+    }
+}
 .prv-pro-edit-profile-toggles {
     display: flex;
     flex-direction: column;
