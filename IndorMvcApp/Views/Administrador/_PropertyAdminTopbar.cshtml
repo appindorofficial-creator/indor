@@ -1,19 +1,20 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
 <header class="pa-portal-topbar">
-    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="INDOR home Portfolio">
-        <i class="fas fa-house" aria-hidden="true"></i> INDOR
+    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="INDOR Portfolio">
+        <span class="pa-portal-logo-main">
+            <i class="fas fa-house" aria-hidden="true"></i> INDOR
+        </span>
+        <span class="pa-portal-logo-label">Portfolio</span>
     </a>
 
-    <div class="pa-portal-account-wrap">
-        <div class="pa-portal-topbar-actions">
-            <button type="button"
-                    class="pa-portal-icon-btn pa-portal-icon-btn--notify @(Model.NotificationCount > 0 ? "has-dot" : null)"
-                    aria-label="Notifications">
-                <i class="fas fa-bell"></i>
-            </button>
-        </div>
-        <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
-            My account <i class="fas fa-chevron-right"></i>
-        </a>
+    <div class="pa-portal-topbar-actions">
+        <button type="button"
+                class="pa-portal-icon-btn pa-portal-icon-btn--notify @(Model.NotificationCount > 0 ? "has-dot" : null)"
+                aria-label="Notifications">
+            <i class="fas fa-bell"></i>
+        </button>
     </div>
+    <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
+        My account <i class="fas fa-chevron-right"></i>
+    </a>
 </header>
