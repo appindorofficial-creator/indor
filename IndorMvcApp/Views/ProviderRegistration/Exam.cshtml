@@ -47,7 +47,7 @@
     <span>Questions @qStart–@qEnd of @questionCount</span>
     <span>Page @examPage of @totalPages</span>
 </p>
-<form asp-action="Exam" method="post">
+<form asp-action="Exam" method="post" id="prvExamForm" class="pa-validate" novalidate>
     @Html.AntiForgeryToken()
     <input type="hidden" name="page" value="@examPage" />
     @foreach (var q in questions)
@@ -58,7 +58,7 @@
             @for (var i = 0; i < q.Options.Count; i++)
             {
                 <div class="prv-exam-opt">
-                    <input type="radio" name="answers[@q.Number]" id="q@(q.Number)_@i" value="@i" @(selected == i.ToString() ? "checked" : "") required />
+                    <input type="radio" name="answers[@q.Number]" id="q@(q.Number)_@i" value="@i" @(selected == i.ToString() ? "checked" : "") required data-field-label="an answer" />
                     <label for="q@(q.Number)_@i">@q.Options[i]</label>
                 </div>
             }
@@ -86,3 +86,5 @@
         </button>
     </div>
 </form>
+
+@await Html.PartialAsync("_PropertyAdminStepValidation")
