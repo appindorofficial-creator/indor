@@ -3612,6 +3612,7 @@ button.rl-premium-link {
 .rl-client-card-v2 {
     display: flex;
     gap: 12px;
+    position: relative;
     background: #fff;
     border: 1px solid #E2E8F0;
     border-radius: 16px;
