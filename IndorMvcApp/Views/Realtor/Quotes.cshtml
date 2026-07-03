@@ -25,7 +25,22 @@
                     <i class="fas fa-magnifying-glass"></i>
                     <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search quotes by address, client or provider..." />
                 </div>
-                <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
+                <div class="rl-filter-wrap">
+                    <button type="button" class="rl-filter-btn" id="rlQuotesFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> Filter</button>
+                    <div class="rl-filter-menu" id="rlQuotesFilterMenu" role="menu" hidden>
+                        @foreach (var chip in Model.Filters)
+                        {
+                            <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                               class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
+                                <span>@chip</span>
+                                @if (Model.ActiveFilter == chip)
+                                {
+                                    <i class="fas fa-check"></i>
+                                }
+                            </a>
+                        }
+                    </div>
+                </div>
             </div>
             <div class="rl-filter-chips">
                 @foreach (var chip in Model.Filters)
@@ -107,3 +122,34 @@
         </section>
     }
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var filterBtn = document.getElementById('rlQuotesFilterBtn');
+        var filterMenu = document.getElementById('rlQuotesFilterMenu');
+        if (!filterBtn || !filterMenu) {
+            return;
+        }
+
+        function closeMenu() {
+            filterMenu.hidden = true;
+            filterBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        filterBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var willOpen = filterMenu.hidden;
+            filterMenu.hidden = !willOpen;
+            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    })();
+</script>
+}
