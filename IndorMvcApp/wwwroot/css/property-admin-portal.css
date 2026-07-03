@@ -366,10 +366,9 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-fab{position:fixed;right:16px;bottom:calc(72px + env(safe-area-inset-bottom));display:inline-flex;align-items:center;gap:8px;padding:14px 18px;border-radius:999px;background:#0066CC;color:#fff;font-size:.84rem;font-weight:700;text-decoration:none;box-shadow:0 8px 24px rgba(0,102,204,.35);z-index:90;max-width:calc(100% - 32px)}
 
 .pa-bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #E2E8F0;display:flex;justify-content:space-around;padding:8px 0 calc(8px + env(safe-area-inset-bottom));z-index:100}
-.pa-bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:.65rem;font-weight:600;color:#94A3B8;text-decoration:none;padding:4px 10px;position:relative}
+.pa-bottom-nav a{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;min-width:0;font-size:.58rem;font-weight:600;color:#94A3B8;text-decoration:none;padding:4px 2px}
 .pa-bottom-nav a.is-active{color:#0066CC}
-.pa-bottom-nav a.is-active::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:24px;height:2px;background:#0066CC;border-radius:2px}
-.pa-bottom-nav a i{font-size:1.05rem}
+.pa-bottom-nav a i{font-size:1.1rem}
 
 .pa-form-step{font-size:.92rem;font-weight:700;color:#0F172A;margin:18px 0 10px}
 .pa-form-hint{font-size:.82rem;color:#64748B;margin:0 0 12px}
@@ -1294,15 +1293,8 @@ a.pa-notify-item:hover{background:#F8FAFC}
 .pa-portfolio-icon{background:var(--pa-grad-primary);color:#fff;box-shadow:0 8px 16px rgba(0,102,204,.28)}
 .pa-portfolio-panel{box-shadow:0 14px 34px rgba(20,66,124,.10)}
 
-/* Bottom nav: gradient pill on the active tab */
+/* Bottom nav: match Realtor — active tab is color only */
 .pa-bottom-nav{box-shadow:0 -10px 26px rgba(20,66,124,.08);border-top-color:#EEF3FA}
-.pa-bottom-nav a i{transition:.18s}
-.pa-bottom-nav a.is-active i{
-    background:var(--pa-grad-primary);color:#fff;width:36px;height:36px;border-radius:13px;
-    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 14px rgba(0,102,204,.32);
-    margin-top:-2px
-}
-.pa-bottom-nav a.is-active::after{display:none}
 
 /* Map / Feed toggle as a floating pill */
 .pa-network-viewtoggle{background:#fff;border:1px solid var(--pa-border);border-radius:999px;padding:5px;box-shadow:var(--pa-shadow-soft)}
