@@ -2115,7 +2115,7 @@ public class RealtorPortalService(
         int pendingInvites, List<IndorRealtorClient> clients, Dictionary<string, int> quoteCounts, string activeFilter)
     {
         var steps = new List<RealtorNextStepViewModel>();
-        if (pendingInvites > 0 && activeFilter is "All" or "Invited" or "Follow-up")
+        if (pendingInvites > 0 && activeFilter == "All")
         {
             steps.Add(new()
             {
