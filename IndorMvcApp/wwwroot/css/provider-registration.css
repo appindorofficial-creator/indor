@@ -166,15 +166,12 @@ button.prv-wiz-card--selectable {
 .prv-wiz-card--selectable:active { transform: scale(.985); }
 .prv-wiz-card--selectable.is-selected,
 .prv-wiz-card--selectable:has(input:checked) { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.12); }
-.prv-wiz-card--selectable.is-selected .prv-wiz-card-chevron,
-.prv-wiz-card--selectable:has(input:checked) .prv-wiz-card-chevron { color: #0066CC; }
 .prv-wiz-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
 .prv-wiz-icon-blue { background: rgba(0,102,204,.1); color: #0066CC; }
 .prv-wiz-icon-orange { background: rgba(234,88,12,.1); color: #EA580C; }
 .prv-wiz-card-body { flex: 1; min-width: 0; }
 .prv-wiz-card-body strong { display: block; font-size: .9rem; color: #0F172A; margin-bottom: 4px; }
 .prv-wiz-card-body small, .prv-wiz-card-body p { display: block; font-size: .78rem; color: #64748B; line-height: 1.45; margin: 0 0 8px; }
-.prv-wiz-card-chevron { color: #0066CC; align-self: center; }
 .prv-wiz-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .68rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
 .prv-wiz-badge--green { background: #DCFCE7; color: #15803D; }
 .prv-wiz-badge--orange { background: #FFEDD5; color: #C2410C; }
