@@ -386,8 +386,7 @@
 
 .pa-portal-shell--profile{padding-top:4px}
 .pa-profile-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
-.pa-profile-back,.pa-profile-settings{width:40px;height:40px;border-radius:50%;border:1.5px solid #E2E8F0;background:#fff;color:#334155;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
-.pa-profile-settings{color:#0066CC;border-color:#BFDBFE;background:#EFF6FF}
+.pa-profile-back{width:40px;height:40px;border-radius:50%;border:1.5px solid #E2E8F0;background:#fff;color:#334155;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
 .pa-profile-hero{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
 .pa-profile-photo-wrap{flex-shrink:0}
 .pa-profile-photo{width:88px;height:88px;border-radius:50%;object-fit:cover;display:block;border:3px solid #fff;box-shadow:0 4px 16px rgba(15,23,42,.08)}
