@@ -1374,7 +1374,6 @@
 .nr-home-toggle input { margin-top: 3px; accent-color: #0066CC; }
 .nr-home-toggle-copy strong { display: block; font-size: .82rem; }
 .nr-home-toggle-copy small { display: block; font-size: .72rem; color: #64748B; margin-top: 2px; }
-.nr-home-toggle .fa-circle-info { color: #94A3B8; margin-left: auto; margin-top: 2px; }
 
 .nr-option-grid { display: grid; gap: 8px; }
 .nr-option-grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
