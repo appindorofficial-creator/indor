@@ -1,76 +1,41 @@
 @model IndorMvcApp.ViewModels.RealtorQuotesViewModel
-
 @{
-
     ViewData["Title"] = "Quotes";
-
     Layout = "_RealtorLayout";
-
     ViewBag.NavActive = "quotes";
-
 }
 
+<div class="rl-dash-shell rl-quotes-shell">
+    <div class="rl-portal-page-hero">
+        @await Html.PartialAsync("_RealtorTopbar", Model)
 
-
-<div class="rl-dash-shell">
-
-    @await Html.PartialAsync("_RealtorTopbar", Model)
-
-
-
-    <div class="rl-page-header">
-
-        <div>
-
-            <h1 class="rl-page-title">Quotes</h1>
-
-            <p class="rl-page-subtitle">Request, compare, and select service quotes.</p>
-
-        </div>
-
-        <a asp-controller="RealtorQuoteRequest" asp-action="Property" class="rl-btn-primary rl-btn-primary--sm">
-
-            <i class="fas fa-plus"></i> Request Quote
-
-        </a>
-
-    </div>
-
-
-
-    <form asp-action="Quotes" method="get" class="rl-search-form">
-
-        <div class="rl-search-row">
-
-            <div class="rl-search-bar">
-
-                <i class="fas fa-magnifying-glass"></i>
-
-                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search quotes by address, client or provider..." />
-
+        <div class="rl-page-header rl-page-header--hero">
+            <div class="rl-page-header-copy">
+                <h1 class="rl-page-title">Quotes</h1>
+                <p class="rl-page-subtitle">Request, compare, and select service quotes.</p>
             </div>
-
-            <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
-
+            <a asp-controller="RealtorQuoteRequest" asp-action="Property" asp-route-returnTo="quotes" class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn">
+                <i class="fas fa-plus"></i> Request Quote
+            </a>
         </div>
 
-        <div class="rl-filter-chips">
-
-            @foreach (var chip in Model.Filters)
-
-            {
-
-                <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-
-                   class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
-
-            }
-
-        </div>
-
-    </form>
-
-
+        <form asp-action="Quotes" method="get" class="rl-search-form">
+            <div class="rl-search-row">
+                <div class="rl-search-bar">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search quotes by address, client or provider..." />
+                </div>
+                <button type="button" class="rl-filter-btn"><i class="fas fa-sliders"></i> Filter</button>
+            </div>
+            <div class="rl-filter-chips">
+                @foreach (var chip in Model.Filters)
+                {
+                    <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
+                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+                }
+            </div>
+        </form>
+    </div>
 
     @{
         IReadOnlyList<IndorMvcApp.ViewModels.RealtorStatItemViewModel> visibleQuoteStats =
@@ -80,128 +45,65 @@
                     .Where(s => string.Equals(s.Label, Model.ActiveFilter, StringComparison.OrdinalIgnoreCase))
                     .ToList();
     }
-
     @await Html.PartialAsync("_RealtorStatsRow", visibleQuoteStats)
 
-
-
     <section class="rl-dash-section">
-
         @if (Model.OpenQuotes.Count == 0)
-
         {
-
             <div class="rl-dash-empty">No quotes match your filters.</div>
-
         }
-
         else
-
         {
-
             @foreach (var quote in Model.OpenQuotes)
-
             {
-
                 <article class="rl-quote-card-v2">
-
                     <img src="@quote.PhotoUrl" alt="" />
-
                     <div class="rl-quote-card-body">
-
                         <div class="rl-quote-card-top">
-
                             <div class="rl-quote-card-title">
-
                                 <strong>@quote.StreetAddress</strong>
-
                                 <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
-
                             </div>
-
                         </div>
-
                         <span class="rl-premium-muted"><i class="fas fa-calendar"></i> @quote.RequestedLabel</span>
-
                         @if (!string.IsNullOrWhiteSpace(quote.ProviderSummary))
-
                         {
-
                             <div class="rl-quote-provider-row">
-
                                 @if (!string.IsNullOrWhiteSpace(quote.ProviderInitials))
-
                                 {
-
                                     <span class="rl-provider-avatar rl-provider-avatar--sm">@quote.ProviderInitials</span>
-
                                 }
-
                                 <span class="rl-premium-muted">@quote.ProviderSummary</span>
-
                             </div>
-
                         }
-
                         @if (!string.IsNullOrWhiteSpace(quote.PriceRangeLabel))
-
                         {
-
                             <span class="rl-quote-price">@quote.PriceRangeLabel</span>
-
                         }
-
                         <div class="rl-quote-card-foot">
-
                             <a href="@quote.ActionUrl" class="ob-btn ob-btn-primary rl-quote-primary-btn">@quote.ActionLabel</a>
-
                             @if (!string.IsNullOrWhiteSpace(quote.SecondaryActionLabel))
-
                             {
-
                                 <a href="@quote.SecondaryActionUrl" class="rl-quote-secondary-link">@quote.SecondaryActionLabel</a>
-
                             }
-
                         </div>
-
                     </div>
-
                 </article>
-
             }
-
         }
-
     </section>
 
-
-
     @if (Model.Alerts.Count > 0)
-
     {
-
         <section class="rl-alert-stack">
-
             @foreach (var alert in Model.Alerts)
-
             {
-
                 <a href="@(alert.Url ?? "#")" class="rl-alert-banner rl-alert-banner--@alert.ColorClass">
-
                     <span class="rl-alert-icon"><i class="fas @alert.Icon"></i></span>
-
                     <span>@alert.Text</span>
-
                     <i class="fas fa-chevron-right"></i>
-
                 </a>
-
             }
-
         </section>
-
     }
-
 </div>
-

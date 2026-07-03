@@ -968,6 +968,12 @@
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             section.classList.add('active');
 
+            const hideBell = sectionId === 'section-myhome';
+            document.body.classList.toggle('top-bar-no-bell', hideBell);
+            if (hideBell) {
+                document.getElementById('notifPanel')?.classList.remove('open');
+            }
+
             const scrollTarget = scrollTargetId
                 ? document.getElementById(scrollTargetId)
                 : null;

@@ -3735,7 +3735,7 @@ button.rl-premium-link {
     flex: 1 0 min(100%, 320px);
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 0;
     min-height: 56px;
     padding: 14px 44px 14px 14px;
@@ -3744,20 +3744,24 @@ button.rl-premium-link {
     color: #fff;
     font-size: .82rem;
     font-weight: 700;
-    line-height: 1.45;
+    line-height: 1.35;
 }
 .rl-next-step-main {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 12px;
     flex: 1;
     min-width: 0;
-    text-align: center;
+    text-align: left;
 }
 .rl-next-step-text {
-    text-align: center;
-    line-height: 1.45;
+    display: block;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+    line-height: 1.35;
+    white-space: normal;
 }
 .rl-next-step--blue { background: linear-gradient(135deg, #0066CC, #0052A3); }
 .rl-next-step--teal { background: linear-gradient(135deg, #0D9488, #0F766E); }
@@ -5030,13 +5034,13 @@ button.rl-profile-nav-item {
 }
 
 .rl-network-view-toggle--map {
-    margin: 8px 16px 6px;
+    margin: 0 0 10px;
     position: relative;
     z-index: 3;
 }
 
 .rl-zillow-map-filters {
-    margin: 0 16px 8px;
+    margin: 0 0 8px;
     position: relative;
     z-index: 3;
 }
@@ -7526,9 +7530,9 @@ a.rl-profile-nav-item {
 .rl-invite-shell { padding-bottom: 156px; }
 
 /* ============================================================
-   Clients page — blue hero, quick actions, rich empty state
+   Portal list pages — blue hero (Clients, Files, Quotes)
    ============================================================ */
-.rl-clients-hero {
+.rl-portal-page-hero {
     margin: -16px -16px 18px;
     padding: 14px 16px 18px;
     border-radius: 0 0 26px 26px;
@@ -7538,22 +7542,23 @@ a.rl-profile-nav-item {
     position: relative;
     isolation: isolate;
 }
-.rl-clients-hero .rl-portal-topbar { margin-bottom: 10px; }
-.rl-clients-hero .rl-portal-logo { color: #fff; }
-.rl-clients-hero .rl-portal-icon-btn {
+.rl-portal-page-hero .rl-portal-topbar { margin-bottom: 10px; }
+.rl-portal-page-hero .rl-portal-logo { color: #fff; }
+.rl-portal-page-hero .rl-portal-icon-btn {
     width: 40px;
     height: 40px;
     border-radius: 50%;
     background: rgba(255, 255, 255, .95);
     color: #0066CC;
 }
-.rl-clients-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
-.rl-clients-hero .rl-page-header { margin-bottom: 12px; position: relative; z-index: 2; }
-.rl-page-header--clients { align-items: flex-start; }
+.rl-portal-page-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
+.rl-portal-page-hero .rl-page-header { margin-bottom: 12px; position: relative; z-index: 2; }
+.rl-page-header--hero { align-items: flex-start; }
 .rl-page-header-copy { min-width: 0; flex: 1; }
-.rl-clients-hero .rl-page-title { color: #fff; }
-.rl-clients-hero .rl-page-subtitle { color: rgba(255, 255, 255, .85); }
-.rl-clients-hero .rl-clients-add {
+.rl-portal-page-hero .rl-page-title { color: #fff; }
+.rl-portal-page-hero .rl-page-subtitle { color: rgba(255, 255, 255, .85); }
+.rl-portal-page-hero .rl-clients-add,
+.rl-portal-page-hero .rl-page-hero-btn {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7580,33 +7585,79 @@ a.rl-profile-nav-item {
     -webkit-tap-highlight-color: rgba(0, 102, 204, .12);
     transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
-.rl-clients-hero .rl-clients-add:hover,
-.rl-clients-hero .rl-clients-add:focus-visible {
+.rl-portal-page-hero .rl-page-hero-btn:hover,
+.rl-portal-page-hero .rl-page-hero-btn:focus-visible {
     background: #F0F7FF !important;
     color: #0057C8 !important;
     box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18) !important;
     filter: none !important;
 }
-.rl-clients-hero .rl-clients-add:active {
+.rl-portal-page-hero .rl-clients-add:active,
+.rl-portal-page-hero .rl-page-hero-btn:active {
     transform: scale(0.98);
     background: #E8F1FB !important;
 }
-.rl-clients-hero .rl-search-form { margin-bottom: 0; position: relative; z-index: 1; }
-.rl-clients-hero .rl-search-bar { margin-bottom: 12px; border-color: transparent; }
-.rl-clients-hero .rl-filter-btn {
+@media (max-width: 480px) {
+    .rl-page-header--hero {
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .rl-portal-page-hero .rl-page-hero-btn,
+    .rl-portal-page-hero .rl-clients-add {
+        width: 100%;
+        justify-content: center;
+    }
+}
+.rl-portal-page-hero .rl-search-form { margin-bottom: 0; position: relative; z-index: 1; }
+.rl-portal-page-hero .rl-search-bar { margin-bottom: 12px; border-color: transparent; }
+.rl-portal-page-hero .rl-filter-btn {
     background: rgba(255, 255, 255, .95);
     border-color: transparent;
     color: #0066CC;
 }
-.rl-clients-hero .rl-filter-chip {
+.rl-portal-page-hero .rl-filter-chip {
     background: rgba(255, 255, 255, .16);
     border-color: rgba(255, 255, 255, .35);
     color: #fff;
 }
-.rl-clients-hero .rl-filter-chip.is-active {
+.rl-portal-page-hero .rl-filter-chip.is-active {
     background: #fff;
     border-color: #fff;
     color: #0066CC;
+}
+
+/* Nearby Network hero */
+.rl-portal-page-hero .rl-network-head {
+    margin-bottom: 14px;
+}
+.rl-portal-page-hero .rl-network-profile-btn {
+    background: rgba(255, 255, 255, .12);
+    border-color: rgba(255, 255, 255, .55);
+    color: #fff;
+}
+.rl-portal-page-hero .rl-network-profile-btn:hover,
+.rl-portal-page-hero .rl-network-profile-btn:focus-visible {
+    background: rgba(255, 255, 255, .22);
+    border-color: #fff;
+    color: #fff;
+}
+.rl-portal-page-hero .rl-network-view-toggle {
+    margin-bottom: 12px;
+    background: rgba(255, 255, 255, .18);
+}
+.rl-portal-page-hero .rl-network-view-btn {
+    color: rgba(255, 255, 255, .88);
+}
+.rl-portal-page-hero .rl-network-view-btn.is-active {
+    background: #fff;
+    color: #0066CC;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+.rl-portal-page-hero--network-map {
+    margin-bottom: 10px;
+}
+.rl-portal-page-hero--network-map .rl-zillow-map-filters {
+    margin: 0 0 4px;
 }
 
 /* Quick actions */

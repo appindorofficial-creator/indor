@@ -5,20 +5,21 @@
     ViewBag.NavActive = "files";
 }
 
-<div class="rl-dash-shell">
-    @await Html.PartialAsync("_RealtorTopbar", Model)
+<div class="rl-dash-shell rl-files-shell">
+    <div class="rl-portal-page-hero">
+        @await Html.PartialAsync("_RealtorTopbar", Model)
 
-    <div class="rl-page-header">
-        <div>
-            <h1 class="rl-page-title">Property Files</h1>
-            <p class="rl-page-subtitle">Track each property file from inspection to package sharing.</p>
+        <div class="rl-page-header rl-page-header--hero">
+            <div class="rl-page-header-copy">
+                <h1 class="rl-page-title">Property Files</h1>
+                <p class="rl-page-subtitle">Track each property file from inspection to package sharing.</p>
+            </div>
+            <a asp-controller="RealtorPropertyFile" asp-action="Details" asp-route-returnTo="files" class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn">
+                <i class="fas fa-plus"></i> New File
+            </a>
         </div>
-        <a asp-controller="RealtorPropertyFile" asp-action="Details" class="rl-btn-primary rl-btn-primary--sm">
-            <i class="fas fa-plus"></i> New File
-        </a>
-    </div>
 
-    <form asp-action="Files" method="get" class="rl-search-form">
+        <form asp-action="Files" method="get" class="rl-search-form">
         <div class="rl-search-row">
             <div class="rl-search-bar">
                 <i class="fas fa-magnifying-glass"></i>
@@ -49,6 +50,7 @@
             }
         </div>
     </form>
+    </div>
 
     @{
         var statFilterMap = new Dictionary<string, string>
