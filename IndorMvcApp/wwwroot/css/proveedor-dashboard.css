@@ -22,9 +22,33 @@
     margin-bottom: 16px;
 }
 
-.prv-pro-brand { display: flex; align-items: baseline; gap: 4px; }
-.prv-pro-brand-indor { font-size: 1.4rem; font-weight: 900; color: #0056D2; letter-spacing: -.03em; }
-.prv-pro-brand-pro { font-size: .82rem; font-weight: 900; color: #0056D2; letter-spacing: .06em; }
+.prv-pro-brand { display: inline-flex; align-items: center; gap: 0; }
+.prv-pro-brand--link {
+    text-decoration: none;
+    color: #0066CC;
+    font-weight: 800;
+    font-size: 1rem;
+}
+.prv-pro-brand--link .fa-house { margin-right: 6px; font-size: 1rem; }
+.prv-pro-brand-indor { font-size: inherit; font-weight: inherit; color: inherit; letter-spacing: normal; }
+.prv-pro-brand-pro { font-size: inherit; font-weight: inherit; color: inherit; letter-spacing: normal; margin-left: 4px; }
+
+.prv-pro-avatar-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
+    text-decoration: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.prv-pro-avatar-btn:focus-visible {
+    outline: 2px solid #0066CC;
+    outline-offset: 2px;
+    border-radius: 50%;
+}
 
 .prv-pro-profile-btn {
     display: inline-flex;
@@ -4605,13 +4629,6 @@ a.prv-pro-profile-quick-btn--share { cursor: pointer; }
 }
 
 .prv-pro-topbar--v2 { margin-bottom: 12px; }
-.prv-pro-profile-btn--compact {
-    padding: 4px 10px 4px 4px;
-    gap: 6px;
-    border: none;
-    box-shadow: 0 2px 12px rgba(15, 23, 42, 0.06);
-}
-.prv-pro-profile-btn--compact span:not(.prv-pro-avatar) { display: none; }
 .prv-pro-avatar--initial {
     font-size: .82rem;
     font-weight: 800;

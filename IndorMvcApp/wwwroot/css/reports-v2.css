@@ -46,6 +46,7 @@
     background-repeat: no-repeat;
 }
 
+.prv-pro-shell--reports-v2 .prv-pro-brand--link,
 .prv-pro-shell--reports-v2 .prv-pro-brand-indor,
 .prv-pro-shell--reports-v2 .prv-pro-brand-pro {
     color: #fff;
@@ -58,13 +59,9 @@
     font-size: .7rem;
 }
 
-.prv-pro-shell--reports-v2 .prv-pro-profile-btn--compact {
-    background: rgba(255, 255, 255, .16);
+.prv-pro-shell--reports-v2 .prv-pro-avatar-btn {
+    background: transparent;
     box-shadow: none;
-}
-
-.prv-pro-shell--reports-v2 .prv-pro-profile-chevron {
-    color: #fff;
 }
 
 .prv-pro-shell--reports-v2 .prv-pro-avatar--initial {

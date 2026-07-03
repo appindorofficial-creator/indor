@@ -8,12 +8,12 @@
     initial ??= "P";
 }
 <header class="prv-pro-topbar prv-pro-topbar--v2">
-    <div class="prv-pro-brand">
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link" aria-label="INDOR PRO home">
+        <i class="fas fa-house" aria-hidden="true"></i>
         <span class="prv-pro-brand-indor">INDOR</span>
         <span class="prv-pro-brand-pro">PRO</span>
-    </div>
-    <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-profile-btn prv-pro-profile-btn--compact" aria-label="Profile menu">
+    </a>
+    <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-avatar-btn" aria-label="Profile">
         <span class="prv-pro-avatar prv-pro-avatar--initial">@initial</span>
-        <i class="fas fa-chevron-down prv-pro-profile-chevron"></i>
     </a>
 </header>

@@ -12,6 +12,13 @@
 }
 
 /* Topbar */
+.prv-pro-avatar-btn {
+    box-shadow: none !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
 .prv-pro-profile-btn {
     box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
 }
