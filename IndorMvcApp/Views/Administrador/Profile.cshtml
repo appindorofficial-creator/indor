@@ -81,15 +81,14 @@
             }
             <form asp-controller="Account" asp-action="Logout" method="post" class="pa-profile-signout-form">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="pa-profile-menu-item is-danger">
-                    <span class="pa-profile-menu-icon"><i class="fas fa-right-from-bracket"></i></span>
-                    <span class="pa-profile-menu-label">Sign out</span>
+                <button type="submit" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
+                    <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+                    <i class="fas fa-chevron-right"></i>
                 </button>
             </form>
-            <a asp-controller="Account" asp-action="DeleteAccount" class="pa-profile-menu-item is-danger">
-                <span class="pa-profile-menu-icon"><i class="fas fa-user-xmark"></i></span>
-                <span class="pa-profile-menu-label">Delete account</span>
-                <i class="fas fa-chevron-right pa-profile-menu-chevron"></i>
+            <a asp-controller="Account" asp-action="DeleteAccount" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
+                <span><i class="fas fa-user-xmark"></i> Delete account</span>
+                <i class="fas fa-chevron-right"></i>
             </a>
         </nav>
     </section>

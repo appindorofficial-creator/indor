@@ -407,11 +407,16 @@
 .pa-profile-menu-label{font-size:.88rem;font-weight:600}
 .pa-profile-menu-badge{min-width:18px;height:18px;padding:0 5px;border-radius:999px;background:#DC2626;color:#fff;font-size:.62rem;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
 .pa-profile-menu-chevron{color:#CBD5E1;font-size:.72rem}
-.pa-profile-menu-item.is-danger .pa-profile-menu-icon{background:#FEF2F2;color:#DC2626}
-.pa-profile-menu-item.is-danger .pa-profile-menu-label{color:#DC2626}
-.pa-profile-menu-item.is-danger{grid-template-columns:auto 1fr}
+.pa-profile-row{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid #E2E8F0;border-radius:14px;padding:14px 16px;text-decoration:none;color:inherit;width:100%;font:inherit;cursor:pointer}
+.pa-profile-row span:first-child{flex:1;font-size:.88rem;font-weight:600}
+.pa-profile-row .fa-chevron-right{color:#CBD5E1;font-size:.72rem}
+.pa-profile-row--danger{color:#DC2626}
+.pa-profile-row--danger i{margin-right:8px}
+.pa-profile-row.pa-profile-row--center{justify-content:center;position:relative}
+.pa-profile-row.pa-profile-row--center>span:first-child{flex:0 1 auto;text-align:center;white-space:nowrap}
+.pa-profile-row.pa-profile-row--center>.fa-chevron-right{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
 .pa-profile-signout-form{margin:0}
-.pa-profile-signout-form .pa-profile-menu-item{width:100%;border:1.5px solid #E2E8F0;cursor:pointer;font:inherit;text-align:left}
+.pa-profile-signout-form .pa-profile-row{width:100%}
 
 .pa-portal-shell--personal{padding-bottom:24px}
 .pa-personal-header{display:flex;align-items:flex-start;gap:12px;margin-bottom:20px}
