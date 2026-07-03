@@ -14,8 +14,12 @@
                 <h1 class="rl-page-title">Property Files</h1>
                 <p class="rl-page-subtitle">Track each property file from inspection to package sharing.</p>
             </div>
-            <a asp-controller="RealtorPropertyFile" asp-action="Details" asp-route-returnTo="files" class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn">
-                <i class="fas fa-plus"></i> New File
+            <a asp-controller="RealtorPropertyFile"
+               asp-action="Details"
+               asp-route-returnTo="files"
+               class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
+               aria-label="Create new property file">
+                <i class="fas fa-plus" aria-hidden="true"></i> New File
             </a>
         </div>
 

@@ -7566,6 +7566,8 @@ a.rl-profile-nav-item {
     align-items: center;
     justify-content: center;
     gap: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
     background: #fff !important;
     border: none !important;
     color: #0066CC !important;
