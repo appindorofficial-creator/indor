@@ -38,55 +38,84 @@
 }
 
 <div class="rl-dash-shell rl-network-page @(isMapView ? "rl-network-page--map" : "")">
-    @if (!isMapView)
-    {
+    <div class="rl-portal-page-hero @(isMapView ? "rl-portal-page-hero--network-map" : "")">
         @await Html.PartialAsync("_RealtorTopbar", Model)
 
-        <div class="rl-network-head">
-            <div class="rl-network-head-main">
-                <div>
-                    <h1 class="rl-page-title">@Model.PageTitle</h1>
-                    <p class="rl-page-subtitle">@Model.RadiusLabel</p>
-                </div>
+        <div class="rl-page-header rl-page-header--hero rl-network-head">
+            <div class="rl-page-header-copy">
+                <h1 class="rl-page-title">@Model.PageTitle</h1>
+                <p class="rl-page-subtitle">@Model.RadiusLabel</p>
             </div>
-            <a asp-controller="Realtor" asp-action="Profile" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn">
-                <i class="fas fa-user"></i> My Realtor Profile
-            </a>
-        </div>
-    }
-
-    <div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
-        <a asp-action="Network"
-           asp-route-view="map"
-           asp-route-filter="@Model.ActiveFilter"
-           asp-route-q="@Model.SearchQuery"
-           class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
-            <i class="fas fa-map"></i> Map
-        </a>
-        <a asp-action="Network"
-           asp-route-view="feed"
-           asp-route-filter="@Model.ActiveFilter"
-           asp-route-q="@Model.SearchQuery"
-           class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
-            <i class="fas fa-list"></i> Feed
-        </a>
-    </div>
-
-    @if (isMapView)
-    {
-        <div class="rl-zillow-map-filters rl-filter-chips rl-filter-chips--scroll">
-            @foreach (var chip in Model.Filters)
+            @if (!isMapView)
             {
-                <a asp-action="Network"
-                   asp-route-filter="@chip.Value"
-                   asp-route-view="map"
-                   asp-route-q="@Model.SearchQuery"
-                   class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
-                    <i class="fas @chip.Icon"></i> @chip.Label
+                <a asp-controller="Realtor" asp-action="Profile" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn">
+                    <i class="fas fa-user"></i> My Realtor Profile
                 </a>
             }
         </div>
 
+        <div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
+            <a asp-action="Network"
+               asp-route-view="map"
+               asp-route-filter="@Model.ActiveFilter"
+               asp-route-q="@Model.SearchQuery"
+               class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
+                <i class="fas fa-map"></i> Map
+            </a>
+            <a asp-action="Network"
+               asp-route-view="feed"
+               asp-route-filter="@Model.ActiveFilter"
+               asp-route-q="@Model.SearchQuery"
+               class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
+                <i class="fas fa-list"></i> Feed
+            </a>
+        </div>
+
+        @if (isMapView)
+        {
+            <div class="rl-zillow-map-filters rl-filter-chips rl-filter-chips--scroll">
+                @foreach (var chip in Model.Filters)
+                {
+                    <a asp-action="Network"
+                       asp-route-filter="@chip.Value"
+                       asp-route-view="map"
+                       asp-route-q="@Model.SearchQuery"
+                       class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                        <i class="fas @chip.Icon"></i> @chip.Label
+                    </a>
+                }
+            </div>
+        }
+        else
+        {
+            <form asp-action="Network" method="get" class="rl-search-form">
+                <div class="rl-search-row">
+                    <div class="rl-search-bar">
+                        <i class="fas fa-magnifying-glass"></i>
+                        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search your network..." />
+                    </div>
+                    <input type="hidden" name="view" value="@Model.ActiveView" />
+                    <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+                </div>
+            </form>
+
+            <div class="rl-filter-chips rl-filter-chips--scroll rl-network-filters">
+                @foreach (var chip in Model.Filters)
+                {
+                    <a asp-action="Network"
+                       asp-route-filter="@chip.Value"
+                       asp-route-view="@Model.ActiveView"
+                       asp-route-q="@Model.SearchQuery"
+                       class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
+                        <i class="fas @chip.Icon"></i> @chip.Label
+                    </a>
+                }
+            </div>
+        }
+    </div>
+
+    @if (isMapView)
+    {
         @if (Model.HasGoogleMaps)
         {
             <section class="rl-zillow-map-shell" aria-label="Nearby map">
@@ -141,30 +170,6 @@
     }
     else
     {
-        <form asp-action="Network" method="get" class="rl-search-form">
-            <div class="rl-search-row">
-                <div class="rl-search-bar">
-                    <i class="fas fa-magnifying-glass"></i>
-                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search your network..." />
-                </div>
-                <input type="hidden" name="view" value="@Model.ActiveView" />
-                <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-            </div>
-        </form>
-
-        <div class="rl-filter-chips rl-filter-chips--scroll rl-network-filters">
-            @foreach (var chip in Model.Filters)
-            {
-                <a asp-action="Network"
-                   asp-route-filter="@chip.Value"
-                   asp-route-view="@Model.ActiveView"
-                   asp-route-q="@Model.SearchQuery"
-                   class="rl-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)">
-                    <i class="fas @chip.Icon"></i> @chip.Label
-                </a>
-            }
-        </div>
-
         <section class="rl-quick-actions rl-quick-actions--network">
             @foreach (var action in Model.QuickActions)
             {
