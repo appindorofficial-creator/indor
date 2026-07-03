@@ -1147,11 +1147,14 @@ button.rl-network-btn {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
     font-weight: 700;
     font-size: .82rem;
+    line-height: 1;
+    text-transform: uppercase;
 }
 .rl-invite-card strong { display: block; font-size: .84rem; }
-.rl-invite-card span { display: block; font-size: .72rem; color: #64748B; }
+.rl-invite-card > div span { display: block; font-size: .72rem; color: #64748B; }
 .rl-resend-link { font-size: .72rem; font-weight: 700; color: #0066CC; text-decoration: none; }
 
 /* Files */
