@@ -70,8 +70,8 @@
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
                 <input asp-for="Title" class="nr-input" placeholder="Need help moving a sofa" maxlength="60" autocomplete="off" />
-                <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             </div>
+            <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             <span asp-validation-for="Title" class="field-validation-error"></span>
         </div>
     </section>
@@ -84,8 +84,8 @@
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
                 <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="Share timing, scope, or anything helpful for helpers." autocomplete="off"></textarea>
-                <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
             </div>
+            <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
         </div>
     </section>
 

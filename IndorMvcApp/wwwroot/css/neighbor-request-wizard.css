@@ -271,7 +271,6 @@
 }
 
 .nr-counted-control {
-    position: relative;
     display: block;
     width: 100%;
     min-width: 0;
@@ -287,39 +286,21 @@
     margin: 0;
 }
 
-.nr-counted-control .nr-textarea,
-.nr-counted-control .nr-edit-textarea {
-    min-height: 120px;
-    padding-bottom: 2rem;
-    resize: vertical;
-}
-
-.nr-counted-control .nr-input,
-.nr-counted-control .nr-edit-input {
-    padding-right: 4.25rem;
-}
-
 .nr-field--count .nr-char-count,
 .nr-edit-field.nr-field--count .nr-char-count {
-    position: absolute;
-    right: 12px;
-    bottom: 10px;
-    z-index: 1;
     display: block;
     text-align: right;
     font-size: .72rem;
     color: #94A3B8;
     line-height: 1.2;
-    pointer-events: none;
-    padding: 2px 0 2px 10px;
-    background: linear-gradient(to left, #fff 65%, rgba(255, 255, 255, 0));
+    margin: 0;
+    padding: 0;
 }
 
 .nr-field--count .nr-char-count.is-over-limit,
 .nr-edit-field.nr-field--count .nr-char-count.is-over-limit {
     color: #DC2626;
     font-weight: 700;
-    background: linear-gradient(to left, #fff 65%, rgba(255, 255, 255, 0));
 }
 
 .nr-photo-actions {
