@@ -30,7 +30,9 @@
     position: relative;
     margin: 0 -16px;
     padding: calc(env(safe-area-inset-top, 0px) + 16px) 18px 48px;
-    background: linear-gradient(135deg, #3B93FF 0%, #0066CC 58%, #0056D2 100%);
+    background: linear-gradient(135deg, #3B93FF 0%, #0066CC 58%, #0056D2 100%) !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
     z-index: 1;
 }
 

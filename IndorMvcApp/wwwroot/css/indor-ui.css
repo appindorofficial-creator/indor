@@ -292,7 +292,6 @@ select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select
 .more-top,
 .rl-dash-top,
 .pa-top,
-.prv-pro-topbar,
 .nr-wizard-top {
     background: rgba(255, 255, 255, .92) !important;
     backdrop-filter: blur(12px);
