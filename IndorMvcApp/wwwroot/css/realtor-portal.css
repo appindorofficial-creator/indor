@@ -7614,14 +7614,14 @@ a.rl-profile-nav-item {
     color: #0066CC;
 }
 .rl-portal-page-hero .rl-filter-chip {
-    background: rgba(255, 255, 255, .16);
-    border-color: rgba(255, 255, 255, .35);
-    color: #fff;
+    background: #fff;
+    border-color: #0066CC;
+    color: #0066CC;
 }
 .rl-portal-page-hero .rl-filter-chip.is-active {
-    background: #fff;
+    background: #0066CC;
     border-color: #fff;
-    color: #0066CC;
+    color: #fff;
 }
 
 /* Nearby Network hero */
