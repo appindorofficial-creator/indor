@@ -1336,9 +1336,37 @@
     display: flex; align-items: center; gap: 10px;
     padding: 12px 14px; border: 1px solid #E5E7EB; border-radius: 14px; background: #fff;
 }
-.nr-location-picker-icon { color: #0066CC; }
+.nr-location-picker:focus-within {
+    border-color: #E5E7EB !important;
+    box-shadow: none !important;
+}
+.nr-location-picker-icon { color: #0066CC; flex-shrink: 0; }
 .nr-location-picker-input {
-    flex: 1; border: 0; background: transparent; font: inherit; font-size: .82rem; color: #0A2540; outline: none;
+    flex: 1; min-width: 0;
+    border: 0 !important;
+    border-width: 0 !important;
+    background: transparent !important;
+    font: inherit; font-size: .82rem; color: #0A2540;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    -webkit-appearance: none;
+    appearance: none;
+    padding: 0;
+    margin: 0;
+}
+.nr-location-picker-input:focus,
+.nr-location-picker-input:focus-visible,
+.nr-location-picker-input:active,
+.nr-location-picker-input:read-only,
+.nr-location-picker-input:read-only:focus,
+.nr-location-picker-input:read-only:focus-visible {
+    border: 0 !important;
+    border-width: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    background: transparent !important;
 }
 .nr-home-toggle {
     display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; cursor: pointer;

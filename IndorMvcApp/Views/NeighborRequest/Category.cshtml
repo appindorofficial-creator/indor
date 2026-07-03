@@ -96,7 +96,10 @@
         </header>
         <label class="nr-location-picker">
             <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
-            <input asp-for="LocationAddress" class="nr-location-picker-input" />
+            <input asp-for="LocationAddress"
+                   class="nr-location-picker-input"
+                   readonly="@Model.UseHomeAddress"
+                   tabindex="@(Model.UseHomeAddress ? "-1" : null)" />
             <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </label>
         <span asp-validation-for="LocationAddress" class="field-validation-error"></span>
@@ -153,10 +156,17 @@
             var homeToggle = document.querySelector('[name="UseHomeAddress"]');
             var addressInput = document.querySelector('[name="LocationAddress"]');
             if (homeToggle && addressInput) {
-                homeToggle.addEventListener('change', function () {
-                    addressInput.readOnly = homeToggle.checked;
-                });
-                addressInput.readOnly = homeToggle.checked;
+                var syncHomeAddressState = function () {
+                    var useHome = homeToggle.checked;
+                    addressInput.readOnly = useHome;
+                    if (useHome) {
+                        addressInput.setAttribute('tabindex', '-1');
+                    } else {
+                        addressInput.removeAttribute('tabindex');
+                    }
+                };
+                homeToggle.addEventListener('change', syncHomeAddressState);
+                syncHomeAddressState();
             }
         })();
     </script>
