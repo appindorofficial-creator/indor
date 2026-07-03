@@ -7537,6 +7537,9 @@ a.rl-profile-nav-item {
    Portal list pages — blue hero (Clients, Files, Quotes)
    ============================================================ */
 .rl-portal-page-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
     margin: -16px -16px 18px;
     padding: 14px 16px 18px;
     border-radius: 0 0 26px 26px;
@@ -7561,12 +7564,16 @@ a.rl-profile-nav-item {
 .rl-page-header-copy { min-width: 0; flex: 1; }
 .rl-portal-page-hero .rl-page-title { color: #fff; }
 .rl-portal-page-hero .rl-page-subtitle { color: rgba(255, 255, 255, .85); }
-.rl-portal-page-hero .rl-page-hero-btn {
+.rl-portal-page-hero .rl-page-hero-btn,
+.rl-portal-page-hero a.rl-clients-add {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
+    flex: 0 0 auto;
     flex-shrink: 0;
+    width: auto;
+    max-width: none;
     white-space: nowrap;
     background: #fff !important;
     border: none !important;
@@ -7586,25 +7593,38 @@ a.rl-profile-nav-item {
     transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
 }
 .rl-portal-page-hero .rl-page-hero-btn:hover,
-.rl-portal-page-hero .rl-page-hero-btn:focus-visible {
+.rl-portal-page-hero .rl-page-hero-btn:focus-visible,
+.rl-portal-page-hero a.rl-clients-add:hover,
+.rl-portal-page-hero a.rl-clients-add:focus-visible {
     background: #F0F7FF !important;
     color: #0057C8 !important;
     box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18) !important;
     filter: none !important;
 }
-.rl-portal-page-hero .rl-page-hero-btn:active {
+.rl-portal-page-hero .rl-page-hero-btn:active,
+.rl-portal-page-hero a.rl-clients-add:active {
     transform: scale(0.97);
     background: #E8F1FB !important;
 }
 @media (max-width: 480px) {
     .rl-page-header--hero {
-        flex-wrap: wrap;
-        gap: 10px;
+        flex-wrap: nowrap;
+        gap: 8px;
+        align-items: center;
     }
-    .rl-page-header--hero .rl-page-hero-btn {
-        width: 100%;
-        justify-content: center;
+    .rl-page-header--hero .rl-page-hero-btn,
+    .rl-portal-page-hero a.rl-clients-add,
+    .rl-files-shell .rl-page-hero-btn,
+    .rl-quotes-shell .rl-page-hero-btn {
+        width: auto;
+        flex: 0 0 auto;
+        padding: 10px 12px;
+        font-size: .78rem;
     }
+}
+.rl-portal-page-hero > a.rl-clients-add {
+    align-self: flex-end;
+    margin-bottom: 12px;
 }
 .rl-portal-page-hero .rl-search-form { margin-bottom: 0; position: relative; z-index: 1; }
 .rl-portal-page-hero .rl-search-bar { margin-bottom: 12px; border-color: transparent; }

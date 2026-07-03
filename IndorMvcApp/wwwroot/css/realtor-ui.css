@@ -137,7 +137,15 @@
 }
 
 /* Portal page hero — white CTA must beat global .rl-btn-primary gradient/text rules */
-.rl-portal-page-hero .rl-page-hero-btn {
+.rl-portal-page-hero .rl-page-hero-btn,
+.rl-clients-shell .rl-page-hero-btn,
+.rl-files-shell .rl-page-hero-btn,
+.rl-quotes-shell .rl-page-hero-btn {
+    display: inline-flex !important;
+    width: auto !important;
+    max-width: none !important;
+    flex: 0 0 auto !important;
+    align-self: center;
     background: #fff !important;
     color: #0066CC !important;
     border: none !important;
@@ -146,6 +154,24 @@
 }
 .rl-portal-page-hero .rl-page-hero-btn:hover,
 .rl-portal-page-hero .rl-page-hero-btn:focus-visible,
-.rl-portal-page-hero .rl-page-hero-btn:active {
+.rl-portal-page-hero .rl-page-hero-btn:active,
+.rl-clients-shell .rl-page-hero-btn:hover,
+.rl-clients-shell .rl-page-hero-btn:focus-visible,
+.rl-clients-shell .rl-page-hero-btn:active,
+.rl-files-shell .rl-page-hero-btn:hover,
+.rl-files-shell .rl-page-hero-btn:focus-visible,
+.rl-files-shell .rl-page-hero-btn:active,
+.rl-quotes-shell .rl-page-hero-btn:hover,
+.rl-quotes-shell .rl-page-hero-btn:focus-visible,
+.rl-quotes-shell .rl-page-hero-btn:active {
     filter: none !important;
+}
+@media (max-width: 480px) {
+    .rl-portal-page-hero .rl-page-header--hero .rl-page-hero-btn,
+    .rl-clients-shell .rl-page-header--hero .rl-page-hero-btn,
+    .rl-files-shell .rl-page-header--hero .rl-page-hero-btn,
+    .rl-quotes-shell .rl-page-header--hero .rl-page-hero-btn {
+        width: auto !important;
+        flex: 0 0 auto !important;
+    }
 }

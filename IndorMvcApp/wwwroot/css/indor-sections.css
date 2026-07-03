@@ -369,10 +369,14 @@ a.rl-network-banner--link .rl-network-btn {
     backdrop-filter: blur(12px);
 }
 
-/* Clients hero — Add Client must stay white + tappable (loads last on realtor pages) */
+/* Portal hero CTAs (Clients, Files, Quotes) — stay compact + tappable on mobile */
+.rl-portal-page-hero .rl-page-hero-btn,
+.rl-portal-page-hero a.rl-clients-add,
 .rl-clients-hero a.rl-clients-add {
-    display: flex !important;
-    width: 100% !important;
+    display: inline-flex !important;
+    width: auto !important;
+    max-width: none !important;
+    flex: 0 0 auto !important;
     background: #fff !important;
     color: #0066CC !important;
     border: none !important;
@@ -382,6 +386,10 @@ a.rl-network-banner--link .rl-network-btn {
     position: relative !important;
     z-index: 4 !important;
 }
+.rl-portal-page-hero .rl-page-hero-btn:hover,
+.rl-portal-page-hero .rl-page-hero-btn:focus-visible,
+.rl-portal-page-hero a.rl-clients-add:hover,
+.rl-portal-page-hero a.rl-clients-add:focus-visible,
 .rl-clients-hero a.rl-clients-add:hover,
 .rl-clients-hero a.rl-clients-add:focus-visible {
     background: #F0F7FF !important;
