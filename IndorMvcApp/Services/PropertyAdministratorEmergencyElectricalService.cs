@@ -74,19 +74,15 @@ public class PropertyAdministratorEmergencyElectricalService(
             Title = $"{LabelIssue(input.IssueType)} • {LabelLocation(input.ProblemLocation)}",
             PropertyName = property.PropertyName,
             Location = property.Location,
-            Status = PropertyAdministratorRequestStatuses.InProgress,
+            Status = PropertyAdministratorRequestStatuses.Open,
             Category = "Emergency",
             ScheduledUtc = now,
             IsEmergency = true,
-            EtaLabel = "24 min",
-            TeamLabel = "Marcus R. • Electrical",
+            EtaLabel = null,
+            TeamLabel = "Matching a verified electrician",
             ImageUrl = property.ImageUrl,
             DetailsJson = detailsJson,
-            TechnicianName = "Marcus R.",
-            TechnicianRating = 4.9m,
-            TechnicianTitle = "Licensed Electrical Pro",
-            VehicleLabel = "White service van",
-            TimelineStep = 2
+            TimelineStep = 1
         };
 
         db.IndorPropertyAdminServiceRequests.Add(request);
@@ -126,11 +122,11 @@ public class PropertyAdministratorEmergencyElectricalService(
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             RequestId = request.Id,
             ViewingProperty = property == null ? null : MapProperty(property),
-            TechnicianName = request.TechnicianName ?? "Marcus R.",
-            TechnicianRating = request.TechnicianRating ?? 4.9m,
-            TechnicianTitle = request.TechnicianTitle ?? "Licensed Electrical Pro",
-            EtaLabel = request.EtaLabel ?? "24 min",
-            VehicleLabel = request.VehicleLabel ?? "White service van",
+            TechnicianName = request.TechnicianName ?? "",
+            TechnicianRating = request.TechnicianRating ?? 0m,
+            TechnicianTitle = request.TechnicianTitle ?? "",
+            EtaLabel = request.EtaLabel ?? "",
+            VehicleLabel = request.VehicleLabel ?? "",
             Timeline = BuildTimeline(request),
             Summary = BuildSummary(input)
         };

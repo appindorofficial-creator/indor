@@ -1,0 +1,321 @@
+@model IndorMvcApp.ViewModels.ExploreViewModel
+@using IndorMvcApp.Services
+@using IndorMvcApp.ViewModels
+@{
+    ViewData["Title"] = "Explore Services - INDOR";
+    Layout = null;
+
+    bool IsPrePurchaseInspection(string? name) => string.Equals(name?.Trim(), "Pre-Purchase Home Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsElectricalInspection(string? name) => string.Equals(name?.Trim(), "Electrical Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsCompleteHomeInspection(string? name) => string.Equals(name?.Trim(), "Complete Home Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsPlumbingInspection(string? name) => string.Equals(name?.Trim(), "Plumbing Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsHvacInspection(string? name) => string.Equals(name?.Trim(), "HVAC Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsStructuralInspection(string? name) => string.Equals(name?.Trim(), "Structural Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsRoofInspection(string? name) => string.Equals(name?.Trim(), "Roof Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsMoldMoistureInspection(string? name) => string.Equals(name?.Trim(), "Mold and Moisture Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsWindowsInsulationInspection(string? name) => string.Equals(name?.Trim(), "Windows and Insulation Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsHomeSafetyInspection(string? name) => string.Equals(name?.Trim(), "Home Safety Inspection", StringComparison.OrdinalIgnoreCase);
+    bool IsInvestorInspection(string? name) => string.Equals(name?.Trim(), "Investor Inspection", StringComparison.OrdinalIgnoreCase);
+
+    bool HasInspectionFlow(string? name) =>
+        IsPrePurchaseInspection(name) || IsElectricalInspection(name)
+        || IsCompleteHomeInspection(name) || IsPlumbingInspection(name)
+        || IsHvacInspection(name) || IsStructuralInspection(name) || IsRoofInspection(name)
+        || IsMoldMoistureInspection(name) || IsWindowsInsulationInspection(name)
+        || IsHomeSafetyInspection(name) || IsInvestorInspection(name);
+
+    string GetInspectionFlowAction(string? name) =>
+        IsPrePurchaseInspection(name) ? "PurchaseDetails"
+        : IsElectricalInspection(name) ? "ElectricalDetails"
+        : IsCompleteHomeInspection(name) ? "HomeReviewDetails"
+        : IsPlumbingInspection(name) ? "PlumbingDetails"
+        : IsHvacInspection(name) ? "HvacDetails"
+        : IsStructuralInspection(name) ? "StructuralDetails"
+        : IsRoofInspection(name) ? "RoofDetails"
+        : IsMoldMoistureInspection(name) ? "MoldMoistureDetails"
+        : IsWindowsInsulationInspection(name) ? "WindowsInsulationDetails"
+        : IsHomeSafetyInspection(name) ? "HomeSafetyDetails"
+        : IsInvestorInspection(name) ? "InvestorDetails"
+        : "PurchaseDetails";
+
+    string[] SplitIncludes(string? incluye) => string.IsNullOrWhiteSpace(incluye)
+        ? Array.Empty<string>()
+        : incluye.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    bool IsSafeAirMicroservice(IndorMvcApp.Models.Microservicio s) => s.Id == 1 || string.Equals(s.Nombre, "Safe Air 365", StringComparison.OrdinalIgnoreCase);
+    bool IsLawnMicroservice(IndorMvcApp.Models.Microservicio s) => s.Id == 2 || string.Equals(s.Nombre, "Always Perfect Lawn", StringComparison.OrdinalIgnoreCase);
+    bool IsTrashMicroservice(IndorMvcApp.Models.Microservicio s) => s.Id == 3 || string.Equals(s.Nombre, "Stress-Free Trash", StringComparison.OrdinalIgnoreCase);
+    bool IsCleaningProMicroservice(IndorMvcApp.Models.Microservicio s) => s.Id == 4 || string.Equals(s.Nombre, "Cleaning Pro", StringComparison.OrdinalIgnoreCase);
+
+    string GetMicroserviceLinkController(IndorMvcApp.Models.Microservicio s) =>
+        IsSafeAirMicroservice(s) ? "SafeAir"
+        : IsLawnMicroservice(s) ? "Lawn"
+        : IsTrashMicroservice(s) ? "Trash"
+        : IsCleaningProMicroservice(s) ? "CleaningPro"
+        : "Microservicios";
+
+    string GetMicroserviceLinkAction(IndorMvcApp.Models.Microservicio s) =>
+        IsSafeAirMicroservice(s) ? "SafeAirService"
+        : IsLawnMicroservice(s) ? "LawnService"
+        : IsTrashMicroservice(s) ? "TrashService"
+        : IsCleaningProMicroservice(s) ? "CleaningProService"
+        : "Schedule";
+
+    bool HasDedicatedMicroserviceFlow(IndorMvcApp.Models.Microservicio s) =>
+        IsSafeAirMicroservice(s) || IsLawnMicroservice(s) || IsTrashMicroservice(s) || IsCleaningProMicroservice(s);
+
+    OfferingCarouselViewModel BuildMicroCarousel(IEnumerable<IndorMvcApp.Models.Microservicio> items, string subtitle) =>
+        new()
+        {
+            Title = "Home Care Essentials",
+            Subtitle = subtitle,
+            Icon = "fa-layer-group",
+            BlockId = "home-care-essentials",
+            Items = items.Select(s => new OfferingCardViewModel
+            {
+                Name = s.Nombre,
+                Subtitle = s.Subtitulo,
+                Description = s.Descripcion,
+                Includes = SplitIncludes(s.Incluye),
+                Frequency = s.Frecuencia,
+                Price = s.Valor,
+                PricePrefix = s.PrecioPrefijo,
+                Currency = s.Moneda,
+                Cta = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Schedule service" : s.CtaTexto,
+                ImageUrl = s.ImagenUrl,
+                ImageBase64 = s.ImagenBase64,
+                SourceId = s.Id,
+                EnableSchedule = !HasDedicatedMicroserviceFlow(s),
+                EnableLink = true,
+                LinkController = GetMicroserviceLinkController(s),
+                LinkAction = GetMicroserviceLinkAction(s)
+            }).ToList()
+        };
+
+    OfferingCarouselViewModel BuildServicioCarousel(
+        IEnumerable<IndorMvcApp.Models.Servicio> items,
+        string subtitle,
+        IReadOnlyDictionary<string, int> homeCarePriorityIds) =>
+        new()
+        {
+            Title = "Services",
+            Subtitle = subtitle,
+            Icon = "fa-screwdriver-wrench",
+            BlockId = "services",
+            BlockClass = "category-block-services",
+            IconClass = "category-icon-alt",
+            BadgeClass = "category-badge-alt",
+            Items = items.Select(sv =>
+            {
+                var link = ServicioFlowRules.BuildOfferingLink(sv, homeCarePriorityIds);
+                return new OfferingCardViewModel
+                {
+                    Name = sv.Nombre,
+                    Subtitle = sv.Subtitulo,
+                    Description = sv.Descripcion,
+                    Includes = SplitIncludes(sv.Incluye),
+                    Frequency = sv.Frecuencia,
+                    Price = sv.Valor,
+                    PricePrefix = sv.PrecioPrefijo,
+                    PriceText = sv.PrecioTexto,
+                    Currency = sv.Moneda,
+                    Cta = string.IsNullOrWhiteSpace(sv.CtaTexto) ? "Request quote" : sv.CtaTexto,
+                    ImageUrl = sv.ImagenUrl,
+                    FreqIcon = "fa-clock",
+                    CtaIcon = ServicioFlowRules.HasFlow(sv.Nombre, sv.Orden) ? "fa-arrow-right" : "fa-paper-plane",
+                    SourceId = link.RouteId,
+                    EnableLink = true,
+                    LinkController = link.Controller,
+                    LinkAction = link.Action
+                };
+            }).ToList()
+        };
+
+    OfferingCarouselViewModel BuildInspeccionCarousel(IEnumerable<IndorMvcApp.Models.Inspeccion> items, string subtitle) =>
+        new()
+        {
+            Title = "Inspections",
+            Subtitle = subtitle,
+            Icon = "fa-magnifying-glass-chart",
+            BlockId = "inspections",
+            BlockClass = "category-block-inspections",
+            IconClass = "category-icon-insp",
+            BadgeClass = "category-badge-insp",
+            Items = items.Select(ins => new OfferingCardViewModel
+            {
+                Name = ins.Nombre,
+                Subtitle = ins.Subtitulo,
+                Description = ins.Descripcion,
+                Includes = SplitIncludes(ins.Incluye),
+                Frequency = ins.Frecuencia,
+                Price = ins.Valor,
+                PricePrefix = ins.PrecioPrefijo,
+                PriceText = ins.PrecioTexto,
+                Currency = ins.Moneda,
+                Cta = HasInspectionFlow(ins.Nombre) ? "Continue" : (string.IsNullOrWhiteSpace(ins.CtaTexto) ? "Schedule inspection" : ins.CtaTexto),
+                ImageUrl = ins.ImagenUrl,
+                FreqIcon = "fa-clipboard-check",
+                CtaIcon = HasInspectionFlow(ins.Nombre) ? "fa-arrow-right" : "fa-calendar-check",
+                SourceId = ins.Id,
+                EnableLink = HasInspectionFlow(ins.Nombre),
+                LinkController = "Inspecciones",
+                LinkAction = GetInspectionFlowAction(ins.Nombre)
+            }).ToList()
+        };
+
+    var catalog = Model.Catalog;
+    var microservicios = catalog.Microservicios;
+    var servicios = catalog.Servicios;
+    var inspecciones = catalog.Inspecciones;
+    var serviciosEmergencia = catalog.ServiciosEmergencia;
+    var homeCarePriorityIds = (IReadOnlyDictionary<string, int>)catalog.HomeCarePriorityIds;
+    var totalOfferings = microservicios.Count + servicios.Count + inspecciones.Count + serviciosEmergencia.Count;
+    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url);
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>@ViewData["Title"]</title>
+    @await Html.PartialAsync("_IndorDesignHead")
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    @await Html.PartialAsync("_AppVersionHead")
+    <link rel="stylesheet" href="~/css/home-index.css" asp-append-version="true" />
+    @await Html.PartialAsync("_TabletResponsiveHead")
+    <style>
+        .xp-topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 16px; }
+        .xp-topbar .hd-brand { font-weight:800; font-size:20px; color:#0f172a; display:inline-flex; align-items:center; gap:2px; text-decoration:none; }
+        .xp-topbar .hd-brand-house { width:22px; height:22px; }
+        .xp-auth { display:flex; gap:8px; }
+        .xp-auth a { font-size:13px; font-weight:600; padding:8px 14px; border-radius:999px; text-decoration:none; white-space:nowrap; }
+        .xp-auth .xp-login { color:#1867F2; border:1px solid #1867F2; background:#fff; }
+        .xp-auth .xp-register { color:#fff; background:#1867F2; border:1px solid #1867F2; }
+        .xp-guest-note { margin:4px 16px 12px; padding:12px 14px; border-radius:14px; background:#EEF4FF; color:#1e3a8a; font-size:13px; display:flex; align-items:flex-start; gap:10px; }
+        .xp-guest-note i { margin-top:2px; }
+        .xp-cta { margin:24px 16px 40px; text-align:center; }
+        .xp-cta a { display:inline-flex; align-items:center; gap:8px; background:#1867F2; color:#fff; font-weight:700; padding:14px 24px; border-radius:999px; text-decoration:none; }
+        .xp-providers { margin:8px 16px 0; }
+        .xp-providers-list { display:flex; flex-direction:column; gap:10px; }
+        .xp-provider { display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid #E5E9F0; border-radius:14px; background:#fff; }
+        .xp-provider-icon { width:42px; height:42px; flex:0 0 42px; border-radius:12px; background:#EEF4FF; color:#1867F2; display:flex; align-items:center; justify-content:center; font-size:16px; }
+        .xp-provider-body { flex:1 1 auto; min-width:0; }
+        .xp-provider-body strong { display:block; font-size:15px; color:#0f172a; }
+        .xp-provider-body small { color:#64748b; font-size:12.5px; }
+        .xp-provider-verified { flex:0 0 auto; font-size:11px; font-weight:700; color:#0f9d58; display:inline-flex; align-items:center; gap:4px; }
+        .xp-provider-empty { padding:16px; border:1px dashed #CBD5E1; border-radius:14px; color:#64748b; font-size:13.5px; text-align:center; }
+    </style>
+</head>
+<body>
+    <header class="top-bar xp-topbar">
+        <span class="hd-brand" aria-label="INDOR">
+            IND
+            <svg class="hd-brand-house" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
+                <path d="M14 3 L26 14 V26 H2 V14 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
+            </svg>
+            R
+        </span>
+        <div class="xp-auth">
+            <a class="xp-login" asp-controller="Account" asp-action="LoginForm">Log In</a>
+            <a class="xp-register" asp-controller="Account" asp-action="Register">Sign Up</a>
+        </div>
+    </header>
+
+    <div class="xp-guest-note">
+        <i class="fas fa-circle-info"></i>
+        <span>You're browsing as a guest. Explore all services, inspections and providers freely. Create a free account only when you're ready to book or request a quote.</span>
+    </div>
+
+    <section class="section active" id="section-services">
+        <div class="section-title">
+            Available services
+            <span class="services-count">@totalOfferings</span>
+        </div>
+
+        @if (totalOfferings == 0)
+        {
+            <div class="empty-state">
+                <i class="fas fa-tools"></i>
+                <p>No services available right now.</p>
+            </div>
+        }
+        else
+        {
+            <div class="services-catalog">
+                <div class="services-hero">
+                    <div class="services-hero-text">
+                        <strong>Take care of your home effortlessly</strong>
+                        <small>Verified professionals with transparent pricing.</small>
+                    </div>
+                    <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
+                </div>
+
+                @if (microservicios.Any())
+                {
+                    @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, $"{microservicios.Count} services available for your home"))
+                }
+
+                @if (servicios.Any())
+                {
+                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, $"{servicios.Count} remodeling and installation projects", homeCarePriorityIds))
+                }
+
+                @if (inspecciones.Any())
+                {
+                    @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count} professional inspections for your home"))
+                }
+
+                @if (emergencySection != null)
+                {
+                    @await Html.PartialAsync("_EmergencyServicesSection", emergencySection)
+                }
+            </div>
+        }
+
+    </section>
+
+    <section class="section active xp-providers">
+        <div class="section-title">
+            Service providers
+            @if (Model.Providers.Count > 0)
+            {
+                <span class="services-count">@Model.Providers.Count</span>
+            }
+        </div>
+
+        @if (Model.Providers.Count == 0)
+        {
+            <div class="xp-provider-empty">
+                No providers are listed in your area yet. New verified providers join INDOR regularly &mdash; create a free account to be notified and to request quotes.
+            </div>
+        }
+        else
+        {
+            <div class="xp-providers-list">
+                @foreach (var provider in Model.Providers)
+                {
+                    <div class="xp-provider">
+                        <span class="xp-provider-icon"><i class="fas @provider.IconClass"></i></span>
+                        <div class="xp-provider-body">
+                            <strong>@provider.Name</strong>
+                            <small>
+                                @provider.CategoryLabel@(string.IsNullOrWhiteSpace(provider.Location) ? "" : (string.IsNullOrWhiteSpace(provider.CategoryLabel) ? "" : " · ") + provider.Location)
+                            </small>
+                        </div>
+                        @if (provider.IsVerified)
+                        {
+                            <span class="xp-provider-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                        }
+                    </div>
+                }
+            </div>
+        }
+
+        <div class="xp-cta">
+            <a asp-controller="Account" asp-action="Register">
+                <i class="fas fa-user-plus"></i> Create a free account to book
+            </a>
+        </div>
+    </section>
+</body>
+</html>

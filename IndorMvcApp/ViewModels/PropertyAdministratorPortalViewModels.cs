@@ -288,7 +288,7 @@ public class PropertyAdministratorSavedProviderViewModel
 {
     public string Name { get; set; } = "";
     public string TradeLabel { get; set; } = "";
-    public string RatingLabel { get; set; } = "";
+    public string? RatingLabel { get; set; }
     public string LastServiceLabel { get; set; } = "";
     public string RequestUrl { get; set; } = "#";
 }

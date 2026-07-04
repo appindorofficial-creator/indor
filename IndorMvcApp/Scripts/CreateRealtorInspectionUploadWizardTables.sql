@@ -68,16 +68,10 @@ BEGIN
 END
 GO
 
--- Extra providers for inspection trades (if quote providers table exists)
-IF OBJECT_ID(N'dbo.IndorRealtorQuoteProviders', N'U') IS NOT NULL
-BEGIN
-    IF NOT EXISTS (SELECT 1 FROM dbo.IndorRealtorQuoteProviders WHERE CompanyName = N'Safe Electric Co.')
-        INSERT INTO dbo.IndorRealtorQuoteProviders (CompanyName, Categories, Rating, DistanceMiles, BadgeLabel, IsVerified, IsRecommended)
-        VALUES (N'Safe Electric Co.', N'Electrical', 4.8, 2.3, N'Verified', 1, 1);
-    IF NOT EXISTS (SELECT 1 FROM dbo.IndorRealtorQuoteProviders WHERE CompanyName = N'Prime Home Services')
-        INSERT INTO dbo.IndorRealtorQuoteProviders (CompanyName, Categories, Rating, DistanceMiles, BadgeLabel, IsVerified, IsRecommended)
-        VALUES (N'Prime Home Services', N'Electrical / General', 4.7, 4.6, N'Available', 1, 0);
-END
+-- NOTE: No sample/placeholder providers are seeded here. Inspection-trade
+-- providers come only from real, registered providers (dbo.IndorProveedores).
+-- Seeding fictional companies was removed to comply with App Store
+-- guideline 2.1(a) (App Completeness — no placeholder content).
 GO
 
 PRINT 'Inspection upload wizard tables ready.';

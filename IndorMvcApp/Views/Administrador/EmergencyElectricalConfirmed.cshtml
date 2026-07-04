@@ -13,47 +13,86 @@
 <div class="pa-portal-shell pa-portal-shell--flow">
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
+    @{
+        var hasTechnician = !string.IsNullOrWhiteSpace(Model.TechnicianName);
+    }
+
     <section class="pa-flow-intro">
         <h1>Emergency Electrical request sent</h1>
-        <p>An electrician is on the way to @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        @if (hasTechnician)
+        {
+            <p>An electrician is on the way to @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        }
+        else
+        {
+            <p>We're connecting you with a verified electrician near @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
+        }
     </section>
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
             <strong>Request received</strong>
-            <span>We've dispatched a technician to help.</span>
+            <span>@(hasTechnician ? "We've dispatched a technician to help." : "We're matching your request with a verified, licensed electrician.")</span>
         </div>
     </div>
 
-    <article class="pa-tech-card">
-        <div class="pa-tech-head">
-            <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
-            <div class="pa-tech-meta">
-                <strong>@Model.TechnicianName</strong>
-                <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
-                <small>@Model.TechnicianTitle</small>
+    @if (hasTechnician)
+    {
+        <article class="pa-tech-card">
+            <div class="pa-tech-head">
+                <img src="/inspeccion2.jpeg" alt="" class="pa-tech-avatar" />
+                <div class="pa-tech-meta">
+                    <strong>@Model.TechnicianName</strong>
+                    <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
+                    <small>@Model.TechnicianTitle</small>
+                </div>
+                <span class="pa-verified-badge"><i class="fas fa-check"></i> Verified</span>
             </div>
-            <span class="pa-verified-badge"><i class="fas fa-check"></i> Verified</span>
-        </div>
-        <div class="pa-tech-stats">
-            <div>
-                <i class="fas fa-clock"></i>
-                <strong>@Model.EtaLabel</strong>
-                <small>ETA</small>
+            <div class="pa-tech-stats">
+                @if (!string.IsNullOrWhiteSpace(Model.EtaLabel))
+                {
+                    <div>
+                        <i class="fas fa-clock"></i>
+                        <strong>@Model.EtaLabel</strong>
+                        <small>ETA</small>
+                    </div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.VehicleLabel))
+                {
+                    <div>
+                        <i class="fas fa-car"></i>
+                        <strong>@Model.VehicleLabel</strong>
+                        <small>Vehicle</small>
+                    </div>
+                }
+                <div>
+                    <i class="fas fa-house"></i>
+                    <strong>Viewing: @(Model.ViewingProperty?.PropertyName)</strong>
+                    <small>@propertyLabel</small>
+                </div>
             </div>
-            <div>
-                <i class="fas fa-car"></i>
-                <strong>@Model.VehicleLabel</strong>
-                <small>Vehicle</small>
+        </article>
+    }
+    else
+    {
+        <article class="pa-tech-card pa-tech-card--matching">
+            <div class="pa-tech-head">
+                <span class="pa-tech-avatar-fallback"><i class="fas fa-bolt"></i></span>
+                <div class="pa-tech-meta">
+                    <strong>Matching a verified electrician</strong>
+                    <small>We'll notify you as soon as a licensed pro accepts your request.</small>
+                </div>
             </div>
-            <div>
-                <i class="fas fa-house"></i>
-                <strong>Viewing: @(Model.ViewingProperty?.PropertyName)</strong>
-                <small>@propertyLabel</small>
+            <div class="pa-tech-stats">
+                <div>
+                    <i class="fas fa-house"></i>
+                    <strong>@(Model.ViewingProperty?.PropertyName)</strong>
+                    <small>@propertyLabel</small>
+                </div>
             </div>
-        </div>
-    </article>
+        </article>
+    }
 
     <article class="pa-summary-card-block">
         <h2>Request summary</h2>

@@ -108,17 +108,10 @@ IF COL_LENGTH('dbo.IndorRealtorQuotes', 'SentUtc') IS NULL
     ALTER TABLE dbo.IndorRealtorQuotes ADD SentUtc DATETIME2(7) NULL;
 GO
 
-IF NOT EXISTS (SELECT 1 FROM dbo.IndorRealtorQuoteProviders)
-BEGIN
-    INSERT INTO dbo.IndorRealtorQuoteProviders (CompanyName, Categories, Rating, DistanceMiles, BadgeLabel, IsVerified, IsRecommended)
-    VALUES
-        (N'Safe HVAC Solution', N'HVAC / Electrical', 4.9, 4.2, N'Verified', 1, 1),
-        (N'Prime Mechanical', N'HVAC / Plumbing', 4.8, 6.1, N'Available', 1, 1),
-        (N'CoolAir Pros', N'HVAC Specialist', 4.9, 5.0, N'Fast Response', 1, 1),
-        (N'Elite Roofing Co', N'Roofing / Gutters', 4.7, 8.3, N'Verified', 1, 0),
-        (N'Quick Fix Plumbing', N'Plumbing', 4.6, 3.5, N'Nearby', 0, 0);
-    PRINT 'Quote providers seeded.';
-END
+-- NOTE: No sample/placeholder providers are seeded here. The quote catalog is
+-- populated only by real, registered providers (dbo.IndorProveedores). Seeding
+-- fictional companies was removed to comply with App Store guideline 2.1(a)
+-- (App Completeness — no placeholder content).
 GO
 
 PRINT 'Quote request wizard tables ready.';

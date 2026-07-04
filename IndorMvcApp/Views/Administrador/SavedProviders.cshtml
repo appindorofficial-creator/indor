@@ -17,6 +17,12 @@
 
     <section class="pa-personal-section">
         <h2>Your providers</h2>
+        @if (!Model.Providers.Any())
+        {
+            <div class="pa-empty-note">
+                <p>You don't have any saved providers yet. Providers you work with on service requests will appear here.</p>
+            </div>
+        }
         <div class="pa-personal-list">
             @foreach (var provider in Model.Providers)
             {
@@ -28,7 +34,10 @@
                         <span class="pa-provider-last">Last service: @provider.LastServiceLabel</span>
                     </div>
                     <div class="pa-provider-meta">
-                        <span class="pa-provider-rating"><i class="fas fa-star"></i> @provider.RatingLabel</span>
+                        @if (!string.IsNullOrWhiteSpace(provider.RatingLabel))
+                        {
+                            <span class="pa-provider-rating"><i class="fas fa-star"></i> @provider.RatingLabel</span>
+                        }
                         <a href="@provider.RequestUrl" class="pa-provider-request">Request again</a>
                     </div>
                 </div>

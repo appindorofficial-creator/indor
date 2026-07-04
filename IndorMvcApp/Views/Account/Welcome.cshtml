@@ -84,5 +84,22 @@
                 <path d="M4 10h12M11 5l5 5-5 5" fill="none" stroke="#1867F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
         </a>
+        <a asp-controller="Explore" asp-action="Index" class="wl-guest-link">
+            Browse services as a guest
+        </a>
     </div>
 </div>
+
+@section Head {
+    <style>
+        .wl-guest-link {
+            display: block;
+            margin-top: 14px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #1867F2;
+            text-decoration: underline;
+        }
+    </style>
+}

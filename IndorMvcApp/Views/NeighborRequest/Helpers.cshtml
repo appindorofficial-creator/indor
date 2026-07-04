@@ -69,7 +69,10 @@
                         }
                     </div>
                     <div class="nr-helper-meta">
-                        <span><i class="fas fa-star"></i> @card.RatingLabel (@card.ReviewCount)</span>
+                        @if (!string.IsNullOrWhiteSpace(card.RatingLabel))
+                        {
+                            <span><i class="fas fa-star"></i> @card.RatingLabel@(card.ReviewCount > 0 ? $" ({card.ReviewCount})" : "")</span>
+                        }
                         <span><i class="fas fa-location-dot"></i> @card.DistanceLabel</span>
                     </div>
                     <div class="nr-helper-tags">

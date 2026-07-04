@@ -237,7 +237,7 @@ public class NeighborRequestHelperCardViewModel
     public string Name { get; set; } = string.Empty;
     public string? PhotoUrl { get; set; }
     public string AvatarIconClass { get; set; } = "fa-user";
-    public string RatingLabel { get; set; } = "4.9";
+    public string? RatingLabel { get; set; }
     public int ReviewCount { get; set; }
     public string DistanceLabel { get; set; } = string.Empty;
     public string PriceLabel { get; set; } = string.Empty;

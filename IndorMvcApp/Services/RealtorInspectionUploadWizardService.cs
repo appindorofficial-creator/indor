@@ -1193,7 +1193,7 @@ public class RealtorInspectionUploadWizardService(
             Id = proveedor.Id,
             CompanyName = ResolveProveedorName(proveedor),
             Categories = proveedor.ServiceDescription ?? "INDOR PRO",
-            Rating = 4.8m,
+            Rating = 0m,
             DistanceMiles = proveedor.TravelRadiusMiles > 0 ? proveedor.TravelRadiusMiles : 5m,
             BadgeLabel = string.Equals(proveedor.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
                 ? "INDOR PRO" : "Verified",

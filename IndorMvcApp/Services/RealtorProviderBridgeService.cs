@@ -204,7 +204,7 @@ public class RealtorProviderBridgeService(AppDbContext db) : IRealtorProviderBri
                 QuoteId = quote.Id,
                 ProviderName = providerName,
                 Amount = estimate.Amount,
-                Rating = 4.8m,
+                Rating = 0m,
                 SortOrder = quote.Bids.Count + 1,
                 ProveedorId = estimate.ProveedorId,
                 EstimateId = estimate.Id,

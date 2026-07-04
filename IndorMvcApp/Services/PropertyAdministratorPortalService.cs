@@ -38,144 +38,15 @@ public class PropertyAdministratorPortalService(
     UserManager<ApplicationUser> userManager,
     IHttpContextAccessor httpContextAccessor) : IPropertyAdministratorPortalService
 {
-    public async Task EnsurePortalDataAsync(CancellationToken cancellationToken = default)
-    {
-        var admin = await LoadAdminAsync(cancellationToken);
-        if (admin == null)
-        {
-            return;
-        }
-
-        var hasData = await db.IndorPropertyAdminHomecarePlans
-            .AnyAsync(p => p.AdministratorId == admin.Id, cancellationToken);
-        if (hasData)
-        {
-            return;
-        }
-
-        var properties = admin.PortfolioProperties.OrderBy(p => p.Id).ToList();
-        var propertyCount = Math.Max(properties.Count, 1);
-        var homesCovered = properties.Count > 0 ? properties.Count : ParsePropertyCountRange(admin.PropertyCountRange);
-
-        if (admin.ToolMaintenanceRequests || admin.ToolTurnoverCleaning)
-        {
-            db.IndorPropertyAdminHomecarePlans.AddRange(
-                new IndorPropertyAdminHomecarePlan
-                {
-                    AdministratorId = admin.Id,
-                    PlanName = "HVAC Filter Change",
-                    Frequency = "Every 2 months",
-                    HomesCovered = homesCovered,
-                    NextDueDate = DateTime.Today.AddDays(18),
-                    IconClass = "fa-fan",
-                    ToneClass = "tone-blue",
-                    Orden = 1
-                },
-                new IndorPropertyAdminHomecarePlan
-                {
-                    AdministratorId = admin.Id,
-                    PlanName = "Smoke Detector Check",
-                    Frequency = "Every 6 months",
-                    HomesCovered = homesCovered,
-                    NextDueDate = DateTime.Today.AddDays(12),
-                    IconClass = "fa-bell",
-                    ToneClass = "tone-green",
-                    Orden = 2
-                },
-                new IndorPropertyAdminHomecarePlan
-                {
-                    AdministratorId = admin.Id,
-                    PlanName = "Turnover Cleaning",
-                    Frequency = "Per booking",
-                    HomesCovered = homesCovered,
-                    NextDueDate = DateTime.Today.AddDays(7),
-                    IconClass = "fa-broom",
-                    ToneClass = "tone-purple",
-                    Orden = 3
-                });
-        }
-
-        var visitTemplates = new[]
-        {
-            ("Smoke detector replacement", 16, "10:00 AM"),
-            ("Pet deep clean", 17, "11:00 AM"),
-            ("HVAC filter visit", 18, "2:00 PM")
-        };
-
-        for (var i = 0; i < visitTemplates.Length; i++)
-        {
-            var prop = properties.ElementAtOrDefault(i % Math.Max(properties.Count, 1));
-            db.IndorPropertyAdminScheduledVisits.Add(new IndorPropertyAdminScheduledVisit
-            {
-                AdministratorId = admin.Id,
-                Title = visitTemplates[i].Item1,
-                PropertyName = prop?.PropertyName ?? "Portfolio property",
-                VisitDate = DateTime.Today.AddDays(visitTemplates[i].Item2),
-                TimeWindow = visitTemplates[i].Item3,
-                ImageUrl = prop?.ImageUrl ?? "/inspeccion2.jpeg"
-            });
-        }
-
-        if (properties.Count > 0)
-        {
-            db.IndorPropertyAdminServiceRequests.Add(new IndorPropertyAdminServiceRequest
-            {
-                AdministratorId = admin.Id,
-                PortfolioPropertyId = properties[0].Id,
-                Title = "Power outage • Living room",
-                PropertyName = properties[0].PropertyName,
-                Location = properties[0].Location,
-                Status = PropertyAdministratorRequestStatuses.InProgress,
-                Category = "Emergency",
-                ScheduledUtc = DateTime.UtcNow,
-                EtaLabel = "24 min",
-                TeamLabel = "Marcus R. • Electrical",
-                ImageUrl = properties[0].ImageUrl,
-                IsEmergency = true,
-                TechnicianName = "Marcus R.",
-                TechnicianRating = 4.9m,
-                TechnicianTitle = "Licensed Electrical Pro",
-                VehicleLabel = "White service van",
-                TimelineStep = 2
-            });
-
-            db.IndorPropertyAdminServiceRequests.Add(new IndorPropertyAdminServiceRequest
-            {
-                AdministratorId = admin.Id,
-                PortfolioPropertyId = properties[0].Id,
-                Title = $"Emergency AC at {properties[0].PropertyName}",
-                PropertyName = properties[0].PropertyName,
-                Location = properties[0].Location,
-                Status = PropertyAdministratorRequestStatuses.Emergency,
-                Category = "Emergency",
-                ScheduledUtc = DateTime.UtcNow,
-                EtaLabel = "ETA 12 min",
-                TeamLabel = "HVAC Team",
-                ImageUrl = properties[0].ImageUrl,
-                IsEmergency = true
-            });
-
-            if (properties.Count > 1)
-            {
-                db.IndorPropertyAdminServiceRequests.Add(new IndorPropertyAdminServiceRequest
-                {
-                    AdministratorId = admin.Id,
-                    PortfolioPropertyId = properties[1].Id,
-                    Title = $"Scheduled cleaning at {properties[1].PropertyName}",
-                    PropertyName = properties[1].PropertyName,
-                    Location = properties[1].Location,
-                    Status = PropertyAdministratorRequestStatuses.Scheduled,
-                    Category = "Cleaning",
-                    ScheduledUtc = DateTime.UtcNow.AddDays(1),
-                    EtaLabel = "Tomorrow 10:00 AM",
-                    TeamLabel = "Cleaning crew",
-                    ImageUrl = properties[1].ImageUrl
-                });
-            }
-        }
-
-        await db.SaveChangesAsync(cancellationToken);
-    }
+    /// <summary>
+    /// Previously auto-seeded demo homecare plans, visits and service requests
+    /// (with placeholder technicians such as "Marcus R.", "HVAC Team", "Cleaning
+    /// crew"). Seeding was removed to comply with App Store guideline 2.1(a) —
+    /// a new property administrator now starts with a clean portal that is
+    /// populated only by their own real actions.
+    /// </summary>
+    public Task EnsurePortalDataAsync(CancellationToken cancellationToken = default)
+        => Task.CompletedTask;
 
     public async Task<PropertyAdministratorHomeViewModel> GetHomeAsync(
         IUrlHelper url, int? propertyId = null, CancellationToken cancellationToken = default)
@@ -806,11 +677,6 @@ public class PropertyAdministratorPortalService(
             .Select(g => g.First())
             .ToList();
 
-        if (providers.Count == 0)
-        {
-            providers = BuildSampleSavedProviders(url);
-        }
-
         return new PropertyAdministratorSavedProvidersViewModel
         {
             DisplayName = shell.DisplayName,
@@ -1175,15 +1041,6 @@ public class PropertyAdministratorPortalService(
         return $"{Format(start)} - {Format(end)}";
     }
 
-    private static int ParsePropertyCountRange(string? range) => range switch
-    {
-        "2-5" => 4,
-        "6-10" => 8,
-        "11-25" => 12,
-        "25+" => 25,
-        _ => 1
-    };
-
     private static PropertyAdministratorBillingInvoiceViewModel MapBillingInvoice(IndorPropertyAdminServiceRequest request)
     {
         var amount = 89m + request.Id % 5 * 35m;
@@ -1240,44 +1097,12 @@ public class PropertyAdministratorPortalService(
         {
             Name = name,
             TradeLabel = request.TechnicianTitle ?? request.Category,
-            RatingLabel = request.TechnicianRating.HasValue
+            RatingLabel = request.TechnicianRating is > 0
                 ? request.TechnicianRating.Value.ToString("0.0")
-                : "4.8",
+                : null,
             LastServiceLabel = request.Title,
             RequestUrl = url.Action("Services", "Administrador") ?? "#"
         };
-    }
-
-    private static List<PropertyAdministratorSavedProviderViewModel> BuildSampleSavedProviders(IUrlHelper url)
-    {
-        var requestUrl = url.Action("Services", "Administrador") ?? "#";
-        return
-        [
-            new()
-            {
-                Name = "Marcus R.",
-                TradeLabel = "Licensed Electrical Pro",
-                RatingLabel = "4.9",
-                LastServiceLabel = "Power outage • Living room",
-                RequestUrl = requestUrl
-            },
-            new()
-            {
-                Name = "HVAC Team",
-                TradeLabel = "Emergency HVAC",
-                RatingLabel = "4.8",
-                LastServiceLabel = "Emergency AC service",
-                RequestUrl = requestUrl
-            },
-            new()
-            {
-                Name = "Cleaning crew",
-                TradeLabel = "Turnover cleaning",
-                RatingLabel = "4.7",
-                LastServiceLabel = "Scheduled cleaning",
-                RequestUrl = requestUrl
-            }
-        ];
     }
 
     private static decimal ParseAmountLabel(PropertyAdministratorBillingInvoiceViewModel invoice) =>

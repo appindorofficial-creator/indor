@@ -34,7 +34,10 @@
                 <span class="rl-provider-avatar">@quote.ProviderInitials</span>
                 <div>
                     <strong>@quote.ProviderName</strong>
-                    <span><i class="fas fa-star"></i> @quote.Rating.ToString("0.0") (@quote.ReviewCount reviews)</span>
+                    @if (quote.Rating > 0)
+                    {
+                        <span><i class="fas fa-star"></i> @quote.Rating.ToString("0.0")@(quote.ReviewCount > 0 ? $" ({quote.ReviewCount} reviews)" : "")</span>
+                    }
                 </div>
             </div>
             <div class="rl-qcmp-grid">
@@ -59,8 +62,8 @@
                 <div>
                     <i class="fas fa-star"></i>
                     <span>Rating</span>
-                    <strong>@quote.Rating.ToString("0.0")</strong>
-                    <em>@quote.ReviewCount reviews</em>
+                    <strong>@(quote.Rating > 0 ? quote.Rating.ToString("0.0") : "—")</strong>
+                    <em>@(quote.ReviewCount > 0 ? $"{quote.ReviewCount} reviews" : "No reviews yet")</em>
                 </div>
             </div>
             <div class="rl-qcmp-card-foot">

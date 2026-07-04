@@ -1089,7 +1089,7 @@ public class NeighborRequestWizardService(
                 ? string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", offer.PriceAmount.Value)
                 : null,
             ScheduleLabel = offer.ScheduleLabel ?? BuildDefaultScheduleLabel(request, offer),
-            RatingLabel = FormatRatingLabel(offer.Rating, offer.Id),
+            RatingLabel = FormatRatingLabel(offer.Rating),
             MetaLabel = BuildOfferMetaLabel(offer),
             RoleLabel = isProvider ? "INDOR Provider" : "Neighbor",
             IsVerified = offer.IsVerified,
@@ -1114,10 +1114,6 @@ public class NeighborRequestWizardService(
 
         var locationAddress = await ResolveDefaultAddressAsync(propiedad, ct);
         var helpers = await LoadNearbyHelperCardsAsync(propiedad, locationAddress, url, ct);
-        if (helpers.Count == 0)
-        {
-            helpers = BuildDemoHelperCards(url);
-        }
 
         return new NeighborRequestBrowseHelpersViewModel
         {
@@ -1288,8 +1284,8 @@ public class NeighborRequestWizardService(
             Name = offer.OffererName,
             PhotoUrl = offer.OffererPhotoUrl,
             AvatarIconClass = offer.AvatarIconClass,
-            RatingLabel = offer.RatingLabel ?? "4.9",
-            ReviewCount = 80 + (offer.ProviderId ?? index) * 17,
+            RatingLabel = offer.RatingLabel,
+            ReviewCount = 0,
             DistanceLabel = $"{0.4m + (index * 0.3m):0.#} mi away",
             PriceLabel = offer.PriceLabel?.Contains("/hr", StringComparison.OrdinalIgnoreCase) == true
                 ? offer.PriceLabel
@@ -1299,11 +1295,6 @@ public class NeighborRequestWizardService(
             IsVerified = offer.IsVerified,
             MessageUrl = offer.MessageUrl
         }).ToList();
-
-        if (helpers.Count == 0)
-        {
-            helpers = BuildDemoHelperCards(url, request.BudgetAmount);
-        }
 
         for (var i = 0; i < helpers.Count; i++)
         {
@@ -1625,7 +1616,7 @@ public class NeighborRequestWizardService(
                 AvatarIconClass = icons[i % icons.Length],
                 PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}", price),
                 ScheduleLabel = BuildSuggestedScheduleLabel(request, i),
-                RatingLabel = FormatRatingLabel(null, provider.Id),
+                RatingLabel = FormatRatingLabel(null),
                 RoleLabel = "INDOR Provider",
                 MetaLabel = "INDOR Provider",
                 IsVerified = string.Equals(provider.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
@@ -1654,10 +1645,13 @@ public class NeighborRequestWizardService(
     private static string ResolveOfferAvatarIcon(IndorNeighborRequestOffer offer, bool isProvider) =>
         isProvider ? "fa-shield-halved" : "fa-wand-magic-sparkles";
 
-    private static string? FormatRatingLabel(decimal? rating, int seed) =>
+    // Only surfaces a rating when a real value exists. Providers without any
+    // rating history return null so the UI hides the rating instead of showing
+    // fabricated numbers (App Store guideline 2.1(a)).
+    private static string? FormatRatingLabel(decimal? rating) =>
         rating is > 0
             ? rating.Value.ToString("0.0", CultureInfo.InvariantCulture)
-            : (4.7m + (seed % 3) * 0.1m).ToString("0.0", CultureInfo.InvariantCulture);
+            : null;
 
     private static string BuildDefaultScheduleLabel(IndorNeighborRequest request, IndorNeighborRequestOffer offer)
     {
@@ -2414,8 +2408,8 @@ public class NeighborRequestWizardService(
                 ProviderId = provider.Id,
                 Name = name,
                 AvatarIconClass = icons[provider.Id % icons.Length],
-                RatingLabel = FormatRatingLabel(null, provider.Id) ?? "4.9",
-                ReviewCount = 80 + (provider.Id % 20) * 17,
+                RatingLabel = FormatRatingLabel(null),
+                ReviewCount = 0,
                 DistanceLabel = $"{distance:0.#} mi away",
                 PriceLabel = string.Format(CultureInfo.GetCultureInfo("en-US"), "{0:C0}/hr", basePrice),
                 MinHoursLabel = "Min. 2 hrs",
@@ -2436,46 +2430,6 @@ public class NeighborRequestWizardService(
         !string.IsNullOrWhiteSpace(categoryLabel)
             ? [categoryLabel, "Local help"]
             : ["General labor", "Home help"];
-
-    private static List<NeighborRequestHelperCardViewModel> BuildDemoHelperCards(IUrlHelper url, decimal? hourlyRate = null)
-    {
-        var payLabel = FormatPayLabel(hourlyRate, NeighborRequestPayTypeCodes.Hourly);
-        if (!payLabel.Contains("/hr", StringComparison.OrdinalIgnoreCase))
-        {
-            payLabel += "/hr";
-        }
-
-        var messageUrl = url.Action("Index", "Home") + "#section-more";
-        return
-        [
-            new NeighborRequestHelperCardViewModel
-            {
-                ProviderId = 1,
-                Name = "Miguel",
-                RatingLabel = "4.9",
-                ReviewCount = 128,
-                DistanceLabel = "0.4 mi away",
-                PriceLabel = payLabel,
-                MinHoursLabel = "Min. 2 hrs",
-                SkillTags = ["Moving", "Furniture", "Heavy Lifting", "+1"],
-                IsVerified = true,
-                MessageUrl = messageUrl
-            },
-            new NeighborRequestHelperCardViewModel
-            {
-                ProviderId = 2,
-                Name = "Ana",
-                RatingLabel = "4.8",
-                ReviewCount = 96,
-                DistanceLabel = "0.7 mi away",
-                PriceLabel = payLabel,
-                MinHoursLabel = "Min. 2 hrs",
-                SkillTags = ["Moving", "Furniture"],
-                IsVerified = true,
-                MessageUrl = messageUrl
-            }
-        ];
-    }
 
     private static decimal CalculateDistanceMiles(double lat1, double lng1, double lat2, double lng2)
     {
