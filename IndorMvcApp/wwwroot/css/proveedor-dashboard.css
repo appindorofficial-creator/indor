@@ -1814,23 +1814,38 @@ a.prv-pro-profile-quick-btn--share { cursor: pointer; }
 .prv-pro-notify-toggle.is-on::after { transform: translateX(20px); }
 .prv-pro-notify-card .prv-pro-btn { width: 100%; margin-top: 12px; justify-content: center; }
 
-.prv-pro-profile-logout,
-.prv-pro-logout-form button {
-    display: inline-flex;
+.prv-pro-logout-form {
+    margin: 0;
+    width: 100%;
+}
+
+.prv-pro-profile-signout {
+    display: flex;
     align-items: center;
-    gap: 8px;
-    margin-top: 10px;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: 10px 14px;
+    margin: 0;
     border: none;
+    border-bottom: 1px solid #F8FAFC;
     background: transparent;
     color: #DC2626;
     font-size: .78rem;
     font-weight: 700;
     cursor: pointer;
     font-family: inherit;
-    padding: 0;
 }
 
-.prv-pro-logout-form { margin: 0; }
+.prv-pro-profile-signout span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.prv-pro-profile-signout i {
+    margin-right: 0;
+}
 
 /* Lead Details flow */
 .prv-pro-shell--lead-details { padding-bottom: 120px; }

@@ -295,7 +295,9 @@
             </a>
             <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="prv-pro-profile-logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
+                <button type="submit" class="prv-pro-profile-signout">
+                    <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+                </button>
             </form>
             <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-link-row" style="color:#B91C1C;">
                 <i class="fas fa-user-xmark"></i>

@@ -12,7 +12,7 @@
     @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Preferences &amp; Notes</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>

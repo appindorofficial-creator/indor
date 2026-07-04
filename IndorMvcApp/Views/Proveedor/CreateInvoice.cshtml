@@ -12,7 +12,7 @@
     @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head">
-        <a asp-controller="Proveedor" asp-action="EstimateAccepted" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="EstimateAccepted" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Create Invoice</h1>
             <small>@Model.Address</small>

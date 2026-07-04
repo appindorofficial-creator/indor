@@ -11,7 +11,7 @@
 
     <header class="prv-pro-jobs-head prv-pro-settings-head">
         <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
-            <i class="fas fa-arrow-left"></i>
+            <i class="fas fa-chevron-left"></i>
         </a>
         <div>
             <h1>Settings</h1>
@@ -82,7 +82,9 @@
         <header class="prv-pro-profile-card-head"><h3><i class="fas fa-life-ring"></i> Account</h3></header>
         <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
             @Html.AntiForgeryToken()
-            <button type="submit" class="prv-pro-profile-logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
+            <button type="submit" class="prv-pro-profile-signout">
+                <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+            </button>
         </form>
         <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-logout" style="display:block;text-align:center;color:#B91C1C;text-decoration:none;margin-top:8px;">
             <i class="fas fa-user-xmark"></i> Delete account
