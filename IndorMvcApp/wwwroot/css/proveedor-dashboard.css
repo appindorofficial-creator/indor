@@ -1779,6 +1779,36 @@ a.prv-pro-profile-quick-btn--share { cursor: pointer; }
 .prv-pro-profile-link-row--plan .prv-pro-profile-link-chevron {
     margin-left: 8px;
 }
+.prv-pro-profile-link-row--danger {
+    color: #DC2626;
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-family: inherit;
+    justify-content: center;
+    position: relative;
+}
+.prv-pro-profile-link-row-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+.prv-pro-profile-link-row--danger > .prv-pro-profile-link-chevron {
+    position: absolute;
+    right: 4px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+}
+.prv-pro-logout-form .prv-pro-profile-link-row--danger {
+    cursor: pointer;
+}
+a.prv-pro-profile-link-row--danger:hover,
+a.prv-pro-profile-link-row--danger:focus-visible,
+.prv-pro-logout-form .prv-pro-profile-link-row--danger:hover,
+.prv-pro-logout-form .prv-pro-profile-link-row--danger:focus-visible {
+    color: #DC2626;
+}
 .prv-pro-profile-card--support {
     position: relative;
     z-index: 1;
