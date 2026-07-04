@@ -1843,6 +1843,7 @@ a.prv-pro-profile-quick-btn--share { cursor: pointer; }
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     width: 100%;
     min-height: 48px;
     padding: 10px 14px;
@@ -1859,13 +1860,22 @@ a.prv-pro-profile-quick-btn--share { cursor: pointer; }
     box-sizing: border-box;
 }
 
-.prv-pro-profile-center-action span {
+.prv-pro-profile-center-action > span:first-child {
+    flex: 0 1 auto;
     display: inline-flex;
     align-items: center;
     gap: 8px;
 }
 
-.prv-pro-profile-center-action i {
+.prv-pro-profile-center-action > .prv-pro-profile-link-chevron {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-left: 0;
+}
+
+.prv-pro-profile-center-action span i {
     margin-right: 0;
 }
 
