@@ -8,6 +8,7 @@
         ? Model.CompanyName.Trim()[0].ToString().ToUpperInvariant()
         : "P";
     var tabs = new[] {
+        ("all", "All"),
         ("today", "Today"),
         ("leads", "Leads"),
         ("active", "Active"),
@@ -21,9 +22,12 @@
         ("estimates", "fa-file-invoice-dollar", "purple", Model.EstimatesCount, "Estimates"),
         ("completed", "fa-circle-check", "green", Model.CompletedCount, "Completed")
     };
-    var visibleStatCards = statCards.Where(card => card.Item1 == Model.ActiveTab);
+    var visibleStatCards = Model.ActiveTab == "all"
+        ? statCards
+        : statCards.Where(card => card.Item1 == Model.ActiveTab);
     string listTitle = Model.ActiveTab switch
     {
+        "all" => $"{Model.AllCount} Item{(Model.AllCount == 1 ? "" : "s")}",
         "today" => $"{Model.TodayCount} Job{(Model.TodayCount == 1 ? "" : "s")} Today",
         "leads" => $"{Model.NewLeadsCount} New Lead{(Model.NewLeadsCount == 1 ? "" : "s")}",
         "estimates" => $"{Model.EstimatesCount} Estimate{(Model.EstimatesCount == 1 ? "" : "s")}",
@@ -32,6 +36,7 @@
     };
     string infoText = Model.ActiveTab switch
     {
+        "all" => "Your full pipeline in one place — leads, active jobs, estimates, and completed work.",
         "today" => "Your schedule for today. Tap a job to view details, add notes, or update status.",
         "leads" => "New leads waiting for your response. Accept or create an estimate to get started.",
         "estimates" => "Review drafts and sent estimates. Tap to edit, send, or convert to a job.",

@@ -11,6 +11,7 @@ public class ProviderProJobsPageViewModel : ProviderProPageBaseViewModel
     public string? SearchQuery { get; set; }
     public int TodayCount { get; set; }
     public int ActiveCount { get; set; }
+    public int AllCount { get; set; }
     public int NewLeadsCount { get; set; }
     public int EstimatesCount { get; set; }
     public int CompletedCount { get; set; }

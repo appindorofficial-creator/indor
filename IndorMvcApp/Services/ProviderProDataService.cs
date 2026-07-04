@@ -236,8 +236,11 @@ public class ProviderProDataService(
             .Where(i => i.Status is ProviderInvoiceStatuses.Overdue or ProviderInvoiceStatuses.Pending)
             .Sum(i => i.Amount);
 
+        var allItems = BuildAllTabItems(jobRows, leadRows, estimateRows, today, tomorrow);
+
         var items = activeTab switch
         {
+            "all" => allItems,
             "today" => jobRows
                 .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
                 .OrderBy(j => j.ScheduledAt)
@@ -274,6 +277,8 @@ public class ProviderProDataService(
                 .ToList();
         }
 
+        var allCount = allItems.Count;
+
         return new ProviderProJobsPageViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
@@ -281,6 +286,7 @@ public class ProviderProDataService(
             SearchQuery = search,
             TodayCount = todayCount,
             ActiveCount = activeCount,
+            AllCount = allCount,
             NewLeadsCount = newLeadsCount,
             EstimatesCount = estimatesCount,
             CompletedCount = completedCount,
@@ -321,6 +327,53 @@ public class ProviderProDataService(
             .Select(e => MapEstimateWorkItem(e, jobs));
 
         return activeJobs.Concat(activeLeads).Concat(openEstimates).ToList();
+    }
+
+    private static List<ProviderProJobsWorkItemViewModel> BuildAllTabItems(
+        List<IndorProveedorJob> jobs,
+        List<IndorProveedorLead> leads,
+        List<IndorProveedorEstimate> estimates,
+        DateTime today,
+        DateTime tomorrow)
+    {
+        var tomorrowEnd = tomorrow;
+        var items = new List<ProviderProJobsWorkItemViewModel>();
+
+        items.AddRange(jobs
+            .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrowEnd)
+            .OrderBy(j => j.ScheduledAt)
+            .Select(MapJobWorkItem));
+
+        items.AddRange(leads
+            .Where(l => l.Status == ProviderLeadStatuses.New)
+            .OrderByDescending(l => l.FechaCreacion)
+            .Select(MapLeadWorkItem));
+
+        items.AddRange(jobs
+            .Where(j => j.Status is ProviderJobStatuses.InProgress
+                or ProviderJobStatuses.Scheduled
+                or ProviderJobStatuses.Confirmed
+                or ProviderJobStatuses.WaitingOnMaterials)
+            .OrderByDescending(j => j.ScheduledAt ?? j.FechaCreacion)
+            .Select(MapJobWorkItem));
+
+        items.AddRange(estimates
+            .Where(e => e.Status is ProviderEstimateStatuses.Sent
+                or ProviderEstimateStatuses.Viewed
+                or ProviderEstimateStatuses.Approved
+                or ProviderEstimateStatuses.Draft)
+            .OrderByDescending(e => e.FechaCreacion)
+            .Select(e => MapEstimateWorkItem(e, jobs)));
+
+        items.AddRange(jobs
+            .Where(j => j.Status == ProviderJobStatuses.Completed)
+            .OrderByDescending(j => j.FechaActualizacion ?? j.FechaCreacion)
+            .Select(MapJobWorkItem));
+
+        return items
+            .GroupBy(i => $"{i.ItemKind}:{i.ItemId}")
+            .Select(g => g.First())
+            .ToList();
     }
 
     private static List<ProviderProSmartSuggestionViewModel> BuildSmartSuggestions(
@@ -2867,7 +2920,7 @@ public class ProviderProDataService(
 
     private static string NormalizeJobsTab(string? tab) => (tab ?? "active").Trim().ToLowerInvariant() switch
     {
-        "today" or "leads" or "estimates" or "completed" => tab!.Trim().ToLowerInvariant(),
+        "all" or "today" or "leads" or "estimates" or "completed" => tab!.Trim().ToLowerInvariant(),
         _ => "active"
     };
 
