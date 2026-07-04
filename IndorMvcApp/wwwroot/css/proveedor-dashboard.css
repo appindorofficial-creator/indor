@@ -630,9 +630,9 @@ a.prv-pro-profile-btn { text-decoration: none; }
     color: inherit;
 }
 
-.prv-pro-jobs-stat i { color: #0066CC; font-size: .9rem; margin-bottom: 4px; }
+.prv-pro-jobs-stat > i { color: #0066CC; font-size: .9rem; margin-bottom: 4px; }
 .prv-pro-jobs-stat strong { display: block; font-size: 1rem; font-weight: 800; }
-.prv-pro-jobs-stat span { display: block; font-size: .68rem; color: #64748B; font-weight: 600; }
+.prv-pro-jobs-stat > span:last-child { display: block; font-size: .68rem; color: #64748B; font-weight: 600; }
 
 .prv-pro-jobs-tabs {
     display: flex;
@@ -5175,6 +5175,19 @@ a.prv-pro-profile-center-action:focus-visible {
     box-shadow: 0 4px 16px rgba(15, 23, 42, 0.05);
     transition: transform .15s ease, box-shadow .15s ease;
 }
+.prv-pro-shell--jobs-v2 .prv-pro-jobs-stat .prv-pro-jobs-stat-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.prv-pro-shell--jobs-v2 .prv-pro-jobs-stat .prv-pro-jobs-stat-icon i {
+    margin: 0;
+    width: auto;
+    height: auto;
+    line-height: 1;
+}
+
 .prv-pro-shell--jobs-v2 .prv-pro-jobs-stat.is-highlighted {
     border: 2px solid #0056D2;
     background: #fff;
@@ -5184,12 +5197,19 @@ a.prv-pro-profile-center-action:focus-visible {
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     margin: 0 0 8px;
     font-size: .95rem;
     box-shadow: 0 4px 10px rgba(15, 23, 42, 0.06);
+}
+
+.prv-pro-jobs-stat-icon i {
+    margin: 0;
+    display: block;
+    line-height: 1;
+    color: inherit;
 }
 .prv-pro-jobs-stat-icon--blue { background: linear-gradient(145deg, #E8F1FB, #BFDBFE); color: #0056D2; }
 .prv-pro-jobs-stat-icon--green { background: linear-gradient(145deg, #DCFCE7, #86EFAC); color: #15803D; }
