@@ -41,6 +41,9 @@
     }
 
     <section class="prv-pro-profile-hero">
+        <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-profile-public-link">
+            View Public Profile <i class="fas fa-arrow-up-right-from-square"></i>
+        </a>
         <div class="prv-pro-profile-hero-main">
             @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
             {
@@ -295,14 +298,12 @@
             </a>
             <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="prv-pro-profile-signout">
+                <button type="submit" class="prv-pro-profile-center-action">
                     <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
                 </button>
             </form>
-            <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-link-row" style="color:#B91C1C;">
-                <i class="fas fa-user-xmark"></i>
-                <span>Delete account</span>
-                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+            <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-center-action">
+                <span><i class="fas fa-user-xmark"></i> Delete account</span>
             </a>
         </section>
     </div>

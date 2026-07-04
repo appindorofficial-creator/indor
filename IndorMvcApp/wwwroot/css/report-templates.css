@@ -74,14 +74,13 @@
     font-size: .7rem;
 }
 
-.prv-pro-rt-topbar .prv-pro-profile-btn {
+.prv-pro-rt-topbar .prv-pro-rt-profile-btn {
     margin-left: auto;
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 4px 8px 4px 4px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, .16);
+    justify-content: center;
+    padding: 0;
+    background: transparent;
     text-decoration: none;
     flex-shrink: 0;
 }
@@ -97,11 +96,6 @@
     color: #0056D2;
     font-weight: 800;
     font-size: .85rem;
-}
-
-.prv-pro-rt-topbar .prv-pro-profile-chevron {
-    color: #fff;
-    font-size: .7rem;
 }
 
 /* ---- Title row + Add Custom ---- */
