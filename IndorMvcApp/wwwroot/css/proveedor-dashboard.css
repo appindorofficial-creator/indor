@@ -4703,10 +4703,12 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-shell--home,
 .prv-pro-shell--profile {
     max-width: 480px;
+    padding-top: 0;
     padding-left: 16px;
     padding-right: 16px;
     min-height: 100vh;
     min-height: 100dvh;
+    background: #E9F2FE;
 }
 
 .prv-pro-shell--home {
