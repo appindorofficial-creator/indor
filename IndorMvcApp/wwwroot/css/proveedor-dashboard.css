@@ -1070,19 +1070,54 @@ a.prv-pro-profile-btn { text-decoration: none; }
 /* Profile tab */
 .prv-pro-profile-hero {
     position: relative;
+    overflow: hidden;
     background: #fff;
-    border: 1px solid #E2E8F0;
-    border-radius: 18px;
-    padding: 18px;
-    margin-bottom: 14px;
-    box-shadow: 0 8px 24px rgba(15, 23, 42, .05);
+    border: none;
+    border-radius: 22px;
+    margin: -6px 0 16px;
+    box-shadow: 0 14px 36px rgba(0, 86, 210, 0.14);
 }
 
-.prv-pro-profile-hero-main {
+.prv-pro-profile-hero-band {
+    height: 64px;
+    background: linear-gradient(135deg, #37A0FF 0%, #0F7BEF 48%, #0057C8 100%);
+}
+
+.prv-pro-profile-hero-body {
+    padding: 0 18px 18px;
+}
+
+.prv-pro-profile-hero-avatar {
     display: flex;
-    gap: 16px;
-    align-items: flex-start;
+    justify-content: center;
+    margin-top: -44px;
+    margin-bottom: 12px;
+}
+
+.prv-pro-profile-hero--featured .prv-pro-profile-logo {
+    width: 96px;
+    height: 96px;
+    font-size: 2.1rem;
+    border: 4px solid #fff;
+    box-shadow: 0 10px 28px rgba(0, 86, 210, 0.28);
+}
+
+.prv-pro-profile-hero--featured .prv-pro-profile-logo--img {
+    border: 4px solid #fff;
+}
+
+.prv-pro-profile-hero-copy {
+    text-align: center;
     margin-bottom: 16px;
+}
+
+.prv-pro-profile-hero--featured .prv-pro-profile-name-row {
+    justify-content: center;
+}
+
+.prv-pro-profile-hero--featured .prv-pro-profile-specialties,
+.prv-pro-profile-hero--featured .prv-pro-profile-area {
+    margin-bottom: 6px;
 }
 
 .prv-pro-profile-logo {
@@ -2288,7 +2323,6 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-lead-actions form { display: inline; }
 
 @media (max-width: 768px) {
-    .prv-pro-profile-hero-main { flex-direction: column; }
     .prv-pro-profile-stats-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .prv-pro-profile-quick { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .prv-pro-profile-grid { grid-template-columns: 1fr; }
