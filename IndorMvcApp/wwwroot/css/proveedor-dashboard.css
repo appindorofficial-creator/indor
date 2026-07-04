@@ -4656,9 +4656,6 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-shell--home {
     max-width: 480px;
     padding: 12px 16px 132px;
-    background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(0, 86, 210, 0.06), transparent 55%),
-        #F4F6FA;
     min-height: 100vh;
     min-height: 100dvh;
 }
@@ -5098,9 +5095,6 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-shell--jobs-v2 {
     max-width: 480px;
     padding: 12px 16px calc(88px + env(safe-area-inset-bottom, 0px));
-    background:
-        radial-gradient(ellipse 120% 80% at 50% -20%, rgba(0, 86, 210, 0.06), transparent 55%),
-        #F4F6FA;
     min-height: 100vh;
     min-height: 100dvh;
 }
