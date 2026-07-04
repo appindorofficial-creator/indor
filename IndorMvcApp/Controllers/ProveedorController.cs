@@ -1597,6 +1597,20 @@ public class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkNotificationsViewed(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return Unauthorized();
+        }
+
+        proData.MarkNotificationsViewed(proveedor.Entity!.Id);
+        return Ok(new { hasNotifications = false });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Notifications(ProviderProNotificationsInput input, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);

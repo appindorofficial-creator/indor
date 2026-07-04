@@ -74,15 +74,13 @@
     font-size: .7rem;
 }
 
-.prv-pro-rt-topbar .prv-pro-rt-profile-btn {
+.prv-pro-rt-topbar .prv-pro-rt-topbar-actions {
     margin-left: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    background: transparent;
-    text-decoration: none;
     flex-shrink: 0;
+}
+
+.prv-pro-rt-topbar .prv-pro-notify-wrap {
+    margin-left: 0;
 }
 
 .prv-pro-rt-topbar .prv-pro-avatar--initial {

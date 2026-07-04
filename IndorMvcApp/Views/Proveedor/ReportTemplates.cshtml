@@ -5,8 +5,6 @@
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "report-templates.css";
 
-    var initial = string.IsNullOrWhiteSpace(Model) ? "P" : Model.Trim()[0].ToString().ToUpperInvariant();
-
     var mostUsed = new (string icon, string color, string title, string desc, string template)[] {
         ("fa-file-lines", "blue", "Completion Report", "Document finished work, photos, notes, and signatures.", "completion"),
         ("fa-magnifying-glass", "green", "Inspection Report", "Record findings, issues, and recommendations.", "inspection"),
@@ -31,9 +29,9 @@
             <span class="prv-pro-brand-indor">INDOR</span>
             <span class="prv-pro-brand-pro">PRO</span>
         </div>
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-rt-profile-btn" aria-label="Profile">
-            <span class="prv-pro-avatar prv-pro-avatar--initial">@initial</span>
-        </a>
+        <div class="prv-pro-rt-topbar-actions">
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
     </header>
 
     <section class="prv-pro-rt-head">

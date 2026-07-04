@@ -6280,3 +6280,171 @@ a.prv-pro-profile-center-action:focus-visible {
     .prv-pro-ins-benefits { gap: 10px 12px; }
     .prv-pro-ins-benefits li { font-size: .7rem; }
 }
+
+/* Topbar notifications (Realtor-style panel) */
+.prv-pro-topbar-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.prv-pro-notify-wrap { position: relative; margin-left: auto; }
+.prv-pro-notify-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: #334155;
+    font-size: 1rem;
+    position: relative;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+.prv-pro-notify-btn.has-dot::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0066CC;
+}
+.prv-pro-notify-btn--inverse {
+    color: #fff;
+    background: rgba(255, 255, 255, .16);
+    border-radius: 11px;
+}
+.prv-pro-notify-btn--inverse.has-dot::after {
+    background: #DC2626;
+    border: 2px solid rgba(255, 255, 255, .85);
+}
+.prv-pro-notify-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: min(340px, calc(100vw - 32px));
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, .14);
+    z-index: 1200;
+    overflow: hidden;
+}
+.prv-pro-notify-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid #F1F5F9;
+}
+.prv-pro-notify-panel-head strong {
+    font-size: .95rem;
+    color: #0F172A;
+}
+.prv-pro-notify-badge {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #0066CC;
+    background: #E8F2FF;
+    border-radius: 999px;
+    padding: 3px 8px;
+}
+.prv-pro-notify-list {
+    list-style: none;
+    margin: 0;
+    padding: 6px 0;
+    max-height: 320px;
+    overflow-y: auto;
+}
+.prv-pro-notify-item {
+    display: grid;
+    grid-template-columns: 36px 1fr auto;
+    gap: 10px;
+    align-items: start;
+    padding: 10px 16px;
+    text-decoration: none;
+    color: inherit;
+    transition: background .15s ease;
+}
+a.prv-pro-notify-item:hover { background: #F8FAFC; }
+.prv-pro-notify-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: #F1F5F9;
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .9rem;
+}
+.prv-pro-notify-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.prv-pro-notify-item-text {
+    font-size: .82rem;
+    line-height: 1.35;
+    color: #0F172A;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.prv-pro-notify-item-time {
+    font-size: .72rem;
+    color: #64748B;
+}
+.prv-pro-notify-tag {
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    color: #64748B;
+    background: #F8FAFC;
+    border-radius: 6px;
+    padding: 3px 6px;
+    white-space: nowrap;
+    align-self: start;
+}
+.prv-pro-notify-tag--leads { color: #D97706; background: #FEF3C7; }
+.prv-pro-notify-tag--estimates { color: #7C3AED; background: #F3E8FF; }
+.prv-pro-notify-tag--messages { color: #0066CC; background: #E8F2FF; }
+.prv-pro-notify-tag--payments { color: #059669; background: #D1FAE5; }
+.prv-pro-notify-empty {
+    padding: 28px 20px;
+    text-align: center;
+    color: #64748B;
+}
+.prv-pro-notify-empty i {
+    font-size: 1.5rem;
+    color: #94A3B8;
+    margin-bottom: 8px;
+}
+.prv-pro-notify-empty p {
+    margin: 0 0 4px;
+    font-weight: 700;
+    color: #334155;
+}
+.prv-pro-notify-empty span {
+    font-size: .78rem;
+    line-height: 1.4;
+}
+.prv-pro-notify-panel-foot {
+    border-top: 1px solid #F1F5F9;
+    padding: 10px 16px 12px;
+}
+.prv-pro-notify-settings-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #0066CC;
+    text-decoration: none;
+}
+.prv-pro-notify-settings-link:hover { text-decoration: underline; }

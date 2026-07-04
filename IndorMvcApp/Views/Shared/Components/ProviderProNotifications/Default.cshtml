@@ -1,0 +1,72 @@
+@model IndorMvcApp.ViewModels.ProviderProTopbarViewModel
+@{
+    var tone = ViewData["NotifyTone"] as string ?? "default";
+    var wrapClass = tone == "inverse" ? "prv-pro-notify-wrap prv-pro-notify-wrap--inverse" : "prv-pro-notify-wrap";
+    var btnClass = tone == "inverse" ? "prv-pro-notify-btn prv-pro-notify-btn--inverse" : "prv-pro-notify-btn";
+}
+<div class="@wrapClass" id="prvNotifyWrap" data-mark-viewed-url="@Url.Action("MarkNotificationsViewed", "Proveedor")">
+    @Html.AntiForgeryToken()
+    <button type="button"
+            class="@btnClass@(Model.HasNotifications ? " has-dot" : "")"
+            id="prvNotifyBtn"
+            aria-label="Notifications"
+            aria-haspopup="true"
+            aria-expanded="false"
+            aria-controls="prvNotifyPanel">
+        <i class="fas fa-bell"></i>
+    </button>
+    <div class="prv-pro-notify-panel" id="prvNotifyPanel" role="dialog" aria-label="Recent activity" hidden>
+        <div class="prv-pro-notify-panel-head">
+            <strong>Notifications</strong>
+            @if (Model.HasNotifications)
+            {
+                <span class="prv-pro-notify-badge" id="prvNotifyNewBadge">New</span>
+            }
+        </div>
+        @if (Model.RecentNotifications.Count == 0)
+        {
+            <div class="prv-pro-notify-empty">
+                <i class="fas fa-bell-slash"></i>
+                <p>No recent activity yet.</p>
+                <span>New leads, estimate updates, and messages will appear here.</span>
+            </div>
+        }
+        else
+        {
+            <ul class="prv-pro-notify-list">
+                @foreach (var item in Model.RecentNotifications)
+                {
+                    <li>
+                        @if (!string.IsNullOrWhiteSpace(item.TargetUrl))
+                        {
+                            <a href="@item.TargetUrl" class="prv-pro-notify-item">
+                                <span class="prv-pro-notify-item-icon"><i class="fas @item.IconClass"></i></span>
+                                <span class="prv-pro-notify-item-body">
+                                    <span class="prv-pro-notify-item-text">@item.Description</span>
+                                    <span class="prv-pro-notify-item-time">@item.OccurredLabel</span>
+                                </span>
+                                <span class="prv-pro-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="prv-pro-notify-item">
+                                <span class="prv-pro-notify-item-icon"><i class="fas @item.IconClass"></i></span>
+                                <span class="prv-pro-notify-item-body">
+                                    <span class="prv-pro-notify-item-text">@item.Description</span>
+                                    <span class="prv-pro-notify-item-time">@item.OccurredLabel</span>
+                                </span>
+                                <span class="prv-pro-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                            </div>
+                        }
+                    </li>
+                }
+            </ul>
+        }
+        <div class="prv-pro-notify-panel-foot">
+            <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-notify-settings-link">
+                <i class="fas fa-gear"></i> Notification settings
+            </a>
+        </div>
+    </div>
+</div>
