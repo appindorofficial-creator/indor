@@ -39,15 +39,25 @@
 }
 
 <div class="prv-pro-shell prv-pro-shell--jobs prv-pro-shell--jobs-v2">
-    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-
-    <header class="prv-pro-jobs-head">
-        <h1>Jobs</h1>
-        <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
-        <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn">
-            <i class="fas fa-plus"></i> Create Job
-        </a>
-    </header>
+    <div class="prv-pro-portal-page-hero">
+        <div class="prv-pro-jobs-hero-top">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="INDOR PRO home">
+                <i class="fas fa-house" aria-hidden="true"></i>
+                <span class="prv-pro-brand-indor">INDOR</span>
+                <span class="prv-pro-brand-pro">PRO</span>
+            </a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-pro-jobs-hero-header">
+            <div class="prv-pro-jobs-hero-title-row">
+                <h1>Jobs</h1>
+                <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn" aria-label="Create job">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Create Job
+                </a>
+            </div>
+            <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
+        </div>
+    </div>
 
     <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-search">
         <input type="hidden" name="tab" value="@Model.ActiveTab" />

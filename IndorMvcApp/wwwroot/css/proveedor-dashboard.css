@@ -853,6 +853,10 @@ a.prv-pro-profile-btn { text-decoration: none; }
 /* Customers tab */
 .prv-pro-shell--customers { padding-bottom: 100px; }
 
+.prv-pro-shell--customers-v2 {
+    padding-bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+}
+
 .prv-pro-customers-list {
     display: flex;
     flex-direction: column;
@@ -5102,50 +5106,140 @@ a.prv-pro-profile-center-action:focus-visible {
     }
 }
 
-/* Jobs hub — premium mobile v2 */
-.prv-pro-shell--jobs-v2 {
+/* Portal list pages — blue hero (Jobs, Customers) */
+.prv-pro-shell--jobs-v2,
+.prv-pro-shell--customers-v2 {
     max-width: 480px;
-    padding: 12px 16px calc(88px + env(safe-area-inset-bottom, 0px));
+    padding: 0 16px calc(88px + env(safe-area-inset-bottom, 0px));
     min-height: 100vh;
     min-height: 100dvh;
 }
 
-.prv-pro-shell--jobs-v2 .prv-pro-jobs-head {
-    display: block;
-    margin-bottom: 14px;
+.prv-pro-shell--jobs-v2 .prv-pro-portal-page-hero,
+.prv-pro-shell--customers-v2 .prv-pro-portal-page-hero {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin: 0 -16px 18px;
+    padding: calc(env(safe-area-inset-top, 0px) + 14px) 16px 18px;
+    border-radius: 0 0 26px 26px;
+    background: linear-gradient(135deg, #37A0FF 0%, #0F7BEF 45%, #0057C8 82%, #063E8C 125%);
+    box-shadow: 0 16px 38px rgba(0, 86, 200, .28);
+    color: #fff;
+    position: relative;
+    isolation: isolate;
 }
-.prv-pro-shell--jobs-v2 .prv-pro-jobs-head h1 {
-    margin: 0 0 6px;
-    font-size: 1.65rem;
-    font-weight: 900;
-    color: #1A2B48;
-    letter-spacing: -.02em;
-}
-.prv-pro-shell--jobs-v2 .prv-pro-jobs-head p {
-    margin: 0 0 14px;
-    color: #6B7280;
-    font-size: .84rem;
-    line-height: 1.45;
-    max-width: none;
-}
-.prv-pro-jobs-create-btn {
+
+.prv-pro-jobs-hero-top {
     display: flex;
     align-items: center;
-    justify-content: center;
-    gap: 8px;
-    width: 100%;
-    padding: 13px 18px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #0066CC, #0056D2);
-    color: #fff;
-    font-size: .88rem;
-    font-weight: 800;
-    text-decoration: none;
-    box-shadow: 0 6px 20px rgba(0, 86, 210, 0.32);
-    transition: transform .15s ease, box-shadow .15s ease;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
 }
-.prv-pro-jobs-create-btn:active {
-    transform: scale(0.98);
+
+.prv-pro-brand--hero,
+.prv-pro-brand--hero .prv-pro-brand-indor,
+.prv-pro-brand--hero .prv-pro-brand-pro {
+    color: #fff;
+}
+
+.prv-pro-brand--hero .prv-pro-brand-pro {
+    background: rgba(255, 255, 255, .2);
+    padding: 2px 8px;
+    border-radius: 7px;
+    font-size: .7rem;
+}
+
+.prv-pro-jobs-hero-header {
+    display: block;
+}
+
+.prv-pro-jobs-hero-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    flex-wrap: nowrap;
+    margin-bottom: 6px;
+}
+
+.prv-pro-jobs-hero-title-row h1 {
+    margin: 0;
+    min-width: 0;
+    flex: 1;
+    font-size: 1.65rem;
+    font-weight: 900;
+    color: #fff;
+    letter-spacing: -.02em;
+}
+
+.prv-pro-jobs-hero-header p {
+    margin: 0;
+    color: rgba(255, 255, 255, .85);
+    font-size: .84rem;
+    line-height: 1.45;
+    max-width: 320px;
+}
+
+.prv-pro-portal-page-hero .prv-pro-notify-wrap {
+    margin-left: 0;
+    flex-shrink: 0;
+}
+
+.prv-pro-portal-page-hero .prv-pro-notify-btn,
+.prv-pro-portal-page-hero .prv-pro-notify-btn--inverse {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .95);
+    color: #0066CC;
+    border: none;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+
+.prv-pro-portal-page-hero .prv-pro-notify-btn.has-dot::after,
+.prv-pro-portal-page-hero .prv-pro-notify-btn--inverse.has-dot::after {
+    top: 7px;
+    right: 8px;
+    background: #DC2626;
+    border: 2px solid rgba(255, 255, 255, .85);
+}
+
+.prv-pro-shell--jobs-v2 .prv-pro-jobs-create-btn,
+.prv-pro-shell--customers-v2 .prv-pro-jobs-create-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    width: auto;
+    max-width: none;
+    white-space: nowrap;
+    padding: 10px 16px;
+    border-radius: 999px;
+    background: #fff;
+    color: #0066CC;
+    font-size: .78rem;
+    font-weight: 700;
+    text-decoration: none;
+    border: none;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.14);
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.prv-pro-shell--jobs-v2 .prv-pro-jobs-create-btn:hover,
+.prv-pro-shell--jobs-v2 .prv-pro-jobs-create-btn:focus-visible,
+.prv-pro-shell--customers-v2 .prv-pro-jobs-create-btn:hover,
+.prv-pro-shell--customers-v2 .prv-pro-jobs-create-btn:focus-visible {
+    background: #F0F7FF;
+    color: #0057C8;
+    box-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+}
+.prv-pro-jobs-create-btn:active,
+.prv-pro-shell--jobs-v2 .prv-pro-jobs-create-btn:active,
+.prv-pro-shell--customers-v2 .prv-pro-jobs-create-btn:active {
+    transform: scale(0.97);
+    background: #E8F1FB;
 }
 
 .prv-pro-shell--jobs-v2 .prv-pro-search-wrap {

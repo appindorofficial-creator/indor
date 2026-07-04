@@ -12,18 +12,26 @@
     };
 }
 
-<div class="prv-pro-shell prv-pro-shell--customers">
-    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-
-    <section class="prv-pro-jobs-head">
-        <div>
-            <h1>Customers</h1>
+<div class="prv-pro-shell prv-pro-shell--customers prv-pro-shell--customers-v2">
+    <div class="prv-pro-portal-page-hero">
+        <div class="prv-pro-jobs-hero-top">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="INDOR PRO home">
+                <i class="fas fa-house" aria-hidden="true"></i>
+                <span class="prv-pro-brand-indor">INDOR</span>
+                <span class="prv-pro-brand-pro">PRO</span>
+            </a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-pro-jobs-hero-header">
+            <div class="prv-pro-jobs-hero-title-row">
+                <h1>Customers</h1>
+                <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-jobs-create-btn" aria-label="Add customer">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add Customer
+                </a>
+            </div>
             <p>Manage homeowners, properties, and connected home records.</p>
         </div>
-        <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
-            <i class="fas fa-plus"></i> Add Customer
-        </a>
-    </section>
+    </div>
 
     <form method="get" asp-controller="Proveedor" asp-action="Customers" class="prv-pro-jobs-search">
         <input type="hidden" name="tab" value="@Model.ActiveTab" />
