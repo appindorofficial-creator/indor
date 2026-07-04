@@ -93,7 +93,7 @@
     </section>
 
     <section class="prv-pro-profile-quick">
-        <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</a>
+        <a asp-controller="Proveedor" asp-action="EditProfile" asp-route-section="full" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</a>
         <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-globe"></i> Public Profile</a>
         <a href="@publicProfileUrl"
            class="prv-pro-profile-quick-btn prv-pro-profile-quick-btn--share"

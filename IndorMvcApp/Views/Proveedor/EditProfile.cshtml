@@ -1,9 +1,32 @@
 @model IndorMvcApp.ViewModels.ProviderProEditProfileViewModel
 @{
-    ViewData["Title"] = "Edit Profile - INDOR PRO";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
+    var activeSection = (ViewBag.ActiveSection as string)?.Trim().ToLowerInvariant() ?? "full";
+    var isFullEdit = activeSection == "full";
+    var showPhoto = isFullEdit;
+    var showBusiness = isFullEdit || activeSection == "business";
+    var showAreas = isFullEdit || activeSection == "areas";
+    var pageTitle = activeSection switch
+    {
+        "business" => "Business Information",
+        "areas" => "Service Areas",
+        _ => "Edit Profile"
+    };
+    ViewData["Title"] = $"{pageTitle} - INDOR PRO";
+    var pageSubtitle = activeSection switch
+    {
+        "business" => "Update your company name, contact details, and hours.",
+        "areas" => "Define where you accept jobs and how far you travel.",
+        _ => "Update your business details and profile photo."
+    };
+    var saveLabel = activeSection switch
+    {
+        "business" => "Save business info",
+        "areas" => "Save service areas",
+        _ => "Save profile"
+    };
 }
 
 <div class="prv-pro-shell prv-pro-shell--profile prv-pro-shell--edit-profile">
@@ -12,8 +35,8 @@
     <header class="prv-pro-jobs-head">
         <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Edit Profile</h1>
-            <p>Update your business details and profile photo.</p>
+            <h1>@pageTitle</h1>
+            <p>@pageSubtitle</p>
         </div>
     </header>
 
@@ -41,7 +64,34 @@
 
     <form asp-controller="Proveedor" asp-action="EditProfile" method="post" enctype="multipart/form-data" class="prv-pro-edit-profile-form" novalidate>
         @Html.AntiForgeryToken()
+        @if (!isFullEdit)
+        {
+            <input type="hidden" name="activeSection" value="@activeSection" />
+        }
 
+        @if (!showBusiness)
+        {
+            <input type="hidden" name="BusinessName" value="@Model.BusinessName" />
+            <input type="hidden" name="DbaName" value="@Model.DbaName" />
+            <input type="hidden" name="PrimaryContact" value="@Model.PrimaryContact" />
+            <input type="hidden" name="Phone" value="@Model.Phone" />
+            <input type="hidden" name="Email" value="@Model.Email" />
+            <input type="hidden" name="BusinessAddress" value="@Model.BusinessAddress" />
+            <input type="hidden" name="PreferredHours" value="@Model.PreferredHours" />
+            <input type="hidden" name="ServiceDescription" value="@Model.ServiceDescription" />
+        }
+
+        @if (!showAreas)
+        {
+            <input type="hidden" name="PrimaryCity" value="@Model.PrimaryCity" />
+            <input type="hidden" name="ServiceZipCodes" value="@Model.ServiceZipCodes" />
+            <input type="hidden" name="TravelRadiusMiles" value="@Model.TravelRadiusMiles" />
+            <input type="hidden" name="EmergencyService" value="@(Model.EmergencyService ? "true" : "false")" />
+            <input type="hidden" name="SameDayJobs" value="@(Model.SameDayJobs ? "true" : "false")" />
+        }
+
+        @if (showPhoto)
+        {
         <section class="prv-pro-wizard-card" id="edit-profile-photo">
             <h2>Profile photo</h2>
             <p>Upload a logo or photo. It will appear on your provider profile.</p>
@@ -66,7 +116,10 @@
                 </div>
             </div>
         </section>
+        }
 
+        @if (showBusiness)
+        {
         <section class="prv-pro-wizard-card" id="edit-profile-business">
             <h2>Business details</h2>
             <div class="prv-pro-edit-profile-fields">
@@ -104,7 +157,10 @@
                 </label>
             </div>
         </section>
+        }
 
+        @if (showAreas)
+        {
         <section class="prv-pro-wizard-card" id="edit-profile-areas">
             <h2>Service areas</h2>
             <p>Define where you accept jobs and how far you travel.</p>
@@ -135,11 +191,12 @@
                 </label>
             </div>
         </section>
+        }
 
         <footer class="prv-pro-edit-profile-actions prv-pro-edit-profile-footer">
             <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-floppy-disk"></i> Save profile
+                <i class="fas fa-floppy-disk"></i> @saveLabel
             </button>
         </footer>
     </form>
@@ -152,15 +209,6 @@
     var preview = document.getElementById('photoPreview');
     var img = document.getElementById('photoPreviewImg');
     var initial = document.getElementById('photoPreviewInitial');
-    var activeSection = '@(ViewBag.ActiveSection ?? "business")';
-    var sectionEl = document.getElementById('edit-profile-' + activeSection);
-    if (sectionEl) {
-        sectionEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        var focusInput = sectionEl.querySelector('input, textarea, select');
-        if (focusInput) {
-            focusInput.focus({ preventScroll: true });
-        }
-    }
 
     var errorAlert = document.querySelector('.prv-pro-edit-profile-alert--error');
     if (errorAlert) {
