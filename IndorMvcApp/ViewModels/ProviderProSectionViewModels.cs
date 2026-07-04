@@ -70,6 +70,8 @@ public class ProviderProCustomersPageViewModel : ProviderProPageBaseViewModel
     public string? SearchQuery { get; set; }
     public int TotalCustomers { get; set; }
     public int ConnectedCount { get; set; }
+    public int NeedsInviteCount { get; set; }
+    public int ActiveHomesCount { get; set; }
     public int ActiveJobsCount { get; set; }
     public int PendingApprovalCount { get; set; }
     public int PropertiesCount { get; set; }

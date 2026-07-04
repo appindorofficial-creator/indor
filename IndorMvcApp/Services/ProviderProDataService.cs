@@ -4420,6 +4420,9 @@ public class ProviderProDataService(
             .Select(c => MapCustomerCard(c, jobs.Where(j => j.ClienteId == c.Id).ToList(), customerIdsWithPendingApproval.Contains(c.Id)))
             .ToList();
 
+        var activeHomesCount = cards.Count(c =>
+            c.ShowJobSection && c.JobStatusClass is "progress" or "scheduled" or "confirmed");
+
         cards = activeTab switch
         {
             "connected" => cards.Where(c => c.ConnectionClass == "connected").ToList(),
@@ -4446,6 +4449,8 @@ public class ProviderProDataService(
             SearchQuery = search,
             TotalCustomers = customerRows.Count,
             ConnectedCount = connectedCount,
+            NeedsInviteCount = needsInviteCount,
+            ActiveHomesCount = activeHomesCount,
             ActiveJobsCount = activeJobsCount,
             PendingApprovalCount = approvals.Count,
             PropertiesCount = propertiesCount,
