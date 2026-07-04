@@ -61,6 +61,30 @@
     font-size: .7rem;
 }
 
+.prv-pro-shell--reports-v2 .prv-pro-notify-wrap {
+    margin-left: auto;
+    flex-shrink: 0;
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-notify-btn,
+.prv-pro-shell--reports-v2 .prv-pro-notify-btn--inverse {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .95);
+    color: #0066CC;
+    border: none;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.12);
+}
+
+.prv-pro-shell--reports-v2 .prv-pro-notify-btn.has-dot::after,
+.prv-pro-shell--reports-v2 .prv-pro-notify-btn--inverse.has-dot::after {
+    top: 7px;
+    right: 8px;
+    background: #DC2626;
+    border: 2px solid rgba(255, 255, 255, .85);
+}
+
 .prv-pro-shell--reports-v2 .prv-pro-avatar-btn {
     background: transparent;
     box-shadow: none;
