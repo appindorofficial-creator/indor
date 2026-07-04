@@ -11,7 +11,22 @@
     font-family: Inter, system-ui, sans-serif;
 }
 
-/* Topbar */
+/* Topbar — transparent like Realtor portal (no frosted white bar) */
+.prv-pro-topbar {
+    background: transparent !important;
+    border-bottom: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+.prv-pro-avatar-btn {
+    box-shadow: none !important;
+    background: transparent !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
 .prv-pro-profile-btn {
     box-shadow: var(--indor-shadow-soft, 0 4px 14px rgba(15, 23, 42, .06));
 }

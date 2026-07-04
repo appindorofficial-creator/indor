@@ -11,6 +11,7 @@ public class ProviderProJobsPageViewModel : ProviderProPageBaseViewModel
     public string? SearchQuery { get; set; }
     public int TodayCount { get; set; }
     public int ActiveCount { get; set; }
+    public int AllCount { get; set; }
     public int NewLeadsCount { get; set; }
     public int EstimatesCount { get; set; }
     public int CompletedCount { get; set; }
@@ -70,6 +71,8 @@ public class ProviderProCustomersPageViewModel : ProviderProPageBaseViewModel
     public string? SearchQuery { get; set; }
     public int TotalCustomers { get; set; }
     public int ConnectedCount { get; set; }
+    public int NeedsInviteCount { get; set; }
+    public int ActiveHomesCount { get; set; }
     public int ActiveJobsCount { get; set; }
     public int PendingApprovalCount { get; set; }
     public int PropertiesCount { get; set; }

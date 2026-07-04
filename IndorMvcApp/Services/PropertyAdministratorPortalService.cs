@@ -4,6 +4,7 @@ using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Globalization;
 
 namespace IndorMvcApp.Services;
 
@@ -31,6 +32,7 @@ public interface IPropertyAdministratorPortalService
     Task<PropertyAdministratorSavedProvidersViewModel> GetSavedProvidersAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task<PropertyAdministratorHelpSupportViewModel> GetHelpSupportAsync(IUrlHelper url, CancellationToken cancellationToken = default);
     Task EnsurePortalDataAsync(CancellationToken cancellationToken = default);
+    void MarkNotificationsViewed(int administratorId);
 }
 
 public class PropertyAdministratorPortalService(
@@ -54,7 +56,7 @@ public class PropertyAdministratorPortalService(
         await EnsurePortalDataAsync(cancellationToken);
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         var properties = admin.PortfolioProperties
             .OrderByDescending(p => p.FechaCreacion)
@@ -96,6 +98,8 @@ public class PropertyAdministratorPortalService(
             ActivePropertyCount = shell.ActivePropertyCount,
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             Properties = properties,
             ViewingProperty = viewingProperty,
@@ -213,12 +217,71 @@ public class PropertyAdministratorPortalService(
         };
     }
 
+    private static List<PropertyAdministratorNotificationItemViewModel> BuildRecentNotifications(
+        IUrlHelper url, IndorPropertyAdministrator admin)
+    {
+        var items = new List<(DateTime SortUtc, PropertyAdministratorNotificationItemViewModel Item)>();
+
+        foreach (var request in admin.ServiceRequests.OrderByDescending(r => r.FechaCreacion).Take(6))
+        {
+            var recent = MapRecentRequest(url, request);
+            items.Add((request.FechaCreacion, new PropertyAdministratorNotificationItemViewModel
+            {
+                Description = $"{request.Title} at {request.PropertyName}",
+                OccurredLabel = FormatRelativeTime(request.FechaCreacion),
+                CategoryTag = recent.StatusLabel,
+                TagCssClass = $"pa-notify-tag--{recent.StatusCss}",
+                IconClass = request.IsEmergency ? "fa-truck-medical" : "fa-clipboard-list",
+                TargetUrl = recent.Url
+            }));
+        }
+
+        foreach (var visit in admin.ScheduledVisits
+                     .Where(v => v.VisitDate >= DateTime.Today)
+                     .OrderBy(v => v.VisitDate)
+                     .Take(3))
+        {
+            items.Add((visit.VisitDate.ToUniversalTime(), new PropertyAdministratorNotificationItemViewModel
+            {
+                Description = $"{visit.Title} at {visit.PropertyName}",
+                OccurredLabel = visit.VisitDate.ToString("MMM d, yyyy"),
+                CategoryTag = "Visit",
+                TagCssClass = "pa-notify-tag--visit",
+                IconClass = "fa-calendar-days",
+                TargetUrl = url.Action("Calendar", "Administrador")
+            }));
+        }
+
+        return items
+            .OrderByDescending(i => i.SortUtc)
+            .Take(8)
+            .Select(i => i.Item)
+            .ToList();
+    }
+
+    private static string FormatRelativeTime(DateTime utc)
+    {
+        var local = utc.ToLocalTime();
+        var today = DateTime.Today;
+        if (local.Date == today)
+        {
+            return $"Today, {local:h:mm tt}";
+        }
+
+        if (local.Date == today.AddDays(-1))
+        {
+            return $"Yesterday, {local:h:mm tt}";
+        }
+
+        return local.ToString("MMM d, yyyy");
+    }
+
     public async Task<PropertyAdministratorCalendarViewModel> GetCalendarAsync(IUrlHelper url, CancellationToken cancellationToken = default)
     {
         await EnsurePortalDataAsync(cancellationToken);
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         return new PropertyAdministratorCalendarViewModel
         {
@@ -227,6 +290,8 @@ public class PropertyAdministratorPortalService(
             ActivePropertyCount = shell.ActivePropertyCount,
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             Visits = admin.ScheduledVisits.OrderBy(v => v.VisitDate)
                 .Select(MapVisit).ToList(),
@@ -243,7 +308,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
         var properties = admin.PortfolioProperties.OrderByDescending(p => p.FechaCreacion).ToList();
         var fromProfile = string.Equals(from, "profile", StringComparison.OrdinalIgnoreCase);
 
@@ -254,6 +319,8 @@ public class PropertyAdministratorPortalService(
             ActivePropertyCount = shell.ActivePropertyCount,
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             PortfolioTypeLabel = PropertyAdministratorCatalog.LabelPortfolioType(admin.PortfolioType),
             ManagementStyleLabel = PropertyAdministratorCatalog.LabelManagementStyle(admin.ManagementStyle),
@@ -279,7 +346,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         var property = await db.IndorPropertyAdminPortfolioProperties
             .AsNoTracking()
@@ -374,7 +441,7 @@ public class PropertyAdministratorPortalService(
         await EnsurePortalDataAsync(cancellationToken);
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
         var activeFilter = string.IsNullOrWhiteSpace(filter) ? "all" : filter.Trim().ToLowerInvariant();
 
         var catalogQuery = db.IndorPropertyAdminServiceCatalog.AsNoTracking().Where(c => c.Activo);
@@ -411,6 +478,8 @@ public class PropertyAdministratorPortalService(
             ActivePropertyCount = shell.ActivePropertyCount,
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ActiveFilter = activeFilter,
             Categories = categories,
@@ -424,7 +493,7 @@ public class PropertyAdministratorPortalService(
         await EnsurePortalDataAsync(cancellationToken);
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
         var activeFilter = string.IsNullOrWhiteSpace(filter) ? "all" : filter.Trim().ToLowerInvariant();
 
         var requests = admin.ServiceRequests.AsEnumerable();
@@ -449,6 +518,8 @@ public class PropertyAdministratorPortalService(
             ActivePropertyCount = shell.ActivePropertyCount,
             Greeting = shell.Greeting,
             NotificationCount = shell.NotificationCount,
+            HasNotifications = shell.HasNotifications,
+            RecentNotifications = shell.RecentNotifications,
             ProfilePhotoUrl = shell.ProfilePhotoUrl,
             ActiveFilter = activeFilter,
             SummaryStats =
@@ -467,7 +538,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         var user = !string.IsNullOrEmpty(userId)
             ? await userManager.FindByIdAsync(userId)
@@ -560,7 +631,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
         var user = !string.IsNullOrEmpty(userId)
             ? await userManager.FindByIdAsync(userId)
@@ -605,7 +676,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         return new PropertyAdministratorSecurityViewModel
         {
@@ -631,7 +702,7 @@ public class PropertyAdministratorPortalService(
         await EnsurePortalDataAsync(cancellationToken);
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         var invoices = admin.ServiceRequests
             .OrderByDescending(r => r.FechaCreacion)
@@ -667,7 +738,7 @@ public class PropertyAdministratorPortalService(
         await EnsurePortalDataAsync(cancellationToken);
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         var providers = admin.ServiceRequests
             .OrderByDescending(r => r.FechaCreacion)
@@ -696,7 +767,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
 
         return new PropertyAdministratorHelpSupportViewModel
         {
@@ -743,7 +814,7 @@ public class PropertyAdministratorPortalService(
     {
         var admin = await LoadAdminAsync(cancellationToken)
             ?? throw new InvalidOperationException("Property administrator not found.");
-        var shell = await BuildShellAsync(admin, cancellationToken);
+        var shell = await BuildShellAsync(admin, url, cancellationToken);
         var quietStart = NormalizeQuietHour(admin.QuietHoursStart, "22:00");
         var quietEnd = NormalizeQuietHour(admin.QuietHoursEnd, "07:00");
 
@@ -825,7 +896,7 @@ public class PropertyAdministratorPortalService(
     }
 
     private async Task<PropertyAdministratorPortalShellViewModel> BuildShellAsync(
-        IndorPropertyAdministrator admin, CancellationToken cancellationToken)
+        IndorPropertyAdministrator admin, IUrlHelper url, CancellationToken cancellationToken)
     {
         var shell = BuildShell(admin);
         var userId = userManager.GetUserId(httpContextAccessor.HttpContext!.User);
@@ -835,8 +906,38 @@ public class PropertyAdministratorPortalService(
             shell.ProfilePhotoUrl = user?.FotoUrl;
         }
 
+        shell.RecentNotifications = BuildRecentNotifications(url, admin);
+        shell.HasNotifications = shell.NotificationCount > 0 && !IsNotificationsMarkedViewed(admin.Id);
+
         return shell;
     }
+
+    public void MarkNotificationsViewed(int administratorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return;
+        }
+
+        session.SetString(
+            NotificationsViewedSessionKey(administratorId),
+            DateTime.UtcNow.ToString("O"));
+    }
+
+    private bool IsNotificationsMarkedViewed(int administratorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return false;
+        }
+
+        return session.GetString(NotificationsViewedSessionKey(administratorId)) != null;
+    }
+
+    private static string NotificationsViewedSessionKey(int administratorId) =>
+        $"pa-notifications-viewed-{administratorId}";
 
     private static PropertyAdministratorPortalShellViewModel BuildShell(IndorPropertyAdministrator admin)
     {

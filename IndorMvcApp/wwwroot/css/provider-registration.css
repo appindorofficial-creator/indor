@@ -7,6 +7,7 @@
 .prv-chip span { font-size: .78rem; font-weight: 700; color: #334155; line-height: 1.25; }
 .prv-chip.is-selected, .prv-chip:has(input:checked) { border-color: #0066CC; background: #E8F1FB; box-shadow: 0 4px 14px rgba(0,102,204,.12); }
 .prv-exam-q { background: #fff; border: 1px solid #E2E8F0; border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+.prv-exam-q.pa-invalid { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
 .prv-exam-q h3 { font-size: .9rem; font-weight: 700; margin: 0 0 12px; color: #0F172A; line-height: 1.4; }
 .prv-exam-opt { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #E2E8F0; cursor: pointer; }
 .prv-exam-opt:has(input:checked) { border-color: #0066CC; background: #E8F1FB; }
@@ -51,7 +52,51 @@
     touch-action: manipulation;
 }
 .prv-doc-label { display: block; font-size: .78rem; font-weight: 700; color: #334155; margin-bottom: 6px; }
-.prv-doc-upload input[type="file"] { width: 100%; font-size: .82rem; }
+.prv-file-picker {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border: 1.5px solid #E2E8F0;
+    border-radius: 12px;
+    padding: 10px 12px;
+    background: #fff;
+    cursor: pointer;
+    margin: 0;
+}
+.prv-file-picker-input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+}
+.prv-file-picker-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: #F1F5F9;
+    border: 1px solid #CBD5E1;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #334155;
+    flex-shrink: 0;
+    pointer-events: none;
+}
+.prv-file-picker-name {
+    font-size: .82rem;
+    color: #64748B;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    pointer-events: none;
+}
+.prv-file-picker.has-file .prv-file-picker-name {
+    color: #0F172A;
+    font-weight: 600;
+}
 .prv-doc-form .ob-btn-outline { margin-bottom: 10px; width: 100%; }
 .prv-chip-grid--single .prv-chip { position: relative; }
 .prv-chip-check { position: absolute; top: 8px; right: 8px; color: #0066CC; font-size: .85rem; }
@@ -64,7 +109,16 @@
 .prv-save-later { display: block; width: 100%; text-align: center; margin-top: 12px; padding: 6px; color: #0066CC; font-weight: 700; font-size: .86rem; text-decoration: none; background: none; border: none; cursor: pointer; -webkit-appearance: none; appearance: none; font-family: inherit; }
 .prv-field-icon { display: flex; align-items: center; gap: 10px; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 4px 12px; margin-bottom: 12px; background: #fff; }
 .prv-field-icon i { color: #0066CC; width: 18px; text-align: center; }
-.prv-field-icon .ob-control { border: none; padding: 10px 0; flex: 1; }
+.prv-field-icon .ob-control { border: none; padding: 10px 0; flex: 1; box-shadow: none !important; outline: none !important; }
+.prv-field-icon:focus-within { border-color: #E2E8F0 !important; box-shadow: none !important; }
+.prv-field-icon .ob-control:focus,
+.prv-field-icon .ob-control:focus-visible,
+.prv-field-icon select.ob-control:focus,
+.prv-field-icon select.ob-control:focus-visible {
+    border: none !important;
+    box-shadow: none !important;
+    outline: none !important;
+}
 .prv-field-label { font-size: .82rem; font-weight: 700; color: #334155; margin: 8px 0; }
 .prv-provider-type-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
 .prv-type-card { border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 12px 8px; background: #fff; cursor: pointer; text-align: center; font-size: .68rem; font-weight: 700; color: #64748B; }
@@ -166,15 +220,12 @@ button.prv-wiz-card--selectable {
 .prv-wiz-card--selectable:active { transform: scale(.985); }
 .prv-wiz-card--selectable.is-selected,
 .prv-wiz-card--selectable:has(input:checked) { border-color: #0066CC; box-shadow: 0 6px 18px rgba(0,102,204,.12); }
-.prv-wiz-card--selectable.is-selected .prv-wiz-card-chevron,
-.prv-wiz-card--selectable:has(input:checked) .prv-wiz-card-chevron { color: #0066CC; }
 .prv-wiz-card-icon { width: 44px; height: 44px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
 .prv-wiz-icon-blue { background: rgba(0,102,204,.1); color: #0066CC; }
 .prv-wiz-icon-orange { background: rgba(234,88,12,.1); color: #EA580C; }
 .prv-wiz-card-body { flex: 1; min-width: 0; }
 .prv-wiz-card-body strong { display: block; font-size: .9rem; color: #0F172A; margin-bottom: 4px; }
 .prv-wiz-card-body small, .prv-wiz-card-body p { display: block; font-size: .78rem; color: #64748B; line-height: 1.45; margin: 0 0 8px; }
-.prv-wiz-card-chevron { color: #0066CC; align-self: center; }
 .prv-wiz-badge { display: inline-flex; align-items: center; gap: 5px; font-size: .68rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
 .prv-wiz-badge--green { background: #DCFCE7; color: #15803D; }
 .prv-wiz-badge--orange { background: #FFEDD5; color: #C2410C; }
@@ -185,7 +236,9 @@ button.prv-wiz-card--selectable {
 .prv-wiz-terms { display: flex; align-items: flex-start; gap: 10px; font-size: .78rem; color: #334155; margin: 4px 0; }
 .prv-wiz-terms a { color: #0066CC; font-weight: 700; text-decoration: none; }
 .pa-inline-error { color: #B91C1C; font-size: .78rem; font-weight: 600; margin: -8px 0 12px 2px; }
-.ob-field.pa-invalid .ob-control { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+.ob-field.pa-invalid:not(.prv-field-icon) .ob-control { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+.ob-field.pa-invalid.prv-field-icon { border-color: #F87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, .15); }
+.ob-field.pa-invalid.prv-field-icon .ob-control { border: none !important; box-shadow: none !important; }
 .prv-wiz-terms.pa-invalid { color: #B91C1C; }
 .prv-wiz-bullets { margin: 8px 0 0; padding-left: 18px; font-size: .78rem; color: #475569; }
 .prv-wiz-checklist { list-style: none; margin: 8px 0 0; padding: 0; }

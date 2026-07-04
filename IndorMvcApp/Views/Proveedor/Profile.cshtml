@@ -40,20 +40,20 @@
         </div>
     }
 
-    <section class="prv-pro-profile-hero">
-        <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-profile-public-link">
-            View Public Profile <i class="fas fa-arrow-up-right-from-square"></i>
-        </a>
-        <div class="prv-pro-profile-hero-main">
-            @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
-            {
-                <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@Model.CompanyName" class="prv-pro-profile-logo prv-pro-profile-logo--img" />
-            }
-            else
-            {
-                <div class="prv-pro-profile-logo">@initial</div>
-            }
-            <div>
+    <section class="prv-pro-profile-hero prv-pro-profile-hero--featured">
+        <div class="prv-pro-profile-hero-band" aria-hidden="true"></div>
+        <div class="prv-pro-profile-hero-body">
+            <div class="prv-pro-profile-hero-avatar">
+                @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                {
+                    <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@Model.CompanyName" class="prv-pro-profile-logo prv-pro-profile-logo--img" />
+                }
+                else
+                {
+                    <div class="prv-pro-profile-logo">@initial</div>
+                }
+            </div>
+            <div class="prv-pro-profile-hero-copy">
                 <div class="prv-pro-profile-name-row">
                     <h2>@Model.CompanyName</h2>
                     @if (Model.IsVerified)
@@ -68,32 +68,32 @@
                 <p class="prv-pro-profile-specialties">@Model.SpecialtiesSummary</p>
                 <p class="prv-pro-profile-area"><i class="fas fa-location-dot"></i> @Model.ServiceAreaLabel</p>
             </div>
-        </div>
-        <div class="prv-pro-profile-stats-row">
-            <div class="prv-pro-profile-stat">
-                <span>Provider Score <i class="fas fa-circle-info"></i></span>
-                <strong>@(Model.ProviderScore > 0 ? Model.ProviderScore.ToString() : "—")</strong>
-            </div>
-            <div class="prv-pro-profile-stat">
-                <span>Rating</span>
-                <strong>@(Model.ReviewCount > 0 ? $"{Model.Rating:0.0} ★" : "—")</strong>
-                <small>@(Model.ReviewCount > 0 ? $"{Model.ReviewCount} reviews" : "No reviews yet")</small>
-            </div>
-            <div class="prv-pro-profile-stat">
-                <span>Jobs Completed</span>
-                <strong>@Model.JobsCompletedThisYear</strong>
-                <small>This Year</small>
-            </div>
-            <div class="prv-pro-profile-stat">
-                <span>Home Records</span>
-                <strong>@Model.HomeRecordsCreated</strong>
-                <small>Created</small>
+            <div class="prv-pro-profile-stats-row">
+                <div class="prv-pro-profile-stat">
+                    <span>Provider Score <i class="fas fa-circle-info"></i></span>
+                    <strong>@(Model.ProviderScore > 0 ? Model.ProviderScore.ToString() : "—")</strong>
+                </div>
+                <div class="prv-pro-profile-stat">
+                    <span>Rating</span>
+                    <strong>@(Model.ReviewCount > 0 ? $"{Model.Rating:0.0} ★" : "—")</strong>
+                    <small>@(Model.ReviewCount > 0 ? $"{Model.ReviewCount} reviews" : "No reviews yet")</small>
+                </div>
+                <div class="prv-pro-profile-stat">
+                    <span>Jobs Completed</span>
+                    <strong>@Model.JobsCompletedThisYear</strong>
+                    <small>This Year</small>
+                </div>
+                <div class="prv-pro-profile-stat">
+                    <span>Home Records</span>
+                    <strong>@Model.HomeRecordsCreated</strong>
+                    <small>Created</small>
+                </div>
             </div>
         </div>
     </section>
 
     <section class="prv-pro-profile-quick">
-        <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</a>
+        <a asp-controller="Proveedor" asp-action="EditProfile" asp-route-section="full" class="prv-pro-profile-quick-btn"><i class="fas fa-pen"></i> Edit Profile</a>
         <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-pro-profile-quick-btn"><i class="fas fa-globe"></i> Public Profile</a>
         <a href="@publicProfileUrl"
            class="prv-pro-profile-quick-btn prv-pro-profile-quick-btn--share"
@@ -298,11 +298,19 @@
             </a>
             <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="prv-pro-profile-logout"><i class="fas fa-right-from-bracket"></i> Logout</button>
+                <button type="submit" class="prv-pro-profile-link-row prv-pro-profile-link-row--danger">
+                    <span class="prv-pro-profile-link-row-label">
+                        <i class="fas fa-right-from-bracket"></i>
+                        Sign Out
+                    </span>
+                    <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+                </button>
             </form>
-            <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-link-row" style="color:#B91C1C;">
-                <i class="fas fa-user-xmark"></i>
-                <span>Delete account</span>
+            <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-link-row prv-pro-profile-link-row--danger">
+                <span class="prv-pro-profile-link-row-label">
+                    <i class="fas fa-user-xmark"></i>
+                    Delete account
+                </span>
                 <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
             </a>
         </section>

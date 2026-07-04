@@ -8,6 +8,7 @@
         ? Model.CompanyName.Trim()[0].ToString().ToUpperInvariant()
         : "P";
     var tabs = new[] {
+        ("all", "All"),
         ("today", "Today"),
         ("leads", "Leads"),
         ("active", "Active"),
@@ -18,10 +19,15 @@
         ("today", "fa-calendar-days", "blue", Model.TodayCount, "Today"),
         ("leads", "fa-user-plus", "green", Model.NewLeadsCount, "Leads"),
         ("active", "fa-circle-notch", "blue", Model.ActiveCount, "Active"),
-        ("estimates", "fa-file-invoice-dollar", "purple", Model.EstimatesCount, "Estimates")
+        ("estimates", "fa-file-invoice-dollar", "purple", Model.EstimatesCount, "Estimates"),
+        ("completed", "fa-circle-check", "green", Model.CompletedCount, "Completed")
     };
+    var visibleStatCards = Model.ActiveTab == "all"
+        ? statCards
+        : statCards.Where(card => card.Item1 == Model.ActiveTab);
     string listTitle = Model.ActiveTab switch
     {
+        "all" => $"{Model.AllCount} Item{(Model.AllCount == 1 ? "" : "s")}",
         "today" => $"{Model.TodayCount} Job{(Model.TodayCount == 1 ? "" : "s")} Today",
         "leads" => $"{Model.NewLeadsCount} New Lead{(Model.NewLeadsCount == 1 ? "" : "s")}",
         "estimates" => $"{Model.EstimatesCount} Estimate{(Model.EstimatesCount == 1 ? "" : "s")}",
@@ -30,6 +36,7 @@
     };
     string infoText = Model.ActiveTab switch
     {
+        "all" => "Your full pipeline in one place — leads, active jobs, estimates, and completed work.",
         "today" => "Your schedule for today. Tap a job to view details, add notes, or update status.",
         "leads" => "New leads waiting for your response. Accept or create an estimate to get started.",
         "estimates" => "Review drafts and sent estimates. Tap to edit, send, or convert to a job.",
@@ -39,46 +46,76 @@
 }
 
 <div class="prv-pro-shell prv-pro-shell--jobs prv-pro-shell--jobs-v2">
-    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-
-    <header class="prv-pro-jobs-head">
-        <h1>Jobs</h1>
-        <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
-        <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn">
-            <i class="fas fa-plus"></i> Create Job
-        </a>
-    </header>
-
-    <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-search">
-        <input type="hidden" name="tab" value="@Model.ActiveTab" />
-        <div class="prv-pro-search-wrap">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs, customers, properties" />
+    <div class="prv-pro-portal-page-hero">
+        <div class="prv-pro-jobs-hero-top">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="INDOR PRO home">
+                <i class="fas fa-house" aria-hidden="true"></i>
+                <span class="prv-pro-brand-indor">INDOR</span>
+                <span class="prv-pro-brand-pro">PRO</span>
+            </a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
-        <button type="submit" class="prv-pro-filter-btn" title="Search"><i class="fas fa-sliders"></i></button>
-    </form>
+        <div class="prv-pro-jobs-hero-header">
+            <div class="prv-pro-jobs-hero-title-row">
+                <h1>Jobs</h1>
+                <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn" aria-label="Create job">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Create Job
+                </a>
+            </div>
+            <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
+        </div>
 
-    <section class="prv-pro-jobs-stats">
-        @foreach (var (tabId, icon, tone, count, label) in statCards)
+        <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-hero-search">
+            <div class="prv-pro-jobs-search-row">
+                <div class="prv-pro-search-wrap">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs, customers, properties" />
+                </div>
+                <div class="prv-pro-filter-wrap">
+                    <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvJobsFilterBtn" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-sliders"></i> Filter
+                    </button>
+                    <div class="prv-pro-filter-menu" id="prvJobsFilterMenu" role="menu" hidden>
+                        @foreach (var (id, label) in tabs)
+                        {
+                            <a asp-controller="Proveedor" asp-action="Jobs"
+                               asp-route-tab="@id"
+                               asp-route-q="@Model.SearchQuery"
+                               class="prv-pro-filter-menu-item @(Model.ActiveTab == id ? "is-active" : null)"
+                               role="menuitem">
+                                <span>@label</span>
+                                @if (Model.ActiveTab == id)
+                                {
+                                    <i class="fas fa-check"></i>
+                                }
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="prv-pro-jobs-filter-chips">
+                @foreach (var (id, label) in tabs)
+                {
+                    <a asp-controller="Proveedor" asp-action="Jobs"
+                       asp-route-tab="@id"
+                       asp-route-q="@Model.SearchQuery"
+                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
+                }
+            </div>
+        </form>
+    </div>
+
+    <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
+        @foreach (var (tabId, icon, tone, count, label) in visibleStatCards)
         {
-            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@tabId"
-               class="prv-pro-jobs-stat @(Model.ActiveTab == tabId ? "is-highlighted" : "")">
+            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@tabId" asp-route-q="@Model.SearchQuery"
+               class="prv-pro-jobs-stat">
                 <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--@tone"><i class="fas @icon"></i></span>
                 <strong>@count</strong>
                 <span>@label</span>
             </a>
         }
     </section>
-
-    <nav class="prv-pro-jobs-tabs" aria-label="Jobs views">
-        @foreach (var (id, label) in tabs)
-        {
-            <a asp-controller="Proveedor" asp-action="Jobs"
-               asp-route-tab="@id"
-               asp-route-q="@Model.SearchQuery"
-               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
-        }
-    </nav>
 
     <div class="prv-pro-jobs-list-head">
         <h2>@listTitle</h2>
@@ -263,3 +300,34 @@
     }
 
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var filterBtn = document.getElementById('prvJobsFilterBtn');
+        var filterMenu = document.getElementById('prvJobsFilterMenu');
+        if (!filterBtn || !filterMenu) {
+            return;
+        }
+
+        function closeMenu() {
+            filterMenu.hidden = true;
+            filterBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        filterBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var willOpen = filterMenu.hidden;
+            filterMenu.hidden = !willOpen;
+            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    })();
+</script>
+}

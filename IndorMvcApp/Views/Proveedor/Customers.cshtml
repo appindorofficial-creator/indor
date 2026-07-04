@@ -10,67 +10,89 @@
         ("activehomes", "Active Homes"),
         ("approvals", "Approvals")
     };
+    var statCards = new[] {
+        ("all", "fa-users", "blue", Model.TotalCustomers, "Customers"),
+        ("connected", "fa-link", "green", Model.ConnectedCount, "Connected"),
+        ("needsinvite", "fa-envelope", "purple", Model.NeedsInviteCount, "Needs Invite"),
+        ("activehomes", "fa-house", "blue", Model.ActiveHomesCount, "Active Homes"),
+        ("approvals", "fa-clock", "purple", Model.PendingApprovalCount, "Approvals")
+    };
+    var visibleStatCards = Model.ActiveTab == "all"
+        ? statCards
+        : statCards.Where(card => card.Item1 == Model.ActiveTab);
 }
 
-<div class="prv-pro-shell prv-pro-shell--customers">
-    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-
-    <section class="prv-pro-jobs-head">
-        <div>
-            <h1>Customers</h1>
+<div class="prv-pro-shell prv-pro-shell--customers prv-pro-shell--customers-v2">
+    <div class="prv-pro-portal-page-hero">
+        <div class="prv-pro-jobs-hero-top">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="INDOR PRO home">
+                <i class="fas fa-house" aria-hidden="true"></i>
+                <span class="prv-pro-brand-indor">INDOR</span>
+                <span class="prv-pro-brand-pro">PRO</span>
+            </a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-pro-jobs-hero-header">
+            <div class="prv-pro-jobs-hero-title-row">
+                <h1>Customers</h1>
+                <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-jobs-create-btn" aria-label="Add customer">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add Customer
+                </a>
+            </div>
             <p>Manage homeowners, properties, and connected home records.</p>
         </div>
-        <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-btn prv-pro-btn--primary prv-pro-create-btn">
-            <i class="fas fa-plus"></i> Add Customer
-        </a>
-    </section>
 
-    <form method="get" asp-controller="Proveedor" asp-action="Customers" class="prv-pro-jobs-search">
-        <input type="hidden" name="tab" value="@Model.ActiveTab" />
-        <div class="prv-pro-search-wrap">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search customers, properties, phone, address" />
-        </div>
-        <button type="button" class="prv-pro-filter-btn" title="Filters"><i class="fas fa-sliders"></i></button>
-    </form>
+        <form method="get" asp-controller="Proveedor" asp-action="Customers" class="prv-pro-jobs-hero-search">
+            <div class="prv-pro-jobs-search-row">
+                <div class="prv-pro-search-wrap">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search customers, properties, phone, address" />
+                </div>
+                <div class="prv-pro-filter-wrap">
+                    <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvCustomersFilterBtn" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-sliders"></i> Filter
+                    </button>
+                    <div class="prv-pro-filter-menu" id="prvCustomersFilterMenu" role="menu" hidden>
+                        @foreach (var (id, label) in tabs)
+                        {
+                            <a asp-controller="Proveedor" asp-action="Customers"
+                               asp-route-tab="@id"
+                               asp-route-q="@Model.SearchQuery"
+                               class="prv-pro-filter-menu-item @(Model.ActiveTab == id ? "is-active" : null)"
+                               role="menuitem">
+                                <span>@label</span>
+                                @if (Model.ActiveTab == id)
+                                {
+                                    <i class="fas fa-check"></i>
+                                }
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="prv-pro-jobs-filter-chips">
+                @foreach (var (id, label) in tabs)
+                {
+                    <a asp-controller="Proveedor" asp-action="Customers"
+                       asp-route-tab="@id"
+                       asp-route-q="@Model.SearchQuery"
+                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
+                }
+            </div>
+        </form>
+    </div>
 
-    <section class="prv-pro-jobs-stats">
-        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="all" class="prv-pro-jobs-stat">
-            <i class="fas fa-user"></i>
-            <strong>@Model.TotalCustomers</strong>
-            <span>Customers</span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="connected" class="prv-pro-jobs-stat">
-            <i class="fas fa-link"></i>
-            <strong>@Model.ConnectedCount</strong>
-            <span>Connected</span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="active" class="prv-pro-jobs-stat">
-            <i class="fas fa-briefcase"></i>
-            <strong>@Model.ActiveJobsCount</strong>
-            <span>Active Jobs</span>
-        </a>
-        <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="approvals" class="prv-pro-jobs-stat">
-            <i class="fas fa-clock"></i>
-            <strong>@Model.PendingApprovalCount</strong>
-            <span>Pending Approval</span>
-        </a>
-        <div class="prv-pro-jobs-stat">
-            <i class="fas fa-house"></i>
-            <strong>@Model.PropertiesCount</strong>
-            <span>Properties</span>
-        </div>
-    </section>
-
-    <nav class="prv-pro-jobs-tabs">
-        @foreach (var (id, label) in tabs)
+    <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
+        @foreach (var (tabId, icon, tone, count, label) in visibleStatCards)
         {
-            <a asp-controller="Proveedor" asp-action="Customers"
-               asp-route-tab="@id"
-               asp-route-q="@Model.SearchQuery"
-               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
+            <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="@tabId" asp-route-q="@Model.SearchQuery"
+               class="prv-pro-jobs-stat">
+                <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--@tone"><i class="fas @icon"></i></span>
+                <strong>@count</strong>
+                <span>@label</span>
+            </a>
         }
-    </nav>
+    </section>
 
     <section class="prv-pro-customers-list">
         @if (Model.Customers.Count == 0)
@@ -183,3 +205,34 @@
 
     <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-fab" aria-label="Add customer"><i class="fas fa-plus"></i></a>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var filterBtn = document.getElementById('prvCustomersFilterBtn');
+        var filterMenu = document.getElementById('prvCustomersFilterMenu');
+        if (!filterBtn || !filterMenu) {
+            return;
+        }
+
+        function closeMenu() {
+            filterMenu.hidden = true;
+            filterBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        filterBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var willOpen = filterMenu.hidden;
+            filterMenu.hidden = !willOpen;
+            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    })();
+</script>
+}

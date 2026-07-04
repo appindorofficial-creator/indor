@@ -10,7 +10,7 @@
     @await Html.PartialAsync("_ProviderProFlowPath", Model.FlowSteps)
 
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
-        <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1><i class="fas fa-bolt"></i> Quick Actions</h1>
         </div>

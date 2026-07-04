@@ -2047,6 +2047,25 @@ public class AdministradorController(
         return View(await portal.GetProfileAsync(Url));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkNotificationsViewed(CancellationToken cancellationToken)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var admin = await registration.GetAdministratorForCurrentUserAsync(cancellationToken);
+        if (admin == null)
+        {
+            return Unauthorized();
+        }
+
+        portal.MarkNotificationsViewed(admin.Id);
+        return Ok(new { hasNotifications = false });
+    }
+
     [HttpGet]
     public async Task<IActionResult> PersonalInformation()
     {

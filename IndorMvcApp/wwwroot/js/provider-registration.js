@@ -246,3 +246,62 @@ wireChipSearch('serviceSearch', 'serviceGrid');
         restoreDraftFromStorage();
     });
 })();
+
+(function wireDocFilePickers() {
+    function wirePicker(picker) {
+        var input = picker.querySelector('.prv-file-picker-input');
+        var nameEl = picker.querySelector('.prv-file-picker-name');
+        if (!input || !nameEl || input.dataset.prvPickerWired === 'true') {
+            return;
+        }
+
+        input.dataset.prvPickerWired = 'true';
+        input.addEventListener('change', function () {
+            var file = input.files && input.files[0];
+            nameEl.textContent = file ? file.name : 'No file selected';
+            picker.classList.toggle('has-file', !!file);
+        });
+    }
+
+    document.querySelectorAll('.prv-doc-upload').forEach(function (block) {
+        var existingPicker = block.querySelector('.prv-file-picker');
+        if (existingPicker) {
+            wirePicker(existingPicker);
+            return;
+        }
+
+        var input = block.querySelector('input[type="file"]');
+        if (!input) {
+            return;
+        }
+
+        var linkedLabel = input.id
+            ? block.querySelector('label[for="' + CSS.escape(input.id) + '"]')
+            : null;
+        if (linkedLabel) {
+            var fieldLabel = document.createElement('span');
+            fieldLabel.className = 'prv-doc-label';
+            fieldLabel.textContent = linkedLabel.textContent.trim();
+            linkedLabel.replaceWith(fieldLabel);
+        }
+
+        input.classList.add('prv-file-picker-input');
+
+        var picker = document.createElement('label');
+        picker.className = 'prv-file-picker';
+
+        var btn = document.createElement('span');
+        btn.className = 'prv-file-picker-btn';
+        btn.textContent = 'Choose file';
+
+        var nameEl = document.createElement('span');
+        nameEl.className = 'prv-file-picker-name';
+        nameEl.textContent = 'No file selected';
+
+        input.replaceWith(picker);
+        picker.appendChild(input);
+        picker.appendChild(btn);
+        picker.appendChild(nameEl);
+        wirePicker(picker);
+    });
+})();

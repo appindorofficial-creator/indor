@@ -4,7 +4,7 @@
     Layout = "_LayoutAuth";
 }
 
-<div class="login-container">
+<div class="login-container login-container--select-role">
     <nav class="auth-stepper" aria-label="Progress">
             <div class="auth-stepper-seg is-done"></div>
             <div class="auth-stepper-seg is-active"></div>
@@ -79,6 +79,7 @@
                     </div>
                 </div>
 
+                <div class="role-form-actions">
                 <button type="submit" class="btn btn-primary" id="continueBtn">
                     <i class="fas fa-circle-check btn-icon btn-icon-left"></i>
                     <span class="btn-label">Continue</span>
@@ -87,6 +88,7 @@
 
                 <div class="skip-link">
                     <button type="submit" name="skipLater" value="true">I'll choose later</button>
+                </div>
                 </div>
             </form>
         </div>

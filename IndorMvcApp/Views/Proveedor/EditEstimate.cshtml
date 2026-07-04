@@ -11,7 +11,7 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-wizard-head">
-        <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Step @Model.StepNumber of @Model.TotalSteps · Edit Estimate</h1>
             <p>Adjust line items, prices, quantities, materials, and notes before sending.</p>

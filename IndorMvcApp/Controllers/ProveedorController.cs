@@ -1597,6 +1597,20 @@ public class ProveedorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    public async Task<IActionResult> MarkNotificationsViewed(CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return Unauthorized();
+        }
+
+        proData.MarkNotificationsViewed(proveedor.Entity!.Id);
+        return Ok(new { hasNotifications = false });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> Notifications(ProviderProNotificationsInput input, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -1620,7 +1634,8 @@ public class ProveedorController(
         }
 
         var model = await proData.GetEditProfileAsync(proveedor.Entity!, cancellationToken: cancellationToken);
-        ViewBag.ActiveSection = string.IsNullOrWhiteSpace(section) ? "business" : section.Trim().ToLowerInvariant();
+        var normalizedSection = string.IsNullOrWhiteSpace(section) ? "full" : section.Trim().ToLowerInvariant();
+        ViewBag.ActiveSection = normalizedSection;
         return View(model);
     }
 
@@ -1630,6 +1645,7 @@ public class ProveedorController(
     public async Task<IActionResult> EditProfile(
         [FromForm] ProviderProEditProfileInput input,
         IFormFile? profilePhoto,
+        [FromForm] string? activeSection,
         CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -1638,7 +1654,10 @@ public class ProveedorController(
             return proveedor.Result;
         }
 
-        if (string.IsNullOrWhiteSpace(input.BusinessName) && string.IsNullOrWhiteSpace(input.DbaName))
+        var section = string.IsNullOrWhiteSpace(activeSection) ? "full" : activeSection.Trim().ToLowerInvariant();
+        ViewBag.ActiveSection = section;
+
+        if (section != "areas" && string.IsNullOrWhiteSpace(input.BusinessName) && string.IsNullOrWhiteSpace(input.DbaName))
         {
             ModelState.AddModelError(nameof(ProviderProEditProfileInput.BusinessName), "Business name or DBA is required.");
         }

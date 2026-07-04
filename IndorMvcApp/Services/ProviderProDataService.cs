@@ -236,8 +236,11 @@ public class ProviderProDataService(
             .Where(i => i.Status is ProviderInvoiceStatuses.Overdue or ProviderInvoiceStatuses.Pending)
             .Sum(i => i.Amount);
 
+        var allItems = BuildAllTabItems(jobRows, leadRows, estimateRows, today, tomorrow);
+
         var items = activeTab switch
         {
+            "all" => allItems,
             "today" => jobRows
                 .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrow)
                 .OrderBy(j => j.ScheduledAt)
@@ -274,6 +277,8 @@ public class ProviderProDataService(
                 .ToList();
         }
 
+        var allCount = allItems.Count;
+
         return new ProviderProJobsPageViewModel
         {
             CompanyName = ResolveCompanyName(proveedor),
@@ -281,6 +286,7 @@ public class ProviderProDataService(
             SearchQuery = search,
             TodayCount = todayCount,
             ActiveCount = activeCount,
+            AllCount = allCount,
             NewLeadsCount = newLeadsCount,
             EstimatesCount = estimatesCount,
             CompletedCount = completedCount,
@@ -321,6 +327,53 @@ public class ProviderProDataService(
             .Select(e => MapEstimateWorkItem(e, jobs));
 
         return activeJobs.Concat(activeLeads).Concat(openEstimates).ToList();
+    }
+
+    private static List<ProviderProJobsWorkItemViewModel> BuildAllTabItems(
+        List<IndorProveedorJob> jobs,
+        List<IndorProveedorLead> leads,
+        List<IndorProveedorEstimate> estimates,
+        DateTime today,
+        DateTime tomorrow)
+    {
+        var tomorrowEnd = tomorrow;
+        var items = new List<ProviderProJobsWorkItemViewModel>();
+
+        items.AddRange(jobs
+            .Where(j => j.ScheduledAt >= today && j.ScheduledAt < tomorrowEnd)
+            .OrderBy(j => j.ScheduledAt)
+            .Select(MapJobWorkItem));
+
+        items.AddRange(leads
+            .Where(l => l.Status == ProviderLeadStatuses.New)
+            .OrderByDescending(l => l.FechaCreacion)
+            .Select(MapLeadWorkItem));
+
+        items.AddRange(jobs
+            .Where(j => j.Status is ProviderJobStatuses.InProgress
+                or ProviderJobStatuses.Scheduled
+                or ProviderJobStatuses.Confirmed
+                or ProviderJobStatuses.WaitingOnMaterials)
+            .OrderByDescending(j => j.ScheduledAt ?? j.FechaCreacion)
+            .Select(MapJobWorkItem));
+
+        items.AddRange(estimates
+            .Where(e => e.Status is ProviderEstimateStatuses.Sent
+                or ProviderEstimateStatuses.Viewed
+                or ProviderEstimateStatuses.Approved
+                or ProviderEstimateStatuses.Draft)
+            .OrderByDescending(e => e.FechaCreacion)
+            .Select(e => MapEstimateWorkItem(e, jobs)));
+
+        items.AddRange(jobs
+            .Where(j => j.Status == ProviderJobStatuses.Completed)
+            .OrderByDescending(j => j.FechaActualizacion ?? j.FechaCreacion)
+            .Select(MapJobWorkItem));
+
+        return items
+            .GroupBy(i => $"{i.ItemKind}:{i.ItemId}")
+            .Select(g => g.First())
+            .ToList();
     }
 
     private static List<ProviderProSmartSuggestionViewModel> BuildSmartSuggestions(
@@ -2867,7 +2920,7 @@ public class ProviderProDataService(
 
     private static string NormalizeJobsTab(string? tab) => (tab ?? "active").Trim().ToLowerInvariant() switch
     {
-        "today" or "leads" or "estimates" or "completed" => tab!.Trim().ToLowerInvariant(),
+        "all" or "today" or "leads" or "estimates" or "completed" => tab!.Trim().ToLowerInvariant(),
         _ => "active"
     };
 
@@ -4420,6 +4473,9 @@ public class ProviderProDataService(
             .Select(c => MapCustomerCard(c, jobs.Where(j => j.ClienteId == c.Id).ToList(), customerIdsWithPendingApproval.Contains(c.Id)))
             .ToList();
 
+        var activeHomesCount = cards.Count(c =>
+            c.ShowJobSection && c.JobStatusClass is "progress" or "scheduled" or "confirmed");
+
         cards = activeTab switch
         {
             "connected" => cards.Where(c => c.ConnectionClass == "connected").ToList(),
@@ -4446,6 +4502,8 @@ public class ProviderProDataService(
             SearchQuery = search,
             TotalCustomers = customerRows.Count,
             ConnectedCount = connectedCount,
+            NeedsInviteCount = needsInviteCount,
+            ActiveHomesCount = activeHomesCount,
             ActiveJobsCount = activeJobsCount,
             PendingApprovalCount = approvals.Count,
             PropertiesCount = propertiesCount,
@@ -5326,6 +5384,242 @@ public class ProviderProDataService(
             NotifyReportReminders = meta.NotifyReportReminders
         };
     }
+
+    public async Task<ProviderProTopbarViewModel> GetTopbarAsync(
+        IndorProveedor proveedor,
+        CancellationToken cancellationToken = default)
+    {
+        var companyName = ResolveCompanyName(proveedor);
+        var recentNotifications = await BuildRecentNotificationsAsync(proveedor.Id, cancellationToken);
+        var lastViewedUtc = LoadNotificationsLastViewedUtc(proveedor.Id);
+        var hasUnreadNotifications = recentNotifications.Any(n => n.OccurredUtc > lastViewedUtc);
+
+        return new ProviderProTopbarViewModel
+        {
+            CompanyName = companyName,
+            CompanyInitial = BuildCompanyInitial(companyName),
+            ShowNotifications = true,
+            HasNotifications = hasUnreadNotifications,
+            RecentNotifications = recentNotifications
+        };
+    }
+
+    public void MarkNotificationsViewed(int proveedorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return;
+        }
+
+        session.SetString(
+            NotificationsViewedSessionKey(proveedorId),
+            DateTime.UtcNow.ToString("O"));
+    }
+
+    private async Task<List<ProviderProNotificationItemViewModel>> BuildRecentNotificationsAsync(
+        int proveedorId,
+        CancellationToken cancellationToken)
+    {
+        var cutoff = DateTime.UtcNow.AddDays(-30);
+        var candidates = new List<ProviderProNotificationItemViewModel>();
+
+        var newLeads = await db.IndorProveedorLeads
+            .AsNoTracking()
+            .Where(l => l.ProveedorId == proveedorId
+                && l.Status == ProviderLeadStatuses.New
+                && l.FechaCreacion >= cutoff)
+            .OrderByDescending(l => l.FechaCreacion)
+            .Take(6)
+            .ToListAsync(cancellationToken);
+
+        foreach (var lead in newLeads)
+        {
+            candidates.Add(new ProviderProNotificationItemViewModel
+            {
+                Id = lead.Id,
+                Description = $"New lead: {lead.ServiceType} — {ShortAddress(lead.Address)}",
+                OccurredLabel = FormatRelativeLeadTime(lead.FechaCreacion),
+                CategoryTag = "Leads",
+                TagCssClass = "prv-pro-notify-tag--leads",
+                IconClass = "fa-bolt",
+                TargetUrl = $"/Proveedor/LeadDetails/{lead.Id}",
+                OccurredUtc = lead.FechaCreacion
+            });
+        }
+
+        var approvedEstimates = await db.IndorProveedorEstimates
+            .AsNoTracking()
+            .Where(e => e.ProveedorId == proveedorId
+                && e.ApprovedUtc != null
+                && e.ApprovedUtc >= cutoff)
+            .OrderByDescending(e => e.ApprovedUtc)
+            .Take(6)
+            .ToListAsync(cancellationToken);
+
+        foreach (var estimate in approvedEstimates)
+        {
+            var occurredUtc = estimate.ApprovedUtc ?? estimate.FechaCreacion;
+            candidates.Add(new ProviderProNotificationItemViewModel
+            {
+                Id = estimate.Id,
+                Description = $"Estimate approved for {ShortAddress(estimate.Address)}",
+                OccurredLabel = FormatRelativeLeadTime(occurredUtc),
+                CategoryTag = "Estimates",
+                TagCssClass = "prv-pro-notify-tag--estimates",
+                IconClass = "fa-circle-check",
+                TargetUrl = $"/Proveedor/EstimateAccepted/{estimate.Id}",
+                OccurredUtc = occurredUtc
+            });
+        }
+
+        var viewedEstimates = await db.IndorProveedorEstimates
+            .AsNoTracking()
+            .Where(e => e.ProveedorId == proveedorId
+                && e.ViewedUtc != null
+                && e.ViewedUtc >= cutoff
+                && e.ApprovedUtc == null)
+            .OrderByDescending(e => e.ViewedUtc)
+            .Take(4)
+            .ToListAsync(cancellationToken);
+
+        foreach (var estimate in viewedEstimates)
+        {
+            var occurredUtc = estimate.ViewedUtc ?? estimate.FechaCreacion;
+            candidates.Add(new ProviderProNotificationItemViewModel
+            {
+                Id = estimate.Id,
+                Description = $"Homeowner viewed your estimate for {ShortAddress(estimate.Address)}",
+                OccurredLabel = FormatRelativeLeadTime(occurredUtc),
+                CategoryTag = "Estimates",
+                TagCssClass = "prv-pro-notify-tag--estimates",
+                IconClass = "fa-eye",
+                TargetUrl = $"/Proveedor/ReviewEstimate/{estimate.Id}",
+                OccurredUtc = occurredUtc
+            });
+        }
+
+        var unreadConversations = await db.IndorProveedorConversations
+            .AsNoTracking()
+            .Where(c => c.ProveedorId == proveedorId
+                && c.UnreadCount > 0
+                && c.LastMessageAt >= cutoff)
+            .OrderByDescending(c => c.LastMessageAt)
+            .Take(6)
+            .ToListAsync(cancellationToken);
+
+        foreach (var conversation in unreadConversations)
+        {
+            var preview = string.IsNullOrWhiteSpace(conversation.LastMessagePreview)
+                ? "New message waiting"
+                : conversation.LastMessagePreview!;
+            candidates.Add(new ProviderProNotificationItemViewModel
+            {
+                Id = conversation.Id,
+                Description = preview,
+                OccurredLabel = FormatRelativeLeadTime(conversation.LastMessageAt),
+                CategoryTag = "Messages",
+                TagCssClass = "prv-pro-notify-tag--messages",
+                IconClass = "fa-comment-dots",
+                TargetUrl = $"/Proveedor/Conversation/{conversation.Id}",
+                OccurredUtc = conversation.LastMessageAt
+            });
+        }
+
+        var overdueInvoices = await db.IndorProveedorInvoices
+            .AsNoTracking()
+            .Where(i => i.ProveedorId == proveedorId
+                && i.Status == ProviderInvoiceStatuses.Overdue)
+            .OrderByDescending(i => i.DueDate ?? i.FechaCreacion)
+            .Take(4)
+            .ToListAsync(cancellationToken);
+
+        foreach (var invoice in overdueInvoices)
+        {
+            var occurredUtc = invoice.DueDate?.ToUniversalTime() ?? invoice.FechaCreacion;
+            candidates.Add(new ProviderProNotificationItemViewModel
+            {
+                Id = invoice.Id,
+                Description = $"Overdue invoice {FormatInvoiceCode(invoice)} — {invoice.Amount:C0}",
+                OccurredLabel = FormatRelativeLeadTime(occurredUtc),
+                CategoryTag = "Payments",
+                TagCssClass = "prv-pro-notify-tag--payments",
+                IconClass = "fa-file-invoice-dollar",
+                TargetUrl = $"/Proveedor/InvoiceDetails/{invoice.Id}",
+                OccurredUtc = occurredUtc
+            });
+        }
+
+        var paidInvoices = await db.IndorProveedorInvoices
+            .AsNoTracking()
+            .Where(i => i.ProveedorId == proveedorId
+                && i.Status == ProviderInvoiceStatuses.Paid
+                && i.PaidDate != null
+                && i.PaidDate >= cutoff)
+            .OrderByDescending(i => i.PaidDate)
+            .Take(4)
+            .ToListAsync(cancellationToken);
+
+        foreach (var invoice in paidInvoices)
+        {
+            var occurredUtc = invoice.PaidDate?.ToUniversalTime() ?? invoice.FechaCreacion;
+            candidates.Add(new ProviderProNotificationItemViewModel
+            {
+                Id = invoice.Id,
+                Description = $"Payment received for {FormatInvoiceCode(invoice)} — {invoice.Amount:C0}",
+                OccurredLabel = FormatRelativeLeadTime(occurredUtc),
+                CategoryTag = "Payments",
+                TagCssClass = "prv-pro-notify-tag--payments",
+                IconClass = "fa-money-bill-wave",
+                TargetUrl = $"/Proveedor/InvoiceDetails/{invoice.Id}",
+                OccurredUtc = occurredUtc
+            });
+        }
+
+        return candidates
+            .OrderByDescending(c => c.OccurredUtc)
+            .Take(8)
+            .ToList();
+    }
+
+    private DateTime LoadNotificationsLastViewedUtc(int proveedorId)
+    {
+        var session = httpContextAccessor.HttpContext?.Session;
+        if (session == null)
+        {
+            return DateTime.MinValue;
+        }
+
+        var raw = session.GetString(NotificationsViewedSessionKey(proveedorId));
+        return DateTime.TryParse(
+            raw,
+            System.Globalization.CultureInfo.InvariantCulture,
+            System.Globalization.DateTimeStyles.RoundtripKind,
+            out var parsed)
+            ? parsed.ToUniversalTime()
+            : DateTime.MinValue;
+    }
+
+    private static string NotificationsViewedSessionKey(int proveedorId) =>
+        "provider-pro-notifications-viewed-" + proveedorId;
+
+    private static string ShortAddress(string address)
+    {
+        if (string.IsNullOrWhiteSpace(address))
+        {
+            return "your service area";
+        }
+
+        var trimmed = address.Trim();
+        return trimmed.Length <= 42 ? trimmed : trimmed[..39] + "...";
+    }
+
+    private static string FormatInvoiceCode(IndorProveedorInvoice invoice) =>
+        string.IsNullOrWhiteSpace(invoice.InvoiceCode)
+            ? $"#{invoice.Id}"
+            : invoice.InvoiceCode.StartsWith('#')
+                ? invoice.InvoiceCode
+                : $"#{invoice.InvoiceCode}";
 
     public async Task SaveNotificationPreferencesAsync(
         int proveedorId,

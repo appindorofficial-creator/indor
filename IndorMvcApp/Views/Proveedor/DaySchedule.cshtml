@@ -20,15 +20,15 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         @if (fromHome)
         {
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         }
         else if (fromJobs)
         {
-            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         }
         else
         {
-            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         }
         <div>
             <h1>@pageTitle</h1>

@@ -1,37 +1,81 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
 <header class="pa-portal-topbar">
-    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="INDOR home Portfolio">
-        <span class="pa-portal-logo-text">ÎNDÔR</span>
-        <span class="pa-portal-logo-sub">
-            <span class="pa-portal-logo-sub-home">home </span><span class="pa-portal-logo-sub-brand">Portfolio</span>
+    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="INDOR Portfolio">
+        <span class="pa-portal-logo-main">
+            <i class="fas fa-house" aria-hidden="true"></i> INDOR
         </span>
+        <span class="pa-portal-logo-label">Portfolio</span>
     </a>
 
-    <div class="pa-portal-account-wrap">
-        <div class="pa-portal-account-pill">
+    <div class="pa-portal-topbar-actions">
+        <div class="pa-notify-wrap" id="paNotifyWrap" data-mark-viewed-url="@Url.Action("MarkNotificationsViewed", "Administrador")">
+            @Html.AntiForgeryToken()
             <button type="button"
-                    class="pa-portal-pill-bell @(Model.NotificationCount > 0 ? "has-badge" : null)"
-                    aria-label="Notifications">
+                    class="pa-portal-icon-btn pa-portal-icon-btn--notify @(Model.HasNotifications ? "has-dot" : null)"
+                    id="paNotifyBtn"
+                    aria-label="Notifications"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                    aria-controls="paNotifyPanel">
                 <i class="fas fa-bell"></i>
-                @if (Model.NotificationCount > 0)
-                {
-                    <span class="pa-portal-badge">@Model.NotificationCount</span>
-                }
             </button>
-            <span class="pa-portal-pill-divider" aria-hidden="true"></span>
-            <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-avatar-link" aria-label="Profile">
-                @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+            <div class="pa-notify-panel" id="paNotifyPanel" role="dialog" aria-label="Recent activity" hidden>
+                <div class="pa-notify-panel-head">
+                    <strong>Notifications</strong>
+                    @if (Model.HasNotifications)
+                    {
+                        <span class="pa-notify-badge" id="paNotifyNewBadge">New</span>
+                    }
+                </div>
+                @if (Model.RecentNotifications.Count == 0)
                 {
-                    <img src="@Model.ProfilePhotoUrl" alt="" class="pa-portal-avatar" />
+                    <div class="pa-notify-empty">
+                        <i class="fas fa-bell-slash"></i>
+                        <p>No recent activity yet.</p>
+                        <span>Request a service or schedule a visit to see updates here.</span>
+                    </div>
                 }
                 else
                 {
-                    <span class="pa-portal-avatar pa-portal-avatar--placeholder"><i class="fas fa-user"></i></span>
+                    <ul class="pa-notify-list">
+                        @foreach (var item in Model.RecentNotifications)
+                        {
+                            <li>
+                                @if (!string.IsNullOrWhiteSpace(item.TargetUrl))
+                                {
+                                    <a href="@item.TargetUrl" class="pa-notify-item">
+                                        <span class="pa-notify-item-icon"><i class="fas @item.IconClass"></i></span>
+                                        <span class="pa-notify-item-body">
+                                            <span class="pa-notify-item-text">@item.Description</span>
+                                            <span class="pa-notify-item-time">@item.OccurredLabel</span>
+                                        </span>
+                                        <span class="pa-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                    </a>
+                                }
+                                else
+                                {
+                                    <div class="pa-notify-item">
+                                        <span class="pa-notify-item-icon"><i class="fas @item.IconClass"></i></span>
+                                        <span class="pa-notify-item-body">
+                                            <span class="pa-notify-item-text">@item.Description</span>
+                                            <span class="pa-notify-item-time">@item.OccurredLabel</span>
+                                        </span>
+                                        <span class="pa-notify-tag @item.TagCssClass">@item.CategoryTag</span>
+                                    </div>
+                                }
+                            </li>
+                        }
+                    </ul>
                 }
-            </a>
+                <div class="pa-notify-panel-foot">
+                    <a asp-controller="Administrador" asp-action="NotificationPreferences" class="pa-notify-settings-link">
+                        <i class="fas fa-gear"></i> Notification settings
+                    </a>
+                </div>
+            </div>
         </div>
-        <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
-            My account <i class="fas fa-chevron-right"></i>
-        </a>
     </div>
+    <a asp-controller="Administrador" asp-action="Profile" class="pa-portal-my-account">
+        My account <i class="fas fa-chevron-right"></i>
+    </a>
 </header>

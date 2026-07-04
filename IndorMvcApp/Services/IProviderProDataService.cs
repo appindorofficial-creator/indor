@@ -87,6 +87,8 @@ public interface IProviderProDataService
     Task<bool> SendMessageQuickActionAsync(int proveedorId, ProviderProMessageActionDraft draft, CancellationToken cancellationToken = default);
     Task<ProviderProMessageSentSuccessViewModel?> GetMessageSentSuccessAsync(IndorProveedor proveedor, int conversationId, string actionLabel, CancellationToken cancellationToken = default);
     Task<int> GetUnreadMessageCountAsync(int proveedorId, CancellationToken cancellationToken = default);
+    Task<ProviderProTopbarViewModel> GetTopbarAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
+    void MarkNotificationsViewed(int proveedorId);
     Task<int> SaveInsuranceQuoteAsync(int proveedorId, ProviderProInsuranceQuoteDraft draft, CancellationToken cancellationToken = default);
 }
 

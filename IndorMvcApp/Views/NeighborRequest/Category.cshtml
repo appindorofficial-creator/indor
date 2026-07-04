@@ -70,8 +70,8 @@
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
                 <input asp-for="Title" class="nr-input" placeholder="Need help moving a sofa" maxlength="60" autocomplete="off" />
-                <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             </div>
+            <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             <span asp-validation-for="Title" class="field-validation-error"></span>
         </div>
     </section>
@@ -84,8 +84,8 @@
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
                 <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="Share timing, scope, or anything helpful for helpers." autocomplete="off"></textarea>
-                <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
             </div>
+            <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
         </div>
     </section>
 
@@ -96,8 +96,10 @@
         </header>
         <label class="nr-location-picker">
             <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
-            <input asp-for="LocationAddress" class="nr-location-picker-input" />
-            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+            <input asp-for="LocationAddress"
+                   class="nr-location-picker-input"
+                   readonly="@Model.UseHomeAddress"
+                   tabindex="@(Model.UseHomeAddress ? "-1" : null)" />
         </label>
         <span asp-validation-for="LocationAddress" class="field-validation-error"></span>
 
@@ -107,7 +109,6 @@
                 <strong>Use my home address</strong>
                 <small>Helpers will see your approximate location.</small>
             </span>
-            <i class="fas fa-circle-info" aria-hidden="true"></i>
         </label>
     </section>
 </form>
@@ -153,10 +154,17 @@
             var homeToggle = document.querySelector('[name="UseHomeAddress"]');
             var addressInput = document.querySelector('[name="LocationAddress"]');
             if (homeToggle && addressInput) {
-                homeToggle.addEventListener('change', function () {
-                    addressInput.readOnly = homeToggle.checked;
-                });
-                addressInput.readOnly = homeToggle.checked;
+                var syncHomeAddressState = function () {
+                    var useHome = homeToggle.checked;
+                    addressInput.readOnly = useHome;
+                    if (useHome) {
+                        addressInput.setAttribute('tabindex', '-1');
+                    } else {
+                        addressInput.removeAttribute('tabindex');
+                    }
+                };
+                homeToggle.addEventListener('change', syncHomeAddressState);
+                syncHomeAddressState();
             }
         })();
     </script>

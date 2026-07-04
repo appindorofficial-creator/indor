@@ -7,7 +7,19 @@ public class PropertyAdministratorPortalShellViewModel
     public int ActivePropertyCount { get; set; }
     public string Greeting { get; set; } = "Good morning";
     public int NotificationCount { get; set; }
+    public bool HasNotifications { get; set; }
+    public List<PropertyAdministratorNotificationItemViewModel> RecentNotifications { get; set; } = [];
     public string? ProfilePhotoUrl { get; set; }
+}
+
+public class PropertyAdministratorNotificationItemViewModel
+{
+    public string Description { get; set; } = "";
+    public string OccurredLabel { get; set; } = "";
+    public string CategoryTag { get; set; } = "";
+    public string? TargetUrl { get; set; }
+    public string IconClass { get; set; } = "fa-circle-info";
+    public string TagCssClass { get; set; } = "";
 }
 
 public class PropertyAdministratorStatCardViewModel

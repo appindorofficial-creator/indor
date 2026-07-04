@@ -17,7 +17,7 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-wizard-head">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Step @Model.StepNumber of @Model.TotalSteps · Pending Estimates</h1>
             <p>Here you can see all estimates waiting for action. Tap an estimate to review it.</p>
