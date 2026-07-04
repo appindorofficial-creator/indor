@@ -1068,8 +1068,6 @@ a.prv-pro-profile-btn { text-decoration: none; }
 }
 
 /* Profile tab */
-.prv-pro-shell--profile { padding-bottom: 88px; }
-
 .prv-pro-profile-hero {
     position: relative;
     background: #fff;
@@ -4667,15 +4665,26 @@ a.prv-pro-profile-center-action:focus-visible {
     .prv-pro-invoice-line-row { grid-template-columns: 1.5fr .5fr .7fr .7fr; }
 }
 
-/* ── INDOR PRO Home — premium mobile mockup ── */
-.prv-pro-shell--home {
+/* ── INDOR PRO portal topbar hero (Home, Profile) ── */
+.prv-pro-shell--home,
+.prv-pro-shell--profile {
     max-width: 480px;
-    padding: 0 16px 132px;
+    padding-left: 16px;
+    padding-right: 16px;
     min-height: 100vh;
     min-height: 100dvh;
 }
 
-.prv-pro-shell--home .prv-pro-topbar {
+.prv-pro-shell--home {
+    padding-bottom: 132px;
+}
+
+.prv-pro-shell--profile {
+    padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+
+.prv-pro-shell--home .prv-pro-topbar,
+.prv-pro-shell--profile .prv-pro-topbar {
     position: relative;
     margin: 0 -16px 12px;
     padding: calc(env(safe-area-inset-top, 0px) + 16px) 18px 48px;
@@ -4685,7 +4694,8 @@ a.prv-pro-profile-center-action:focus-visible {
     z-index: 1;
 }
 
-.prv-pro-shell--home .prv-pro-topbar::after {
+.prv-pro-shell--home .prv-pro-topbar::after,
+.prv-pro-shell--profile .prv-pro-topbar::after {
     content: "";
     position: absolute;
     left: 0;
@@ -4699,24 +4709,31 @@ a.prv-pro-profile-center-action:focus-visible {
 
 .prv-pro-shell--home .prv-pro-brand--link,
 .prv-pro-shell--home .prv-pro-brand-indor,
-.prv-pro-shell--home .prv-pro-brand-pro {
+.prv-pro-shell--home .prv-pro-brand-pro,
+.prv-pro-shell--profile .prv-pro-brand--link,
+.prv-pro-shell--profile .prv-pro-brand-indor,
+.prv-pro-shell--profile .prv-pro-brand-pro {
     color: #fff;
 }
 
-.prv-pro-shell--home .prv-pro-brand-pro {
+.prv-pro-shell--home .prv-pro-brand-pro,
+.prv-pro-shell--profile .prv-pro-brand-pro {
     background: rgba(255, 255, 255, .2);
     padding: 2px 8px;
     border-radius: 7px;
     font-size: .7rem;
 }
 
-.prv-pro-shell--home .prv-pro-notify-wrap {
+.prv-pro-shell--home .prv-pro-notify-wrap,
+.prv-pro-shell--profile .prv-pro-notify-wrap {
     margin-left: auto;
     flex-shrink: 0;
 }
 
 .prv-pro-shell--home .prv-pro-notify-btn,
-.prv-pro-shell--home .prv-pro-notify-btn--inverse {
+.prv-pro-shell--home .prv-pro-notify-btn--inverse,
+.prv-pro-shell--profile .prv-pro-notify-btn,
+.prv-pro-shell--profile .prv-pro-notify-btn--inverse {
     width: 40px;
     height: 40px;
     border-radius: 50%;
@@ -4727,7 +4744,9 @@ a.prv-pro-profile-center-action:focus-visible {
 }
 
 .prv-pro-shell--home .prv-pro-notify-btn.has-dot::after,
-.prv-pro-shell--home .prv-pro-notify-btn--inverse.has-dot::after {
+.prv-pro-shell--home .prv-pro-notify-btn--inverse.has-dot::after,
+.prv-pro-shell--profile .prv-pro-notify-btn.has-dot::after,
+.prv-pro-shell--profile .prv-pro-notify-btn--inverse.has-dot::after {
     top: 7px;
     right: 8px;
     background: #DC2626;
