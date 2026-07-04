@@ -35,7 +35,7 @@ public static class MyHomeDisplayService
                 FormattedAddress = propiedad.Direccion ?? string.Empty
             };
             info.PropertyDetails ??= new PropertyDetailsInfo();
-            PropertyEnrichmentMapper.ApplyPayload(info, propiedad.AttomRawJson);
+            ApplyAttomPreservingUserEdits(info, propiedad.AttomRawJson);
         }
 
         var maintenance = PropertyMaintenanceDisplayService.ParseFromPropiedad(propiedad);
@@ -49,6 +49,58 @@ public static class MyHomeDisplayService
         }
 
         return info;
+    }
+
+    /// <summary>
+    /// Re-applies the ATTOM/enrichment payload but keeps values the homeowner typed in
+    /// "Edit property". Without this guard, <see cref="PropertyEnrichmentMapper.ApplyPayload"/>
+    /// overwrites manually edited fields (YearBuilt, LivingArea, Bedrooms, Bathrooms,
+    /// EstimatedValue, PropertyType) on every read, so saved edits appear to be lost.
+    /// For non-edited properties the enrichment still wins as before.
+    /// </summary>
+    private static void ApplyAttomPreservingUserEdits(PropertyInfoViewModel info, string attomRawJson)
+    {
+        var details = info.PropertyDetails!;
+        var userEdited = info.DataSource?.Contains("Edited", StringComparison.OrdinalIgnoreCase) == true;
+
+        if (!userEdited)
+        {
+            PropertyEnrichmentMapper.ApplyPayload(info, attomRawJson);
+            return;
+        }
+
+        var propertyType = details.PropertyType;
+        var yearBuilt = details.YearBuilt;
+        var livingArea = details.LivingArea;
+        var lotSize = details.LotSize;
+        var bedrooms = details.Bedrooms;
+        var bathrooms = details.Bathrooms;
+        var estimatedValue = details.EstimatedValue;
+        var annualTax = details.AnnualTaxAmount;
+        var taxYear = details.TaxYear;
+        var parcelNumber = details.ParcelNumber;
+        var zoning = details.Zoning;
+        var assignedSchool = details.AssignedSchool;
+        var lastSalePrice = details.LastSalePrice;
+        var lastSaleDate = details.LastSaleDate;
+
+        PropertyEnrichmentMapper.ApplyPayload(info, attomRawJson);
+
+        // Restore homeowner-entered values; ATTOM only keeps fields the user left blank.
+        if (!string.IsNullOrWhiteSpace(propertyType)) details.PropertyType = propertyType;
+        if (yearBuilt.HasValue) details.YearBuilt = yearBuilt;
+        if (livingArea.HasValue) details.LivingArea = livingArea;
+        if (lotSize.HasValue) details.LotSize = lotSize;
+        if (bedrooms.HasValue) details.Bedrooms = bedrooms;
+        if (bathrooms.HasValue) details.Bathrooms = bathrooms;
+        if (estimatedValue.HasValue) details.EstimatedValue = estimatedValue;
+        if (annualTax.HasValue) details.AnnualTaxAmount = annualTax;
+        if (taxYear.HasValue) details.TaxYear = taxYear;
+        if (!string.IsNullOrWhiteSpace(parcelNumber)) details.ParcelNumber = parcelNumber;
+        if (!string.IsNullOrWhiteSpace(zoning)) details.Zoning = zoning;
+        if (!string.IsNullOrWhiteSpace(assignedSchool)) details.AssignedSchool = assignedSchool;
+        if (lastSalePrice.HasValue) details.LastSalePrice = lastSalePrice;
+        if (lastSaleDate.HasValue) details.LastSaleDate = lastSaleDate;
     }
 
     public static AddPropertyViewModel BuildAddressFormForEdit(Propiedad propiedad, PropertyInfoViewModel? info)

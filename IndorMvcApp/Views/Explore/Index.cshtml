@@ -252,22 +252,22 @@
 
                 @if (microservicios.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, $"{microservicios.Count} services available for your home"))
+                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildMicroCarousel(microservicios, $"{microservicios.Count} services available for your home"))
                 }
 
                 @if (servicios.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, $"{servicios.Count} remodeling and installation projects", homeCarePriorityIds))
+                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildServicioCarousel(servicios, $"{servicios.Count} remodeling and installation projects", homeCarePriorityIds))
                 }
 
                 @if (inspecciones.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count} professional inspections for your home"))
+                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count} professional inspections for your home"))
                 }
 
                 @if (emergencySection != null)
                 {
-                    @await Html.PartialAsync("_EmergencyServicesSection", emergencySection)
+                    @await Html.PartialAsync("~/Views/Home/_EmergencyServicesSection.cshtml", emergencySection)
                 }
             </div>
         }

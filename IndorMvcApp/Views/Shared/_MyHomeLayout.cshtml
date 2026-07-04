@@ -104,5 +104,6 @@
             <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId" class="nav-item @(activeNav == "documents" ? "active" : "")"><i class="fas fa-file-lines"></i><span>Documents</span></a>
         </nav>
     }
+    @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
