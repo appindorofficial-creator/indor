@@ -17,6 +17,9 @@
         ("activehomes", "fa-house", "blue", Model.ActiveHomesCount, "Active Homes"),
         ("approvals", "fa-clock", "purple", Model.PendingApprovalCount, "Approvals")
     };
+    var visibleStatCards = Model.ActiveTab == "all"
+        ? statCards
+        : statCards.Where(card => card.Item1 == Model.ActiveTab);
 }
 
 <div class="prv-pro-shell prv-pro-shell--customers prv-pro-shell--customers-v2">
@@ -80,7 +83,7 @@
     </div>
 
     <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
-        @foreach (var (tabId, icon, tone, count, label) in statCards)
+        @foreach (var (tabId, icon, tone, count, label) in visibleStatCards)
         {
             <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="@tabId" asp-route-q="@Model.SearchQuery"
                class="prv-pro-jobs-stat">

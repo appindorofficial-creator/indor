@@ -21,6 +21,7 @@
         ("estimates", "fa-file-invoice-dollar", "purple", Model.EstimatesCount, "Estimates"),
         ("completed", "fa-circle-check", "green", Model.CompletedCount, "Completed")
     };
+    var visibleStatCards = statCards.Where(card => card.Item1 == Model.ActiveTab);
     string listTitle = Model.ActiveTab switch
     {
         "today" => $"{Model.TodayCount} Job{(Model.TodayCount == 1 ? "" : "s")} Today",
@@ -100,7 +101,7 @@
     </div>
 
     <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
-        @foreach (var (tabId, icon, tone, count, label) in statCards)
+        @foreach (var (tabId, icon, tone, count, label) in visibleStatCards)
         {
             <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@tabId" asp-route-q="@Model.SearchQuery"
                class="prv-pro-jobs-stat">
