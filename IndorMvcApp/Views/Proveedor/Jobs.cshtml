@@ -18,7 +18,8 @@
         ("today", "fa-calendar-days", "blue", Model.TodayCount, "Today"),
         ("leads", "fa-user-plus", "green", Model.NewLeadsCount, "Leads"),
         ("active", "fa-circle-notch", "blue", Model.ActiveCount, "Active"),
-        ("estimates", "fa-file-invoice-dollar", "purple", Model.EstimatesCount, "Estimates")
+        ("estimates", "fa-file-invoice-dollar", "purple", Model.EstimatesCount, "Estimates"),
+        ("completed", "fa-circle-check", "green", Model.CompletedCount, "Completed")
     };
     string listTitle = Model.ActiveTab switch
     {
@@ -57,38 +58,58 @@
             </div>
             <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
         </div>
+
+        <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-hero-search">
+            <div class="prv-pro-jobs-search-row">
+                <div class="prv-pro-search-wrap">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs, customers, properties" />
+                </div>
+                <div class="prv-pro-filter-wrap">
+                    <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvJobsFilterBtn" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-sliders"></i> Filter
+                    </button>
+                    <div class="prv-pro-filter-menu" id="prvJobsFilterMenu" role="menu" hidden>
+                        @foreach (var (id, label) in tabs)
+                        {
+                            <a asp-controller="Proveedor" asp-action="Jobs"
+                               asp-route-tab="@id"
+                               asp-route-q="@Model.SearchQuery"
+                               class="prv-pro-filter-menu-item @(Model.ActiveTab == id ? "is-active" : null)"
+                               role="menuitem">
+                                <span>@label</span>
+                                @if (Model.ActiveTab == id)
+                                {
+                                    <i class="fas fa-check"></i>
+                                }
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="prv-pro-jobs-filter-chips">
+                @foreach (var (id, label) in tabs)
+                {
+                    <a asp-controller="Proveedor" asp-action="Jobs"
+                       asp-route-tab="@id"
+                       asp-route-q="@Model.SearchQuery"
+                       class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
+                }
+            </div>
+        </form>
     </div>
 
-    <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-search">
-        <input type="hidden" name="tab" value="@Model.ActiveTab" />
-        <div class="prv-pro-search-wrap">
-            <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs, customers, properties" />
-        </div>
-        <button type="submit" class="prv-pro-filter-btn" title="Search"><i class="fas fa-sliders"></i></button>
-    </form>
-
-    <section class="prv-pro-jobs-stats">
+    <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
         @foreach (var (tabId, icon, tone, count, label) in statCards)
         {
-            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@tabId"
-               class="prv-pro-jobs-stat @(Model.ActiveTab == tabId ? "is-highlighted" : "")">
+            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@tabId" asp-route-q="@Model.SearchQuery"
+               class="prv-pro-jobs-stat">
                 <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--@tone"><i class="fas @icon"></i></span>
                 <strong>@count</strong>
                 <span>@label</span>
             </a>
         }
     </section>
-
-    <nav class="prv-pro-jobs-tabs" aria-label="Jobs views">
-        @foreach (var (id, label) in tabs)
-        {
-            <a asp-controller="Proveedor" asp-action="Jobs"
-               asp-route-tab="@id"
-               asp-route-q="@Model.SearchQuery"
-               class="@(Model.ActiveTab == id ? "is-active" : "")">@label</a>
-        }
-    </nav>
 
     <div class="prv-pro-jobs-list-head">
         <h2>@listTitle</h2>
@@ -273,3 +294,34 @@
     }
 
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        var filterBtn = document.getElementById('prvJobsFilterBtn');
+        var filterMenu = document.getElementById('prvJobsFilterMenu');
+        if (!filterBtn || !filterMenu) {
+            return;
+        }
+
+        function closeMenu() {
+            filterMenu.hidden = true;
+            filterBtn.setAttribute('aria-expanded', 'false');
+        }
+
+        filterBtn.addEventListener('click', function (e) {
+            e.stopPropagation();
+            var willOpen = filterMenu.hidden;
+            filterMenu.hidden = !willOpen;
+            filterBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+        });
+
+        document.addEventListener('click', closeMenu);
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeMenu();
+            }
+        });
+    })();
+</script>
+}
