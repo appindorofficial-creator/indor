@@ -9,12 +9,13 @@
 <link rel="stylesheet" href="~/css/property-loading.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/address-autocomplete.css" asp-append-version="true" />
 
-<form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form" id="editProfileForm">
-    @Html.AntiForgeryToken()
-
-    <section class="pf-edit-photo-card" id="photo">
-        <h3><i class="fas fa-camera"></i> Profile photo</h3>
-        <p>Upload a photo. It will appear on your profile in the More section.</p>
+<section class="pf-edit-photo-card" id="photo">
+    <h3><i class="fas fa-camera"></i> Profile photo</h3>
+    <p>Upload a photo. It will appear on your profile in the More section.</p>
+    <div id="editProfilePhotoAlerts"></div>
+    <form asp-controller="Perfil" asp-action="SubirFoto" method="post" enctype="multipart/form-data" id="editProfilePhotoForm" class="pf-edit-photo-upload-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnTo" value="editar" />
         <div class="pf-edit-photo-row">
             <div class="pf-edit-photo-preview" id="photoPreview">
                 @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
@@ -29,14 +30,27 @@
                 }
             </div>
             <div class="pf-edit-photo-actions">
-                <label class="pf-edit-upload-btn">
-                    <i class="fas fa-camera"></i> Choose photo
-                    <input type="file" name="foto" id="fotoInput" accept="image/jpeg,image/png,image/webp" hidden />
-                </label>
+                <button type="button" class="pf-edit-upload-btn" id="editProfilePhotoBtn" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-camera"></i> Change photo
+                </button>
+                <div class="more-profile-photo-menu pf-edit-photo-menu" id="editProfilePhotoMenu" role="menu" hidden>
+                    <button type="button" class="more-profile-photo-menu-item" id="editProfilePhotoTake" role="menuitem">
+                        <i class="fas fa-camera"></i> Take photo
+                    </button>
+                    <button type="button" class="more-profile-photo-menu-item" id="editProfilePhotoChoose" role="menuitem">
+                        <i class="fas fa-image"></i> Choose from library
+                    </button>
+                </div>
+                <input type="file" id="editProfilePhotoCamera" name="foto" accept="image/*" capture="environment" hidden />
+                <input type="file" id="editProfilePhotoLibrary" name="foto" accept="image/jpeg,image/png,image/webp,image/*" hidden />
                 <small>JPG, PNG or WEBP · Max 10 MB</small>
             </div>
         </div>
-    </section>
+    </form>
+</section>
+
+<form asp-controller="Perfil" asp-action="EditarPerfil" method="post" enctype="multipart/form-data" class="pf-edit-profile-form" id="editProfileForm">
+    @Html.AntiForgeryToken()
 
     <div class="pf-card" id="personal">
         <h3><i class="fas fa-id-card"></i> Personal details</h3>
@@ -221,23 +235,6 @@
     @await Html.PartialAsync("_AddressAutocompleteScripts")
     <script>
         (function () {
-            var input = document.getElementById('fotoInput');
-            var previewImg = document.getElementById('photoPreviewImg');
-            var previewInitial = document.getElementById('photoPreviewInitial');
-            if (input && previewImg) {
-                input.addEventListener('change', function () {
-                    var file = input.files && input.files[0];
-                    if (!file) return;
-                    var reader = new FileReader();
-                    reader.onload = function (e) {
-                        previewImg.src = e.target.result;
-                        previewImg.hidden = false;
-                        if (previewInitial) previewInitial.hidden = true;
-                    };
-                    reader.readAsDataURL(file);
-                });
-            }
-
             if (window.location.hash === '#home') {
                 var home = document.getElementById('home');
                 if (home) {

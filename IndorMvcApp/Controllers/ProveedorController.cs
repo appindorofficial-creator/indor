@@ -1530,6 +1530,31 @@ public class ProveedorController(
 
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadProfilePhoto(IFormFile? photo, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return IsAjaxPhotoUploadRequest() ? Unauthorized() : proveedor.Result;
+        }
+
+        if (photo == null || photo.Length == 0)
+        {
+            return PhotoUploadResult("Please choose a photo to upload.");
+        }
+
+        var (photoError, photoUrl) = await SaveProfilePhotoAsync(proveedor.Entity!.Id, photo);
+        if (!string.IsNullOrWhiteSpace(photoError))
+        {
+            return PhotoUploadResult(photoError);
+        }
+
+        return PhotoUploadResult(null, photoUrl);
+    }
+
     [HttpGet]
     public async Task<IActionResult> PublicProfile(CancellationToken cancellationToken)
     {
@@ -1678,7 +1703,7 @@ public class ProveedorController(
 
         if (profilePhoto != null && profilePhoto.Length > 0)
         {
-            var logoError = await SaveProfilePhotoAsync(proveedor.Entity.Id, profilePhoto);
+            var (logoError, _) = await SaveProfilePhotoAsync(proveedor.Entity.Id, profilePhoto);
             if (!string.IsNullOrWhiteSpace(logoError))
             {
                 TempData["ProfilePhotoError"] = logoError;
@@ -3470,7 +3495,7 @@ public class ProveedorController(
         ProviderDocumentTypes.PlumbingLicense
     };
 
-    private async Task<string?> SaveProfilePhotoAsync(int proveedorId, IFormFile file)
+    private async Task<(string? Error, string? PhotoUrl)> SaveProfilePhotoAsync(int proveedorId, IFormFile file)
     {
         var ext = Path.GetExtension(file.FileName).ToLowerInvariant();
         if (string.IsNullOrEmpty(ext) && file.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
@@ -3480,12 +3505,12 @@ public class ProveedorController(
 
         if (!ProfilePhotoExtensions.Contains(ext))
         {
-            return "Photo must be JPG, PNG, or WEBP.";
+            return ("Photo must be JPG, PNG, or WEBP.", null);
         }
 
         if (file.Length > MaxProfilePhotoBytes)
         {
-            return "Photo must be 10 MB or less.";
+            return ("Photo must be 10 MB or less.", null);
         }
 
         var uploadDir = Path.Combine(env.WebRootPath, "uploads", "provider", proveedorId.ToString());
@@ -3499,8 +3524,37 @@ public class ProveedorController(
 
         var relativeUrl = $"/uploads/provider/{proveedorId}/{storedName}";
         await registration.RegisterDocumentUploadAsync(ProviderDocumentTypes.Logo, relativeUrl, proveedorId);
-        return null;
+        return (null, relativeUrl);
     }
+
+    private IActionResult PhotoUploadResult(string? error, string? photoUrl = null)
+    {
+        if (IsAjaxPhotoUploadRequest())
+        {
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                return BadRequest(new { ok = false, message = error });
+            }
+
+            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+        }
+
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            TempData["ProfilePhotoError"] = error;
+        }
+        else
+        {
+            TempData["ProfileSaved"] = true;
+        }
+
+        return RedirectToAction(nameof(Profile));
+    }
+
+    private static bool IsAjaxPhotoUploadRequest(Microsoft.AspNetCore.Http.HttpRequest request) =>
+        string.Equals(request.Headers.XRequestedWith, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
+    private bool IsAjaxPhotoUploadRequest() => IsAjaxPhotoUploadRequest(Request);
 
     private async Task<string?> SaveProviderDocumentAsync(int proveedorId, string documentType, IFormFile file)
     {
