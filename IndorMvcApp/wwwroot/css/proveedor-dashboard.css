@@ -4949,7 +4949,7 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-shell--profile .prv-pro-notify-btn--inverse.has-dot::after {
     top: 7px;
     right: 8px;
-    background: #DC2626;
+    background: #0066CC;
     border: 2px solid rgba(255, 255, 255, .85);
 }
 
@@ -5480,7 +5480,7 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-portal-page-hero .prv-pro-notify-btn--inverse.has-dot::after {
     top: 7px;
     right: 8px;
-    background: #DC2626;
+    background: #0066CC;
     border: 2px solid rgba(255, 255, 255, .85);
 }
 
@@ -6862,7 +6862,7 @@ a.prv-pro-profile-center-action:focus-visible {
     border-radius: 11px;
 }
 .prv-pro-notify-btn--inverse.has-dot::after {
-    background: #DC2626;
+    background: #0066CC;
     border: 2px solid rgba(255, 255, 255, .85);
 }
 .prv-pro-notify-panel {

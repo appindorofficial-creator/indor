@@ -7645,7 +7645,6 @@ a.rl-profile-nav-item {
     background: rgba(255, 255, 255, .95);
     color: #0066CC;
 }
-.rl-portal-page-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
 .rl-portal-page-hero .rl-page-header { margin-bottom: 16px; position: relative; z-index: 3; }
 .rl-page-header--hero { align-items: center; }
 .rl-page-header-copy { min-width: 0; flex: 1; }
