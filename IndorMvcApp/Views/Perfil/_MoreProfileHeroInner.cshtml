@@ -2,34 +2,16 @@
 @using IndorMvcApp.Services
 
 <div class="more-avatar-wrap">
-    <form asp-controller="Perfil" asp-action="SubirFoto" method="post" enctype="multipart/form-data" id="moreProfilePhotoForm">
-        @Html.AntiForgeryToken()
-        <div class="more-avatar" id="moreProfilePhotoPreview">
-            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
-            {
-                <img src="@Url.Content("~" + Model.PhotoUrl)" alt="Profile photo" id="moreProfilePhotoImg" />
-                <i class="fas fa-user" id="moreProfilePhotoPlaceholder" hidden></i>
-            }
-            else
-            {
-                <i class="fas fa-user" id="moreProfilePhotoPlaceholder"></i>
-                <img src="" alt="Profile photo" id="moreProfilePhotoImg" hidden />
-            }
-        </div>
-        <button type="button" class="more-avatar-edit" id="moreProfilePhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
-            <i class="fas fa-camera"></i>
-        </button>
-        <div class="more-profile-photo-menu" id="moreProfilePhotoMenu" role="menu" hidden>
-            <button type="button" class="more-profile-photo-menu-item" id="moreProfilePhotoTake" role="menuitem">
-                <i class="fas fa-camera"></i> Take photo
-            </button>
-            <button type="button" class="more-profile-photo-menu-item" id="moreProfilePhotoChoose" role="menuitem">
-                <i class="fas fa-image"></i> Choose from library
-            </button>
-        </div>
-        <input type="file" id="moreProfilePhotoCamera" name="foto" accept="image/*" capture="environment" hidden />
-        <input type="file" id="moreProfilePhotoLibrary" name="foto" accept="image/jpeg,image/png,image/webp,image/*" hidden />
-    </form>
+    <div class="more-avatar">
+        @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+        {
+            <img src="@Url.Content("~" + Model.PhotoUrl)" alt="Profile photo" />
+        }
+        else
+        {
+            <i class="fas fa-user"></i>
+        }
+    </div>
 </div>
 <div class="more-profile-meta">
     <p class="mp-name">@Model.FullName</p>

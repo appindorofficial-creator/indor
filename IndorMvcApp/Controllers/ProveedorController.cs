@@ -3545,10 +3545,10 @@ public class ProveedorController(
         }
         else
         {
-            TempData["ProfileSaved"] = true;
+            TempData["ProfilePhotoOk"] = "Profile photo updated.";
         }
 
-        return RedirectToAction(nameof(Profile));
+        return RedirectToAction(nameof(EditProfile), new { section = "full" });
     }
 
     private static bool IsAjaxPhotoUploadRequest(Microsoft.AspNetCore.Http.HttpRequest request) =>

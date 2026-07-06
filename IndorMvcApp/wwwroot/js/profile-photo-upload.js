@@ -12,6 +12,7 @@
         var previewImg = document.getElementById(options.imgId);
         var placeholder = options.placeholderId ? document.getElementById(options.placeholderId) : null;
         var alertsId = options.alertsId;
+        var alertClass = options.alertClass || 'more-profile-photo-alert';
 
         if (!photoForm || !menuBtn || !menu) {
             return;
@@ -65,7 +66,7 @@
 
             wrap.innerHTML = '';
             var alert = document.createElement('div');
-            alert.className = 'more-profile-photo-alert more-profile-photo-alert--' + tone;
+            alert.className = alertClass + ' ' + alertClass + '--' + tone;
             alert.setAttribute('role', tone === 'success' ? 'status' : 'alert');
             alert.textContent = message;
             wrap.appendChild(alert);
@@ -86,9 +87,8 @@
             }
 
             var formData = new FormData(photoForm);
-            formData.delete('foto');
-            formData.delete('photo');
-            formData.append(options.fieldName || 'foto', file);
+            formData.delete(options.fieldName || 'photo');
+            formData.append(options.fieldName || 'photo', file);
 
             fetch(photoForm.action, {
                 method: 'POST',
@@ -135,20 +135,6 @@
     }
 
     wirePhotoPicker({
-        formId: 'moreProfilePhotoForm',
-        btnId: 'moreProfilePhotoBtn',
-        menuId: 'moreProfilePhotoMenu',
-        takeId: 'moreProfilePhotoTake',
-        chooseId: 'moreProfilePhotoChoose',
-        cameraId: 'moreProfilePhotoCamera',
-        libraryId: 'moreProfilePhotoLibrary',
-        imgId: 'moreProfilePhotoImg',
-        placeholderId: 'moreProfilePhotoPlaceholder',
-        alertsId: 'moreProfilePhotoAlerts',
-        fieldName: 'foto'
-    });
-
-    wirePhotoPicker({
         formId: 'editProfilePhotoForm',
         btnId: 'editProfilePhotoBtn',
         menuId: 'editProfilePhotoMenu',
@@ -159,6 +145,37 @@
         imgId: 'photoPreviewImg',
         placeholderId: 'photoPreviewInitial',
         alertsId: 'editProfilePhotoAlerts',
-        fieldName: 'foto'
+        fieldName: 'foto',
+        alertClass: 'more-profile-photo-alert'
+    });
+
+    wirePhotoPicker({
+        formId: 'prvEditProfilePhotoForm',
+        btnId: 'prvEditProfilePhotoBtn',
+        menuId: 'prvEditProfilePhotoMenu',
+        takeId: 'prvEditProfilePhotoTake',
+        chooseId: 'prvEditProfilePhotoChoose',
+        cameraId: 'prvEditProfilePhotoCamera',
+        libraryId: 'prvEditProfilePhotoLibrary',
+        imgId: 'prvEditProfilePhotoImg',
+        placeholderId: 'prvEditProfilePhotoPlaceholder',
+        alertsId: 'prvEditProfilePhotoAlerts',
+        fieldName: 'photo',
+        alertClass: 'prv-pro-profile-photo-alert'
+    });
+
+    wirePhotoPicker({
+        formId: 'rlBusinessPhotoForm',
+        btnId: 'rlBusinessPhotoBtn',
+        menuId: 'rlBusinessPhotoMenu',
+        takeId: 'rlBusinessPhotoTake',
+        chooseId: 'rlBusinessPhotoChoose',
+        cameraId: 'rlBusinessPhotoCamera',
+        libraryId: 'rlBusinessPhotoLibrary',
+        imgId: 'rlBusinessPhotoImg',
+        placeholderId: 'rlBusinessPhotoPlaceholder',
+        alertsId: 'rlBusinessPhotoAlerts',
+        fieldName: 'photo',
+        alertClass: 'rl-profile-photo-alert'
     });
 })();

@@ -4,6 +4,54 @@
     ViewBag.NavActive = "profile";
 }
 
+<div id="rlBusinessPhotoAlerts">
+@if (TempData["ProfilePhotoOk"] is string photoOk)
+{
+    <div class="rl-profile-photo-alert rl-profile-photo-alert--success" role="status">@photoOk</div>
+}
+@if (TempData["ProfilePhotoError"] is string photoError)
+{
+    <div class="rl-profile-photo-alert rl-profile-photo-alert--error" role="alert">@photoError</div>
+}
+</div>
+
+<section class="rl-ep-photo-card">
+    <h2>Profile photo</h2>
+    <p>Upload a photo. It will appear on your realtor profile.</p>
+    <form asp-controller="Realtor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="rlBusinessPhotoForm">
+        @Html.AntiForgeryToken()
+        <div class="rl-ep-photo-row">
+            <div class="rl-profile-photo-wrap rl-ep-photo-preview">
+                <div class="rl-profile-photo-preview" id="rlBusinessPhotoPreview">
+                    @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+                    {
+                        <img src="@Model.ProfilePhotoUrl" alt="" class="rl-profile-photo" id="rlBusinessPhotoImg" />
+                        <span class="rl-profile-photo rl-profile-photo--placeholder" id="rlBusinessPhotoPlaceholder" hidden><i class="fas fa-user"></i></span>
+                    }
+                    else
+                    {
+                        <span class="rl-profile-photo rl-profile-photo--placeholder" id="rlBusinessPhotoPlaceholder"><i class="fas fa-user"></i></span>
+                        <img src="" alt="" class="rl-profile-photo" id="rlBusinessPhotoImg" hidden />
+                    }
+                </div>
+                <button type="button" class="rl-profile-photo-edit" id="rlBusinessPhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <div class="rl-profile-photo-menu" id="rlBusinessPhotoMenu" role="menu" hidden>
+                    <button type="button" class="rl-profile-photo-menu-item" id="rlBusinessPhotoTake" role="menuitem">
+                        <i class="fas fa-camera"></i> Take photo
+                    </button>
+                    <button type="button" class="rl-profile-photo-menu-item" id="rlBusinessPhotoChoose" role="menuitem">
+                        <i class="fas fa-image"></i> Choose from library
+                    </button>
+                </div>
+                <input type="file" id="rlBusinessPhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
+                <input type="file" id="rlBusinessPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+            </div>
+        </div>
+    </form>
+</section>
+
 <section class="rl-ep-progress-card">
     <div class="rl-ep-progress-ring" style="--progress:@Model.ProfileCompletionPercent">
         <span>@Model.ProfileCompletionPercent%</span>
@@ -67,3 +115,7 @@
 <footer class="rl-ep-footer">
     <a asp-controller="Realtor" asp-action="EditProfileContact" class="rl-ep-btn-primary">Continue</a>
 </footer>
+
+@section Scripts {
+<script src="~/js/profile-photo-upload.js" asp-append-version="true"></script>
+}

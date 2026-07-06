@@ -11,48 +11,17 @@
         </a>
     </header>
 
-    <div id="paProfilePhotoAlerts">
-    @if (TempData["PersonalPhotoOk"] is string photoOk)
-    {
-        <div class="pa-personal-alert pa-personal-alert--success" role="status">@photoOk</div>
-    }
-    @if (TempData["PersonalPhotoError"] is string photoError)
-    {
-        <div class="pa-personal-alert pa-personal-alert--error" role="alert">@photoError</div>
-    }
-    </div>
-
     <section class="pa-profile-hero">
-        <form asp-controller="Administrador" asp-action="UploadPersonalPhoto" method="post" enctype="multipart/form-data" id="paProfilePhotoForm" class="pa-profile-photo-form">
-            @Html.AntiForgeryToken()
-            <input type="hidden" name="returnTo" value="profile" />
-            <div class="pa-profile-photo-wrap">
-                <div class="pa-profile-photo-preview" id="paProfilePhotoPreview">
-                    @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
-                    {
-                        <img src="@Model.ProfilePhotoUrl" alt="" class="pa-profile-photo" id="paProfilePhotoImg" />
-                    }
-                    else
-                    {
-                        <span class="pa-profile-photo pa-profile-photo--placeholder" id="paProfilePhotoPlaceholder"><i class="fas fa-user"></i></span>
-                        <img src="" alt="" class="pa-profile-photo" id="paProfilePhotoImg" hidden />
-                    }
-                </div>
-                <button type="button" class="pa-profile-photo-edit" id="paProfilePhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-camera"></i>
-                </button>
-                <div class="pa-profile-photo-menu" id="paProfilePhotoMenu" role="menu" hidden>
-                    <button type="button" class="pa-profile-photo-menu-item" id="paProfilePhotoTake" role="menuitem">
-                        <i class="fas fa-camera"></i> Take photo
-                    </button>
-                    <button type="button" class="pa-profile-photo-menu-item" id="paProfilePhotoChoose" role="menuitem">
-                        <i class="fas fa-image"></i> Choose from library
-                    </button>
-                </div>
-                <input type="file" id="paProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
-                <input type="file" id="paProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
-            </div>
-        </form>
+        <div class="pa-profile-photo-wrap">
+            @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+            {
+                <img src="@Model.ProfilePhotoUrl" alt="" class="pa-profile-photo" />
+            }
+            else
+            {
+                <span class="pa-profile-photo pa-profile-photo--placeholder"><i class="fas fa-user"></i></span>
+            }
+        </div>
         <div class="pa-profile-identity">
             <h1>@Model.DisplayName</h1>
             <span class="pa-profile-badge">@Model.RoleBadge</span>
@@ -122,132 +91,3 @@
     </section>
 </div>
 
-@section Scripts {
-<script>
-    (function () {
-        var form = document.getElementById('paProfilePhotoForm');
-        var menuBtn = document.getElementById('paProfilePhotoBtn');
-        var menu = document.getElementById('paProfilePhotoMenu');
-        var takeBtn = document.getElementById('paProfilePhotoTake');
-        var chooseBtn = document.getElementById('paProfilePhotoChoose');
-        var cameraInput = document.getElementById('paProfilePhotoCamera');
-        var libraryInput = document.getElementById('paProfilePhotoLibrary');
-        var previewImg = document.getElementById('paProfilePhotoImg');
-        var placeholder = document.getElementById('paProfilePhotoPlaceholder');
-
-        if (!form || !menuBtn || !menu) {
-            return;
-        }
-
-        function closeMenu() {
-            menu.hidden = true;
-            menuBtn.setAttribute('aria-expanded', 'false');
-        }
-
-        menuBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            var willOpen = menu.hidden;
-            menu.hidden = !willOpen;
-            menuBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-        });
-
-        document.addEventListener('click', closeMenu);
-        document.addEventListener('keydown', function (e) {
-            if (e.key === 'Escape') {
-                closeMenu();
-            }
-        });
-
-        if (takeBtn && cameraInput) {
-            takeBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                closeMenu();
-                cameraInput.click();
-            });
-        }
-
-        if (chooseBtn && libraryInput) {
-            chooseBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                closeMenu();
-                libraryInput.click();
-            });
-        }
-
-        function showPhotoAlert(message, tone) {
-            var wrap = document.getElementById('paProfilePhotoAlerts');
-            if (!wrap) {
-                return;
-            }
-
-            wrap.innerHTML = '';
-            var alert = document.createElement('div');
-            alert.className = 'pa-personal-alert pa-personal-alert--' + tone;
-            alert.setAttribute('role', tone === 'success' ? 'status' : 'alert');
-            alert.textContent = message;
-            wrap.appendChild(alert);
-        }
-
-        function handlePhotoSelected(input) {
-            if (!input.files || input.files.length === 0) {
-                return;
-            }
-
-            var file = input.files[0];
-            if (previewImg && file.type.startsWith('image/')) {
-                previewImg.src = URL.createObjectURL(file);
-                previewImg.hidden = false;
-                if (placeholder) {
-                    placeholder.hidden = true;
-                }
-            }
-
-            var formData = new FormData(form);
-            formData.delete('photo');
-            formData.append('photo', file);
-
-            fetch(form.action, {
-                method: 'POST',
-                body: formData,
-                headers: { 'X-Requested-With': 'XMLHttpRequest' }
-            })
-                .then(function (response) {
-                    return response.json().then(function (data) {
-                        if (!response.ok || !data.ok) {
-                            throw new Error(data.message || 'Could not upload photo.');
-                        }
-                        return data;
-                    });
-                })
-                .then(function (data) {
-                    if (previewImg && data.photoUrl) {
-                        previewImg.src = data.photoUrl;
-                        previewImg.hidden = false;
-                        if (placeholder) {
-                            placeholder.hidden = true;
-                        }
-                    }
-                    showPhotoAlert(data.message || 'Profile photo updated.', 'success');
-                })
-                .catch(function (error) {
-                    showPhotoAlert(error.message || 'Could not upload photo.', 'error');
-                })
-                .finally(function () {
-                    input.value = '';
-                });
-        }
-
-        if (cameraInput) {
-            cameraInput.addEventListener('change', function () {
-                handlePhotoSelected(cameraInput);
-            });
-        }
-
-        if (libraryInput) {
-            libraryInput.addEventListener('change', function () {
-                handlePhotoSelected(libraryInput);
-            });
-        }
-    })();
-</script>
-}

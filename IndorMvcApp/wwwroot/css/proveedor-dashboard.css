@@ -1292,6 +1292,24 @@ a.prv-pro-profile-btn { text-decoration: none; }
     flex-shrink: 0;
     box-shadow: 0 8px 20px rgba(0, 86, 210, 0.28);
 }
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    padding: 0;
+}
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview > .prv-pro-profile-logo,
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview > .prv-pro-profile-logo--img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview > [hidden] {
+    display: none !important;
+}
 .prv-pro-edit-profile-photo-preview img {
     width: 100%;
     height: 100%;
@@ -1300,6 +1318,9 @@ a.prv-pro-profile-btn { text-decoration: none; }
 .prv-pro-edit-profile-photo-preview.has-image {
     background: #fff;
     border: 3px solid #E8F1FB;
+}
+.prv-pro-edit-profile-photo-actions {
+    position: relative;
 }
 .prv-pro-edit-profile-photo-actions small {
     display: block;

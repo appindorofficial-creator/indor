@@ -1074,7 +1074,7 @@ public class RealtorController(
             TempData["ProfilePhotoOk"] = "Profile photo updated.";
         }
 
-        return RedirectToAction(nameof(Profile));
+        return RedirectToAction(nameof(BusinessInformation));
     }
 
     private bool IsAjaxPhotoUploadRequest() =>

@@ -23,51 +23,22 @@
     </section>
 
     <section class="rl-profile-card-v2 rl-profile-card-v2--overlap">
-        <div id="rlProfilePhotoAlerts">
-        @if (TempData["ProfilePhotoOk"] is string photoOk)
-        {
-            <div class="rl-profile-photo-alert rl-profile-photo-alert--success" role="status">@photoOk</div>
-        }
-        @if (TempData["ProfilePhotoError"] is string photoError)
-        {
-            <div class="rl-profile-photo-alert rl-profile-photo-alert--error" role="alert">@photoError</div>
-        }
-        </div>
-        <div class="rl-profile-card-link">
-            <form asp-controller="Realtor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="rlProfilePhotoForm">
-                @Html.AntiForgeryToken()
-                <div class="rl-profile-photo-wrap">
-                    <div class="rl-profile-photo-preview" id="rlProfilePhotoPreview">
-                        @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
-                        {
-                            <img src="@Model.ProfilePhotoUrl" alt="" class="rl-profile-photo" id="rlProfilePhotoImg" />
-                        }
-                        else
-                        {
-                            <span class="rl-profile-photo rl-profile-photo--placeholder" id="rlProfilePhotoPlaceholder"><i class="fas fa-user"></i></span>
-                            <img src="" alt="" class="rl-profile-photo" id="rlProfilePhotoImg" hidden />
-                        }
-                    </div>
-                    <button type="button" class="rl-profile-photo-edit" id="rlProfilePhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                    <div class="rl-profile-photo-menu" id="rlProfilePhotoMenu" role="menu" hidden>
-                        <button type="button" class="rl-profile-photo-menu-item" id="rlProfilePhotoTake" role="menuitem">
-                            <i class="fas fa-camera"></i> Take photo
-                        </button>
-                        <button type="button" class="rl-profile-photo-menu-item" id="rlProfilePhotoChoose" role="menuitem">
-                            <i class="fas fa-image"></i> Choose from library
-                        </button>
-                    </div>
-                    <input type="file" id="rlProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
-                    <input type="file" id="rlProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
-                    @if (Model.IsVerified)
-                    {
-                        <span class="rl-profile-photo-badge" aria-label="Verified"><i class="fas fa-circle-check"></i></span>
-                    }
-                </div>
-            </form>
-            <a asp-controller="@profileCardController" asp-action="@profileCardAction" class="rl-profile-card-info">
+        <a asp-controller="@profileCardController" asp-action="@profileCardAction" class="rl-profile-card-link">
+            <div class="rl-profile-photo-wrap">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePhotoUrl))
+                {
+                    <img src="@Model.ProfilePhotoUrl" alt="" class="rl-profile-photo" />
+                }
+                else
+                {
+                    <span class="rl-profile-photo rl-profile-photo--placeholder"><i class="fas fa-user"></i></span>
+                }
+                @if (Model.IsVerified)
+                {
+                    <span class="rl-profile-photo-badge" aria-label="Verified"><i class="fas fa-circle-check"></i></span>
+                }
+            </div>
+            <div class="rl-profile-card-info">
                 <strong>@Model.FullName</strong>
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
@@ -79,8 +50,8 @@
                         <span class="rl-verify-link">Verify profile <i class="fas fa-chevron-right"></i></span>
                     }
                 </div>
-            </a>
-        </div>
+            </div>
+        </a>
         <div class="rl-profile-stats">
             @foreach (var stat in Model.Stats)
             {
@@ -417,128 +388,6 @@
             e.preventDefault();
             saveNotifyPreferences();
         });
-
-        var photoForm = document.getElementById('rlProfilePhotoForm');
-        var menuBtn = document.getElementById('rlProfilePhotoBtn');
-        var menu = document.getElementById('rlProfilePhotoMenu');
-        var takeBtn = document.getElementById('rlProfilePhotoTake');
-        var chooseBtn = document.getElementById('rlProfilePhotoChoose');
-        var cameraInput = document.getElementById('rlProfilePhotoCamera');
-        var libraryInput = document.getElementById('rlProfilePhotoLibrary');
-        var previewImg = document.getElementById('rlProfilePhotoImg');
-        var placeholder = document.getElementById('rlProfilePhotoPlaceholder');
-
-        if (photoForm && menuBtn && menu) {
-            function closePhotoMenu() {
-                menu.hidden = true;
-                menuBtn.setAttribute('aria-expanded', 'false');
-            }
-
-            menuBtn.addEventListener('click', function (e) {
-                e.stopPropagation();
-                var willOpen = menu.hidden;
-                menu.hidden = !willOpen;
-                menuBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
-            });
-
-            document.addEventListener('click', closePhotoMenu);
-            document.addEventListener('keydown', function (e) {
-                if (e.key === 'Escape') {
-                    closePhotoMenu();
-                }
-            });
-
-            if (takeBtn && cameraInput) {
-                takeBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    closePhotoMenu();
-                    cameraInput.click();
-                });
-            }
-
-            if (chooseBtn && libraryInput) {
-                chooseBtn.addEventListener('click', function (e) {
-                    e.stopPropagation();
-                    closePhotoMenu();
-                    libraryInput.click();
-                });
-            }
-
-            function showPhotoAlert(message, tone) {
-                var wrap = document.getElementById('rlProfilePhotoAlerts');
-                if (!wrap) {
-                    return;
-                }
-
-                wrap.innerHTML = '';
-                var alert = document.createElement('div');
-                alert.className = 'rl-profile-photo-alert rl-profile-photo-alert--' + tone;
-                alert.setAttribute('role', tone === 'success' ? 'status' : 'alert');
-                alert.textContent = message;
-                wrap.appendChild(alert);
-            }
-
-            function handlePhotoSelected(input) {
-                if (!input.files || input.files.length === 0) {
-                    return;
-                }
-
-                var file = input.files[0];
-                if (previewImg && file.type.startsWith('image/')) {
-                    previewImg.src = URL.createObjectURL(file);
-                    previewImg.hidden = false;
-                    if (placeholder) {
-                        placeholder.hidden = true;
-                    }
-                }
-
-                var formData = new FormData(photoForm);
-                formData.delete('photo');
-                formData.append('photo', file);
-
-                fetch(photoForm.action, {
-                    method: 'POST',
-                    body: formData,
-                    headers: { 'X-Requested-With': 'XMLHttpRequest' }
-                })
-                    .then(function (response) {
-                        return response.json().then(function (data) {
-                            if (!response.ok || !data.ok) {
-                                throw new Error(data.message || 'Could not upload photo.');
-                            }
-                            return data;
-                        });
-                    })
-                    .then(function (data) {
-                        if (previewImg && data.photoUrl) {
-                            previewImg.src = data.photoUrl;
-                            previewImg.hidden = false;
-                            if (placeholder) {
-                                placeholder.hidden = true;
-                            }
-                        }
-                        showPhotoAlert(data.message || 'Profile photo updated.', 'success');
-                    })
-                    .catch(function (error) {
-                        showPhotoAlert(error.message || 'Could not upload photo.', 'error');
-                    })
-                    .finally(function () {
-                        input.value = '';
-                    });
-            }
-
-            if (cameraInput) {
-                cameraInput.addEventListener('change', function () {
-                    handlePhotoSelected(cameraInput);
-                });
-            }
-
-            if (libraryInput) {
-                libraryInput.addEventListener('change', function () {
-                    handlePhotoSelected(libraryInput);
-                });
-            }
-        }
     })();
 </script>
 }

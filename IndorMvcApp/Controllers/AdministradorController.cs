@@ -2137,10 +2137,7 @@ public class AdministradorController(
 
     private string ResolvePhotoUploadReturnAction()
     {
-        var returnTo = Request.Form["returnTo"].ToString();
-        return string.Equals(returnTo, "profile", StringComparison.OrdinalIgnoreCase)
-            ? nameof(Profile)
-            : nameof(PersonalInformation);
+        return nameof(PersonalInformation);
     }
 
     private bool IsAjaxPhotoUploadRequest() =>
