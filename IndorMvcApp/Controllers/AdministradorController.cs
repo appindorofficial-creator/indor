@@ -2132,7 +2132,15 @@ public class AdministradorController(
             TempData["PersonalPhotoOk"] = "Profile photo updated.";
         }
 
-        return RedirectToAction(nameof(PersonalInformation));
+        return RedirectToAction(ResolvePhotoUploadReturnAction());
+    }
+
+    private string ResolvePhotoUploadReturnAction()
+    {
+        var returnTo = Request.Form["returnTo"].ToString();
+        return string.Equals(returnTo, "profile", StringComparison.OrdinalIgnoreCase)
+            ? nameof(Profile)
+            : nameof(PersonalInformation);
     }
 
     private bool IsAjaxPhotoUploadRequest() =>
