@@ -1,0 +1,390 @@
+/* Homeowner portal shell — aligned with Realtor portal header patterns */
+
+.ho-dash-shell {
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.ho-portal-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    position: relative;
+    z-index: 2;
+}
+
+.ho-portal-logo {
+    font-weight: 800;
+    font-size: 1rem;
+    color: #0066CC;
+    text-decoration: none;
+}
+
+.ho-portal-logo i { margin-right: 6px; }
+
+.ho-portal-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.ho-portal-icon-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    color: #334155;
+    font-size: 1rem;
+    position: relative;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    padding: 0;
+}
+
+.ho-portal-icon-btn.has-dot::after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #0066CC;
+}
+
+.ho-portal-topbar--inverse .ho-portal-logo { color: #fff; }
+
+.ho-portal-topbar--inverse .ho-portal-icon-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .95);
+    color: #0066CC;
+}
+
+.ho-portal-topbar--inverse .ho-portal-icon-btn.has-dot::after {
+    top: 7px;
+    right: 8px;
+    border: 2px solid rgba(255, 255, 255, .85);
+}
+
+.ho-notify-wrap--global {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    z-index: 200;
+    pointer-events: none;
+}
+
+.ho-notify-wrap--global .ho-notify-panel {
+    pointer-events: auto;
+    position: fixed;
+    top: 58px;
+    right: 16px;
+}
+
+
+.ho-notify-wrap { position: relative; }
+
+.ho-notify-wrap:not(.ho-notify-wrap--global) .ho-notify-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+}
+
+.ho-notify-panel {
+    width: min(340px, calc(100vw - 32px));
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, .14);
+    z-index: 1200;
+    overflow: hidden;
+    display: none;
+}
+
+.ho-notify-panel.open { display: block; }
+
+.ho-notify-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ho-notify-panel-head strong {
+    font-size: .95rem;
+    color: #0F172A;
+}
+
+.ho-notify-badge {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #0066CC;
+    background: #E8F2FF;
+    border-radius: 999px;
+    padding: 3px 8px;
+}
+
+.ho-notify-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.ho-notify-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ho-notify-item:last-child { border-bottom: 0; }
+
+.ho-notify-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: .9rem;
+}
+
+.ho-notify-item-icon.expired { background: #FEE2E2; color: #B91C1C; }
+.ho-notify-item-icon.soon { background: #FEF3C7; color: #B45309; }
+.ho-notify-item-icon.upcoming { background: #DBEAFE; color: #004FA3; }
+
+.ho-notify-item-body { flex: 1; min-width: 0; }
+
+.ho-notify-item-title {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.35;
+}
+
+.ho-notify-item-sub {
+    font-size: .72rem;
+    color: #64748B;
+    margin-top: 2px;
+}
+
+.ho-notify-item-time {
+    font-size: .7rem;
+    color: #94A3B8;
+    margin-top: 4px;
+}
+
+.ho-notify-empty {
+    padding: 28px 20px;
+    text-align: center;
+    color: #64748B;
+    font-size: .85rem;
+}
+
+.ho-section-topbar {
+    margin: -16px -16px 16px;
+    padding: 14px 16px 0;
+}
+
+.ho-portal-page-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin: -16px -16px 16px;
+    padding: 14px 16px 18px;
+    border-radius: 0 0 26px 26px;
+    background: linear-gradient(135deg, #37A0FF 0%, #0F7BEF 45%, #0057C8 82%, #063E8C 125%);
+    box-shadow: 0 16px 38px rgba(0, 86, 200, .28);
+    color: #fff;
+    position: relative;
+    isolation: isolate;
+}
+
+.ho-page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.ho-page-header-copy { min-width: 0; flex: 1; }
+
+.ho-page-title {
+    margin: 0;
+    font-size: 1.45rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.15;
+}
+
+.ho-page-subtitle {
+    margin: 4px 0 0;
+    font-size: .88rem;
+    color: rgba(255, 255, 255, .85);
+}
+
+.ho-profile-chip-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1.5px solid rgba(255, 255, 255, .55);
+    background: rgba(255, 255, 255, .12);
+    color: #fff;
+    font-size: .76rem;
+    font-weight: 700;
+    text-decoration: none;
+    white-space: nowrap;
+    flex-shrink: 0;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.ho-profile-chip-btn:hover,
+.ho-profile-chip-btn:focus-visible {
+    background: rgba(255, 255, 255, .22);
+    border-color: #fff;
+    color: #fff;
+}
+
+.ho-network-view-toggle {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding: 4px;
+    background: rgba(255, 255, 255, .18);
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+}
+
+.ho-network-view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 12px 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    color: rgba(255, 255, 255, .88);
+    font-size: .88rem;
+    font-weight: 700;
+}
+
+.ho-network-view-btn.is-active {
+    background: #fff;
+    color: #0066CC;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.22);
+}
+
+.ho-portal-page-hero .hn-search-form {
+    margin-bottom: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.ho-portal-page-hero .hn-search-bar {
+    margin-bottom: 12px;
+    border-color: transparent;
+}
+
+.ho-portal-page-hero .hn-filter-chips {
+    position: relative;
+    z-index: 1;
+    margin-bottom: 0;
+}
+
+.ho-portal-page-hero .hn-filter-chip {
+    background: #fff;
+    border-color: #0066CC;
+    color: #0066CC;
+}
+
+.ho-portal-page-hero .hn-filter-chip.is-active {
+    background: #0066CC;
+    border-color: #fff;
+    color: #fff;
+}
+
+.ho-view-switcher-wrap {
+    margin: 0 0 14px;
+}
+
+.ho-home-hero {
+    margin-bottom: 16px;
+}
+
+.ho-home-hero-user {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.ho-home-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, .65);
+    box-shadow: 0 6px 16px rgba(6, 40, 90, .3);
+    flex-shrink: 0;
+}
+
+.ho-home-avatar--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.ho-home-hero h1 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.ho-home-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+#section-home.hn-map-active .ho-portal-page-hero--network-map {
+    margin-bottom: 0;
+    border-radius: 0 0 20px 20px;
+}
+
+#section-home.hn-map-active .ho-view-switcher-wrap {
+    margin: 12px 0 14px;
+}

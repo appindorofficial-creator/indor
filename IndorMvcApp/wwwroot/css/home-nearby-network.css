@@ -1,9 +1,4 @@
 /* Homeowner Nearby Network (Home tab) */
-:root {
-    /* Match top-bar flex row: brand + gap, bell + gap (same edges as .search-bar) */
-    --home-search-offset-brand-gap: calc(3.784rem + 4px);
-    --home-search-offset-bell-gap: calc(38px + 4px);
-}
 
 #section-home.hn-map-active {
     padding: 0 !important;
@@ -26,28 +21,16 @@
     padding-bottom: 24px;
 }
 
-/* Align Map/Feed toggle + empty state with top search bar (logo ↔ bell) */
 #section-home:not(.hn-map-active) .hn-network-view-toggle,
 #section-home:not(.hn-map-active) .hn-network-empty,
 #section-home:not(.hn-map-active) .hn-feed-empty {
-    margin-left: var(--home-search-offset-brand-gap);
-    margin-right: var(--home-search-offset-bell-gap);
-}
-
-#section-home:not(.hn-map-active) .hn-network-view-toggle {
-    margin-top: 8px;
+    margin-left: 0;
+    margin-right: 0;
 }
 
 #section-home.hn-map-active .hn-network-view-toggle {
-    margin-left: calc(16px + var(--home-search-offset-brand-gap));
-    margin-right: calc(16px + var(--home-search-offset-bell-gap));
-}
-
-@media (min-width: 768px) {
-    #section-home.hn-map-active .hn-network-view-toggle {
-        margin-left: calc(24px + var(--home-search-offset-brand-gap));
-        margin-right: calc(24px + var(--home-search-offset-bell-gap));
-    }
+    margin-left: 0;
+    margin-right: 0;
 }
 
 .hn-network-head {

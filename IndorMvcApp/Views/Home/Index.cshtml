@@ -511,6 +511,18 @@
     }
 
     notificaciones = notificaciones.OrderBy(n => n.DaysRemaining).ToList();
+    var homeNotificationItems = notificaciones.Select(n => new IndorMvcApp.ViewModels.HomeNotificationItemViewModel
+    {
+        Icon = n.Icon,
+        Severity = n.Severity,
+        Title = n.Title,
+        Subtitle = n.Subtitle,
+        Date = n.Date
+    }).ToList();
+    var moreProfileShell = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
+        ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
+    ViewData["HomeNotificationCount"] = homeNotificationItems.Count;
+    ViewData["HomeNotificationItems"] = homeNotificationItems;
 }
 
 @functions {
@@ -556,59 +568,12 @@
     <link rel="stylesheet" href="~/css/profile-more.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/schedule-section.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home-portal-header.css" asp-append-version="true" />
     @await Html.PartialAsync("_AppVersionHead")
     <link rel="stylesheet" href="~/css/home-index.css" asp-append-version="true" />
     @await Html.PartialAsync("_TabletResponsiveHead")
 </head>
 <body>
-    <header class="top-bar">
-        <a class="hd-brand" asp-controller="Home" asp-action="Index" aria-label="INDOR">
-            IND
-            <svg class="hd-brand-house" viewBox="0 0 28 28" aria-hidden="true" focusable="false">
-                <path d="M14 3 L26 14 V26 H2 V14 Z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" />
-            </svg>
-            R
-        </a>
-        <button type="button" class="search-bar" id="homeSearchOpen" aria-label="Search in my neighborhood">
-            <i class="fas fa-search"></i>
-            <span>Search in my neighborhood...</span>
-        </button>
-        <div class="bell" id="bellToggle" role="button" aria-label="Notifications">
-            <i class="far fa-bell"></i>
-            @if (notificaciones.Count > 0)
-            {
-                <span class="bell-count">@(notificaciones.Count > 9 ? "9+" : notificaciones.Count.ToString())</span>
-            }
-        </div>
-    </header>
-
-    <div class="notif-panel" id="notifPanel" role="dialog" aria-label="Notifications">
-        <div class="notif-header">
-            <strong><i class="far fa-bell"></i> Notifications</strong>
-            <button type="button" class="notif-clear" id="notifClose">Close</button>
-        </div>
-        <div class="notif-list">
-            @if (notificaciones.Count == 0)
-            {
-                <div class="notif-empty">You have no notifications right now.</div>
-            }
-            else
-            {
-                @foreach (var n in notificaciones)
-                {
-                    <div class="notif-item">
-                        <div class="notif-icon @n.Severity"><i class="fas @n.Icon"></i></div>
-                        <div class="notif-text">
-                            <div class="nt-title">@n.Title</div>
-                            <div class="nt-sub">@n.Subtitle</div>
-                            <div class="nt-date"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
-                        </div>
-                    </div>
-                }
-            }
-        </div>
-    </div>
-
     <div class="home-search-overlay" id="homeSearchOverlay" role="dialog" aria-label="Search" aria-hidden="true">
         <div class="home-search-panel">
             <div class="home-search-head">
@@ -616,6 +581,33 @@
                 <button type="button" class="home-search-cancel" id="homeSearchClose">Cancel</button>
             </div>
             <div class="home-search-results" id="homeSearchResults"></div>
+        </div>
+    </div>
+
+    <div class="ho-notify-wrap ho-notify-wrap--global" id="hoNotifyWrap">
+        @{
+            var notifyCount = ViewData["HomeNotificationCount"] as int? ?? 0;
+            var notifyItems = ViewData["HomeNotificationItems"] as IReadOnlyList<IndorMvcApp.ViewModels.HomeNotificationItemViewModel>
+                ?? Array.Empty<IndorMvcApp.ViewModels.HomeNotificationItemViewModel>();
+        }
+        <div class="ho-notify-panel" id="notifPanel" role="dialog" aria-label="Notifications">
+            <div class="ho-notify-panel-head">
+                <strong>Notifications</strong>
+                @if (notifyCount > 0)
+                {
+                    <span class="ho-notify-badge">New</span>
+                }
+            </div>
+            @if (notifyCount == 0)
+            {
+                <div class="ho-notify-empty">You have no notifications right now.</div>
+            }
+            else
+            {
+                <div class="ho-notify-list">
+                    @await Html.PartialAsync("_HomeownerNotificationItems", notifyItems)
+                </div>
+            }
         </div>
     </div>
 
@@ -628,18 +620,48 @@
         @{
             var homeNearbyNetwork = homeNearbyNetworkModel;
         }
-        @if (TempData["NeighborRequestSaved"] is string neighborMsg)
-        {
-            <div class="alert-schedule-ok" style="margin:12px 16px;"><i class="fas fa-check-circle"></i> @neighborMsg</div>
-        }
-        @{
-            ViewData["HomeViewSwitcherActive"] = "network";
-        }
-        @await Html.PartialAsync("_HomeViewSwitcher")
-        @if (homeNearbyNetwork != null)
-        {
-            @await Html.PartialAsync("_HomeNearbyNetwork", homeNearbyNetwork)
-        }
+        <div class="ho-dash-shell @(isHomeMapView ? "ho-network-page--map" : "")">
+            <div class="ho-portal-page-hero @(isHomeMapView ? "ho-portal-page-hero--network-map" : "")">
+                @{
+                    ViewData["HomeTopbarInverse"] = true;
+                    ViewData["HomeTopbarSearch"] = false;
+                }
+                @await Html.PartialAsync("_HomeownerTopbar")
+                @if (homeNearbyNetwork != null)
+                {
+                    <div class="ho-page-header ho-page-header--hero">
+                        <div class="ho-page-header-copy">
+                            <h1 class="ho-page-title">@homeNearbyNetwork.PageTitle</h1>
+                            <p class="ho-page-subtitle"><i class="fas fa-location-dot"></i> @homeNearbyNetwork.RadiusLabel</p>
+                        </div>
+                        @if (!isHomeMapView)
+                        {
+                            <button type="button" class="ho-profile-chip-btn nav-jump" data-target="section-more">
+                                <i class="fas fa-user"></i> My Profile
+                            </button>
+                        }
+                    </div>
+                    @await Html.PartialAsync("_HomeNearbyNetworkHero", homeNearbyNetwork)
+                }
+            </div>
+
+            @if (TempData["NeighborRequestSaved"] is string neighborMsg)
+            {
+                <div class="alert-schedule-ok" style="margin:0 0 12px;"><i class="fas fa-check-circle"></i> @neighborMsg</div>
+            }
+
+            <div class="ho-view-switcher-wrap">
+                @{
+                    ViewData["HomeViewSwitcherActive"] = "network";
+                }
+                @await Html.PartialAsync("_HomeViewSwitcher")
+            </div>
+
+            @if (homeNearbyNetwork != null)
+            {
+                @await Html.PartialAsync("_HomeNearbyNetwork", homeNearbyNetwork)
+            }
+        </div>
     </section>
 
     <!-- ====== MY HOME (property dashboard) ====== -->
@@ -647,26 +669,59 @@
         @{
             var homeDashboard = ViewBag.HomeDashboard as IndorMvcApp.ViewModels.HomeDashboardViewModel;
         }
-        @if (TempData["InspectionSaved"] is string inspectionMsg)
-        {
-            <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
-        }
-        @if (TempData["PropertySaved"] is string propertySavedMsg)
-        {
-            <div class="alert-schedule-ok" style="margin:12px 0;"><i class="fas fa-check-circle"></i> @propertySavedMsg</div>
-        }
-        @{
-            ViewData["HomeViewSwitcherActive"] = "myhome";
-        }
-        @await Html.PartialAsync("_HomeViewSwitcher")
-        @if (homeDashboard != null)
-        {
-            @await Html.PartialAsync("_HomeDashboard", homeDashboard)
-        }
+        <div class="ho-dash-shell">
+            <div class="ho-portal-page-hero ho-home-hero">
+                @{
+                    ViewData["HomeTopbarInverse"] = true;
+                    ViewData["HomeTopbarSearch"] = false;
+                }
+                @await Html.PartialAsync("_HomeownerTopbar")
+                <div class="ho-home-hero-user">
+                    @if (!string.IsNullOrWhiteSpace(moreProfileShell.PhotoUrl))
+                    {
+                        <img src="@Url.Content("~" + moreProfileShell.PhotoUrl)" alt="" class="ho-home-avatar" asp-append-version="true" />
+                    }
+                    else
+                    {
+                        <span class="ho-home-avatar ho-home-avatar--placeholder"><i class="fas fa-user"></i></span>
+                    }
+                    <div>
+                        <h1>Hello @(string.IsNullOrWhiteSpace(moreProfileShell.FullName) || moreProfileShell.FullName == "Your name" ? "there" : moreProfileShell.FullName)</h1>
+                        <span class="ho-home-badge"><i class="fas fa-house"></i> Homeowner</span>
+                    </div>
+                </div>
+            </div>
+
+            @if (TempData["InspectionSaved"] is string inspectionMsg)
+            {
+                <div class="alert-schedule-ok" style="margin:0 0 12px;"><i class="fas fa-check-circle"></i> @inspectionMsg</div>
+            }
+            @if (TempData["PropertySaved"] is string propertySavedMsg)
+            {
+                <div class="alert-schedule-ok" style="margin:0 0 12px;"><i class="fas fa-check-circle"></i> @propertySavedMsg</div>
+            }
+            <div class="ho-view-switcher-wrap">
+                @{
+                    ViewData["HomeViewSwitcherActive"] = "myhome";
+                }
+                @await Html.PartialAsync("_HomeViewSwitcher")
+            </div>
+            @if (homeDashboard != null)
+            {
+                @await Html.PartialAsync("_HomeDashboard", homeDashboard)
+            }
+        </div>
     </section>
 
     <!-- ====== SERVICES ====== -->
     <section class="section" id="section-services">
+        @{
+            ViewData["HomeTopbarInverse"] = false;
+            ViewData["HomeTopbarSearch"] = true;
+        }
+        <div class="ho-section-topbar">
+            @await Html.PartialAsync("_HomeownerTopbar")
+        </div>
         @{
             var microservicios = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
                                  ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
@@ -750,6 +805,13 @@
     </section>
     <section class="section" id="section-myhome">
         @{
+            ViewData["HomeTopbarInverse"] = false;
+            ViewData["HomeTopbarSearch"] = true;
+        }
+        <div class="ho-section-topbar">
+            @await Html.PartialAsync("_HomeownerTopbar")
+        </div>
+        @{
             var houseFactProfile = ViewBag.HouseFactProfile as HouseFactProfileViewModel;
             var houseFactPreviewMode = ViewBag.HouseFactPreviewMode as bool? == true;
             var houseFactPropiedadId = ViewBag.HouseFactPropiedadId as int?;
@@ -820,6 +882,13 @@
 
     <!-- ====== MORE ====== -->
     <section class="section" id="section-more">
+        @{
+            ViewData["HomeTopbarInverse"] = false;
+            ViewData["HomeTopbarSearch"] = true;
+        }
+        <div class="ho-section-topbar">
+            @await Html.PartialAsync("_HomeownerTopbar")
+        </div>
         @{
             var moreProfile = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
                 ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
@@ -967,12 +1036,6 @@
             });
             document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
             section.classList.add('active');
-
-            const hideBell = sectionId === 'section-myhome';
-            document.body.classList.toggle('top-bar-no-bell', hideBell);
-            if (hideBell) {
-                document.getElementById('notifPanel')?.classList.remove('open');
-            }
 
             const scrollTarget = scrollTargetId
                 ? document.getElementById(scrollTargetId)
@@ -1194,12 +1257,12 @@
 
         // === Home search ===
         (function () {
-            const openBtn = document.getElementById('homeSearchOpen');
+            const openButtons = document.querySelectorAll('.js-home-search-open');
             const overlay = document.getElementById('homeSearchOverlay');
             const input = document.getElementById('homeSearchInput');
             const resultsEl = document.getElementById('homeSearchResults');
             const closeBtn = document.getElementById('homeSearchClose');
-            if (!openBtn || !overlay || !input || !resultsEl) return;
+            if (!overlay || !input || !resultsEl || openButtons.length === 0) return;
 
             const propiedadId = @(primaryProp?.Id.ToString() ?? "null");
             let searchIndex = null;
@@ -1304,7 +1367,9 @@
                 overlay.setAttribute('aria-hidden', 'true');
             }
 
-            openBtn.addEventListener('click', openSearch);
+            openButtons.forEach(function (btn) {
+                btn.addEventListener('click', openSearch);
+            });
             closeBtn.addEventListener('click', closeSearch);
             overlay.addEventListener('click', function (e) {
                 if (e.target === overlay) closeSearch();
@@ -1319,19 +1384,28 @@
 
         // === Notificaciones (campanita) ===
         (function () {
-            const bell = document.getElementById('bellToggle');
             const panel = document.getElementById('notifPanel');
-            const closeBtn = document.getElementById('notifClose');
-            if (!bell || !panel) return;
-            bell.addEventListener('click', (e) => {
-                e.stopPropagation();
-                panel.classList.toggle('open');
+            if (!panel) return;
+            const bells = document.querySelectorAll('.js-home-bell');
+            function closePanel() {
+                panel.classList.remove('open');
+                bells.forEach(b => b.setAttribute('aria-expanded', 'false'));
+            }
+            bells.forEach(bell => {
+                bell.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const willOpen = !panel.classList.contains('open');
+                    panel.classList.toggle('open', willOpen);
+                    bells.forEach(b => b.setAttribute('aria-expanded', willOpen ? 'true' : 'false'));
+                });
             });
-            closeBtn && closeBtn.addEventListener('click', () => panel.classList.remove('open'));
             document.addEventListener('click', (e) => {
-                if (!panel.contains(e.target) && e.target !== bell) {
-                    panel.classList.remove('open');
+                if (!panel.contains(e.target) && !e.target.closest('.js-home-bell')) {
+                    closePanel();
                 }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') closePanel();
             });
         })();
 
