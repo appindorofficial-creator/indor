@@ -16,7 +16,7 @@
     <section class="prv-net-hire-card" style="margin-top:22px;">
         <div class="prv-net-card-label">Subcontractor</div>
         <div class="prv-net-sub-top">
-            <span class="prv-net-avatar">@Model.AvatarInitial</span>
+            <span class="prv-net-avatar prv-net-avatar--trade"><i class="fas @Model.IconClass"></i></span>
             <div class="prv-net-sub-main">
                 <p class="prv-net-sub-name">@Model.SubcontractorName @if (Model.IsVerified) { <i class="fas fa-circle-check"></i> }</p>
                 @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))

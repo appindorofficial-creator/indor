@@ -197,6 +197,72 @@
     font-weight: 700;
 }
 
+.prv-net-hero-chip--outline {
+    background: transparent;
+    border-color: #fff;
+    color: #fff;
+    font-weight: 700;
+}
+
+/* Light search (secondary, on sky background) */
+.prv-net-search--light {
+    margin: 16px 18px 0;
+    border: 1px solid var(--net-line);
+}
+
+/* ---------------------------------------------------- Illustrated quick cards */
+.prv-net-illus-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    padding: 18px 18px 0;
+}
+
+.prv-net-illus-card {
+    background: #fff;
+    border-radius: var(--net-radius);
+    box-shadow: var(--net-shadow);
+    text-decoration: none;
+    color: var(--net-navy);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid rgba(230, 238, 247, .8);
+}
+
+.prv-net-illus-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 14px 10px;
+}
+
+.prv-net-illus-head strong { display: block; font-size: .92rem; font-weight: 800; line-height: 1.15; }
+.prv-net-illus-head span { display: block; font-size: .72rem; color: var(--net-muted); margin-top: 3px; line-height: 1.3; }
+
+.prv-net-illus-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #EAF3FF;
+    color: var(--net-blue);
+    font-size: .82rem;
+}
+
+.prv-net-illus-img {
+    width: 100%;
+    height: 118px;
+    object-fit: cover;
+    object-position: center 32%;
+    display: block;
+    margin-top: auto;
+}
+
 /* ---------------------------------------------------- Quick entry cards */
 .prv-net-quickcards {
     display: grid;
@@ -428,6 +494,9 @@
 }
 
 .prv-net-avatar--img { background: #E7EFF9; }
+
+.prv-net-avatar--trade i { font-size: 1.25rem; }
+.prv-net-profile-avatar.prv-net-avatar--trade i { font-size: 1.9rem; }
 
 .prv-net-avatar .prv-net-avatar-dot {
     position: absolute;
