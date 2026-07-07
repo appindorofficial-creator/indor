@@ -733,16 +733,17 @@
     border-radius: var(--net-radius);
     overflow: hidden;
     box-shadow: var(--net-shadow);
-    background:
-        radial-gradient(circle at 30% 30%, #dbe9fb, transparent 40%),
-        radial-gradient(circle at 70% 60%, #e3f0ff, transparent 45%),
-        repeating-linear-gradient(0deg, #eef5fd, #eef5fd 22px, #e4eefb 23px),
-        repeating-linear-gradient(90deg, #eef5fd, #eef5fd 22px, #e4eefb 23px);
-    height: 260px;
+    background: #eef5fd;
+    height: 300px;
     position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+}
+
+.prv-net-map-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
 }
 
 .prv-net-map-pin {
@@ -762,7 +763,12 @@
     font-size: .8rem;
     color: var(--net-muted);
     text-align: center;
+    z-index: 500;
+    pointer-events: none;
+    box-shadow: 0 4px 12px rgba(0, 74, 153, .12);
 }
+
+.prv-net-map-note .fa-location-dot { color: #2E8BFF; }
 
 /* ============================================================
    PROFILE (Screen 3)
