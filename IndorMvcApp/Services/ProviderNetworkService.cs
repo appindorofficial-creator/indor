@@ -22,9 +22,10 @@ public sealed class ProviderNetworkService(
         var catalog = await LoadCatalogAsync(cancellationToken);
         var providers = await LoadActiveProvidersAsync(me.Id, cancellationToken);
         var ratings = await LoadRatingsAsync(providers.Select(p => p.Id), cancellationToken);
+        var jobCounts = await LoadJobCountsAsync(providers.Select(p => p.Id), cancellationToken);
 
         var cards = providers
-            .Select(p => BuildCard(p, catalog, ratings, me))
+            .Select(p => BuildCard(p, catalog, ratings, jobCounts, me))
             .OrderByDescending(c => c.IsRecommended)
             .ThenByDescending(c => c.Rating ?? 0)
             .ThenByDescending(c => c.ReviewCount)
@@ -57,11 +58,13 @@ public sealed class ProviderNetworkService(
         bool nearby,
         bool insuredOnly,
         bool availableNow,
+        bool docsReady,
         CancellationToken cancellationToken = default)
     {
         var catalog = await LoadCatalogAsync(cancellationToken);
         var providers = await LoadActiveProvidersAsync(me.Id, cancellationToken);
         var ratings = await LoadRatingsAsync(providers.Select(p => p.Id), cancellationToken);
+        var jobCounts = await LoadJobCountsAsync(providers.Select(p => p.Id), cancellationToken);
 
         trade = string.IsNullOrWhiteSpace(trade) ? "all" : trade.Trim();
         view = string.Equals(view, "map", StringComparison.OrdinalIgnoreCase) ? "map" : "list";
@@ -85,6 +88,11 @@ public sealed class ProviderNetworkService(
             filtered = filtered.Where(p => p.SameDayJobs);
         }
 
+        if (docsReady)
+        {
+            filtered = filtered.Where(p => p.Documentos.Any(d => d.UploadedUtc != null));
+        }
+
         if (!string.IsNullOrWhiteSpace(normalizedQuery))
         {
             filtered = filtered.Where(p =>
@@ -95,7 +103,7 @@ public sealed class ProviderNetworkService(
                 p.Categorias.Any(c => catalog.TryGetValue(c.CategoriaId, out var cat) && Contains(cat.LabelEn, normalizedQuery)));
         }
 
-        var cards = filtered.Select(p => BuildCard(p, catalog, ratings, me)).ToList();
+        var cards = filtered.Select(p => BuildCard(p, catalog, ratings, jobCounts, me)).ToList();
 
         var hasLocation = me.Latitude.HasValue && me.Longitude.HasValue;
         if (nearby && hasLocation)
@@ -120,6 +128,7 @@ public sealed class ProviderNetworkService(
             FilterNearby = nearby,
             FilterInsuredOnly = insuredOnly,
             FilterAvailableNow = availableNow,
+            FilterDocsReady = docsReady,
             TradeChips = BuildTradeChips(catalog, providers),
             Results = cards,
             SortLabel = nearby && hasLocation ? "Nearest" : "Best Match",
@@ -280,11 +289,12 @@ public sealed class ProviderNetworkService(
         var catalog = await LoadCatalogAsync(cancellationToken);
         var providers = await LoadActiveProvidersAsync(me.Id, cancellationToken);
         var ratings = await LoadRatingsAsync(providers.Select(p => p.Id), cancellationToken);
+        var jobCounts = await LoadJobCountsAsync(providers.Select(p => p.Id), cancellationToken);
 
         var matches = providers
             .Where(p => string.IsNullOrWhiteSpace(job.TradeId)
                 || p.Categorias.Any(c => string.Equals(c.CategoriaId, job.TradeId, StringComparison.OrdinalIgnoreCase)))
-            .Select(p => BuildCard(p, catalog, ratings, me))
+            .Select(p => BuildCard(p, catalog, ratings, jobCounts, me))
             .OrderByDescending(c => c.IsRecommended)
             .ThenByDescending(c => c.Rating ?? 0)
             .Take(4)
@@ -578,6 +588,31 @@ public sealed class ProviderNetworkService(
         }
     }
 
+    private async Task<Dictionary<int, int>> LoadJobCountsAsync(IEnumerable<int> ids, CancellationToken ct)
+    {
+        var idList = ids.Distinct().ToList();
+        if (idList.Count == 0)
+        {
+            return new Dictionary<int, int>();
+        }
+
+        try
+        {
+            var grouped = await db.IndorProveedorNetworkHires
+                .AsNoTracking()
+                .Where(h => idList.Contains(h.SubcontractorProveedorId))
+                .GroupBy(h => h.SubcontractorProveedorId)
+                .Select(g => new { g.Key, Count = g.Count() })
+                .ToListAsync(ct);
+
+            return grouped.ToDictionary(g => g.Key, g => g.Count);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return new Dictionary<int, int>();
+        }
+    }
+
     private async Task<List<NetworkReviewViewModel>> LoadReviewsAsync(int subId, CancellationToken ct)
     {
         try
@@ -633,6 +668,7 @@ public sealed class ProviderNetworkService(
         IndorProveedor p,
         IReadOnlyDictionary<string, IndorProveedorCategoriaCatalogo> catalog,
         IReadOnlyDictionary<int, (decimal Avg, int Count)> ratings,
+        IReadOnlyDictionary<int, int> jobCounts,
         IndorProveedor me)
     {
         var name = ResolveName(p);
@@ -641,6 +677,7 @@ public sealed class ProviderNetworkService(
 
         ratings.TryGetValue(p.Id, out var rating);
         var (avg, count) = rating;
+        jobCounts.TryGetValue(p.Id, out var jobsCompleted);
         var docsReady = p.Documentos.Any(d => d.UploadedUtc != null);
         var recommended = count > 0 && avg >= 4.8m;
 
@@ -654,6 +691,8 @@ public sealed class ProviderNetworkService(
             IconClass = primaryCat?.IconClass ?? "fa-screwdriver-wrench",
             Rating = count > 0 ? avg : null,
             ReviewCount = count,
+            JobsCompletedCount = jobsCompleted,
+            ResponseLabel = ShortResponseLabel(p),
             DistanceLabel = DistanceLabel(me, p),
             LocationLabel = ComposeLocation(p),
             IsVerified = IsVerified(p),
@@ -748,6 +787,22 @@ public sealed class ProviderNetworkService(
         }
 
         return p.EmergencyService ? "Typically replies within a few hours" : "Typically replies within a day";
+    }
+
+    /// <summary>Compact response label shown on cards, derived from real availability flags.</summary>
+    private static string ShortResponseLabel(IndorProveedor p)
+    {
+        if (p.EmergencyService)
+        {
+            return "Responds in 30 min";
+        }
+
+        if (p.SameDayJobs)
+        {
+            return "Responds in 1 hr";
+        }
+
+        return "Responds within a day";
     }
 
     private static string? DistanceLabel(IndorProveedor me, IndorProveedor other)

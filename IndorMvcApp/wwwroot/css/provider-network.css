@@ -59,6 +59,12 @@
     font-size: 1rem;
 }
 
+.prv-net-brand-word {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .4px;
+}
+
 .prv-net-brand-pro {
     font-size: .62rem;
     font-weight: 800;
@@ -604,6 +610,50 @@
 .prv-net-badge--verified { background: #EAF3FF; color: var(--net-blue); }
 .prv-net-badge--insured { background: var(--net-green-soft); color: var(--net-green); }
 .prv-net-badge--docs { background: var(--net-purple-soft); color: var(--net-purple); }
+
+/* Location line under the trade */
+.prv-net-sub-loc {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin: 2px 0 0;
+    font-size: .8rem;
+    color: var(--net-muted);
+}
+
+.prv-net-sub-loc .fa-location-dot { color: #94A3B8; font-size: .78rem; }
+
+/* Stats footer: rating · jobs completed · responds */
+.prv-net-sub-stats {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px;
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--net-line);
+    font-size: .8rem;
+    color: var(--net-muted);
+}
+
+.prv-net-stat {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.prv-net-stat strong { color: var(--net-ink); font-weight: 800; }
+.prv-net-stat i { color: #94A3B8; font-size: .78rem; }
+.prv-net-stat .prv-net-stat-star { color: var(--net-amber); }
+
+/* Chevron/arrow on the home tool cards */
+.prv-net-tool > div { flex: 1; min-width: 0; }
+.prv-net-tool-arrow {
+    align-self: center;
+    color: #C3CFDD;
+    font-size: .8rem;
+    flex-shrink: 0;
+}
 
 /* ---------------------------------------------------- Tool grid (home) */
 .prv-net-tools {

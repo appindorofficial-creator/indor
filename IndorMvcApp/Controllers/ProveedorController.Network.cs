@@ -39,6 +39,7 @@ public partial class ProveedorController
         bool nearby,
         bool insured,
         bool available,
+        bool docs,
         CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
@@ -48,7 +49,7 @@ public partial class ProveedorController
         }
 
         var model = await network.GetFindAsync(
-            proveedor.Entity!, q, trade, view, nearby, insured, available, cancellationToken);
+            proveedor.Entity!, q, trade, view, nearby, insured, available, docs, cancellationToken);
         return View(model);
     }
 

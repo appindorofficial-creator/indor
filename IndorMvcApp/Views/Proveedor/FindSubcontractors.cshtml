@@ -15,8 +15,8 @@
 
         <div class="prv-net-hero-title">
             <div>
-                <h1>Find Subcontractors</h1>
-                <p>Search by trade, location, and verification.</p>
+                <h1>Verified Subcontractors</h1>
+                <p>Browse trusted pros near you.</p>
             </div>
         </div>
 
@@ -26,6 +26,7 @@
             @if (Model.FilterNearby) { <input type="hidden" name="nearby" value="true" /> }
             @if (Model.FilterInsuredOnly) { <input type="hidden" name="insured" value="true" /> }
             @if (Model.FilterAvailableNow) { <input type="hidden" name="available" value="true" /> }
+            @if (Model.FilterDocsReady) { <input type="hidden" name="docs" value="true" /> }
             <div class="prv-net-search">
                 <i class="fas fa-magnifying-glass"></i>
                 <input type="search" name="q" value="@Model.Query" placeholder="Search subcontractors, trades, or services" />
@@ -60,19 +61,29 @@
         </div>
     }
 
+    @{
+        var noFilters = !Model.FilterNearby && !Model.FilterInsuredOnly && !Model.FilterAvailableNow && !Model.FilterDocsReady;
+    }
     <div class="prv-net-fpills">
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
            asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
-           asp-route-nearby="@(!Model.FilterNearby)" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow"
-           class="prv-net-fpill @(Model.FilterNearby ? "is-active" : null)"><i class="fas fa-location-dot"></i> Nearby</a>
+           class="prv-net-fpill @(noFilters ? "is-active" : null)"><i class="fas fa-border-all"></i> All</a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors"
            asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
-           asp-route-nearby="@Model.FilterNearby" asp-route-insured="@(!Model.FilterInsuredOnly)" asp-route-available="@Model.FilterAvailableNow"
-           class="prv-net-fpill @(Model.FilterInsuredOnly ? "is-active" : null)"><i class="fas fa-shield-halved"></i> Insured Only</a>
-        <a asp-controller="Proveedor" asp-action="FindSubcontractors"
-           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
-           asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@(!Model.FilterAvailableNow)"
+           asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@(!Model.FilterAvailableNow)" asp-route-docs="@Model.FilterDocsReady"
            class="prv-net-fpill @(Model.FilterAvailableNow ? "is-active" : null)"><i class="fas fa-clock"></i> Available Now</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors"
+           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-nearby="@Model.FilterNearby" asp-route-insured="@(!Model.FilterInsuredOnly)" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
+           class="prv-net-fpill @(Model.FilterInsuredOnly ? "is-active" : null)"><i class="fas fa-shield-halved"></i> Insurance Active</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors"
+           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-nearby="@Model.FilterNearby" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@(!Model.FilterDocsReady)"
+           class="prv-net-fpill @(Model.FilterDocsReady ? "is-active" : null)"><i class="fas fa-file-lines"></i> Docs Ready</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors"
+           asp-route-q="@Model.Query" asp-route-trade="@Model.ActiveTrade" asp-route-view="@Model.ActiveView"
+           asp-route-nearby="@(!Model.FilterNearby)" asp-route-insured="@Model.FilterInsuredOnly" asp-route-available="@Model.FilterAvailableNow" asp-route-docs="@Model.FilterDocsReady"
+           class="prv-net-fpill @(Model.FilterNearby ? "is-active" : null)"><i class="fas fa-location-dot"></i> Nearby</a>
     </div>
 
     <div class="prv-net-count">
@@ -153,4 +164,14 @@
             }
         </div>
     }
+
+    <section class="prv-net-why">
+        <div class="prv-net-why-head"><i class="fas fa-circle-info"></i> Why contractors use INDOR</div>
+        <div class="prv-net-why-grid">
+            <div class="prv-net-why-item"><i class="fas fa-circle-check"></i> Verified</div>
+            <div class="prv-net-why-item"><i class="fas fa-shield-halved"></i> Insurance Active</div>
+            <div class="prv-net-why-item"><i class="fas fa-file-lines"></i> Docs Ready</div>
+            <div class="prv-net-why-item"><i class="fas fa-bolt"></i> Faster Hiring</div>
+        </div>
+    </section>
 </div>

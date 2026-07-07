@@ -35,24 +35,17 @@
             {
                 <p class="prv-net-sub-trade">@Model.TradeLabel</p>
             }
-            <div class="prv-net-sub-meta">
-                @if (Model.HasReviews)
-                {
-                    <span class="prv-net-stars"><i class="fas fa-star"></i> @Model.Rating!.Value.ToString("0.0") <span class="prv-net-sub-dist">(@Model.ReviewCount)</span></span>
-                }
-                else
-                {
-                    <span class="prv-net-sub-new">New</span>
-                }
-                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
-                {
-                    <span class="prv-net-sub-dist">@Model.DistanceLabel</span>
-                }
-                else if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
-                {
-                    <span class="prv-net-sub-dist">@Model.LocationLabel</span>
-                }
-            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel) || !string.IsNullOrWhiteSpace(Model.LocationLabel))
+            {
+                <p class="prv-net-sub-loc">
+                    <i class="fas fa-location-dot"></i>
+                    @(!string.IsNullOrWhiteSpace(Model.LocationLabel) ? Model.LocationLabel : Model.DistanceLabel)
+                    @if (!string.IsNullOrWhiteSpace(Model.LocationLabel) && !string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                    {
+                        <span class="prv-net-sub-dist">&middot; @Model.DistanceLabel</span>
+                    }
+                </p>
+            }
         </div>
 
         <div class="prv-net-sub-side">
@@ -77,6 +70,33 @@
         @if (Model.IsDocsReady)
         {
             <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> Docs Ready</span>
+        }
+    </div>
+
+    <div class="prv-net-sub-stats">
+        <span class="prv-net-stat">
+            @if (Model.HasReviews)
+            {
+                <i class="fas fa-star prv-net-stat-star"></i>
+                <strong>@Model.Rating!.Value.ToString("0.0")</strong>
+                <span class="prv-net-sub-dist">(@Model.ReviewCount)</span>
+            }
+            else
+            {
+                <span class="prv-net-sub-new">New</span>
+            }
+        </span>
+        @if (Model.HasJobsCompleted)
+        {
+            <span class="prv-net-stat">
+                <i class="fas fa-briefcase"></i> <strong>@Model.JobsCompletedCount</strong> jobs completed
+            </span>
+        }
+        @if (!string.IsNullOrWhiteSpace(Model.ResponseLabel))
+        {
+            <span class="prv-net-stat">
+                <i class="fas fa-clock"></i> @Model.ResponseLabel
+            </span>
         }
     </div>
 </a>

@@ -19,6 +19,7 @@ public interface IProviderNetworkService
         bool nearby,
         bool insuredOnly,
         bool availableNow,
+        bool docsReady,
         CancellationToken cancellationToken = default);
 
     Task<SubcontractorProfileViewModel?> GetProfileAsync(

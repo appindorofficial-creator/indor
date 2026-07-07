@@ -27,6 +27,12 @@ public sealed class NetworkSubcontractorCardViewModel
     public int ReviewCount { get; init; }
     public bool HasReviews => ReviewCount > 0 && Rating.HasValue;
 
+    public int JobsCompletedCount { get; init; }
+    public bool HasJobsCompleted => JobsCompletedCount > 0;
+
+    /// <summary>Short response label e.g. "Responds in 30 min". Null when unknown.</summary>
+    public string? ResponseLabel { get; init; }
+
     public string? DistanceLabel { get; init; }
     public string? LocationLabel { get; init; }
 
@@ -61,6 +67,7 @@ public sealed class FindSubcontractorsViewModel
     public bool FilterNearby { get; init; }
     public bool FilterInsuredOnly { get; init; }
     public bool FilterAvailableNow { get; init; }
+    public bool FilterDocsReady { get; init; }
     public List<NetworkTradeChipViewModel> TradeChips { get; init; } = [];
     public List<NetworkSubcontractorCardViewModel> Results { get; init; } = [];
     public int ResultCount => Results.Count;
