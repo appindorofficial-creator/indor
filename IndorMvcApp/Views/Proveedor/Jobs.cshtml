@@ -101,18 +101,11 @@
                        asp-route-q="@Model.SearchQuery"
                        class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
                 }
+                <a asp-controller="Proveedor" asp-action="Network" class="prv-pro-jobs-filter-chip">Network</a>
+                <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-pro-jobs-filter-chip prv-pro-jobs-filter-chip--outline">Subcontractors</a>
             </div>
         </form>
     </div>
-
-    <a asp-controller="Proveedor" asp-action="Network" class="prv-pro-net-banner">
-        <span class="prv-pro-net-banner-ic"><i class="fas fa-people-group"></i></span>
-        <div class="prv-pro-net-banner-body">
-            <strong>Contractor Network</strong>
-            <span>Find, verify &amp; hire subcontractors near you</span>
-        </div>
-        <i class="fas fa-chevron-right"></i>
-    </a>
 
     <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
         @foreach (var (tabId, icon, tone, count, label) in visibleStatCards)

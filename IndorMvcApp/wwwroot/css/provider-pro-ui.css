@@ -138,3 +138,10 @@
 .prv-pro-net-banner-body strong { display: block; font-size: 1rem; font-weight: 800; }
 .prv-pro-net-banner-body span { font-size: .82rem; color: rgba(255, 255, 255, .9); }
 .prv-pro-net-banner > .fa-chevron-right { color: rgba(255, 255, 255, .8); }
+
+/* Network / Subcontractors chips inside the Jobs hub filter row */
+.prv-pro-jobs-filter-chip--outline {
+    border: 1.5px solid #2E8BFF !important;
+    color: #0066CC !important;
+    font-weight: 700;
+}
