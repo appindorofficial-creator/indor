@@ -1,0 +1,134 @@
+@model IndorMvcApp.ViewModels.HireSubcontractorViewModel
+@{
+    ViewData["Title"] = "Hire With Confidence";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-network.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-net-shell">
+    <header class="prv-net-hero" style="padding-bottom:44px;">
+        <div class="prv-net-hero-top">
+            <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.SubcontractorId" class="prv-net-back"><i class="fas fa-chevron-left"></i> Profile</a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-net-hire-banner"><i class="fas fa-circle-check"></i> You're ready to hire</div>
+        <p class="prv-net-hire-sub">Great match for your project.</p>
+    </header>
+
+    <section class="prv-net-hire-card">
+        <div class="prv-net-card-label">Selected Subcontractor</div>
+        <div class="prv-net-sub-top">
+            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+            {
+                <span class="prv-net-avatar prv-net-avatar--img" style="background-image:url('@Model.PhotoUrl');background-size:cover;"></span>
+            }
+            else
+            {
+                <span class="prv-net-avatar prv-net-avatar--trade"><i class="fas @Model.IconClass"></i></span>
+            }
+            <div class="prv-net-sub-main">
+                <p class="prv-net-sub-name">@Model.Name @if (Model.IsVerified) { <i class="fas fa-circle-check"></i> }</p>
+                <div class="prv-net-sub-meta">
+                    @if (Model.HasReviews)
+                    {
+                        <span class="prv-net-stars"><i class="fas fa-star"></i> @Model.Rating!.Value.ToString("0.0") (@Model.ReviewCount)</span>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
+                    {
+                        <span class="prv-net-sub-dist">@Model.LocationLabel</span>
+                    }
+                </div>
+            </div>
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-bell" style="background:#EAF3FF;color:var(--net-blue);"><i class="fas fa-comment"></i></a>
+        </div>
+        <div class="prv-net-badges">
+            @if (Model.IsVerified) { <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> Verified</span> }
+            @if (Model.IsInsured) { <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> Insurance Active</span> }
+            @if (Model.IsDocsReady) { <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> Docs Approved</span> }
+        </div>
+    </section>
+
+    <section class="prv-net-summary">
+        <div class="prv-net-summary-head">
+            <h3>Project Summary</h3>
+        </div>
+        <div class="prv-net-summary-grid">
+            <div class="prv-net-summary-cell">
+                <i class="fas fa-screwdriver-wrench"></i>
+                <small>Trade</small>
+                <strong>@Model.TradeSummary</strong>
+            </div>
+            <div class="prv-net-summary-cell">
+                <i class="fas fa-dollar-sign"></i>
+                <small>Budget</small>
+                <strong>@Model.BudgetRange</strong>
+            </div>
+            <div class="prv-net-summary-cell">
+                <i class="fas fa-calendar"></i>
+                <small>Start Date</small>
+                <strong>@Model.StartDateLabel</strong>
+            </div>
+        </div>
+    </section>
+
+    <section class="prv-net-check">
+        <div class="prv-net-check-title">All set to move forward</div>
+        <div class="prv-net-check-item">
+            <span class="prv-net-check-ic @(Model.ProfileReviewed ? null : "prv-net-check-ic--pending")"><i class="fas fa-check"></i></span>
+            <div class="prv-net-check-body">
+                <strong>Profile reviewed</strong>
+                <span>Background, license, and reviews look great</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="prv-net-check-item">
+            <span class="prv-net-check-ic @(Model.InsuranceVerified ? null : "prv-net-check-ic--pending")"><i class="fas @(Model.InsuranceVerified ? "fa-check" : "fa-clock")"></i></span>
+            <div class="prv-net-check-body">
+                <strong>Insurance @(Model.InsuranceVerified ? "verified" : "pending")</strong>
+                <span>@(Model.InsuranceVerified ? "General liability insurance is active" : "Ask the pro to upload proof of insurance")</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="prv-net-check-item">
+            <span class="prv-net-check-ic @(Model.DocumentsReady ? null : "prv-net-check-ic--pending")"><i class="fas @(Model.DocumentsReady ? "fa-check" : "fa-clock")"></i></span>
+            <div class="prv-net-check-body">
+                <strong>Documents @(Model.DocumentsReady ? "ready" : "pending")</strong>
+                <span>W-9, COI, trade license on file</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+        <div class="prv-net-check-item">
+            <span class="prv-net-check-ic @(Model.AvailabilityConfirmed ? null : "prv-net-check-ic--pending")"><i class="fas fa-check"></i></span>
+            <div class="prv-net-check-body">
+                <strong>Availability confirmed</strong>
+                <span>Can start on @Model.StartDateLabel</span>
+            </div>
+            <i class="fas fa-chevron-right"></i>
+        </div>
+    </section>
+
+    <form asp-controller="Proveedor" asp-action="ConfirmHire" method="post" class="prv-net-actionbar" style="position:static;">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="SubcontractorId" value="@Model.SubcontractorId" />
+        @if (Model.NetworkJobId.HasValue) { <input type="hidden" name="NetworkJobId" value="@Model.NetworkJobId" /> }
+        <input type="hidden" name="ProjectTitle" value="@Model.ProjectTitle" />
+        <input type="hidden" name="TradeLabel" value="@Model.TradeSummary" />
+        <input type="hidden" name="BudgetRange" value="@Model.BudgetRange" />
+        <input type="hidden" name="StartDate" value="@Model.StartDateIso" />
+
+        <button type="submit" name="Mode" value="hire" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-handshake"></i> Hire Now</button>
+        <div class="prv-net-btn-row">
+            <button type="submit" name="Mode" value="start" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-play"></i> Start Job</button>
+            <button type="submit" name="Mode" value="agreement" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-file-signature"></i> Send Agreement</button>
+        </div>
+    </form>
+
+    <div class="prv-net-reassure">
+        <i class="fas fa-shield-halved"></i>
+        <div>
+            <strong>No guessing — every key detail is visible before you hire.</strong>
+            We help you hire with confidence and stay protected.
+        </div>
+    </div>
+</div>

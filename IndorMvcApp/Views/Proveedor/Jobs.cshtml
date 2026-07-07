@@ -101,6 +101,8 @@
                        asp-route-q="@Model.SearchQuery"
                        class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
                 }
+                <a asp-controller="Proveedor" asp-action="Network" class="prv-pro-jobs-filter-chip">Network</a>
+                <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-pro-jobs-filter-chip prv-pro-jobs-filter-chip--outline">Subcontractors</a>
             </div>
         </form>
     </div>

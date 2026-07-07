@@ -1,0 +1,149 @@
+@model IndorMvcApp.ViewModels.NetworkHomeViewModel
+@{
+    ViewData["Title"] = "Contractor Network";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-network.css";
+    ViewBag.NavActive = "jobs";
+    var jobTabs = new[] { ("all", "All"), ("today", "Today"), ("leads", "Leads"), ("active", "Active"), ("estimates", "Estimates") };
+}
+
+<div class="prv-net-shell">
+    <header class="prv-net-hero">
+        <div class="prv-net-hero-top">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-net-brand" aria-label="INDOR PRO home">
+                <i class="fas fa-house"></i>
+                <span>INDOR</span>
+                <span class="prv-net-brand-pro">PRO</span>
+            </a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+
+        <div class="prv-net-hero-title">
+            <div>
+                <h1>Jobs</h1>
+                <p>Find and verify subcontractors faster.</p>
+            </div>
+            <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-net-create">
+                <i class="fas fa-plus"></i> Create Job
+            </a>
+        </div>
+
+        <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-net-searchbar">
+            <div class="prv-net-search">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" placeholder="Search jobs, customers, properties" />
+            </div>
+            <button type="submit" class="prv-net-filter"><i class="fas fa-sliders"></i> Filter</button>
+        </form>
+
+        <div class="prv-net-hero-chips">
+            @foreach (var (id, label) in jobTabs)
+            {
+                <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="@id" class="prv-net-hero-chip">@label</a>
+            }
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-hero-chip is-active">Network</a>
+            <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-hero-chip prv-net-hero-chip--outline">Subcontractors</a>
+        </div>
+    </header>
+
+    <section class="prv-net-illus-cards">
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-illus-card">
+            <div class="prv-net-illus-head">
+                <div>
+                    <strong>Find Subcontractors</strong>
+                    <span>Search and connect with verified pros.</span>
+                </div>
+                <span class="prv-net-illus-badge"><i class="fas fa-magnifying-glass"></i></span>
+            </div>
+            <img src="~/images/network/find-subcontractors.png" alt="Find subcontractors" class="prv-net-illus-img" asp-append-version="true" />
+        </a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="all" class="prv-net-illus-card">
+            <div class="prv-net-illus-head">
+                <div>
+                    <strong>Service Providers</strong>
+                    <span>Browse trusted specialists by trade or service.</span>
+                </div>
+                <span class="prv-net-illus-badge"><i class="fas fa-briefcase"></i></span>
+            </div>
+            <img src="~/images/network/service-providers.png" alt="Service providers" class="prv-net-illus-img" asp-append-version="true" />
+        </a>
+    </section>
+
+    <div class="prv-net-toggle">
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-view="map"><i class="fas fa-map-location-dot"></i> Map</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-view="list" class="is-active"><i class="fas fa-list"></i> Feed</a>
+    </div>
+
+    <form method="get" asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-search prv-net-search--light">
+        <i class="fas fa-magnifying-glass"></i>
+        <input type="search" name="q" placeholder="Search subcontractors, trades, or services" />
+    </form>
+
+    @if (Model.TradeChips.Count > 0)
+    {
+        <div class="prv-net-chips">
+            <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-chip is-active"><i class="fas fa-border-all"></i> All</a>
+            @foreach (var chip in Model.TradeChips)
+            {
+                <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="@chip.Id" class="prv-net-chip">
+                    <i class="fas @chip.IconClass"></i> @chip.Label
+                </a>
+            }
+        </div>
+    }
+
+    <section class="prv-net-tools">
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-insured="true" class="prv-net-tool">
+            <span class="prv-net-tool-ic prv-net-tool-ic--blue"><i class="fas fa-user-shield"></i></span>
+            <div>
+                <strong>Verified Subcontractors</strong>
+                <span>@Model.VerifiedSubcontractorsCount insured, qualified pros near you</span>
+            </div>
+        </a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-insured="true" class="prv-net-tool">
+            <span class="prv-net-tool-ic prv-net-tool-ic--purple"><i class="fas fa-file-shield"></i></span>
+            <div>
+                <strong>Insurance &amp; Docs</strong>
+                <span>See insurance active and documents ready</span>
+            </div>
+        </a>
+        <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-net-tool">
+            <span class="prv-net-tool-ic prv-net-tool-ic--green"><i class="fas fa-plus"></i></span>
+            <div>
+                <strong>Post a Job</strong>
+                <span>Get matched with subcontractors fast</span>
+            </div>
+        </a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-tool">
+            <span class="prv-net-tool-ic prv-net-tool-ic--amber"><i class="fas fa-clipboard-check"></i></span>
+            <div>
+                <strong>My Requests</strong>
+                <span>@Model.MyRequestsCount posted &bull; @Model.ActiveHiresCount hires</span>
+            </div>
+        </a>
+    </section>
+
+    @if (Model.FeaturedSubcontractors.Count > 0)
+    {
+        <div class="prv-net-sec-head">
+            <h2>Verified Subcontractors</h2>
+            <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-sort">See all <i class="fas fa-chevron-right"></i></a>
+        </div>
+        <div class="prv-net-list">
+            @foreach (var sub in Model.FeaturedSubcontractors.Take(3))
+            {
+                @await Html.PartialAsync("_NetworkSubcontractorCard", sub)
+            }
+        </div>
+    }
+
+    <section class="prv-net-why">
+        <div class="prv-net-why-head"><i class="fas fa-circle-info"></i> Why contractors use INDOR</div>
+        <div class="prv-net-why-grid">
+            <div class="prv-net-why-item"><i class="fas fa-circle-check"></i> Verified</div>
+            <div class="prv-net-why-item"><i class="fas fa-shield-halved"></i> Insurance Active</div>
+            <div class="prv-net-why-item"><i class="fas fa-file-lines"></i> Docs Ready</div>
+            <div class="prv-net-why-item"><i class="fas fa-bolt"></i> Faster Hiring</div>
+        </div>
+    </section>
+</div>
