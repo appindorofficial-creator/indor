@@ -253,8 +253,7 @@
 
         /* === MyHome (slider con datos del JSON) === */
         #section-myhome {
-            overflow-x: hidden;
-            max-width: 100%;
+            overflow-x: clip;
         }
         #section-myhome .hf-app { margin-bottom: 8px; }
         #section-myhome .hf-property-management {
@@ -608,7 +607,8 @@
 
         /* === Home & Services - modern light layout === */
 /* Nearby uses ho-dash-shell padding (same as rl-dash-shell); avoid double horizontal inset */
-#section-home {
+#section-home,
+.section.ho-portal-section {
     padding: 0 0 24px;
     max-width: none;
 }

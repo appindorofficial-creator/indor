@@ -1,0 +1,24 @@
+@model IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
+
+<div class="rl-portal-page-hero ho-section-hero @Model.CssClass">
+    @await Html.PartialAsync("_HomeownerTopbar")
+    <div class="rl-page-header rl-page-header--hero">
+        <div class="rl-page-header-copy">
+            <h1 class="rl-page-title">@Model.Title</h1>
+            @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
+            {
+                <p class="rl-page-subtitle">@Model.Subtitle</p>
+            }
+        </div>
+        @if (!string.IsNullOrWhiteSpace(Model.BadgeLabel))
+        {
+            <span class="ho-section-hero-badge">
+                @if (!string.IsNullOrWhiteSpace(Model.BadgeIconClass))
+                {
+                    <i class="fas @Model.BadgeIconClass"></i>
+                }
+                @Model.BadgeLabel
+            </span>
+        }
+    </div>
+</div>
