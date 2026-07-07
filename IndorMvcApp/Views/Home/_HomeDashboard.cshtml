@@ -8,9 +8,10 @@
 
 @if (!Model.HasProperty)
 {
-    <div class="hd-empty">
-        <p>You have no registered properties yet.</p>
-        <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home">Add your home</a>
+    <div class="hn-network-empty">
+        <i class="fas fa-house"></i>
+        <p>Add your home to start your dashboard.</p>
+        <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">Add your home</a>
     </div>
 }
 else

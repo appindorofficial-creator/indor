@@ -1,20 +1,18 @@
 @model IndorMvcApp.ViewModels.ScheduleSectionViewModel
 
-<section class="section" id="section-schedule">
-    <div class="ho-section-topbar">
-        @await Html.PartialAsync("~/Views/Home/_HomeownerTopbar.cshtml")
-    </div>
-    @if (TempData["ScheduleSaved"] is string scheduleMsg)
-    {
-        <div class="sch-alert-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
-    }
-    <header class="sch-page-head sch-header">
-        <div>
-            <h2 class="sch-title">Schedule</h2>
-            <p class="sch-subtitle">Stay on top of maintenance and home tasks.</p>
-        </div>
-        <span class="sch-free-badge"><i class="fas fa-gift"></i> Free</span>
-    </header>
+<section class="section ho-portal-section" id="section-schedule">
+    <div class="rl-dash-shell">
+        @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
+        {
+            Title = "Schedule",
+            Subtitle = "Stay on top of maintenance and home tasks.",
+            BadgeLabel = "Free",
+            BadgeIconClass = "fa-gift"
+        })
+        @if (TempData["ScheduleSaved"] is string scheduleMsg)
+        {
+            <div class="sch-alert-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>
+        }
 
     @if (Model.QuickAddItems.Count > 0)
     {
@@ -95,4 +93,5 @@
             }
         </div>
     }
+    </div>
 </section>

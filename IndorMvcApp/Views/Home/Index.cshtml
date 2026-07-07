@@ -617,7 +617,7 @@
         var homeNearbyNetworkModel = ViewBag.HomeNearbyNetwork as IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel;
         var isHomeMapView = homeNearbyNetworkModel?.ActiveView == "map";
     }
-    <section class="section active @(isHomeMapView ? "hn-map-active" : "")" id="section-home">
+    <section class="section ho-portal-section active @(isHomeMapView ? "hn-map-active" : "")" id="section-home">
         @{
             var homeNearbyNetwork = homeNearbyNetworkModel;
         }
@@ -666,7 +666,7 @@
         @{
             var homeDashboard = ViewBag.HomeDashboard as IndorMvcApp.ViewModels.HomeDashboardViewModel;
         }
-        <div class="ho-dash-shell">
+        <div class="rl-dash-shell">
             <div class="rl-portal-page-hero ho-home-hero">
                 @await Html.PartialAsync("_HomeownerTopbar")
                 <div class="ho-home-hero-user">
@@ -707,10 +707,13 @@
     </section>
 
     <!-- ====== SERVICES ====== -->
-    <section class="section" id="section-services">
-        <div class="ho-section-topbar">
-            @await Html.PartialAsync("_HomeownerTopbar")
-        </div>
+    <section class="section ho-portal-section" id="section-services">
+        <div class="rl-dash-shell">
+        @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
+        {
+            Title = "Services",
+            Subtitle = "Verified professionals for your home"
+        })
         @{
             var microservicios = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
                                  ?? Enumerable.Empty<IndorMvcApp.Models.Microservicio>();
@@ -734,10 +737,6 @@
                 + movingSetupCount
                 + emergencyCount;
         }
-        <div class="section-title">
-            Available services
-            <span class="services-count">@totalOfferings</span>
-        </div>
 
         @if (totalOfferings == 0)
         {
@@ -791,17 +790,20 @@
                 }
             </div>
         }
-    </section>
-    <section class="section" id="section-myhome">
-        <div class="ho-section-topbar">
-            @await Html.PartialAsync("_HomeownerTopbar")
         </div>
+    </section>
+    <section class="section ho-portal-section" id="section-myhome">
+        <div class="rl-dash-shell">
+        @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
+        {
+            Title = "House Facts",
+            Subtitle = "Your property overview and details"
+        })
         @{
             var houseFactProfile = ViewBag.HouseFactProfile as HouseFactProfileViewModel;
             var houseFactPreviewMode = ViewBag.HouseFactPreviewMode as bool? == true;
             var houseFactPropiedadId = ViewBag.HouseFactPropiedadId as int?;
         }
-        <div class="hf-section-kicker"><i class="fas fa-house"></i> House Facts</div>
 
         @if (houseFactProfile != null && houseFactProfile.HasData)
         {
@@ -856,6 +858,7 @@
                 }
             </div>
         }
+        </div>
     </section>
 
     <!-- ====== SCHEDULE ====== -->
@@ -866,10 +869,13 @@
     @await Html.PartialAsync("_ScheduleSection", scheduleSection)
 
     <!-- ====== MORE ====== -->
-    <section class="section" id="section-more">
-        <div class="ho-section-topbar">
-            @await Html.PartialAsync("_HomeownerTopbar")
-        </div>
+    <section class="section ho-portal-section" id="section-more">
+        <div class="rl-dash-shell">
+        @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
+        {
+            Title = "More",
+            Subtitle = "Account, homes, and preferences"
+        })
         @{
             var moreProfile = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
                 ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
@@ -996,6 +1002,7 @@
                     <i class="fas fa-right-from-bracket"></i> Sign out
                 </button>
             </form>
+        </div>
         </div>
     </section>
 

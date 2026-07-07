@@ -30,13 +30,17 @@
 <form asp-action="UploadPropertyDocuments" method="post" enctype="multipart/form-data" id="uploadDocumentsForm">
     @Html.AntiForgeryToken()
 
-    <label class="pa-field">
-        <i class="fas fa-file-arrow-up"></i>
+    <div class="pa-file-picker" id="documentFilesPicker">
+        <i class="fas fa-file-arrow-up pa-file-picker-icon" aria-hidden="true"></i>
         <input type="file"
+               id="documentFiles"
                name="documentFiles"
+               class="pa-file-picker-input"
                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf"
                multiple />
-    </label>
+        <label for="documentFiles" class="pa-file-picker-btn">Choose files</label>
+        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="No files selected">No files selected</span>
+    </div>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Upload documents</button>
 </form>
@@ -44,3 +48,37 @@
 <div class="pa-reg-actions" style="margin-top:18px;">
     <a href="@Model.BackUrl" class="pa-reg-action-back">Back to properties</a>
 </div>
+
+@section Scripts {
+<script>
+    (function () {
+        const input = document.getElementById('documentFiles');
+        const nameEl = document.getElementById('documentFilesName');
+        const picker = document.getElementById('documentFilesPicker');
+        if (!input || !nameEl || !picker) return;
+
+        const emptyLabel = nameEl.dataset.emptyLabel || 'No files selected';
+
+        function syncFileLabel() {
+            const files = input.files ? Array.from(input.files) : [];
+            if (files.length === 0) {
+                nameEl.textContent = emptyLabel;
+                nameEl.classList.remove('is-selected');
+                picker.classList.remove('has-file');
+                return;
+            }
+
+            if (files.length === 1) {
+                nameEl.textContent = files[0].name;
+            } else {
+                nameEl.textContent = files.length + ' files selected';
+            }
+            nameEl.classList.add('is-selected');
+            picker.classList.add('has-file');
+        }
+
+        input.addEventListener('change', syncFileLabel);
+        syncFileLabel();
+    })();
+</script>
+}
