@@ -48,29 +48,6 @@
 }
 
 <div class="hn-network @(isMapView ? "hn-network--map" : "")">
-    @if (isMapView)
-    {
-        <div class="hn-network-head hn-network-head--map">
-            <div class="hn-network-head-main">
-                <div>
-                    <h1 class="hn-page-title">@Model.PageTitle</h1>
-                    <p class="hn-page-subtitle"><i class="fas fa-location-dot"></i> @Model.RadiusLabel</p>
-                </div>
-            </div>
-        </div>
-    }
-
-    <div class="hn-network-view-toggle @(isMapView ? "hn-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
-        <a href="@((Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view = "map", q = Model.SearchQuery }) ?? "/") + "#section-home")"
-           class="hn-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
-            <i class="fas fa-map"></i> Map
-        </a>
-        <a href="@((Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view = "feed", q = Model.SearchQuery }) ?? "/") + "#section-home")"
-           class="hn-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
-            <i class="fas fa-list"></i> Feed
-        </a>
-    </div>
-
     @if (!Model.HasProperty)
     {
         <div class="hn-network-empty">

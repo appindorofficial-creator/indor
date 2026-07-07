@@ -1,0 +1,12 @@
+@model IReadOnlyList<IndorMvcApp.ViewModels.HomeNotificationItemViewModel>
+@foreach (var n in Model)
+{
+    <div class="ho-notify-item">
+        <div class="ho-notify-item-icon @n.Severity"><i class="fas @n.Icon"></i></div>
+        <div class="ho-notify-item-body">
+            <div class="ho-notify-item-title">@n.Title</div>
+            <div class="ho-notify-item-sub">@n.Subtitle</div>
+            <div class="ho-notify-item-time"><i class="far fa-calendar"></i> @n.Date.ToString("dd/MM/yyyy")</div>
+        </div>
+    </div>
+}

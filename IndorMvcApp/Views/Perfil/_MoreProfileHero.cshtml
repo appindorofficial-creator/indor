@@ -40,7 +40,8 @@
         else
         {
             <p class="more-completion-hint">Complete your profile to unlock better recommendations.</p>
-            var nextItem = Model.CompletionItems.FirstOrDefault(i => !i.IsComplete);
+            var nextItem = Model.CompletionItems.FirstOrDefault(i =>
+                !i.IsComplete && !i.Label.Contains("photo", StringComparison.OrdinalIgnoreCase));
             if (nextItem != null)
             {
                 var nextIcon = nextItem.Label.Contains("photo", StringComparison.OrdinalIgnoreCase) ? "fa-camera" : "fa-circle-plus";

@@ -607,7 +607,11 @@
         .home-banner img { width: 100%; max-width: 320px; height: auto; display: block; margin: 0 auto; }
 
         /* === Home & Services - modern light layout === */
-        #section-home { padding: 0 16px 24px; }
+/* Nearby uses ho-dash-shell padding (same as rl-dash-shell); avoid double horizontal inset */
+#section-home {
+    padding: 0 0 24px;
+    max-width: none;
+}
         .home-content { display: flex; flex-direction: column; gap: 14px; }
 
         .prop-hero {

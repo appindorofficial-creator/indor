@@ -1,0 +1,193 @@
+/* Homeowner portal — notifications, section topbars, My Home hero */
+
+.ho-dash-shell {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 16px;
+}
+
+.ho-notify-wrap--global {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 0;
+    height: 0;
+    z-index: 200;
+    pointer-events: none;
+}
+
+.ho-notify-wrap--global .ho-notify-panel {
+    pointer-events: auto;
+    position: fixed;
+    top: 58px;
+    right: 16px;
+}
+
+.ho-notify-wrap { position: relative; }
+
+.ho-notify-wrap:not(.ho-notify-wrap--global) .ho-notify-panel {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+}
+
+.ho-notify-panel {
+    width: min(340px, calc(100vw - 32px));
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 16px;
+    box-shadow: 0 16px 40px rgba(15, 23, 42, .14);
+    z-index: 1200;
+    overflow: hidden;
+    display: none;
+}
+
+.ho-notify-panel.open { display: block; }
+
+.ho-notify-panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 14px 16px 10px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ho-notify-panel-head strong {
+    font-size: .95rem;
+    color: #0F172A;
+}
+
+.ho-notify-badge {
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: #0066CC;
+    background: #E8F2FF;
+    border-radius: 999px;
+    padding: 3px 8px;
+}
+
+.ho-notify-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.ho-notify-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 16px;
+    border-bottom: 1px solid #F1F5F9;
+}
+
+.ho-notify-item:last-child { border-bottom: 0; }
+
+.ho-notify-item-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: .9rem;
+}
+
+.ho-notify-item-icon.expired { background: #FEE2E2; color: #B91C1C; }
+.ho-notify-item-icon.soon { background: #FEF3C7; color: #B45309; }
+.ho-notify-item-icon.upcoming { background: #DBEAFE; color: #004FA3; }
+
+.ho-notify-item-body { flex: 1; min-width: 0; }
+
+.ho-notify-item-title {
+    font-size: .82rem;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.35;
+}
+
+.ho-notify-item-sub {
+    font-size: .72rem;
+    color: #64748B;
+    margin-top: 2px;
+}
+
+.ho-notify-item-time {
+    font-size: .7rem;
+    color: #94A3B8;
+    margin-top: 4px;
+}
+
+.ho-notify-empty {
+    padding: 28px 20px;
+    text-align: center;
+    color: #64748B;
+    font-size: .85rem;
+}
+
+.ho-section-topbar {
+    margin: -16px -16px 16px;
+    padding: 14px 16px 0;
+}
+
+.ho-view-switcher-wrap {
+    margin: 0 0 14px;
+}
+
+.ho-home-hero {
+    margin-bottom: 16px;
+}
+
+.ho-home-hero-user {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.ho-home-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, .65);
+    box-shadow: 0 6px 16px rgba(6, 40, 90, .3);
+    flex-shrink: 0;
+}
+
+.ho-home-avatar--placeholder {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, .2);
+    color: #fff;
+    font-size: 1.2rem;
+}
+
+.ho-home-hero h1 {
+    margin: 0 0 6px;
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.ho-home-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+}
+
+#section-home.hn-map-active .ho-view-switcher-wrap {
+    margin: 12px 0 14px;
+}

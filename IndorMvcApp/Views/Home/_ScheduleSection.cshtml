@@ -1,6 +1,9 @@
 @model IndorMvcApp.ViewModels.ScheduleSectionViewModel
 
 <section class="section" id="section-schedule">
+    <div class="ho-section-topbar">
+        @await Html.PartialAsync("~/Views/Home/_HomeownerTopbar.cshtml")
+    </div>
     @if (TempData["ScheduleSaved"] is string scheduleMsg)
     {
         <div class="sch-alert-ok"><i class="fas fa-check-circle"></i> @scheduleMsg</div>

@@ -1,0 +1,19 @@
+@{
+    var notificationCount = ViewData["HomeNotificationCount"] as int? ?? 0;
+}
+
+<header class="rl-portal-topbar">
+    <a asp-controller="Home" asp-action="Index" class="rl-portal-logo" aria-label="INDOR home">
+        <i class="fas fa-house"></i> INDOR
+    </a>
+    <div class="rl-portal-topbar-actions">
+        <button type="button"
+                class="rl-portal-icon-btn js-home-bell @(notificationCount > 0 ? "has-dot" : "")"
+                aria-label="Notifications"
+                aria-haspopup="true"
+                aria-expanded="false"
+                aria-controls="notifPanel">
+            <i class="fas fa-bell"></i>
+        </button>
+    </div>
+</header>
