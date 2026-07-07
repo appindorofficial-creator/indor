@@ -39,8 +39,11 @@ public class AdministradorController(
     IPropertyAdministratorPoolHotTubService poolHotTub,
     HomeownerNearbyNetworkService nearbyNetwork,
     UserManager<ApplicationUser> userManager,
-    SignInManager<ApplicationUser> signInManager) : Controller
+    SignInManager<ApplicationUser> signInManager,
+    IWebHostEnvironment environment) : Controller
 {
+    private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
+    private const long MaxProfilePhotoBytes = 10_000_000;
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -2077,6 +2080,69 @@ public class AdministradorController(
         return View(await portal.GetPersonalInformationAsync(Url));
     }
 
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadPersonalPhoto(IFormFile? photo)
+    {
+        if (await EnsureRegisteredAsync() is { } redirect)
+        {
+            return redirect;
+        }
+
+        var user = await userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Challenge();
+        }
+
+        if (photo == null || photo.Length == 0)
+        {
+            return PhotoUploadResult("Please choose a photo to upload.");
+        }
+
+        var photoError = await TrySaveProfilePhotoAsync(user, photo);
+        if (!string.IsNullOrWhiteSpace(photoError))
+        {
+            return PhotoUploadResult(photoError);
+        }
+
+        await userManager.UpdateAsync(user);
+        return PhotoUploadResult(null, user.FotoUrl);
+    }
+
+    private IActionResult PhotoUploadResult(string? error, string? photoUrl = null)
+    {
+        if (IsAjaxPhotoUploadRequest())
+        {
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                return BadRequest(new { ok = false, message = error });
+            }
+
+            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+        }
+
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            TempData["PersonalPhotoError"] = error;
+        }
+        else
+        {
+            TempData["PersonalPhotoOk"] = "Profile photo updated.";
+        }
+
+        return RedirectToAction(ResolvePhotoUploadReturnAction());
+    }
+
+    private string ResolvePhotoUploadReturnAction()
+    {
+        return nameof(PersonalInformation);
+    }
+
+    private bool IsAjaxPhotoUploadRequest() =>
+        string.Equals(Request.Headers.XRequestedWith, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
     [HttpGet]
     public async Task<IActionResult> NotificationPreferences(bool? saved)
     {
@@ -2188,5 +2254,38 @@ public class AdministradorController(
         }
 
         return View(await portal.GetHelpSupportAsync(Url));
+    }
+
+    private async Task<string?> TrySaveProfilePhotoAsync(ApplicationUser user, IFormFile photo)
+    {
+        var ext = Path.GetExtension(photo.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) && photo.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        {
+            ext = photo.ContentType.Contains("png", StringComparison.OrdinalIgnoreCase) ? ".png"
+                : photo.ContentType.Contains("webp", StringComparison.OrdinalIgnoreCase) ? ".webp"
+                : ".jpg";
+        }
+
+        if (!ProfilePhotoExtensions.Contains(ext))
+        {
+            return "Photo must be JPG, PNG, or WEBP.";
+        }
+
+        if (photo.Length > MaxProfilePhotoBytes)
+        {
+            return "Photo must be 10 MB or less.";
+        }
+
+        var folder = Path.Combine(environment.WebRootPath, "uploads", "avatars");
+        Directory.CreateDirectory(folder);
+        var fileName = $"{user.Id}_{Guid.NewGuid():N}{ext}";
+        var path = Path.Combine(folder, fileName);
+        await using (var stream = System.IO.File.Create(path))
+        {
+            await photo.CopyToAsync(stream);
+        }
+
+        user.FotoUrl = $"/uploads/avatars/{fileName}";
+        return null;
     }
 }

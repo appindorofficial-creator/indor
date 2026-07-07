@@ -27,12 +27,6 @@
             <i class="fas fa-circle-check"></i> Profile updated successfully.
         </div>
     }
-    @if (TempData["ProfilePhotoError"] is string photoError)
-    {
-        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-            <i class="fas fa-circle-exclamation"></i> @photoError
-        </div>
-    }
     @if (TempData["ProfileSectionError"] is string sectionError)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">

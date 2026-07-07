@@ -92,29 +92,50 @@
 
         @if (showPhoto)
         {
+        <div id="prvEditProfilePhotoAlerts"></div>
+        @if (TempData["ProfilePhotoOk"] is string photoOk)
+        {
+            <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success" role="status">
+                <i class="fas fa-circle-check"></i> @photoOk
+            </div>
+        }
         <section class="prv-pro-wizard-card" id="edit-profile-photo">
             <h2>Profile photo</h2>
             <p>Upload a logo or photo. It will appear on your provider profile.</p>
-            <div class="prv-pro-edit-profile-photo-row">
-                <div class="prv-pro-edit-profile-photo-preview" id="photoPreview">
-                    @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
-                    {
-                        <img src="@Url.Content($"~{Model.LogoUrl}")" alt="Current profile photo" id="photoPreviewImg" />
-                    }
-                    else
-                    {
-                        <span id="photoPreviewInitial">@Model.CompanyInitial</span>
-                        <img src="" alt="" id="photoPreviewImg" hidden />
-                    }
+            <form asp-controller="Proveedor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="prvEditProfilePhotoForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="returnTo" value="editar" />
+                <div class="prv-pro-edit-profile-photo-row">
+                    <div class="prv-pro-edit-profile-photo-preview prv-pro-profile-photo-preview" id="prvEditProfilePhotoPreview">
+                        @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                        {
+                            <img src="@Url.Content($"~{Model.LogoUrl}")" alt="Current profile photo" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" />
+                            <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder" hidden>@Model.CompanyInitial</span>
+                        }
+                        else
+                        {
+                            <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder">@Model.CompanyInitial</span>
+                            <img src="" alt="" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" hidden />
+                        }
+                    </div>
+                    <div class="prv-pro-edit-profile-photo-actions">
+                        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-edit-profile-upload-btn" id="prvEditProfilePhotoBtn" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-camera"></i> Change photo
+                        </button>
+                        <div class="prv-pro-profile-photo-menu" id="prvEditProfilePhotoMenu" role="menu" hidden>
+                            <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoTake" role="menuitem">
+                                <i class="fas fa-camera"></i> Take photo
+                            </button>
+                            <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoChoose" role="menuitem">
+                                <i class="fas fa-image"></i> Choose from library
+                            </button>
+                        </div>
+                        <input type="file" id="prvEditProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
+                        <input type="file" id="prvEditProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+                        <small>JPG, PNG or WEBP · Max 10 MB</small>
+                    </div>
                 </div>
-                <div class="prv-pro-edit-profile-photo-actions">
-                    <label class="prv-pro-btn prv-pro-btn--ghost prv-pro-edit-profile-upload-btn">
-                        <i class="fas fa-camera"></i> Choose photo
-                        <input type="file" name="profilePhoto" id="profilePhotoInput" accept="image/jpeg,image/png,image/webp" hidden />
-                    </label>
-                    <small>JPG, PNG or WEBP · Max 10 MB</small>
-                </div>
-            </div>
+            </form>
         </section>
         }
 
@@ -203,32 +224,13 @@
 </div>
 
 @section Scripts {
+<script src="~/js/profile-photo-upload.js" asp-append-version="true"></script>
 <script>
 (function () {
-    var input = document.getElementById('profilePhotoInput');
-    var preview = document.getElementById('photoPreview');
-    var img = document.getElementById('photoPreviewImg');
-    var initial = document.getElementById('photoPreviewInitial');
-
     var errorAlert = document.querySelector('.prv-pro-edit-profile-alert--error');
     if (errorAlert) {
         errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-
-    input?.addEventListener('change', function () {
-        const file = input.files && input.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            if (img) {
-                img.src = e.target?.result || '';
-                img.hidden = false;
-            }
-            if (initial) initial.style.display = 'none';
-            preview?.classList.add('has-image');
-        };
-        reader.readAsDataURL(file);
-    });
 })();
 </script>
 }

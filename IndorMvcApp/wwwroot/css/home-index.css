@@ -1466,7 +1466,7 @@
         .bell { position: relative; cursor: pointer; }
         .bell-count {
             position: absolute; top: -2px; right: -2px;
-            background: #EF4444; color: #FFF; font-size: 0.62rem; font-weight: 700;
+            background: #0066CC; color: #FFF; font-size: 0.62rem; font-weight: 700;
             min-width: 16px; height: 16px; border-radius: 999px; padding: 0 4px;
             display: flex; align-items: center; justify-content: center;
             border: 2px solid #FFF;

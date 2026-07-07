@@ -1,3 +1,4 @@
+using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
@@ -6,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
 
 namespace IndorMvcApp.Controllers;
@@ -17,10 +19,13 @@ public class RealtorController(
     RealtorNearbyNetworkService nearbyNetworkService,
     RealtorSharedQuoteService sharedQuoteService,
     UserManager<ApplicationUser> userManager,
+    AppDbContext db,
     IWebHostEnvironment env) : Controller
 {
     private const long MaxDocumentBytes = 10 * 1024 * 1024;
+    private const long MaxProfilePhotoBytes = 10_000_000;
     private static readonly string[] AllowedDocExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
+    private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
         if (User.Identity?.IsAuthenticated != true)
@@ -561,6 +566,44 @@ public class RealtorController(
 
     [HttpPost]
     [ValidateAntiForgeryToken]
+    [RequestSizeLimit(10_000_000)]
+    public async Task<IActionResult> UploadProfilePhoto(IFormFile? photo, CancellationToken cancellationToken)
+    {
+        if (await ResolveProfilePhotoRedirectAsync(cancellationToken) is { } redirect)
+        {
+            return redirect;
+        }
+
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return PhotoUploadResult("Could not find your realtor profile.");
+        }
+
+        if (photo == null || photo.Length == 0)
+        {
+            return PhotoUploadResult("Please choose a photo to upload.");
+        }
+
+        var entity = await db.IndorRealtors
+            .FirstOrDefaultAsync(r => r.Id == realtor.Id, cancellationToken);
+        if (entity == null)
+        {
+            return PhotoUploadResult("Could not find your realtor profile.");
+        }
+
+        var photoError = await TrySaveRealtorProfilePhotoAsync(entity, photo, cancellationToken);
+        if (!string.IsNullOrWhiteSpace(photoError))
+        {
+            return PhotoUploadResult(photoError);
+        }
+
+        await db.SaveChangesAsync(cancellationToken);
+        return PhotoUploadResult(null, entity.ProfilePhotoUrl);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> ProfileNotificationPreferences(
         RealtorNotificationPreferencesInput input,
         CancellationToken cancellationToken)
@@ -988,5 +1031,88 @@ public class RealtorController(
 
         var relativeUrl = $"/uploads/realtor-docs/{realtor.Id}/{fileName}";
         await registration.RegisterDocumentUploadAsync(RealtorDocumentTypes.LicensePhoto, relativeUrl, cancellationToken);
+    }
+
+    private async Task<IActionResult?> ResolveProfilePhotoRedirectAsync(CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return IsAjaxPhotoUploadRequest()
+                ? Unauthorized()
+                : RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        if (realtor.RegistrationStatus == RealtorRegistrationStatuses.Draft)
+        {
+            return IsAjaxPhotoUploadRequest()
+                ? Unauthorized()
+                : RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        return null;
+    }
+
+    private IActionResult PhotoUploadResult(string? error, string? photoUrl = null)
+    {
+        if (IsAjaxPhotoUploadRequest())
+        {
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                return BadRequest(new { ok = false, message = error });
+            }
+
+            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+        }
+
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            TempData["ProfilePhotoError"] = error;
+        }
+        else
+        {
+            TempData["ProfilePhotoOk"] = "Profile photo updated.";
+        }
+
+        return RedirectToAction(nameof(BusinessInformation));
+    }
+
+    private bool IsAjaxPhotoUploadRequest() =>
+        string.Equals(Request.Headers.XRequestedWith, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
+
+    private async Task<string?> TrySaveRealtorProfilePhotoAsync(
+        IndorRealtor realtor,
+        IFormFile photo,
+        CancellationToken cancellationToken)
+    {
+        var ext = Path.GetExtension(photo.FileName).ToLowerInvariant();
+        if (string.IsNullOrEmpty(ext) && photo.ContentType.StartsWith("image/", StringComparison.OrdinalIgnoreCase))
+        {
+            ext = photo.ContentType.Contains("png", StringComparison.OrdinalIgnoreCase) ? ".png"
+                : photo.ContentType.Contains("webp", StringComparison.OrdinalIgnoreCase) ? ".webp"
+                : ".jpg";
+        }
+
+        if (!ProfilePhotoExtensions.Contains(ext))
+        {
+            return "Photo must be JPG, PNG, or WEBP.";
+        }
+
+        if (photo.Length > MaxProfilePhotoBytes)
+        {
+            return "Photo must be 10 MB or less.";
+        }
+
+        var folder = Path.Combine(env.WebRootPath, "uploads", "realtor", realtor.Id.ToString());
+        Directory.CreateDirectory(folder);
+        var fileName = $"profile-{Guid.NewGuid():N}{ext}";
+        var path = Path.Combine(folder, fileName);
+        await using (var stream = System.IO.File.Create(path))
+        {
+            await photo.CopyToAsync(stream, cancellationToken);
+        }
+
+        realtor.ProfilePhotoUrl = $"/uploads/realtor/{realtor.Id}/{fileName}";
+        return null;
     }
 }

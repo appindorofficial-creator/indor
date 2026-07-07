@@ -47,6 +47,57 @@
 .rl-ep-step-segment { height: 4px; border-radius: 999px; background: #E2E8F0; }
 .rl-ep-step-segment.is-active { background: #0066CC; }
 
+.rl-ep-photo-card {
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+.rl-ep-photo-card h2 {
+    margin: 0 0 6px;
+    font-size: .95rem;
+    font-weight: 700;
+    color: #0F172A;
+}
+.rl-ep-photo-card p {
+    margin: 0 0 14px;
+    font-size: .78rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+.rl-ep-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+.rl-ep-photo-preview {
+    width: 72px;
+    height: 72px;
+}
+.rl-ep-photo-preview .rl-profile-photo-preview {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.rl-ep-photo-preview .rl-profile-photo-preview > .rl-profile-photo,
+.rl-ep-photo-preview .rl-profile-photo-preview > .rl-profile-photo--placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.rl-ep-photo-preview .rl-profile-photo-preview > [hidden] {
+    display: none !important;
+}
+.rl-ep-photo-preview .rl-profile-photo,
+.rl-ep-photo-preview .rl-profile-photo--placeholder {
+    width: 100%;
+    height: 100%;
+}
+
 .rl-ep-progress-card {
     display: grid; grid-template-columns: auto 1fr auto; gap: 12px; align-items: center;
     padding: 14px; margin-bottom: 16px; border-radius: 16px;

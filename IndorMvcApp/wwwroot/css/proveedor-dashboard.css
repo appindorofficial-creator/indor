@@ -1094,6 +1094,119 @@ a.prv-pro-profile-btn { text-decoration: none; }
     margin-bottom: 12px;
 }
 
+#prvProfilePhotoForm {
+    display: inline-block;
+    margin: 0;
+}
+
+.prv-pro-profile-photo-wrap {
+    position: relative;
+    width: 96px;
+    height: 96px;
+    flex-shrink: 0;
+}
+
+.prv-pro-profile-photo-preview {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.prv-pro-profile-photo-preview > .prv-pro-profile-logo,
+.prv-pro-profile-photo-preview > .prv-pro-profile-logo--img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+
+.prv-pro-profile-photo-preview > [hidden] {
+    display: none !important;
+}
+
+.prv-pro-profile-photo-edit {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #0066CC;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .68rem;
+    border: 3px solid #fff;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+    box-shadow: 0 2px 8px rgba(0, 102, 204, .35);
+}
+
+.prv-pro-profile-photo-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 20;
+    min-width: 190px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .14);
+    padding: 6px;
+}
+
+.prv-pro-profile-photo-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #334155;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.prv-pro-profile-photo-menu-item:hover {
+    background: #F1F5F9;
+}
+
+.prv-pro-profile-photo-menu-item i {
+    color: #0066CC;
+    width: 16px;
+    text-align: center;
+}
+
+.prv-pro-profile-photo-alert {
+    margin: 0 0 12px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: .76rem;
+    font-weight: 600;
+}
+
+.prv-pro-profile-photo-alert--success {
+    background: #ECFDF5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
+}
+
+.prv-pro-profile-photo-alert--error {
+    background: #FEF2F2;
+    color: #B91C1C;
+    border: 1px solid #FECACA;
+}
+
 .prv-pro-profile-hero--featured .prv-pro-profile-logo {
     width: 96px;
     height: 96px;
@@ -1179,6 +1292,24 @@ a.prv-pro-profile-btn { text-decoration: none; }
     flex-shrink: 0;
     box-shadow: 0 8px 20px rgba(0, 86, 210, 0.28);
 }
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview {
+    position: relative;
+    width: 88px;
+    height: 88px;
+    padding: 0;
+}
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview > .prv-pro-profile-logo,
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview > .prv-pro-profile-logo--img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+}
+.prv-pro-edit-profile-photo-preview.prv-pro-profile-photo-preview > [hidden] {
+    display: none !important;
+}
 .prv-pro-edit-profile-photo-preview img {
     width: 100%;
     height: 100%;
@@ -1187,6 +1318,9 @@ a.prv-pro-profile-btn { text-decoration: none; }
 .prv-pro-edit-profile-photo-preview.has-image {
     background: #fff;
     border: 3px solid #E8F1FB;
+}
+.prv-pro-edit-profile-photo-actions {
+    position: relative;
 }
 .prv-pro-edit-profile-photo-actions small {
     display: block;
@@ -4815,7 +4949,7 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-shell--profile .prv-pro-notify-btn--inverse.has-dot::after {
     top: 7px;
     right: 8px;
-    background: #DC2626;
+    background: #0066CC;
     border: 2px solid rgba(255, 255, 255, .85);
 }
 
@@ -5346,7 +5480,7 @@ a.prv-pro-profile-center-action:focus-visible {
 .prv-pro-portal-page-hero .prv-pro-notify-btn--inverse.has-dot::after {
     top: 7px;
     right: 8px;
-    background: #DC2626;
+    background: #0066CC;
     border: 2px solid rgba(255, 255, 255, .85);
 }
 
@@ -6728,7 +6862,7 @@ a.prv-pro-profile-center-action:focus-visible {
     border-radius: 11px;
 }
 .prv-pro-notify-btn--inverse.has-dot::after {
-    background: #DC2626;
+    background: #0066CC;
     border: 2px solid rgba(255, 255, 255, .85);
 }
 .prv-pro-notify-panel {

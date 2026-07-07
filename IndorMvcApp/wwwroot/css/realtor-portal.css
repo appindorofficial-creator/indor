@@ -4071,6 +4071,96 @@ button.rl-premium-link {
     flex-shrink: 0;
 }
 
+.rl-profile-photo-preview {
+    width: 64px;
+    height: 64px;
+}
+
+.rl-profile-photo-edit {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #0066CC;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .62rem;
+    border: 2px solid #fff;
+    cursor: pointer;
+    padding: 0;
+    z-index: 2;
+}
+
+.rl-profile-photo-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    z-index: 20;
+    min-width: 190px;
+    background: #fff;
+    border: 1px solid #E2E8F0;
+    border-radius: 12px;
+    box-shadow: 0 12px 28px rgba(15, 23, 42, .14);
+    padding: 6px;
+}
+
+.rl-profile-photo-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    font-size: .8rem;
+    font-weight: 600;
+    color: #334155;
+    text-align: left;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.rl-profile-photo-menu-item:hover {
+    background: #F1F5F9;
+}
+
+.rl-profile-photo-menu-item i {
+    color: #0066CC;
+    width: 16px;
+    text-align: center;
+}
+
+.rl-profile-photo-alert {
+    margin: 0 0 10px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    font-size: .76rem;
+    font-weight: 600;
+}
+
+.rl-profile-photo-alert--success {
+    background: #ECFDF5;
+    color: #047857;
+    border: 1px solid #A7F3D0;
+}
+
+.rl-profile-photo-alert--error {
+    background: #FEF2F2;
+    color: #B91C1C;
+    border: 1px solid #FECACA;
+}
+
+.rl-profile-card-info {
+    flex: 1;
+    text-decoration: none;
+    color: inherit;
+}
+
 .rl-profile-photo-badge {
     position: absolute;
     right: -2px;
@@ -4090,11 +4180,8 @@ button.rl-premium-link {
     display: flex;
     align-items: center;
     gap: 12px;
-    text-decoration: none;
-    color: inherit;
     margin-bottom: 14px;
 }
-.rl-profile-card-info { flex: 1; }
 .rl-profile-card-info strong { display: block; font-size: 1rem; margin-bottom: 6px; }
 .rl-profile-card-chevron { color: #CBD5E1; }
 .rl-profile-stats {
@@ -7558,7 +7645,6 @@ a.rl-profile-nav-item {
     background: rgba(255, 255, 255, .95);
     color: #0066CC;
 }
-.rl-portal-page-hero .rl-portal-icon-btn.has-dot::after { background: #DC2626; }
 .rl-portal-page-hero .rl-page-header { margin-bottom: 16px; position: relative; z-index: 3; }
 .rl-page-header--hero { align-items: center; }
 .rl-page-header-copy { min-width: 0; flex: 1; }

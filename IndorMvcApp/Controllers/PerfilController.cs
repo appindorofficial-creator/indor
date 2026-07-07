@@ -1076,28 +1076,64 @@ public class PerfilController : Controller
     [HttpPost]
     [ValidateAntiForgeryToken]
     [RequestSizeLimit(10_000_000)]
-    public async Task<IActionResult> SubirFoto(IFormFile foto)
+    public async Task<IActionResult> SubirFoto(IFormFile? foto, IFormFile? photo)
     {
         var user = await _userManager.GetUserAsync(User);
-        if (user == null) return RedirectToAction("Login", "Account");
-
-        if (foto == null || foto.Length == 0)
+        if (user == null)
         {
-            TempData["PerfilError"] = "Please choose a photo to upload.";
-            return RedirectToAction(nameof(EditarPerfil));
+            return IsAjaxPhotoUploadRequest()
+                ? Unauthorized()
+                : RedirectToAction("Login", "Account");
         }
 
-        var photoError = await TrySaveHomeownerPhotoAsync(user, foto);
+        var file = foto ?? photo;
+        if (file == null || file.Length == 0)
+        {
+            return HomeownerPhotoUploadResult("Please choose a photo to upload.");
+        }
+
+        var photoError = await TrySaveHomeownerPhotoAsync(user, file);
         if (!string.IsNullOrWhiteSpace(photoError))
         {
-            TempData["PerfilError"] = photoError;
-            return RedirectToAction(nameof(EditarPerfil));
+            return HomeownerPhotoUploadResult(photoError);
         }
 
         await _userManager.UpdateAsync(user);
-        TempData["PerfilOk"] = "Photo updated.";
+        return HomeownerPhotoUploadResult(null, user.FotoUrl);
+    }
+
+    private IActionResult HomeownerPhotoUploadResult(string? error, string? photoUrl = null)
+    {
+        if (IsAjaxPhotoUploadRequest())
+        {
+            if (!string.IsNullOrWhiteSpace(error))
+            {
+                return BadRequest(new { ok = false, message = error });
+            }
+
+            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+        }
+
+        if (!string.IsNullOrWhiteSpace(error))
+        {
+            TempData["PerfilError"] = error;
+        }
+        else
+        {
+            TempData["PerfilOk"] = "Photo updated.";
+        }
+
+        var returnTo = Request.Form["returnTo"].ToString();
+        if (string.Equals(returnTo, "editar", StringComparison.OrdinalIgnoreCase))
+        {
+            return RedirectToAction(nameof(EditarPerfil));
+        }
+
         return RedirectToAction("Index", "Home", new { section = "more" });
     }
+
+    private bool IsAjaxPhotoUploadRequest() =>
+        string.Equals(Request.Headers.XRequestedWith, "XMLHttpRequest", StringComparison.OrdinalIgnoreCase);
 
     [HttpPost]
     [ValidateAntiForgeryToken]
