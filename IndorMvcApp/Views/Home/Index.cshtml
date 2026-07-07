@@ -624,7 +624,6 @@
             <div class="ho-portal-page-hero @(isHomeMapView ? "ho-portal-page-hero--network-map" : "")">
                 @{
                     ViewData["HomeTopbarInverse"] = true;
-                    ViewData["HomeTopbarSearch"] = false;
                 }
                 @await Html.PartialAsync("_HomeownerTopbar")
                 @if (homeNearbyNetwork != null)
@@ -673,7 +672,6 @@
             <div class="ho-portal-page-hero ho-home-hero">
                 @{
                     ViewData["HomeTopbarInverse"] = true;
-                    ViewData["HomeTopbarSearch"] = false;
                 }
                 @await Html.PartialAsync("_HomeownerTopbar")
                 <div class="ho-home-hero-user">
@@ -715,10 +713,6 @@
 
     <!-- ====== SERVICES ====== -->
     <section class="section" id="section-services">
-        @{
-            ViewData["HomeTopbarInverse"] = false;
-            ViewData["HomeTopbarSearch"] = true;
-        }
         <div class="ho-section-topbar">
             @await Html.PartialAsync("_HomeownerTopbar")
         </div>
@@ -804,10 +798,6 @@
         }
     </section>
     <section class="section" id="section-myhome">
-        @{
-            ViewData["HomeTopbarInverse"] = false;
-            ViewData["HomeTopbarSearch"] = true;
-        }
         <div class="ho-section-topbar">
             @await Html.PartialAsync("_HomeownerTopbar")
         </div>
@@ -882,10 +872,6 @@
 
     <!-- ====== MORE ====== -->
     <section class="section" id="section-more">
-        @{
-            ViewData["HomeTopbarInverse"] = false;
-            ViewData["HomeTopbarSearch"] = true;
-        }
         <div class="ho-section-topbar">
             @await Html.PartialAsync("_HomeownerTopbar")
         </div>

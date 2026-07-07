@@ -1,6 +1,5 @@
 @{
     var inverse = ViewData["HomeTopbarInverse"] as bool? ?? false;
-    var showSearch = ViewData["HomeTopbarSearch"] as bool? ?? false;
     var notificationCount = ViewData["HomeNotificationCount"] as int? ?? 0;
     var topbarClass = inverse ? "ho-portal-topbar ho-portal-topbar--inverse" : "ho-portal-topbar";
 }
@@ -10,14 +9,6 @@
         <i class="fas fa-house"></i> INDOR
     </a>
     <div class="ho-portal-topbar-actions">
-        @if (showSearch)
-        {
-            <button type="button"
-                    class="ho-portal-icon-btn js-home-search-open"
-                    aria-label="Search services and inspections">
-                <i class="fas fa-magnifying-glass"></i>
-            </button>
-        }
         <button type="button"
                 class="ho-portal-icon-btn js-home-bell @(notificationCount > 0 ? "has-dot" : "")"
                 aria-label="Notifications"

@@ -1,10 +1,6 @@
 @model IndorMvcApp.ViewModels.ScheduleSectionViewModel
 
 <section class="section" id="section-schedule">
-    @{
-        ViewData["HomeTopbarInverse"] = false;
-        ViewData["HomeTopbarSearch"] = true;
-    }
     <div class="ho-section-topbar">
         @await Html.PartialAsync("~/Views/Home/_HomeownerTopbar.cshtml")
     </div>
