@@ -21,14 +21,14 @@
     padding-bottom: 24px;
 }
 
-#section-home:not(.hn-map-active) .hn-network-view-toggle,
+#section-home:not(.hn-map-active) .rl-network-view-toggle,
 #section-home:not(.hn-map-active) .hn-network-empty,
 #section-home:not(.hn-map-active) .hn-feed-empty {
     margin-left: 0;
     margin-right: 0;
 }
 
-#section-home.hn-map-active .hn-network-view-toggle {
+#section-home.hn-map-active .rl-network-view-toggle {
     margin-left: 0;
     margin-right: 0;
 }

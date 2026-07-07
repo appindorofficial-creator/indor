@@ -58,6 +58,17 @@
     }
     else if (isMapView)
     {
+        <div class="hn-filter-chips hn-filter-chips--map hn-filter-chips--scroll">
+            @foreach (var chip in Model.Filters)
+            {
+                <a href="@BuildFilterUrl(chip.Value)"
+                   class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
+                   aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
+                    <i class="fas @chip.Icon"></i> @chip.Label
+                </a>
+            }
+        </div>
+
         @if (Model.HasGoogleMaps)
         {
             <section class="hn-map-shell" aria-label="Nearby map">
@@ -102,6 +113,17 @@
     }
     else
     {
+        <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form" asp-fragment="section-home">
+            <div class="hn-search-row">
+                <div class="hn-search-bar">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <input type="text" name="q" value="@Model.SearchQuery" placeholder="Search in my neighborhood..." inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="Search in my neighborhood" />
+                </div>
+                <input type="hidden" name="view" value="@Model.ActiveView" />
+                <input type="hidden" name="filter" value="@Model.ActiveFilter" />
+            </div>
+        </form>
+
         <div class="hn-filter-chips hn-filter-chips--scroll">
             @foreach (var chip in Model.Filters)
             {

@@ -1,16 +1,14 @@
 @{
-    var inverse = ViewData["HomeTopbarInverse"] as bool? ?? false;
     var notificationCount = ViewData["HomeNotificationCount"] as int? ?? 0;
-    var topbarClass = inverse ? "ho-portal-topbar ho-portal-topbar--inverse" : "ho-portal-topbar";
 }
 
-<header class="@topbarClass">
-    <a asp-controller="Home" asp-action="Index" class="ho-portal-logo" aria-label="INDOR home">
+<header class="rl-portal-topbar">
+    <a asp-controller="Home" asp-action="Index" class="rl-portal-logo" aria-label="INDOR home">
         <i class="fas fa-house"></i> INDOR
     </a>
-    <div class="ho-portal-topbar-actions">
+    <div class="rl-portal-topbar-actions">
         <button type="button"
-                class="ho-portal-icon-btn js-home-bell @(notificationCount > 0 ? "has-dot" : "")"
+                class="rl-portal-icon-btn js-home-bell @(notificationCount > 0 ? "has-dot" : "")"
                 aria-label="Notifications"
                 aria-haspopup="true"
                 aria-expanded="false"

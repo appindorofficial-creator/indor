@@ -1,44 +1,17 @@
 @model IndorMvcApp.ViewModels.HomeownerNearbyNetworkViewModel
 @{
     var isMapView = Model.ActiveView == "map";
-    string BuildFilterUrl(string filter) =>
-        (Url.Action("Index", "Home", new { filter, view = Model.ActiveView, q = Model.SearchQuery }) ?? "/") + "#section-home";
+    string BuildViewUrl(string view) =>
+        (Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view, q = Model.SearchQuery }) ?? "/") + "#section-home";
 }
 
-<div class="ho-network-view-toggle @(isMapView ? "ho-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
-    <a href="@((Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view = "map", q = Model.SearchQuery }) ?? "/") + "#section-home")"
-       class="ho-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
+<div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
+    <a href="@BuildViewUrl("map")"
+       class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
         <i class="fas fa-map"></i> Map
     </a>
-    <a href="@((Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view = "feed", q = Model.SearchQuery }) ?? "/") + "#section-home")"
-       class="ho-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
+    <a href="@BuildViewUrl("feed")"
+       class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
         <i class="fas fa-list"></i> Feed
     </a>
 </div>
-
-@if (isMapView)
-{
-    <div class="hn-filter-chips hn-filter-chips--map hn-filter-chips--scroll">
-        @foreach (var chip in Model.Filters)
-        {
-            <a href="@BuildFilterUrl(chip.Value)"
-               class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
-               aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
-                <i class="fas @chip.Icon"></i> @chip.Label
-            </a>
-        }
-    </div>
-}
-else
-{
-    <form asp-controller="Home" asp-action="Index" method="get" class="hn-search-form" asp-fragment="section-home">
-        <div class="hn-search-row">
-            <div class="hn-search-bar">
-                <i class="fas fa-magnifying-glass"></i>
-                <input type="text" name="q" value="@Model.SearchQuery" placeholder="Search in my neighborhood..." inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="Search in my neighborhood" />
-            </div>
-            <input type="hidden" name="view" value="@Model.ActiveView" />
-            <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-        </div>
-    </form>
-}

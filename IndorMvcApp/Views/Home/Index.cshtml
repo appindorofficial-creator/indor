@@ -569,11 +569,12 @@
     <link rel="stylesheet" href="~/css/schedule-section.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/homeowner-bottom-nav.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home-portal-header.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/realtor-portal.css" asp-append-version="true" />
     @await Html.PartialAsync("_AppVersionHead")
     <link rel="stylesheet" href="~/css/home-index.css" asp-append-version="true" />
     @await Html.PartialAsync("_TabletResponsiveHead")
 </head>
-<body>
+<body class="rl-dash-page">
     <div class="home-search-overlay" id="homeSearchOverlay" role="dialog" aria-label="Search" aria-hidden="true">
         <div class="home-search-panel">
             <div class="home-search-head">
@@ -620,22 +621,19 @@
         @{
             var homeNearbyNetwork = homeNearbyNetworkModel;
         }
-        <div class="ho-dash-shell @(isHomeMapView ? "ho-network-page--map" : "")">
-            <div class="ho-portal-page-hero @(isHomeMapView ? "ho-portal-page-hero--network-map" : "")">
-                @{
-                    ViewData["HomeTopbarInverse"] = true;
-                }
+        <div class="rl-dash-shell rl-network-page @(isHomeMapView ? "rl-network-page--map" : "")">
+            <div class="rl-portal-page-hero @(isHomeMapView ? "rl-portal-page-hero--network-map" : "")">
                 @await Html.PartialAsync("_HomeownerTopbar")
                 @if (homeNearbyNetwork != null)
                 {
-                    <div class="ho-page-header ho-page-header--hero">
-                        <div class="ho-page-header-copy">
-                            <h1 class="ho-page-title">@homeNearbyNetwork.PageTitle</h1>
-                            <p class="ho-page-subtitle"><i class="fas fa-location-dot"></i> @homeNearbyNetwork.RadiusLabel</p>
+                    <div class="rl-page-header rl-page-header--hero rl-network-head">
+                        <div class="rl-page-header-copy">
+                            <h1 class="rl-page-title">@homeNearbyNetwork.PageTitle</h1>
+                            <p class="rl-page-subtitle">@homeNearbyNetwork.RadiusLabel</p>
                         </div>
                         @if (!isHomeMapView)
                         {
-                            <button type="button" class="ho-profile-chip-btn nav-jump" data-target="section-more">
+                            <button type="button" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn nav-jump" data-target="section-more">
                                 <i class="fas fa-user"></i> My Profile
                             </button>
                         }
@@ -669,10 +667,7 @@
             var homeDashboard = ViewBag.HomeDashboard as IndorMvcApp.ViewModels.HomeDashboardViewModel;
         }
         <div class="ho-dash-shell">
-            <div class="ho-portal-page-hero ho-home-hero">
-                @{
-                    ViewData["HomeTopbarInverse"] = true;
-                }
+            <div class="rl-portal-page-hero ho-home-hero">
                 @await Html.PartialAsync("_HomeownerTopbar")
                 <div class="ho-home-hero-user">
                     @if (!string.IsNullOrWhiteSpace(moreProfileShell.PhotoUrl))

@@ -1,75 +1,9 @@
-/* Homeowner portal shell — aligned with Realtor portal header patterns */
+/* Homeowner portal — notifications, section topbars, My Home hero */
 
 .ho-dash-shell {
     max-width: 480px;
     margin: 0 auto;
-}
-
-.ho-portal-topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    position: relative;
-    z-index: 2;
-}
-
-.ho-portal-logo {
-    font-weight: 800;
-    font-size: 1rem;
-    color: #0066CC;
-    text-decoration: none;
-}
-
-.ho-portal-logo i { margin-right: 6px; }
-
-.ho-portal-topbar-actions {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.ho-portal-icon-btn {
-    width: 36px;
-    height: 36px;
-    border: none;
-    background: transparent;
-    color: #334155;
-    font-size: 1rem;
-    position: relative;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    text-decoration: none;
-    padding: 0;
-}
-
-.ho-portal-icon-btn.has-dot::after {
-    content: "";
-    position: absolute;
-    top: 6px;
-    right: 8px;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #0066CC;
-}
-
-.ho-portal-topbar--inverse .ho-portal-logo { color: #fff; }
-
-.ho-portal-topbar--inverse .ho-portal-icon-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, .95);
-    color: #0066CC;
-}
-
-.ho-portal-topbar--inverse .ho-portal-icon-btn.has-dot::after {
-    top: 7px;
-    right: 8px;
-    border: 2px solid rgba(255, 255, 255, .85);
+    padding: 16px;
 }
 
 .ho-notify-wrap--global {
@@ -88,7 +22,6 @@
     top: 58px;
     right: 16px;
 }
-
 
 .ho-notify-wrap { position: relative; }
 
@@ -201,131 +134,6 @@
     padding: 14px 16px 0;
 }
 
-.ho-portal-page-hero {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
-    margin: -16px -16px 16px;
-    padding: 14px 16px 18px;
-    border-radius: 0 0 26px 26px;
-    background: linear-gradient(135deg, #37A0FF 0%, #0F7BEF 45%, #0057C8 82%, #063E8C 125%);
-    box-shadow: 0 16px 38px rgba(0, 86, 200, .28);
-    color: #fff;
-    position: relative;
-    isolation: isolate;
-}
-
-.ho-page-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    margin-bottom: 14px;
-    position: relative;
-    z-index: 1;
-}
-
-.ho-page-header-copy { min-width: 0; flex: 1; }
-
-.ho-page-title {
-    margin: 0;
-    font-size: 1.45rem;
-    font-weight: 800;
-    color: #fff;
-    line-height: 1.15;
-}
-
-.ho-page-subtitle {
-    margin: 4px 0 0;
-    font-size: .88rem;
-    color: rgba(255, 255, 255, .85);
-}
-
-.ho-profile-chip-btn {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 8px 12px;
-    border-radius: 999px;
-    border: 1.5px solid rgba(255, 255, 255, .55);
-    background: rgba(255, 255, 255, .12);
-    color: #fff;
-    font-size: .76rem;
-    font-weight: 700;
-    text-decoration: none;
-    white-space: nowrap;
-    flex-shrink: 0;
-    cursor: pointer;
-    font-family: inherit;
-}
-
-.ho-profile-chip-btn:hover,
-.ho-profile-chip-btn:focus-visible {
-    background: rgba(255, 255, 255, .22);
-    border-color: #fff;
-    color: #fff;
-}
-
-.ho-network-view-toggle {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 12px;
-    padding: 4px;
-    background: rgba(255, 255, 255, .18);
-    border-radius: 14px;
-    position: relative;
-    z-index: 1;
-}
-
-.ho-network-view-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 12px 10px;
-    border-radius: 10px;
-    text-decoration: none;
-    color: rgba(255, 255, 255, .88);
-    font-size: .88rem;
-    font-weight: 700;
-}
-
-.ho-network-view-btn.is-active {
-    background: #fff;
-    color: #0066CC;
-    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.22);
-}
-
-.ho-portal-page-hero .hn-search-form {
-    margin-bottom: 0;
-    position: relative;
-    z-index: 1;
-}
-
-.ho-portal-page-hero .hn-search-bar {
-    margin-bottom: 12px;
-    border-color: transparent;
-}
-
-.ho-portal-page-hero .hn-filter-chips {
-    position: relative;
-    z-index: 1;
-    margin-bottom: 0;
-}
-
-.ho-portal-page-hero .hn-filter-chip {
-    background: #fff;
-    border-color: #0066CC;
-    color: #0066CC;
-}
-
-.ho-portal-page-hero .hn-filter-chip.is-active {
-    background: #0066CC;
-    border-color: #fff;
-    color: #fff;
-}
-
 .ho-view-switcher-wrap {
     margin: 0 0 14px;
 }
@@ -378,11 +186,6 @@
     color: #fff;
     font-size: .72rem;
     font-weight: 700;
-}
-
-#section-home.hn-map-active .ho-portal-page-hero--network-map {
-    margin-bottom: 0;
-    border-radius: 0 0 20px 20px;
 }
 
 #section-home.hn-map-active .ho-view-switcher-wrap {
