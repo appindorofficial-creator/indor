@@ -29,16 +29,49 @@
 <form asp-action="ImportPortfolio" method="post" enctype="multipart/form-data" id="importPortfolioForm">
     @Html.AntiForgeryToken()
 
-    <label class="pa-field">
-        <i class="fas fa-file-csv"></i>
+    <div class="pa-file-picker" id="csvFilePicker">
+        <i class="fas fa-file-csv pa-file-picker-icon" aria-hidden="true"></i>
         <input type="file"
+               id="csvFile"
                name="csvFile"
+               class="pa-file-picker-input"
                accept=".csv,text/csv,.txt"
                required />
-    </label>
+        <label for="csvFile" class="pa-file-picker-btn">Choose CSV file</label>
+        <span class="pa-file-picker-name" id="csvFileName" data-empty-label="No file selected">No file selected</span>
+    </div>
 
     <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Import properties</button>
 </form>
+
+@section Scripts {
+<script>
+    (function () {
+        const input = document.getElementById('csvFile');
+        const nameEl = document.getElementById('csvFileName');
+        const picker = document.getElementById('csvFilePicker');
+        if (!input || !nameEl || !picker) return;
+
+        const emptyLabel = nameEl.dataset.emptyLabel || 'No file selected';
+
+        function syncFileLabel() {
+            const file = input.files && input.files[0];
+            if (file) {
+                nameEl.textContent = file.name;
+                nameEl.classList.add('is-selected');
+                picker.classList.add('has-file');
+            } else {
+                nameEl.textContent = emptyLabel;
+                nameEl.classList.remove('is-selected');
+                picker.classList.remove('has-file');
+            }
+        }
+
+        input.addEventListener('change', syncFileLabel);
+        syncFileLabel();
+    })();
+</script>
+}
 
 <div class="pa-reg-actions" style="margin-top:18px;">
     <a href="@Model.BackUrl" class="pa-reg-action-back">Back to properties</a>
