@@ -132,6 +132,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IProviderRegistrationService, ProviderRegistrationService>();
 builder.Services.AddScoped<IProviderProDataService, ProviderProDataService>();
 builder.Services.AddScoped<IProviderProJobWorkflowService, ProviderProJobWorkflowService>();
+builder.Services.AddScoped<IProviderNetworkService, ProviderNetworkService>();
 builder.Services.AddScoped<ProviderProDashboardService>();
 builder.Services.AddScoped<RealtorGuidanceService>();
 builder.Services.AddScoped<IRealtorRegistrationService, RealtorRegistrationService>();

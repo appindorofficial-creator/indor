@@ -107,3 +107,34 @@
 .prv-pro-flow-path strong {
     color: var(--indor-navy, #0A2540);
 }
+
+/* Contractor Network entry banner (Jobs hub + Home) */
+.prv-pro-net-banner {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin: 16px 0 0;
+    padding: 16px 18px;
+    border-radius: 18px;
+    text-decoration: none;
+    color: #fff;
+    background: linear-gradient(135deg, #2E8BFF, #0066CC 70%, #004a99);
+    box-shadow: 0 12px 26px rgba(0, 74, 153, .26);
+}
+
+.prv-pro-net-banner-ic {
+    width: 46px;
+    height: 46px;
+    border-radius: 14px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, .2);
+}
+
+.prv-pro-net-banner-body { flex: 1; min-width: 0; }
+.prv-pro-net-banner-body strong { display: block; font-size: 1rem; font-weight: 800; }
+.prv-pro-net-banner-body span { font-size: .82rem; color: rgba(255, 255, 255, .9); }
+.prv-pro-net-banner > .fa-chevron-right { color: rgba(255, 255, 255, .8); }

@@ -21,7 +21,7 @@ namespace IndorMvcApp.Controllers;
 
 [Authorize]
 
-public class ProveedorController(
+public partial class ProveedorController(
 
     UserManager<ApplicationUser> userManager,
 
@@ -34,6 +34,8 @@ public class ProveedorController(
     IProviderProDataService proData,
 
     IProviderProJobWorkflowService jobWorkflow,
+
+    IProviderNetworkService network,
 
     IWebHostEnvironment env) : Controller
 

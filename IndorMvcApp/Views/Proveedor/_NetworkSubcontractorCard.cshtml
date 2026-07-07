@@ -1,0 +1,82 @@
+@model IndorMvcApp.ViewModels.NetworkSubcontractorCardViewModel
+
+<a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.Id"
+   class="prv-net-sub-card @(Model.IsRecommended ? "is-recommended" : null)">
+    <div class="prv-net-sub-top">
+        @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+        {
+            <span class="prv-net-avatar prv-net-avatar--img" style="background-image:url('@Model.PhotoUrl');background-size:cover;">
+                @if (Model.IsAvailableNow)
+                {
+                    <span class="prv-net-avatar-dot"></span>
+                }
+            </span>
+        }
+        else
+        {
+            <span class="prv-net-avatar">
+                @Model.AvatarInitial
+                @if (Model.IsAvailableNow)
+                {
+                    <span class="prv-net-avatar-dot"></span>
+                }
+            </span>
+        }
+
+        <div class="prv-net-sub-main">
+            <p class="prv-net-sub-name">
+                @Model.Name
+                @if (Model.IsVerified)
+                {
+                    <i class="fas fa-circle-check" title="Verified"></i>
+                }
+            </p>
+            @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+            {
+                <p class="prv-net-sub-trade">@Model.TradeLabel</p>
+            }
+            <div class="prv-net-sub-meta">
+                @if (Model.HasReviews)
+                {
+                    <span class="prv-net-stars"><i class="fas fa-star"></i> @Model.Rating!.Value.ToString("0.0") <span class="prv-net-sub-dist">(@Model.ReviewCount)</span></span>
+                }
+                else
+                {
+                    <span class="prv-net-sub-new">New</span>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
+                {
+                    <span class="prv-net-sub-dist">@Model.DistanceLabel</span>
+                }
+                else if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
+                {
+                    <span class="prv-net-sub-dist">@Model.LocationLabel</span>
+                }
+            </div>
+        </div>
+
+        <div class="prv-net-sub-side">
+            @if (Model.IsRecommended)
+            {
+                <span class="prv-net-reco-tag">Recommended</span>
+            }
+            <span class="prv-net-avail @(Model.IsAvailableNow ? null : "prv-net-avail--soft")">@Model.AvailabilityLabel</span>
+            <i class="fas fa-chevron-right prv-net-chevron"></i>
+        </div>
+    </div>
+
+    <div class="prv-net-badges">
+        @if (Model.IsVerified)
+        {
+            <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> Verified</span>
+        }
+        @if (Model.IsInsured)
+        {
+            <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+        }
+        @if (Model.IsDocsReady)
+        {
+            <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> Docs Ready</span>
+        }
+    </div>
+</a>

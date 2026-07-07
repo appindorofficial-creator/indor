@@ -1,0 +1,59 @@
+@model IndorMvcApp.ViewModels.NetworkHireConfirmedViewModel
+@{
+    ViewData["Title"] = "Hire Confirmed";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-network.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-net-shell">
+    <div class="prv-net-success">
+        <span class="prv-net-success-ic"><i class="fas fa-handshake-simple"></i></span>
+        <h1>@Model.StatusLabel!</h1>
+        <p>You've brought <strong>@Model.SubcontractorName</strong> onto your project. They've been notified.</p>
+    </div>
+
+    <section class="prv-net-hire-card" style="margin-top:22px;">
+        <div class="prv-net-card-label">Subcontractor</div>
+        <div class="prv-net-sub-top">
+            <span class="prv-net-avatar">@Model.AvatarInitial</span>
+            <div class="prv-net-sub-main">
+                <p class="prv-net-sub-name">@Model.SubcontractorName @if (Model.IsVerified) { <i class="fas fa-circle-check"></i> }</p>
+                @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+                {
+                    <p class="prv-net-sub-trade">@Model.TradeLabel</p>
+                }
+            </div>
+        </div>
+        <div class="prv-net-badges">
+            @if (Model.IsVerified) { <span class="prv-net-badge prv-net-badge--verified"><i class="fas fa-circle-check"></i> Verified</span> }
+            @if (Model.IsInsured) { <span class="prv-net-badge prv-net-badge--insured"><i class="fas fa-shield-halved"></i> Insured</span> }
+            @if (Model.IsDocsReady) { <span class="prv-net-badge prv-net-badge--docs"><i class="fas fa-file-lines"></i> Docs Ready</span> }
+        </div>
+    </section>
+
+    <section class="prv-net-summary">
+        <div class="prv-net-summary-grid">
+            <div class="prv-net-summary-cell">
+                <i class="fas fa-clipboard"></i>
+                <small>Project</small>
+                <strong>@(string.IsNullOrWhiteSpace(Model.ProjectTitle) ? "—" : Model.ProjectTitle)</strong>
+            </div>
+            <div class="prv-net-summary-cell">
+                <i class="fas fa-dollar-sign"></i>
+                <small>Budget</small>
+                <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? "—" : Model.BudgetRange)</strong>
+            </div>
+            <div class="prv-net-summary-cell">
+                <i class="fas fa-calendar"></i>
+                <small>Start</small>
+                <strong>@Model.StartDateLabel</strong>
+            </div>
+        </div>
+    </section>
+
+    <div class="prv-net-actionbar" style="position:static;">
+        <a asp-controller="Proveedor" asp-action="Network" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-house"></i> Back to Network</a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-net-btn prv-net-btn--ghost"><i class="fas fa-magnifying-glass"></i> Find more pros</a>
+    </div>
+</div>

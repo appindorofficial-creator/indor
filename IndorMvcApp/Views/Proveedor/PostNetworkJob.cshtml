@@ -1,0 +1,110 @@
+@model IndorMvcApp.ViewModels.PostNetworkJobViewModel
+@{
+    ViewData["Title"] = "Post a Job";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-network.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-net-shell">
+    <header class="prv-net-hero" style="border-radius:0 0 28px 28px;padding-bottom:44px;">
+        <div class="prv-net-hero-top">
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-back"><i class="fas fa-chevron-left"></i> Network</a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-net-hero-title">
+            <div>
+                <h1>Post a Job</h1>
+                <p>Get matched with qualified subcontractors fast.</p>
+            </div>
+        </div>
+    </header>
+
+    <form method="post" asp-controller="Proveedor" asp-action="PostNetworkJob" enctype="multipart/form-data" class="prv-net-form">
+        @Html.AntiForgeryToken()
+
+        @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+        {
+            <div class="prv-net-form-error"><i class="fas fa-circle-exclamation"></i> @Model.ErrorMessage</div>
+        }
+
+        <div class="prv-net-field">
+            <label for="TradeId"><i class="fas fa-screwdriver-wrench"></i> Trade Needed</label>
+            <select id="TradeId" name="TradeId">
+                <option value="">Select a trade</option>
+                @foreach (var trade in Model.TradeOptions)
+                {
+                    <option value="@trade.Id" selected="@(Model.SelectedTradeId == trade.Id)">@trade.Label</option>
+                }
+            </select>
+        </div>
+
+        <div class="prv-net-field">
+            <label for="Description"><i class="fas fa-align-left"></i> Project Description</label>
+            <textarea id="Description" name="Description" maxlength="500" placeholder="Describe your project, scope of work, and any details…">@Model.Description</textarea>
+            <div class="prv-net-field-hint"><span id="descCount">0</span>/500</div>
+        </div>
+
+        <div class="prv-net-field">
+            <label for="Location"><i class="fas fa-location-dot"></i> Location</label>
+            <input type="text" id="Location" name="Location" value="@Model.Location" placeholder="Enter your address or neighborhood" />
+        </div>
+
+        <div class="prv-net-field">
+            <label for="DateNeeded"><i class="fas fa-calendar"></i> Date Needed</label>
+            <input type="date" id="DateNeeded" name="DateNeeded" value="@Model.DateNeeded" />
+        </div>
+
+        <div class="prv-net-field">
+            <label for="BudgetRange"><i class="fas fa-dollar-sign"></i> Budget</label>
+            <select id="BudgetRange" name="BudgetRange">
+                <option value="">Select budget range</option>
+                @foreach (var budget in Model.BudgetOptions)
+                {
+                    <option value="@budget" selected="@(Model.BudgetRange == budget)">@budget</option>
+                }
+            </select>
+        </div>
+
+        <div class="prv-net-field">
+            <label><i class="fas fa-image"></i> Upload Photo (Optional)</label>
+            <label class="prv-net-upload" for="Photo">
+                <i class="fas fa-cloud-arrow-up"></i>
+                <strong>Tap to upload</strong>
+                <small id="photoName">PNG, JPG up to 10MB</small>
+                <input type="file" id="Photo" name="Photo" accept="image/png,image/jpeg,image/webp" />
+            </label>
+        </div>
+
+        <button type="submit" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-paper-plane"></i> Post Job</button>
+    </form>
+
+    <div class="prv-net-match-note">
+        <i class="fas fa-shield-halved"></i>
+        <div>
+            <strong>We'll match you with qualified pros.</strong>
+            Your job is shared only with verified subcontractors you can trust.
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        var desc = document.getElementById('Description');
+        var count = document.getElementById('descCount');
+        function sync() { if (count) { count.textContent = (desc.value || '').length; } }
+        if (desc) { desc.addEventListener('input', sync); sync(); }
+
+        var photo = document.getElementById('Photo');
+        var photoName = document.getElementById('photoName');
+        if (photo) {
+            photo.addEventListener('change', function () {
+                if (photo.files && photo.files.length) {
+                    photoName.textContent = photo.files[0].name;
+                }
+            });
+        }
+    })();
+</script>
+}

@@ -154,6 +154,12 @@ public class AppDbContext : IdentityDbContext<ApplicationUser>
     public DbSet<IndorProveedorConversation> IndorProveedorConversations { get; set; }
     public DbSet<IndorProveedorMessage> IndorProveedorMessages { get; set; }
 
+    // Contractor Network (subcontractor marketplace)
+    public DbSet<IndorProveedorNetworkJob> IndorProveedorNetworkJobs { get; set; }
+    public DbSet<IndorProveedorNetworkHire> IndorProveedorNetworkHires { get; set; }
+    public DbSet<IndorProveedorNetworkResena> IndorProveedorNetworkResenas { get; set; }
+    public DbSet<IndorProveedorNetworkGuardado> IndorProveedorNetworkGuardados { get; set; }
+
     public DbSet<IndorPropertyAdministrator> IndorPropertyAdministrators { get; set; }
     public DbSet<IndorPropertyAdminPortfolioProperty> IndorPropertyAdminPortfolioProperties { get; set; }
     public DbSet<IndorPropertyAdminServiceRequest> IndorPropertyAdminServiceRequests { get; set; }
