@@ -630,7 +630,7 @@
             if (pac.style.display === 'none' || pac.style.visibility === 'hidden') {
                 return false;
             }
-            return pac.offsetParent !== null || pac.getClientRects().length > 0;
+            return pac.querySelector('.pac-item') !== null;
         });
     }
 
@@ -680,8 +680,13 @@
         if (containers.length === 1) {
             var single = containers[0];
             if (single.classList.contains('pac-container--dismissed')) {
-                resetPacContainerStyles(single);
+                return;
             }
+            if (!single.querySelector('.pac-item')) {
+                dismissPacDropdown(null, false);
+                return;
+            }
+            resetPacContainerStyles(single);
             return;
         }
 
@@ -733,6 +738,7 @@
             } else {
                 dismissPacDropdown(null, false);
             }
+            lastAutocompleteInput = null;
         }, 400);
     }
 
@@ -986,7 +992,7 @@
         if (pac.style.display === 'none' || pac.style.visibility === 'hidden') {
             return false;
         }
-        return pac.getClientRects().length > 0 || pac.querySelector('.pac-item') !== null;
+        return pac.querySelector('.pac-item') !== null;
     }
 
     function positionPacContainer(input) {
@@ -1228,8 +1234,7 @@
 
             input.addEventListener('keydown', function (e) {
                 if (e.key !== 'Enter') return;
-                var open = document.querySelector('.pac-container');
-                if (open && open.offsetParent !== null) {
+                if (isPacVisible()) {
                     e.preventDefault();
                 }
             });
@@ -1336,8 +1341,7 @@
             // Don't let Enter submit the form while a suggestion list is open.
             input.addEventListener('keydown', function (e) {
                 if (e.key !== 'Enter') return;
-                var open = document.querySelector('.pac-container');
-                if (open && open.offsetParent !== null) {
+                if (isPacVisible()) {
                     e.preventDefault();
                 }
             });
