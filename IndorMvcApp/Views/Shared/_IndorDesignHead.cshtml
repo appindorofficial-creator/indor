@@ -4,6 +4,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/navigation-loading.css" asp-append-version="true" />
+<script src="~/js/navigation-loading.js" asp-append-version="true"></script>
 <script>
     // Smart back + navigation recovery (see PreventWebViewCacheMiddleware: no-store is
     // avoided so bfcache can restore pages instantly when the browser allows it).
@@ -37,6 +39,10 @@
                 overlay.classList.remove('is-visible');
                 overlay.setAttribute('hidden', 'hidden');
             }
+
+            if (typeof window.indorHideNavigationLoading === 'function') {
+                window.indorHideNavigationLoading();
+            }
         }
 
         window.addEventListener('pageshow', clearNavigationBusyState);
@@ -61,6 +67,9 @@
                 e.preventDefault();
                 el.classList.add('is-busy');
                 el.setAttribute('aria-busy', 'true');
+                if (typeof window.indorShowNavigationLoading === 'function') {
+                    window.indorShowNavigationLoading();
+                }
                 window.history.back();
             }
         });
