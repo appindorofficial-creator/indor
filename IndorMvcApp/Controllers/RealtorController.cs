@@ -435,6 +435,36 @@ public class RealtorController(
             return Redirect(model.ContactUrl);
         }
 
+        return RedirectToAction(nameof(ViewNetworkLead), new { id, contact = true });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> RequestNetworkLeadIntro(int id, CancellationToken cancellationToken)
+    {
+        var realtor = await registration.GetRealtorForCurrentUserAsync(cancellationToken);
+        if (realtor == null)
+        {
+            return RedirectToAction("Profile", "RealtorRegistration");
+        }
+
+        var model = await nearbyNetworkService.BuildLeadDetailAsync(realtor, id, showContact: true, interestRecorded: false, cancellationToken);
+        if (model == null)
+        {
+            return NotFound();
+        }
+
+        if (model.RelatedClientId is > 0)
+        {
+            return RedirectToAction(nameof(ClientDetail), new { id = model.RelatedClientId });
+        }
+
+        if (!string.IsNullOrWhiteSpace(model.ContactUrl))
+        {
+            await nearbyNetworkService.RecordLeadContactAsync(realtor, id, cancellationToken);
+            return Redirect(model.ContactUrl);
+        }
+
         await nearbyNetworkService.RecordLeadContactAsync(realtor, id, cancellationToken);
         return RedirectToAction(nameof(ViewNetworkLead), new { id, contact = true, recorded = true });
     }

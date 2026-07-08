@@ -333,6 +333,7 @@ public class RealtorNearbyNetworkService(
         var client = item.RelatedClient;
         var contactUrl = BuildLeadContactUrl(client?.Email, client?.FullName ?? item.Title, item.Subtitle);
         var canContact = !string.IsNullOrWhiteSpace(contactUrl);
+        var alreadyContacted = await HasLeadContactBeenRecordedAsync(realtor.Id, item.Title, ct);
 
         return new RealtorNetworkLeadDetailViewModel
         {
@@ -358,7 +359,7 @@ public class RealtorNearbyNetworkService(
             ContactUrl = contactUrl,
             ContactActionLabel = canContact ? "Email Buyer" : "Contact Buyer",
             CanContactBuyer = canContact || item.RelatedClientId is > 0,
-            InterestRecorded = interestRecorded
+            InterestRecorded = interestRecorded || alreadyContacted
         };
     }
 
@@ -415,11 +416,16 @@ public class RealtorNearbyNetworkService(
             return false;
         }
 
+        if (await HasLeadContactBeenRecordedAsync(realtor.Id, item.Title, ct))
+        {
+            return true;
+        }
+
         db.IndorRealtorActivities.Add(new IndorRealtorActivity
         {
             RealtorId = realtor.Id,
             ActivityType = "lead",
-            Description = $"Contact initiated for lead: {item.Title}",
+            Description = LeadContactActivityDescription(item.Title),
             CategoryTag = "Leads",
             OccurredUtc = DateTime.UtcNow
         });
@@ -717,7 +723,7 @@ public class RealtorNearbyNetworkService(
                     $"/Realtor/ViewNetworkLead/{item.Id}",
                     item.RelatedClientId is > 0
                         ? $"/Realtor/ClientDetail/{item.RelatedClientId}"
-                        : $"/Realtor/ContactNetworkLead/{item.Id}");
+                        : $"/Realtor/ViewNetworkLead/{item.Id}?contact=true");
 
             case "provider":
             case "promotion":
@@ -1189,6 +1195,20 @@ public class RealtorNearbyNetworkService(
         amount.ToString("C0", CultureInfo.GetCultureInfo("en-US"));
 
     private static string ListingViewUrl(int itemId) => $"/Realtor/ViewNetworkListing/{itemId}";
+
+    private static string LeadContactActivityDescription(string leadTitle) =>
+        $"Contact initiated for lead: {leadTitle}";
+
+    private Task<bool> HasLeadContactBeenRecordedAsync(
+        int realtorId,
+        string leadTitle,
+        CancellationToken ct) =>
+        db.IndorRealtorActivities.AsNoTracking()
+            .AnyAsync(
+                a => a.RealtorId == realtorId
+                     && a.ActivityType == "lead"
+                     && a.Description == LeadContactActivityDescription(leadTitle),
+                ct);
 
     private static string? BuildLeadContactUrl(string? email, string buyerName, string? area)
     {

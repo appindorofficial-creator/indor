@@ -54,7 +54,7 @@ BEGIN
          0, 20),
 
         (NULL, N'Lead', N'Leads', N'NEW LEAD', N'lead', N'Buyer Interested Nearby', N'Looking for a 3–4 bed home in Charlotte', NULL, NULL, NULL, NULL,
-         N'Budget $450K – $650K', NULL, 1.80, NULL, NULL, N'LEAD REQUEST', N'lead', N'View Lead', N'/Realtor/ViewNetworkLead/3', N'Contact Buyer', N'/Realtor/ViewNetworkLead/3?contact=1',
+         N'Budget $450K – $650K', NULL, 1.80, NULL, NULL, N'LEAD REQUEST', N'lead', N'View Lead', N'/Realtor/ViewNetworkLead/3', N'Contact Buyer', N'/Realtor/ViewNetworkLead/3?contact=true',
          0, 30),
 
         (NULL, N'Provider', N'Providers', N'PROVIDER', N'provider', N'AC Tune-Up Special This Week', N'Climate Solutions HVAC', NULL, NULL, NULL, NULL,
