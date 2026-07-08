@@ -497,6 +497,12 @@ public class RealtorPropertyFileWizardService(
             await db.SaveChangesAsync(cancellationToken);
         }
 
+        if (RealtorPropertyFileInspectionSync.DeduplicateItemsWithFileUrl(db, file) > 0)
+        {
+            file.UpdatedUtc = DateTime.UtcNow;
+            await db.SaveChangesAsync(cancellationToken);
+        }
+
         var context = new RealtorPropertyFileActionContext(file, pendingDraft, OnViewPage: true);
         var (badge, css) = RealtorPropertyFileActions.DeriveStatus(context);
         var (primaryLabel, primaryUrl, secondaryLabel, secondaryUrl) = RealtorPropertyFileActions.DeriveViewActions(context);
@@ -513,15 +519,22 @@ public class RealtorPropertyFileWizardService(
                 {
                     Label = meta.Label ?? g.Key,
                     Icon = meta.Icon ?? "fa-folder",
-                    Items = g.OrderByDescending(i => i.UploadedUtc).Select(i => new RealtorPropertyFileViewItemViewModel
-                    {
-                        ItemLabel = i.ItemLabel,
-                        FileUrl = i.FileUrl,
-                        NoteText = i.NoteText,
-                        MetaLabel = i.FileSizeBytes.HasValue
-                            ? FormatFileSize(i.FileSizeBytes.Value)
-                            : i.ExpirationUtc?.ToLocalTime().ToString("Expires MMM d, yyyy")
-                    }).ToList()
+                    Items = g.OrderByDescending(i => i.UploadedUtc)
+                        .ThenByDescending(i => i.Id)
+                        .GroupBy(i => string.IsNullOrWhiteSpace(i.FileUrl)
+                            ? $"note:{i.ItemLabel}"
+                            : i.FileUrl!,
+                            StringComparer.OrdinalIgnoreCase)
+                        .Select(itemGroup => itemGroup.First())
+                        .Select(i => new RealtorPropertyFileViewItemViewModel
+                        {
+                            ItemLabel = i.ItemLabel,
+                            FileUrl = i.FileUrl,
+                            NoteText = i.NoteText,
+                            MetaLabel = i.FileSizeBytes.HasValue
+                                ? FormatFileSize(i.FileSizeBytes.Value)
+                                : i.ExpirationUtc?.ToLocalTime().ToString("Expires MMM d, yyyy")
+                        }).ToList()
                 };
             })
             .Where(s => s.Items.Count > 0)

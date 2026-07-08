@@ -366,6 +366,8 @@ public class RealtorInspectionUploadWizardService(
             RealtorPropertyFileInspectionSync.UpsertInspectionReport(db, property, reportUrl, reportFileName);
         }
 
+        RealtorPropertyFileInspectionSync.DeduplicateItemsWithFileUrl(db, property);
+
         RealtorPropertyFileInspectionSync.NormalizeEmptyRepairReviewPhase(property);
 
         property.UpdatedUtc = DateTime.UtcNow;
@@ -864,14 +866,11 @@ public class RealtorInspectionUploadWizardService(
 
         if (!string.IsNullOrWhiteSpace(draft.ReportFileUrl))
         {
-            db.IndorRealtorPropertyFileItems.Add(new IndorRealtorPropertyFileItem
-            {
-                PropertyFileId = property.Id,
-                CategoryType = RealtorPropertyFileCategoryTypes.InspectionReports,
-                ItemLabel = draft.ReportFileName ?? "Inspection Report",
-                FileUrl = draft.ReportFileUrl,
-                UploadedUtc = DateTime.UtcNow
-            });
+            RealtorPropertyFileInspectionSync.UpsertInspectionReport(
+                db,
+                property,
+                draft.ReportFileUrl,
+                draft.ReportFileName ?? "Inspection Report");
         }
 
         foreach (var finding in selectedFindings)

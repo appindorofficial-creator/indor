@@ -3903,6 +3903,11 @@ button.rl-premium-link {
     margin-bottom: 2px;
 }
 
+.rl-file-open-btn {
+    cursor: pointer;
+    font: inherit;
+}
+
 .rl-insight-chips .rl-insight-chip {
     flex: 0 0 220px;
     display: flex;
