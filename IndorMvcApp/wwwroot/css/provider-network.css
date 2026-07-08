@@ -266,6 +266,8 @@
     width: 14px;
     height: 14px;
     display: block;
+    stroke: var(--net-blue);
+    fill: none;
 }
 
 .prv-net-illus-img {
@@ -684,6 +686,8 @@
     width: 14px;
     height: 14px;
     display: block;
+    stroke: #C3CFDD;
+    fill: none;
 }
 
 /* ---------------------------------------------------- Tool grid (home) */
@@ -715,6 +719,7 @@
     position: relative;
     display: block;
     color: #fff;
+    -webkit-text-fill-color: #fff;
     overflow: hidden;
 }
 
@@ -734,6 +739,9 @@
     width: 20px;
     height: 20px;
     display: block;
+    fill: #fff;
+    color: #fff;
+    -webkit-text-fill-color: #fff;
 }
 
 .prv-net-tool-ic--blue { background: linear-gradient(135deg, #2E8BFF, #0066CC); }
