@@ -248,29 +248,44 @@
 .prv-net-illus-head span { display: block; font-size: .68rem; color: var(--net-muted); margin-top: 3px; line-height: 1.25; }
 
 .prv-net-illus-badge {
-    width: 26px;
-    height: 26px;
-    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
     flex-shrink: 0;
-    display: grid;
-    place-items: center;
+    position: relative;
+    display: block;
     background: #EAF3FF;
     color: var(--net-blue);
 }
 
 .prv-net-illus-badge svg {
-    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     width: 14px;
     height: 14px;
+    display: block;
 }
 
 .prv-net-illus-img {
     width: 100%;
-    height: 112px;
-    object-fit: cover;
-    object-position: center 28%;
     display: block;
     margin-top: auto;
+}
+
+.prv-net-illus-img--workers {
+    height: 118px;
+    object-fit: cover;
+    object-position: center 42%;
+}
+
+.prv-net-illus-img--services {
+    height: 108px;
+    object-fit: contain;
+    object-position: center bottom;
+    padding: 0 6px 8px;
+    background: linear-gradient(180deg, #fff 0%, #F8FBFF 100%);
 }
 
 /* ---------------------------------------------------- Quick entry cards */
@@ -654,9 +669,21 @@
 .prv-net-tool > div { flex: 1; min-width: 0; }
 .prv-net-tool-arrow {
     align-self: center;
-    color: #C3CFDD;
-    font-size: .8rem;
     flex-shrink: 0;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    color: #C3CFDD;
+}
+
+.prv-net-tool-arrow svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    display: block;
 }
 
 /* ---------------------------------------------------- Tool grid (home) */
@@ -685,10 +712,10 @@
     height: 38px;
     border-radius: 11px;
     flex-shrink: 0;
-    display: grid;
-    place-items: center;
+    position: relative;
+    display: block;
     color: #fff;
-    line-height: 1;
+    overflow: hidden;
 }
 
 .prv-net-tool-ic i {
@@ -700,9 +727,13 @@
 }
 
 .prv-net-tool-ic svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
     display: block;
-    width: 19px;
-    height: 19px;
 }
 
 .prv-net-tool-ic--blue { background: linear-gradient(135deg, #2E8BFF, #0066CC); }
@@ -1646,7 +1677,8 @@
     .prv-net-illus-head strong { font-size: .8125rem; }
     .prv-net-illus-head span { font-size: .625rem; }
 
-    .prv-net-illus-img { height: 108px; }
+    .prv-net-illus-img--workers { height: 112px; }
+    .prv-net-illus-img--services { height: 100px; padding: 0 4px 6px; }
 
     .prv-net-tools {
         gap: 8px;
@@ -1665,8 +1697,8 @@
     }
 
     .prv-net-tool-ic svg {
-        width: 17px;
-        height: 17px;
+        width: 18px;
+        height: 18px;
     }
 
     .prv-net-tool strong { font-size: .75rem; }

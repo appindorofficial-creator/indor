@@ -69,7 +69,7 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </span>
             </div>
-            <img src="~/images/network/find-subcontractors.png" alt="Find subcontractors" class="prv-net-illus-img" asp-append-version="true" />
+            <img src="~/images/network/find-subcontractors.png" alt="Find subcontractors" class="prv-net-illus-img prv-net-illus-img--workers" asp-append-version="true" />
         </a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="all" class="prv-net-illus-card">
             <div class="prv-net-illus-head">
@@ -81,20 +81,20 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                 </span>
             </div>
-            <img src="~/images/network/service-providers.png" alt="Service providers" class="prv-net-illus-img" asp-append-version="true" />
+            <img src="~/images/network/service-providers.png" alt="Service providers" class="prv-net-illus-img prv-net-illus-img--services" asp-append-version="true" />
         </a>
     </section>
 
     <section class="prv-net-tools">
         <a asp-controller="Proveedor" asp-action="VerifyContractors" class="prv-net-tool">
             <span class="prv-net-tool-ic prv-net-tool-ic--blue">
-                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 1 3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-2.16 14.03L7.1 12.3l1.41-1.41 1.43 1.43 4.28-4.28 1.41 1.41-5.69 5.68z"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 4 5v6.09c0 5.05 3.41 9.76 8 10.91 4.59-1.15 8-5.86 8-10.91V5l-8-3zm-1.03 13.03L7.7 11.7l1.41-1.41 2.12 2.12 4.42-4.42 1.41 1.41-5.84 5.83z"/></svg>
             </span>
             <div>
                 <strong>Verified Subcontractors</strong>
                 <span>@Model.VerifiedSubcontractorsCount insured, qualified pros near you</span>
             </div>
-            <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
+            <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-docs="true" class="prv-net-tool">
             <span class="prv-net-tool-ic prv-net-tool-ic--purple">
@@ -104,17 +104,17 @@
                 <strong>Insurance &amp; Docs</strong>
                 <span>See insurance active and documents ready</span>
             </div>
-            <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
+            <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </a>
         <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-net-tool">
             <span class="prv-net-tool-ic prv-net-tool-ic--green">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M11 11V4h2v7h7v2h-7v7h-2v-7H4v-2h7z"/></svg>
             </span>
             <div>
                 <strong>Post a Job</strong>
                 <span>Get matched with subcontractors fast</span>
             </div>
-            <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
+            <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </a>
         <a asp-controller="Proveedor" asp-action="MyRequests" class="prv-net-tool">
             <span class="prv-net-tool-ic prv-net-tool-ic--amber">
@@ -124,7 +124,7 @@
                 <strong>My Requests</strong>
                 <span>@Model.MyRequestsCount posted &bull; @Model.ActiveHiresCount hires</span>
             </div>
-            <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
+            <span class="prv-net-tool-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg></span>
         </a>
     </section>
 
