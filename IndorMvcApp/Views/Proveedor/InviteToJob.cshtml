@@ -1,0 +1,175 @@
+@model IndorMvcApp.ViewModels.InviteToJobViewModel
+@{
+    ViewData["Title"] = "Invite to Job";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-requests.css";
+    ViewBag.NavActive = "jobs";
+    var timings = new[] { ("Urgent", "Urgent", "fa-bolt"), ("ThisWeek", "This Week", "fa-calendar-day"), ("Flexible", "Flexible", "fa-clock") };
+}
+
+<div class="prv-req-shell">
+    <header class="prv-req-hero prv-req-hero--detail">
+        <div class="prv-req-hero-top">
+            <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.Sub.Id" class="prv-req-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+            <span class="prv-req-brand-word">INDOR</span>
+            <span class="prv-req-brand-pro">PRO</span>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-req-hero-title">
+            <div>
+                <h1>Invite to Job</h1>
+                <p>Share project details with this subcontractor.</p>
+            </div>
+        </div>
+    </header>
+
+    @await Html.PartialAsync("_InviteSubHeader", Model.Sub)
+
+    @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
+    {
+        <div class="prv-inv-error"><i class="fas fa-circle-exclamation"></i> @Model.ErrorMessage</div>
+    }
+
+    <form method="post" asp-controller="Proveedor" asp-action="InviteToJob" enctype="multipart/form-data" class="prv-inv-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="SubcontractorId" value="@Model.Sub.Id" />
+        <input type="hidden" name="TradeId" value="@Model.TradeId" />
+        <input type="hidden" name="ServiceCategory" value="@Model.ServiceCategory" />
+        @foreach (var a in Model.Attachments)
+        {
+            <input type="hidden" name="ExistingAttachments" value="@a" />
+        }
+
+        <section class="prv-inv-card">
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-file-lines"></i> <span>Job Title</span></div>
+                <input type="text" name="JobTitle" value="@Model.JobTitle" class="prv-inv-input" placeholder="e.g. Kitchen sink leak repair" />
+            </div>
+
+            <div class="prv-inv-row">
+                <div class="prv-inv-row-head"><i class="fas fa-screwdriver-wrench"></i> <span>Service Category</span></div>
+                <div class="prv-inv-value">@(Model.ServiceCategory ?? "General")</div>
+            </div>
+
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-location-dot"></i> <span>Property Address</span></div>
+                <input type="text" name="PropertyAddress" value="@Model.PropertyAddress" class="prv-inv-input" placeholder="Street, City, State ZIP" />
+            </div>
+
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-calendar"></i> <span>Schedule</span></div>
+                <div class="prv-inv-schedule">
+                    <label class="prv-inv-seg @(Model.ScheduleToday ? "is-active" : "")">
+                        <input type="radio" name="ScheduleToday" value="true" @(Model.ScheduleToday ? "checked" : "") /> Today
+                    </label>
+                    <label class="prv-inv-seg @(!Model.ScheduleToday ? "is-active" : "")">
+                        <input type="radio" name="ScheduleToday" value="false" @(!Model.ScheduleToday ? "checked" : "") /> Select Date
+                    </label>
+                    <input type="date" name="ScheduleDate" value="@Model.ScheduleDate" class="prv-inv-date" />
+                </div>
+            </div>
+
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-dollar-sign"></i> <span>Budget</span></div>
+                <select name="BudgetRange" class="prv-inv-input prv-inv-select">
+                    <option value="">Select a budget range</option>
+                    @foreach (var b in Model.BudgetOptions)
+                    {
+                        <option value="@b" selected="@(Model.BudgetRange == b)">@b</option>
+                    }
+                </select>
+            </div>
+
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-file-lines"></i> <span>Description / Scope</span></div>
+                <textarea name="Description" rows="4" class="prv-inv-input prv-inv-textarea" placeholder="Describe the work, materials, and anything the pro should know.">@Model.Description</textarea>
+            </div>
+
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-clock"></i> <span>Timing Preference</span></div>
+                <div class="prv-inv-timing">
+                    @foreach (var (val, label, icon) in timings)
+                    {
+                        <label class="prv-inv-chip prv-inv-chip--@val.ToLower() @(Model.TimingPreference == val ? "is-active" : "")">
+                            <input type="radio" name="TimingPreference" value="@val" @(Model.TimingPreference == val ? "checked" : "") />
+                            <i class="fas @icon"></i> @label
+                        </label>
+                    }
+                </div>
+            </div>
+
+            <div class="prv-inv-row prv-inv-row--stack">
+                <div class="prv-inv-row-head"><i class="fas fa-paperclip"></i> <span>Attachments</span></div>
+                <div class="prv-inv-attachments" id="invAttachments">
+                    @foreach (var a in Model.Attachments)
+                    {
+                        var isPdf = a.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
+                        <span class="prv-inv-att @(isPdf ? "prv-inv-att--file" : "")" style="@(isPdf ? "" : $"background-image:url('{a}')")">
+                            @if (isPdf)
+                            {
+                                <i class="fas fa-file-pdf"></i>
+                            }
+                        </span>
+                    }
+                    <label class="prv-inv-att prv-inv-att--add">
+                        <i class="fas fa-plus"></i>
+                        <span>Add More</span>
+                        <input type="file" name="Attachments" multiple accept="image/*,application/pdf" hidden id="invAttInput" />
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <div class="prv-inv-note">
+            <i class="fas fa-circle-info"></i>
+            <span>@Model.Sub.Name will receive your request and can respond with availability and quote.</span>
+        </div>
+
+        <div class="prv-inv-actions">
+            <button type="submit" name="Mode" value="draft" class="prv-req-btn prv-req-btn--ghost">
+                <i class="fas fa-file-lines"></i> Save Draft
+            </button>
+            <button type="submit" name="Mode" value="send" class="prv-req-btn prv-req-btn--primary">
+                <i class="fas fa-paper-plane"></i> Send Request
+            </button>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+<script>
+    (function () {
+        var segs = document.querySelectorAll('.prv-inv-seg input');
+        segs.forEach(function (r) {
+            r.addEventListener('change', function () {
+                document.querySelectorAll('.prv-inv-seg').forEach(function (s) { s.classList.remove('is-active'); });
+                r.closest('.prv-inv-seg').classList.add('is-active');
+            });
+        });
+        var chips = document.querySelectorAll('.prv-inv-timing input');
+        chips.forEach(function (r) {
+            r.addEventListener('change', function () {
+                document.querySelectorAll('.prv-inv-timing .prv-inv-chip').forEach(function (c) { c.classList.remove('is-active'); });
+                r.closest('.prv-inv-chip').classList.add('is-active');
+            });
+        });
+        var input = document.getElementById('invAttInput');
+        var wrap = document.getElementById('invAttachments');
+        if (input && wrap) {
+            input.addEventListener('change', function () {
+                Array.from(input.files).forEach(function (f) {
+                    var el = document.createElement('span');
+                    el.className = 'prv-inv-att';
+                    if (f.type === 'application/pdf') {
+                        el.classList.add('prv-inv-att--file');
+                        el.innerHTML = '<i class="fas fa-file-pdf"></i>';
+                    } else {
+                        el.style.backgroundImage = "url('" + URL.createObjectURL(f) + "')";
+                    }
+                    wrap.insertBefore(el, wrap.querySelector('.prv-inv-att--add'));
+                });
+            });
+        }
+    })();
+</script>
+}

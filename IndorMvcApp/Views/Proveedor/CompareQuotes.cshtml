@@ -1,0 +1,133 @@
+@model IndorMvcApp.ViewModels.CompareQuotesViewModel
+@{
+    ViewData["Title"] = "Compare Quotes";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-requests.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-req-shell">
+    <header class="prv-req-hero prv-req-hero--detail">
+        <div class="prv-req-hero-top">
+            <a asp-controller="Proveedor" asp-action="RequestDetails" asp-route-id="@Model.Id" class="prv-req-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+            <span class="prv-req-brand-word">INDOR</span>
+            <span class="prv-req-brand-pro">PRO</span>
+        </div>
+        <div class="prv-req-hero-title">
+            <h1>Compare Quotes</h1>
+            <p>Review options and choose the right pro.</p>
+        </div>
+    </header>
+
+    <section class="prv-req-jobcard">
+        <div class="prv-req-jobcard-head">
+            <span class="prv-req-ico prv-req-ico--@Model.IconTone prv-req-ico--lg"><i class="fas @Model.IconClass"></i></span>
+            <div class="prv-req-card-id">
+                <div class="prv-req-title prv-req-title--lg">@Model.Title</div>
+                @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+                {
+                    <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
+                {
+                    <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                }
+            </div>
+            <div class="prv-req-budget">
+                <span>Budget</span>
+                <strong>@(Model.BudgetRange ?? "—")</strong>
+                <span class="prv-req-posted-inline">Posted @Model.PostedLabel</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="prv-req-sorts">
+        <a asp-controller="Proveedor" asp-action="CompareQuotes" asp-route-id="@Model.Id" asp-route-sort="price"
+           class="prv-req-sort @(Model.Sort == "price" ? "is-active" : "")"><i class="fas fa-arrow-down-wide-short"></i> Lowest Price</a>
+        <a asp-controller="Proveedor" asp-action="CompareQuotes" asp-route-id="@Model.Id" asp-route-sort="rating"
+           class="prv-req-sort @(Model.Sort == "rating" ? "is-active" : "")"><i class="fas fa-star"></i> Top Rated</a>
+        <a asp-controller="Proveedor" asp-action="CompareQuotes" asp-route-id="@Model.Id" asp-route-sort="fastest"
+           class="prv-req-sort @(Model.Sort == "fastest" ? "is-active" : "")"><i class="fas fa-bolt"></i> Fastest</a>
+    </div>
+
+    @if (Model.Quotes.Count == 0)
+    {
+        <div class="prv-req-nowuotes prv-req-nowuotes--card">
+            <i class="fas fa-hourglass-half"></i>
+            <span>No quotes yet. Check back soon.</span>
+        </div>
+    }
+    else
+    {
+        <div class="prv-req-cmp-list">
+            @foreach (var qt in Model.Quotes)
+            {
+                <div class="prv-req-cmp @(qt.IsBestMatch ? "is-best" : "")">
+                    @if (qt.IsBestMatch)
+                    {
+                        <span class="prv-req-best"><i class="fas fa-award"></i> Best Match</span>
+                    }
+                    <div class="prv-req-cmp-top">
+                        <span class="prv-req-ico prv-req-ico--@Model.IconTone prv-req-ico--lg"><i class="fas @qt.IconClass"></i></span>
+                        <div class="prv-req-cmp-id">
+                            <div class="prv-req-quote-name">
+                                @qt.Name
+                                @if (qt.IsVerified)
+                                {
+                                    <i class="fas fa-circle-check prv-req-verified"></i>
+                                }
+                            </div>
+                            <div class="prv-req-cmp-stats">
+                                @if (qt.Rating.HasValue)
+                                {
+                                    <span><i class="fas fa-star prv-req-star"></i> @qt.Rating.Value.ToString("0.0") (@qt.ReviewCount)</span>
+                                }
+                                <span><i class="fas fa-briefcase"></i> @qt.JobsCompleted jobs completed</span>
+                            </div>
+                            <div class="prv-req-cmp-stats">
+                                <span><i class="fas fa-clock"></i> @qt.ResponseLabel</span>
+                            </div>
+                        </div>
+                        <div class="prv-req-cmp-price">
+                            <strong>@qt.AmountLabel</strong>
+                            @if (qt.WithinBudget)
+                            {
+                                <span class="prv-req-within">Within budget</span>
+                            }
+                        </div>
+                    </div>
+
+                    @if (!string.IsNullOrWhiteSpace(qt.Message))
+                    {
+                        <p class="prv-req-cmp-msg">@qt.Message</p>
+                    }
+
+                    <div class="prv-req-badges">
+                        @if (qt.IsVerified)
+                        {
+                            <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> Verified</span>
+                        }
+                        @if (qt.IsInsured)
+                        {
+                            <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+                        }
+                        @if (qt.IsDocsReady)
+                        {
+                            <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> Docs Ready</span>
+                        }
+                    </div>
+
+                    <div class="prv-req-cmp-actions">
+                        <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@qt.SubcontractorId" class="prv-req-btn prv-req-btn--ghost">View Quote</a>
+                        <form method="post" asp-controller="Proveedor" asp-action="SelectQuote" class="prv-req-select-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <input type="hidden" name="quoteId" value="@qt.Id" />
+                            <button type="submit" class="prv-req-btn prv-req-btn--primary">Select Pro</button>
+                        </form>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

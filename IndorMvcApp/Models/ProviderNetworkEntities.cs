@@ -139,6 +139,118 @@ public static class NetworkHireStatuses
 }
 
 /// <summary>
+/// A quote a subcontractor submits on a posted network job. Powers the
+/// "My Requests" → Request Details → Compare Quotes flow for the job poster.
+/// </summary>
+[Table("IndorProveedorNetworkQuotes")]
+public class IndorProveedorNetworkQuote
+{
+    public int Id { get; set; }
+
+    public int NetworkJobId { get; set; }
+
+    /// <summary>The subcontractor (IndorProveedor) submitting the quote.</summary>
+    public int SubcontractorProveedorId { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal AmountLow { get; set; }
+
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal AmountHigh { get; set; }
+
+    /// <summary>The firm single-number quote shown on Compare Quotes.</summary>
+    [Column(TypeName = "decimal(10,2)")]
+    public decimal QuotedAmount { get; set; }
+
+    /// <summary>Response time in minutes, used for "Responds in …" labels.</summary>
+    public int ResponseMinutes { get; set; } = 60;
+
+    [MaxLength(400)]
+    public string? Message { get; set; }
+
+    [Required, MaxLength(20)]
+    public string Status { get; set; } = NetworkQuoteStatuses.Pending;
+
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+}
+
+public static class NetworkQuoteStatuses
+{
+    public const string Pending = "Pending";
+    public const string Selected = "Selected";
+    public const string Declined = "Declined";
+}
+
+/// <summary>
+/// A direct "Invite to Job" a provider sends to a specific subcontractor from
+/// their profile. Powers the Invite to Job → Invitation Sent flow and the
+/// Sent → Viewed → Responded → Hired tracking.
+/// </summary>
+[Table("IndorProveedorNetworkInvitaciones")]
+public class IndorProveedorNetworkInvitacion
+{
+    public int Id { get; set; }
+
+    /// <summary>The provider sending the invitation.</summary>
+    public int InviterProveedorId { get; set; }
+
+    /// <summary>The subcontractor (IndorProveedor) being invited.</summary>
+    public int SubcontractorProveedorId { get; set; }
+
+    public int? NetworkJobId { get; set; }
+
+    [MaxLength(160)]
+    public string? JobTitle { get; set; }
+
+    [MaxLength(40)]
+    public string? TradeId { get; set; }
+
+    [MaxLength(120)]
+    public string? ServiceCategory { get; set; }
+
+    [MaxLength(300)]
+    public string? PropertyAddress { get; set; }
+
+    public DateTime? ScheduleDate { get; set; }
+
+    public bool ScheduleToday { get; set; } = true;
+
+    [MaxLength(40)]
+    public string? BudgetRange { get; set; }
+
+    [MaxLength(600)]
+    public string? Description { get; set; }
+
+    /// <summary>Urgent, ThisWeek, Flexible.</summary>
+    [MaxLength(20)]
+    public string? TimingPreference { get; set; }
+
+    /// <summary>JSON array of attachment URLs (photos, PDFs).</summary>
+    public string? AttachmentsJson { get; set; }
+
+    [Required, MaxLength(20)]
+    public string Status { get; set; } = NetworkInvitationStatuses.Sent;
+
+    public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+}
+
+public static class NetworkInvitationStatuses
+{
+    public const string Draft = "Draft";
+    public const string Sent = "Sent";
+    public const string Viewed = "Viewed";
+    public const string Responded = "Responded";
+    public const string Hired = "Hired";
+}
+
+public static class NetworkInvitationTimings
+{
+    public const string Urgent = "Urgent";
+    public const string ThisWeek = "ThisWeek";
+    public const string Flexible = "Flexible";
+}
+
+/// <summary>
 /// A rating/review left for a subcontractor. Powers the star rating and review
 /// counts shown on subcontractor cards and profiles.
 /// </summary>

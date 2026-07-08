@@ -160,6 +160,63 @@ public static class ProviderDatabaseSchemaInitializer
             SubcontractorProveedorId INT NOT NULL,
             FechaCreacion DATETIME2 NOT NULL CONSTRAINT DF_IndorNetworkGuardados_Fecha DEFAULT (SYSUTCDATETIME())
         );
+        """,
+        """
+        IF OBJECT_ID(N'dbo.IndorProveedorNetworkQuotes', N'U') IS NULL
+        CREATE TABLE dbo.IndorProveedorNetworkQuotes (
+            Id INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_IndorProveedorNetworkQuotes PRIMARY KEY,
+            NetworkJobId INT NOT NULL,
+            SubcontractorProveedorId INT NOT NULL,
+            AmountLow DECIMAL(10,2) NOT NULL CONSTRAINT DF_IndorNetworkQuotes_Low DEFAULT (0),
+            AmountHigh DECIMAL(10,2) NOT NULL CONSTRAINT DF_IndorNetworkQuotes_High DEFAULT (0),
+            QuotedAmount DECIMAL(10,2) NOT NULL CONSTRAINT DF_IndorNetworkQuotes_Amt DEFAULT (0),
+            ResponseMinutes INT NOT NULL CONSTRAINT DF_IndorNetworkQuotes_Resp DEFAULT (60),
+            Message NVARCHAR(400) NULL,
+            Status NVARCHAR(20) NOT NULL CONSTRAINT DF_IndorNetworkQuotes_Status DEFAULT ('Pending'),
+            FechaCreacion DATETIME2 NOT NULL CONSTRAINT DF_IndorNetworkQuotes_Fecha DEFAULT (SYSUTCDATETIME())
+        );
+        """,
+        """
+        IF OBJECT_ID(N'dbo.IndorProveedorNetworkInvitaciones', N'U') IS NULL
+        CREATE TABLE dbo.IndorProveedorNetworkInvitaciones (
+            Id INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_IndorProveedorNetworkInvitaciones PRIMARY KEY,
+            InviterProveedorId INT NOT NULL,
+            SubcontractorProveedorId INT NOT NULL,
+            NetworkJobId INT NULL,
+            JobTitle NVARCHAR(160) NULL,
+            TradeId NVARCHAR(40) NULL,
+            ServiceCategory NVARCHAR(120) NULL,
+            PropertyAddress NVARCHAR(300) NULL,
+            ScheduleDate DATETIME2 NULL,
+            ScheduleToday BIT NOT NULL CONSTRAINT DF_IndorNetworkInv_Today DEFAULT (1),
+            BudgetRange NVARCHAR(40) NULL,
+            Description NVARCHAR(600) NULL,
+            TimingPreference NVARCHAR(20) NULL,
+            AttachmentsJson NVARCHAR(MAX) NULL,
+            Status NVARCHAR(20) NOT NULL CONSTRAINT DF_IndorNetworkInv_Status DEFAULT ('Sent'),
+            FechaCreacion DATETIME2 NOT NULL CONSTRAINT DF_IndorNetworkInv_Fecha DEFAULT (SYSUTCDATETIME())
+        );
+        """,
+        """
+        IF OBJECT_ID(N'dbo.IndorProveedorVerificaciones', N'U') IS NULL
+        CREATE TABLE dbo.IndorProveedorVerificaciones (
+            Id INT IDENTITY(1,1) NOT NULL CONSTRAINT PK_IndorProveedorVerificaciones PRIMARY KEY,
+            ProveedorId INT NOT NULL,
+            Status NVARCHAR(20) NOT NULL CONSTRAINT DF_IndorVerificaciones_Status DEFAULT ('Pending'),
+            LicenseVerified BIT NOT NULL CONSTRAINT DF_IndorVerificaciones_Lic DEFAULT (0),
+            LicenseExpiry DATETIME2 NULL,
+            InsuranceVerified BIT NOT NULL CONSTRAINT DF_IndorVerificaciones_Ins DEFAULT (0),
+            InsuranceExpiry DATETIME2 NULL,
+            W9Verified BIT NOT NULL CONSTRAINT DF_IndorVerificaciones_W9 DEFAULT (0),
+            BackgroundStatus NVARCHAR(20) NOT NULL CONSTRAINT DF_IndorVerificaciones_Bg DEFAULT ('Pending'),
+            OperatorNotes NVARCHAR(600) NULL,
+            FollowUpNote NVARCHAR(300) NULL,
+            ReviewerName NVARCHAR(160) NULL,
+            ApprovedUtc DATETIME2 NULL,
+            FechaCreacion DATETIME2 NOT NULL CONSTRAINT DF_IndorVerificaciones_Fecha DEFAULT (SYSUTCDATETIME()),
+            FechaActualizacion DATETIME2 NULL,
+            CONSTRAINT UQ_IndorVerificaciones_Proveedor UNIQUE (ProveedorId)
+        );
         """
     ];
 

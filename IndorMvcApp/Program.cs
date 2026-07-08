@@ -133,6 +133,8 @@ builder.Services.AddScoped<IProviderRegistrationService, ProviderRegistrationSer
 builder.Services.AddScoped<IProviderProDataService, ProviderProDataService>();
 builder.Services.AddScoped<IProviderProJobWorkflowService, ProviderProJobWorkflowService>();
 builder.Services.AddScoped<IProviderNetworkService, ProviderNetworkService>();
+builder.Services.AddScoped<IContractorVerificationService, ContractorVerificationService>();
+builder.Services.AddScoped<INetworkRequestsService, NetworkRequestsService>();
 builder.Services.AddScoped<ProviderProDashboardService>();
 builder.Services.AddScoped<RealtorGuidanceService>();
 builder.Services.AddScoped<IRealtorRegistrationService, RealtorRegistrationService>();

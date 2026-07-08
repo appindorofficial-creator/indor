@@ -1,0 +1,140 @@
+@model IndorMvcApp.ViewModels.VerificationCompleteViewModel
+@{
+    ViewData["Title"] = "Verification Complete";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-verify.css";
+    ViewBag.NavActive = "verify";
+}
+
+<div class="prv-vf-shell">
+    <header class="prv-vf-hero">
+        <div class="prv-vf-hero-top">
+            <span class="prv-vf-brand-word">INDOR</span>
+            <span class="prv-vf-brand-pro">PRO</span>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-vf-hero-title">
+            <h1>Verification Complete</h1>
+            <p>@(Model.IsReady ? "This contractor is ready to be approved." : "Review the remaining items before approving.")</p>
+        </div>
+    </header>
+
+    <section class="prv-vf-profile">
+        <div class="prv-vf-profile-head">
+            <span class="prv-vf-ico prv-vf-ico--lg"><i class="fas @Model.IconClass"></i></span>
+            <div>
+                <div class="prv-vf-name prv-vf-name--lg">@Model.Name</div>
+                @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+                {
+                    <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
+                {
+                    <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                }
+            </div>
+            <span class="prv-vf-seal @(Model.IsReady ? "" : "is-muted")">
+                <i class="fas fa-shield-halved"></i>
+                <span>VERIFIED</span>
+            </span>
+        </div>
+
+        <div class="prv-vf-items prv-vf-items--flat">
+            @foreach (var it in Model.Items)
+            {
+                <div class="prv-vf-item is-@it.State">
+                    <i class="fas @it.IconClass"></i>
+                    <span>@it.Label</span>
+                    <em>@it.StatusLabel</em>
+                </div>
+            }
+        </div>
+
+        <div class="prv-vf-foot prv-vf-foot--flat">
+            <div class="prv-vf-progress">
+                <span>@Model.ItemsComplete / @Model.TotalItems items complete</span>
+                <div class="prv-vf-bar"><i style="width:@((int)Math.Round(100.0 * Model.ItemsComplete / Model.TotalItems))%"></i></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="prv-vf-panel">
+        <h2 class="prv-vf-panel-title">Verification Summary</h2>
+        <div class="prv-vf-summary">
+            @foreach (var it in Model.Items)
+            {
+                <div class="prv-vf-summary-item is-@it.State">
+                    <span class="prv-vf-summary-ic"><i class="fas @it.IconClass"></i></span>
+                    <strong>@it.Label</strong>
+                    <span>@it.StatusLabel</span>
+                </div>
+            }
+        </div>
+
+        @if (Model.IsReady)
+        {
+            <div class="prv-vf-banner prv-vf-banner--ok">
+                <i class="fas fa-circle-check"></i>
+                <div>
+                    <strong>All required verification items are complete.</strong>
+                    <span>This contractor meets all INDOR PRO verification standards.</span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div class="prv-vf-banner prv-vf-banner--warn">
+                <i class="fas fa-triangle-exclamation"></i>
+                <div>
+                    <strong>Some items are still pending.</strong>
+                    <span>Approving will mark all verification items as verified.</span>
+                </div>
+            </div>
+        }
+    </section>
+
+    <section class="prv-vf-panel">
+        <h2 class="prv-vf-panel-title">What happens next</h2>
+        <div class="prv-vf-next">
+            <div class="prv-vf-next-item">
+                <span class="prv-vf-next-num">1</span>
+                <i class="fas fa-shield-halved"></i>
+                <span>Contractor gets verified badge</span>
+            </div>
+            <div class="prv-vf-next-item">
+                <span class="prv-vf-next-num">2</span>
+                <i class="fas fa-users"></i>
+                <span>Profile becomes visible to customers</span>
+            </div>
+            <div class="prv-vf-next-item">
+                <span class="prv-vf-next-num">3</span>
+                <i class="fas fa-briefcase"></i>
+                <span>Contractor can receive jobs</span>
+            </div>
+        </div>
+    </section>
+
+    @if (Model.AlreadyApproved)
+    {
+        <div class="prv-vf-banner prv-vf-banner--ok prv-vf-banner--solo">
+            <i class="fas fa-circle-check"></i>
+            <div><strong>This contractor is already verified.</strong></div>
+        </div>
+        <a asp-controller="Proveedor" asp-action="VerifyContractors" asp-route-tab="approved" class="prv-vf-btn prv-vf-btn--ghost prv-vf-btn--block">
+            <i class="fas fa-arrow-left"></i> Back to Queue
+        </a>
+    }
+    else
+    {
+        <form method="post" asp-controller="Proveedor" asp-action="ApproveVerification" class="prv-vf-approve-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="id" value="@Model.Id" />
+            <button type="submit" class="prv-vf-btn prv-vf-btn--primary prv-vf-btn--block">
+                <i class="fas fa-shield-halved"></i> Approve &amp; Verify
+            </button>
+        </form>
+        <a asp-controller="Proveedor" asp-action="VerifyContractors" class="prv-vf-btn prv-vf-btn--ghost prv-vf-btn--block">
+            <i class="fas fa-arrow-left"></i> Back to Queue
+        </a>
+    }
+</div>

@@ -37,6 +37,10 @@ public partial class ProveedorController(
 
     IProviderNetworkService network,
 
+    IContractorVerificationService verification,
+
+    INetworkRequestsService requests,
+
     IWebHostEnvironment env) : Controller
 
 {

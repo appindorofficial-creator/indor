@@ -1,0 +1,141 @@
+@model IndorMvcApp.ViewModels.ContractorVerificationViewModel
+@{
+    ViewData["Title"] = "Contractor Verification";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-verify.css";
+    ViewBag.NavActive = "verify";
+}
+
+<div class="prv-vf-shell">
+    <header class="prv-vf-hero prv-vf-hero--detail">
+        <div class="prv-vf-hero-top">
+            <a asp-controller="Proveedor" asp-action="VerifyContractors" class="prv-vf-back" aria-label="Back to queue">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            <span class="prv-vf-brand-word">INDOR</span>
+            <span class="prv-vf-brand-pro">PRO</span>
+            <span class="prv-vf-hero-status">@Model.StatusLabel</span>
+        </div>
+        <div class="prv-vf-hero-title">
+            <h1>Contractor Verification</h1>
+            <p>Review documents and verification items.</p>
+        </div>
+    </header>
+
+    <section class="prv-vf-profile">
+        <div class="prv-vf-profile-head">
+            <span class="prv-vf-ico prv-vf-ico--lg">
+                @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+                {
+                    <img src="@Model.PhotoUrl" alt="@Model.Name" />
+                }
+                else
+                {
+                    <i class="fas @Model.IconClass"></i>
+                }
+            </span>
+            <div>
+                <div class="prv-vf-name prv-vf-name--lg">@Model.Name</div>
+                @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+                {
+                    <div class="prv-vf-trade"><i class="fas fa-screwdriver-wrench"></i> @Model.TradeLabel</div>
+                }
+                @if (!string.IsNullOrWhiteSpace(Model.LocationLabel))
+                {
+                    <div class="prv-vf-loc"><i class="fas fa-location-dot"></i> @Model.LocationLabel</div>
+                }
+            </div>
+        </div>
+        <div class="prv-vf-contact">
+            <div class="prv-vf-contact-item">
+                <i class="fas fa-user"></i>
+                <div><span>Contact Person</span><strong>@(Model.ContactPerson ?? "—")</strong></div>
+            </div>
+            <div class="prv-vf-contact-item">
+                <i class="fas fa-phone"></i>
+                <div><span>Phone</span><strong>@(Model.Phone ?? "—")</strong></div>
+            </div>
+            <div class="prv-vf-contact-item">
+                <i class="fas fa-envelope"></i>
+                <div><span>Email</span><strong>@(Model.Email ?? "—")</strong></div>
+            </div>
+            <div class="prv-vf-contact-item">
+                <i class="fas fa-calendar"></i>
+                <div><span>Submitted</span><strong>@Model.SubmittedLabel</strong></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="prv-vf-panel">
+        <h2 class="prv-vf-panel-title">Verification Checklist</h2>
+        <div class="prv-vf-rows">
+            @foreach (var it in Model.Items)
+            {
+                <div class="prv-vf-row">
+                    <span class="prv-vf-row-ic is-@it.State"><i class="fas @it.IconClass"></i></span>
+                    <div class="prv-vf-row-body">
+                        <strong>@it.Label</strong>
+                        @if (!string.IsNullOrWhiteSpace(it.Detail))
+                        {
+                            <span>@it.Detail</span>
+                        }
+                    </div>
+                    <div class="prv-vf-row-status is-@it.State">
+                        <span class="prv-vf-row-badge">
+                            <i class="fas @(it.State == "ok" ? "fa-circle-check" : it.State == "warn" ? "fa-circle-exclamation" : "fa-circle-notch")"></i>
+                            @it.StatusLabel
+                        </span>
+                        @if (!string.IsNullOrWhiteSpace(it.Meta))
+                        {
+                            <em>@it.Meta</em>
+                        }
+                    </div>
+                    <i class="fas fa-chevron-right prv-vf-row-arrow"></i>
+                </div>
+            }
+        </div>
+    </section>
+
+    <form method="post" asp-controller="Proveedor" asp-action="SaveVerificationReview" class="prv-vf-review-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="id" value="@Model.Id" />
+
+        <div class="prv-vf-notes-grid">
+            <section class="prv-vf-panel prv-vf-notes">
+                <div class="prv-vf-notes-head">
+                    <h2 class="prv-vf-panel-title">Operator Notes</h2>
+                    <i class="fas fa-pen"></i>
+                </div>
+                <textarea name="operatorNotes" rows="3" placeholder="Add a note about this contractor…">@Model.OperatorNotes</textarea>
+                @if (!string.IsNullOrWhiteSpace(Model.NotesSavedLabel))
+                {
+                    <span class="prv-vf-notes-saved">@Model.NotesSavedLabel</span>
+                }
+            </section>
+
+            <section class="prv-vf-panel prv-vf-followup">
+                <div class="prv-vf-followup-head"><i class="fas fa-circle-exclamation"></i> Missing / Follow-up</div>
+                @if (Model.FollowUps.Count == 0)
+                {
+                    <div class="prv-vf-followup-ok"><i class="fas fa-circle-check"></i> Nothing outstanding</div>
+                }
+                else
+                {
+                    @foreach (var f in Model.FollowUps)
+                    {
+                        <div class="prv-vf-followup-item"><i class="fas fa-user-plus"></i> @f</div>
+                    }
+                }
+            </section>
+        </div>
+
+        <div class="prv-vf-actions">
+            <button type="submit" name="mode" value="request" class="prv-vf-btn prv-vf-btn--ghost">
+                <i class="fas fa-comment-dots"></i> Request Info
+            </button>
+            <button type="submit" name="mode" value="continue" class="prv-vf-btn prv-vf-btn--primary">
+                Continue Review <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </form>
+</div>

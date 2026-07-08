@@ -1,0 +1,15 @@
+@model List<IndorMvcApp.ViewModels.RequestStepViewModel>
+<div class="prv-req-stepper">
+    @for (var i = 0; i < Model.Count; i++)
+    {
+        var step = Model[i];
+        <div class="prv-req-step is-@step.State">
+            <span class="prv-req-step-dot"><i class="fas @step.IconClass"></i></span>
+            <span class="prv-req-step-label">@step.Label</span>
+        </div>
+        @if (i < Model.Count - 1)
+        {
+            <span class="prv-req-step-line @(Model[i].State == "done" ? "is-done" : "")"></span>
+        }
+    }
+</div>

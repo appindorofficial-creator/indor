@@ -1,0 +1,89 @@
+@model IndorMvcApp.ViewModels.MyRequestsViewModel
+@{
+    ViewData["Title"] = "My Requests";
+    Layout = "_ProviderProLayout";
+    ViewData["ProviderProExtraCss"] = "provider-requests.css";
+    ViewBag.NavActive = "jobs";
+}
+
+<div class="prv-req-shell">
+    <header class="prv-req-hero">
+        <div class="prv-req-hero-top">
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-req-brand" aria-label="INDOR PRO">
+                <span class="prv-req-brand-word">INDOR</span>
+                <span class="prv-req-brand-pro">PRO</span>
+            </a>
+            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+        </div>
+        <div class="prv-req-hero-title">
+            <h1>My Requests</h1>
+            <p>Track posted jobs, quotes, and hiring progress.</p>
+        </div>
+        <form method="get" asp-controller="Proveedor" asp-action="MyRequests" class="prv-req-searchbar">
+            <input type="hidden" name="tab" value="@Model.ActiveTab" />
+            <div class="prv-req-search">
+                <i class="fas fa-magnifying-glass"></i>
+                <input type="search" name="q" value="@Model.Query" placeholder="Search my requests..." />
+            </div>
+            <button type="submit" class="prv-req-filter"><i class="fas fa-sliders"></i> Filter</button>
+        </form>
+    </header>
+
+    <div class="prv-req-tabs">
+        @foreach (var t in Model.Tabs)
+        {
+            <a asp-controller="Proveedor" asp-action="MyRequests" asp-route-tab="@t.Id" asp-route-q="@Model.Query"
+               class="prv-req-tab @(Model.ActiveTab == t.Id ? "is-active" : "")">@t.Label</a>
+        }
+    </div>
+
+    @if (Model.Requests.Count == 0)
+    {
+        <div class="prv-req-empty">
+            <i class="fas fa-clipboard-list"></i>
+            <strong>No requests yet</strong>
+            <span>Post a job to start receiving quotes from verified subcontractors.</span>
+            <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-req-empty-btn"><i class="fas fa-plus"></i> Post a Job</a>
+        </div>
+    }
+    else
+    {
+        <div class="prv-req-list">
+            @foreach (var r in Model.Requests)
+            {
+                <div class="prv-req-card">
+                    <div class="prv-req-card-top">
+                        <span class="prv-req-ico prv-req-ico--@r.IconTone"><i class="fas @r.IconClass"></i></span>
+                        <div class="prv-req-card-id">
+                            <div class="prv-req-title">@r.Title</div>
+                            @if (!string.IsNullOrWhiteSpace(r.TradeLabel))
+                            {
+                                <div class="prv-req-meta"><i class="fas fa-screwdriver-wrench"></i> @r.TradeLabel</div>
+                            }
+                            @if (!string.IsNullOrWhiteSpace(r.LocationLabel))
+                            {
+                                <div class="prv-req-meta"><i class="fas fa-location-dot"></i> @r.LocationLabel</div>
+                            }
+                        </div>
+                        <div class="prv-req-card-right">
+                            <span class="prv-req-pill prv-req-pill--@r.StatusKind">
+                                @(r.QuoteCount > 0 && r.StatusKind == "green" ? $"{r.QuoteCount} Quotes Received" : r.StatusLabel)
+                            </span>
+                            @if (!string.IsNullOrWhiteSpace(r.BudgetRange))
+                            {
+                                <div class="prv-req-budget-mini"><span>Budget</span><strong>@r.BudgetRange</strong></div>
+                            }
+                            <div class="prv-req-posted"><span>Posted</span><strong>@r.PostedLabel</strong></div>
+                        </div>
+                    </div>
+
+                    @await Html.PartialAsync("_RequestStepper", r.Steps)
+
+                    <a asp-controller="Proveedor" asp-action="RequestDetails" asp-route-id="@r.Id" class="prv-req-view">
+                        View Request <i class="fas fa-chevron-right"></i>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</div>

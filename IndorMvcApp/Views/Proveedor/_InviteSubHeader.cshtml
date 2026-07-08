@@ -1,0 +1,50 @@
+@model IndorMvcApp.ViewModels.InviteSubHeaderViewModel
+<section class="prv-inv-sub">
+    <div class="prv-inv-sub-head">
+        <span class="prv-req-ico prv-req-ico--@Model.IconTone prv-req-ico--lg">
+            @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
+            {
+                <img src="@Model.PhotoUrl" alt="@Model.Name" />
+            }
+            else
+            {
+                <i class="fas @Model.IconClass"></i>
+            }
+        </span>
+        <div class="prv-inv-sub-id">
+            <div class="prv-req-quote-name">
+                @Model.Name
+                @if (Model.IsVerified)
+                {
+                    <i class="fas fa-circle-check prv-req-verified"></i>
+                }
+            </div>
+            @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
+            {
+                <div class="prv-req-meta">@Model.TradeLabel</div>
+            }
+            <div class="prv-req-meta">
+                <i class="fas fa-location-dot"></i>
+                @Model.LocationLabel@(string.IsNullOrWhiteSpace(Model.DistanceLabel) ? "" : $" • {Model.DistanceLabel}")
+            </div>
+        </div>
+        @if (Model.IsAvailableNow)
+        {
+            <span class="prv-inv-avail">@Model.AvailabilityLabel</span>
+        }
+    </div>
+    <div class="prv-req-badges">
+        @if (Model.IsVerified)
+        {
+            <span class="prv-req-badge prv-req-badge--blue"><i class="fas fa-circle-check"></i> Verified</span>
+        }
+        @if (Model.IsInsured)
+        {
+            <span class="prv-req-badge prv-req-badge--green"><i class="fas fa-shield-halved"></i> Insurance Active</span>
+        }
+        @if (Model.IsDocsReady)
+        {
+            <span class="prv-req-badge prv-req-badge--purple"><i class="fas fa-file-lines"></i> Docs Ready</span>
+        }
+    </div>
+</section>

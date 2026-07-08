@@ -9,9 +9,18 @@
     <a asp-controller="Proveedor" asp-action="Network" class="@(active == "jobs" ? "is-active" : "")">
         <i class="fas fa-briefcase"></i><span>Jobs</span>
     </a>
-    <a asp-controller="Proveedor" asp-action="Customers" class="@(active == "customers" ? "is-active" : "")">
-        <i class="fas fa-users"></i><span>Customers</span>
-    </a>
+    @if (active == "verify")
+    {
+        <a asp-controller="Proveedor" asp-action="VerifyContractors" class="is-active">
+            <i class="fas fa-shield-halved"></i><span>Verify</span>
+        </a>
+    }
+    else
+    {
+        <a asp-controller="Proveedor" asp-action="Customers" class="@(active == "customers" ? "is-active" : "")">
+            <i class="fas fa-users"></i><span>Customers</span>
+        </a>
+    }
     <a asp-controller="Proveedor" asp-action="Reports" class="@(active == "reports" ? "is-active" : "")">
         <i class="fas fa-chart-line"></i><span>Reports</span>
     </a>
