@@ -679,7 +679,7 @@
     border: 1px solid rgba(226, 232, 240, .9);
     display: flex;
     gap: 12px;
-    align-items: center;
+    align-items: flex-start;
 }
 
 .prv-net-tool-ic {
