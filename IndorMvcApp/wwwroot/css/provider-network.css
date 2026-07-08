@@ -681,9 +681,8 @@
     height: 40px;
     border-radius: 12px;
     flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    place-items: center;
     color: #fff;
     font-size: 1.05rem;
     line-height: 1;
@@ -693,7 +692,9 @@
 .prv-net-tool-ic i {
     display: block;
     line-height: 1;
+    width: auto;
     margin: 0;
+    text-align: center;
 }
 
 .prv-net-tool-ic--blue { background: linear-gradient(135deg, #2E8BFF, #0066CC); }
