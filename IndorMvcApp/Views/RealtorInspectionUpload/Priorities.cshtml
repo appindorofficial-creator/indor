@@ -2,24 +2,23 @@
 
 <h2 class="rl-insp-page-address">@Model.PropertyDisplay</h2>
 
-@if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
+@if (!string.IsNullOrWhiteSpace(Model.ReportFileName) && !string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
 {
-    var pdfUrl = string.IsNullOrWhiteSpace(Model.ReportPdfUrl) ? null : Url.Content($"~{Model.ReportPdfUrl}");
-    if (pdfUrl != null)
-    {
-        <a href="@pdfUrl" target="_blank" rel="noopener" class="rl-insp-report-link">
-            <i class="fas fa-file-pdf"></i>
-            <span>@Model.ReportFileName</span>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-    }
-    else
-    {
-        <p class="rl-insp-report-link rl-insp-report-link--static">
-            <i class="fas fa-file-pdf"></i>
-            <span>@Model.ReportFileName</span>
-        </p>
-    }
+    <a asp-action="ViewReport"
+       asp-route-filter="@Model.ActiveFilter"
+       asp-route-sort="@Model.SortBy"
+       class="rl-insp-report-link">
+        <i class="fas fa-file-pdf"></i>
+        <span>@Model.ReportFileName</span>
+        <i class="fas fa-chevron-right"></i>
+    </a>
+}
+else if (!string.IsNullOrWhiteSpace(Model.ReportFileName))
+{
+    <p class="rl-insp-report-link rl-insp-report-link--static">
+        <i class="fas fa-file-pdf"></i>
+        <span>@Model.ReportFileName</span>
+    </p>
 }
 
 <div class="rl-insp-findings-hero">
@@ -115,11 +114,6 @@ else
         <div class="rl-insp-findings-list">
             @foreach (var finding in Model.Findings)
             {
-                var pdfUrl = string.IsNullOrWhiteSpace(Model.ReportPdfUrl) ? null : Url.Content($"~{Model.ReportPdfUrl}");
-                var pageLink = finding.SourcePage is > 0 && pdfUrl != null
-                    ? $"{pdfUrl}#page={finding.SourcePage}"
-                    : pdfUrl;
-
                 <label class="rl-insp-finding-card rl-insp-finding-card--@finding.PriorityCss">
                     <input type="checkbox" name="selectedFindingIds" value="@finding.Id" />
 
@@ -204,12 +198,16 @@ else
                                 </div>
                             }
 
-                            @if (finding.SourcePage is > 0 && pageLink != null)
+                            @if (finding.SourcePage is > 0 && !string.IsNullOrWhiteSpace(Model.ReportPdfUrl))
                             {
-                                <a href="@pageLink" target="_blank" rel="noopener" class="rl-insp-open-page-btn">
+                                <a asp-action="ViewReport"
+                                   asp-route-page="@finding.SourcePage"
+                                   asp-route-filter="@Model.ActiveFilter"
+                                   asp-route-sort="@Model.SortBy"
+                                   class="rl-insp-open-page-btn">
                                     <i class="fas fa-file-pdf"></i>
                                     Open report page @finding.SourcePage
-                                    <i class="fas fa-arrow-up-right-from-square"></i>
+                                    <i class="fas fa-chevron-right"></i>
                                 </a>
                             }
 
