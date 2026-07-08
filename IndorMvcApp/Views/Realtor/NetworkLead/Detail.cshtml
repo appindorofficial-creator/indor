@@ -77,26 +77,38 @@
                         <i class="fas fa-comment-dots"></i> Open Client Profile
                     </a>
                 }
+                else if (Model.InterestRecorded)
+                {
+                    <span class="rl-btn-primary rl-btn-primary--sm rl-btn-primary--disabled" aria-disabled="true">
+                        <i class="fas fa-check"></i> Intro requested
+                    </span>
+                }
                 else if (!string.IsNullOrWhiteSpace(Model.ContactUrl))
                 {
-                    <a href="@Model.ContactUrl" class="rl-btn-primary rl-btn-primary--sm">
-                        <i class="fas fa-envelope"></i> @Model.ContactActionLabel
-                    </a>
+                    <form asp-action="RequestNetworkLeadIntro" asp-route-id="@Model.ItemId" method="post" class="rl-inline-form">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="rl-btn-primary rl-btn-primary--sm">
+                            <i class="fas fa-envelope"></i> @Model.ContactActionLabel
+                        </button>
+                    </form>
                 }
                 else
                 {
-                    <a asp-action="ContactNetworkLead" asp-route-id="@Model.ItemId" class="rl-btn-primary rl-btn-primary--sm">
-                        <i class="fas fa-comment-dots"></i> Request Intro
-                    </a>
+                    <form asp-action="RequestNetworkLeadIntro" asp-route-id="@Model.ItemId" method="post" class="rl-inline-form">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="rl-btn-primary rl-btn-primary--sm">
+                            <i class="fas fa-comment-dots"></i> Request Intro
+                        </button>
+                    </form>
                 }
             </div>
         </section>
     }
 
     <div class="rl-listing-detail-actions">
-        @if (!Model.ShowContactPanel)
+        @if (!Model.ShowContactPanel && !Model.InterestRecorded)
         {
-            <a asp-action="ContactNetworkLead" asp-route-id="@Model.ItemId" class="rl-btn-primary rl-btn-primary--sm">
+            <a asp-action="ViewNetworkLead" asp-route-id="@Model.ItemId" asp-route-contact="true" class="rl-btn-primary rl-btn-primary--sm">
                 <i class="fas fa-comment-dots"></i> Contact Buyer
             </a>
         }
