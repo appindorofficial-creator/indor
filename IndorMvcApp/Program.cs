@@ -244,9 +244,17 @@ app.UseStaticFiles(new StaticFileOptions
     OnPrepareResponse = static ctx =>
     {
         var path = ctx.Context.Request.Path.Value ?? string.Empty;
+
+        // Stylesheets and scripts change with every deploy. Force the browser to
+        // revalidate them on each load (cheap 304 via ETag) so published CSS/JS
+        // changes are picked up immediately instead of being pinned for a year.
         if (path.EndsWith(".css", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".js", StringComparison.OrdinalIgnoreCase)
-            || path.EndsWith(".woff2", StringComparison.OrdinalIgnoreCase)
+            || path.EndsWith(".js", StringComparison.OrdinalIgnoreCase))
+        {
+            ctx.Context.Response.Headers.CacheControl = "no-cache,must-revalidate";
+        }
+        // Fingerprint-stable binary assets can be cached aggressively.
+        else if (path.EndsWith(".woff2", StringComparison.OrdinalIgnoreCase)
             || path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
             || path.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase)
             || path.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase)
