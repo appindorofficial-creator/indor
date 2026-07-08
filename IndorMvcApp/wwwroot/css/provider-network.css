@@ -260,6 +260,12 @@
     font-size: .78rem;
 }
 
+.prv-net-illus-badge svg {
+    display: block;
+    width: 15px;
+    height: 15px;
+}
+
 .prv-net-illus-img {
     width: 100%;
     height: 104px;
@@ -695,6 +701,12 @@
     width: auto;
     margin: 0;
     text-align: center;
+}
+
+.prv-net-tool-ic svg {
+    display: block;
+    width: 20px;
+    height: 20px;
 }
 
 .prv-net-tool-ic--blue { background: linear-gradient(135deg, #2E8BFF, #0066CC); }

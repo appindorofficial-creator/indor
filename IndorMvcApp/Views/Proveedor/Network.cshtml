@@ -65,7 +65,9 @@
                     <strong>Find Subcontractors</strong>
                     <span>Search and connect with verified pros.</span>
                 </div>
-                <span class="prv-net-illus-badge"><i class="fas fa-arrow-right"></i></span>
+                <span class="prv-net-illus-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </span>
             </div>
             <img src="~/images/network/find-subcontractors.png" alt="Find subcontractors" class="prv-net-illus-img" asp-append-version="true" />
         </a>
@@ -75,7 +77,9 @@
                     <strong>Service Providers</strong>
                     <span>Browse trusted specialists by trade or service.</span>
                 </div>
-                <span class="prv-net-illus-badge"><i class="fas fa-arrow-right"></i></span>
+                <span class="prv-net-illus-badge">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </span>
             </div>
             <img src="~/images/network/service-providers.png" alt="Service providers" class="prv-net-illus-img" asp-append-version="true" />
         </a>
@@ -83,7 +87,9 @@
 
     <section class="prv-net-tools">
         <a asp-controller="Proveedor" asp-action="VerifyContractors" class="prv-net-tool">
-            <span class="prv-net-tool-ic prv-net-tool-ic--blue"><i class="fas fa-user-shield"></i></span>
+            <span class="prv-net-tool-ic prv-net-tool-ic--blue">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>
+            </span>
             <div>
                 <strong>Verified Subcontractors</strong>
                 <span>@Model.VerifiedSubcontractorsCount insured, qualified pros near you</span>
@@ -91,7 +97,9 @@
             <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
         </a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-docs="true" class="prv-net-tool">
-            <span class="prv-net-tool-ic prv-net-tool-ic--purple"><i class="fas fa-file-shield"></i></span>
+            <span class="prv-net-tool-ic prv-net-tool-ic--purple">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M16 13H8"/><path d="M16 17H8"/><path d="M10 9H8"/></svg>
+            </span>
             <div>
                 <strong>Insurance &amp; Docs</strong>
                 <span>See insurance active and documents ready</span>
@@ -99,7 +107,9 @@
             <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
         </a>
         <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-net-tool">
-            <span class="prv-net-tool-ic prv-net-tool-ic--green"><i class="fas fa-plus"></i></span>
+            <span class="prv-net-tool-ic prv-net-tool-ic--green">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </span>
             <div>
                 <strong>Post a Job</strong>
                 <span>Get matched with subcontractors fast</span>
@@ -107,7 +117,9 @@
             <i class="fas fa-chevron-right prv-net-tool-arrow"></i>
         </a>
         <a asp-controller="Proveedor" asp-action="MyRequests" class="prv-net-tool">
-            <span class="prv-net-tool-ic prv-net-tool-ic--amber"><i class="fas fa-clipboard-check"></i></span>
+            <span class="prv-net-tool-ic prv-net-tool-ic--amber">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="m9 14 2 2 4-4"/></svg>
+            </span>
             <div>
                 <strong>My Requests</strong>
                 <span>@Model.MyRequestsCount posted &bull; @Model.ActiveHiresCount hires</span>
