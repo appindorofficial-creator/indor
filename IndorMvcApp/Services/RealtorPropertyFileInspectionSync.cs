@@ -16,14 +16,24 @@ public static class RealtorPropertyFileInspectionSync
         string reportUrl,
         string reportFileName)
     {
-        var existing = property.Items.FirstOrDefault(i =>
-            string.Equals(i.CategoryType, RealtorPropertyFileCategoryTypes.InspectionReports, StringComparison.OrdinalIgnoreCase));
+        var matches = property.Items
+            .Where(i => string.Equals(i.CategoryType, RealtorPropertyFileCategoryTypes.InspectionReports, StringComparison.OrdinalIgnoreCase))
+            .OrderByDescending(i => i.UploadedUtc)
+            .ToList();
 
-        if (existing != null)
+        if (matches.Count > 0)
         {
+            var existing = matches[0];
             existing.ItemLabel = reportFileName;
             existing.FileUrl = reportUrl;
             existing.UploadedUtc = DateTime.UtcNow;
+
+            foreach (var duplicate in matches.Skip(1))
+            {
+                db.IndorRealtorPropertyFileItems.Remove(duplicate);
+                property.Items.Remove(duplicate);
+            }
+
             return;
         }
 
@@ -35,6 +45,32 @@ public static class RealtorPropertyFileInspectionSync
             FileUrl = reportUrl,
             UploadedUtc = DateTime.UtcNow
         });
+    }
+
+    public static int DeduplicateItemsWithFileUrl(AppDbContext db, IndorRealtorPropertyFile property)
+    {
+        var removed = 0;
+        var groups = property.Items
+            .Where(i => !string.IsNullOrWhiteSpace(i.FileUrl))
+            .GroupBy(i => $"{i.CategoryType}|{i.FileUrl}", StringComparer.OrdinalIgnoreCase)
+            .Where(g => g.Count() > 1);
+
+        foreach (var group in groups)
+        {
+            var keeper = group
+                .OrderByDescending(i => i.UploadedUtc)
+                .ThenByDescending(i => i.Id)
+                .First();
+
+            foreach (var duplicate in group.Where(i => i != keeper))
+            {
+                db.IndorRealtorPropertyFileItems.Remove(duplicate);
+                property.Items.Remove(duplicate);
+                removed++;
+            }
+        }
+
+        return removed;
     }
 
     public static int UpsertRepairItemsFromFindings(

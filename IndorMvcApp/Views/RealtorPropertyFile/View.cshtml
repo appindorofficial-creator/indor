@@ -92,9 +92,15 @@
                             </div>
                             @if (!string.IsNullOrWhiteSpace(item.FileUrl))
                             {
-                                <a href="@item.FileUrl" target="_blank" rel="noopener" class="rl-btn-outline rl-btn-outline--sm">
-                                    Open <i class="fas fa-arrow-up-right-from-square"></i>
-                                </a>
+                                var fileOpenUrl = item.FileUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                                    ? item.FileUrl
+                                    : Url.Content("~" + item.FileUrl);
+                                <button type="button"
+                                        class="rl-btn-outline rl-btn-outline--sm rl-file-open-btn"
+                                        data-file-url="@fileOpenUrl"
+                                        aria-label="Open @item.ItemLabel">
+                                    Open <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
+                                </button>
                             }
                         </li>
                     }
@@ -103,3 +109,7 @@
         }
     }
 </div>
+
+@section Scripts {
+    <script src="~/js/realtor-property-file-open.js" asp-append-version="true"></script>
+}
