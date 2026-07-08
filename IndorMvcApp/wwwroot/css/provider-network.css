@@ -666,25 +666,26 @@
 .prv-net-tool {
     background: #fff;
     border-radius: 16px;
-    padding: 13px;
+    padding: 15px;
     text-decoration: none;
     color: var(--net-navy);
     box-shadow: var(--net-shadow-sm);
+    border: 1px solid rgba(226, 232, 240, .9);
     display: flex;
-    gap: 10px;
+    gap: 12px;
     align-items: flex-start;
 }
 
 .prv-net-tool-ic {
-    width: 36px;
-    height: 36px;
-    border-radius: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: 1rem;
+    font-size: 1.05rem;
     line-height: 1;
     text-align: center;
 }
@@ -700,8 +701,8 @@
 .prv-net-tool-ic--purple { background: linear-gradient(135deg, #A78BFA, #7C3AED); }
 .prv-net-tool-ic--amber { background: linear-gradient(135deg, #FBBF24, #F59E0B); }
 
-.prv-net-tool strong { font-size: .84rem; font-weight: 800; display: block; line-height: 1.15; }
-.prv-net-tool span { font-size: .72rem; color: var(--net-muted); line-height: 1.25; display: block; margin-top: 2px; }
+.prv-net-tool strong { font-size: .9rem; font-weight: 800; display: block; line-height: 1.15; }
+.prv-net-tool span { font-size: .76rem; color: var(--net-muted); line-height: 1.3; display: block; margin-top: 3px; }
 
 /* ---------------------------------------------------- Why INDOR banner */
 .prv-net-why {
