@@ -186,6 +186,35 @@ public class RealtorInspectionUploadController(
     }
 
     [HttpGet]
+    public async Task<IActionResult> ViewReport(int? page, string? filter, string? sort)
+    {
+        var draft = await wizard.GetDraftAsync();
+        if (draft == null || string.IsNullOrWhiteSpace(draft.ReportFileUrl))
+        {
+            return RedirectToAction(nameof(Upload));
+        }
+
+        var reportUrl = Url.Content($"~{draft.ReportFileUrl}");
+        if (page is > 0)
+        {
+            reportUrl += $"#page={page.Value}";
+        }
+
+        var backUrl = draft.CurrentStep >= 3
+                      && draft.AnalysisStatus == RealtorInspectionAnalysisStatuses.Complete
+            ? Url.Action(nameof(Priorities), new { filter, sort })!
+            : Url.Action(nameof(Analyze))!;
+
+        return View(new RealtorInspectionReportViewViewModel
+        {
+            ReportFileName = draft.ReportFileName ?? "Inspection Report",
+            ReportUrl = reportUrl,
+            SourcePage = page,
+            BackUrl = backUrl
+        });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Priorities(string? filter, string? sort)
     {
         var draft = await wizard.GetDraftAsync();

@@ -106,6 +106,14 @@ public class RealtorInspectionPrioritiesViewModel : RealtorInspectionUploadStepV
     public List<RealtorInspectionFindingCardViewModel> Findings { get; set; } = [];
 }
 
+public class RealtorInspectionReportViewViewModel
+{
+    public string ReportFileName { get; set; } = "Inspection Report";
+    public string ReportUrl { get; set; } = "";
+    public string BackUrl { get; set; } = "";
+    public int? SourcePage { get; set; }
+}
+
 public class RealtorInspectionFindingCardViewModel
 {
     public int Id { get; set; }

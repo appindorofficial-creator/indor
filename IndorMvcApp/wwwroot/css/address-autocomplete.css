@@ -52,3 +52,10 @@
     visibility: hidden !important;
     pointer-events: none !important;
 }
+
+/* Google sometimes leaves the logo strip after a selection with no suggestions. */
+.pac-container:not(:has(.pac-item)) {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+}
