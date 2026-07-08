@@ -676,15 +676,23 @@
 }
 
 .prv-net-tool-ic {
-    width: 34px;
-    height: 34px;
+    width: 36px;
+    height: 36px;
     border-radius: 10px;
     flex-shrink: 0;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     color: #fff;
-    font-size: .88rem;
+    font-size: 1rem;
+    line-height: 1;
+    text-align: center;
+}
+
+.prv-net-tool-ic i {
+    display: block;
+    line-height: 1;
+    margin: 0;
 }
 
 .prv-net-tool-ic--blue { background: linear-gradient(135deg, #2E8BFF, #0066CC); }
