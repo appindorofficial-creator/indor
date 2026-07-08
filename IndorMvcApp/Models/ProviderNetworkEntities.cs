@@ -41,14 +41,60 @@ public class IndorProveedorNetworkJob
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 
     public DateTime? FechaActualizacion { get; set; }
+
+    // ---- Post-a-Job wizard fields (Details / Location & Budget / Review) ----
+
+    /// <summary>Short job title (e.g. "Fix leak under kitchen sink").</summary>
+    [MaxLength(160)]
+    public string? JobTitle { get; set; }
+
+    /// <summary>When the job is needed: ASAP, ThisWeek, Flexible.</summary>
+    [MaxLength(20)]
+    public string? Urgency { get; set; }
+
+    /// <summary>House, Townhome, Condo, Commercial.</summary>
+    [MaxLength(30)]
+    public string? PropertyType { get; set; }
+
+    /// <summary>Who meets the pro: Homeowner, Tenant, PropertyManager.</summary>
+    [MaxLength(30)]
+    public string? WhoMeets { get; set; }
+
+    /// <summary>Fixed or Hourly.</summary>
+    [MaxLength(20)]
+    public string? QuoteType { get; set; }
+
+    [MaxLength(300)]
+    public string? AccessNotes { get; set; }
+
+    /// <summary>JSON array of uploaded photo URLs.</summary>
+    public string? PhotoUrlsJson { get; set; }
+
+    public decimal? Latitude { get; set; }
+
+    public decimal? Longitude { get; set; }
 }
 
 public static class NetworkJobStatuses
 {
+    public const string Draft = "Draft";
     public const string Open = "Open";
     public const string Matched = "Matched";
     public const string Hired = "Hired";
     public const string Closed = "Closed";
+}
+
+public static class NetworkJobUrgencies
+{
+    public const string Asap = "ASAP";
+    public const string ThisWeek = "ThisWeek";
+    public const string Flexible = "Flexible";
+}
+
+public static class NetworkJobQuoteTypes
+{
+    public const string Fixed = "Fixed";
+    public const string Hourly = "Hourly";
 }
 
 /// <summary>

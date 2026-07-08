@@ -27,13 +27,23 @@ public interface IProviderNetworkService
         int subcontractorId,
         CancellationToken cancellationToken = default);
 
-    Task<PostNetworkJobViewModel> GetPostJobAsync(IndorProveedor me, CancellationToken cancellationToken = default);
+    // ---- Post a Job wizard (draft persisted in the database) ----
 
-    Task<int> SavePostJobAsync(
+    Task<PostJobDetailsViewModel> GetDetailsAsync(IndorProveedor me, int? draftId, CancellationToken cancellationToken = default);
+
+    Task<int> SaveDetailsAsync(
         int posterProveedorId,
-        PostNetworkJobInput input,
-        string? photoUrl,
+        PostJobDetailsInput input,
+        List<string> newPhotoUrls,
         CancellationToken cancellationToken = default);
+
+    Task<PostJobLocationViewModel?> GetLocationAsync(IndorProveedor me, int draftId, CancellationToken cancellationToken = default);
+
+    Task<bool> SaveLocationAsync(IndorProveedor me, PostJobLocationInput input, CancellationToken cancellationToken = default);
+
+    Task<PostJobReviewViewModel?> GetReviewAsync(IndorProveedor me, int draftId, CancellationToken cancellationToken = default);
+
+    Task<int?> PublishJobAsync(IndorProveedor me, int draftId, CancellationToken cancellationToken = default);
 
     Task<NetworkJobPostedViewModel?> GetJobPostedAsync(
         IndorProveedor me,

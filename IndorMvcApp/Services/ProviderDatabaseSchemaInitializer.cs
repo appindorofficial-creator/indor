@@ -76,8 +76,54 @@ public static class ProviderDatabaseSchemaInitializer
             PhotoUrl NVARCHAR(500) NULL,
             Status NVARCHAR(30) NOT NULL CONSTRAINT DF_IndorNetworkJobs_Status DEFAULT ('Open'),
             FechaCreacion DATETIME2 NOT NULL CONSTRAINT DF_IndorNetworkJobs_Fecha DEFAULT (SYSUTCDATETIME()),
-            FechaActualizacion DATETIME2 NULL
+            FechaActualizacion DATETIME2 NULL,
+            JobTitle NVARCHAR(160) NULL,
+            Urgency NVARCHAR(20) NULL,
+            PropertyType NVARCHAR(30) NULL,
+            WhoMeets NVARCHAR(30) NULL,
+            QuoteType NVARCHAR(20) NULL,
+            AccessNotes NVARCHAR(300) NULL,
+            PhotoUrlsJson NVARCHAR(MAX) NULL,
+            Latitude DECIMAL(9,6) NULL,
+            Longitude DECIMAL(9,6) NULL
         );
+        """,
+        // Columns added after the network tables first shipped (idempotent).
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'JobTitle') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD JobTitle NVARCHAR(160) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'Urgency') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD Urgency NVARCHAR(20) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'PropertyType') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD PropertyType NVARCHAR(30) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'WhoMeets') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD WhoMeets NVARCHAR(30) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'QuoteType') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD QuoteType NVARCHAR(20) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'AccessNotes') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD AccessNotes NVARCHAR(300) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'PhotoUrlsJson') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD PhotoUrlsJson NVARCHAR(MAX) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'Latitude') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD Latitude DECIMAL(9,6) NULL;
+        """,
+        """
+        IF COL_LENGTH(N'dbo.IndorProveedorNetworkJobs', N'Longitude') IS NULL
+            ALTER TABLE dbo.IndorProveedorNetworkJobs ADD Longitude DECIMAL(9,6) NULL;
         """,
         """
         IF OBJECT_ID(N'dbo.IndorProveedorNetworkHires', N'U') IS NULL

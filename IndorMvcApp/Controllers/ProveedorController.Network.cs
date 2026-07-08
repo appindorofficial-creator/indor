@@ -88,10 +88,11 @@ public partial class ProveedorController
         return RedirectToAction(nameof(SubcontractorProfile), new { id });
     }
 
-    // ------------------------------------------------------ Screen 4: Post a Job
+    // ------------------------------------------------------ Screen 4: Post a Job (3-step wizard)
 
+    // Step 1 — Details
     [HttpGet]
-    public async Task<IActionResult> PostNetworkJob(CancellationToken cancellationToken)
+    public async Task<IActionResult> PostNetworkJob(int? id, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -99,14 +100,14 @@ public partial class ProveedorController
             return proveedor.Result;
         }
 
-        var model = await network.GetPostJobAsync(proveedor.Entity!, cancellationToken);
-        return View(model);
+        var model = await network.GetDetailsAsync(proveedor.Entity!, id, cancellationToken);
+        return View("PostNetworkJob", model);
     }
 
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [RequestSizeLimit(20_000_000)]
-    public async Task<IActionResult> PostNetworkJob(PostNetworkJobInput input, CancellationToken cancellationToken)
+    [RequestSizeLimit(60_000_000)]
+    public async Task<IActionResult> PostNetworkJobDetails(PostJobDetailsInput input, CancellationToken cancellationToken)
     {
         var proveedor = await ResolveProveedorAsync(cancellationToken);
         if (proveedor.Result != null)
@@ -114,26 +115,107 @@ public partial class ProveedorController
             return proveedor.Result;
         }
 
-        if (string.IsNullOrWhiteSpace(input.TradeId) || string.IsNullOrWhiteSpace(input.Description))
+        var newPhotos = new List<string>();
+        if (input.Photos is { Count: > 0 })
         {
-            var model = await network.GetPostJobAsync(proveedor.Entity!, cancellationToken);
+            foreach (var file in input.Photos.Where(f => f is { Length: > 0 }).Take(6))
+            {
+                var url = await SaveNetworkJobPhotoAsync(proveedor.Entity!.Id, file);
+                if (!string.IsNullOrWhiteSpace(url))
+                {
+                    newPhotos.Add(url);
+                }
+            }
+        }
+
+        if (string.IsNullOrWhiteSpace(input.TradeId) || string.IsNullOrWhiteSpace(input.JobTitle))
+        {
+            var model = await network.GetDetailsAsync(proveedor.Entity!, input.DraftId, cancellationToken);
             model.SelectedTradeId = input.TradeId;
+            model.JobTitle = input.JobTitle;
             model.Description = input.Description;
-            model.Location = input.Location;
-            model.DateNeeded = input.DateNeeded;
-            model.BudgetRange = input.BudgetRange;
-            model.ErrorMessage = "Please choose a trade and describe the project.";
-            return View(model);
+            model.Urgency = input.Urgency;
+            model.Photos.Clear();
+            model.Photos.AddRange((input.ExistingPhotos ?? []).Where(u => !string.IsNullOrWhiteSpace(u)));
+            model.Photos.AddRange(newPhotos);
+            model.ErrorMessage = "Please choose a trade and add a job title.";
+            return View("PostNetworkJob", model);
         }
 
-        string? photoUrl = null;
-        if (input.Photo is { Length: > 0 })
+        var draftId = await network.SaveDetailsAsync(proveedor.Entity!.Id, input, newPhotos, cancellationToken);
+        return RedirectToAction(nameof(PostNetworkJobLocation), new { id = draftId });
+    }
+
+    // Step 2 — Location & Budget
+    [HttpGet]
+    public async Task<IActionResult> PostNetworkJobLocation(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
         {
-            photoUrl = await SaveNetworkJobPhotoAsync(proveedor.Entity!.Id, input.Photo);
+            return proveedor.Result;
         }
 
-        var jobId = await network.SavePostJobAsync(proveedor.Entity!.Id, input, photoUrl, cancellationToken);
-        return RedirectToAction(nameof(NetworkJobPosted), new { id = jobId });
+        var model = await network.GetLocationAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PostNetworkJobLocation(PostJobLocationInput input, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var ok = await network.SaveLocationAsync(proveedor.Entity!, input, cancellationToken);
+        if (!ok)
+        {
+            return NotFound();
+        }
+
+        if (string.Equals(input.Mode, "draft", StringComparison.OrdinalIgnoreCase))
+        {
+            TempData["NetworkToast"] = "Draft saved. You can finish posting it anytime.";
+            return RedirectToAction(nameof(Network));
+        }
+
+        return RedirectToAction(nameof(PostNetworkJobReview), new { id = input.DraftId });
+    }
+
+    // Step 3 — Review
+    [HttpGet]
+    public async Task<IActionResult> PostNetworkJobReview(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var model = await network.GetReviewAsync(proveedor.Entity!, id, cancellationToken);
+        return model == null ? NotFound() : View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> PublishNetworkJob(int id, CancellationToken cancellationToken)
+    {
+        var proveedor = await ResolveProveedorAsync(cancellationToken);
+        if (proveedor.Result != null)
+        {
+            return proveedor.Result;
+        }
+
+        var jobId = await network.PublishJobAsync(proveedor.Entity!, id, cancellationToken);
+        if (jobId == null)
+        {
+            return RedirectToAction(nameof(PostNetworkJob), new { id });
+        }
+
+        return RedirectToAction(nameof(NetworkJobPosted), new { id = jobId.Value });
     }
 
     [HttpGet]

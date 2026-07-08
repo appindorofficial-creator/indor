@@ -133,38 +133,90 @@ public sealed class SubcontractorProfileViewModel
     public bool IsSaved { get; init; }
 }
 
-/// <summary>Screen 4 — Post a Job.</summary>
-public sealed class PostNetworkJobViewModel
+/// <summary>Budget options shown as chips in the Post a Job wizard.</summary>
+public static class PostJobOptions
 {
-    public required string CompanyName { get; init; }
-    public List<NetworkTradeChipViewModel> TradeOptions { get; init; } = [];
-    public List<string> BudgetOptions { get; init; } =
+    public static readonly string[] Budgets =
     [
-        "Under $500",
-        "$500 – $1,000",
-        "$1,000 – $5,000",
-        "$5,000 – $10,000",
-        "$10,000 – $25,000",
-        "$25,000+"
+        "Under $250",
+        "$250 – $500",
+        "$500 – $1,500",
+        "$1,500+",
+        "Not Sure"
     ];
+}
 
-    // Preserved values on validation errors.
+/// <summary>Screen 4a — Post a Job, step 1 (Details).</summary>
+public sealed class PostJobDetailsViewModel
+{
+    public int? DraftId { get; set; }
+    public List<NetworkTradeChipViewModel> TradeOptions { get; init; } = [];
     public string? SelectedTradeId { get; set; }
+    public string? JobTitle { get; set; }
     public string? Description { get; set; }
-    public string? Location { get; set; }
-    public string? DateNeeded { get; set; }
-    public string? BudgetRange { get; set; }
+    public string? Urgency { get; set; }
+    public List<string> Photos { get; init; } = [];
     public string? ErrorMessage { get; set; }
 }
 
-public sealed class PostNetworkJobInput
+public sealed class PostJobDetailsInput
 {
+    public int? DraftId { get; set; }
     public string? TradeId { get; set; }
+    public string? JobTitle { get; set; }
     public string? Description { get; set; }
+    public string? Urgency { get; set; }
+    public List<IFormFile>? Photos { get; set; }
+    public List<string>? ExistingPhotos { get; set; }
+}
+
+/// <summary>Screen 4b — Post a Job, step 2 (Location &amp; Budget).</summary>
+public sealed class PostJobLocationViewModel
+{
+    public int DraftId { get; set; }
+    public string? JobTitle { get; set; }
     public string? Location { get; set; }
-    public string? DateNeeded { get; set; }
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
+    public string? PropertyType { get; set; }
+    public string? WhoMeets { get; set; }
     public string? BudgetRange { get; set; }
-    public IFormFile? Photo { get; set; }
+    public IReadOnlyList<string> BudgetOptions => PostJobOptions.Budgets;
+    public string? QuoteType { get; set; }
+    public string? AccessNotes { get; set; }
+    public string? ErrorMessage { get; set; }
+}
+
+public sealed class PostJobLocationInput
+{
+    public int DraftId { get; set; }
+    public string? Location { get; set; }
+    public decimal? Latitude { get; set; }
+    public decimal? Longitude { get; set; }
+    public string? PropertyType { get; set; }
+    public string? WhoMeets { get; set; }
+    public string? BudgetRange { get; set; }
+    public string? QuoteType { get; set; }
+    public string? AccessNotes { get; set; }
+    /// <summary>"draft" to save and exit, otherwise continue to Review.</summary>
+    public string? Mode { get; set; }
+}
+
+/// <summary>Screen 4c — Post a Job, step 3 (Review).</summary>
+public sealed class PostJobReviewViewModel
+{
+    public int DraftId { get; set; }
+    public string? TradeLabel { get; set; }
+    public string TradeIconClass { get; init; } = "fa-screwdriver-wrench";
+    public string? JobTitle { get; set; }
+    public string? Description { get; set; }
+    public List<string> Photos { get; init; } = [];
+    public string? Location { get; set; }
+    public string? PropertyTypeLabel { get; set; }
+    public string? BudgetRange { get; set; }
+    public string? QuoteTypeLabel { get; set; }
+    public string? UrgencyLabel { get; set; }
+    public string? AccessNotes { get; set; }
 }
 
 /// <summary>Success screen after posting a job.</summary>

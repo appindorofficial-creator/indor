@@ -1,4 +1,4 @@
-@model IndorMvcApp.ViewModels.PostNetworkJobViewModel
+@model IndorMvcApp.ViewModels.PostJobDetailsViewModel
 @{
     ViewData["Title"] = "Post a Job";
     Layout = "_ProviderProLayout";
@@ -7,85 +7,107 @@
 }
 
 <div class="prv-net-shell">
-    <header class="prv-net-hero" style="border-radius:0 0 28px 28px;padding-bottom:44px;">
+    <header class="prv-net-hero prv-net-hero--wizard">
         <div class="prv-net-hero-top">
-            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-back"><i class="fas fa-chevron-left"></i> Network</a>
-            @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-net-brand" aria-label="INDOR PRO">
+                <span class="prv-net-brand-word">INDOR</span>
+                <span class="prv-net-brand-pro">PRO</span>
+            </a>
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-close" aria-label="Close"><i class="fas fa-xmark"></i></a>
         </div>
         <div class="prv-net-hero-title">
             <div>
                 <h1>Post a Job</h1>
-                <p>Get matched with qualified subcontractors fast.</p>
+                <p>Tell us what you need and get matched fast.</p>
             </div>
         </div>
     </header>
 
-    <form method="post" asp-controller="Proveedor" asp-action="PostNetworkJob" enctype="multipart/form-data" class="prv-net-form">
+    <div class="prv-net-stepper">
+        <div class="prv-net-step is-active"><span class="prv-net-step-num">1</span><span class="prv-net-step-label">Details</span></div>
+        <span class="prv-net-step-line"></span>
+        <div class="prv-net-step"><span class="prv-net-step-num">2</span><span class="prv-net-step-label">Location &amp; Budget</span></div>
+        <span class="prv-net-step-line"></span>
+        <div class="prv-net-step"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">Review</span></div>
+    </div>
+
+    <form method="post" asp-controller="Proveedor" asp-action="PostNetworkJobDetails" enctype="multipart/form-data" class="prv-net-wizard-form">
         @Html.AntiForgeryToken()
+        @if (Model.DraftId.HasValue)
+        {
+            <input type="hidden" name="DraftId" value="@Model.DraftId" />
+        }
 
         @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
         {
             <div class="prv-net-form-error"><i class="fas fa-circle-exclamation"></i> @Model.ErrorMessage</div>
         }
 
-        <div class="prv-net-field">
-            <label for="TradeId"><i class="fas fa-screwdriver-wrench"></i> Trade Needed</label>
-            <select id="TradeId" name="TradeId">
-                <option value="">Select a trade</option>
+        <div class="prv-net-card">
+            <h3 class="prv-net-card-title">What do you need help with?</h3>
+            <div class="prv-net-optionchips">
                 @foreach (var trade in Model.TradeOptions)
                 {
-                    <option value="@trade.Id" selected="@(Model.SelectedTradeId == trade.Id)">@trade.Label</option>
+                    <label class="prv-net-optionchip">
+                        <input type="radio" name="TradeId" value="@trade.Id" checked="@(Model.SelectedTradeId == trade.Id)" />
+                        <span><i class="fas @trade.IconClass"></i> @trade.Label</span>
+                    </label>
                 }
-            </select>
-        </div>
+            </div>
 
-        <div class="prv-net-field">
-            <label for="Description"><i class="fas fa-align-left"></i> Project Description</label>
-            <textarea id="Description" name="Description" maxlength="500" placeholder="Describe your project, scope of work, and any details…">@Model.Description</textarea>
+            <label class="prv-net-flabel" for="JobTitle">Job title</label>
+            <div class="prv-net-input-wrap">
+                <input type="text" id="JobTitle" name="JobTitle" value="@Model.JobTitle" maxlength="160"
+                       placeholder="e.g. Fix leak under kitchen sink" class="prv-net-input" />
+                <i class="fas fa-circle-check prv-net-input-ok" id="titleOk"></i>
+            </div>
+
+            <label class="prv-net-flabel" for="Description">Describe the job</label>
+            <textarea id="Description" name="Description" maxlength="500" class="prv-net-textarea"
+                      placeholder="Tell us more about the issue, what needs to be done, and any important details.">@Model.Description</textarea>
             <div class="prv-net-field-hint"><span id="descCount">0</span>/500</div>
         </div>
 
-        <div class="prv-net-field">
-            <label for="Location"><i class="fas fa-location-dot"></i> Location</label>
-            <input type="text" id="Location" name="Location" value="@Model.Location" placeholder="Enter your address or neighborhood" />
-        </div>
-
-        <div class="prv-net-field">
-            <label for="DateNeeded"><i class="fas fa-calendar"></i> Date Needed</label>
-            <input type="date" id="DateNeeded" name="DateNeeded" value="@Model.DateNeeded" />
-        </div>
-
-        <div class="prv-net-field">
-            <label for="BudgetRange"><i class="fas fa-dollar-sign"></i> Budget</label>
-            <select id="BudgetRange" name="BudgetRange">
-                <option value="">Select budget range</option>
-                @foreach (var budget in Model.BudgetOptions)
+        <div class="prv-net-card">
+            <h3 class="prv-net-card-title">Add photos <span class="prv-net-optional">(optional)</span></h3>
+            <p class="prv-net-card-sub">Photos help pros understand the job</p>
+            <div class="prv-net-photos" id="photoGrid">
+                @foreach (var photo in Model.Photos)
                 {
-                    <option value="@budget" selected="@(Model.BudgetRange == budget)">@budget</option>
+                    <div class="prv-net-photo" data-existing="@photo">
+                        <img src="@photo" alt="Job photo" />
+                        <button type="button" class="prv-net-photo-x" aria-label="Remove"><i class="fas fa-xmark"></i></button>
+                        <input type="hidden" name="ExistingPhotos" value="@photo" />
+                    </div>
                 }
-            </select>
+                <label class="prv-net-photo-add" id="photoAdd">
+                    <i class="fas fa-camera"></i>
+                    <span>Add Photo</span>
+                    <input type="file" name="Photos" accept="image/png,image/jpeg,image/webp" multiple hidden />
+                </label>
+            </div>
         </div>
 
-        <div class="prv-net-field">
-            <label><i class="fas fa-image"></i> Upload Photo (Optional)</label>
-            <label class="prv-net-upload" for="Photo">
-                <i class="fas fa-cloud-arrow-up"></i>
-                <strong>Tap to upload</strong>
-                <small id="photoName">PNG, JPG up to 10MB</small>
-                <input type="file" id="Photo" name="Photo" accept="image/png,image/jpeg,image/webp" />
-            </label>
+        <div class="prv-net-card">
+            <h3 class="prv-net-card-title">When do you need it?</h3>
+            <div class="prv-net-optionchips prv-net-optionchips--3">
+                <label class="prv-net-optionchip">
+                    <input type="radio" name="Urgency" value="ASAP" checked="@(Model.Urgency == "ASAP")" />
+                    <span><i class="fas fa-clock"></i> ASAP</span>
+                </label>
+                <label class="prv-net-optionchip">
+                    <input type="radio" name="Urgency" value="ThisWeek" checked="@(Model.Urgency == "ThisWeek")" />
+                    <span><i class="fas fa-calendar-day"></i> This Week</span>
+                </label>
+                <label class="prv-net-optionchip">
+                    <input type="radio" name="Urgency" value="Flexible" checked="@(Model.Urgency == "Flexible")" />
+                    <span><i class="fas fa-clock-rotate-left"></i> Flexible</span>
+                </label>
+            </div>
         </div>
 
-        <button type="submit" class="prv-net-btn prv-net-btn--primary"><i class="fas fa-paper-plane"></i> Post Job</button>
+        <button type="submit" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard">Continue</button>
     </form>
-
-    <div class="prv-net-match-note">
-        <i class="fas fa-shield-halved"></i>
-        <div>
-            <strong>We'll match you with qualified pros.</strong>
-            Your job is shared only with verified subcontractors you can trust.
-        </div>
-    </div>
 </div>
 
 @section Scripts {
@@ -93,16 +115,36 @@
     (function () {
         var desc = document.getElementById('Description');
         var count = document.getElementById('descCount');
-        function sync() { if (count) { count.textContent = (desc.value || '').length; } }
-        if (desc) { desc.addEventListener('input', sync); sync(); }
+        function syncCount() { if (count) { count.textContent = (desc.value || '').length; } }
+        if (desc) { desc.addEventListener('input', syncCount); syncCount(); }
 
-        var photo = document.getElementById('Photo');
-        var photoName = document.getElementById('photoName');
-        if (photo) {
-            photo.addEventListener('change', function () {
-                if (photo.files && photo.files.length) {
-                    photoName.textContent = photo.files[0].name;
-                }
+        var title = document.getElementById('JobTitle');
+        var ok = document.getElementById('titleOk');
+        function syncTitle() { if (ok) { ok.style.display = (title.value || '').trim().length > 2 ? 'inline' : 'none'; } }
+        if (title) { title.addEventListener('input', syncTitle); syncTitle(); }
+
+        var grid = document.getElementById('photoGrid');
+        var add = document.getElementById('photoAdd');
+        var input = add ? add.querySelector('input[type=file]') : null;
+        if (input) {
+            input.addEventListener('change', function () {
+                Array.prototype.forEach.call(input.files, function (file) {
+                    if (!file.type.startsWith('image/')) { return; }
+                    var reader = new FileReader();
+                    reader.onload = function (e) {
+                        var div = document.createElement('div');
+                        div.className = 'prv-net-photo';
+                        div.innerHTML = '<img src="' + e.target.result + '" alt="New photo" />';
+                        grid.insertBefore(div, add);
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+        }
+        if (grid) {
+            grid.addEventListener('click', function (ev) {
+                var btn = ev.target.closest('.prv-net-photo-x');
+                if (btn) { ev.preventDefault(); btn.closest('.prv-net-photo').remove(); }
             });
         }
     })();

@@ -35,6 +35,11 @@
         </form>
     </header>
 
+    @if (TempData["NetworkToast"] is string toast && !string.IsNullOrWhiteSpace(toast))
+    {
+        <div class="prv-net-toast"><i class="fas fa-circle-check"></i> @toast</div>
+    }
+
     <div class="prv-net-toggle">
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-view="list" class="is-active"><i class="fas fa-list"></i> Feed</a>
         <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-view="map"><i class="fas fa-map-location-dot"></i> Map</a>

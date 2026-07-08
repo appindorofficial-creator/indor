@@ -1,3 +1,4 @@
+using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
@@ -216,61 +217,223 @@ public sealed class ProviderNetworkService(
         };
     }
 
-    // ---------------------------------------------------------------- Post job
+    // ---------------------------------------------------------------- Post job (wizard)
 
-    public async Task<PostNetworkJobViewModel> GetPostJobAsync(IndorProveedor me, CancellationToken cancellationToken = default)
+    public async Task<PostJobDetailsViewModel> GetDetailsAsync(IndorProveedor me, int? draftId, CancellationToken cancellationToken = default)
     {
         var catalog = await LoadCatalogAsync(cancellationToken);
-        return new PostNetworkJobViewModel
+        var options = catalog.Values
+            .OrderBy(c => c.SortOrder)
+            .Select(c => new NetworkTradeChipViewModel { Id = c.Id, Label = c.LabelEn, IconClass = c.IconClass })
+            .ToList();
+
+        var draft = draftId.HasValue ? await LoadDraftAsync(me.Id, draftId.Value, cancellationToken) : null;
+
+        return new PostJobDetailsViewModel
         {
-            CompanyName = ResolveMyName(me),
-            TradeOptions = catalog.Values
-                .OrderBy(c => c.SortOrder)
-                .Select(c => new NetworkTradeChipViewModel { Id = c.Id, Label = c.LabelEn, IconClass = c.IconClass })
-                .ToList()
+            DraftId = draft?.Id,
+            TradeOptions = options,
+            SelectedTradeId = draft?.TradeId,
+            JobTitle = draft?.JobTitle,
+            Description = draft?.Description,
+            Urgency = draft?.Urgency,
+            Photos = ParsePhotos(draft?.PhotoUrlsJson)
         };
     }
 
-    public async Task<int> SavePostJobAsync(
+    public async Task<int> SaveDetailsAsync(
         int posterProveedorId,
-        PostNetworkJobInput input,
-        string? photoUrl,
+        PostJobDetailsInput input,
+        List<string> newPhotoUrls,
         CancellationToken cancellationToken = default)
     {
+        var catalog = await LoadCatalogAsync(cancellationToken);
         string? tradeLabel = null;
-        if (!string.IsNullOrWhiteSpace(input.TradeId))
+        if (!string.IsNullOrWhiteSpace(input.TradeId) && catalog.TryGetValue(input.TradeId, out var cat))
         {
-            var catalog = await LoadCatalogAsync(cancellationToken);
-            if (catalog.TryGetValue(input.TradeId, out var cat))
-            {
-                tradeLabel = cat.LabelEn;
-            }
+            tradeLabel = cat.LabelEn;
         }
 
-        DateTime? dateNeeded = null;
-        if (DateTime.TryParse(input.DateNeeded, out var parsed))
-        {
-            dateNeeded = DateTime.SpecifyKind(parsed, DateTimeKind.Utc);
-        }
+        var draft = input.DraftId.HasValue
+            ? await db.IndorProveedorNetworkJobs.FirstOrDefaultAsync(
+                j => j.Id == input.DraftId.Value && j.PosterProveedorId == posterProveedorId, cancellationToken)
+            : null;
 
-        var job = new IndorProveedorNetworkJob
+        var isNew = draft == null;
+        draft ??= new IndorProveedorNetworkJob
         {
             PosterProveedorId = posterProveedorId,
-            TradeId = input.TradeId,
-            TradeLabel = tradeLabel,
-            Description = Trim(input.Description, 600),
-            Location = Trim(input.Location, 200),
-            DateNeeded = dateNeeded,
-            BudgetRange = Trim(input.BudgetRange, 40),
-            PhotoUrl = photoUrl,
-            Status = NetworkJobStatuses.Open,
+            Status = NetworkJobStatuses.Draft,
             FechaCreacion = DateTime.UtcNow
         };
 
-        db.IndorProveedorNetworkJobs.Add(job);
+        draft.TradeId = input.TradeId;
+        draft.TradeLabel = tradeLabel;
+        draft.JobTitle = Trim(input.JobTitle, 160);
+        draft.Description = Trim(input.Description, 600);
+        draft.Urgency = NormalizeUrgency(input.Urgency);
+
+        var photos = (input.ExistingPhotos ?? [])
+            .Where(u => !string.IsNullOrWhiteSpace(u))
+            .Concat(newPhotoUrls)
+            .Distinct()
+            .Take(6)
+            .ToList();
+        draft.PhotoUrlsJson = photos.Count == 0 ? null : JsonSerializer.Serialize(photos);
+        draft.PhotoUrl = photos.FirstOrDefault();
+        draft.FechaActualizacion = DateTime.UtcNow;
+
+        if (isNew)
+        {
+            db.IndorProveedorNetworkJobs.Add(draft);
+        }
+
         await db.SaveChangesAsync(cancellationToken);
-        return job.Id;
+        return draft.Id;
     }
+
+    public async Task<PostJobLocationViewModel?> GetLocationAsync(IndorProveedor me, int draftId, CancellationToken cancellationToken = default)
+    {
+        var draft = await LoadDraftAsync(me.Id, draftId, cancellationToken);
+        if (draft == null)
+        {
+            return null;
+        }
+
+        return new PostJobLocationViewModel
+        {
+            DraftId = draft.Id,
+            JobTitle = draft.JobTitle,
+            Location = string.IsNullOrWhiteSpace(draft.Location) ? ComposeLocation(me) : draft.Location,
+            Latitude = draft.Latitude ?? me.Latitude,
+            Longitude = draft.Longitude ?? me.Longitude,
+            PropertyType = draft.PropertyType,
+            WhoMeets = draft.WhoMeets,
+            BudgetRange = draft.BudgetRange,
+            QuoteType = draft.QuoteType,
+            AccessNotes = draft.AccessNotes
+        };
+    }
+
+    public async Task<bool> SaveLocationAsync(IndorProveedor me, PostJobLocationInput input, CancellationToken cancellationToken = default)
+    {
+        var draft = await db.IndorProveedorNetworkJobs
+            .FirstOrDefaultAsync(j => j.Id == input.DraftId && j.PosterProveedorId == me.Id, cancellationToken);
+        if (draft == null)
+        {
+            return false;
+        }
+
+        draft.Location = Trim(input.Location, 200);
+        draft.Latitude = input.Latitude;
+        draft.Longitude = input.Longitude;
+        draft.PropertyType = Trim(input.PropertyType, 30);
+        draft.WhoMeets = Trim(input.WhoMeets, 30);
+        draft.BudgetRange = Trim(input.BudgetRange, 40);
+        draft.QuoteType = Trim(input.QuoteType, 20);
+        draft.AccessNotes = Trim(input.AccessNotes, 300);
+        draft.FechaActualizacion = DateTime.UtcNow;
+
+        await db.SaveChangesAsync(cancellationToken);
+        return true;
+    }
+
+    public async Task<PostJobReviewViewModel?> GetReviewAsync(IndorProveedor me, int draftId, CancellationToken cancellationToken = default)
+    {
+        var draft = await LoadDraftAsync(me.Id, draftId, cancellationToken);
+        if (draft == null)
+        {
+            return null;
+        }
+
+        var catalog = await LoadCatalogAsync(cancellationToken);
+        catalog.TryGetValue(draft.TradeId ?? "", out var cat);
+
+        return new PostJobReviewViewModel
+        {
+            DraftId = draft.Id,
+            TradeLabel = draft.TradeLabel ?? cat?.LabelEn,
+            TradeIconClass = cat?.IconClass ?? "fa-screwdriver-wrench",
+            JobTitle = draft.JobTitle,
+            Description = draft.Description,
+            Photos = ParsePhotos(draft.PhotoUrlsJson),
+            Location = draft.Location,
+            PropertyTypeLabel = draft.PropertyType,
+            BudgetRange = draft.BudgetRange,
+            QuoteTypeLabel = QuoteTypeLabel(draft.QuoteType),
+            UrgencyLabel = UrgencyLabel(draft.Urgency),
+            AccessNotes = draft.AccessNotes
+        };
+    }
+
+    public async Task<int?> PublishJobAsync(IndorProveedor me, int draftId, CancellationToken cancellationToken = default)
+    {
+        var draft = await db.IndorProveedorNetworkJobs
+            .FirstOrDefaultAsync(j => j.Id == draftId && j.PosterProveedorId == me.Id, cancellationToken);
+        if (draft == null || string.IsNullOrWhiteSpace(draft.TradeId) || string.IsNullOrWhiteSpace(draft.JobTitle))
+        {
+            return null;
+        }
+
+        draft.Status = NetworkJobStatuses.Open;
+        draft.FechaActualizacion = DateTime.UtcNow;
+        await db.SaveChangesAsync(cancellationToken);
+        return draft.Id;
+    }
+
+    private async Task<IndorProveedorNetworkJob?> LoadDraftAsync(int posterId, int draftId, CancellationToken ct)
+    {
+        try
+        {
+            return await db.IndorProveedorNetworkJobs
+                .AsNoTracking()
+                .FirstOrDefaultAsync(j => j.Id == draftId && j.PosterProveedorId == posterId, ct);
+        }
+        catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
+        {
+            return null;
+        }
+    }
+
+    private static List<string> ParsePhotos(string? json)
+    {
+        if (string.IsNullOrWhiteSpace(json))
+        {
+            return [];
+        }
+
+        try
+        {
+            return JsonSerializer.Deserialize<List<string>>(json) ?? [];
+        }
+        catch (JsonException)
+        {
+            return [];
+        }
+    }
+
+    private static string? NormalizeUrgency(string? value) => value switch
+    {
+        NetworkJobUrgencies.Asap => NetworkJobUrgencies.Asap,
+        NetworkJobUrgencies.ThisWeek => NetworkJobUrgencies.ThisWeek,
+        NetworkJobUrgencies.Flexible => NetworkJobUrgencies.Flexible,
+        _ => null
+    };
+
+    private static string? UrgencyLabel(string? value) => value switch
+    {
+        NetworkJobUrgencies.Asap => "ASAP",
+        NetworkJobUrgencies.ThisWeek => "This week",
+        NetworkJobUrgencies.Flexible => "Flexible",
+        _ => null
+    };
+
+    private static string? QuoteTypeLabel(string? value) => value switch
+    {
+        NetworkJobQuoteTypes.Fixed => "Fixed Price",
+        NetworkJobQuoteTypes.Hourly => "Hourly Estimate",
+        _ => null
+    };
 
     public async Task<NetworkJobPostedViewModel?> GetJobPostedAsync(
         IndorProveedor me,
@@ -363,9 +526,11 @@ public sealed class ProviderNetworkService(
             IsInsured = provider.IsInsured,
             IsDocsReady = docsReady,
             NetworkJobId = job?.Id,
-            ProjectTitle = string.IsNullOrWhiteSpace(job?.Description)
-                ? $"{tradeLabel} project"
-                : Shorten(job!.Description!, 60),
+            ProjectTitle = !string.IsNullOrWhiteSpace(job?.JobTitle)
+                ? Shorten(job!.JobTitle!, 60)
+                : string.IsNullOrWhiteSpace(job?.Description)
+                    ? $"{tradeLabel} project"
+                    : Shorten(job!.Description!, 60),
             TradeSummary = tradeLabel,
             BudgetRange = job?.BudgetRange ?? "$1,000 – $5,000",
             StartDateLabel = startDate.ToString("MMM d, yyyy"),
