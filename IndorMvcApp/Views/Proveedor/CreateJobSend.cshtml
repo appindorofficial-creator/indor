@@ -14,7 +14,8 @@
 
     @{
         ViewBag.WizardTitle = "Review & Send";
-        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+        ViewBag.WizardStepLine = Model.StepSubtitle;
+        ViewBag.WizardSteps = Model.WizardSteps;
     }
     @await Html.PartialAsync("_CreateJobWizardHead")
 
@@ -137,8 +138,6 @@
             </div>
         }
     </form>
-
-    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
 </div>
 
 @section Scripts {

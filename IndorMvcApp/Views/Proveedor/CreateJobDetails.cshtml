@@ -9,7 +9,8 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     @{
-        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+        ViewBag.WizardStepLine = Model.StepSubtitle;
+        ViewBag.WizardSteps = Model.WizardSteps;
     }
     @await Html.PartialAsync("_CreateJobWizardHead")
 
@@ -24,7 +25,7 @@
 
             <div class="prv-pro-wizard-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" id="createJobCustomerSearch" placeholder="Search customer, property, or phone" autocomplete="off" />
+                <input type="text" id="createJobCustomerSearch" class="prv-pro-search-input" placeholder="Search customer, property, or phone" autocomplete="off" inputmode="search" enterkeyhint="search" role="searchbox" />
             </div>
 
             <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-wizard-link">
@@ -95,8 +96,6 @@
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
         </div>
     </form>
-
-    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
 </div>
 
 @section Scripts {

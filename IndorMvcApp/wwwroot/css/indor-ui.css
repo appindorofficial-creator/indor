@@ -183,7 +183,10 @@ select.form-control,
 .pa-field input,
 .pa-field select,
 .prv-field-icon .ob-control,
-.prv-field-icon select.ob-control {
+.prv-field-icon select.ob-control,
+.prv-pro-wizard-search input,
+.prv-pro-search-wrap input,
+.prv-pro-search-input {
     border: none !important;
     border-radius: 0 !important;
     box-shadow: none !important;
@@ -201,7 +204,7 @@ select.form-control,
 .hf-input:focus,
 .hf-textarea:focus,
 .ob-input:focus,
-input:focus:not(.rl-field input):not(.rl-cp-input input):not(.nr-location-picker-input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input):not(.prv-field-icon .ob-control),
+input:focus:not(.rl-field input):not(.rl-cp-input input):not(.nr-location-picker-input):not(.rl-search-bar input):not(.pa-field input):not(.pa-network-search input):not(.pa-search-bar input):not(.hn-search-bar input):not(.rl-field-icon input):not(.prv-field-icon .ob-control):not(.prv-pro-wizard-search input):not(.prv-pro-search-wrap input):not(.prv-pro-search-input),
 textarea:focus:not(.rl-field textarea),
 select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select):not(.prv-field-icon select.ob-control) {
     outline: none;
@@ -214,6 +217,12 @@ select:focus:not(.rl-field select):not(.rl-cp-input select):not(.pa-field select
 .rl-field textarea:focus,
 .rl-search-bar input:focus,
 .rl-search-bar input:focus-visible,
+.prv-pro-wizard-search input:focus,
+.prv-pro-wizard-search input:focus-visible,
+.prv-pro-search-wrap input:focus,
+.prv-pro-search-wrap input:focus-visible,
+.prv-pro-search-input:focus,
+.prv-pro-search-input:focus-visible,
 .rl-cp-input input:focus,
 .rl-cp-input input:focus-visible,
 .rl-cp-input input:active,

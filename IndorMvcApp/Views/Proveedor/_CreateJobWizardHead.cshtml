@@ -4,15 +4,24 @@
         ?? (cancelAction == "Dashboard" ? "Home" : "Jobs hub");
     var stepLine = ViewBag.WizardStepLine as string;
     var title = ViewBag.WizardTitle as string ?? "Create Job";
+    var wizardSteps = ViewBag.WizardSteps as List<IndorMvcApp.ViewModels.ProviderProWizardStepViewModel>;
 }
 
-<header class="prv-pro-wizard-head prv-pro-wizard-head--nav">
-    <a asp-controller="Proveedor" asp-action="@cancelAction" class="prv-pro-wizard-back" aria-label="@($"Back to {cancelLabel}")">
-        <i class="fas fa-chevron-left"></i> Back to @cancelLabel
+<header class="prv-pro-workflow-head prv-pro-workflow-head--step">
+    <a asp-controller="Proveedor" asp-action="@cancelAction" class="prv-pro-lead-back" aria-label="@($"Back to {cancelLabel}")">
+        <i class="fas fa-chevron-left"></i>
     </a>
-    <h1>@title</h1>
-    @if (!string.IsNullOrWhiteSpace(stepLine))
-    {
-        <p class="prv-pro-wizard-step">@stepLine</p>
-    }
+    <div>
+        <h1>@title</h1>
+        @if (!string.IsNullOrWhiteSpace(stepLine))
+        {
+            <small>@stepLine</small>
+        }
+    </div>
 </header>
+
+@if (wizardSteps is { Count: > 0 })
+{
+  ViewBag.WizardStepperPosition = "top";
+  @await Html.PartialAsync("_ProviderProWizardStepper", wizardSteps)
+}
