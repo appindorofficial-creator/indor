@@ -1,0 +1,8 @@
+@using System.Text.Json
+<script>
+window.IndorQuoteRequestI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["{0} provider selected"] = L["{0} provider selected"],
+    ["{0} providers selected"] = L["{0} providers selected"]
+}));
+</script>

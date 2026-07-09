@@ -33,6 +33,25 @@ public static class UiDisplayLocalization
             return text ?? string.Empty;
         }
 
+        if (localizer.IsSpanish)
+        {
+            var direct = localizer[text];
+            if (!string.Equals(direct, text, StringComparison.Ordinal))
+            {
+                return direct;
+            }
+        }
+
+        if (text.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Today, {0}", text["Today, ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Yesterday, ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Yesterday, {0}", text["Yesterday, ".Length..].Trim());
+        }
+
         foreach (var (regex, key) in CountPatterns)
         {
             var match = regex.Match(text);
@@ -178,6 +197,12 @@ public static class UiDisplayLocalization
                 ? "{0} file needs contractor selection"
                 : "{0} files need contractor selection";
             return localizer.T(key, contractorCount);
+        }
+
+        var miMatch = Regex.Match(text, @"^([\d.]+) mi$", RegexOptions.IgnoreCase);
+        if (miMatch.Success)
+        {
+            return localizer.T("{0} mi", miMatch.Groups[1].Value);
         }
 
         return localizer[text];
