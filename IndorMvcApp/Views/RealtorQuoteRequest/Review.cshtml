@@ -94,7 +94,11 @@
 
     <div id="scheduleField" class="@(Model.SendNow ? "rl-hidden" : "")">
 
-        <input type="datetime-local" name="scheduledSendUtc" class="rl-field-select rl-field-select--full" />
+        <input type="datetime-local"
+               name="scheduledSendUtc"
+               class="rl-field-select rl-field-select--full"
+               lang="en-US"
+               value="@(Model.ScheduledSendUtc?.ToString("yyyy-MM-ddTHH:mm", System.Globalization.CultureInfo.InvariantCulture))" />
 
     </div>
 
