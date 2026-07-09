@@ -144,6 +144,42 @@ public static class UiDisplayLocalization
             return localizer.T("{0} File", clientFileMatch.Groups[1].Value.Trim());
         }
 
+        if (text.StartsWith("Last updated ", StringComparison.OrdinalIgnoreCase))
+        {
+            var datePart = LocalizeRelativeTimestamp(localizer, text["Last updated ".Length..].Trim());
+            return localizer.T("Last updated {0}", datePart);
+        }
+
+        var repairItemsMatch = Regex.Match(text, @"^Repair items: (\d+)$", RegexOptions.IgnoreCase);
+        if (repairItemsMatch.Success && int.TryParse(repairItemsMatch.Groups[1].Value, out var repairCount))
+        {
+            return localizer.T("Repair items: {0}", repairCount);
+        }
+
+        var quotesReceivedMatch = Regex.Match(text, @"^Quotes received: (\d+)$", RegexOptions.IgnoreCase);
+        if (quotesReceivedMatch.Success && int.TryParse(quotesReceivedMatch.Groups[1].Value, out var quotesCount))
+        {
+            return localizer.T("Quotes received: {0}", quotesCount);
+        }
+
+        var parsingReadyMatch = Regex.Match(text, @"^(\d+) reports? ready for parsing$", RegexOptions.IgnoreCase);
+        if (parsingReadyMatch.Success && int.TryParse(parsingReadyMatch.Groups[1].Value, out var parsingCount))
+        {
+            var key = parsingCount == 1
+                ? "{0} report ready for parsing"
+                : "{0} reports ready for parsing";
+            return localizer.T(key, parsingCount);
+        }
+
+        var contractorSelectionMatch = Regex.Match(text, @"^(\d+) files? need contractor selection$", RegexOptions.IgnoreCase);
+        if (contractorSelectionMatch.Success && int.TryParse(contractorSelectionMatch.Groups[1].Value, out var contractorCount))
+        {
+            var key = contractorCount == 1
+                ? "{0} file needs contractor selection"
+                : "{0} files need contractor selection";
+            return localizer.T(key, contractorCount);
+        }
+
         return localizer[text];
     }
 
@@ -157,5 +193,20 @@ public static class UiDisplayLocalization
         return string.Join(", ",
             text.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
                 .Select(part => Localize(localizer, part)));
+    }
+
+    private static string LocalizeRelativeTimestamp(IIndorLocalizer localizer, string value)
+    {
+        if (value.StartsWith("Today, ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Today, {0}", value["Today, ".Length..].Trim());
+        }
+
+        if (value.StartsWith("Yesterday, ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Yesterday, {0}", value["Yesterday, ".Length..].Trim());
+        }
+
+        return value;
     }
 }
