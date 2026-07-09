@@ -1501,6 +1501,30 @@ a.prv-pro-profile-btn { text-decoration: none; }
     border: 1.5px dashed #CBD5E1;
     border-radius: 14px;
     background: #F8FAFC;
+    cursor: pointer;
+    transition: border-color .15s ease, background .15s ease, box-shadow .15s ease;
+}
+
+.prv-pro-doc-empty:hover {
+    border-color: #93C5FD;
+    background: #F8FBFF;
+    box-shadow: 0 8px 20px rgba(0, 102, 204, .06);
+}
+
+.prv-pro-doc-empty.is-hidden {
+    display: none !important;
+}
+
+.prv-pro-doc-file-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
 }
 
 .prv-pro-doc-empty-icon {
@@ -1604,6 +1628,14 @@ a.prv-pro-profile-btn { text-decoration: none; }
     white-space: nowrap;
 }
 
+.prv-pro-doc-attached .prv-pro-doc-file-meta span {
+    display: block;
+    font-size: .82rem;
+    color: #334155;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
 .prv-pro-doc-file-meta span {
     display: block;
     margin-top: 2px;
@@ -1637,6 +1669,10 @@ a.prv-pro-profile-btn { text-decoration: none; }
 
 .prv-pro-doc-pending.is-hidden,
 .prv-pro-file-picker.is-hidden {
+    display: none !important;
+}
+
+.prv-pro-doc-pending .is-hidden {
     display: none !important;
 }
 
@@ -1716,6 +1752,22 @@ a.prv-pro-profile-btn { text-decoration: none; }
     flex-wrap: wrap;
     gap: 10px;
     align-items: stretch;
+    position: relative;
+}
+
+.prv-pro-doc-slot.is-empty .prv-pro-edit-profile-doc-form,
+.prv-pro-doc-slot.is-uploaded .prv-pro-edit-profile-doc-form {
+    flex-direction: column;
+}
+
+.prv-pro-doc-slot.is-empty .prv-pro-edit-profile-doc-form .prv-pro-btn--primary,
+.prv-pro-doc-slot.is-uploaded .prv-pro-edit-profile-doc-form .prv-pro-btn--primary {
+    width: 100%;
+    justify-content: center;
+}
+
+.prv-pro-doc-empty--replace {
+    margin-top: 0;
 }
 
 .prv-pro-edit-profile-doc-form .prv-pro-btn--primary {
