@@ -118,6 +118,26 @@ public static class UiDisplayLocalization
             return localizer.T(key, selectionCount);
         }
 
+        if (string.Equals(text, "1 invited client awaiting response", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("1 invited client awaiting response");
+        }
+
+        var invitedClientsMatch = Regex.Match(text, @"^(\d+) invited clients awaiting response$", RegexOptions.IgnoreCase);
+        if (invitedClientsMatch.Success && int.TryParse(invitedClientsMatch.Groups[1].Value, out var invitedCount))
+        {
+            return localizer.T("{0} invited clients awaiting response", invitedCount);
+        }
+
+        var pendingQuotesMatch = Regex.Match(text, @"^(\d+) clients? have pending quotes$", RegexOptions.IgnoreCase);
+        if (pendingQuotesMatch.Success && int.TryParse(pendingQuotesMatch.Groups[1].Value, out var pendingQuotesCount))
+        {
+            var key = pendingQuotesCount == 1
+                ? "{0} client has pending quotes"
+                : "{0} clients have pending quotes";
+            return localizer.T(key, pendingQuotesCount);
+        }
+
         return localizer[text];
     }
 }

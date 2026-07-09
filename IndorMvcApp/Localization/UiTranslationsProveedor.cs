@@ -723,7 +723,7 @@ public static class UiTranslationsProveedor
             ["Qualification"] = "Qualification",
             ["Qualification status"] = "Qualification status",
             ["Questions"] = "Questions",
-            ["Quick Actions"] = "Acciones rÃ¡pidas",
+            ["Quick Actions"] = "Acciones rápidas",
             ["Quick Estimate"] = "Quick CotizaciÃ³n",
             ["Quote"] = "CotizaciÃ³n",
             ["Quote preview"] = "CotizaciÃ³n preview",

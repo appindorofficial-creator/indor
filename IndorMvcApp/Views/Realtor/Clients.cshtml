@@ -24,7 +24,7 @@
                class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
                id="rlClientsAddBtn"
                aria-label="@L["Add client — start invite wizard"]">
-                <i class="fas fa-plus" aria-hidden="true"></i> Add Client
+                <i class="fas fa-plus" aria-hidden="true"></i> @L["Add Client"]
             </a>
         </div>
 
@@ -41,7 +41,7 @@
                         {
                             <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
                                class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
-                                <span>@chip</span>
+                                <span>@UiDisplayLocalization.Localize(L, chip)</span>
                                 @if (Model.ActiveFilter == chip)
                                 {
                                     <i class="fas fa-check"></i>
@@ -55,7 +55,7 @@
                 @foreach (var chip in Model.Filters)
                 {
                     <a asp-action="Clients" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@UiDisplayLocalization.Localize(L, chip)</a>
                 }
             </div>
         </form>
@@ -104,7 +104,7 @@
                             </div>
                             <span class="rl-status-pill rl-status-pill--invited">@L["Invited"]</span>
                         </div>
-                        <span class="rl-premium-muted">Sent @inv.SentLabel</span>
+                        <span class="rl-premium-muted">@L.T("Sent {0}", inv.SentLabel)</span>
                         <div class="rl-client-card-foot">
                             <span class="rl-premium-muted">@L["Awaiting acceptance"]</span>
                         </div>
@@ -135,9 +135,9 @@
                         <div class="rl-client-card-top">
                             <div>
                                 <strong>@client.FullName</strong>
-                                <span class="rl-role-label">@client.ClientRole</span>
+                                <span class="rl-role-label">@UiDisplayLocalization.Localize(L, client.ClientRole)</span>
                             </div>
-                            <span class="rl-status-pill rl-status-pill--@client.StatusCss">@client.StatusBadge</span>
+                            <span class="rl-status-pill rl-status-pill--@client.StatusCss">@UiDisplayLocalization.Localize(L, client.StatusBadge)</span>
                         </div>
                         @if (!string.IsNullOrWhiteSpace(client.PropertyAddress))
                         {
@@ -146,21 +146,21 @@
                         <div class="rl-client-metrics">
                             @if (client.FilesCount > 0)
                             {
-                                <span><i class="fas fa-folder"></i> @client.FilesCount File@(client.FilesCount == 1 ? "" : "s")</span>
+                                <span><i class="fas fa-folder"></i> @L.T(client.FilesCount == 1 ? "{0} File" : "{0} Files", client.FilesCount)</span>
                             }
                             @if (client.QuotesCount > 0)
                             {
-                                <span><i class="fas fa-file-invoice-dollar"></i> @client.QuotesCount Quote@(client.QuotesCount == 1 ? "" : "s")</span>
+                                <span><i class="fas fa-file-invoice-dollar"></i> @L.T(client.QuotesCount == 1 ? "{0} Quote" : "{0} Quotes", client.QuotesCount)</span>
                             }
                         </div>
                         <div class="rl-client-card-foot">
                             @if (string.IsNullOrWhiteSpace(client.ActionUrl) || client.ActionUrl == "#")
                             {
-                                <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Not available">@client.ActionLabel</span>
+                                <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="@L["Not available"]">@UiDisplayLocalization.Localize(L, client.ActionLabel)</span>
                             }
                             else
                             {
-                                <a href="@client.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@client.ActionLabel</a>
+                                <a href="@client.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, client.ActionLabel)</a>
                             }
                         </div>
                     </div>
@@ -172,7 +172,7 @@
         {
             if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
             {
-                <div class="rl-dash-empty">No clients match &ldquo;@Model.SearchQuery&rdquo;.</div>
+                <div class="rl-dash-empty">@L.T("No clients match \"{0}\".", Model.SearchQuery)</div>
             }
             else if (Model.ActiveFilter == "All" && !Model.HasAnyClients)
             {
@@ -190,13 +190,13 @@
             {
                 var emptyMessage = Model.ActiveFilter switch
                 {
-                    "Buyers" => "No buyers yet. Invited buyers will show up here.",
-                    "Sellers" => "No sellers yet. Invited sellers will show up here.",
-                    "Homeowners" => "No homeowners yet. Invited homeowners will show up here.",
-                    "Invited" => "No pending invitations right now.",
-                    "Connect" => "No connected clients yet. Accepted invitations will appear here.",
-                    "Follow-up" => "No follow-ups needed right now.",
-                    _ => "No clients match your filters."
+                    "Buyers" => L["No buyers yet. Invited buyers will show up here."],
+                    "Sellers" => L["No sellers yet. Invited sellers will show up here."],
+                    "Homeowners" => L["No homeowners yet. Invited homeowners will show up here."],
+                    "Invited" => L["No pending invitations right now."],
+                    "Connect" => L["No connected clients yet. Accepted invitations will appear here."],
+                    "Follow-up" => L["No follow-ups needed right now."],
+                    _ => L["No clients match your filters."]
                 };
                 <div class="rl-dash-empty">@emptyMessage</div>
             }
@@ -207,7 +207,7 @@
         <div class="rl-tips-card">
             <span class="rl-tips-icon"><i class="fas fa-lightbulb"></i></span>
             <div class="rl-tips-body">
-                <strong>@L["Tips &amp; Insights"]</strong>
+                <strong>@L["Tips & Insights"]</strong>
                 <p>@L["Invite clients and create files to keep everything organized in one place."]</p>
             </div>
             <a asp-controller="Realtor" asp-action="Files" class="rl-tips-link">@L["Learn more"] <i class="fas fa-chevron-right"></i></a>
@@ -223,7 +223,7 @@
                     <a href="@(step.Url ?? "#")" class="rl-next-step rl-next-step--@step.ColorClass">
                         <span class="rl-next-step-main">
                             <span class="rl-next-step-icon"><i class="fas @step.Icon" aria-hidden="true"></i></span>
-                            <span class="rl-next-step-text">@step.Text</span>
+                            <span class="rl-next-step-text">@UiDisplayLocalization.Localize(L, step.Text)</span>
                         </span>
                         <i class="fas fa-chevron-right" aria-hidden="true"></i>
                     </a>
