@@ -827,7 +827,7 @@ public class RealtorNearbyNetworkService(
             Tags = ParseTags(item.TagsJson),
             DistanceLabel = item.DistanceMiles is > 0
                 ? $"{item.DistanceMiles:0.#} mi away"
-                : "Nearby",
+                : "Near you",
             StatusBadge = item.StatusBadge,
             StatusCss = item.StatusCss ?? "active",
             PrimaryActionLabel = primaryLabel,

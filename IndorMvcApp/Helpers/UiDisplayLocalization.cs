@@ -21,7 +21,9 @@ public static class UiDisplayLocalization
         (new Regex(@"^(\d+)\s+beds$", RegexOptions.IgnoreCase), "{0} beds"),
         (new Regex(@"^(\d+(?:\.\d+)?)\s+baths?$", RegexOptions.IgnoreCase), "{0} baths"),
         (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sqft$", RegexOptions.IgnoreCase), "{0} sqft"),
-        (new Regex(@"^(\d{1,3}(?:,\d{3})*)\s+sq ft$", RegexOptions.IgnoreCase), "{0} sq ft"),
+        (new Regex(@"^([\d.]+) mi away$", RegexOptions.IgnoreCase), "{0} mi away"),
+        (new Regex(@"^([\d.]+) miles around you$", RegexOptions.IgnoreCase), "{0} miles around you"),
+        (new Regex(@"^([\d.]+) miles around (.+)$", RegexOptions.IgnoreCase), "{0} miles around {1}"),
     ];
 
     public static string Localize(IIndorLocalizer localizer, string? text)
@@ -41,6 +43,16 @@ public static class UiDisplayLocalization
 
             var raw = match.Groups[1].Value;
             if (key.Contains("{0} baths", StringComparison.Ordinal))
+            {
+                return localizer.T(key, raw);
+            }
+
+            if (key.Contains("{0} miles around {1}", StringComparison.Ordinal) && match.Groups.Count > 2)
+            {
+                return localizer.T(key, raw, match.Groups[2].Value.Trim());
+            }
+
+            if (key.Contains("{0} mi away", StringComparison.Ordinal) || key.Contains("{0} miles around you", StringComparison.Ordinal))
             {
                 return localizer.T(key, raw);
             }

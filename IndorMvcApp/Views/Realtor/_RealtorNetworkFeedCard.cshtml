@@ -126,7 +126,7 @@ else
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
-                    <span class="rl-network-distance"><i class="fas fa-location-dot"></i> @Model.DistanceLabel</span>
+                    <span class="rl-network-distance"><i class="fas fa-location-dot"></i> @UiDisplayLocalization.Localize(L, Model.DistanceLabel)</span>
                 }
             </div>
         </div>

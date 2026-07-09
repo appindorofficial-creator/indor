@@ -287,7 +287,7 @@ public static class UiTranslationsFlows
             ["Cable setup"] = "Cable setup",
             ["call 911"] = "call 911",
             ["Call first"] = "Call first",
-            ["Call now"] = "Call now",
+            ["Call now"] = "Llamar ahora",
             ["Call support"] = "Call support",
             ["Can extend tank life"] = "Can extend tank life",
             ["Can we call you right away?"] = "Can we call you right away?",
