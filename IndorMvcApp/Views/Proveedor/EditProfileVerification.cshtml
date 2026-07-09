@@ -55,17 +55,37 @@
             && !string.IsNullOrWhiteSpace(slot.FileUrl)
             && slot.FileUrl.EndsWith(".pdf", StringComparison.OrdinalIgnoreCase);
 
-        <section class="prv-pro-wizard-card prv-pro-doc-slot @(slot.IsUploaded ? "is-uploaded" : "")" data-doc-slot="@slot.DocumentType">
+        <section class="prv-pro-wizard-card prv-pro-doc-slot @(slot.IsUploaded ? "is-uploaded" : "is-empty")" data-doc-slot="@slot.DocumentType">
             <div class="prv-pro-edit-profile-doc-head">
                 <div>
                     <h2>@slot.Label</h2>
-                    <p>@(slot.IsUploaded ? "Document on file. Upload again to replace it." : "Upload a clear photo or PDF.")</p>
+                    @if (slot.IsUploaded)
+                    {
+                        <p class="prv-pro-doc-head-note prv-pro-doc-head-note--success">
+                            <i class="fas fa-circle-check"></i> Document on file. Upload again to replace it.
+                        </p>
+                    }
                 </div>
                 @if (slot.IsUploaded)
                 {
                     <span class="prv-pro-pill prv-pro-pill--scheduled">On file</span>
                 }
+                else
+                {
+                    <span class="prv-pro-pill prv-pro-pill--pending">Required</span>
+                }
             </div>
+
+            @if (!slot.IsUploaded)
+            {
+                <div class="prv-pro-doc-empty">
+                    <span class="prv-pro-doc-empty-icon" aria-hidden="true"><i class="fas fa-cloud-arrow-up"></i></span>
+                    <div class="prv-pro-doc-empty-copy">
+                        <strong>Upload a clear photo or PDF</strong>
+                        <span>JPG, PNG, WEBP or PDF · Max 10 MB</span>
+                    </div>
+                </div>
+            }
 
             @if (!string.IsNullOrWhiteSpace(fileUrl))
             {

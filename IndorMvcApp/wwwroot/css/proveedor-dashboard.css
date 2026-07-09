@@ -1463,6 +1463,81 @@ a.prv-pro-profile-btn { text-decoration: none; }
     margin-bottom: 12px;
 }
 
+.prv-pro-edit-profile-doc-head h2 {
+    margin-bottom: 0;
+}
+
+.prv-pro-doc-head-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 6px 0 0;
+    font-size: .76rem;
+    line-height: 1.4;
+    color: #64748B;
+}
+
+.prv-pro-doc-head-note i {
+    font-size: .72rem;
+    flex-shrink: 0;
+}
+
+.prv-pro-doc-head-note--success {
+    color: #15803D;
+    font-weight: 600;
+}
+
+.prv-pro-doc-slot.is-empty {
+    border-color: #E2E8F0;
+    background: linear-gradient(180deg, #F8FAFC 0%, #fff 88px);
+}
+
+.prv-pro-doc-empty {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding: 14px;
+    border: 1.5px dashed #CBD5E1;
+    border-radius: 14px;
+    background: #F8FAFC;
+}
+
+.prv-pro-doc-empty-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #E8F1FB, #DBEAFE);
+    color: #0066CC;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.1rem;
+    box-shadow: inset 0 0 0 1px rgba(0, 102, 204, .08);
+}
+
+.prv-pro-doc-empty-copy {
+    flex: 1;
+    min-width: 0;
+}
+
+.prv-pro-doc-empty-copy strong {
+    display: block;
+    font-size: .84rem;
+    font-weight: 700;
+    color: #0F172A;
+    line-height: 1.35;
+}
+
+.prv-pro-doc-empty-copy span {
+    display: block;
+    margin-top: 4px;
+    font-size: .72rem;
+    color: #64748B;
+    line-height: 1.4;
+}
+
 .prv-pro-doc-slot.is-uploaded {
     border-color: #86EFAC;
     background: linear-gradient(180deg, #F8FFF9 0%, #fff 72px);
