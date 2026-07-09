@@ -33,7 +33,7 @@
             <div class="prv-pro-profile-tags prv-pro-edit-profile-service-grid">
                 @foreach (var option in Model.Options)
                 {
-                    <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")">
+                    <label class="prv-pro-edit-profile-service-chip @(option.IsSelected ? "is-selected" : "")" aria-pressed="@(option.IsSelected ? "true" : "false")">
                         <input type="checkbox" name="serviceIds" value="@option.Id" @(option.IsSelected ? "checked" : "") />
                         <i class="fas @option.IconClass"></i>
                         <span>@option.Label</span>
@@ -54,3 +54,23 @@
         </footer>
     </form>
 </div>
+
+@section Scripts {
+<script>
+(function () {
+    function syncServiceChip(input) {
+        var chip = input.closest('.prv-pro-edit-profile-service-chip');
+        if (!chip) return;
+        chip.classList.toggle('is-selected', input.checked);
+        chip.setAttribute('aria-pressed', input.checked ? 'true' : 'false');
+    }
+
+    document.querySelectorAll('.prv-pro-edit-profile-service-chip input[type="checkbox"]').forEach(function (input) {
+        input.addEventListener('change', function () {
+            syncServiceChip(input);
+        });
+        syncServiceChip(input);
+    });
+})();
+</script>
+}
