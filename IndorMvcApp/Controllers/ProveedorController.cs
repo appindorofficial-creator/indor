@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Identity;
 
 using IndorMvcApp.ViewModels;
 
+using IndorMvcApp.Validation;
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Hosting;
 
@@ -1691,6 +1693,12 @@ public partial class ProveedorController(
         if (section != "areas" && string.IsNullOrWhiteSpace(input.BusinessName) && string.IsNullOrWhiteSpace(input.DbaName))
         {
             ModelState.AddModelError(nameof(ProviderProEditProfileInput.BusinessName), "Business name or DBA is required.");
+        }
+
+        if (!UsPhoneOptionalAttribute.IsValidOptional(input.Phone))
+        {
+            ModelState.AddModelError(nameof(ProviderProEditProfileInput.Phone),
+                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
         }
 
         if (!ModelState.IsValid)

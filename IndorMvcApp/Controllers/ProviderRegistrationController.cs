@@ -1,6 +1,7 @@
 using IndorMvcApp.Helpers;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -519,6 +520,29 @@ public partial class ProviderRegistrationController(
             return View(StepVm(state.UsesServicesFirstFlow ? 3 : 2, "Tell us about your business", "", state,
                 state.UsesServicesFirstFlow ? Url.Action(nameof(Services))! : Url.Action(nameof(Categories))!));
         }
+
+        if (!UsPhoneOptionalAttribute.IsValidOptional(posted.Phone))
+        {
+            ModelState.AddModelError(string.Empty,
+                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+            ViewBag.IsPlumbing = state.IsPlumbingOnly;
+            ViewBag.IsHvac = state.IsHvacOnly;
+            ViewBag.IsHandyman = state.IsHandymanOnly;
+            ViewBag.IsConstruction = state.IsConstructionOnly;
+            ViewBag.IsBathroom = state.IsBathroomOnly;
+            ViewBag.IsKitchen = state.IsKitchenOnly;
+            ViewBag.IsRoofing = state.IsRoofingOnly;
+            ViewBag.IsPainting = state.IsPaintingOnly;
+            ViewBag.IsFlooring = state.IsFlooringOnly;
+            ViewBag.IsCleaning = state.IsCleaningOnly;
+            ViewBag.IsLandscaping = state.IsLandscapingOnly;
+            ViewBag.IsPest = state.IsPestOnly;
+            ViewBag.IsAppliance = state.IsApplianceOnly;
+            return View(StepVm(state.UsesServicesFirstFlow ? 3 : 2, "Tell us about your business", "", state,
+                state.UsesServicesFirstFlow ? Url.Action(nameof(Services))! : Url.Action(nameof(Categories))!));
+        }
+
+        state.Phone = UsPhoneOptionalAttribute.NormalizeToStorage(posted.Phone) ?? "";
 
         if (state.IsHandymanOnly && string.IsNullOrWhiteSpace(state.ServiceZipCodes))
         {

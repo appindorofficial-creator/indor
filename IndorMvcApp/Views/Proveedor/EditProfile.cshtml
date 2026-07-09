@@ -158,7 +158,7 @@
                 </label>
                 <label>
                     <span>Phone</span>
-                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="Business phone" />
+                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="Business phone" data-phone-input />
                 </label>
                 <label>
                     <span>Email</span>
@@ -231,6 +231,28 @@
     if (errorAlert) {
         errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    var form = document.querySelector('.prv-pro-edit-profile-form');
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener('submit', function (e) {
+        var phone = form.querySelector('[data-phone-input]');
+        if (!phone || !phone.value.trim()) {
+            return;
+        }
+
+        var valid = window.IndorPhoneInput
+            ? window.IndorPhoneInput.isValidOptional(phone.value)
+            : phone.value.replace(/\D/g, '').length === 10;
+
+        if (!valid) {
+            e.preventDefault();
+            phone.setCustomValidity('Enter a valid 10-digit US phone number (e.g. 555 123 4567).');
+            phone.reportValidity();
+        }
+    });
 })();
 </script>
 }

@@ -1,6 +1,7 @@
 using System.Text.Json;
 using IndorMvcApp.Data;
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -5063,7 +5064,7 @@ public class ProviderProDataService(
         entity.BusinessName = TrimOrEmpty(input.BusinessName);
         entity.DbaName = TrimOrEmpty(input.DbaName);
         entity.PrimaryContact = TrimOrEmpty(input.PrimaryContact);
-        entity.Phone = TrimOrEmpty(input.Phone);
+        entity.Phone = UsPhoneOptionalAttribute.NormalizeToStorage(input.Phone) ?? "";
         entity.Email = TrimOrEmpty(input.Email);
         entity.BusinessAddress = TrimOrEmpty(input.BusinessAddress);
         entity.PrimaryCity = TrimOrEmpty(input.PrimaryCity);
