@@ -145,3 +145,28 @@
     color: #0066CC !important;
     font-weight: 700;
 }
+
+/* Wizard search — keep outer box; never draw an inner focus rectangle on the input */
+.prv-pro-search-input,
+.prv-pro-search-input:focus,
+.prv-pro-search-input:focus-visible,
+.prv-pro-search-input:active,
+.prv-pro-wizard-search :is(input, input:focus, input:focus-visible, input:active),
+#createJobCustomerSearch,
+#createJobCustomerSearch:focus,
+#createJobCustomerSearch:focus-visible,
+#createJobCustomerSearch:active {
+    border: none !important;
+    border-width: 0 !important;
+    border-color: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+    background: transparent !important;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-appearance: none;
+    appearance: none;
+}
+.prv-pro-wizard-search:focus-within {
+    box-shadow: none !important;
+}

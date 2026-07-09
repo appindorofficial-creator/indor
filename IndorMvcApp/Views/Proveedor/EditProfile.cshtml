@@ -62,6 +62,55 @@
         </div>
     }
 
+    @if (showPhoto)
+    {
+    <div id="prvEditProfilePhotoAlerts"></div>
+    @if (TempData["ProfilePhotoOk"] is string photoOk)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success" role="status">
+            <i class="fas fa-circle-check"></i> @photoOk
+        </div>
+    }
+    <section class="prv-pro-wizard-card" id="edit-profile-photo">
+        <h2>Profile photo</h2>
+        <p>Upload a logo or photo. It will appear on your provider profile.</p>
+        <form asp-controller="Proveedor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="prvEditProfilePhotoForm">
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="returnTo" value="editar" />
+            <div class="prv-pro-edit-profile-photo-row">
+                <div class="prv-pro-edit-profile-photo-preview prv-pro-profile-photo-preview" id="prvEditProfilePhotoPreview">
+                    @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                    {
+                        <img src="@Url.Content($"~{Model.LogoUrl}")" alt="Current profile photo" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" />
+                        <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder" hidden>@Model.CompanyInitial</span>
+                    }
+                    else
+                    {
+                        <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder">@Model.CompanyInitial</span>
+                        <img src="" alt="" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" hidden />
+                    }
+                </div>
+                <div class="prv-pro-edit-profile-photo-actions">
+                    <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-edit-profile-upload-btn" id="prvEditProfilePhotoBtn" aria-haspopup="true" aria-expanded="false">
+                        <i class="fas fa-camera"></i> Change photo
+                    </button>
+                    <div class="prv-pro-profile-photo-menu" id="prvEditProfilePhotoMenu" role="menu" hidden>
+                        <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoTake" role="menuitem">
+                            <i class="fas fa-camera"></i> Take photo
+                        </button>
+                        <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoChoose" role="menuitem">
+                            <i class="fas fa-image"></i> Choose from library
+                        </button>
+                    </div>
+                    <input type="file" id="prvEditProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
+                    <input type="file" id="prvEditProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+                    <small>JPG, PNG or WEBP · Max 10 MB</small>
+                </div>
+            </div>
+        </form>
+    </section>
+    }
+
     <form asp-controller="Proveedor" asp-action="EditProfile" method="post" enctype="multipart/form-data" class="prv-pro-edit-profile-form" novalidate>
         @Html.AntiForgeryToken()
         @if (!isFullEdit)
@@ -90,55 +139,6 @@
             <input type="hidden" name="SameDayJobs" value="@(Model.SameDayJobs ? "true" : "false")" />
         }
 
-        @if (showPhoto)
-        {
-        <div id="prvEditProfilePhotoAlerts"></div>
-        @if (TempData["ProfilePhotoOk"] is string photoOk)
-        {
-            <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success" role="status">
-                <i class="fas fa-circle-check"></i> @photoOk
-            </div>
-        }
-        <section class="prv-pro-wizard-card" id="edit-profile-photo">
-            <h2>Profile photo</h2>
-            <p>Upload a logo or photo. It will appear on your provider profile.</p>
-            <form asp-controller="Proveedor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="prvEditProfilePhotoForm">
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="returnTo" value="editar" />
-                <div class="prv-pro-edit-profile-photo-row">
-                    <div class="prv-pro-edit-profile-photo-preview prv-pro-profile-photo-preview" id="prvEditProfilePhotoPreview">
-                        @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
-                        {
-                            <img src="@Url.Content($"~{Model.LogoUrl}")" alt="Current profile photo" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" />
-                            <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder" hidden>@Model.CompanyInitial</span>
-                        }
-                        else
-                        {
-                            <span class="prv-pro-profile-logo" id="prvEditProfilePhotoPlaceholder">@Model.CompanyInitial</span>
-                            <img src="" alt="" class="prv-pro-profile-logo prv-pro-profile-logo--img" id="prvEditProfilePhotoImg" hidden />
-                        }
-                    </div>
-                    <div class="prv-pro-edit-profile-photo-actions">
-                        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-edit-profile-upload-btn" id="prvEditProfilePhotoBtn" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-camera"></i> Change photo
-                        </button>
-                        <div class="prv-pro-profile-photo-menu" id="prvEditProfilePhotoMenu" role="menu" hidden>
-                            <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoTake" role="menuitem">
-                                <i class="fas fa-camera"></i> Take photo
-                            </button>
-                            <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoChoose" role="menuitem">
-                                <i class="fas fa-image"></i> Choose from library
-                            </button>
-                        </div>
-                        <input type="file" id="prvEditProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
-                        <input type="file" id="prvEditProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
-                        <small>JPG, PNG or WEBP · Max 10 MB</small>
-                    </div>
-                </div>
-            </form>
-        </section>
-        }
-
         @if (showBusiness)
         {
         <section class="prv-pro-wizard-card" id="edit-profile-business">
@@ -158,7 +158,7 @@
                 </label>
                 <label>
                     <span>Phone</span>
-                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="Business phone" />
+                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="Business phone" data-phone-input />
                 </label>
                 <label>
                     <span>Email</span>
@@ -231,6 +231,28 @@
     if (errorAlert) {
         errorAlert.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
+
+    var form = document.querySelector('.prv-pro-edit-profile-form');
+    if (!form) {
+        return;
+    }
+
+    form.addEventListener('submit', function (e) {
+        var phone = form.querySelector('[data-phone-input]');
+        if (!phone || !phone.value.trim()) {
+            return;
+        }
+
+        var valid = window.IndorPhoneInput
+            ? window.IndorPhoneInput.isValidOptional(phone.value)
+            : phone.value.replace(/\D/g, '').length === 10;
+
+        if (!valid) {
+            e.preventDefault();
+            phone.setCustomValidity('Enter a valid 10-digit US phone number (e.g. 555 123 4567).');
+            phone.reportValidity();
+        }
+    });
 })();
 </script>
 }

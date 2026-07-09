@@ -78,6 +78,28 @@
                 || !emailDomainIsValid(value);
         }
 
+        function isPhoneField(field) {
+            return field.getAttribute('data-phone-input') !== null;
+        }
+
+        function isInvalidPhone(field) {
+            var value = (field.value || '').trim();
+            if (!value) {
+                return false;
+            }
+
+            if (window.IndorPhoneInput) {
+                return !window.IndorPhoneInput.isValidOptional(value);
+            }
+
+            var digits = value.replace(/\D/g, '');
+            if (digits.length === 11 && digits.charAt(0) === '1') {
+                digits = digits.slice(1);
+            }
+
+            return digits.length !== 10;
+        }
+
         function summaryFor(form) {
             var summary = form.querySelector('[data-pa-form-summary]');
             if (!summary) {
@@ -164,6 +186,13 @@
                 registerValidationIssue(field, messageFor(field), state);
             });
 
+            form.querySelectorAll('[data-phone-input]').forEach(function (field) {
+                if (!isInvalidPhone(field)) {
+                    return;
+                }
+                registerValidationIssue(field, 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).', state);
+            });
+
             if (state.firstInvalid) {
                 if (state.messages.length > 0) {
                     var summary = summaryFor(form);
@@ -199,8 +228,8 @@
 
             form.addEventListener('input', function (e) {
                 var field = e.target;
-                if (!isRequired(field) && !isEmailField(field)) { return; }
-                if ((!isRequired(field) || !isMissing(field, form)) && !isInvalidEmail(field)) {
+                if (!isRequired(field) && !isEmailField(field) && !isPhoneField(field)) { return; }
+                if ((!isRequired(field) || !isMissing(field, form)) && !isInvalidEmail(field) && !isInvalidPhone(field)) {
                     var anchor = anchorFor(field);
                     anchor.classList.remove('pa-invalid');
                     if (anchor.nextElementSibling && anchor.nextElementSibling.classList.contains('pa-inline-error')) {
@@ -215,8 +244,8 @@
 
             form.addEventListener('change', function (e) {
                 var field = e.target;
-                if (!isRequired(field) && !isEmailField(field)) { return; }
-                if ((!isRequired(field) || !isMissing(field, form)) && !isInvalidEmail(field)) {
+                if (!isRequired(field) && !isEmailField(field) && !isPhoneField(field)) { return; }
+                if ((!isRequired(field) || !isMissing(field, form)) && !isInvalidEmail(field) && !isInvalidPhone(field)) {
                     var anchor = anchorFor(field);
                     anchor.classList.remove('pa-invalid');
                     if (anchor.nextElementSibling && anchor.nextElementSibling.classList.contains('pa-inline-error')) {

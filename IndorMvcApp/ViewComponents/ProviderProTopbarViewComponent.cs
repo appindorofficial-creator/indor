@@ -17,6 +17,11 @@ public class ProviderProTopbarViewComponent(
         }
 
         var model = await proData.GetTopbarAsync(proveedor, HttpContext.RequestAborted);
+        if (ViewContext.ViewData["HideTopbarNotifications"] as bool? == true)
+        {
+            model.ShowNotifications = false;
+        }
+
         return View(model);
     }
 }

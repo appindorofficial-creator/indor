@@ -1,3 +1,5 @@
+using IndorMvcApp.Validation;
+
 namespace IndorMvcApp.ViewModels;
 
 public class ProviderProPageBaseViewModel
@@ -251,6 +253,8 @@ public class ProviderProEditProfileInput
     public string? BusinessName { get; set; }
     public string? DbaName { get; set; }
     public string? PrimaryContact { get; set; }
+
+    [UsPhoneOptional]
     public string? Phone { get; set; }
     public string? Email { get; set; }
     public string? BusinessAddress { get; set; }

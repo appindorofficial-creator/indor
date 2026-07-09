@@ -1,4 +1,5 @@
 using IndorMvcApp.Models;
+using IndorMvcApp.Validation;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
@@ -124,6 +125,12 @@ public partial class ProviderRegistrationController
             ModelState.AddModelError(string.Empty, "Email address is required.");
         }
 
+        if (!UsPhoneOptionalAttribute.IsValidOptional(phone))
+        {
+            ModelState.AddModelError(string.Empty,
+                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+        }
+
         if (!ModelState.IsValid)
         {
             ViewBag.Categories = await registration.GetCategoriesAsync();
@@ -131,6 +138,8 @@ public partial class ProviderRegistrationController
                 "Tell us about your business to set up your provider profile.",
                 state, Url.Action(nameof(Entry))));
         }
+
+        state.Phone = UsPhoneOptionalAttribute.NormalizeToStorage(phone) ?? "";
 
         await registration.SaveAsync(state, 2);
         return RedirectToAction(nameof(Verification));

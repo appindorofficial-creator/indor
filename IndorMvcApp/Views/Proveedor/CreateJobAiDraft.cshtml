@@ -9,7 +9,8 @@
 
     @{
         ViewBag.WizardTitle = "AI Quote Draft";
-        ViewBag.WizardStepLine = $"Step {Model.StepNumber} of {Model.TotalSteps} · {Model.StepSubtitle}";
+        ViewBag.WizardStepLine = Model.StepSubtitle;
+        ViewBag.WizardSteps = Model.WizardSteps;
     }
     @await Html.PartialAsync("_CreateJobWizardHead")
 
@@ -90,6 +91,4 @@
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
         </div>
     </form>
-
-    @await Html.PartialAsync("_ProviderProWizardStepper", Model.WizardSteps)
 </div>
