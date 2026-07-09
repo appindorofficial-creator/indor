@@ -73,6 +73,39 @@ public static class UiDisplayLocalization
             return $"{localizer.T("Uploaded")} {datePart}";
         }
 
+        if (text.StartsWith("Shared with ", StringComparison.OrdinalIgnoreCase))
+        {
+            var namePart = text["Shared with ".Length..].Trim();
+            return localizer.T("Shared with {0}", namePart);
+        }
+
+        var inspectionReadyMatch = Regex.Match(text, @"^(\d+) inspection reports? ready for review$", RegexOptions.IgnoreCase);
+        if (inspectionReadyMatch.Success && int.TryParse(inspectionReadyMatch.Groups[1].Value, out var inspectionCount))
+        {
+            var key = inspectionCount == 1
+                ? "{0} inspection report ready for review"
+                : "{0} inspection reports ready for review";
+            return localizer.T(key, inspectionCount);
+        }
+
+        var followUpMatch = Regex.Match(text, @"^(\d+) files? need client follow-up$", RegexOptions.IgnoreCase);
+        if (followUpMatch.Success && int.TryParse(followUpMatch.Groups[1].Value, out var followUpCount))
+        {
+            var key = followUpCount == 1
+                ? "{0} file needs client follow-up"
+                : "{0} files need client follow-up";
+            return localizer.T(key, followUpCount);
+        }
+
+        var providerSelectionMatch = Regex.Match(text, @"^(\d+) quote requests? need provider selection$", RegexOptions.IgnoreCase);
+        if (providerSelectionMatch.Success && int.TryParse(providerSelectionMatch.Groups[1].Value, out var selectionCount))
+        {
+            var key = selectionCount == 1
+                ? "{0} quote request needs provider selection"
+                : "{0} quote requests need provider selection";
+            return localizer.T(key, selectionCount);
+        }
+
         return localizer[text];
     }
 }

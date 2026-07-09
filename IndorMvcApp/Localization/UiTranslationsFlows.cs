@@ -1397,7 +1397,7 @@ public static class UiTranslationsFlows
             ["Unsafe conditions now"] = "Unsafe conditions now",
             ["Up to 5 photos, max 10MB each"] = "Up to 5 photos, max 10MB each",
             ["Upload files"] = "Subir files",
-            ["Upload inspection report"] = "Subir inspección informe",
+            ["Upload inspection report"] = "Subir informe de inspección",
             ["Upload PDF"] = "Subir PDF",
             ["Upload photo"] = "Subir photo",
             ["Upload photos (optional)"] = "Subir photos (optional)",

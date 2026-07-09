@@ -23,7 +23,7 @@
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
                         <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
-                        @Model.BadgeLabel
+                        @UiDisplayLocalization.Localize(L, Model.BadgeLabel)
                     </span>
                     @if (!Model.IsVerified)
                     {
@@ -39,7 +39,7 @@
         {
             <a href="@action.Url" class="rl-quick-action">
                 <span class="rl-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                <span>@action.Label</span>
+                <span>@UiDisplayLocalization.Localize(L, action.Label)</span>
             </a>
         }
     </section>
@@ -73,7 +73,7 @@
                         <button type="button" class="rl-card-menu" aria-label="@L["Options"]"><i class="fas fa-ellipsis-vertical"></i></button>
                         <div class="rl-premium-card-media">
                             <img src="@file.PhotoUrl" alt="" class="rl-premium-card-img" />
-                            <span class="rl-card-image-badge rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusLabel</span>
+                            <span class="rl-card-image-badge rl-status-pill rl-status-pill--@file.StatusCss">@UiDisplayLocalization.Localize(L, file.StatusLabel)</span>
                         </div>
                         <div class="rl-premium-card-body">
                             <strong>@file.StreetAddress</strong>
@@ -85,7 +85,7 @@
                             {
                                 <span class="rl-premium-client"><i class="fas fa-user"></i> @file.ClientName</span>
                             }
-                            <a href="@file.ActionUrl" class="rl-premium-link">@file.ActionLabel <i class="fas fa-chevron-right"></i></a>
+                            <a href="@file.ActionUrl" class="rl-premium-link">@UiDisplayLocalization.Localize(L, file.ActionLabel) <i class="fas fa-chevron-right"></i></a>
                         </div>
                     </article>
                 }
@@ -112,11 +112,11 @@
                             <img src="@quote.PhotoUrl" alt="" class="rl-premium-card-img" />
                             @if (quote.ProviderQuotesReceived > 0)
                             {
-                                <span class="rl-card-image-badge rl-quote-count-badge">@quote.ProviderQuotesReceived Quotes</span>
+                                <span class="rl-card-image-badge rl-quote-count-badge">@L.T("{0} Quotes", quote.ProviderQuotesReceived)</span>
                             }
                             else
                             {
-                                <span class="rl-card-image-badge rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
+                                <span class="rl-card-image-badge rl-status-pill rl-status-pill--@quote.StatusCss">@UiDisplayLocalization.Localize(L, quote.StatusLabel)</span>
                             }
                         </div>
                         <div class="rl-premium-card-body">
@@ -127,13 +127,13 @@
                             }
                             @if (!string.IsNullOrWhiteSpace(quote.RequestedLabel))
                             {
-                                <span class="rl-premium-muted">@quote.RequestedLabel</span>
+                                <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, quote.RequestedLabel)</span>
                             }
                             @if (!string.IsNullOrWhiteSpace(quote.DueLabel))
                             {
-                                <span class="rl-premium-muted">@quote.DueLabel</span>
+                                <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, quote.DueLabel)</span>
                             }
-                            <a asp-controller="Realtor" asp-action="Quotes" class="rl-premium-link">@quote.ActionLabel <i class="fas fa-chevron-right"></i></a>
+                            <a asp-controller="Realtor" asp-action="Quotes" class="rl-premium-link">@UiDisplayLocalization.Localize(L, quote.ActionLabel) <i class="fas fa-chevron-right"></i></a>
                         </div>
                     </article>
                 }
@@ -159,13 +159,13 @@
                         <span class="rl-pkg-folder rl-pkg-folder--@pkg.IconColor"><i class="fas fa-folder"></i></span>
                         <div class="rl-premium-card-body">
                             <strong>@pkg.PackageTitle</strong>
-                            <span class="rl-premium-muted">Shared with @pkg.ClientName</span>
+                            <span class="rl-premium-muted">@L.T("Shared with {0}", pkg.ClientName)</span>
                             <span class="rl-status-pill rl-status-pill--@pkg.StatusCss">
                                 @if (pkg.StatusCss == "viewed") { <i class="fas fa-circle-check"></i> }
                                 else { <i class="fas fa-clock"></i> }
-                                @pkg.StatusLabel
+                                @UiDisplayLocalization.Localize(L, pkg.StatusLabel)
                             </span>
-                            <span class="rl-premium-muted rl-premium-date">@pkg.SharedLabel</span>
+                            <span class="rl-premium-muted rl-premium-date">@UiDisplayLocalization.Localize(L, pkg.SharedLabel)</span>
                         </div>
                     </article>
                 }
@@ -186,14 +186,14 @@
                         {
                             <a href="@insight.TargetUrl" class="rl-insight-link">
                                 <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
-                                <span>@insight.Text</span>
+                                <span>@UiDisplayLocalization.Localize(L, insight.Text)</span>
                                 <i class="fas fa-chevron-right"></i>
                             </a>
                         }
                         else
                         {
                             <span class="rl-insight-icon rl-insight-icon--@insight.ColorClass"><i class="fas @insight.Icon"></i></span>
-                            <span>@insight.Text</span>
+                            <span>@UiDisplayLocalization.Localize(L, insight.Text)</span>
                         }
                     </li>
                 }
