@@ -100,7 +100,7 @@
         });
     }
 
-    document.querySelectorAll('.prv-pro-wizard-form').forEach(bindEnglishFormValidation);
+    document.querySelectorAll('.prv-pro-wizard-form, .prv-pro-add-customer-form').forEach(bindEnglishFormValidation);
 
     function clearSearchInputChrome(input) {
         input.style.setProperty('box-shadow', 'none', 'important');

@@ -120,6 +120,7 @@ public partial class ProveedorController(
         }
 
         var model = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, draft);
+        ApplyAddCustomerNavigation();
         return View(model);
     }
 
@@ -146,6 +147,7 @@ public partial class ProveedorController(
                 PreferredContactMethod = string.IsNullOrWhiteSpace(input.PreferredContactMethod) ? "SMS" : input.PreferredContactMethod,
                 CompanyName = TrimOrEmpty(input.CompanyName)
             });
+            ApplyAddCustomerNavigation();
             return View(invalidModel);
         }
 
@@ -179,6 +181,7 @@ public partial class ProveedorController(
         }
 
         var model = proData.GetAddCustomerPropertyViewModel(proveedor.Entity!, draft);
+        ApplyAddCustomerNavigation();
         return View(model);
     }
 
@@ -229,6 +232,7 @@ public partial class ProveedorController(
         }
 
         var model = proData.GetAddCustomerPreferencesViewModel(proveedor.Entity!, draft);
+        ApplyAddCustomerNavigation();
         return View(model);
     }
 
@@ -272,6 +276,7 @@ public partial class ProveedorController(
             return RedirectToAction(nameof(AddCustomer));
         }
 
+        ApplyAddCustomerNavigation();
         return View(model);
     }
 
@@ -3254,6 +3259,12 @@ public partial class ProveedorController(
         ViewBag.CreateJobFrom = draft.NavOrigin;
         ViewBag.CreateJobCancelLabel = draft.NavOrigin == "home" ? "Home" : "Jobs hub";
         ViewBag.HideBottomNav = true;
+        ViewBag.HideTopbarNotifications = true;
+    }
+
+    private void ApplyAddCustomerNavigation()
+    {
+        ViewBag.HideTopbarNotifications = true;
     }
 
     private const string CreateEstimateDraftSessionKey = "ProviderProCreateEstimateDraft";
