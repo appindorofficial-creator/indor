@@ -3,8 +3,20 @@
 
     function wirePhotoPicker(options) {
         var photoForm = document.getElementById(options.formId);
-        var menuBtn = document.getElementById(options.btnId);
         var menu = document.getElementById(options.menuId);
+        var menuBtns = [];
+        if (options.btnId) {
+            var primaryBtn = document.getElementById(options.btnId);
+            if (primaryBtn) {
+                menuBtns.push(primaryBtn);
+            }
+        }
+        (options.extraBtnIds || []).forEach(function (btnId) {
+            var extraBtn = document.getElementById(btnId);
+            if (extraBtn) {
+                menuBtns.push(extraBtn);
+            }
+        });
         var takeBtn = document.getElementById(options.takeId);
         var chooseBtn = document.getElementById(options.chooseId);
         var cameraInput = document.getElementById(options.cameraId);
@@ -14,43 +26,68 @@
         var alertsId = options.alertsId;
         var alertClass = options.alertClass || 'more-profile-photo-alert';
 
-        if (!photoForm || !menuBtn || !menu) {
+        if (!photoForm || menuBtns.length === 0 || !menu) {
             return;
         }
 
+        var menuBtn = menuBtns[0];
+
         function closePhotoMenu() {
             menu.hidden = true;
-            menuBtn.setAttribute('aria-expanded', 'false');
+            menuBtns.forEach(function (btn) {
+                btn.setAttribute('aria-expanded', 'false');
+            });
         }
 
-        menuBtn.addEventListener('click', function (e) {
+        var pickerRoot = photoForm;
+
+        function togglePhotoMenu(e) {
             e.preventDefault();
             e.stopPropagation();
             var willOpen = menu.hidden;
             menu.hidden = !willOpen;
-            menuBtn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            menuBtns.forEach(function (btn) {
+                btn.setAttribute('aria-expanded', willOpen ? 'true' : 'false');
+            });
+        }
+
+        menuBtns.forEach(function (btn) {
+            btn.addEventListener('click', togglePhotoMenu);
         });
 
-        document.addEventListener('click', closePhotoMenu);
+        document.addEventListener('click', function (e) {
+            if (pickerRoot && pickerRoot.contains(e.target)) {
+                return;
+            }
+            closePhotoMenu();
+        });
         document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closePhotoMenu();
             }
         });
 
+        function openFilePicker(input) {
+            if (!input) {
+                return;
+            }
+            closePhotoMenu();
+            input.click();
+        }
+
         if (takeBtn && cameraInput) {
             takeBtn.addEventListener('click', function (e) {
+                e.preventDefault();
                 e.stopPropagation();
-                closePhotoMenu();
-                cameraInput.click();
+                openFilePicker(cameraInput);
             });
         }
 
         if (chooseBtn && libraryInput) {
             chooseBtn.addEventListener('click', function (e) {
+                e.preventDefault();
                 e.stopPropagation();
-                closePhotoMenu();
-                libraryInput.click();
+                openFilePicker(libraryInput);
             });
         }
 
@@ -167,6 +204,7 @@
     wirePhotoPicker({
         formId: 'rlBusinessPhotoForm',
         btnId: 'rlBusinessPhotoBtn',
+        extraBtnIds: ['rlBusinessPhotoChangeBtn'],
         menuId: 'rlBusinessPhotoMenu',
         takeId: 'rlBusinessPhotoTake',
         chooseId: 'rlBusinessPhotoChoose',

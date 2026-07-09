@@ -4121,6 +4121,44 @@ button.rl-premium-link {
     z-index: 2;
 }
 
+.rl-ep-photo-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.rl-ep-photo-actions {
+    position: relative;
+    flex: 1;
+    min-width: 0;
+}
+
+.rl-profile-photo-change-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid #CBD5E1;
+    border-radius: 12px;
+    background: #fff;
+    color: #334155;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.rl-profile-photo-change-btn i {
+    color: #0066CC;
+}
+
+.rl-ep-photo-hint {
+    display: block;
+    margin-top: 8px;
+    font-size: .7rem;
+    color: #94A3B8;
+}
+
 .rl-profile-photo-menu {
     position: absolute;
     top: calc(100% + 8px);

@@ -37,6 +37,11 @@
                 <button type="button" class="rl-profile-photo-edit" id="rlBusinessPhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-camera"></i>
                 </button>
+            </div>
+            <div class="rl-ep-photo-actions">
+                <button type="button" class="rl-profile-photo-change-btn" id="rlBusinessPhotoChangeBtn" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-camera"></i> Change photo
+                </button>
                 <div class="rl-profile-photo-menu" id="rlBusinessPhotoMenu" role="menu" hidden>
                     <button type="button" class="rl-profile-photo-menu-item" id="rlBusinessPhotoTake" role="menuitem">
                         <i class="fas fa-camera"></i> Take photo
@@ -47,6 +52,7 @@
                 </div>
                 <input type="file" id="rlBusinessPhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
                 <input type="file" id="rlBusinessPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
+                <small class="rl-ep-photo-hint">JPG, PNG or WEBP · Max 10 MB</small>
             </div>
         </div>
     </form>
