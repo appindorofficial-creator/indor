@@ -232,6 +232,72 @@ public static class UiDisplayLocalization
             return localizer.T("Please attach your {0} before continuing, or choose Skip for now.", docLabel);
         }
 
+        if (text.StartsWith("Requested ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Requested {0}", text["Requested ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Total ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Total {0}", text["Total ".Length..].Trim());
+        }
+
+        if (text.StartsWith("Starting at ", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("Starting at {0}", text["Starting at ".Length..].Trim());
+        }
+
+        var quotesReceivedPluralMatch = Regex.Match(text, @"^(\d+) Quotes Received$", RegexOptions.IgnoreCase);
+        if (quotesReceivedPluralMatch.Success && int.TryParse(quotesReceivedPluralMatch.Groups[1].Value, out var quotesReceivedCount))
+        {
+            return localizer.T("{0} Quotes Received", quotesReceivedCount);
+        }
+
+        var quoteReceivedSingularMatch = Regex.Match(text, @"^(\d+) Quote Received$", RegexOptions.IgnoreCase);
+        if (quoteReceivedSingularMatch.Success && int.TryParse(quoteReceivedSingularMatch.Groups[1].Value, out var quoteReceivedCount))
+        {
+            return localizer.T("{0} Quote Received", quoteReceivedCount);
+        }
+
+        var providerQuotesPluralMatch = Regex.Match(text, @"^(\d+) provider quotes received$", RegexOptions.IgnoreCase);
+        if (providerQuotesPluralMatch.Success && int.TryParse(providerQuotesPluralMatch.Groups[1].Value, out var providerQuotesCount))
+        {
+            return localizer.T("{0} provider quotes received", providerQuotesCount);
+        }
+
+        var providerQuoteSingularMatch = Regex.Match(text, @"^(\d+) provider quote received$", RegexOptions.IgnoreCase);
+        if (providerQuoteSingularMatch.Success && int.TryParse(providerQuoteSingularMatch.Groups[1].Value, out var providerQuoteCount))
+        {
+            return localizer.T("{0} provider quote received", providerQuoteCount);
+        }
+
+        var quotesReceivedFooterMatch = Regex.Match(text, @"^(\d+) quotes received$", RegexOptions.IgnoreCase);
+        if (quotesReceivedFooterMatch.Success && int.TryParse(quotesReceivedFooterMatch.Groups[1].Value, out var footerQuotesCount))
+        {
+            return localizer.T("{0} quotes received", footerQuotesCount);
+        }
+
+        var reviewTodayMatch = Regex.Match(text, @"^(\d+) quotes? need review today$", RegexOptions.IgnoreCase);
+        if (reviewTodayMatch.Success && int.TryParse(reviewTodayMatch.Groups[1].Value, out var reviewCount))
+        {
+            var key = reviewCount == 1 ? "{0} quote needs review today" : "{0} quotes need review today";
+            return localizer.T(key, reviewCount);
+        }
+
+        var urgentProviderMatch = Regex.Match(text, @"^(\d+) urgent requests? need provider$", RegexOptions.IgnoreCase);
+        if (urgentProviderMatch.Success && int.TryParse(urgentProviderMatch.Groups[1].Value, out var urgentCount))
+        {
+            var key = urgentCount == 1 ? "{0} urgent request needs provider" : "{0} urgent requests need provider";
+            return localizer.T(key, urgentCount);
+        }
+
+        var selectedShareMatch = Regex.Match(text, @"^(\d+) selected quotes? ready to share$", RegexOptions.IgnoreCase);
+        if (selectedShareMatch.Success && int.TryParse(selectedShareMatch.Groups[1].Value, out var selectedCount))
+        {
+            var key = selectedCount == 1 ? "{0} selected quote ready to share" : "{0} selected quotes ready to share";
+            return localizer.T(key, selectedCount);
+        }
+
         return localizer[text];
     }
 

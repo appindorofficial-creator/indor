@@ -37,7 +37,7 @@
                         {
                             <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
                                class="rl-filter-menu-item @(Model.ActiveFilter == chip ? "is-active" : null)" role="menuitem">
-                                <span>@chip</span>
+                                <span>@UiDisplayLocalization.Localize(L, chip)</span>
                                 @if (Model.ActiveFilter == chip)
                                 {
                                     <i class="fas fa-check"></i>
@@ -51,7 +51,7 @@
                 @foreach (var chip in Model.Filters)
                 {
                     <a asp-action="Quotes" asp-route-filter="@chip" asp-route-q="@Model.SearchQuery"
-                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@chip</a>
+                       class="rl-filter-chip @(Model.ActiveFilter == chip ? "is-active" : null)">@UiDisplayLocalization.Localize(L, chip)</a>
                 }
             </div>
         </form>
@@ -82,10 +82,10 @@
                         <div class="rl-quote-card-top">
                             <div class="rl-quote-card-title">
                                 <strong>@quote.StreetAddress</strong>
-                                <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
+                                <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@UiDisplayLocalization.Localize(L, quote.StatusLabel)</span>
                             </div>
                         </div>
-                        <span class="rl-premium-muted"><i class="fas fa-calendar"></i> @quote.RequestedLabel</span>
+                        <span class="rl-premium-muted"><i class="fas fa-calendar"></i> @UiDisplayLocalization.Localize(L, quote.RequestedLabel)</span>
                         @if (!string.IsNullOrWhiteSpace(quote.ProviderSummary))
                         {
                             <div class="rl-quote-provider-row">
@@ -93,18 +93,18 @@
                                 {
                                     <span class="rl-provider-avatar rl-provider-avatar--sm">@quote.ProviderInitials</span>
                                 }
-                                <span class="rl-premium-muted">@quote.ProviderSummary</span>
+                                <span class="rl-premium-muted">@UiDisplayLocalization.Localize(L, quote.ProviderSummary)</span>
                             </div>
                         }
                         @if (!string.IsNullOrWhiteSpace(quote.PriceRangeLabel))
                         {
-                            <span class="rl-quote-price">@quote.PriceRangeLabel</span>
+                            <span class="rl-quote-price">@UiDisplayLocalization.Localize(L, quote.PriceRangeLabel)</span>
                         }
                         <div class="rl-quote-card-foot">
-                            <a href="@quote.ActionUrl" class="ob-btn ob-btn-primary rl-quote-primary-btn">@quote.ActionLabel</a>
+                            <a href="@quote.ActionUrl" class="ob-btn ob-btn-primary rl-quote-primary-btn">@UiDisplayLocalization.Localize(L, quote.ActionLabel)</a>
                             @if (!string.IsNullOrWhiteSpace(quote.SecondaryActionLabel))
                             {
-                                <a href="@quote.SecondaryActionUrl" class="rl-quote-secondary-link">@quote.SecondaryActionLabel</a>
+                                <a href="@quote.SecondaryActionUrl" class="rl-quote-secondary-link">@UiDisplayLocalization.Localize(L, quote.SecondaryActionLabel)</a>
                             }
                         </div>
                     </div>
@@ -120,7 +120,7 @@
             {
                 <a href="@(alert.Url ?? "#")" class="rl-alert-banner rl-alert-banner--@alert.ColorClass">
                     <span class="rl-alert-icon"><i class="fas @alert.Icon"></i></span>
-                    <span>@alert.Text</span>
+                    <span>@UiDisplayLocalization.Localize(L, alert.Text)</span>
                     <i class="fas fa-chevron-right"></i>
                 </a>
             }
