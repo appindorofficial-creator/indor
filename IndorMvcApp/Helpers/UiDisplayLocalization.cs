@@ -138,6 +138,24 @@ public static class UiDisplayLocalization
             return localizer.T(key, pendingQuotesCount);
         }
 
+        var clientFileMatch = Regex.Match(text, @"^(.+) File$", RegexOptions.IgnoreCase);
+        if (clientFileMatch.Success)
+        {
+            return localizer.T("{0} File", clientFileMatch.Groups[1].Value.Trim());
+        }
+
         return localizer[text];
+    }
+
+    public static string LocalizeCommaList(IIndorLocalizer localizer, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+        {
+            return text ?? string.Empty;
+        }
+
+        return string.Join(", ",
+            text.Split(", ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries)
+                .Select(part => Localize(localizer, part)));
     }
 }

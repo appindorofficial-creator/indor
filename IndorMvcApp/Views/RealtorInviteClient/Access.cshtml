@@ -8,6 +8,12 @@
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
         .ToList();
+    const string DefaultWelcomeMessageEnglish =
+        "Hi! I'd like to invite you to view project details and stay updated in INDOR. Let me know if you have any questions.";
+    var welcomeMessage = string.IsNullOrWhiteSpace(Model.WelcomeMessage)
+                         || Model.WelcomeMessage == DefaultWelcomeMessageEnglish
+        ? L[DefaultWelcomeMessageEnglish]
+        : Model.WelcomeMessage;
 }
 
 <form asp-action="Access" method="post" class="rl-invite-form" id="inviteAccessForm" novalidate>
@@ -19,54 +25,54 @@
         <div class="rl-error-banner" role="alert" id="inviteAccessFormErrors">
             <i class="fas fa-circle-exclamation"></i>
             <div>
-                <strong>Please fix the following to continue:</strong>
+                <strong>@L["Please fix the following to continue:"]</strong>
                 <ul class="rl-error-list">
                     @foreach (var msg in formErrors)
                     {
-                        <li>@msg</li>
+                        <li>@UiDisplayLocalization.Localize(L, msg)</li>
                     }
                 </ul>
             </div>
         </div>
     }
 
-    <p class="rl-page-subtitle rl-invite-access-intro">Choose what this client can see and how they can collaborate. Nothing is shared until you turn it on.</p>
+    <p class="rl-page-subtitle rl-invite-access-intro">@L["Choose what this client can see and how they can collaborate. Nothing is shared until you turn it on."]</p>
 
-    <h2 class="rl-invite-section-title">Access &amp; Permissions</h2>
+    <h2 class="rl-invite-section-title">@L["Access & Permissions"]</h2>
     <div class="rl-toggle-list">
         <label class="rl-toggle-row">
-            <span>Property Overview</span>
+            <span>@L["Property Overview"]</span>
             <input type="checkbox" name="AccessPropertyOverview" value="true" @(Model.AccessPropertyOverview ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
         <label class="rl-toggle-row">
-            <span>Files &amp; Reports</span>
+            <span>@L["Files & Reports"]</span>
             <input type="checkbox" name="AccessFilesReports" value="true" @(Model.AccessFilesReports ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
         <label class="rl-toggle-row">
-            <span>Quotes &amp; Estimates</span>
+            <span>@L["Quotes & Estimates"]</span>
             <input type="checkbox" name="AccessQuotesEstimates" value="true" @(Model.AccessQuotesEstimates ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
         <label class="rl-toggle-row">
-            <span>Messages</span>
+            <span>@L["Messages"]</span>
             <input type="checkbox" name="AccessMessages" value="true" @(Model.AccessMessages ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
         <label class="rl-toggle-row">
-            <span>Project Updates</span>
+            <span>@L["Project Updates"]</span>
             <input type="checkbox" name="AccessProjectUpdates" value="true" @(Model.AccessProjectUpdates ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
         <label class="rl-toggle-row">
-            <span>Payments <small>(optional)</small></span>
+            <span>@L["Payments"] <small>@L["(optional)"]</small></span>
             <input type="checkbox" name="AccessPayments" value="true" @(Model.AccessPayments ? "checked" : null) />
             <span class="rl-toggle"></span>
         </label>
     </div>
 
-    <h2 class="rl-invite-section-title">Collaboration Level <span class="rl-cp-req">*</span></h2>
+    <h2 class="rl-invite-section-title">@L["Collaboration Level"] <span class="rl-cp-req">*</span></h2>
     <div class="rl-collab-grid @(collaborationError.Length > 0 ? "is-error" : null)">
         @foreach (var opt in Model.CollaborationOptions)
         {
@@ -74,44 +80,44 @@
             <label class="rl-collab-card @(selected ? "is-selected" : "")">
                 <input type="radio" name="CollaborationLevel" value="@opt.Value" @(selected ? "checked" : null) />
                 <i class="fas @opt.Icon"></i>
-                <span>@opt.Label</span>
+                <span>@UiDisplayLocalization.Localize(L, opt.Label)</span>
                 @if (selected) { <i class="fas fa-circle-check rl-collab-check"></i> }
             </label>
         }
     </div>
     @if (!string.IsNullOrWhiteSpace(collaborationError))
     {
-        <span class="rl-field-error">@collaborationError</span>
+        <span class="rl-field-error">@UiDisplayLocalization.Localize(L, collaborationError)</span>
     }
 
-    <h2 class="rl-invite-section-title">Invitation Delivery <span class="rl-cp-req">*</span></h2>
+    <h2 class="rl-invite-section-title">@L["Invitation Delivery"] <span class="rl-cp-req">*</span></h2>
     <div class="rl-delivery-row">
         <label class="rl-delivery-btn @(Model.DeliveryEmail ? "is-selected" : "")">
             <input type="checkbox" name="DeliveryEmail" value="true" @(Model.DeliveryEmail ? "checked" : null) />
-            Email
+            @L["Email"]
         </label>
         <label class="rl-delivery-btn @(Model.DeliveryText ? "is-selected" : "")">
             <input type="checkbox" name="DeliveryText" value="true" @(Model.DeliveryText ? "checked" : null) />
-            Text Message
+            @L["Text Message"]
         </label>
     </div>
 
-    <h2 class="rl-invite-section-title">Custom Welcome Message <small>(optional)</small></h2>
+    <h2 class="rl-invite-section-title">@L["Custom Welcome Message"] <small>@L["(optional)"]</small></h2>
     <label class="rl-field rl-field--textarea">
-        <textarea name="WelcomeMessage" maxlength="250" rows="4">@Model.WelcomeMessage</textarea>
+        <textarea name="WelcomeMessage" maxlength="250" rows="4">@welcomeMessage</textarea>
     </label>
-    <span class="rl-char-count">@Model.WelcomeMessage.Length/250</span>
+    <span class="rl-char-count">@welcomeMessage.Length/250</span>
 
     <div class="rl-info-box rl-info-box--muted">
         <i class="fas fa-circle-info"></i>
-        <p>You can update permissions later from the client profile.</p>
+        <p>@L["You can update permissions later from the client profile."]</p>
     </div>
 
 </form>
 
 <div class="rl-invite-actions">
-    <a asp-action="BackToProperty" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="inviteAccessForm" id="inviteAccessNextBtn" class="ob-btn ob-btn-primary">Next</button>
+    <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
+    <button type="submit" form="inviteAccessForm" id="inviteAccessNextBtn" class="ob-btn ob-btn-primary">@L["Next"]</button>
 </div>
 
 @section Scripts {

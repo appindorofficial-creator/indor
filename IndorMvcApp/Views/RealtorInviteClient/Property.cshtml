@@ -5,10 +5,11 @@
         .SelectMany(x => x.Value!.Errors.Select(e => e.ErrorMessage))
         .Where(m => !string.IsNullOrWhiteSpace(m))
         .Distinct()
+        .Select(m => UiDisplayLocalization.Localize(L, m))
         .ToList();
 }
 
-<h2 class="rl-invite-section-title">Select Property</h2>
+<h2 class="rl-invite-section-title">@L["Select Property"]</h2>
 
 <form asp-action="Property" method="post" class="rl-invite-form" id="invitePropertyForm" data-create-url="@Url.Action("CreateProperty")" data-search-url="@Url.Action("Property")" novalidate>
     @Html.AntiForgeryToken()
@@ -17,7 +18,7 @@
     <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" role="alert" id="invitePropertyFormErrors">
         <i class="fas fa-circle-exclamation"></i>
         <div>
-            <strong>Please fix the following to continue:</strong>
+            <strong>@L["Please fix the following to continue:"]</strong>
             <ul class="rl-error-list" id="invitePropertyFormErrorList">
                 @foreach (var msg in formErrors)
                 {
@@ -33,27 +34,27 @@
                name="q"
                id="invitePropertySearch"
                value="@Model.SearchQuery"
-               placeholder="Search address or property name"
+               placeholder="@L["Search address or property name"]"
                autocomplete="off"
                enterkeyhint="search" />
     </label>
     <span class="rl-field-error" id="invitePropertySearchError" role="alert"></span>
-    <p class="rl-field-hint">Type an address and tap <strong>Next</strong> to create a new property, or pick one from the list below.</p>
+    <p class="rl-field-hint">@L["Type an address and tap"] <strong>@L["Next"]</strong> @L["to create a new property, or pick one from the list below."]</p>
 
     @if (Model.Properties.Count == 0)
     {
         <div class="rl-dash-empty">
             @if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
             {
-                <p>No matching properties found for <strong>@Model.SearchQuery</strong>.</p>
-                <p>Create a new property with this address to continue.</p>
+                <p>@L.T("No matching properties found for {0}.", Model.SearchQuery)</p>
+                <p>@L["Create a new property with this address to continue."]</p>
                 <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="ob-btn ob-btn-primary rl-invite-create-from-search">
-                    Create property for this address
+                    @L["Create property for this address"]
                 </a>
             }
             else
             {
-                <p>No properties found yet. Search an address above or create a new property below.</p>
+                <p>@L["No properties found yet. Search an address above or create a new property below."]</p>
             }
         </div>
     }
@@ -67,35 +68,35 @@
                 <span class="rl-property-pick-icon"><i class="fas @prop.Icon"></i></span>
                 <span class="rl-property-pick-body">
                     <strong>@prop.Address</strong>
-                    <span>@prop.Label</span>
+                    <span>@UiDisplayLocalization.Localize(L, prop.Label)</span>
                     @if (!string.IsNullOrWhiteSpace(prop.CityRegion))
                     {
                         <span>@prop.CityRegion</span>
                     }
                 </span>
-                <span class="rl-phase-badge rl-phase-badge--@prop.StatusLabel.Replace(" ", "-").ToLowerInvariant()">@prop.StatusLabel</span>
+                <span class="rl-phase-badge rl-phase-badge--@prop.StatusLabel.Replace(" ", "-").ToLowerInvariant()">@UiDisplayLocalization.Localize(L, prop.StatusLabel)</span>
             </label>
         }
     }
 
-    <h2 class="rl-invite-section-title">Or Add New Property</h2>
+    <h2 class="rl-invite-section-title">@L["Or Add New Property"]</h2>
     <a asp-action="CreateProperty" asp-route-address="@Model.SearchQuery" class="rl-action-card">
         <span class="rl-action-card-icon"><i class="fas fa-plus"></i></span>
         <div>
-            <strong>Create New Property</strong>
-            <span>Add a new property for this client</span>
+            <strong>@L["Create New Property"]</strong>
+            <span>@L["Add a new property for this client"]</span>
         </div>
         <i class="fas fa-chevron-right"></i>
     </a>
 
     <div class="rl-info-box">
         <i class="fas fa-shield-halved"></i>
-        <p>You can invite the client to an existing property or create a new shared property record.</p>
+        <p>@L["You can invite the client to an existing property or create a new shared property record."]</p>
     </div>
 
     <div class="rl-invite-actions">
-        <a asp-action="BackToClientInfo" class="rl-invite-cancel">Back</a>
-        <button type="submit" id="invitePropertyNextBtn" class="ob-btn ob-btn-primary">Next</button>
+        <a asp-action="BackToClientInfo" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" id="invitePropertyNextBtn" class="ob-btn ob-btn-primary">@L["Next"]</button>
     </div>
 </form>
 

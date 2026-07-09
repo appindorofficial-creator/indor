@@ -1,14 +1,21 @@
 @model IndorMvcApp.ViewModels.RealtorInviteReviewViewModel
-
+@{
+    const string DefaultWelcomeMessageEnglish =
+        "Hi! I'd like to invite you to view project details and stay updated in INDOR. Let me know if you have any questions.";
+    var welcomeMessage = string.IsNullOrWhiteSpace(Model.WelcomeMessage)
+                         || Model.WelcomeMessage == DefaultWelcomeMessageEnglish
+        ? L[DefaultWelcomeMessageEnglish]
+        : Model.WelcomeMessage;
+}
 <div class="rl-invite-form">
-    <h2 class="rl-invite-section-title">Invitation Summary</h2>
+    <h2 class="rl-invite-section-title">@L["Invitation Summary"]</h2>
 
     <div class="rl-review-card">
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-user"></i> Client</span>
+            <span class="rl-review-label"><i class="fas fa-user"></i> @L["Client"]</span>
             <div>
                 <strong>@Model.FullName</strong>
-                <span class="rl-role-badge rl-role-badge--@Model.ClientRole.ToLowerInvariant()">@Model.ClientRole</span>
+                <span class="rl-role-badge rl-role-badge--@Model.ClientRole.ToLowerInvariant()">@UiDisplayLocalization.Localize(L, Model.ClientRole)</span>
                 <span>@Model.Email</span>
                 @if (!string.IsNullOrWhiteSpace(Model.Phone))
                 {
@@ -17,47 +24,47 @@
             </div>
         </div>
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-house"></i> Property</span>
+            <span class="rl-review-label"><i class="fas fa-house"></i> @L["Property"]</span>
             <strong>@Model.PropertyDisplay</strong>
         </div>
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-lock-open"></i> Access</span>
-            <span>@Model.AccessSummary</span>
+            <span class="rl-review-label"><i class="fas fa-lock-open"></i> @L["Access"]</span>
+            <span>@UiDisplayLocalization.LocalizeCommaList(L, Model.AccessSummary)</span>
         </div>
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-comments"></i> Collaboration</span>
-            <span>@Model.CollaborationLabel</span>
+            <span class="rl-review-label"><i class="fas fa-comments"></i> @L["Collaboration Level"]</span>
+            <span>@UiDisplayLocalization.Localize(L, Model.CollaborationLabel)</span>
         </div>
         <div class="rl-review-row">
-            <span class="rl-review-label"><i class="fas fa-paper-plane"></i> Delivery</span>
-            <span>@Model.DeliveryLabel</span>
+            <span class="rl-review-label"><i class="fas fa-paper-plane"></i> @L["Invitation Delivery"]</span>
+            <span>@UiDisplayLocalization.Localize(L, Model.DeliveryLabel)</span>
         </div>
-        @if (!string.IsNullOrWhiteSpace(Model.WelcomeMessage))
+        @if (!string.IsNullOrWhiteSpace(welcomeMessage))
         {
             <div class="rl-review-row">
-                <span class="rl-review-label"><i class="fas fa-note-sticky"></i> Note</span>
-                <span>@Model.WelcomeMessage</span>
+                <span class="rl-review-label"><i class="fas fa-note-sticky"></i> @L["Note"]</span>
+                <span>@welcomeMessage</span>
             </div>
         }
     </div>
 
-    <h2 class="rl-invite-section-title">What happens next?</h2>
+    <h2 class="rl-invite-section-title">@L["What happens next?"]</h2>
     <ol class="rl-next-steps">
-        <li><span>1</span> Client receives invite</li>
-        <li><span>2</span> Client accepts invitation</li>
-        <li><span>3</span> You can track activity in Clients</li>
+        <li><span>1</span> @L["Client receives invite"]</li>
+        <li><span>2</span> @L["Client accepts invitation"]</li>
+        <li><span>3</span> @L["You can track activity in Clients"]</li>
     </ol>
 
     <form asp-action="Send" method="post" id="inviteSendForm">
         @Html.AntiForgeryToken()
         <label class="rl-check-row">
             <input type="checkbox" name="sendReminder48h" value="true" @(Model.SendReminder48h ? "checked" : null) />
-            <span>Send a reminder if not accepted in 48 hours</span>
+            <span>@L["Send a reminder if not accepted in 48 hours"]</span>
         </label>
     </form>
 
     <div class="rl-invite-actions">
-        <a asp-action="BackToAccess" class="rl-invite-cancel">Back</a>
-        <button type="submit" form="inviteSendForm" class="ob-btn ob-btn-primary">Send Invitation</button>
+        <a asp-action="BackToAccess" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" form="inviteSendForm" class="ob-btn ob-btn-primary">@L["Send Invitation"]</button>
     </div>
 </div>

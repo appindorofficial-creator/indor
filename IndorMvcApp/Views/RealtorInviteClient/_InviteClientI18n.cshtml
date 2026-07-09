@@ -1,0 +1,32 @@
+@using System.Text.Json
+<script>
+window.IndorInviteClientI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["Please fix the following to continue:"] = L["Please fix the following to continue:"],
+    ["Full name is required."] = L["Full name is required."],
+    ["Full name must be at least 2 characters."] = L["Full name must be at least 2 characters."],
+    ["Enter a valid full name using letters (e.g. John Smith)."] = L["Enter a valid full name using letters (e.g. John Smith)."],
+    ["Full name cannot contain only numbers."] = L["Full name cannot contain only numbers."],
+    ["Enter the client's first and last name."] = L["Enter the client's first and last name."],
+    ["Email address is required."] = L["Email address is required."],
+    ["Enter a valid email address (e.g. name@email.com)."] = L["Enter a valid email address (e.g. name@email.com)."],
+    ["Phone number is required."] = L["Phone number is required."],
+    ["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."] = L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."],
+    ["Please select a client role."] = L["Please select a client role."],
+    ["Select a property from the list, or enter an address to create a new one."] = L["Select a property from the list, or enter an address to create a new one."],
+    ["Enter an address and tap Next to create a new property."] = L["Enter an address and tap Next to create a new property."],
+    ["Property address is required."] = L["Property address is required."],
+    ["Enter a complete street address."] = L["Enter a complete street address."],
+    ["Enter a valid street address with a street name."] = L["Enter a valid street address with a street name."],
+    ["Address cannot contain only numbers."] = L["Address cannot contain only numbers."],
+    ["Enter a street number (e.g. 123 Main St)."] = L["Enter a street number (e.g. 123 Main St)."],
+    ["Enter a complete street address with street name and type (e.g. 123 Main St)."] = L["Enter a complete street address with street name and type (e.g. 123 Main St)."],
+    ["City is required."] = L["City is required."],
+    ["State is required."] = L["State is required."],
+    ["ZIP code is required."] = L["ZIP code is required."],
+    ["Enter a valid 5-digit ZIP code (e.g. 77002)."] = L["Enter a valid 5-digit ZIP code (e.g. 77002)."],
+    ["Select at least one access permission."] = L["Select at least one access permission."],
+    ["Select a collaboration level."] = L["Select a collaboration level."],
+    ["Select at least one invitation delivery method (email or text)."] = L["Select at least one invitation delivery method (email or text)."]
+}));
+</script>

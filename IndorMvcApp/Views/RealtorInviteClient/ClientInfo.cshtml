@@ -20,17 +20,17 @@
     <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" role="alert" id="inviteClientFormErrors">
         <i class="fas fa-circle-exclamation"></i>
         <div>
-            <strong>Please fix the following to continue:</strong>
+            <strong>@L["Please fix the following to continue:"]</strong>
             <ul class="rl-error-list" id="inviteClientFormErrorList">
                 @foreach (var msg in formErrors)
                 {
-                    <li>@msg</li>
+                    <li>@UiDisplayLocalization.Localize(L, msg)</li>
                 }
             </ul>
         </div>
     </div>
 
-    <h2 class="rl-invite-section-title">Client Information</h2>
+    <h2 class="rl-invite-section-title">@L["Client Information"]</h2>
 
     <label class="rl-field @(fullNameError.Length > 0 ? "is-error" : null)" for="inviteClientFullName">
         <i class="fas fa-user"></i>
@@ -38,13 +38,13 @@
                id="inviteClientFullName"
                name="fullName"
                value="@Model.FullName"
-               placeholder="Enter full name"
+               placeholder="@L["Enter full name"]"
                autocomplete="name"
                aria-required="true"
                aria-invalid="@(fullNameError.Length > 0)"
                @(fullNameError.Length > 0 ? Html.Raw("aria-describedby=\"fullNameError\"") : null) />
     </label>
-    <span class="rl-field-error" id="fullNameError" data-client-error="fullName">@fullNameError</span>
+    <span class="rl-field-error" id="fullNameError" data-client-error="fullName">@UiDisplayLocalization.Localize(L, fullNameError)</span>
 
     <label class="rl-field @(emailError.Length > 0 ? "is-error" : null)" for="inviteClientEmail">
         <i class="fas fa-envelope"></i>
@@ -52,14 +52,14 @@
                id="inviteClientEmail"
                name="email"
                value="@Model.Email"
-               placeholder="Enter email address (e.g. name@email.com)"
+               placeholder="@L["Enter email address (e.g. name@email.com)"]"
                autocomplete="email"
                inputmode="email"
                aria-required="true"
                aria-invalid="@(emailError.Length > 0)"
                @(emailError.Length > 0 ? Html.Raw("aria-describedby=\"emailError\"") : null) />
     </label>
-    <span class="rl-field-error" id="emailError" data-client-error="email">@emailError</span>
+    <span class="rl-field-error" id="emailError" data-client-error="email">@UiDisplayLocalization.Localize(L, emailError)</span>
 
     <label class="rl-field @(phoneError.Length > 0 ? "is-error" : null)" for="inviteClientPhone">
         <i class="fas fa-phone"></i>
@@ -67,7 +67,7 @@
                id="inviteClientPhone"
                name="phone"
                value="@Model.Phone"
-               placeholder="Enter 10-digit phone number"
+               placeholder="@L["Enter 10-digit phone number"]"
                autocomplete="tel"
                inputmode="numeric"
                maxlength="10"
@@ -78,35 +78,35 @@
                aria-invalid="@(phoneError.Length > 0)"
                @(phoneError.Length > 0 ? Html.Raw("aria-describedby=\"phoneError\"") : null) />
     </label>
-    <span class="rl-field-error" id="phoneError" data-client-error="phone">@phoneError</span>
+    <span class="rl-field-error" id="phoneError" data-client-error="phone">@UiDisplayLocalization.Localize(L, phoneError)</span>
 
-    <p class="rl-invite-section-title">Client Role <span class="rl-required" aria-hidden="true">*</span></p>
+    <p class="rl-invite-section-title">@L["Client Role"] <span class="rl-required" aria-hidden="true">*</span></p>
     <div class="rl-role-pills">
         @foreach (var role in Model.ClientRoles)
         {
             <label class="rl-role-pill @(Model.ClientRole == role ? "is-selected" : "")">
                 <input type="radio" name="clientRole" value="@role" @(Model.ClientRole == role ? "checked" : null) />
-                <span>@role</span>
+                <span>@UiDisplayLocalization.Localize(L, role)</span>
             </label>
         }
     </div>
-    <span class="rl-field-error" id="clientRoleError" data-client-error="clientRole">@clientRoleError</span>
+    <span class="rl-field-error" id="clientRoleError" data-client-error="clientRole">@UiDisplayLocalization.Localize(L, clientRoleError)</span>
 
-    <p class="rl-invite-section-title">Quick Note <small>(optional)</small></p>
+    <p class="rl-invite-section-title">@L["Quick Note"] <small>@L["(optional)"]</small></p>
     <label class="rl-field rl-field--textarea">
         <i class="fas fa-note-sticky"></i>
-        <textarea name="quickNote" maxlength="250" placeholder="Add a note about this client..." rows="3">@Model.QuickNote</textarea>
+        <textarea name="quickNote" maxlength="250" placeholder="@L["Add a note about this client..."]" rows="3">@Model.QuickNote</textarea>
     </label>
     <span class="rl-char-count"><span id="noteCount">@Model.QuickNote.Length</span>/250</span>
 
     <div class="rl-info-box">
         <i class="fas fa-shield-halved"></i>
-        <p>The client will receive an invitation by email or text and can securely access shared property information.</p>
+        <p>@L["The client will receive an invitation by email or text and can securely access shared property information."]</p>
     </div>
 
     <div class="rl-invite-actions">
-        <button type="submit" formaction="@Url.Action("Cancel")" formnovalidate class="rl-invite-cancel">Cancel</button>
-        <button type="submit" id="inviteNextBtn" class="ob-btn ob-btn-primary">Next</button>
+        <button type="submit" formaction="@Url.Action("Cancel")" formnovalidate class="rl-invite-cancel">@L["Cancel"]</button>
+        <button type="submit" id="inviteNextBtn" class="ob-btn ob-btn-primary">@L["Next"]</button>
     </div>
 </form>
 

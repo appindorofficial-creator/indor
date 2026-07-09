@@ -1,18 +1,18 @@
 @model IndorMvcApp.ViewModels.RealtorInviteStepViewModel
 @{
-    var steps = new[] { "Client Info", "Property", "Access", "Review" };
+    var steps = new[] { L["Client Info"], L["Property"], L["Access"], L["Review"] };
 }
 @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", new IndorMvcApp.ViewModels.RealtorPortalShellViewModel { HideNotifications = true })
 
 <div class="rl-invite-head">
-    <h1>@Model.Title</h1>
+    <h1>@UiDisplayLocalization.Localize(L, Model.Title)</h1>
     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
     {
-        <p>@Model.Subtitle</p>
+        <p>@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
     }
 </div>
 
-<nav class="rl-invite-stepper" aria-label="Invite client progress">
+<nav class="rl-invite-stepper" aria-label="@L["Invite client progress"]">
     @for (var i = 0; i < steps.Length; i++)
     {
         var stepNum = i + 1;

@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RealtorInviteSuccessViewModel
 @{
     Layout = "_RealtorLayout";
-    ViewData["Title"] = "Invitation Sent";
+    ViewData["Title"] = L["Invitation Sent"];
     ViewBag.NavActive = "clients";
 }
 
@@ -12,12 +12,12 @@
         <div class="rl-success-icon-wrap">
             <span class="rl-success-icon"><i class="fas fa-check"></i></span>
         </div>
-        <h1>Invitation Sent</h1>
-        <p>Your client has been invited successfully</p>
+        <h1>@L["Invitation Sent"]</h1>
+        <p>@L["Your client has been invited successfully"]</p>
     </section>
 
     <div class="rl-success-card">
-        <p>Invitation sent to <strong class="rl-success-name">@Model.FullName</strong></p>
+        <p>@L["Invitation sent to"] <strong class="rl-success-name">@Model.FullName</strong></p>
         <div class="rl-success-detail"><i class="fas fa-envelope"></i> @Model.Email</div>
         @if (!string.IsNullOrWhiteSpace(Model.Phone))
         {
@@ -26,26 +26,26 @@
         <div class="rl-success-detail"><i class="fas fa-house"></i> @Model.PropertyDisplay</div>
         <div class="rl-success-detail">
             <i class="fas fa-clock"></i>
-            <span class="rl-card-status rl-card-status--pending">@Model.StatusLabel</span>
+            <span class="rl-card-status rl-card-status--pending">@UiDisplayLocalization.Localize(L, Model.StatusLabel)</span>
         </div>
     </div>
 
     <div class="rl-success-links">
         <a asp-controller="Realtor" asp-action="Clients" class="rl-success-link-row">
-            <i class="fas fa-eye"></i> View Pending Invitation <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-eye"></i> @L["View Pending Invitation"] <i class="fas fa-chevron-right"></i>
         </a>
-        <button type="button" class="rl-success-link-row" id="copyInviteLink" data-link="@Model.InviteLink">
-            <i class="fas fa-link"></i> Copy Invite Link <i class="fas fa-chevron-right"></i>
+        <button type="button" class="rl-success-link-row" id="copyInviteLink" data-link="@Model.InviteLink" data-prompt="@L["Copy invite link:"]">
+            <i class="fas fa-link"></i> @L["Copy Invite Link"] <i class="fas fa-chevron-right"></i>
         </button>
         <a asp-controller="RealtorInviteClient" asp-action="New" class="rl-success-link-row">
-            <i class="fas fa-user-plus"></i> Invite Another Client <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-user-plus"></i> @L["Invite Another Client"] <i class="fas fa-chevron-right"></i>
         </a>
     </div>
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Pending Invitations</h2>
-            <a asp-controller="Realtor" asp-action="Clients" asp-route-filter="Pending">View all <i class="fas fa-chevron-right"></i></a>
+            <h2>@L["Pending Invitations"]</h2>
+            <a asp-controller="Realtor" asp-action="Clients" asp-route-filter="Pending">@L["View all"] <i class="fas fa-chevron-right"></i></a>
         </div>
         @foreach (var inv in Model.PendingInvitations)
         {
@@ -54,23 +54,24 @@
                 <div>
                     <strong>@inv.FullName</strong>
                     <span>@inv.Email</span>
-                    <span class="rl-card-status rl-card-status--pending">Invitation sent</span>
+                    <span class="rl-card-status rl-card-status--pending">@L["Invitation sent"]</span>
                 </div>
             </article>
         }
     </section>
 
-    <a asp-controller="Realtor" asp-action="Clients" class="ob-btn ob-btn-primary rl-done-btn">Done</a>
+    <a asp-controller="Realtor" asp-action="Clients" class="ob-btn ob-btn-primary rl-done-btn">@L["Done"]</a>
 </div>
 
 @section Scripts {
 <script>
     document.getElementById('copyInviteLink')?.addEventListener('click', async function () {
         const link = this.dataset.link;
+        const promptLabel = this.dataset.prompt || 'Copy invite link:';
         try {
             await navigator.clipboard.writeText(link);
             this.querySelector('i.fa-link').className = 'fas fa-check';
-        } catch { window.prompt('Copy invite link:', link); }
+        } catch { window.prompt(promptLabel, link); }
     });
 </script>
 }
