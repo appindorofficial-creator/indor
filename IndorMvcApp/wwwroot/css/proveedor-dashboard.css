@@ -1487,6 +1487,11 @@ a.prv-pro-profile-btn { text-decoration: none; }
     font-weight: 600;
 }
 
+.prv-pro-pill--on-file {
+    background: #DCFCE7;
+    color: #15803D;
+}
+
 .prv-pro-doc-slot.is-empty {
     border-color: #E2E8F0;
     background: linear-gradient(180deg, #F8FAFC 0%, #fff 88px);

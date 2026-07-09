@@ -59,16 +59,10 @@
             <div class="prv-pro-edit-profile-doc-head">
                 <div>
                     <h2>@slot.Label</h2>
-                    @if (slot.IsUploaded)
-                    {
-                        <p class="prv-pro-doc-head-note prv-pro-doc-head-note--success">
-                            <i class="fas fa-circle-check"></i> Document on file.
-                        </p>
-                    }
                 </div>
                 @if (slot.IsUploaded)
                 {
-                    <span class="prv-pro-pill prv-pro-pill--scheduled">On file</span>
+                    <span class="prv-pro-pill prv-pro-pill--on-file">On file</span>
                 }
                 else
                 {
