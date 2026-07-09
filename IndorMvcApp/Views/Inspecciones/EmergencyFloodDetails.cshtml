@@ -1,7 +1,7 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyFloodDetailsViewModel
+@model IndorMvcApp.ViewModels.EmergencyFloodDetailsViewModel
 @{
-    ViewData["Title"] = "Flood Details - INDOR";
-    ViewData["WizardTitle"] = "Flood Details";
+    ViewData["Title"] = L["Flood Details - INDOR"];
+    ViewData["WizardTitle"] = L["Flood Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
@@ -9,13 +9,13 @@
 }
 
 <div class="title-row">
-        <h1>Flood Details</h1>
+        <h1>@L["Flood Details"]</h1>
         <span class="badge-247">24/7</span>
     </div>
-    <p class="page-lead">Fast help for standing water, basement flooding, and storm damage.</p>
+    <p class="page-lead">@L["Fast help for standing water, basement flooding, and storm damage."]</p>
 
     
-<h2 class="page-heading">Tell us about the flooding</h2>
+<h2 class="page-heading">@L["Tell us about the flooding"]</h2>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyFloodDetails" method="post">
         <input type="hidden" asp-for="ServicioEmergenciaId" />
@@ -30,48 +30,48 @@
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                    <input asp-for="DireccionPropiedad" placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required />
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What is causing the water?</span>
+            <span class="field-label">@L["What is causing the water?"]</span>
             <div class="option-grid" data-target="CausaAgua">
-                <button type="button" class="option-btn" data-value="BurstPipe">Burst pipe</button>
-                <button type="button" class="option-btn" data-value="WaterHeater">Water heater</button>
-                <button type="button" class="option-btn" data-value="ApplianceLeak">Appliance leak</button>
-                <button type="button" class="option-btn" data-value="ToiletOverflow">Toilet overflow</button>
-                <button type="button" class="option-btn" data-value="RoofCeilingLeak">Roof / ceiling leak</button>
-                <button type="button" class="option-btn" data-value="UnknownSource">Unknown source</button>
+                <button type="button" class="option-btn" data-value="BurstPipe">@L["Burst pipe"]</button>
+                <button type="button" class="option-btn" data-value="WaterHeater">@L["Water heater"]</button>
+                <button type="button" class="option-btn" data-value="ApplianceLeak">@L["Appliance leak"]</button>
+                <button type="button" class="option-btn" data-value="ToiletOverflow">@L["Toilet overflow"]</button>
+                <button type="button" class="option-btn" data-value="RoofCeilingLeak">@L["Roof / ceiling leak"]</button>
+                <button type="button" class="option-btn" data-value="UnknownSource">@L["Unknown source"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Where is the water?</span>
+            <span class="field-label">@L["Where is the water?"]</span>
             <div class="option-grid" data-target="UbicacionAgua">
-                <button type="button" class="option-btn" data-value="Basement">Basement</button>
-                <button type="button" class="option-btn" data-value="FirstFloor">1st floor</button>
-                <button type="button" class="option-btn" data-value="SecondFloor">2nd floor</button>
-                <button type="button" class="option-btn" data-value="Bathroom">Bathroom</button>
-                <button type="button" class="option-btn" data-value="Kitchen">Kitchen</button>
-                <button type="button" class="option-btn" data-value="Laundry">Laundry</button>
-                <button type="button" class="option-btn" data-value="Garage">Garage</button>
-                <button type="button" class="option-btn" data-value="CrawlSpace">Crawl space</button>
+                <button type="button" class="option-btn" data-value="Basement">@L["Basement"]</button>
+                <button type="button" class="option-btn" data-value="FirstFloor">@L["1st floor"]</button>
+                <button type="button" class="option-btn" data-value="SecondFloor">@L["2nd floor"]</button>
+                <button type="button" class="option-btn" data-value="Bathroom">@L["Bathroom"]</button>
+                <button type="button" class="option-btn" data-value="Kitchen">@L["Kitchen"]</button>
+                <button type="button" class="option-btn" data-value="Laundry">@L["Laundry"]</button>
+                <button type="button" class="option-btn" data-value="Garage">@L["Garage"]</button>
+                <button type="button" class="option-btn" data-value="CrawlSpace">@L["Crawl space"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Is water still active right now?</span>
+            <span class="field-label">@L["Is water still active right now?"]</span>
             <div class="segmented-3" data-target="AguaActiva">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> Upload photos first</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> @L["Upload photos first"]</button>
     </form>
 </div>
 @section Scripts {

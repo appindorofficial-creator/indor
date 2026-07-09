@@ -14,8 +14,14 @@ public class IndorNeighborRequestCategory
     [Required, MaxLength(80)]
     public string LabelEn { get; set; } = string.Empty;
 
+    [MaxLength(80)]
+    public string? LabelEs { get; set; }
+
     [MaxLength(200)]
     public string? DescriptionEn { get; set; }
+
+    [MaxLength(200)]
+    public string? DescriptionEs { get; set; }
 
     [MaxLength(60)]
     public string IconClass { get; set; } = "fa-circle";

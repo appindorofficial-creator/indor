@@ -15,71 +15,71 @@
             <input type="checkbox" name="toolMaintenanceRequests" value="true" @(s.ToolMaintenanceRequests ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-wrench"></i>
-            <strong>Maintenance requests</strong>
-            <small>Track and resolve issues</small>
+            <strong>@L["Maintenance requests"]</strong>
+            <small>@L["Track and resolve issues"]</small>
         </label>
         <label class="pa-tool-card @(s.ToolTurnoverCleaning ? "is-selected" : "")">
             <input type="checkbox" name="toolTurnoverCleaning" value="true" @(s.ToolTurnoverCleaning ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-wand-magic-sparkles"></i>
-            <strong>Turnover & cleaning</strong>
-            <small>Manage cleanings and turnovers</small>
+            <strong>@L["Turnover & cleaning"]</strong>
+            <small>@L["Manage cleanings and turnovers"]</small>
         </label>
         <label class="pa-tool-card @(s.ToolGuestMessaging ? "is-selected" : "")">
             <input type="checkbox" name="toolGuestMessaging" value="true" @(s.ToolGuestMessaging ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-comment-dots"></i>
-            <strong>Guest/tenant messaging</strong>
-            <small>Communicate in one place</small>
+            <strong>@L["Guest/tenant messaging"]</strong>
+            <small>@L["Communicate in one place"]</small>
         </label>
         <label class="pa-tool-card @(s.ToolInvoicesPayments ? "is-selected" : "")">
             <input type="checkbox" name="toolInvoicesPayments" value="true" @(s.ToolInvoicesPayments ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-file-invoice-dollar"></i>
-            <strong>Invoices & payments</strong>
-            <small>Create and collect payments</small>
+            <strong>@L["Invoices & payments"]</strong>
+            <small>@L["Create and collect payments"]</small>
         </label>
         <label class="pa-tool-card @(s.ToolDocumentsWarranties ? "is-selected" : "")">
             <input type="checkbox" name="toolDocumentsWarranties" value="true" @(s.ToolDocumentsWarranties ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-folder-open"></i>
-            <strong>Documents & warranties</strong>
-            <small>Store important documents</small>
+            <strong>@L["Documents & warranties"]</strong>
+            <small>@L["Store important documents"]</small>
         </label>
         <label class="pa-tool-card @(s.ToolServiceProviders ? "is-selected" : "")">
             <input type="checkbox" name="toolServiceProviders" value="true" @(s.ToolServiceProviders ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-user-gear"></i>
-            <strong>Service providers</strong>
-            <small>Manage vendors and contracts</small>
+            <strong>@L["Service providers"]</strong>
+            <small>@L["Manage vendors and contracts"]</small>
         </label>
         <label class="pa-tool-card wide @(s.ToolTeamAccess ? "is-selected" : "")">
             <input type="checkbox" name="toolTeamAccess" value="true" @(s.ToolTeamAccess ? "checked" : null) />
             <span class="pa-check"><i class="fas fa-check"></i></span>
             <i class="fas fa-users"></i>
-            <strong>Team access</strong>
-            <small>Invite and manage your team</small>
+            <strong>@L["Team access"]</strong>
+            <small>@L["Invite and manage your team"]</small>
         </label>
     </div>
 
-    <p class="pa-notify-title">NOTIFICATION PREFERENCES</p>
+    <p class="pa-notify-title">@L["NOTIFICATION PREFERENCES"]</p>
     <div class="pa-review-card" style="padding:4px 16px;">
         <div class="pa-toggle-row">
-            <div class="left"><i class="fas fa-bell"></i> Urgent maintenance alerts</div>
+            <div class="left"><i class="fas fa-bell"></i> @L["Urgent maintenance alerts"]</div>
             <label class="pa-switch">
                 <input type="checkbox" name="notifyUrgentMaintenance" value="true" @(s.NotifyUrgentMaintenance ? "checked" : null) />
                 <span></span>
             </label>
         </div>
         <div class="pa-toggle-row">
-            <div class="left"><i class="fas fa-calendar-week"></i> Weekly portfolio summary</div>
+            <div class="left"><i class="fas fa-calendar-week"></i> @L["Weekly portfolio summary"]</div>
             <label class="pa-switch">
                 <input type="checkbox" name="notifyWeeklySummary" value="true" @(s.NotifyWeeklySummary ? "checked" : null) />
                 <span></span>
             </label>
         </div>
         <div class="pa-toggle-row">
-            <div class="left"><i class="fas fa-envelope"></i> Booking or lease updates</div>
+            <div class="left"><i class="fas fa-envelope"></i> @L["Booking or lease updates"]</div>
             <label class="pa-switch">
                 <input type="checkbox" name="notifyBookingLeaseUpdates" value="true" @(s.NotifyBookingLeaseUpdates ? "checked" : null) />
                 <span></span>

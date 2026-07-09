@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyElectricalLocationViewModel
 @{
-    ViewData["Title"] = "Electrical emergency - INDOR";
-    ViewData["WizardTitle"] = "Electrical emergency";
+    ViewData["Title"] = L["Electrical emergency - INDOR"];
+    ViewData["WizardTitle"] = L["Electrical emergency"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyElectricalProblem", "Inspecciones", new { id = Model.ServicioEmergenciaId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
@@ -9,11 +9,11 @@
 }
 
 
-    <strong style="display:block;margin-bottom:6px;">Electrical emergency</strong>
+    <strong style="display:block;margin-bottom:6px;">@L["Electrical emergency"]</strong>
     
 <div class="issue-banner"><i class="fas fa-bolt"></i> @Model.ProblemaResumen</div>
 
-    <h2 class="page-heading">Location &amp; safety</h2>
+    <h2 class="page-heading">@L["Location &amp; safety"]</h2>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyElectricalLocation" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -28,55 +28,55 @@
         <input type="hidden" asp-for="PuedeAlejarse" id="PuedeAlejarse" />
 
         <div class="field-card">
-            <span class="field-label">Where is the problem?</span>
+            <span class="field-label">@L["Where is the problem?"]</span>
             <div class="option-grid" data-target="UbicacionProblema" data-single="true">
-                <button type="button" class="option-btn" data-value="WholeHouse">Whole house</button>
-                <button type="button" class="option-btn" data-value="Kitchen">Kitchen</button>
-                <button type="button" class="option-btn" data-value="LivingRoom">Living room</button>
-                <button type="button" class="option-btn" data-value="Bedroom">Bedroom</button>
-                <button type="button" class="option-btn" data-value="Bathroom">Bathroom</button>
-                <button type="button" class="option-btn" data-value="Garage">Garage</button>
-                <button type="button" class="option-btn" data-value="Outside">Outside</button>
-                <button type="button" class="option-btn" data-value="ElectricalPanel">Electrical panel</button>
+                <button type="button" class="option-btn" data-value="WholeHouse">@L["Whole house"]</button>
+                <button type="button" class="option-btn" data-value="Kitchen">@L["Kitchen"]</button>
+                <button type="button" class="option-btn" data-value="LivingRoom">@L["Living room"]</button>
+                <button type="button" class="option-btn" data-value="Bedroom">@L["Bedroom"]</button>
+                <button type="button" class="option-btn" data-value="Bathroom">@L["Bathroom"]</button>
+                <button type="button" class="option-btn" data-value="Garage">@L["Garage"]</button>
+                <button type="button" class="option-btn" data-value="Outside">@L["Outside"]</button>
+                <button type="button" class="option-btn" data-value="ElectricalPanel">@L["Electrical panel"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What do you notice right now? (Select all that apply)</span>
+            <span class="field-label">@L["What do you notice right now? (Select all that apply)"]</span>
             <div class="symptom-list" id="symptomGroup">
-                <button type="button" class="symptom-btn" data-value="NoPower">No power <i class="fas fa-check check"></i></button>
-                <button type="button" class="symptom-btn" data-value="Sparks">Sparks <i class="fas fa-check check"></i></button>
-                <button type="button" class="symptom-btn" data-value="BurningSmell">Burning smell <i class="fas fa-check check"></i></button>
-                <button type="button" class="symptom-btn" data-value="WarmOutlet">Warm outlet <i class="fas fa-check check"></i></button>
-                <button type="button" class="symptom-btn" data-value="Buzzing">Buzzing <i class="fas fa-check check"></i></button>
-                <button type="button" class="symptom-btn" data-value="LightsFlickering">Lights flickering <i class="fas fa-check check"></i></button>
+                <button type="button" class="symptom-btn" data-value="NoPower">@L["No power"] <i class="fas fa-check check"></i></button>
+                <button type="button" class="symptom-btn" data-value="Sparks">@L["Sparks"] <i class="fas fa-check check"></i></button>
+                <button type="button" class="symptom-btn" data-value="BurningSmell">@L["Burning smell"] <i class="fas fa-check check"></i></button>
+                <button type="button" class="symptom-btn" data-value="WarmOutlet">@L["Warm outlet"] <i class="fas fa-check check"></i></button>
+                <button type="button" class="symptom-btn" data-value="Buzzing">@L["Buzzing"] <i class="fas fa-check check"></i></button>
+                <button type="button" class="symptom-btn" data-value="LightsFlickering">@L["Lights flickering"] <i class="fas fa-check check"></i></button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Is power still on in that area?</span>
+            <span class="field-label">@L["Is power still on in that area?"]</span>
             <div class="choice-row" data-target="EnergiaEncendida">
-                <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>Yes</button>
-                <button type="button" class="choice-btn" data-value="No"><i class="fas fa-xmark" style="color:#DC2626;"></i>No</button>
-                <button type="button" class="choice-btn" data-value="NotSure"><i class="fas fa-circle-question" style="color:#64748B;"></i>Not sure</button>
+                <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>@L["Yes"]</button>
+                <button type="button" class="choice-btn" data-value="No"><i class="fas fa-xmark" style="color:#DC2626;"></i>@L["No"]</button>
+                <button type="button" class="choice-btn" data-value="NotSure"><i class="fas fa-circle-question" style="color:#64748B;"></i>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Can you stay safely away from the affected area?</span>
+            <span class="field-label">@L["Can you stay safely away from the affected area?"]</span>
             <div class="choice-row cols-2" data-target="PuedeAlejarse">
-                <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>Yes</button>
-                <button type="button" class="choice-btn" data-value="NeedHelp"><i class="fas fa-triangle-exclamation" style="color:#DC2626;"></i>Need help</button>
+                <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>@L["Yes"]</button>
+                <button type="button" class="choice-btn" data-value="NeedHelp"><i class="fas fa-triangle-exclamation" style="color:#DC2626;"></i>@L["Need help"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-shield-halved"></i>
-            <div>Stay away from hot outlets, exposed wires, or panels with smoke.</div>
+            <div>@L["Stay away from hot outlets, exposed wires, or panels with smoke."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Continue</button>
-        <button type="submit" class="btn-outline" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Continue"]</button>
+        <button type="submit" class="btn-outline" name="action" value="back">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

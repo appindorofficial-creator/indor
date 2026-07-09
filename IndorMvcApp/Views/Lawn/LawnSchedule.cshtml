@@ -26,12 +26,12 @@
             <div class="review-list">
                 <div class="review-item"><i class="fas fa-rotate"></i><span>@Model.FrequencyLabel</span></div>
                 <div class="review-item"><i class="fas fa-house"></i><span>@Model.AreaLabel</span></div>
-                <div class="review-item"><i class="fas fa-tag"></i><span>Estimated total <strong>$@Model.PrecioTotal.ToString("0")</strong></span></div>
+                <div class="review-item"><i class="fas fa-tag"></i><span>@L["Estimated total"] <strong>$@Model.PrecioTotal.ToString("0")</strong></span></div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Choose the first date</span>
+            <span class="field-label">@L["Choose the first date"]</span>
             <div class="date-scroll" id="dateGroup">
                 @foreach (var date in Model.DateOptions)
                 {
@@ -47,7 +47,7 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label">Time window</span>
+            <span class="field-label">@L["Time window"]</span>
             <div class="time-grid" id="timeGroup">
                 @foreach (var slot in Model.TimeWindowOptions)
                 {
@@ -62,8 +62,8 @@
             <div class="reminder-card-head">
                 <span class="reminder-icon"><i class="fas fa-bell"></i></span>
                 <div>
-                    <strong>Active reminder</strong>
-                    <p>We will notify you to schedule or repeat the service.</p>
+                    <strong>@L["Active reminder"]</strong>
+                    <p>@L["We will notify you to schedule or repeat the service."]</p>
                 </div>
                 <label class="toggle-switch">
                     <input type="checkbox" id="reminderToggle" @(Model.RecordatorioActivo ? "checked" : null) />
@@ -72,11 +72,11 @@
             </div>
             <div class="reminder-settings" id="reminderSettings">
                 <div class="reminder-setting-row">
-                    <span>Repeat reminder</span>
+                    <span>@L["Repeat reminder"]</span>
                     <strong id="repeatLabel">@Model.FrequencyLabel</strong>
                 </div>
                 <div class="field-card" style="margin:10px 0 0;padding:10px 0 0;border:none;box-shadow:none;">
-                    <span class="field-label" style="font-size:.78rem;">Notify me</span>
+                    <span class="field-label" style="font-size:.78rem;">@L["Notify me"]</span>
                     <div class="segment-group" id="leadGroup">
                         @foreach (var lead in Model.ReminderLeadOptions)
                         {
@@ -85,7 +85,7 @@
                     </div>
                 </div>
                 <div class="field-card" style="margin:0;padding:10px 0 0;border:none;box-shadow:none;">
-                    <span class="field-label" style="font-size:.78rem;">Reminder channel</span>
+                    <span class="field-label" style="font-size:.78rem;">@L["Reminder channel"]</span>
                     <div class="segment-group" id="channelGroup">
                         @foreach (var channel in Model.ReminderChannelOptions)
                         {
@@ -97,8 +97,8 @@
             </div>
         </div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 
 @section Scripts {

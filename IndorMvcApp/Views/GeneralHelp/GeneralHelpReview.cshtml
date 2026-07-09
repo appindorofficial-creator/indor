@@ -10,32 +10,32 @@
 
 
 <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
-    <p class="page-lead" style="margin-top:-8px;text-align:center;">Confirm your general help request before sending.</p>
+    <p class="page-lead" style="margin-top:-8px;text-align:center;">@L["Confirm your general help request before sending."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="summary-card">
-        <strong style="font-size:0.92rem;display:block;margin-bottom:10px;">Request summary</strong>
-        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-people-carry-box"></i><div><div class="summary-label">Request type</div><div class="summary-value">@Model.TipoAyudaLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Address</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Timing</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-shield"></i><div><div class="summary-label">Urgency</div><div class="summary-value">@Model.UrgenciaLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-comment"></i><div><div class="summary-label">Contact</div><div class="summary-value">@Model.ContactoPreferidoLabel</div></div></div>
+        <strong style="font-size:0.92rem;display:block;margin-bottom:10px;">@L["Request summary"]</strong>
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-people-carry-box"></i><div><div class="summary-label">@L["Request type"]</div><div class="summary-value">@Model.TipoAyudaLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timing"]</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-shield"></i><div><div class="summary-label">@L["Urgency"]</div><div class="summary-value">@Model.UrgenciaLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-comment"></i><div><div class="summary-label">@L["Contact"]</div><div class="summary-value">@Model.ContactoPreferidoLabel</div></div></div>
         @if (!string.IsNullOrWhiteSpace(Model.AccesoLabel) && Model.AccesoLabel != "—")
         {
-            <div class="summary-row"><i class="fas fa-door-open"></i><div><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
+            <div class="summary-row"><i class="fas fa-door-open"></i><div><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
         }
         @if (!string.IsNullOrWhiteSpace(Model.Descripcion))
         {
-            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">Note</div><div class="summary-value">@Model.Descripcion</div></div></div>
+            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">@L["Note"]</div><div class="summary-value">@Model.Descripcion</div></div></div>
         }
     </div>
 
     @if (Model.ArchivosExistentes.Count > 0)
     {
         <div class="field-card">
-            <span class="field-label">Photos</span>
+            <span class="field-label">@L["Photos"]</span>
             @foreach (var file in Model.ArchivosExistentes)
             {
                 <div class="included-row"><i class="fas fa-image"></i><span>@file.NombreArchivo</span></div>
@@ -44,20 +44,20 @@
     }
 
     <div class="field-card">
-        <strong style="font-size:0.92rem;display:block;margin-bottom:12px;">What happens next</strong>
+        <strong style="font-size:0.92rem;display:block;margin-bottom:12px;">@L["What happens next"]</strong>
         <div class="next-steps">
-            <div class="next-step"><i class="fas fa-magnifying-glass"></i>We review your request</div>
+            <div class="next-step"><i class="fas fa-magnifying-glass"></i>@L["We review your request"]</div>
             <span class="dots">···</span>
-            <div class="next-step"><i class="fas fa-people-group"></i>We match the right helper</div>
+            <div class="next-step"><i class="fas fa-people-group"></i>@L["We match the right helper"]</div>
             <span class="dots">···</span>
-            <div class="next-step"><i class="fas fa-check"></i>You receive confirmation</div>
+            <div class="next-step"><i class="fas fa-check"></i>@L["You receive confirmation"]</div>
         </div>
     </div>
 
-    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>Urgent requests may be contacted first by text or call to confirm details quickly.</span></div>
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Urgent requests may be contacted first by text or call to confirm details quickly."]</span></div>
 
     <form asp-action="GeneralHelpReview" method="post">
         <input type="hidden" name="id" value="@Model.SolicitudId" />
-        <button type="submit" name="action" value="submit" class="btn-primary">Submit Request</button>
-        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+        <button type="submit" name="action" value="submit" class="btn-primary">@L["Submit Request"]</button>
+        <button type="submit" name="action" value="edit" class="btn-outline">@L["Edit details"]</button>
     </form>

@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProJobsPageViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Jobs - INDOR PRO";
+    ViewData["Title"] = L["Jobs - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
     ViewBag.CompanyInitial = Model.CompanyName.Trim().Length > 0
@@ -48,28 +48,28 @@
 <div class="prv-pro-shell prv-pro-shell--jobs prv-pro-shell--jobs-v2">
     <div class="prv-pro-portal-page-hero">
         <div class="prv-pro-jobs-hero-top">
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="INDOR PRO home">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="@L["INDOR PRO home"]">
                 <i class="fas fa-house" aria-hidden="true"></i>
-                <span class="prv-pro-brand-indor">INDOR</span>
-                <span class="prv-pro-brand-pro">PRO</span>
+                <span class="prv-pro-brand-indor">@L["INDOR"]</span>
+                <span class="prv-pro-brand-pro">@L["PRO"]</span>
             </a>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-pro-jobs-hero-header">
             <div class="prv-pro-jobs-hero-title-row">
-                <h1>Jobs</h1>
-                <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn" aria-label="Create job">
+                <h1>@L["Jobs"]</h1>
+                <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="jobs" class="prv-pro-jobs-create-btn" aria-label="@L["Create job"]">
                     <i class="fas fa-plus" aria-hidden="true"></i> Create Job
                 </a>
             </div>
-            <p>Your operational hub for leads, jobs, estimates, reports, and payments.</p>
+            <p>@L["Your operational hub for leads, jobs, estimates, reports, and payments."]</p>
         </div>
 
         <form method="get" asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-jobs-hero-search">
             <div class="prv-pro-jobs-search-row">
                 <div class="prv-pro-search-wrap">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs, customers, properties" />
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search jobs, customers, properties"]" />
                 </div>
                 <div class="prv-pro-filter-wrap">
                     <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvJobsFilterBtn" aria-haspopup="true" aria-expanded="false">
@@ -101,8 +101,8 @@
                        asp-route-q="@Model.SearchQuery"
                        class="prv-pro-jobs-filter-chip @(Model.ActiveTab == id ? "is-active" : null)">@label</a>
                 }
-                <a asp-controller="Proveedor" asp-action="Network" class="prv-pro-jobs-filter-chip">Network</a>
-                <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-pro-jobs-filter-chip prv-pro-jobs-filter-chip--outline">Subcontractors</a>
+                <a asp-controller="Proveedor" asp-action="Network" class="prv-pro-jobs-filter-chip">@L["Network"]</a>
+                <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-pro-jobs-filter-chip prv-pro-jobs-filter-chip--outline">@L["Subcontractors"]</a>
             </div>
         </form>
     </div>
@@ -126,7 +126,7 @@
             <a asp-controller="Proveedor" asp-action="DaySchedule"
                asp-route-date="@DateTime.Today.ToString("yyyy-MM-dd")"
                asp-route-from="jobs"
-               class="prv-pro-jobs-list-schedule-link">Today's schedule <i class="fas fa-chevron-right"></i></a>
+               class="prv-pro-jobs-list-schedule-link">@L["Today's schedule"]<i class="fas fa-chevron-right"></i></a>
         }
     </div>
     <div class="prv-pro-jobs-info">
@@ -138,7 +138,7 @@
         @if (Model.Items.Count == 0)
         {
             <div class="prv-pro-jobs-empty">
-                <p class="prv-pro-empty">No items in this view yet. Jobs, leads, and estimates from your account will appear here.</p>
+                <p class="prv-pro-empty">@L["No items in this view yet. Jobs, leads, and estimates from your account will appear here."]</p>
             </div>
         }
         else
@@ -146,7 +146,7 @@
             @foreach (var item in Model.Items)
             {
                 <article class="prv-pro-job-card">
-                    <button type="button" class="prv-pro-job-card-menu" aria-label="More options"><i class="fas fa-ellipsis-vertical"></i></button>
+                    <button type="button" class="prv-pro-job-card-menu" aria-label="@L["More options"]"><i class="fas fa-ellipsis-vertical"></i></button>
 
                     <div class="prv-pro-job-card-main">
                         <span class="prv-pro-job-card-icon prv-pro-job-card-icon--@item.IconTone">
@@ -179,38 +179,38 @@
                             @if (item.ItemKind == "Estimate" && item.ItemId.HasValue)
                             {
                                 <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@item.ItemId" class="prv-pro-job-quick-link prv-pro-job-quick-link--blue">
-                                    <i class="fas fa-file-invoice"></i><span>Estimate</span>
+                                    <i class="fas fa-file-invoice"></i><span>@L["Estimate"]</span>
                                 </a>
                             }
                             else if (item.ItemKind == "Lead" && item.ItemId.HasValue)
                             {
                                 <a asp-controller="Proveedor" asp-action="QuickEstimate" asp-route-id="@item.ItemId" class="prv-pro-job-quick-link prv-pro-job-quick-link--blue">
-                                    <i class="fas fa-file-invoice"></i><span>Estimate</span>
+                                    <i class="fas fa-file-invoice"></i><span>@L["Estimate"]</span>
                                 </a>
                             }
                             else if (item.ItemKind == "Job" && item.ClienteId.HasValue)
                             {
                                 <a asp-controller="Proveedor" asp-action="CreateEstimate" asp-route-clienteId="@item.ClienteId" class="prv-pro-job-quick-link prv-pro-job-quick-link--blue">
-                                    <i class="fas fa-file-invoice"></i><span>Estimate</span>
+                                    <i class="fas fa-file-invoice"></i><span>@L["Estimate"]</span>
                                 </a>
                             }
                         }
                         @if (item.ShowPhotosLink && item.ItemKind == "Job" && item.ItemId.HasValue)
                         {
                             <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="inprogress" class="prv-pro-job-quick-link prv-pro-job-quick-link--green">
-                                <i class="fas fa-camera"></i><span>Photos</span>
+                                <i class="fas fa-camera"></i><span>@L["Photos"]</span>
                             </a>
                         }
                         @if (item.ShowChecklistLink && item.ItemKind == "Job" && item.ItemId.HasValue)
                         {
                             <a asp-controller="Proveedor" asp-action="ActiveJob" asp-route-id="@item.ItemId" class="prv-pro-job-quick-link prv-pro-job-quick-link--purple">
-                                <i class="fas fa-list-check"></i><span>Checklist</span>
+                                <i class="fas fa-list-check"></i><span>@L["Checklist"]</span>
                             </a>
                         }
                         @if (item.ShowHouseFactsLink)
                         {
                             <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts" class="prv-pro-job-quick-link prv-pro-job-quick-link--orange">
-                                <i class="fas fa-house"></i><span>House Facts</span>
+                                <i class="fas fa-house"></i><span>@L["House Facts"]</span>
                             </a>
                         }
                     </div>

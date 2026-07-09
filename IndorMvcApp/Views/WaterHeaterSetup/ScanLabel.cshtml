@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.WaterHeaterScanLabelViewModel
 @{
-    ViewData["Title"] = "Scan Water Heater Label";
+    ViewData["Title"] = L["Scan Water Heater Label"];
     var hasSavedPreview = !string.IsNullOrWhiteSpace(Model.PreviewImageUrl);
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
@@ -24,14 +24,14 @@ Model.CurrentStep
                     <video id="cameraVideo" class="hvac-camera-live @(hasSavedPreview ? "is-hidden" : "")" autoplay playsinline muted></video>
                     <div id="cameraEmpty" class="hvac-camera-empty @(hasSavedPreview ? "is-hidden" : "")">
                         <i class="fas fa-camera"></i>
-                        <span>Open your camera or upload a label photo</span>
+                        <span>@L["Open your camera or upload a label photo"]</span>
                     </div>
                     <img src="@(hasSavedPreview ? Url.Content($"~{Model.PreviewImageUrl}") : "")"
-                         alt="Your water heater label photo"
+                         alt="@L["Your water heater label photo"]"
                          class="hvac-camera-sample @(hasSavedPreview ? "is-custom" : "is-hidden")"
                          id="previewImage" />
                     <div class="hvac-camera-frame" aria-hidden="true"></div>
-                    <div class="hvac-camera-hint">Center the manufacturer label in the frame</div>
+                    <div class="hvac-camera-hint">@L["Center the manufacturer label in the frame"]</div>
                 </div>
             </div>
 
@@ -41,8 +41,8 @@ Model.CurrentStep
             <button type="button" class="hvac-save-btn hvac-btn-with-icon" id="captureBtn">
                 <i class="fas fa-camera"></i> <span id="captureBtnText">@(hasSavedPreview ? "Use this photo" : "Capture label")</span>
             </button>
-            <button type="button" class="hvac-text-btn" id="uploadBtn">Upload photo instead</button>
-            <button type="submit" class="hvac-text-btn">Continue with estimated details</button>
+            <button type="button" class="hvac-text-btn" id="uploadBtn">@L["Upload photo instead"]</button>
+            <button type="submit" class="hvac-text-btn">@L["Continue with estimated details"]</button>
         </form>
     </div>
 
@@ -77,7 +77,7 @@ Model.CurrentStep
             hideElement(cameraVideo);
             hideElement(cameraEmpty);
             hasSelectedFile = true;
-            captureBtnText.textContent = 'Use this photo';
+            captureBtnText.textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use this photo"]));
         }
 
         async function startCamera() {

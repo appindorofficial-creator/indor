@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.StructuralDetailsViewModel
+@model IndorMvcApp.ViewModels.StructuralDetailsViewModel
 @{
-    ViewData["Title"] = "Structural Details - INDOR";
-    ViewData["WizardTitle"] = "Structural Details";
+    ViewData["Title"] = L["Structural Details - INDOR"];
+    ViewData["WizardTitle"] = L["Structural Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 6;
 
 }
 
-<h1 class="page-heading">Tell us about your structural concern</h1>
-    <p class="page-lead">This helps INDOR prepare the right checklist and send the right provider.</p>
+<h1 class="page-heading">@L["Tell us about your structural concern"]</h1>
+    <p class="page-lead">@L["This helps INDOR prepare the right checklist and send the right provider."]</p>
 
     <form asp-controller="Inspecciones" asp-action="StructuralDetails" method="post">
         <input type="hidden" asp-for="InspeccionId" />
@@ -22,65 +22,65 @@
         <input type="hidden" asp-for="DanoVisible" id="DanoVisible" />
 
         <div class="field-card">
-            <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
-            <div class="input-wrap"><i class="fas fa-location-dot"></i><input asp-for="DireccionPropiedad" class="form-input" placeholder="123 Main St, Charlotte, NC 28202" required /></div>
+            <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
+            <div class="input-wrap"><i class="fas fa-location-dot"></i><input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required /></div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What type of structural issue is it?</span>
+            <span class="field-label">@L["What type of structural issue is it?"]</span>
             <div class="issue-grid" id="tiposGroup">
-                <button type="button" class="issue-btn" data-value="FoundationCrack"><span class="check"><i class="fas fa-check"></i></span>Foundation crack</button>
-                <button type="button" class="issue-btn" data-value="WallCrack"><span class="check"><i class="fas fa-check"></i></span>Wall crack</button>
-                <button type="button" class="issue-btn" data-value="FloorSloping"><span class="check"><i class="fas fa-check"></i></span>Floor sloping</button>
-                <button type="button" class="issue-btn" data-value="SettlementSigns"><span class="check"><i class="fas fa-check"></i></span>Settlement signs</button>
-                <button type="button" class="issue-btn" data-value="SaggingFloor"><span class="check"><i class="fas fa-check"></i></span>Sagging floor</button>
-                <button type="button" class="issue-btn" data-value="SaggingRoof"><span class="check"><i class="fas fa-check"></i></span>Sagging roof</button>
-                <button type="button" class="issue-btn" data-value="DoorWindowSticking"><span class="check"><i class="fas fa-check"></i></span>Door / window sticking</button>
-                <button type="button" class="issue-btn" data-value="SupportColumn"><span class="check"><i class="fas fa-check"></i></span>Support column</button>
-                <button type="button" class="issue-btn" data-value="BeamConcern"><span class="check"><i class="fas fa-check"></i></span>Beam concern</button>
-                <button type="button" class="issue-btn" data-value="CrawlSpaceIssue"><span class="check"><i class="fas fa-check"></i></span>Crawl space issue</button>
-                <button type="button" class="issue-btn" data-value="ChimneyCrack"><span class="check"><i class="fas fa-check"></i></span>Chimney crack</button>
-                <button type="button" class="issue-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>General review</button>
+                <button type="button" class="issue-btn" data-value="FoundationCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Foundation crack"]</button>
+                <button type="button" class="issue-btn" data-value="WallCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Wall crack"]</button>
+                <button type="button" class="issue-btn" data-value="FloorSloping"><span class="check"><i class="fas fa-check"></i></span>@L["Floor sloping"]</button>
+                <button type="button" class="issue-btn" data-value="SettlementSigns"><span class="check"><i class="fas fa-check"></i></span>@L["Settlement signs"]</button>
+                <button type="button" class="issue-btn" data-value="SaggingFloor"><span class="check"><i class="fas fa-check"></i></span>@L["Sagging floor"]</button>
+                <button type="button" class="issue-btn" data-value="SaggingRoof"><span class="check"><i class="fas fa-check"></i></span>@L["Sagging roof"]</button>
+                <button type="button" class="issue-btn" data-value="DoorWindowSticking"><span class="check"><i class="fas fa-check"></i></span>@L["Door / window sticking"]</button>
+                <button type="button" class="issue-btn" data-value="SupportColumn"><span class="check"><i class="fas fa-check"></i></span>@L["Support column"]</button>
+                <button type="button" class="issue-btn" data-value="BeamConcern"><span class="check"><i class="fas fa-check"></i></span>@L["Beam concern"]</button>
+                <button type="button" class="issue-btn" data-value="CrawlSpaceIssue"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space issue"]</button>
+                <button type="button" class="issue-btn" data-value="ChimneyCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Chimney crack"]</button>
+                <button type="button" class="issue-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>@L["General review"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Which area needs attention?</span>
+            <span class="field-label">@L["Which area needs attention?"]</span>
             <div class="area-group" data-target="AreaPreocupacion">
-                <button type="button" class="area-btn" data-value="Foundation"><span class="check"><i class="fas fa-check"></i></span>Foundation</button>
-                <button type="button" class="area-btn" data-value="InteriorWall"><span class="check"><i class="fas fa-check"></i></span>Interior wall</button>
-                <button type="button" class="area-btn" data-value="ExteriorWall"><span class="check"><i class="fas fa-check"></i></span>Exterior wall</button>
-                <button type="button" class="area-btn" data-value="Floor"><span class="check"><i class="fas fa-check"></i></span>Floor</button>
-                <button type="button" class="area-btn" data-value="CeilingRoof"><span class="check"><i class="fas fa-check"></i></span>Ceiling / roof</button>
-                <button type="button" class="area-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>Crawl space</button>
-                <button type="button" class="area-btn" data-value="GarageSlab"><span class="check"><i class="fas fa-check"></i></span>Garage slab</button>
-                <button type="button" class="area-btn" data-value="WholeHouse"><span class="check"><i class="fas fa-check"></i></span>Whole house</button>
+                <button type="button" class="area-btn" data-value="Foundation"><span class="check"><i class="fas fa-check"></i></span>@L["Foundation"]</button>
+                <button type="button" class="area-btn" data-value="InteriorWall"><span class="check"><i class="fas fa-check"></i></span>@L["Interior wall"]</button>
+                <button type="button" class="area-btn" data-value="ExteriorWall"><span class="check"><i class="fas fa-check"></i></span>@L["Exterior wall"]</button>
+                <button type="button" class="area-btn" data-value="Floor"><span class="check"><i class="fas fa-check"></i></span>@L["Floor"]</button>
+                <button type="button" class="area-btn" data-value="CeilingRoof"><span class="check"><i class="fas fa-check"></i></span>@L["Ceiling / roof"]</button>
+                <button type="button" class="area-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space"]</button>
+                <button type="button" class="area-btn" data-value="GarageSlab"><span class="check"><i class="fas fa-check"></i></span>@L["Garage slab"]</button>
+                <button type="button" class="area-btn" data-value="WholeHouse"><span class="check"><i class="fas fa-check"></i></span>@L["Whole house"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is it?</span>
+            <span class="field-label">@L["How urgent is it?"]</span>
             <div class="segmented-3" data-target="Urgencia">
-                <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                <button type="button" class="segment-btn emergency" data-value="Emergency">Emergency</button>
+                <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                <button type="button" class="segment-btn emergency" data-value="Emergency">@L["Emergency"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Is movement or cracking active right now?</span>
+            <span class="field-label">@L["Is movement or cracking active right now?"]</span>
             <div class="segmented-3" data-target="DanoVisible">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <div class="info-box"><i class="fas fa-circle-info"></i><div>If you see major movement, widening cracks, or unsafe floors, choose <strong>Emergency</strong> or contact support immediately.</div></div>
+        <div class="info-box"><i class="fas fa-circle-info"></i><div>@L["If you see major movement, widening cracks, or unsafe floors, choose"] <strong>@L["Emergency"]</strong> @L["or contact support immediately."]</div></div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> Upload photos or report</button>
-        <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos or report"]</button>
+        <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
     </form>
 </div>
 @section Scripts {

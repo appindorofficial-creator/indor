@@ -13,7 +13,7 @@
         displayCategories = categories.Take(7).ToList();
     }
 }
-<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="prv-wiz-step-label">@L.T("Step {0} of {1}", Model.Step, Model.TotalSteps)</div>
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
@@ -38,8 +38,8 @@
     <div class="prv-wiz-assessment-box">
         <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-clipboard-check"></i></span>
         <div>
-            <strong>Trade Assessment</strong>
-            <p>Take a short assessment based on your main category to help validate quality and experience.</p>
+            <strong>@L["Trade Assessment"]</strong>
+            <p>@L["Take a short assessment based on your main category to help validate quality and experience."]</p>
             <div class="prv-wiz-assessment-badges">
                 <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Optional for using the software</span>
                 <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-check"></i> Required for INDOR Provider activation</span>
@@ -56,6 +56,6 @@
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="take-assessment" class="ob-btn ob-btn-primary">Take Assessment</button>
-    <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="skip" class="ob-btn ob-btn-outline">Skip for Now</button>
+    <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="take-assessment" class="ob-btn ob-btn-primary">@L["Take Assessment"]</button>
+    <button type="submit" form="prvCategoriesAssessmentForm" name="action" value="skip" class="ob-btn ob-btn-outline">@L["Skip for Now"]</button>
 </div>

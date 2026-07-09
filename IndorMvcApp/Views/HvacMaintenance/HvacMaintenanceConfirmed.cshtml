@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HvacMaintenanceConfirmedViewModel
 @{
-    ViewData["Title"] = "Tune-up request sent - INDOR";
+    ViewData["Title"] = L["Tune-up request sent - INDOR"];
 var scheduleUrl = $"{Url.Action("Index", "Home")}#section-schedule";
     var homeCareGuideUrl = Url.Action("HomeCareGuide", "Home");
     ViewData["WizardTitle"] = Model.NombreServicio;
@@ -11,27 +11,27 @@ var scheduleUrl = $"{Url.Action("Index", "Home")}#section-schedule";
 
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Tune-up request sent</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your yearly HVAC service is being arranged.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["Tune-up request sent"]</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L["Your yearly HVAC service is being arranged."]</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-fan"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-barcode"></i><div><div class="summary-label">System serial</div><div class="summary-value">@Model.SerialLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Last maintenance</div><div class="summary-value">@Model.LastMaintenanceLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Visit window</div><div class="summary-value">@Model.VisitWindowLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">Reminder</div><div class="summary-value">@Model.ReminderLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-fan"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-barcode"></i><div><div class="summary-label">@L["System serial"]</div><div class="summary-value">@Model.SerialLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Last maintenance"]</div><div class="summary-value">@Model.LastMaintenanceLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Visit window"]</div><div class="summary-value">@Model.VisitWindowLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-bell"></i><div><div class="summary-label">@L["Reminder"]</div><div class="summary-value">@Model.ReminderLabel</div></div></div>
     </div>
 
     <div class="next-steps">
-        <h4>What happens next</h4>
-        <div class="next-step-item"><i class="fas fa-user-check"></i><span>A technician will review your request</span></div>
-        <div class="next-step-item"><i class="fas fa-mobile-screen"></i><span>You'll receive confirmation in the app</span></div>
-        <div class="next-step-item"><i class="fas fa-calendar-check"></i><span>We'll remind you before next year's service</span></div>
+        <h4>@L["What happens next"]</h4>
+        <div class="next-step-item"><i class="fas fa-user-check"></i><span>@L["A technician will review your request"]</span></div>
+        <div class="next-step-item"><i class="fas fa-mobile-screen"></i><span>@L["You'll receive confirmation in the app"]</span></div>
+        <div class="next-step-item"><i class="fas fa-calendar-check"></i><span>@L["We'll remind you before next year's service"]</span></div>
     </div>
 
     <a href="@scheduleUrl" class="btn-primary">
-        <i class="fas fa-calendar"></i> Go to My Schedule <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-calendar"></i> @L["Go to My Schedule"] <i class="fas fa-chevron-right"></i>
     </a>
     <a href="@homeCareGuideUrl" class="btn-outline" style="margin-top:10px;">
         <i class="fas fa-house"></i> Back to Home Care Guide

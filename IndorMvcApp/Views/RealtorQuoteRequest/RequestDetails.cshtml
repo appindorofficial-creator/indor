@@ -10,7 +10,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">How do you want to request quotes?</h2>
+    <h2 class="rl-invite-section-title">@L["How do you want to request quotes?"]</h2>
 
     <div class="rl-file-type-list">
 
@@ -42,13 +42,13 @@
 
 
 
-    <h2 class="rl-invite-section-title">What should providers receive?</h2>
+    <h2 class="rl-invite-section-title">@L["What should providers receive?"]</h2>
 
     <div class="rl-toggle-list">
 
         <label class="rl-toggle-row">
 
-            <span><i class="fas fa-camera"></i> Photos &amp; Videos</span>
+            <span><i class="fas fa-camera"></i> @L["Photos &amp; Videos"]</span>
 
             <input type="checkbox" name="sharePhotosVideos" value="true" @(Model.SharePhotosVideos ? "checked" : null) />
 
@@ -58,7 +58,7 @@
 
         <label class="rl-toggle-row">
 
-            <span><i class="fas fa-file-lines"></i> Inspection Report</span>
+            <span><i class="fas fa-file-lines"></i> @L["Inspection Report"]</span>
 
             <input type="checkbox" name="shareInspectionReport" value="true" @(Model.ShareInspectionReport ? "checked" : null) />
 
@@ -68,7 +68,7 @@
 
         <label class="rl-toggle-row">
 
-            <span><i class="fas fa-wrench"></i> Repair Items</span>
+            <span><i class="fas fa-wrench"></i> @L["Repair Items"]</span>
 
             <input type="checkbox" name="shareRepairItems" value="true" @(Model.ShareRepairItems ? "checked" : null) />
 
@@ -78,7 +78,7 @@
 
         <label class="rl-toggle-row">
 
-            <span><i class="fas fa-note-sticky"></i> Notes &amp; Documents</span>
+            <span><i class="fas fa-note-sticky"></i> @L["Notes &amp; Documents"]</span>
 
             <input type="checkbox" name="shareNotes" value="true" @(Model.ShareNotes ? "checked" : null) />
 
@@ -90,7 +90,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">Response deadline</h2>
+    <h2 class="rl-invite-section-title">@L["Response deadline"]</h2>
 
     <div class="rl-deadline-row">
 
@@ -118,7 +118,7 @@
 
         <i class="fas fa-circle-info"></i>
 
-        <p>Keep it simple: most realtors only need to choose full file or by item, what documents to share, and when they want responses.</p>
+        <p>@L["Keep it simple: most realtors only need to choose full file or by item, what documents to share, and when they want responses."]</p>
 
     </div>
 
@@ -128,9 +128,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="BackToProperty" class="rl-invite-cancel">Back</a>
+    <a asp-action="BackToProperty" class="rl-invite-cancel">@L["Back"]</a>
 
-    <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">Next</button>
+    <button type="submit" form="quoteDetailsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
 
 </div>
 

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
 @{
-    ViewData["Title"] = "Help Center - INDOR PRO";
+    ViewData["Title"] = L["Help Center - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -10,12 +10,12 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-jobs-head prv-pro-settings-head">
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="@L["Back to profile"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div>
-            <h1>Help Center</h1>
-            <p>Guides and support for INDOR Pro providers.</p>
+            <h1>@L["Help Center"]</h1>
+            <p>@L["Guides and support for INDOR Pro providers."]</p>
         </div>
     </header>
 
@@ -23,47 +23,47 @@
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-settings-item">
             <span class="prv-pro-settings-icon"><i class="fas fa-gauge-high"></i></span>
             <div>
-                <strong>Getting started with INDOR Pro</strong>
-                <span>Manage clients, jobs, estimates, invoices, and reports.</span>
+                <strong>@L["Getting started with INDOR Pro"]</strong>
+                <span>@L["Manage clients, jobs, estimates, invoices, and reports."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="ProviderRegistration" asp-action="Verification" class="prv-pro-settings-item">
             <span class="prv-pro-settings-icon"><i class="fas fa-file-shield"></i></span>
             <div>
-                <strong>Upload verification documents</strong>
-                <span>Submit license, insurance, and ID to receive INDOR jobs.</span>
+                <strong>@L["Upload verification documents"]</strong>
+                <span>@L["Submit license, insurance, and ID to receive INDOR jobs."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="ProviderRegistration" asp-action="ActivationCall" class="prv-pro-settings-item">
             <span class="prv-pro-settings-icon"><i class="fas fa-phone-volume"></i></span>
             <div>
-                <strong>Schedule activation call</strong>
-                <span>Complete provider activation for INDOR lead opportunities.</span>
+                <strong>@L["Schedule activation call"]</strong>
+                <span>@L["Complete provider activation for INDOR lead opportunities."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-help" class="prv-pro-settings-item">
             <span class="prv-pro-settings-icon"><i class="fas fa-scale-balanced"></i></span>
             <div>
-                <strong>Terms &amp; Conditions</strong>
-                <span>Review INDOR platform terms for service providers.</span>
+                <strong>@L["Terms &amp; Conditions"]</strong>
+                <span>@L["Review INDOR platform terms for service providers."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Account" asp-action="Privacy" asp-route-from="provider-help" class="prv-pro-settings-item">
             <span class="prv-pro-settings-icon"><i class="fas fa-user-shield"></i></span>
             <div>
-                <strong>Privacy Policy</strong>
-                <span>How INDOR handles your business and account data.</span>
+                <strong>@L["Privacy Policy"]</strong>
+                <span>@L["How INDOR handles your business and account data."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
     </nav>
 
     <section class="prv-pro-profile-card">
-        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-headset"></i> Need more help?</h3></header>
-        <p class="prv-pro-support-copy">Contact INDOR support through your account representative or email <a href="mailto:support@homeindor.com">support@homeindor.com</a>.</p>
+        <header class="prv-pro-profile-card-head"><h3><i class="fas fa-headset"></i> @L["Need more help?"]</h3></header>
+        <p class="prv-pro-support-copy">@L["Contact INDOR support through your account representative or email"]<a href="mailto:support@homeindor.com">support@homeindor.com</a>.</p>
     </section>
 </div>

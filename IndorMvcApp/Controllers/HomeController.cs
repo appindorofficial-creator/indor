@@ -22,6 +22,7 @@ public class HomeController : Controller
     private readonly HomeownerNearbyNetworkService _nearbyNetworkService;
     private readonly HomeCatalogCache _catalogCache;
     private readonly HomeIndexQueryService _homeIndexQueries;
+    private readonly IIndorLocalizer _localizer;
 
     public HomeController(
         AppDbContext db,
@@ -31,7 +32,8 @@ public class HomeController : Controller
         IConfiguration configuration,
         HomeownerNearbyNetworkService nearbyNetworkService,
         HomeCatalogCache catalogCache,
-        HomeIndexQueryService homeIndexQueries)
+        HomeIndexQueryService homeIndexQueries,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _dbFactory = dbFactory;
@@ -41,6 +43,7 @@ public class HomeController : Controller
         _nearbyNetworkService = nearbyNetworkService;
         _catalogCache = catalogCache;
         _homeIndexQueries = homeIndexQueries;
+        _localizer = localizer;
     }
 
     [Authorize]
@@ -78,14 +81,16 @@ public class HomeController : Controller
             catalog.MovingConfig,
             catalog.MovingServicios,
             catalog.MovingEnlaces,
-            Url);
+            Url,
+            _localizer.IsSpanish);
 
         var prioritiesItems = catalog.HomeCarePriorities;
         ViewBag.HomeCarePrioritiesSection = HomeCarePrioritiesDisplayService.Build(
             catalog.PrioritiesConfig,
             prioritiesItems,
             propiedades.FirstOrDefault()?.Id,
-            Url);
+            Url,
+            _localizer.IsSpanish);
 
         // === Datos para secciÃ³n "More" ===
         ViewBag.Planes = catalog.PlanesMembresia;
@@ -254,7 +259,7 @@ public class HomeController : Controller
             .ThenBy(p => p.Id)
             .ToListAsync();
 
-        var section = HomeCarePrioritiesDisplayService.Build(config, items, propiedadId, Url);
+        var section = HomeCarePrioritiesDisplayService.Build(config, items, propiedadId, Url, _localizer.IsSpanish);
         if (section == null)
         {
             return RedirectToAction(nameof(Index));
@@ -275,7 +280,7 @@ public class HomeController : Controller
             .ThenBy(s => s.Id)
             .ToListAsync();
 
-        var model = EmergencyServicesDisplayService.BuildGuide(items, Url);
+        var model = EmergencyServicesDisplayService.BuildGuide(items, Url, _localizer.IsSpanish);
         if (model == null)
         {
             return RedirectToAction(nameof(Index));

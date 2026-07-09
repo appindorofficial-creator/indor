@@ -1,4 +1,5 @@
 @using IndorMvcApp.Services
+@using IndorMvcApp.Localization
 @{
     var plan = (IndorMvcApp.Models.PlanMembresia)ViewBag.Plan!;
     var signup = (IndorMvcApp.ViewModels.MembershipSignupState?)ViewBag.Signup;
@@ -7,11 +8,12 @@
     var kind = ProfileDisplayService.GetPlanKind(plan);
     var isFilter = kind == MembershipPlanKind.Filter;
     var isHomeStyle = kind is MembershipPlanKind.HomeCare or MembershipPlanKind.Premium;
-    var feats = string.IsNullOrWhiteSpace(plan.Caracteristicas)
+    var es = L.IsSpanish;
+    var featText = CatalogText.PickPipeList(plan.Caracteristicas, plan.CaracteristicasEs, es);
+    var feats = string.IsNullOrWhiteSpace(featText)
         ? Array.Empty<string>()
-        : plan.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        : featText.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
     ViewData["MembershipTotalSteps"] = 6;
-    var nextBill = DateTime.Today.AddMonths(1);
     var filterDetail = signup != null ? $"{signup.FilterSize}, {signup.FilterType}" : "—";
 }
 
@@ -20,7 +22,7 @@
     <div class="mem-review-plan">
         <img class="filter-art" src="~/images/filter-plan-icon.svg" alt="" style="width:52px;height:52px;" asp-append-version="true" />
         <div style="flex:1;">
-            <div class="mr-title">Filter Plan – <em>@plan.PrecioMensual.ToString("C0", culture)</em>/month</div>
+            <div class="mr-title">@L.T("Filter Plan – {0}/month", plan.PrecioMensual.ToString("C0", culture))</div>
             <ul>
                 @foreach (var f in feats.Take(2))
                 {
@@ -32,30 +34,30 @@
 
     <a class="mem-review-row" asp-action="MembresiaFiltro">
         <span class="mr-icon"><i class="fas fa-table-cells"></i></span>
-        <span class="mr-body"><strong>Filter details</strong><small>@filterDetail</small></span>
+        <span class="mr-body"><strong>@L["Filter details"]</strong><small>@filterDetail</small></span>
         <i class="fas fa-chevron-right" style="color:#0066CC;font-size:.75rem;"></i>
     </a>
     <a class="mem-review-row" asp-action="MembresiaEntrega">
         <span class="mr-icon"><i class="fas fa-location-dot"></i></span>
-        <span class="mr-body"><strong>Shipping address</strong><small>@signup?.ShippingAddress</small></span>
+        <span class="mr-body"><strong>@L["Shipping address"]</strong><small>@signup?.ShippingAddress</small></span>
         <i class="fas fa-chevron-right" style="color:#0066CC;font-size:.75rem;"></i>
     </a>
     <a class="mem-review-row" asp-action="MembresiaEntrega">
         <span class="mr-icon"><i class="far fa-calendar"></i></span>
-        <span class="mr-body"><strong>First delivery date</strong><small>@(signup?.FirstDeliveryDate?.ToString("MMMM d, yyyy") ?? "—")</small></span>
+        <span class="mr-body"><strong>@L["First delivery date"]</strong><small>@(signup?.FirstDeliveryDate?.ToString("MMMM d, yyyy") ?? "—")</small></span>
         <i class="fas fa-chevron-right" style="color:#0066CC;font-size:.75rem;"></i>
     </a>
     <div class="mem-review-row">
         <span class="mr-icon"><i class="fab fa-cc-visa" style="font-size:1.4rem;"></i></span>
         <span class="mr-body">
-            <strong>Payment method</strong>
+            <strong>@L["Payment method"]</strong>
             <small>
-                @(metodo != null ? $"{metodo.Marca} ending in {metodo.Ultimos4}" : "Add a card in Profile Options")
+                @(metodo != null ? L.T("{0} ending in {1}", metodo.Marca, metodo.Ultimos4) : L["Add a card in Profile Options"])
             </small>
         </span>
         @if (metodo == null)
         {
-            <a asp-action="Opciones" asp-fragment="payment" style="color:#0066CC;font-size:.78rem;font-weight:600;">Add</a>
+            <a asp-action="Opciones" asp-fragment="payment" style="color:#0066CC;font-size:.78rem;font-weight:600;">@L["Add"]</a>
         }
         else
         {
@@ -64,60 +66,60 @@
     </div>
 
     <div class="mem-pricing-lines">
-        <div class="pl-row"><span>Today</span><span>@plan.PrecioMensual.ToString("C0", culture)</span></div>
-        <div class="pl-row bold"><span>Recurring monthly</span><span>@plan.PrecioMensual.ToString("C0", culture)</span></div>
+        <div class="pl-row"><span>@L["Today"]</span><span>@plan.PrecioMensual.ToString("C0", culture)</span></div>
+        <div class="pl-row bold"><span>@L["Recurring monthly"]</span><span>@plan.PrecioMensual.ToString("C0", culture)</span></div>
     </div>
 
     <form method="post" asp-action="ConfirmarMembresia">
         @Html.AntiForgeryToken()
-        <button type="submit" class="pf-btn" style="width:100%;">Subscribe now <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="pf-btn" style="width:100%;">@L["Subscribe now"] <i class="fas fa-chevron-right"></i></button>
     </form>
-    <a class="mem-edit-link" asp-action="MembresiaFiltro">Edit details</a>
-    <div class="mem-trust" style="margin-top:14px;"><i class="fas fa-shield-check"></i> Cancel anytime. No long-term contracts.</div>
+    <a class="mem-edit-link" asp-action="MembresiaFiltro">@L["Edit details"]</a>
+    <div class="mem-trust" style="margin-top:14px;"><i class="fas fa-shield-check"></i> @L["Cancel anytime. No long-term contracts."]</div>
 }
 else if (isHomeStyle)
 {
     <div class="mem-review-plan">
         <span class="plan-pick-icon"><i class="fas @ProfileDisplayService.PlanIconClass(plan.Nombre)"></i></span>
         <div style="flex:1;">
-            <div class="mr-title">@plan.Nombre</div>
+            <div class="mr-title">@plan.LocalizedNombre(es)</div>
             <ul>
-                <li><i class="fas fa-check" style="color:#0066CC;font-size:.65rem;"></i> Filter delivery every 3 months</li>
-                <li><i class="fas fa-check" style="color:#0066CC;font-size:.65rem;"></i> Maintenance reminders</li>
-                <li><i class="fas fa-check" style="color:#0066CC;font-size:.65rem;"></i> @(kind == MembershipPlanKind.Premium ? "10%" : "5%") discount on services</li>
+                <li><i class="fas fa-check" style="color:#0066CC;font-size:.65rem;"></i> @L["Filter delivery every 3 months"]</li>
+                <li><i class="fas fa-check" style="color:#0066CC;font-size:.65rem;"></i> @L["Maintenance reminders"]</li>
+                <li><i class="fas fa-check" style="color:#0066CC;font-size:.65rem;"></i> @L.T("{0} discount on services", kind == MembershipPlanKind.Premium ? "10%" : "5%")</li>
             </ul>
         </div>
-        <div class="plan-pick-price" style="font-size:1.1rem;">@plan.PrecioMensual.ToString("C0", culture)<em>/month</em></div>
+        <div class="plan-pick-price" style="font-size:1.1rem;">@plan.PrecioMensual.ToString("C0", culture)<em>@L["/month"]</em></div>
     </div>
 
     <a class="mem-review-row" asp-action="Opciones" asp-fragment="payment">
         <span class="mr-icon"><i class="fab fa-cc-visa" style="font-size:1.4rem;"></i></span>
         <span class="mr-body">
-            <strong>Payment method</strong>
-            <small>@(metodo != null ? $"{metodo.Marca} ending in {metodo.Ultimos4}" : "Visa ending in 4242")</small>
+            <strong>@L["Payment method"]</strong>
+            <small>@(metodo != null ? L.T("{0} ending in {1}", metodo.Marca, metodo.Ultimos4) : L.T("{0} ending in {1}", "Visa", "4242"))</small>
         </span>
         <i class="fas fa-chevron-right" style="color:#0066CC;font-size:.75rem;"></i>
     </a>
 
     <div class="mem-pricing-lines">
-        <strong style="display:block;margin-bottom:10px;">Billing summary</strong>
-        <div class="pl-row"><span>Membership</span><span>@plan.PrecioMensual.ToString("C2", culture)</span></div>
-        <div class="pl-row"><span>Tax</span><span>$0.00</span></div>
+        <strong style="display:block;margin-bottom:10px;">@L["Billing summary"]</strong>
+        <div class="pl-row"><span>@L["Membership"]</span><span>@plan.PrecioMensual.ToString("C2", culture)</span></div>
+        <div class="pl-row"><span>@L["Tax"]</span><span>$0.00</span></div>
         <div class="pl-row bold" style="border-top:1px solid #EEF2F7;padding-top:10px;margin-top:6px;">
-            <span>Due today</span><span style="color:#0066CC;">@plan.PrecioMensual.ToString("C2", culture)</span>
+            <span>@L["Due today"]</span><span style="color:#0066CC;">@plan.PrecioMensual.ToString("C2", culture)</span>
         </div>
     </div>
 
     <form method="post" asp-action="ConfirmarMembresia">
         @Html.AntiForgeryToken()
-        <button type="submit" class="pf-btn" style="width:100%;">Start membership <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="pf-btn" style="width:100%;">@L["Start membership"] <i class="fas fa-chevron-right"></i></button>
     </form>
-    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-lock"></i> Secure monthly billing. Cancel anytime.</div>
+    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-lock"></i> @L["Secure monthly billing. Cancel anytime."]</div>
 }
 else
 {
     <div class="pf-card">
-        <p class="empty">Plan review not available.</p>
-        <a asp-action="Suscripciones" class="pf-btn">Back to plans</a>
+        <p class="empty">@L["Plan review not available."]</p>
+        <a asp-action="Suscripciones" class="pf-btn">@L["Back to plans"]</a>
     </div>
 }

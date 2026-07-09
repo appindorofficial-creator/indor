@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.VerificationCompleteViewModel
 @{
-    ViewData["Title"] = "Verification Complete";
+    ViewData["Title"] = L["Verification Complete"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-verify.css";
     ViewBag.NavActive = "verify";
@@ -9,12 +9,12 @@
 <div class="prv-vf-shell">
     <header class="prv-vf-hero">
         <div class="prv-vf-hero-top">
-            <span class="prv-vf-brand-word">INDOR</span>
-            <span class="prv-vf-brand-pro">PRO</span>
+            <span class="prv-vf-brand-word">@L["INDOR"]</span>
+            <span class="prv-vf-brand-pro">@L["PRO"]</span>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-vf-hero-title">
-            <h1>Verification Complete</h1>
+            <h1>@L["Verification Complete"]</h1>
             <p>@(Model.IsReady ? "This contractor is ready to be approved." : "Review the remaining items before approving.")</p>
         </div>
     </header>
@@ -35,7 +35,7 @@
             </div>
             <span class="prv-vf-seal @(Model.IsReady ? "" : "is-muted")">
                 <i class="fas fa-shield-halved"></i>
-                <span>VERIFIED</span>
+                <span>@L["VERIFIED"]</span>
             </span>
         </div>
 
@@ -59,7 +59,7 @@
     </section>
 
     <section class="prv-vf-panel">
-        <h2 class="prv-vf-panel-title">Verification Summary</h2>
+        <h2 class="prv-vf-panel-title">@L["Verification Summary"]</h2>
         <div class="prv-vf-summary">
             @foreach (var it in Model.Items)
             {
@@ -76,8 +76,8 @@
             <div class="prv-vf-banner prv-vf-banner--ok">
                 <i class="fas fa-circle-check"></i>
                 <div>
-                    <strong>All required verification items are complete.</strong>
-                    <span>This contractor meets all INDOR PRO verification standards.</span>
+                    <strong>@L["All required verification items are complete."]</strong>
+                    <span>@L["This contractor meets all INDOR PRO verification standards."]</span>
                 </div>
             </div>
         }
@@ -86,30 +86,30 @@
             <div class="prv-vf-banner prv-vf-banner--warn">
                 <i class="fas fa-triangle-exclamation"></i>
                 <div>
-                    <strong>Some items are still pending.</strong>
-                    <span>Approving will mark all verification items as verified.</span>
+                    <strong>@L["Some items are still pending."]</strong>
+                    <span>@L["Approving will mark all verification items as verified."]</span>
                 </div>
             </div>
         }
     </section>
 
     <section class="prv-vf-panel">
-        <h2 class="prv-vf-panel-title">What happens next</h2>
+        <h2 class="prv-vf-panel-title">@L["What happens next"]</h2>
         <div class="prv-vf-next">
             <div class="prv-vf-next-item">
                 <span class="prv-vf-next-num">1</span>
                 <i class="fas fa-shield-halved"></i>
-                <span>Contractor gets verified badge</span>
+                <span>@L["Contractor gets verified badge"]</span>
             </div>
             <div class="prv-vf-next-item">
                 <span class="prv-vf-next-num">2</span>
                 <i class="fas fa-users"></i>
-                <span>Profile becomes visible to customers</span>
+                <span>@L["Profile becomes visible to customers"]</span>
             </div>
             <div class="prv-vf-next-item">
                 <span class="prv-vf-next-num">3</span>
                 <i class="fas fa-briefcase"></i>
-                <span>Contractor can receive jobs</span>
+                <span>@L["Contractor can receive jobs"]</span>
             </div>
         </div>
     </section>
@@ -118,7 +118,7 @@
     {
         <div class="prv-vf-banner prv-vf-banner--ok prv-vf-banner--solo">
             <i class="fas fa-circle-check"></i>
-            <div><strong>This contractor is already verified.</strong></div>
+            <div><strong>@L["This contractor is already verified."]</strong></div>
         </div>
         <a asp-controller="Proveedor" asp-action="VerifyContractors" asp-route-tab="approved" class="prv-vf-btn prv-vf-btn--ghost prv-vf-btn--block">
             <i class="fas fa-arrow-left"></i> Back to Queue

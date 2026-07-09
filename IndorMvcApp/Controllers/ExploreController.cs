@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -20,11 +21,13 @@ public class ExploreController : Controller
 {
     private readonly AppDbContext _db;
     private readonly HomeCatalogCache _catalogCache;
+    private readonly IIndorLocalizer _localizer;
 
-    public ExploreController(AppDbContext db, HomeCatalogCache catalogCache)
+    public ExploreController(AppDbContext db, HomeCatalogCache catalogCache, IIndorLocalizer localizer)
     {
         _db = db;
         _catalogCache = catalogCache;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -35,6 +38,8 @@ public class ExploreController : Controller
         {
             return RedirectToAction("Index", "Home");
         }
+
+        ViewData["Title"] = _localizer["Explore Services - INDOR"];
 
         var catalog = await _catalogCache.GetAsync(_db, cancellationToken);
         var providers = await LoadPublicProvidersAsync(cancellationToken);
@@ -81,26 +86,32 @@ public class ExploreController : Controller
             return [];
         }
 
-        Dictionary<string, string> categoryLabels;
+        Dictionary<string, (string En, string? Es)> categoryLabels;
         try
         {
             categoryLabels = await _db.IndorProveedorCategoriasCatalogo
                 .AsNoTracking()
-                .ToDictionaryAsync(c => c.Id, c => c.LabelEn, ct);
+                .ToDictionaryAsync(c => c.Id, c => (c.LabelEn, c.LabelEs), ct);
         }
         catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
         {
-            categoryLabels = new Dictionary<string, string>();
+            categoryLabels = new Dictionary<string, (string En, string? Es)>();
         }
+
+        var isSpanish = _localizer.IsSpanish;
 
         return providers.Select(p =>
         {
             var name = !string.IsNullOrWhiteSpace(p.DbaName)
                 ? p.DbaName!.Trim()
-                : (p.BusinessName?.Trim() ?? "INDOR Provider");
+                : (p.BusinessName?.Trim() ?? _localizer["INDOR Provider"]);
 
             var categoryId = p.Categorias.Select(c => c.CategoriaId).FirstOrDefault();
-            categoryLabels.TryGetValue(categoryId ?? "", out var categoryLabel);
+            string? categoryLabel = null;
+            if (categoryId != null && categoryLabels.TryGetValue(categoryId, out var labels))
+            {
+                categoryLabel = CatalogText.Pick(labels.En, labels.Es, isSpanish);
+            }
 
             var isVerified = string.Equals(p.RegistrationStatus, ProviderRegistrationStatuses.IndorProActive, StringComparison.OrdinalIgnoreCase)
                 || string.Equals(p.RegistrationStatus, ProviderRegistrationStatuses.Approved, StringComparison.OrdinalIgnoreCase);

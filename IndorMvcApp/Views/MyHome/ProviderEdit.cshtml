@@ -1,26 +1,26 @@
 @model IndorMvcApp.ViewModels.MyHomeProviderFormViewModel
 @{
-    ViewData["Title"] = "Edit Provider";
+    ViewData["Title"] = L["Edit Provider"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "summary";
     ViewBag.MyHomeBackUrl = Url.Action("Providers", "MyHome", new { id = Model.PropiedadId });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Edit provider</h1>
+    <h1 class="hf-title">@L["Edit provider"]</h1>
 </div>
 <form asp-action="ProviderEdit" method="post">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="PropiedadId" />
-    <label asp-for="Name" class="hf-label">Company name</label>
+    <label asp-for="Name" class="hf-label">@L["Company name"]</label>
     <input asp-for="Name" class="hf-input" />
-    <label asp-for="ServiceCategory" class="hf-label">Service category</label>
+    <label asp-for="ServiceCategory" class="hf-label">@L["Service category"]</label>
     <input asp-for="ServiceCategory" class="hf-input" />
-    <label asp-for="Phone" class="hf-label">Phone</label>
+    <label asp-for="Phone" class="hf-label">@L["Phone"]</label>
     <input asp-for="Phone" class="hf-input" />
-    <label asp-for="Website" class="hf-label">Website</label>
+    <label asp-for="Website" class="hf-label">@L["Website"]</label>
     <input asp-for="Website" class="hf-input" />
-    <label asp-for="Notes" class="hf-label">Notes</label>
+    <label asp-for="Notes" class="hf-label">@L["Notes"]</label>
     <textarea asp-for="Notes" class="hf-textarea" rows="3"></textarea>
-    <button type="submit" class="hf-btn hf-btn-primary">Save provider</button>
+    <button type="submit" class="hf-btn hf-btn-primary">@L["Save provider"]</button>
 </form>

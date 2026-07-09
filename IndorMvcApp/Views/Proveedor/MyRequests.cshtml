@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.MyRequestsViewModel
 @{
-    ViewData["Title"] = "My Requests";
+    ViewData["Title"] = L["My Requests"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-requests.css";
     ViewBag.NavActive = "jobs";
@@ -9,21 +9,21 @@
 <div class="prv-req-shell">
     <header class="prv-req-hero">
         <div class="prv-req-hero-top">
-            <a asp-controller="Proveedor" asp-action="Network" class="prv-req-brand" aria-label="INDOR PRO">
-                <span class="prv-req-brand-word">INDOR</span>
-                <span class="prv-req-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-req-brand" aria-label="@L["INDOR PRO"]">
+                <span class="prv-req-brand-word">@L["INDOR"]</span>
+                <span class="prv-req-brand-pro">@L["PRO"]</span>
             </a>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-req-hero-title">
-            <h1>My Requests</h1>
-            <p>Track posted jobs, quotes, and hiring progress.</p>
+            <h1>@L["My Requests"]</h1>
+            <p>@L["Track posted jobs, quotes, and hiring progress."]</p>
         </div>
         <form method="get" asp-controller="Proveedor" asp-action="MyRequests" class="prv-req-searchbar">
             <input type="hidden" name="tab" value="@Model.ActiveTab" />
             <div class="prv-req-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.Query" placeholder="Search my requests..." />
+                <input type="search" name="q" value="@Model.Query" placeholder="@L["Search my requests..."]" />
             </div>
             <button type="submit" class="prv-req-filter"><i class="fas fa-sliders"></i> Filter</button>
         </form>
@@ -41,8 +41,8 @@
     {
         <div class="prv-req-empty">
             <i class="fas fa-clipboard-list"></i>
-            <strong>No requests yet</strong>
-            <span>Post a job to start receiving quotes from verified subcontractors.</span>
+            <strong>@L["No requests yet"]</strong>
+            <span>@L["Post a job to start receiving quotes from verified subcontractors."]</span>
             <a asp-controller="Proveedor" asp-action="PostNetworkJob" class="prv-req-empty-btn"><i class="fas fa-plus"></i> Post a Job</a>
         </div>
     }
@@ -71,9 +71,9 @@
                             </span>
                             @if (!string.IsNullOrWhiteSpace(r.BudgetRange))
                             {
-                                <div class="prv-req-budget-mini"><span>Budget</span><strong>@r.BudgetRange</strong></div>
+                                <div class="prv-req-budget-mini"><span>@L["Budget"]</span><strong>@r.BudgetRange</strong></div>
                             }
-                            <div class="prv-req-posted"><span>Posted</span><strong>@r.PostedLabel</strong></div>
+                            <div class="prv-req-posted"><span>@L["Posted"]</span><strong>@r.PostedLabel</strong></div>
                         </div>
                     </div>
 

@@ -1,24 +1,24 @@
 @model IndorMvcApp.ViewModels.MyHomeHistoryListViewModel
 @{
-    ViewData["Title"] = "House History";
+    ViewData["Title"] = L["House History"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">House History</h1>
-    <a asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">+ Add</a>
+    <h1 class="hf-title">@L["House History"]</h1>
+    <a asp-action="HistoryCreate" asp-route-id="@Model.PropiedadId" class="hf-btn">@L["+ Add"]</a>
 </div>
 <div class="hf-chip-row">
     @foreach (var f in new[] { "All", "Improvement", "Repair", "Maintenance" })
     {
-        <a asp-action="History" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@f</a>
+        <a asp-action="History" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@L[f]</a>
     }
 </div>
 @if (groups.Count == 0)
 {
-    <div class="hf-card" style="text-align:center;color:#64748B;">No history records yet. Tap <strong>+ Add</strong> to log improvements, repairs, or maintenance.</div>
+    <div class="hf-card" style="text-align:center;color:#64748B;">@L["No history records yet. Tap"] <strong>@L["+ Add"]</strong> @L["to log improvements, repairs, or maintenance."]</div>
 }
 else
 {
@@ -33,7 +33,7 @@ else
                     <div class="hf-timeline-card">
                         <div class="body">
                             <div class="title">@item.Title</div>
-                            <div class="sub">@(item.ProviderName ?? "No provider")</div>
+                            <div class="sub">@(item.ProviderName ?? L["No provider"])</div>
                         </div>
                         <div class="cost">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(item.TotalCost)</div>
                         <i class="fas fa-chevron-right" style="color:#CBD5E1;font-size:0.75rem;"></i>
@@ -45,5 +45,5 @@ else
 }
 <div class="hf-banner">
     <i class="fas fa-shield-check"></i>
-    <div><strong>Keep your information up to date.</strong> A complete history gives you peace of mind and can increase your property value. <span style="color:#0066CC;font-weight:700;">Learn more &gt;</span></div>
+    <div><strong>@L["Keep your information up to date."]</strong> @L["A complete history gives you peace of mind and can increase your property value."] <span style="color:#0066CC;font-weight:700;">@L["Learn more >"]</span></div>
 </div>

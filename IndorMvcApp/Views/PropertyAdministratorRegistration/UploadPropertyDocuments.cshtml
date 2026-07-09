@@ -24,7 +24,7 @@
 }
 
 <div class="pa-review-card" style="margin-bottom:16px;">
-    <p class="pa-step-hint" style="margin:0;">Accepted formats: PDF, JPG, PNG, WEBP, HEIC. Max 10 MB per file.</p>
+    <p class="pa-step-hint" style="margin:0;">@L["Accepted formats: PDF, JPG, PNG, WEBP, HEIC. Max 10 MB per file."]</p>
 </div>
 
 <form asp-action="UploadPropertyDocuments" method="post" enctype="multipart/form-data" id="uploadDocumentsForm">
@@ -38,15 +38,15 @@
                class="pa-file-picker-input"
                accept=".pdf,.jpg,.jpeg,.png,.webp,.heic,image/*,application/pdf"
                multiple />
-        <label for="documentFiles" class="pa-file-picker-btn">Choose files</label>
-        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="No files selected">No files selected</span>
+        <label for="documentFiles" class="pa-file-picker-btn">@L["Choose files"]</label>
+        <span class="pa-file-picker-name" id="documentFilesName" data-empty-label="No files selected">@L["No files selected"]</span>
     </div>
 
-    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Upload documents</button>
+    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Upload documents"]</button>
 </form>
 
 <div class="pa-reg-actions" style="margin-top:18px;">
-    <a href="@Model.BackUrl" class="pa-reg-action-back">Back to properties</a>
+    <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to properties"]</a>
 </div>
 
 @section Scripts {

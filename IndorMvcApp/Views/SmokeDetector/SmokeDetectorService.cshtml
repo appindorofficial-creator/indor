@@ -22,7 +22,7 @@
     @if (Model.TrackItems.Count > 0)
     {
         <div class="field-card">
-            <div class="field-head"><span>What you'll track</span></div>
+            <div class="field-head"><span>@L["What you'll track"]</span></div>
             <div class="track-grid">
                 @foreach (var item in Model.TrackItems)
                 {
@@ -41,7 +41,7 @@
 
     @if (Model.WhereTrackItems.Count > 0)
     {
-        <div class="where-label">Where to track</div>
+        <div class="where-label">@L["Where to track"]</div>
         <div class="where-grid">
             @foreach (var item in Model.WhereTrackItems)
             {

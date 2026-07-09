@@ -3,7 +3,7 @@
     if (Model.IsRegistrationComplete)
     {
         Layout = "_PropertyAdminLayout";
-        ViewData["Title"] = "Add property";
+        ViewData["Title"] = L["Add property"];
         ViewBag.NavActive = "properties";
     }
     else
@@ -19,7 +19,7 @@
 {
     <div class="pa-portal-shell pa-portal-shell--portfolio">
         <header class="pa-portfolio-page-header">
-            <a href="@Model.DoneUrl" class="pa-profile-back" aria-label="Back">
+            <a href="@Model.DoneUrl" class="pa-profile-back" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div class="pa-portfolio-page-header-text">
@@ -30,7 +30,7 @@
         <div class="pa-portfolio-add-content">
             @await Html.PartialAsync("_PropertyAdminPropertiesBody", Model)
             <div class="pa-reg-actions">
-                <a href="@Model.DoneUrl" class="ob-btn ob-btn-primary">Done</a>
+                <a href="@Model.DoneUrl" class="ob-btn ob-btn-primary">@L["Done"]</a>
             </div>
         </div>
     </div>
@@ -40,7 +40,7 @@ else
     <div class="ob-head-block">
         <h1>@Model.Title</h1>
         <p>@Model.Subtitle</p>
-        <p class="pa-step-hint">You can add properties now or skip and add them later from your dashboard.</p>
+        <p class="pa-step-hint">@L["You can add properties now or skip and add them later from your dashboard."]</p>
     </div>
 
     @await Html.PartialAsync("_PropertyAdminPropertiesBody", Model)

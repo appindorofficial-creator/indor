@@ -7,7 +7,7 @@
 }
 
 <div class="prv-verification-step">
-    <div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+    <div class="prv-wiz-step-label">@L.T("Step {0} of {1}", Model.Step, Model.TotalSteps)</div>
     <div class="ob-head-block">
         <h1>@Model.Title</h1>
         <p>@Model.Subtitle</p>
@@ -17,12 +17,12 @@
         <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-display"></i></span>
         <span class="prv-wiz-card-body">
             <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Active</span>
-            <strong>INDOR Pro Access</strong>
+            <strong>@L["INDOR Pro Access"]</strong>
             <ul class="prv-wiz-bullets">
-                <li>Clients &amp; CRM</li>
-                <li>Jobs &amp; photos</li>
-                <li>Estimates &amp; invoices</li>
-                <li>Reports &amp; property history</li>
+                <li>@L["Clients &amp; CRM"]</li>
+                <li>@L["Jobs &amp; photos"]</li>
+                <li>@L["Estimates &amp; invoices"]</li>
+                <li>@L["Reports &amp; property history"]</li>
             </ul>
         </span>
     </div>
@@ -31,7 +31,7 @@
         <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-list"></i></span>
         <span class="prv-wiz-card-body">
             <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Pending</span>
-            <strong>Requirements to Receive INDOR Jobs</strong>
+            <strong>@L["Requirements to Receive INDOR Jobs"]</strong>
             <ul class="prv-wiz-checklist">
                 <li><i class="far fa-circle"></i> Business license or registration</li>
                 <li><i class="far fa-circle"></i> Insurance (if applicable)</li>
@@ -53,51 +53,51 @@
         {
             <div class="prv-doc-form">
                 <div class="prv-doc-upload">
-                    <span class="prv-doc-label">Government ID</span>
+                    <span class="prv-doc-label">@L["Government ID"]</span>
                     <label class="prv-file-picker">
                         <input type="file"
                                class="prv-file-picker-input"
                                id="prvGovernmentIdFile"
                                name="governmentIdFile"
                                accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
-                        <span class="prv-file-picker-btn">Choose file</span>
-                        <span class="prv-file-picker-name">No file selected</span>
+                        <span class="prv-file-picker-btn">@L["Choose file"]</span>
+                        <span class="prv-file-picker-name">@L["No file selected"]</span>
                     </label>
                 </div>
                 <div class="prv-doc-upload">
-                    <span class="prv-doc-label">Business license</span>
+                    <span class="prv-doc-label">@L["Business license"]</span>
                     <label class="prv-file-picker">
                         <input type="file"
                                class="prv-file-picker-input"
                                id="prvLicenseFile"
                                name="licenseFile"
                                accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
-                        <span class="prv-file-picker-btn">Choose file</span>
-                        <span class="prv-file-picker-name">No file selected</span>
+                        <span class="prv-file-picker-btn">@L["Choose file"]</span>
+                        <span class="prv-file-picker-name">@L["No file selected"]</span>
                     </label>
                 </div>
                 <div class="prv-doc-upload">
-                    <span class="prv-doc-label">Insurance certificate</span>
+                    <span class="prv-doc-label">@L["Insurance certificate"]</span>
                     <label class="prv-file-picker">
                         <input type="file"
                                class="prv-file-picker-input"
                                id="prvInsuranceFile"
                                name="insuranceFile"
                                accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
-                        <span class="prv-file-picker-btn">Choose file</span>
-                        <span class="prv-file-picker-name">No file selected</span>
+                        <span class="prv-file-picker-btn">@L["Choose file"]</span>
+                        <span class="prv-file-picker-name">@L["No file selected"]</span>
                     </label>
                 </div>
                 <div class="prv-doc-upload">
-                    <span class="prv-doc-label">Business registration</span>
+                    <span class="prv-doc-label">@L["Business registration"]</span>
                     <label class="prv-file-picker">
                         <input type="file"
                                class="prv-file-picker-input"
                                id="prvBusinessRegistrationFile"
                                name="businessRegistrationFile"
                                accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/*" />
-                        <span class="prv-file-picker-btn">Choose file</span>
-                        <span class="prv-file-picker-name">No file selected</span>
+                        <span class="prv-file-picker-btn">@L["Choose file"]</span>
+                        <span class="prv-file-picker-name">@L["No file selected"]</span>
                     </label>
                 </div>
                 <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline prv-verification-upload">
@@ -110,7 +110,7 @@
     <div class="prv-wiz-info prv-verification-note">
         <i class="fas fa-circle-info"></i>
         <div>
-            <p>You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads.</p>
+            <p>@L["You can start using INDOR Pro even if your provider profile is not yet activated for INDOR leads."]</p>
         </div>
     </div>
 

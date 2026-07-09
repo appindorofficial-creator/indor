@@ -1,22 +1,22 @@
 @model IndorMvcApp.ViewModels.SafeAirConfirmedViewModel
 @{
-    ViewData["Title"] = "Request Confirmed - INDOR";
-    ViewData["WizardTitle"] = "Booking Confirmed";
+    ViewData["Title"] = L["Request Confirmed - INDOR"];
+    ViewData["WizardTitle"] = L["Booking Confirmed"];
 var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? DateTime.Today.AddMonths(3).ToString("MMMM d, yyyy");
 }
 
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">You're all set</h1>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["You're all set"]</h1>
         <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your @Model.NombreServicio request has been saved.</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-wind"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Visit</div><div class="summary-value">@Model.VisitaLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">Filter size</div><div class="summary-value">@Model.FiltroTamanioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-user-gear"></i><div><div class="summary-label">Provider</div><div class="summary-value">@Model.ProveedorLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">Status</div><div class="summary-value"><span class="status-confirmed"><i class="fas fa-check"></i> Confirmed</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-wind"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Visit"]</div><div class="summary-value">@Model.VisitaLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">@L["Filter size"]</div><div class="summary-value">@Model.FiltroTamanioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-user-gear"></i><div><div class="summary-label">@L["Provider"]</div><div class="summary-value">@Model.ProveedorLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-confirmed"><i class="fas fa-check"></i> @L["Confirmed"]</span></div></div></div>
     </div>
 
     @if (Model.RecordatorioActivo)
@@ -24,7 +24,7 @@ var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? D
         <div class="info-banner">
             <i class="fas fa-bell"></i>
             <div>
-                <strong>Next reminder scheduled in 3 months</strong><br />
+                <strong>@L["Next reminder scheduled in 3 months"]</strong><br />
                 We'll remind you again around @reminderDate.
             </div>
         </div>
@@ -33,25 +33,25 @@ var reminderDate = Model.FechaProximoRecordatorio?.ToString("MMMM d, yyyy") ?? D
     <div class="badge-row">
         @if (Model.RecordatorioActivo)
         {
-            <span class="badge-pill">Reminder active</span>
+            <span class="badge-pill">@L["Reminder active"]</span>
         }
         @if (Model.TieneFotos)
         {
-            <span class="badge-pill">Photo received</span>
+            <span class="badge-pill">@L["Photo received"]</span>
         }
-        <span class="badge-pill">Filter tracked</span>
+        <span class="badge-pill">@L["Filter tracked"]</span>
     </div>
 
     @if (string.Equals(Model.TipoNecesidad, "ChangedMyself", StringComparison.OrdinalIgnoreCase))
     {
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>If you selected "I changed it myself," your reminder has been updated.</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["If you selected \"I changed it myself,\" your reminder has been updated."]</span></div>
     }
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
-        <i class="fas fa-calendar"></i> View appointment <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-calendar"></i> @L["View appointment"] <i class="fas fa-chevron-right"></i>
     </a>
     @if (string.Equals(Model.TipoNecesidad, "ChangedMyself", StringComparison.OrdinalIgnoreCase))
     {
-        <a asp-action="SafeAirService" asp-route-id="@Model.MicroservicioId" class="btn-outline"><i class="fas fa-pen"></i> Mark as changed</a>
+        <a asp-action="SafeAirService" asp-route-id="@Model.MicroservicioId" class="btn-outline"><i class="fas fa-pen"></i> @L["Mark as changed"]</a>
     }
-    <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-outline" style="border:none;color:#0066CC;">Go to My Home</a>
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-outline" style="border:none;color:#0066CC;">@L["Go to My Home"]</a>

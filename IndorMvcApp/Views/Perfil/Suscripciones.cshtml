@@ -1,61 +1,65 @@
 @using IndorMvcApp.Services
+@using IndorMvcApp.Localization
 @{
-    ViewData["Title"] = "Choose your membership";
-    ViewData["Subtitulo"] = "Pick the plan that fits your home care needs.";
+    ViewData["Title"] = L["Choose your membership"];
+    ViewData["Subtitulo"] = L["Pick the plan that fits your home care needs."];
     ViewData["MembershipStep"] = 1;
     ViewData["MembershipTotalSteps"] = 6;
     var planes = (IEnumerable<IndorMvcApp.Models.PlanMembresia>?)ViewBag.Planes ?? Enumerable.Empty<IndorMvcApp.Models.PlanMembresia>();
     var membresia = (IndorMvcApp.Models.MembresiaUsuario?)ViewBag.MembresiaActual;
     var selectedId = ViewBag.SelectedPlanId as int?;
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    var es = L.IsSpanish;
     var defaultPlan = planes.FirstOrDefault(p => ProfileDisplayService.IsHomeCarePlan(p.Nombre))
         ?? planes.FirstOrDefault(p => p.Recomendado)
         ?? planes.FirstOrDefault();
     var initialId = selectedId ?? defaultPlan?.Id ?? planes.First().Id;
+    var selectedLabel = L["Selected"];
 }
 
 @if (!planes.Any())
 {
-    <div class="empty">No plans available. Run <code>SeedIndorMembershipPlans.sql</code> on your database.</div>
+    <div class="empty">@L["No plans available. Run SeedIndorMembershipPlans.sql on your database."]</div>
 }
 else
 {
-    <form method="post" asp-action="SeleccionarPlan" id="planPickForm">
+    <form method="post" asp-action="SeleccionarPlan" id="planPickForm" data-selected-label="@selectedLabel">
         @Html.AntiForgeryToken()
         <input type="hidden" name="planId" id="selectedPlanId" value="@initialId" />
 
         @foreach (var pl in planes)
         {
-            var feats = string.IsNullOrWhiteSpace(pl.Caracteristicas)
+            var featText = CatalogText.PickPipeList(pl.Caracteristicas, pl.CaracteristicasEs, es);
+            var feats = string.IsNullOrWhiteSpace(featText)
                 ? Array.Empty<string>()
-                : pl.Caracteristicas.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+                : featText.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
             var kind = ProfileDisplayService.GetPlanKind(pl);
             var esActual = membresia?.PlanMembresiaId == pl.Id;
             var isSelected = pl.Id == initialId;
             var icon = ProfileDisplayService.PlanIconClass(pl.Nombre);
             var solidCheck = ProfileDisplayService.UseSolidCheckmarks(kind);
-            var sub = string.IsNullOrWhiteSpace(pl.Subtitulo)
-                ? (kind == MembershipPlanKind.Free ? "Basic reminders only." : "")
-                : pl.Subtitulo;
+            var sub = string.IsNullOrWhiteSpace(CatalogText.Pick(pl.Subtitulo, pl.SubtituloEs, es))
+                ? (kind == MembershipPlanKind.Free ? L["Basic reminders only."] : "")
+                : CatalogText.Pick(pl.Subtitulo, pl.SubtituloEs, es);
             <div class="plan-pick-card @(isSelected ? "selected" : "")"
                  data-plan-id="@pl.Id" role="button" tabindex="0">
                 <span class="plan-badge-area">
                     @if (isSelected)
                     {
-                        <span class="plan-badge"><i class="fas fa-check"></i> Selected</span>
+                        <span class="plan-badge"><i class="fas fa-check"></i> @L["Selected"]</span>
                     }
                     else if (pl.Recomendado)
                     {
-                        <span class="plan-badge"><i class="fas fa-star"></i> Most popular</span>
+                        <span class="plan-badge"><i class="fas fa-star"></i> @L["Most popular"]</span>
                     }
                     else if (esActual)
                     {
-                        <span class="plan-badge">Current plan</span>
+                        <span class="plan-badge">@L["Current plan"]</span>
                     }
                 </span>
                 <span class="plan-pick-icon"><i class="fas @icon"></i></span>
                 <div class="plan-pick-body">
-                    <h4>@pl.Nombre</h4>
+                    <h4>@pl.LocalizedNombre(es)</h4>
                     @if (!string.IsNullOrWhiteSpace(sub))
                     {
                         <div class="sub">@sub</div>
@@ -71,15 +75,15 @@ else
                     </ul>
                 </div>
                 <div class="plan-pick-price @(isSelected ? "price-selected" : "")">
-                    @pl.PrecioMensual.ToString("C0", culture)<em>/mo</em>
+                    @pl.PrecioMensual.ToString("C0", culture)<em>@L["/mo"]</em>
                 </div>
             </div>
         }
 
         <div class="mem-footer">
-            <button type="submit" class="pf-btn">Continue <i class="fas fa-chevron-right"></i></button>
-            <span class="compare-link">Compare plan details</span>
-            <div class="mem-trust"><i class="fas fa-shield-check"></i> Cancel anytime. No long-term contracts.</div>
+            <button type="submit" class="pf-btn">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+            <span class="compare-link">@L["Compare plan details"]</span>
+            <div class="mem-trust"><i class="fas fa-shield-check"></i> @L["Cancel anytime. No long-term contracts."]</div>
         </div>
     </form>
 }
@@ -89,6 +93,7 @@ else
         const form = document.getElementById('planPickForm');
         if (!form) return;
         const hidden = document.getElementById('selectedPlanId');
+        const selectedLabel = form.dataset.selectedLabel || 'Selected';
 
         function refreshBadges(selectedCard) {
             document.querySelectorAll('.plan-pick-card').forEach(c => {
@@ -103,7 +108,7 @@ else
             if (priceEl) priceEl.classList.add('price-selected');
             const area = selectedCard.querySelector('.plan-badge-area');
             if (area) {
-                area.innerHTML = '<span class="plan-badge"><i class="fas fa-check"></i> Selected</span>';
+                area.innerHTML = '<span class="plan-badge"><i class="fas fa-check"></i> ' + selectedLabel + '</span>';
             }
             hidden.value = selectedCard.dataset.planId;
         }

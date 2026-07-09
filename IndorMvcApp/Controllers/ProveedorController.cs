@@ -43,7 +43,9 @@ public partial class ProveedorController(
 
     INetworkRequestsService requests,
 
-    IWebHostEnvironment env) : Controller
+    IWebHostEnvironment env,
+
+    IIndorLocalizer localizer) : Controller
 
 {
 
@@ -136,7 +138,7 @@ public partial class ProveedorController(
 
         if (string.IsNullOrWhiteSpace(input.FirstName) || string.IsNullOrWhiteSpace(input.LastName))
         {
-            TempData["AddCustomerError"] = "First name and last name are required.";
+            TempData["AddCustomerError"] = localizer["First name and last name are required."];
             var invalidModel = proData.GetAddCustomerInfoViewModel(proveedor.Entity!, new ProviderProAddCustomerDraft
             {
                 CustomerType = string.IsNullOrWhiteSpace(input.CustomerType) ? "Homeowner" : input.CustomerType,
@@ -622,7 +624,7 @@ public partial class ProveedorController(
 
         if (!authorize)
         {
-            TempData["InsuranceConfirmError"] = "Please authorize the payment to continue.";
+            TempData["InsuranceConfirmError"] = localizer["Please authorize the payment to continue."];
             return RedirectToAction(nameof(InsuranceReview));
         }
 
@@ -952,7 +954,7 @@ public partial class ProveedorController(
         ClearExportReportDraft();
         await HttpContext.Session.CommitAsync(cancellationToken);
 
-        TempData["ProviderProToast"] = send ? "Export report sent." : "Export report saved.";
+        TempData["ProviderProToast"] = send ? localizer["Export report sent."] : localizer["Export report saved."];
         return RedirectToAction(nameof(Reports));
     }
 
@@ -1759,7 +1761,7 @@ public partial class ProveedorController(
 
         if (serviceIds == null || serviceIds.Length == 0)
         {
-            TempData["ProfileSectionError"] = "Select at least one service or category.";
+            TempData["ProfileSectionError"] = localizer["Select at least one service or category."];
             return RedirectToAction(nameof(EditProfileServices));
         }
 
@@ -1770,7 +1772,7 @@ public partial class ProveedorController(
 
         if (!saved)
         {
-            TempData["ProfileSectionError"] = "We couldn't save your services. Please try again.";
+            TempData["ProfileSectionError"] = localizer["We couldn't save your services. Please try again."];
             return RedirectToAction(nameof(EditProfileServices));
         }
 
@@ -1805,7 +1807,7 @@ public partial class ProveedorController(
 
         if (documentFile == null || documentFile.Length == 0 || string.IsNullOrWhiteSpace(documentType))
         {
-            TempData["ProfileSectionError"] = "Choose a file to upload.";
+            TempData["ProfileSectionError"] = localizer["Choose a file to upload."];
             return RedirectToAction(nameof(EditProfileVerification));
         }
 
@@ -3257,7 +3259,7 @@ public partial class ProveedorController(
         ViewBag.NavActive = draft.NavOrigin;
         ViewBag.CreateJobCancelAction = draft.NavOrigin == "home" ? "Dashboard" : "Jobs";
         ViewBag.CreateJobFrom = draft.NavOrigin;
-        ViewBag.CreateJobCancelLabel = draft.NavOrigin == "home" ? "Home" : "Jobs hub";
+        ViewBag.CreateJobCancelLabel = draft.NavOrigin == "home" ? localizer["Home"] : localizer["Jobs hub"];
         ViewBag.HideBottomNav = true;
         ViewBag.HideTopbarNotifications = true;
     }
@@ -3570,7 +3572,7 @@ public partial class ProveedorController(
         }
         else
         {
-            TempData["ProfilePhotoOk"] = "Profile photo updated.";
+            TempData["ProfilePhotoOk"] = localizer["Profile photo updated."];
         }
 
         return RedirectToAction(nameof(EditProfile), new { section = "full" });

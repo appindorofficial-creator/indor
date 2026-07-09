@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Payments & Banking - INDOR PRO";
+    ViewData["Title"] = L["Payments & Banking - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -14,23 +14,23 @@
     <header class="prv-pro-jobs-head">
         <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Payments &amp; Banking</h1>
-            <p>Review payout status and manage invoices.</p>
+            <h1>@L["Payments &amp; Banking"]</h1>
+            <p>@L["Review payout status and manage invoices."]</p>
         </div>
     </header>
 
     <section class="prv-pro-wizard-card">
-        <h2>Account status</h2>
+        <h2>@L["Account status"]</h2>
         <div class="prv-pro-profile-kv-row">
-            <span>Payout account</span>
+            <span>@L["Payout account"]</span>
             <strong class="@(Model.PayoutConnected ? "prv-pro-status-ok" : "")">@(Model.PayoutConnected ? "Connected" : "Not connected")</strong>
         </div>
         <div class="prv-pro-profile-kv-row">
-            <span>Payment processing</span>
+            <span>@L["Payment processing"]</span>
             <strong class="@(Model.PaymentProcessingActive ? "prv-pro-status-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
         </div>
         <div class="prv-pro-profile-kv-row">
-            <span>Next payout</span>
+            <span>@L["Next payout"]</span>
             <div>
                 <strong>@Model.NextPayoutAmount.ToString("C2", money)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.NextPayoutDateLabel))
@@ -42,27 +42,23 @@
     </section>
 
     <section class="prv-pro-wizard-card">
-        <h2>Manage payments</h2>
-        <p>View pending, overdue, and paid invoices from your jobs and estimates.</p>
+        <h2>@L["Manage payments"]</h2>
+        <p>@L["View pending, overdue, and paid invoices from your jobs and estimates."]</p>
         <div class="prv-pro-edit-profile-actions prv-pro-edit-profile-actions--stack">
             <a asp-controller="Proveedor" asp-action="Invoices" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block">
-                <i class="fas fa-file-invoice-dollar"></i> View invoices
-            </a>
+                <i class="fas fa-file-invoice-dollar"></i> @L["View invoices"]</a>
             <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--block">
-                <i class="fas fa-crown"></i> Subscription / plan
-            </a>
+                <i class="fas fa-crown"></i> @L["Subscription / plan"]</a>
         </div>
     </section>
 
     @if (!Model.PayoutConnected)
     {
         <div class="prv-pro-edit-profile-alert">
-            <i class="fas fa-circle-info"></i>
-            Track invoices and record payments directly in INDOR Pro.
-        </div>
+            <i class="fas fa-circle-info"></i> @L["Track invoices and record payments directly in INDOR Pro."]</div>
     }
 
     <footer class="prv-pro-edit-profile-actions">
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Back to profile</a>
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">@L["Back to profile"]</a>
     </footer>
 </div>

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProMessageQuickActionsViewModel
 @{
-    ViewData["Title"] = "Quick Actions - INDOR PRO";
+    ViewData["Title"] = L["Quick Actions - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
 }
@@ -49,8 +49,8 @@
         </div>
 
         <div class="prv-pro-upload-report-actions">
-            <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
+            <a asp-controller="Proveedor" asp-action="Conversation" asp-route-id="@Model.ConversationId" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Continue"]</button>
         </div>
     </form>
 </div>

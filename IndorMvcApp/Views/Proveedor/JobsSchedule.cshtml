@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProJobsScheduleViewModel
 @{
-    ViewData["Title"] = "Jobs Schedule - INDOR PRO";
+    ViewData["Title"] = L["Jobs Schedule - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
     var views = new[] { ("today", "Today"), ("week", "Week"), ("month", "Month") };
@@ -13,7 +13,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Jobs Schedule</h1>
+            <h1>@L["Jobs Schedule"]</h1>
             <small>@Model.DateLabel</small>
         </div>
         <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary prv-pro-workflow-add">
@@ -22,7 +22,7 @@
     </header>
 
     <div class="prv-pro-schedule-toolbar">
-        <button type="button" class="prv-pro-filter-btn" title="Filter"><i class="fas fa-filter"></i> Filter</button>
+        <button type="button" class="prv-pro-filter-btn" title="@L["Filter"]"><i class="fas fa-filter"></i> Filter</button>
         <nav class="prv-pro-schedule-tabs">
             @foreach (var (id, label) in views)
             {
@@ -39,7 +39,7 @@
     <section class="prv-pro-schedule-list">
         @if (Model.Jobs.Count == 0)
         {
-            <p class="prv-pro-empty">No jobs scheduled for this view.</p>
+            <p class="prv-pro-empty">@L["No jobs scheduled for this view."]</p>
         }
         else
         {

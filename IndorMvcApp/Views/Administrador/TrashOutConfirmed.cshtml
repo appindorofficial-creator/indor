@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorTrashOutConfirmedViewModel
 @{
-    ViewData["Title"] = "Trash Out service scheduled";
+    ViewData["Title"] = L["Trash Out service scheduled"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,7 +13,7 @@
     <section class="pa-flow-intro pa-flow-intro--confirmed">
         <span class="pa-trash-success-icon"><i class="fas fa-trash-can"></i><span class="pa-trash-success-check"><i class="fas fa-check"></i></span></span>
         <div>
-            <h1>Trash Out service scheduled</h1>
+            <h1>@L["Trash Out service scheduled"]</h1>
             <p>We'll take the bins out and bring them back for @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
         </div>
     </section>
@@ -21,8 +21,8 @@
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
-            <strong>Request received</strong>
-            <span>Your trash bin service is scheduled.</span>
+            <strong>@L["Request received"]</strong>
+            <span>@L["Your trash bin service is scheduled."]</span>
         </div>
     </div>
 
@@ -44,7 +44,7 @@
     </article>
 
     <article class="pa-timeline-card">
-        <h2>Service timeline</h2>
+        <h2>@L["Service timeline"]</h2>
         <ul class="pa-timeline">
             @foreach (var step in Model.Timeline)
             {
@@ -69,17 +69,17 @@
     </article>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-pen"></i><span>Edit request</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message guest</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-pen"></i><span>@L["Edit request"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message guest"]</span></button>
         <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>View details</span>
+            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
-        <button type="button" class="pa-action-tile"><i class="fas fa-share"></i><span>Share update</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-share"></i><span>@L["Share update"]</span></button>
     </div>
 
     <div class="pa-junk-tip-banner pa-junk-tip-banner--purple">
         <i class="fas fa-circle-info"></i>
-        <p><strong>Tip:</strong> @Model.Tip</p>
+        <p><strong>@L["Tip:"]</strong> @Model.Tip</p>
     </div>
 
     <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">

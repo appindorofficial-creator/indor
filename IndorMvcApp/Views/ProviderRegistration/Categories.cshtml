@@ -13,7 +13,7 @@
     <div asp-validation-summary="All" class="ob-summary"></div>
     <div class="prv-search-wrap">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" id="categorySearch" placeholder="Search provider type" autocomplete="off" />
+        <input type="search" id="categorySearch" placeholder="@L["Search provider type"]" autocomplete="off" />
     </div>
     <div class="prv-chip-grid prv-chip-grid--single" data-chip-group data-single-select="true" id="categoryGrid">
         @foreach (var cat in categories)
@@ -32,11 +32,11 @@
     </div>
     <div class="prv-rule-banner">
         <i class="fas fa-circle-info"></i>
-        <span>Only one main trade can be selected. Additional work categories require separate INDOR approval.</span>
+        <span>@L["Only one main trade can be selected. Additional work categories require separate INDOR approval."]</span>
     </div>
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="categoryForm" class="ob-btn ob-btn-primary">Continue</button>
-    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">Save and finish later</a>
+    <button type="submit" form="categoryForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">@L["Save and finish later"]</a>
 </div>

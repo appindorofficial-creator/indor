@@ -1,30 +1,30 @@
 @model IndorMvcApp.ViewModels.TrashConfirmedViewModel
 @{
-    ViewData["Title"] = "Service Activated - INDOR";
-    ViewData["WizardTitle"] = "Booking Confirmed";
+    ViewData["Title"] = L["Service Activated - INDOR"];
+    ViewData["WizardTitle"] = L["Booking Confirmed"];
 }
 
 <div class="success-wrap" style="text-align:center;margin-bottom:16px;">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.1rem;margin-bottom:6px;">Service activated</h1>
-        <p class="page-lead" style="text-align:center;">INDOR will remind you and manage your bins on schedule.</p>
+        <h1 class="page-heading" style="font-size:1.1rem;margin-bottom:6px;">@L["Service activated"]</h1>
+        <p class="page-lead" style="text-align:center;">@L["INDOR will remind you and manage your bins on schedule."]</p>
     </div>
 
     <div class="summary-card">
         <div class="summary-row"><i class="fas fa-rotate"></i><div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-trash-can"></i><div><div class="summary-value">@Model.BinsLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-arrows-rotate"></i><div><div class="summary-value">@Model.ServiceTypeLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Pickup day</div><div class="summary-value">@Model.PickupDayLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-tag"></i><div><div class="summary-label">Monthly total</div><div class="summary-value" style="color:#0066CC;">$@Model.PrecioMensual.ToString("0") @Model.Moneda</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Pickup day"]</div><div class="summary-value">@Model.PickupDayLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-tag"></i><div><div class="summary-label">@L["Monthly total"]</div><div class="summary-value" style="color:#0066CC;">$@Model.PrecioMensual.ToString("0") @Model.Moneda</div></div></div>
     </div>
 
     <div class="status-row">
-        <span class="status-pill green"><i class="fas fa-check"></i> Request received</span>
-        <span class="status-pill blue"><i class="fas fa-spinner"></i> Provider matching</span>
-        <span class="status-pill purple"><i class="fas fa-bell"></i> Next reminder active</span>
+        <span class="status-pill green"><i class="fas fa-check"></i> @L["Request received"]</span>
+        <span class="status-pill blue"><i class="fas fa-spinner"></i> @L["Provider matching"]</span>
+        <span class="status-pill purple"><i class="fas fa-bell"></i> @L["Next reminder active"]</span>
     </div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="btn-primary">
         <i class="fas fa-house"></i> Go to My Home
     </a>
-    <a asp-action="TrashSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> Edit service</a>
+    <a asp-action="TrashSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> @L["Edit service"]</a>

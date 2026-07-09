@@ -1,10 +1,13 @@
-﻿@model ErrorViewModel
+﻿@using IndorMvcApp.Localization
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
+@model ErrorViewModel
 @{
-    ViewData["Title"] = "Error";
+    ViewData["Title"] = L["Error"];
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -47,48 +50,47 @@
 </head>
 <body>
     <div class="wrap">
-        <h1>Error</h1>
-        <p>An error occurred while processing your request.</p>
+        <h1>@L["Error"]</h1>
+        <p>@L["An error occurred while processing your request."]</p>
 
         @if (Model.ShowRequestId)
         {
-            <div class="meta"><strong>Request ID:</strong> <code>@Model.RequestId</code></div>
+            <div class="meta"><strong>@L["Request ID:"]</strong> <code>@Model.RequestId</code></div>
         }
 
         @if (!string.IsNullOrWhiteSpace(Model.Path))
         {
-            <div class="meta"><strong>Path:</strong> <code>@Model.Path</code></div>
+            <div class="meta"><strong>@L["Path:"]</strong> <code>@Model.Path</code></div>
         }
 
         @if (Model.ShowDetails)
         {
             @if (!string.IsNullOrWhiteSpace(Model.ExceptionType))
             {
-                <h2>Exception</h2>
-                <div class="meta"><strong>Type:</strong> @Model.ExceptionType</div>
+                <h2>@L["Exception"]</h2>
+                <div class="meta"><strong>@L["Type:"]</strong> @Model.ExceptionType</div>
             }
 
             @if (!string.IsNullOrWhiteSpace(Model.ExceptionMessage))
             {
-                <div class="meta"><strong>Message:</strong> @Model.ExceptionMessage</div>
+                <div class="meta"><strong>@L["Message:"]</strong> @Model.ExceptionMessage</div>
             }
 
             @if (!string.IsNullOrWhiteSpace(Model.InnerExceptionMessage))
             {
-                <div class="meta"><strong>Inner exception:</strong> @Model.InnerExceptionMessage</div>
+                <div class="meta"><strong>@L["Inner exception:"]</strong> @Model.InnerExceptionMessage</div>
             }
 
             @if (!string.IsNullOrWhiteSpace(Model.StackTrace))
             {
-                <h2>Stack trace</h2>
+                <h2>@L["Stack trace"]</h2>
                 <pre>@Model.StackTrace</pre>
             }
         }
         else
         {
             <div class="hint">
-                Detailed errors are disabled. Set <code>Diagnostics:ShowDetailedErrors</code> to <code>true</code>
-                in Azure App Service configuration to see the full exception.
+                @L["Detailed errors are disabled. Set"] <code>Diagnostics:ShowDetailedErrors</code> @L["in Azure App Service configuration to see the full exception."]
             </div>
         }
     </div>

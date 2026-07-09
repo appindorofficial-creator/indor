@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestCategoryStepViewModel
 @{
-    ViewData["Title"] = "Post Quick Job";
+    ViewData["Title"] = L["Post Quick Job"];
 }
 
 <form asp-action="Category" method="post" class="nr-step-form" id="nrStep1Form" autocomplete="off">
@@ -14,20 +14,20 @@
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-briefcase"></i></span>
             <span class="nr-card-head-text">
-                <h2>What do you need help with?</h2>
-                <p class="nr-card-sub">Choose the kind of help you need.</p>
+                <h2>@L["What do you need help with?"]</h2>
+                <p class="nr-card-sub">@L["Choose the kind of help you need."]</p>
             </span>
         </header>
 
         @if (Model.Categories.Count == 0)
         {
             <div class="nr-empty">
-                <p>Categories are not available yet. Run the database script and try again.</p>
+                <p>@L["Categories are not available yet. Run the database script and try again."]</p>
             </div>
         }
         else
         {
-            <div class="nr-cat-grid" role="radiogroup" aria-label="Job category">
+            <div class="nr-cat-grid" role="radiogroup" aria-label="@L["Job category"]">
                 @foreach (var category in Model.Categories)
                 {
                     var isSelected = Model.CategoryId == category.Id || Model.SelectedCategoryId == category.Id;
@@ -57,7 +57,7 @@
 
             <div class="nr-cat-tip">
                 <span class="nr-cat-tip-icon"><i class="fas fa-lightbulb"></i></span>
-                <span><strong>Tip:</strong> Pick the option that best matches the type of labor help you need.</span>
+                <span><strong>@L["Tip:"]</strong> @L["Pick the option that best matches the type of labor help you need."]</span>
             </div>
         }
     </section>
@@ -65,11 +65,11 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-users"></i></span>
-            <h2>Job title</h2>
+            <h2>@L["Job title"]</h2>
         </header>
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
-                <input asp-for="Title" class="nr-input" placeholder="Need help moving a sofa" maxlength="60" autocomplete="off" />
+                <input asp-for="Title" class="nr-input" placeholder="@L["Need help moving a sofa"]" maxlength="60" autocomplete="off" />
             </div>
             <span class="nr-char-count"><span id="nrTitleCount">0</span>/60</span>
             <span asp-validation-for="Title" class="field-validation-error"></span>
@@ -79,11 +79,11 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-comment-dots"></i></span>
-            <h2>Describe the job</h2>
+            <h2>@L["Describe the job"]</h2>
         </header>
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
-                <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="Share timing, scope, or anything helpful for helpers." autocomplete="off"></textarea>
+                <textarea asp-for="Description" class="nr-textarea" maxlength="300" placeholder="@L["Share timing, scope, or anything helpful for helpers."]" autocomplete="off"></textarea>
             </div>
             <span class="nr-char-count"><span id="nrDescCount">0</span>/300</span>
         </div>
@@ -92,7 +92,7 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-location-dot"></i></span>
-            <h2>Location</h2>
+            <h2>@L["Location"]</h2>
         </header>
         <label class="nr-location-picker">
             <span class="nr-location-picker-icon"><i class="fas fa-house"></i></span>
@@ -106,15 +106,15 @@
         <label class="nr-home-toggle">
             <input type="checkbox" asp-for="UseHomeAddress" />
             <span class="nr-home-toggle-copy">
-                <strong>Use my home address</strong>
-                <small>Helpers will see your approximate location.</small>
+                <strong>@L["Use my home address"]</strong>
+                <small>@L["Helpers will see your approximate location."]</small>
             </span>
         </label>
     </section>
 </form>
 
 @section WizardFooter {
-    @{ ViewData["NrWizardFormId"] = "nrStep1Form"; ViewData["NrWizardContinueLabel"] = "Continue"; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @{ ViewData["NrWizardFormId"] = "nrStep1Form"; ViewData["NrWizardContinueLabel"] = L["Continue"]; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
     @await Html.PartialAsync("_NrWizardFooter")
 }
 

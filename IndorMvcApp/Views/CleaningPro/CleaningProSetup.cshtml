@@ -18,51 +18,51 @@
         <input type="hidden" asp-for="CantidadLimpiadores" id="CantidadLimpiadores" />
 
         <div class="field-card">
-            <div class="section-num">1. How often do you need cleaning?</div>
-            <div class="section-hint">Choose a frequency that works for you.</div>
+            <div class="section-num">@L["1. How often do you need cleaning?"]</div>
+            <div class="section-hint">@L["Choose a frequency that works for you."]</div>
             <div class="freq-row" id="freqGroup">
-                <button type="button" class="freq-chip" data-value="OneTime"><i class="fas fa-calendar-day"></i>One-time</button>
-                <button type="button" class="freq-chip" data-value="Weekly"><i class="fas fa-rotate"></i>Weekly</button>
-                <button type="button" class="freq-chip" data-value="Biweekly"><i class="fas fa-calendar-week"></i>Biweekly</button>
-                <button type="button" class="freq-chip" data-value="Monthly"><i class="fas fa-calendar"></i>Monthly</button>
+                <button type="button" class="freq-chip" data-value="OneTime"><i class="fas fa-calendar-day"></i>@L["One-time"]</button>
+                <button type="button" class="freq-chip" data-value="Weekly"><i class="fas fa-rotate"></i>@L["Weekly"]</button>
+                <button type="button" class="freq-chip" data-value="Biweekly"><i class="fas fa-calendar-week"></i>@L["Biweekly"]</button>
+                <button type="button" class="freq-chip" data-value="Monthly"><i class="fas fa-calendar"></i>@L["Monthly"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="section-num">2. How many cleaners would you like?</div>
-            <div class="section-hint">More cleaners = faster, deeper cleaning.</div>
+            <div class="section-num">@L["2. How many cleaners would you like?"]</div>
+            <div class="section-hint">@L["More cleaners = faster, deeper cleaning."]</div>
             <div class="crew-grid" id="crewGroup">
                 <button type="button" class="crew-card" data-value="One">
                     <span class="check"><i class="fas fa-check"></i></span>
                     <i class="fas fa-user main"></i>
-                    <strong>1 Cleaner</strong>
-                    <div class="rate">$35/hr</div>
-                    <div class="hint">Best for small spaces</div>
+                    <strong>@L["1 Cleaner"]</strong>
+                    <div class="rate">@L["$35/hr"]</div>
+                    <div class="hint">@L["Best for small spaces"]</div>
                 </button>
                 <button type="button" class="crew-card" data-value="Two">
                     <span class="check"><i class="fas fa-check"></i></span>
                     <i class="fas fa-user-group main"></i>
-                    <strong>2 Cleaners</strong>
-                    <div class="rate">$70/hr</div>
-                    <div class="hint">Most popular</div>
+                    <strong>@L["2 Cleaners"]</strong>
+                    <div class="rate">@L["$70/hr"]</div>
+                    <div class="hint">@L["Most popular"]</div>
                 </button>
                 <button type="button" class="crew-card" data-value="Three">
                     <span class="check"><i class="fas fa-check"></i></span>
                     <i class="fas fa-users main"></i>
-                    <strong>3 Cleaners</strong>
-                    <div class="rate">$105/hr</div>
-                    <div class="hint">Best for larger homes</div>
+                    <strong>@L["3 Cleaners"]</strong>
+                    <div class="rate">@L["$105/hr"]</div>
+                    <div class="hint">@L["Best for larger homes"]</div>
                 </button>
             </div>
-            <div class="trust-badge"><i class="fas fa-shield-halved"></i> All cleaners are background-checked &amp; professional.</div>
+            <div class="trust-badge"><i class="fas fa-shield-halved"></i> @L["All cleaners are background-checked &amp; professional."]</div>
         </div>
 
         <div class="field-card">
-            <div class="section-num">3. Where do you need cleaning?</div>
+            <div class="section-num">@L["3. Where do you need cleaning?"]</div>
             <div class="address-card">
                 <div class="left">
                     <i class="fas fa-location-dot" style="color:#0066CC;"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="Enter your full address" autocomplete="street-address" />
+                    <input asp-for="DireccionPropiedad" placeholder="@L["Enter your full address"]" autocomplete="street-address" />
                 </div>
                 <i class="fas fa-chevron-right" style="color:#94A3B8;font-size:0.8rem;"></i>
             </div>
@@ -73,7 +73,7 @@
             <button type="submit" name="action" value="continue" class="btn-primary">
                 Customize cleaning <i class="fas fa-chevron-right"></i>
             </button>
-            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
     </form>
 </div>

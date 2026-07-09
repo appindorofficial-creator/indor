@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyElectricalProblemViewModel
+@model IndorMvcApp.ViewModels.EmergencyElectricalProblemViewModel
 @{
-    ViewData["Title"] = "Electrical emergency - INDOR";
-    ViewData["WizardTitle"] = "Electrical emergency";
+    ViewData["Title"] = L["Electrical emergency - INDOR"];
+    ViewData["WizardTitle"] = L["Electrical emergency"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<h1 class="page-heading">Tell us what's happening</h1>
-    <p class="page-lead">Tell us what's happening so we can send the right help fast.</p>
+<h1 class="page-heading">@L["Tell us what's happening"]</h1>
+    <p class="page-lead">@L["Tell us what's happening so we can send the right help fast."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyElectricalProblem" method="post">
         <input type="hidden" asp-for="ServicioEmergenciaId" />
@@ -24,51 +24,51 @@
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                    <input asp-for="DireccionPropiedad" placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required />
                 </div>
-                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What best describes the problem?</span>
+            <span class="field-label">@L["What best describes the problem?"]</span>
             <div class="issue-grid" id="issueGroup">
-                <button type="button" class="issue-btn" data-value="NoPower"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bolt issue-icon"></i>No power</button>
-                <button type="button" class="issue-btn" data-value="PartialOutage"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-gauge-high issue-icon"></i>Partial outage</button>
-                <button type="button" class="issue-btn" data-value="BreakerTripping"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug issue-icon"></i>Breaker keeps tripping</button>
-                <button type="button" class="issue-btn" data-value="OutletSwitch"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug issue-icon"></i>Outlet / switch issue</button>
-                <button type="button" class="issue-btn" data-value="SparksBurning"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-fire issue-icon"></i>Sparks or burning smell</button>
-                <button type="button" class="issue-btn" data-value="PanelIssue"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-table-columns issue-icon"></i>Panel issue</button>
-                <button type="button" class="issue-btn" data-value="ExposedWire"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-code-branch issue-icon"></i>Exposed wire</button>
-                <button type="button" class="issue-btn" data-value="Other"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ellipsis issue-icon"></i>Other</button>
+                <button type="button" class="issue-btn" data-value="NoPower"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bolt issue-icon"></i>@L["No power"]</button>
+                <button type="button" class="issue-btn" data-value="PartialOutage"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-gauge-high issue-icon"></i>@L["Partial outage"]</button>
+                <button type="button" class="issue-btn" data-value="BreakerTripping"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug issue-icon"></i>@L["Breaker keeps tripping"]</button>
+                <button type="button" class="issue-btn" data-value="OutletSwitch"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug issue-icon"></i>@L["Outlet / switch issue"]</button>
+                <button type="button" class="issue-btn" data-value="SparksBurning"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-fire issue-icon"></i>@L["Sparks or burning smell"]</button>
+                <button type="button" class="issue-btn" data-value="PanelIssue"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-table-columns issue-icon"></i>@L["Panel issue"]</button>
+                <button type="button" class="issue-btn" data-value="ExposedWire"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-code-branch issue-icon"></i>@L["Exposed wire"]</button>
+                <button type="button" class="issue-btn" data-value="Other"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ellipsis issue-icon"></i>@L["Other"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is it?</span>
+            <span class="field-label">@L["How urgent is it?"]</span>
             <div class="urgency-grid" data-target="Urgencia">
-                <button type="button" class="urgency-btn" data-value="Priority">Priority</button>
-                <button type="button" class="urgency-btn" data-value="Urgent">Urgent</button>
-                <button type="button" class="urgency-btn" data-value="Emergency">Emergency</button>
+                <button type="button" class="urgency-btn" data-value="Priority">@L["Priority"]</button>
+                <button type="button" class="urgency-btn" data-value="Urgent">@L["Urgent"]</button>
+                <button type="button" class="urgency-btn" data-value="Emergency">@L["Emergency"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Can you safely turn off the breaker?</span>
+            <span class="field-label">@L["Can you safely turn off the breaker?"]</span>
             <div class="segmented-3" data-target="PuedeApagarBreaker">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-shield-halved"></i>
-            <div>If you see smoke, fire, or active sparking, move away and call <strong>911</strong> first.</div>
+            <div>@L["If you see smoke, fire, or active sparking, move away and call"] <strong>911</strong> @L["first."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next</button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> Add photo first</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"]</button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> @L["Add photo first"]</button>
     </form>
 </div>
 @section Scripts {

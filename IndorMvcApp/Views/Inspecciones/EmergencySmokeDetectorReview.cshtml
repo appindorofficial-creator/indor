@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencySmokeDetectorReviewViewModel
 @{
-    ViewData["Title"] = "Smoke & CO Details - INDOR";
-    ViewData["WizardTitle"] = "Smoke & CO Details";
+    ViewData["Title"] = L["Smoke & CO Details - INDOR"];
+    ViewData["WizardTitle"] = L["Smoke & CO Details"];
 var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.OrdinalIgnoreCase)
         || Model.SeguridadResumen.Contains("not safe", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("EmergencySmokeDetectorYourInfo", "Inspecciones", new { id = Model.SolicitudId });
@@ -10,11 +10,11 @@ var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.
 
 }
 
-    <strong style="display:block;margin-bottom:4px;">Smoke &amp; CO Details</strong>
+    <strong style="display:block;margin-bottom:4px;">@L["Smoke &amp; CO Details"]</strong>
 
     
-<h2 class="page-heading">Review your emergency request</h2>
-    <p class="page-lead">Make sure everything looks right before we dispatch help.</p>
+<h2 class="page-heading">@L["Review your emergency request"]</h2>
+    <p class="page-lead">@L["Make sure everything looks right before we dispatch help."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencySmokeDetectorReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -28,26 +28,26 @@ var unsafeInside = Model.SeguridadResumen.Contains("Not sure", StringComparison.
         <input type="hidden" asp-for="AccesoResumen" />
 
         <div class="summary-card">
-            <div class="summary-row"><i class="fas fa-fire-flame-curved"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
-            <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-            <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">Issue</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">Locations</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-triangle-exclamation warn"></i><div style="flex:1;"><div class="summary-label">Safety status</div><div class="summary-value @(unsafeInside ? "warn" : "")">@Model.SeguridadResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-wind"></i><div style="flex:1;"><div class="summary-label">Gas smell</div><div class="summary-value">@Model.OlorGasResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-user"></i><div style="flex:1;"><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-fire-flame-curved"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+            <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+            <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Locations"]</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-triangle-exclamation warn"></i><div style="flex:1;"><div class="summary-label">@L["Safety status"]</div><div class="summary-value @(unsafeInside ? "warn" : "")">@Model.SeguridadResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-wind"></i><div style="flex:1;"><div class="summary-label">@L["Gas smell"]</div><div class="summary-value">@Model.OlorGasResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-user"></i><div style="flex:1;"><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoResumen</div></div></div>
         </div>
 
-        <label asp-for="NotaCorta" class="field-label">Optional notes</label>
-        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="500" placeholder="Hallway detector started sounding and bedroom detector is chirping too."></textarea>
+        <label asp-for="NotaCorta" class="field-label">@L["Optional notes"]</label>
+        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Hallway detector started sounding and bedroom detector is chirping too."]"></textarea>
         <div class="char-count"><span id="charCount">0</span>/500</div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>Providers will review your answers first. If danger increases, leave the home and call emergency services.</div>
+            <div>@L["Providers will review your answers first. If danger increases, leave the home and call emergency services."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="submit">Submit request <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="back">Edit details</button>
+        <button type="submit" class="btn-primary" name="action" value="submit">@L["Submit request"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">@L["Edit details"]</button>
     </form>
 </div>
 @section Scripts {

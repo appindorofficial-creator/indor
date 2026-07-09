@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProEstimateAcceptedViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Estimate Approved - INDOR PRO";
+    ViewData["Title"] = L["Estimate Approved - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -13,29 +13,29 @@
 
     <section class="prv-pro-estimate-sent-hero">
         <div class="prv-pro-estimate-sent-icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Estimate Approved!</h1>
-        <p>The customer accepted your estimate. You can schedule work or create an invoice.</p>
+        <h1>@L["Estimate Approved!"]</h1>
+        <p>@L["The customer accepted your estimate. You can schedule work or create an invoice."]</p>
     </section>
 
     <section class="prv-pro-lead-section prv-pro-status-card">
         <div class="prv-pro-status-card-row">
-            <span>Property</span>
+            <span>@L["Property"]</span>
             <strong>@Model.Address</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Approved Total</span>
+            <span>@L["Approved Total"]</span>
             <strong class="prv-pro-estimate-sent-amount">@Model.TotalAmount.ToString("C0", money)</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Approved Items</span>
+            <span>@L["Approved Items"]</span>
             <strong>@Model.ApprovedItemCount</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Approved by</span>
+            <span>@L["Approved by"]</span>
             <strong>@Model.ApprovedByLabel</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Date</span>
+            <span>@L["Date"]</span>
             <strong>@Model.ApprovedLabel</strong>
         </div>
     </section>
@@ -45,13 +45,11 @@
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.EstimateId" />
             <button type="submit" class="prv-pro-btn prv-pro-btn--teal prv-pro-btn--full">
-                <i class="fas fa-calendar-check"></i> Schedule Work
-            </button>
+                <i class="fas fa-calendar-check"></i> @L["Schedule Work"]</button>
         </form>
         <a asp-controller="Proveedor" asp-action="CreateInvoice" asp-route-estimateId="@Model.EstimateId"
            class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
-            <i class="fas fa-file-invoice-dollar"></i> Create Invoice
-        </a>
+            <i class="fas fa-file-invoice-dollar"></i> @L["Create Invoice"]</a>
         <a asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full">
             Back to Leads
         </a>

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NetworkJobPostedViewModel
 @{
-    ViewData["Title"] = "Job Posted";
+    ViewData["Title"] = L["Job Posted"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-network.css";
     ViewBag.NavActive = "jobs";
@@ -9,7 +9,7 @@
 <div class="prv-net-shell">
     <div class="prv-net-success">
         <span class="prv-net-success-ic"><i class="fas fa-check"></i></span>
-        <h1>Job posted!</h1>
+        <h1>@L["Job posted!"]</h1>
         <p>
             @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
             {
@@ -17,22 +17,22 @@
             }
             else
             {
-                <text>Your job is now shared with verified subcontractors.</text>
+                <text>@L["Your job is now shared with verified subcontractors."]</text>
             }
         </p>
     </div>
 
     <div class="prv-net-sec-head">
         <h2>@Model.MatchedCount qualified match@(Model.MatchedCount == 1 ? "" : "es")</h2>
-        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="@(Model.TradeLabel == null ? "all" : "all")" class="prv-net-sort">See all <i class="fas fa-chevron-right"></i></a>
+        <a asp-controller="Proveedor" asp-action="FindSubcontractors" asp-route-trade="@(Model.TradeLabel == null ? "all" : "all")" class="prv-net-sort">@L["See all"]<i class="fas fa-chevron-right"></i></a>
     </div>
 
     @if (Model.Matches.Count == 0)
     {
         <div class="prv-net-empty">
             <i class="fas fa-user-clock"></i>
-            <h3>Matching in progress</h3>
-            <p>We'll notify you as verified subcontractors respond to your job.</p>
+            <h3>@L["Matching in progress"]</h3>
+            <p>@L["We'll notify you as verified subcontractors respond to your job."]</p>
         </div>
     }
     else

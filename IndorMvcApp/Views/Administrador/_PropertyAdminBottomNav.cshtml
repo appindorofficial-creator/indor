@@ -1,25 +1,25 @@
 @{
     var active = ViewBag.NavActive as string ?? "home";
 }
-<nav class="pa-bottom-nav" aria-label="Portfolio navigation">
+<nav class="pa-bottom-nav" aria-label="@L["Portfolio navigation"]">
     <a asp-controller="Administrador" asp-action="Index" class="@(active == "home" ? "is-active" : null)">
         <i class="fas fa-house"></i>
-        <span>Home</span>
+        <span>@L["Home"]</span>
     </a>
     <a asp-controller="Administrador" asp-action="Calendar" class="@(active == "calendar" ? "is-active" : null)">
         <i class="fas fa-calendar-days"></i>
-        <span>Calendar</span>
+        <span>@L["Calendar"]</span>
     </a>
     <a asp-controller="Administrador" asp-action="Properties" class="@(active == "properties" ? "is-active" : null)">
         <i class="fas fa-building"></i>
-        <span>Properties</span>
+        <span>@L["Properties"]</span>
     </a>
     <a asp-controller="Administrador" asp-action="Services" class="@(active == "services" ? "is-active" : null)">
         <i class="fas fa-briefcase"></i>
-        <span>Services</span>
+        <span>@L["Services"]</span>
     </a>
     <a asp-controller="Administrador" asp-action="Tasks" class="@(active == "tasks" ? "is-active" : null)">
         <i class="fas fa-list-check"></i>
-        <span>Tasks</span>
+        <span>@L["Tasks"]</span>
     </a>
 </nav>

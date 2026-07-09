@@ -1,38 +1,38 @@
 @model IndorMvcApp.ViewModels.MyHomeHistoryFormViewModel
 @{
-    ViewData["Title"] = "Edit Record";
+    ViewData["Title"] = L["Edit Record"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
     ViewBag.MyHomeBackUrl = Url.Action("HistoryDetail", "MyHome", new { id = Model.Id });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Edit record</h1>
+    <h1 class="hf-title">@L["Edit record"]</h1>
 </div>
 <form asp-action="HistoryEdit" method="post">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="PropiedadId" />
-    <label asp-for="RecordType" class="hf-label">Record type</label>
+    <label asp-for="RecordType" class="hf-label">@L["Record type"]</label>
     <select asp-for="RecordType" class="hf-select">
-        <option value="Improvement">Improvement</option>
-        <option value="Repair">Repair</option>
-        <option value="Maintenance">Maintenance</option>
+        <option value="Improvement">@L["Improvement"]</option>
+        <option value="Repair">@L["Repair"]</option>
+        <option value="Maintenance">@L["Maintenance"]</option>
     </select>
-    <label asp-for="Title" class="hf-label">Title</label>
+    <label asp-for="Title" class="hf-label">@L["Title"]</label>
     <input asp-for="Title" class="hf-input" />
-    <label asp-for="ProviderName" class="hf-label">Provider</label>
+    <label asp-for="ProviderName" class="hf-label">@L["Provider"]</label>
     <input asp-for="ProviderName" class="hf-input" />
-    <label asp-for="CompletionDate" class="hf-label">Completion date</label>
+    <label asp-for="CompletionDate" class="hf-label">@L["Completion date"]</label>
     <input asp-for="CompletionDate" class="hf-input" type="date" />
-    <label asp-for="TotalCost" class="hf-label">Total cost</label>
+    <label asp-for="TotalCost" class="hf-label">@L["Total cost"]</label>
     <input asp-for="TotalCost" class="hf-input" type="number" step="0.01" />
-    <label asp-for="WarrantyStatus" class="hf-label">Warranty status</label>
+    <label asp-for="WarrantyStatus" class="hf-label">@L["Warranty status"]</label>
     <select asp-for="WarrantyStatus" class="hf-select">
-        <option value="">Not specified</option>
-        <option value="Active">Active</option>
-        <option value="Expired">Expired</option>
+        <option value="">@L["Not specified"]</option>
+        <option value="Active">@L["Active"]</option>
+        <option value="Expired">@L["Expired"]</option>
     </select>
-    <label asp-for="Description" class="hf-label">Description</label>
+    <label asp-for="Description" class="hf-label">@L["Description"]</label>
     <textarea asp-for="Description" class="hf-textarea" rows="4"></textarea>
-    <button type="submit" class="hf-btn hf-btn-primary">Save record</button>
+    <button type="submit" class="hf-btn hf-btn-primary">@L["Save record"]</button>
 </form>

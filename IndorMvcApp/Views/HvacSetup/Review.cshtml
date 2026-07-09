@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HvacReviewViewModel
 @{
-    ViewData["Title"] = "Review & consent";
+    ViewData["Title"] = L["Review & consent"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
     ViewData["WizardStep"] = Model.CurrentStep;
@@ -18,22 +18,22 @@
                 <div class="hvac-review-card-head">
                     <span class="hvac-review-icon"><i class="fas fa-clipboard-list"></i></span>
                     <div>
-                        <strong>Review your HVAC details</strong>
-                        <p>Please confirm the information captured from your equipment label.</p>
+                        <strong>@L["Review your HVAC details"]</strong>
+                        <p>@L["Please confirm the information captured from your equipment label."]</p>
                     </div>
                 </div>
                 @if (!string.IsNullOrWhiteSpace(Model.LabelImageUrl))
                 {
                     <div class="hvac-review-label-photo">
-                        <img src="@Url.Content($"~{Model.LabelImageUrl}")" alt="Your uploaded HVAC label" />
+                        <img src="@Url.Content($"~{Model.LabelImageUrl}")" alt="@L["Your uploaded HVAC label"]" />
                     </div>
                 }
                 <div class="hvac-review-rows">
-                    <div class="hvac-review-row"><span>System type</span><strong>@Model.SystemTypeLabel</strong></div>
-                    <div class="hvac-review-row"><span>Brand</span><strong>@Model.Brand</strong></div>
-                    <div class="hvac-review-row"><span>Model</span><strong>@Model.EquipmentModel</strong></div>
-                    <div class="hvac-review-row"><span>Serial number</span><strong>@Model.SerialNumber</strong></div>
-                    <div class="hvac-review-row"><span>Approx. install year</span><strong>@Model.InstallYearLabel</strong></div>
+                    <div class="hvac-review-row"><span>@L["System type"]</span><strong>@Model.SystemTypeLabel</strong></div>
+                    <div class="hvac-review-row"><span>@L["Brand"]</span><strong>@Model.Brand</strong></div>
+                    <div class="hvac-review-row"><span>@L["Model"]</span><strong>@Model.EquipmentModel</strong></div>
+                    <div class="hvac-review-row"><span>@L["Serial number"]</span><strong>@Model.SerialNumber</strong></div>
+                    <div class="hvac-review-row"><span>@L["Approx. install year"]</span><strong>@Model.InstallYearLabel</strong></div>
                 </div>
             </div>
 
@@ -41,20 +41,20 @@
                 <div class="hvac-review-card-head">
                     <span class="hvac-review-icon"><i class="fas fa-shield-halved"></i></span>
                     <div>
-                        <strong>Terms &amp; Conditions</strong>
-                        <p>Your consent helps INDOR deliver personalized maintenance and protection for your home.</p>
+                        <strong>@L["Terms & Conditions"]</strong>
+                        <p>@L["Your consent helps INDOR deliver personalized maintenance and protection for your home."]</p>
                     </div>
                 </div>
 
                 <label class="hvac-consent-row">
                     <input asp-for="ConfirmInfo" type="checkbox" />
-                    <span>I confirm this equipment information is correct or I have updated it before saving.</span>
+                    <span>@L["I confirm this equipment information is correct or I have updated it before saving."]</span>
                 </label>
                 <span asp-validation-for="ConfirmInfo" class="text-danger"></span>
 
                 <label class="hvac-consent-row">
                     <input asp-for="AuthorizeStorage" type="checkbox" />
-                    <span>I authorize INDOR to store this equipment data and use it to personalize reminders, organize home records, and surface maintenance insights.</span>
+                    <span>@L["I authorize INDOR to store this equipment data and use it to personalize reminders, organize home records, and surface maintenance insights."]</span>
                 </label>
                 <span asp-validation-for="AuthorizeStorage" class="text-danger"></span>
 
@@ -70,7 +70,7 @@
             </div>
 
             <div class="sticky-footer">
-                <button type="submit" class="hvac-save-btn">Agree &amp; save</button>
+                <button type="submit" class="hvac-save-btn">@L["Agree & save"]</button>
             </div>
         </form>
 

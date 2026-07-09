@@ -27,7 +27,7 @@
     @if (Model.IncludedItems.Count > 0)
     {
         <div class="includes-box" style="background:#F9FAFB;border:1px solid #E5E7EB;border-radius:14px;padding:12px 14px;margin-bottom:14px;">
-            <div style="font-size:0.65rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#6B7280;margin-bottom:8px;">Includes</div>
+            <div style="font-size:0.65rem;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:#6B7280;margin-bottom:8px;">@L["Includes"]</div>
             <ul style="list-style:none;padding:0;margin:0;">
                 @foreach (var item in Model.IncludedItems)
                 {

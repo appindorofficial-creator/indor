@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProAddCustomerInfoViewModel
 @{
-    ViewData["Title"] = "Customer Information - INDOR PRO";
+    ViewData["Title"] = L["Customer Information - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "customers";
     var types = new[] { ("Homeowner", "fa-house-user"), ("Buyer", "fa-key"), ("Realtor", "fa-building"), ("Property Manager", "fa-building-user") };
@@ -14,7 +14,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Customer Information</h1>
+            <h1>@L["Customer Information"]</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -29,7 +29,7 @@
         @Html.AntiForgeryToken()
 
         <section class="prv-pro-add-customer-section">
-            <h3>Customer Type</h3>
+            <h3>@L["Customer Type"]</h3>
             <div class="prv-pro-customer-type-grid">
                 @foreach (var (type, icon) in types)
                 {
@@ -43,25 +43,23 @@
         </section>
 
         <div class="prv-pro-form-row-2">
-            <label class="prv-pro-form-label">First Name <span class="prv-pro-required">*</span>
+            <label class="prv-pro-form-label">@L["First Name"]<span class="prv-pro-required">*</span>
                 <div class="prv-pro-form-input-wrap"><i class="fas fa-user"></i><input type="text" name="FirstName" value="@Model.FirstName" required /></div>
             </label>
-            <label class="prv-pro-form-label">Last Name <span class="prv-pro-required">*</span>
+            <label class="prv-pro-form-label">@L["Last Name"]<span class="prv-pro-required">*</span>
                 <div class="prv-pro-form-input-wrap"><i class="fas fa-user"></i><input type="text" name="LastName" value="@Model.LastName" required /></div>
             </label>
         </div>
 
         <div class="prv-pro-form-row-2">
-            <label class="prv-pro-form-label">Phone Number
-                <div class="prv-pro-form-input-wrap"><i class="fas fa-phone"></i><input type="tel" name="Phone" value="@Model.Phone" placeholder="5551234567" autocomplete="tel" data-phone-input /></div>
+            <label class="prv-pro-form-label">@L["Phone Number"]<div class="prv-pro-form-input-wrap"><i class="fas fa-phone"></i><input type="tel" name="Phone" value="@Model.Phone" placeholder="@L["5551234567"]" autocomplete="tel" data-phone-input /></div>
             </label>
-            <label class="prv-pro-form-label">Email Address
-                <div class="prv-pro-form-input-wrap"><i class="fas fa-envelope"></i><input type="email" name="Email" value="@Model.Email" placeholder="name@example.com" /></div>
+            <label class="prv-pro-form-label">@L["Email Address"]<div class="prv-pro-form-input-wrap"><i class="fas fa-envelope"></i><input type="email" name="Email" value="@Model.Email" placeholder="@L["name@example.com"]" /></div>
             </label>
         </div>
 
         <section class="prv-pro-add-customer-section">
-            <h3>Preferred Contact Method</h3>
+            <h3>@L["Preferred Contact Method"]</h3>
             <div class="prv-pro-contact-method-grid">
                 @foreach (var (method, icon) in contacts)
                 {
@@ -73,13 +71,12 @@
             </div>
         </section>
 
-        <label class="prv-pro-form-label">Company Name (optional)
-            <div class="prv-pro-form-input-wrap"><i class="fas fa-building"></i><input type="text" name="CompanyName" value="@Model.CustomerCompanyName" /></div>
+        <label class="prv-pro-form-label">@L["Company Name (optional)"]<div class="prv-pro-form-input-wrap"><i class="fas fa-building"></i><input type="text" name="CompanyName" value="@Model.CustomerCompanyName" /></div>
         </label>
 
         <div class="prv-pro-add-customer-actions">
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>
 </div>

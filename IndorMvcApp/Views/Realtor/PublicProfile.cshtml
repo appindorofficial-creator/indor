@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorPublicProfileViewModel
 @{
-    ViewData["Title"] = "Public Profile";
+    ViewData["Title"] = L["Public Profile"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "profile";
     var aboutText = !string.IsNullOrWhiteSpace(Model.Bio)
@@ -11,8 +11,8 @@
 }
 
 <div class="rl-dash-shell rl-public-profile rl-public-profile--v2">
-    <section class="rl-public-hero rl-public-hero--banner" aria-label="Public profile header">
-        <a asp-controller="Realtor" asp-action="Profile" class="rl-public-hero-back" aria-label="Back to profile">
+    <section class="rl-public-hero rl-public-hero--banner" aria-label="@L["Public profile header"]">
+        <a asp-controller="Realtor" asp-action="Profile" class="rl-public-hero-back" aria-label="@L["Back to profile"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <span class="rl-public-hero-wave" aria-hidden="true"></span>
@@ -28,7 +28,7 @@
                 }
                 @if (Model.IsOwnProfile)
                 {
-                    <a asp-controller="Realtor" asp-action="EditProfile" class="rl-public-hero-photo-edit" aria-label="Edit photo">
+                    <a asp-controller="Realtor" asp-action="EditProfile" class="rl-public-hero-photo-edit" aria-label="@L["Edit photo"]">
                         <i class="fas fa-camera"></i>
                     </a>
                 }
@@ -72,15 +72,15 @@
             <a asp-controller="Realtor" asp-action="EditProfile" class="rl-public-action-card rl-public-action-card--primary">
                 <span class="rl-public-action-icon"><i class="fas fa-user-pen"></i></span>
                 <span class="rl-public-action-copy">
-                    <strong>Edit Profile</strong>
-                    <small>Update photo, license, and bio</small>
+                    <strong>@L["Edit Profile"]</strong>
+                    <small>@L["Update photo, license, and bio"]</small>
                 </span>
             </a>
             <button type="button" class="rl-public-action-card rl-public-action-card--secondary" id="rlPublicShareBtn">
                 <span class="rl-public-action-icon"><i class="fas fa-share-from-square"></i></span>
                 <span class="rl-public-action-copy">
-                    <strong>Share Profile</strong>
-                    <small>Share your profile link</small>
+                    <strong>@L["Share Profile"]</strong>
+                    <small>@L["Share your profile link"]</small>
                 </span>
             </button>
         </section>
@@ -88,7 +88,7 @@
 
     @if (Model.Stats.Count > 0)
     {
-        <section class="rl-public-stats" aria-label="Profile stats">
+        <section class="rl-public-stats" aria-label="@L["Profile stats"]">
             @foreach (var stat in Model.Stats)
             {
                 <div class="rl-public-stat">
@@ -101,7 +101,7 @@
     }
 
     <section class="rl-public-section rl-public-about">
-        <h2>About</h2>
+        <h2>@L["About"]</h2>
         <p>@aboutText</p>
         @if (!string.IsNullOrWhiteSpace(Model.LicenseLabel))
         {
@@ -116,7 +116,7 @@
     @if (Model.ServiceAreaChips.Count > 0)
     {
         <section class="rl-public-section">
-            <h2>Service Areas</h2>
+            <h2>@L["Service Areas"]</h2>
             <div class="rl-public-chips">
                 @foreach (var area in Model.ServiceAreaChips)
                 {
@@ -134,8 +134,8 @@
             </div>
             <div class="rl-public-verify-card-body">
                 <div class="rl-public-verify-card-head">
-                    <h3><i class="fas fa-shield-check" aria-hidden="true"></i> Become a Verified Realtor</h3>
-                    <p>Complete your verification to build trust, improve visibility, and unlock more opportunities in INDOR.</p>
+                    <h3><i class="fas fa-shield-check" aria-hidden="true"></i> @L["Become a Verified Realtor"]</h3>
+                    <p>@L["Complete your verification to build trust, improve visibility, and unlock more opportunities in INDOR."]</p>
                 </div>
                 <ul class="rl-public-verify-steps">
                     @foreach (var step in Model.VerificationSteps)
@@ -160,8 +160,8 @@
     {
         <section class="rl-public-section">
             <div class="rl-public-section-head">
-                <h2>Active Listings</h2>
-                <a asp-controller="Realtor" asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-public-section-link">See all</a>
+                <h2>@L["Active Listings"]</h2>
+                <a asp-controller="Realtor" asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-public-section-link">@L["See all"]</a>
             </div>
             <div class="rl-public-carousel">
                 @foreach (var listing in Model.ActiveListings)
@@ -191,7 +191,7 @@
                             {
                                 <span class="rl-network-card-specs">@listing.SpecsLabel</span>
                             }
-                            <a href="@listing.ViewUrl" class="rl-btn-outline rl-btn-outline--sm rl-public-listing-btn">View Listing</a>
+                            <a href="@listing.ViewUrl" class="rl-btn-outline rl-btn-outline--sm rl-public-listing-btn">@L["View Listing"]</a>
                         </div>
                     </article>
                 }
@@ -203,8 +203,8 @@
     {
         <section class="rl-public-section">
             <div class="rl-public-section-head">
-                <h2>Open Houses</h2>
-                <a asp-controller="Realtor" asp-action="Network" asp-route-view="feed" asp-route-filter="OpenHouses" class="rl-public-section-link">See all</a>
+                <h2>@L["Open Houses"]</h2>
+                <a asp-controller="Realtor" asp-action="Network" asp-route-view="feed" asp-route-filter="OpenHouses" class="rl-public-section-link">@L["See all"]</a>
             </div>
             <div class="rl-public-openhouses">
                 @foreach (var openHouse in Model.OpenHouses)
@@ -240,9 +240,9 @@
     {
         <section class="rl-public-section">
             <div class="rl-public-section-head">
-                <h2>Shared Packages</h2>
+                <h2>@L["Shared Packages"]</h2>
             </div>
-            <p class="rl-public-section-desc">Curated packages and resources shared with clients on INDOR.</p>
+            <p class="rl-public-section-desc">@L["Curated packages and resources shared with clients on INDOR."]</p>
             <div class="rl-public-packages">
                 @foreach (var package in Model.SharedPackages)
                 {

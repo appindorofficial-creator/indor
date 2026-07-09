@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestOffersListViewModel
 @{
-    ViewData["Title"] = "Offers received";
+    ViewData["Title"] = L["Offers received"];
     Layout = null;
 }
 <!DOCTYPE html>
@@ -8,17 +8,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Offers received - INDOR</title>
+    <title>@L["Offers received"] - INDOR</title>
     @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-detail.css" asp-append-version="true" />
 </head>
 <body class="nr-detail-page">
     <div class="nr-detail-shell">
         <header class="nr-detail-top">
-            <a href="@Model.BackUrl" class="nr-detail-nav-btn" aria-label="Back">
+            <a href="@Model.BackUrl" class="nr-detail-nav-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <strong class="nr-detail-top-title">Offers received</strong>
+            <strong class="nr-detail-top-title">@L["Offers received"]</strong>
             <span class="nr-detail-nav-btn nr-detail-nav-btn--spacer" aria-hidden="true"></span>
         </header>
 

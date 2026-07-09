@@ -8,7 +8,7 @@
 
         <i class="fas fa-magnifying-glass"></i>
 
-        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search properties by address or client name" />
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search properties by address or client name"]" />
 
     </div>
 
@@ -28,7 +28,7 @@
 
     {
 
-        <div class="rl-dash-empty">No properties found. Create a property file first.</div>
+        <div class="rl-dash-empty">@L["No properties found. Create a property file first."]</div>
 
     }
 
@@ -76,7 +76,7 @@
 
         <i class="fas fa-circle-info"></i>
 
-        <p>Choose an existing property file so photos, reports, and quotes stay connected.</p>
+        <p>@L["Choose an existing property file so photos, reports, and quotes stay connected."]</p>
 
     </div>
 
@@ -90,11 +90,11 @@
 
         @Html.AntiForgeryToken()
 
-        <button type="submit" class="rl-invite-cancel">Cancel</button>
+        <button type="submit" class="rl-invite-cancel">@L["Cancel"]</button>
 
     </form>
 
-    <button type="submit" form="quotePropertyForm" class="ob-btn ob-btn-primary">Next</button>
+    <button type="submit" form="quotePropertyForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
 
 </div>
 

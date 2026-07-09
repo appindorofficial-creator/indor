@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestSuccessViewModel
 @{
-    ViewData["Title"] = "Request published";
+    ViewData["Title"] = L["Request published"];
     Layout = null;
 }
 <!DOCTYPE html>
@@ -8,7 +8,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Request published - INDOR</title>
+    <title>@L["Request published"] - INDOR</title>
     @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
 </head>
@@ -16,11 +16,11 @@
     <div class="nr-wizard-shell">
         <div class="nr-success">
             <div class="nr-success-icon"><i class="fas fa-check"></i></div>
-            <h1>Your request is live!</h1>
-            <p>Neighbors and providers in your area can now see it and send you offers.</p>
+            <h1>@L["Your request is live!"]</h1>
+            <p>@L["Neighbors and providers in your area can now see it and send you offers."]</p>
             <div class="nr-success-actions">
-                <a asp-action="Detail" asp-route-id="@Model.RequestId" class="nr-btn-primary">View my request</a>
-                <a asp-controller="Home" asp-action="Index" class="nr-btn-outline">Go to Home</a>
+                <a asp-action="Detail" asp-route-id="@Model.RequestId" class="nr-btn-primary">@L["View my request"]</a>
+                <a asp-controller="Home" asp-action="Index" class="nr-btn-outline">@L["Go to Home"]</a>
             </div>
         </div>
     </div>

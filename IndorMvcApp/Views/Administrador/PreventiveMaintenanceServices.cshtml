@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPreventiveServicesStepViewModel
 @{
-    ViewData["Title"] = "Preventive Maintenance";
+    ViewData["Title"] = L["Preventive Maintenance"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Preventive Maintenance</h1>
-        <p>Choose the upkeep services your property needs.</p>
+        <h1>@L["Preventive Maintenance"]</h1>
+        <p>@L["Choose the upkeep services your property needs."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -40,7 +40,7 @@
         }
 
         <section class="pa-prev-section">
-            <h2>Recommended services</h2>
+            <h2>@L["Recommended services"]</h2>
             <div class="pa-prev-service-grid">
                 @foreach (var svc in Model.Services)
                 {
@@ -56,7 +56,7 @@
         </section>
 
         <section class="pa-prev-section">
-            <h2>Plan options</h2>
+            <h2>@L["Plan options"]</h2>
             <div class="pa-plan-tier-row">
                 @foreach (var tier in Model.PlanTiers)
                 {
@@ -71,8 +71,8 @@
             </div>
         </section>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

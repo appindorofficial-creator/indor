@@ -1,7 +1,7 @@
 @using IndorMvcApp.Helpers
 @{
     Layout = "_Layout";
-    var titulo = ViewData["Title"] as string ?? "Profile";
+    var titulo = ViewData["Title"] as string ?? L["Profile"];
     var step = ViewData["MembershipStep"] as int?;
     var totalSteps = ViewData["MembershipTotalSteps"] as int? ?? 6;
     var progressPct = step.HasValue ? (int)Math.Round(step.Value / (double)totalSteps * 100) : 0;
@@ -16,11 +16,11 @@
         }
         @if (!string.IsNullOrEmpty(backUrl))
         {
-            <a class="app-back-btn" href="@backUrl" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+            <a class="app-back-btn" href="@backUrl" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         }
         else
         {
-            <a class="app-back-btn" href="@HomeNavigationUrls.MoreTab(Url)" aria-label="Back">
+            <a class="app-back-btn" href="@HomeNavigationUrls.MoreTab(Url)" aria-label="@L["Back"]">
                 <i class="fas fa-chevron-left"></i>
             </a>
         }
@@ -28,7 +28,7 @@
             @if (step.HasValue)
             {
                 <div class="mem-progress">
-                    <span>Step @step of @totalSteps</span>
+                    <span>@L["Step"] @step @L["of"] @totalSteps</span>
                     @if (totalSteps == 6)
                     {
                         <div class="mem-progress-segments" aria-hidden="true">

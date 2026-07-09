@@ -1,9 +1,12 @@
+@using IndorMvcApp.Localization
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
 @{
     var wizardModel = Model as IndorMvcApp.ViewModels.IndorWizardShellViewModel;
     var pageTitle = wizardModel?.PageTitle ?? ViewData["Title"] as string ?? "INDOR";
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />

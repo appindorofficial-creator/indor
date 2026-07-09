@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorPreviewSharedQuoteViewModel
 @{
-    ViewData["Title"] = "Preview Shared Quote";
+    ViewData["Title"] = L["Preview Shared Quote"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "quotes";
 }
@@ -12,22 +12,22 @@
         <a asp-controller="Realtor" asp-action="EditSharedQuote" asp-route-quoteId="@Model.QuoteId" asp-route-bidId="@Model.BidId" class="rl-back-link">
             <i class="fas fa-chevron-left"></i> Edit
         </a>
-        <h1 class="rl-page-title">Preview Shared Quote</h1>
+        <h1 class="rl-page-title">@L["Preview Shared Quote"]</h1>
     </div>
 
     <div class="rl-qshare-preview-head">
         <strong>To: @Model.HomeownerName – @Model.HomeownerRole</strong>
-        <p>Choose how you'd like to share this quote.</p>
+        <p>@L["Choose how you'd like to share this quote."]</p>
         <div class="rl-qshare-delivery-icons">
-            <span><i class="fas fa-mobile-screen"></i> In-App</span>
-            <span><i class="fas fa-envelope"></i> Email</span>
-            <span><i class="fas fa-comment-sms"></i> Text</span>
-            <span><i class="fas fa-link"></i> Share Link</span>
+            <span><i class="fas fa-mobile-screen"></i> @L["In-App"]</span>
+            <span><i class="fas fa-envelope"></i> @L["Email"]</span>
+            <span><i class="fas fa-comment-sms"></i> @L["Text"]</span>
+            <span><i class="fas fa-link"></i> @L["Share Link"]</span>
         </div>
     </div>
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head"><h2>What the homeowner will receive</h2></div>
+        <div class="rl-dash-section-head"><h2>@L["What the homeowner will receive"]</h2></div>
         <div class="rl-qshare-preview-card">
             <div class="rl-qview-hero rl-qview-hero--compact">
                 <img src="@Model.PhotoUrl" alt="" />
@@ -37,29 +37,29 @@
                     {
                         <div class="rl-qshare-mini-provider">
                             <span class="rl-provider-avatar rl-provider-avatar--sm">@Model.ProviderInitials</span>
-                            @Model.ProviderName <span class="rl-premium-muted">Verified provider</span>
+                            @Model.ProviderName <span class="rl-premium-muted">@L["Verified provider"]</span>
                         </div>
                     }
                 </div>
             </div>
 
             <div class="rl-qview-metrics">
-                <div><i class="fas fa-dollar-sign rl-metric-icon rl-metric-icon--blue"></i><span>Total Quote</span><strong>@Model.TotalLabel</strong></div>
+                <div><i class="fas fa-dollar-sign rl-metric-icon rl-metric-icon--blue"></i><span>@L["Total Quote"]</span><strong>@Model.TotalLabel</strong></div>
                 @if (!string.IsNullOrWhiteSpace(Model.TimelineLabel))
                 {
-                    <div><i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i><span>Timeline</span><strong>@Model.TimelineLabel</strong></div>
+                    <div><i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i><span>@L["Timeline"]</span><strong>@Model.TimelineLabel</strong></div>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.WarrantyLabel))
                 {
-                    <div><i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i><span>Warranty</span><strong>@Model.WarrantyLabel</strong></div>
+                    <div><i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i><span>@L["Warranty"]</span><strong>@Model.WarrantyLabel</strong></div>
                 }
-                <div><i class="fas fa-circle-check rl-metric-icon rl-metric-icon--green"></i><span>Status</span><strong>@Model.ReviewStatusLabel</strong></div>
+                <div><i class="fas fa-circle-check rl-metric-icon rl-metric-icon--green"></i><span>@L["Status"]</span><strong>@Model.ReviewStatusLabel</strong></div>
             </div>
 
             @if (Model.IncludedRepairs.Count > 0)
             {
                 <div class="rl-qshare-preview-block">
-                    <strong>Included Repairs</strong>
+                    <strong>@L["Included Repairs"]</strong>
                     <ul class="rl-qview-repairs">
                         @foreach (var repair in Model.IncludedRepairs)
                         {
@@ -82,13 +82,13 @@
     <form asp-action="SendSharedQuote" asp-route-id="@Model.SharedQuoteId" method="post" class="rl-qshare-send-form">
         @Html.AntiForgeryToken()
         <div class="rl-qshare-delivery-tabs">
-            <label><input type="radio" name="deliveryMethod" value="InApp" checked /><i class="fas fa-mobile-screen"></i> In-App</label>
-            <label><input type="radio" name="deliveryMethod" value="Email" /><i class="fas fa-envelope"></i> Email</label>
-            <label><input type="radio" name="deliveryMethod" value="Text" /><i class="fas fa-comment-sms"></i> Text</label>
-            <label><input type="radio" name="deliveryMethod" value="Link" /><i class="fas fa-link"></i> Copy Link</label>
+            <label><input type="radio" name="deliveryMethod" value="InApp" checked /><i class="fas fa-mobile-screen"></i> @L["In-App"]</label>
+            <label><input type="radio" name="deliveryMethod" value="Email" /><i class="fas fa-envelope"></i> @L["Email"]</label>
+            <label><input type="radio" name="deliveryMethod" value="Text" /><i class="fas fa-comment-sms"></i> @L["Text"]</label>
+            <label><input type="radio" name="deliveryMethod" value="Link" /><i class="fas fa-link"></i> @L["Copy Link"]</label>
         </div>
-        <button type="submit" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-paper-plane"></i> Send Quote from INDOR</button>
-        <a href="@Model.ShareLink" class="rl-btn-outline rl-qview-btn" target="_blank"><i class="fas fa-link"></i> Copy Share Link</a>
-        <p class="rl-qshare-footnote"><i class="fas fa-shield-halved"></i> The homeowner will see the same quote details directly in INDOR.</p>
+        <button type="submit" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-paper-plane"></i> @L["Send Quote from INDOR"]</button>
+        <a href="@Model.ShareLink" class="rl-btn-outline rl-qview-btn" target="_blank"><i class="fas fa-link"></i> @L["Copy Share Link"]</a>
+        <p class="rl-qshare-footnote"><i class="fas fa-shield-halved"></i> @L["The homeowner will see the same quote details directly in INDOR."]</p>
     </form>
 </div>

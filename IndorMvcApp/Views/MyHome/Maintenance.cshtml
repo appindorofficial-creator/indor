@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.MyHomeMaintenanceViewModel
 @{
-    ViewData["Title"] = "Maintenance";
+    ViewData["Title"] = L["Maintenance"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "maintenance";
@@ -8,18 +8,18 @@
     var groups = Model.Items.GroupBy(i => i.MonthLabel).ToList();
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Maintenance</h1>
-    <a asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-btn">+ Add</a>
+    <h1 class="hf-title">@L["Maintenance"]</h1>
+    <a asp-action="MaintenanceCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@Model.NavigationFrom" class="hf-btn">@L["+ Add"]</a>
 </div>
 <div class="hf-chip-row">
     @foreach (var f in new[] { "Upcoming", "Completed", "All" })
     {
-        <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@Model.NavigationFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@f</a>
+        <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" asp-route-filter="@f" asp-route-from="@Model.NavigationFrom" class="hf-chip @(string.Equals(Model.Filter, f, StringComparison.OrdinalIgnoreCase) ? "active" : "")">@L[f]</a>
     }
 </div>
 @if (groups.Count == 0)
 {
-    <div class="hf-card" style="text-align:center;color:#64748B;">No maintenance tasks yet.</div>
+    <div class="hf-card" style="text-align:center;color:#64748B;">@L["No maintenance tasks yet."]</div>
 }
 else
 {
@@ -32,9 +32,9 @@ else
                 <i class="fas fa-clipboard-list icon"></i>
                 <div class="meta">
                     <div class="value">@item.Title</div>
-                    <div class="label">@IndorMvcApp.Services.MyHomeDisplayService.FormatDueDate(item.DueDate)</div>
+                    <div class="label">@(item.DueDate.HasValue ? L.T("Due on {0}", item.DueDate.Value.ToString("MMM dd, yyyy")) : L["No due date"])</div>
                 </div>
-                <span class="hf-badge" style="font-size:0.72rem;padding:4px 8px;">@IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(item.Status)</span>
+                <span class="hf-badge" style="font-size:0.72rem;padding:4px 8px;">@L[IndorMvcApp.Services.MyHomeDisplayService.MaintenanceStatusLabel(item.Status)]</span>
                 <i class="fas fa-chevron-right" style="color:#CBD5E1;margin-left:8px;"></i>
             </a>
         }

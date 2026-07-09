@@ -1,17 +1,17 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPersonalInformationViewModel
 @{
-    ViewData["Title"] = "Personal information";
+    ViewData["Title"] = L["Personal information"];
     Layout = "_PropertyAdminLayout";
 }
 
 <div class="pa-portal-shell pa-portal-shell--personal">
     <header class="pa-personal-header">
-        <a asp-controller="Administrador" asp-action="Profile" class="pa-profile-back" aria-label="Back">
+        <a asp-controller="Administrador" asp-action="Profile" class="pa-profile-back" aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="pa-personal-header-text">
-            <h1>Personal information</h1>
-            <p>Manage your personal details and how we contact you.</p>
+            <h1>@L["Personal information"]</h1>
+            <p>@L["Manage your personal details and how we contact you."]</p>
         </div>
     </header>
 
@@ -41,7 +41,7 @@
                         <img src="" alt="" class="pa-personal-photo" id="paPersonalPhotoImg" hidden />
                     }
                 </div>
-                <button type="button" class="pa-personal-photo-edit" id="paPersonalPhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="pa-personal-photo-edit" id="paPersonalPhotoBtn" aria-label="@L["Change profile photo"]" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-camera"></i>
                 </button>
                 <div class="pa-personal-photo-menu" id="paPersonalPhotoMenu" role="menu" hidden>
@@ -61,43 +61,43 @@
     </section>
 
     <section class="pa-personal-section">
-        <h2>Personal details</h2>
+        <h2>@L["Personal details"]</h2>
         <div class="pa-personal-list">
             <div class="pa-personal-row pa-personal-row--static">
-                <span class="pa-personal-row-label">Full name</span>
+                <span class="pa-personal-row-label">@L["Full name"]</span>
                 <span class="pa-personal-row-value">@Model.FullName</span>
             </div>
             <div class="pa-personal-row pa-personal-row--static">
-                <span class="pa-personal-row-label">Email address</span>
+                <span class="pa-personal-row-label">@L["Email address"]</span>
                 <span class="pa-personal-row-value">@Model.Email</span>
             </div>
             <a href="tel:@Model.Phone" class="pa-personal-row">
-                <span class="pa-personal-row-label">Phone number</span>
+                <span class="pa-personal-row-label">@L["Phone number"]</span>
                 <span class="pa-personal-row-value is-link">@Model.Phone</span>
                 <i class="fas fa-chevron-right"></i>
             </a>
             <div class="pa-personal-row pa-personal-row--static">
-                <span class="pa-personal-row-label">Address</span>
+                <span class="pa-personal-row-label">@L["Address"]</span>
                 <span class="pa-personal-row-value">@Model.Address</span>
             </div>
             <div class="pa-personal-row pa-personal-row--static">
-                <span class="pa-personal-row-label">Date of birth</span>
+                <span class="pa-personal-row-label">@L["Date of birth"]</span>
                 <span class="pa-personal-row-value">@Model.DateOfBirthLabel</span>
             </div>
         </div>
     </section>
 
     <section class="pa-personal-section">
-        <h2>Communication preferences</h2>
+        <h2>@L["Communication preferences"]</h2>
         <div class="pa-personal-list">
             <div class="pa-personal-row pa-personal-row--static">
-                <span class="pa-personal-row-label">Preferred contact method</span>
+                <span class="pa-personal-row-label">@L["Preferred contact method"]</span>
                 <span class="pa-personal-row-value">@Model.PreferredContactMethod</span>
             </div>
             <div class="pa-personal-row pa-personal-row--toggle">
                 <div>
-                    <strong>Marketing emails</strong>
-                    <small>Receive updates about new features and offers.</small>
+                    <strong>@L["Marketing emails"]</strong>
+                    <small>@L["Receive updates about new features and offers."]</small>
                 </div>
                 <span class="pa-personal-toggle @(Model.MarketingEmailsEnabled ? "is-on" : null)" aria-hidden="true">
                     <span class="pa-personal-toggle-knob"></span>
@@ -107,11 +107,11 @@
     </section>
 
     <section class="pa-personal-section" id="security">
-        <h2>Security</h2>
+        <h2>@L["Security"]</h2>
         <div class="pa-personal-list">
             <a href="@Model.ChangePasswordUrl" class="pa-personal-row">
                 <span class="pa-personal-row-icon"><i class="fas fa-lock"></i></span>
-                <span class="pa-personal-row-label">Change password</span>
+                <span class="pa-personal-row-label">@L["Change password"]</span>
                 <i class="fas fa-chevron-right"></i>
             </a>
         </div>
@@ -119,8 +119,8 @@
 
     <section class="pa-personal-info-card">
         <div>
-            <strong>How we use your information</strong>
-            <p>We use your information to provide and improve our services. Learn more in our <a href="@Model.PrivacyPolicyUrl">Privacy Policy</a>.</p>
+            <strong>@L["How we use your information"]</strong>
+            <p>@L["We use your information to provide and improve our services. Learn more in our"] <a href="@Model.PrivacyPolicyUrl">@L["Privacy Policy"]</a>.</p>
         </div>
         <i class="fas fa-chevron-right"></i>
     </section>

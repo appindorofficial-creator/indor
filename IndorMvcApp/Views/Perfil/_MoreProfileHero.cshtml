@@ -27,7 +27,7 @@
 
     <div class="more-completion">
         <div class="more-completion-head">
-            <span>Profile completion</span>
+            <span>@L["Profile completion"]</span>
             <span>@Model.ProfileCompletionPercent%</span>
         </div>
         <div class="more-progress-track">
@@ -35,11 +35,11 @@
         </div>
         @if (Model.IsProfileComplete)
         {
-            <p class="more-completion-hint is-complete"><i class="fas fa-circle-check"></i> Your profile is complete.</p>
+            <p class="more-completion-hint is-complete"><i class="fas fa-circle-check"></i> @L["Your profile is complete."]</p>
         }
         else
         {
-            <p class="more-completion-hint">Complete your profile to unlock better recommendations.</p>
+            <p class="more-completion-hint">@L["Complete your profile to unlock better recommendations."]</p>
             var nextItem = Model.CompletionItems.FirstOrDefault(i =>
                 !i.IsComplete && !i.Label.Contains("photo", StringComparison.OrdinalIgnoreCase));
             if (nextItem != null)
@@ -47,7 +47,7 @@
                 var nextIcon = nextItem.Label.Contains("photo", StringComparison.OrdinalIgnoreCase) ? "fa-camera" : "fa-circle-plus";
                 <a class="more-complete-link" href="@(string.IsNullOrEmpty(nextItem.ActionUrl) ? "#" : nextItem.ActionUrl)">
                     <i class="fas @nextIcon"></i>
-                    <span>@nextItem.Label</span>
+                    <span>@L[nextItem.Label]</span>
                     <i class="fas fa-chevron-right more-complete-chevron"></i>
                 </a>
             }
@@ -59,20 +59,20 @@
         <div class="more-actions">
             <a asp-controller="Perfil" asp-action="EditarPerfil" class="more-action">
                 <span class="more-action-icon"><i class="far fa-user"></i></span>
-                <span class="more-action-body"><strong>Edit Profile</strong><small>Update your details</small></span>
+                <span class="more-action-body"><strong>@L["Edit Profile"]</strong><small>@L["Update your details"]</small></span>
                 <i class="fas fa-chevron-right more-action-chevron"></i>
             </a>
             @if (ProfileDisplayService.PaidMembershipEnabled)
             {
                 <a asp-controller="Perfil" asp-action="Suscripciones" class="more-action more-action-upgrade">
                     <span class="more-action-icon"><i class="fas fa-star"></i></span>
-                    <span class="more-action-body"><strong>Upgrade</strong><small>Unlock premium</small></span>
+                    <span class="more-action-body"><strong>@L["Upgrade"]</strong><small>@L["Unlock premium"]</small></span>
                     <i class="fas fa-chevron-right more-action-chevron"></i>
                 </a>
             }
             <a asp-controller="Perfil" asp-action="Soporte" class="more-action">
                 <span class="more-action-icon"><i class="fas fa-headset"></i></span>
-                <span class="more-action-body"><strong>Support</strong><small>We're here to help</small></span>
+                <span class="more-action-body"><strong>@L["Support"]</strong><small>@L["We're here to help"]</small></span>
                 <i class="fas fa-chevron-right more-action-chevron"></i>
             </a>
         </div>

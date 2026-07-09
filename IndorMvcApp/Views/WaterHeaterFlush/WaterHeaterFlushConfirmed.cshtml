@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushConfirmedViewModel
 @{
-    ViewData["Title"] = "Water heater maintenance booked - INDOR";
+    ViewData["Title"] = L["Water heater maintenance booked - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 }
@@ -8,33 +8,33 @@
 
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Water heater maintenance booked</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your annual flush request has been submitted.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["Water heater maintenance booked"]</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L["Your annual flush request has been submitted."]</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-droplet"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Frequency</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Preferred time</div><div class="summary-value">@Model.PreferredTimeLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">Unit info received</div><div class="summary-value">@Model.UnitInfoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-droplet"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Frequency"]</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Preferred time"]</div><div class="summary-value">@Model.PreferredTimeLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-shield-check"></i><div><div class="summary-label">@L["Unit info received"]</div><div class="summary-value">@Model.UnitInfoLabel</div></div></div>
     </div>
 
     <div class="benefit-row">
-        <div class="item"><i class="fas fa-water"></i><span>Helps remove sediment</span></div>
-        <div class="item"><i class="fas fa-leaf"></i><span>Supports better efficiency</span></div>
-        <div class="item"><i class="fas fa-shield-halved"></i><span>Can extend tank life</span></div>
+        <div class="item"><i class="fas fa-water"></i><span>@L["Helps remove sediment"]</span></div>
+        <div class="item"><i class="fas fa-leaf"></i><span>@L["Supports better efficiency"]</span></div>
+        <div class="item"><i class="fas fa-shield-halved"></i><span>@L["Can extend tank life"]</span></div>
     </div>
 
     <div class="next-steps">
-        <h4>What happens next</h4>
+        <h4>@L["What happens next"]</h4>
         <div class="next-flow">
-            <div class="step"><i class="fas fa-file-lines"></i>We'll review your request</div>
-            <div class="step"><i class="fas fa-user-check"></i>A provider will confirm details</div>
-            <div class="step"><i class="fas fa-calendar-check"></i>You'll receive a reminder before next year's maintenance</div>
+            <div class="step"><i class="fas fa-file-lines"></i>@L["We'll review your request"]</div>
+            <div class="step"><i class="fas fa-user-check"></i>@L["A provider will confirm details"]</div>
+            <div class="step"><i class="fas fa-calendar-check"></i>@L["You'll receive a reminder before next year's maintenance"]</div>
         </div>
     </div>
 
-    <a asp-controller="Home" asp-action="Index" class="btn-primary">Done</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-primary">@L["Done"]</a>
     @if (Model.PropiedadId.HasValue)
     {
         <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="btn-outline" style="margin-top:10px;">

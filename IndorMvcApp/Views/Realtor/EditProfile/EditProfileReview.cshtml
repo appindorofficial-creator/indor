@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorEditProfileReviewViewModel
 @{
-    ViewData["Title"] = "Review & Save";
+    ViewData["Title"] = L["Review & Save"];
 }
 
 <section class="rl-ep-review-list">
@@ -28,7 +28,7 @@
                     <span class="rl-ep-row-value">@(string.IsNullOrWhiteSpace(row.Value) ? "Not provided" : row.Value)</span>
                 }
             </div>
-            <a asp-controller="Realtor" asp-action="@row.EditAction" class="rl-ep-review-edit">Edit <i class="fas fa-chevron-right"></i></a>
+            <a asp-controller="Realtor" asp-action="@row.EditAction" class="rl-ep-review-edit">@L["Edit"] <i class="fas fa-chevron-right"></i></a>
         </div>
     }
 </section>
@@ -45,7 +45,7 @@
         }
     </div>
     <div class="rl-ep-preview-copy">
-        <small>Public Profile Preview</small>
+        <small>@L["Public Profile Preview"]</small>
         <strong>@Model.Preview.FullName</strong>
         @if (!string.IsNullOrWhiteSpace(Model.Preview.BrokerageName))
         {
@@ -61,6 +61,6 @@
 
 <form asp-action="SaveEditProfile" method="post" class="rl-ep-review-actions">
     @Html.AntiForgeryToken()
-    <button type="submit" class="rl-ep-btn-primary">Save Changes</button>
-    <a asp-controller="Realtor" asp-action="PublicProfile" class="rl-ep-btn-secondary">Preview Public Profile</a>
+    <button type="submit" class="rl-ep-btn-primary">@L["Save Changes"]</button>
+    <a asp-controller="Realtor" asp-action="PublicProfile" class="rl-ep-btn-secondary">@L["Preview Public Profile"]</a>
 </form>

@@ -1,11 +1,11 @@
 @{
 }
 <header class="tpl-topbar">
-    <a asp-controller="Proveedor" asp-action="Dashboard" class="tpl-brand" aria-label="INDOR PRO home">
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="tpl-brand" aria-label="@L["INDOR PRO home"]">
         <svg viewBox="0 0 24 24" class="tpl-brand-mark" aria-hidden="true">
             <path d="M12 2l8.66 5v10L12 22 3.34 17V7z" fill="none" stroke="#ffffff" stroke-width="2" stroke-linejoin="round" />
             <circle cx="12" cy="12" r="3" fill="#ffffff" />
         </svg>
-        <span>INDOR <strong>PRO</strong></span>
+        <span>@L["INDOR"]<strong>@L["PRO"]</strong></span>
     </a>
 </header>

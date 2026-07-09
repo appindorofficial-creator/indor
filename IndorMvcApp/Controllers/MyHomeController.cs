@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Helpers;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -21,17 +22,20 @@ public class MyHomeController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
     private readonly IPropertyEnrichmentService _propertyEnrichmentService;
+    private readonly IIndorLocalizer _localizer;
 
     public MyHomeController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
         IWebHostEnvironment env,
-        IPropertyEnrichmentService propertyEnrichmentService)
+        IPropertyEnrichmentService propertyEnrichmentService,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
         _propertyEnrichmentService = propertyEnrichmentService;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -111,8 +115,8 @@ public class MyHomeController : Controller
         await _db.SaveChangesAsync();
 
         TempData["AttomSyncMessage"] = result.Success
-            ? $"Property data refreshed ({result.DataSource})."
-            : (result.ErrorMessage ?? "Property refresh did not return data.");
+            ? _localizer.T("Property data refreshed ({0}).", result.DataSource)
+            : (result.ErrorMessage ?? _localizer["Property refresh did not return data."]);
 
         return RedirectToAction(nameof(Details), new { id = propiedad.Id, tab = result.Success ? "attom" : "information" });
     }
@@ -196,6 +200,7 @@ public class MyHomeController : Controller
             query = query.Where(h => h.RecordType == filter);
         }
 
+        var culture = UiCulture.ToCultureInfo(_localizer.CurrentCulture);
         var items = await query
             .OrderByDescending(h => h.CompletionDate ?? h.FechaCreacion)
             .Select(h => new MyHomeHistoryItemViewModel
@@ -206,7 +211,7 @@ public class MyHomeController : Controller
                 ProviderName = h.ProviderName,
                 TotalCost = h.TotalCost,
                 CompletionDate = h.CompletionDate,
-                MonthLabel = (h.CompletionDate ?? h.FechaCreacion).ToString("MMMM yyyy", CultureInfo.InvariantCulture)
+                MonthLabel = (h.CompletionDate ?? h.FechaCreacion).ToString("MMMM yyyy", culture)
             })
             .ToListAsync();
 
@@ -260,14 +265,14 @@ public class MyHomeController : Controller
         {
             Id = record.Id,
             PropiedadId = record.PropiedadId,
-            RecordType = MyHomeDisplayService.RecordTypeLabel(record.RecordType),
+            RecordType = _localizer[MyHomeDisplayService.RecordTypeLabel(record.RecordType)],
             Title = record.Title,
             ProviderName = record.ProviderName,
             ProviderId = record.PropiedadProveedorId,
             CompletionDate = record.CompletionDate,
             TotalCost = record.TotalCost,
             Description = record.Description,
-            WarrantyStatus = record.WarrantyStatus ?? "Not specified",
+            WarrantyStatus = record.WarrantyStatus ?? _localizer["Not specified"],
             RelatedDocuments = await _db.PropiedadDocumentos
                 .Where(d => d.PropiedadId == record.PropiedadId
                     && (d.Category == "Invoices" || d.Category == "Permits" || d.Category == "Warranties"))
@@ -446,6 +451,7 @@ public class MyHomeController : Controller
             _ => query.Where(m => m.Status != "Completed")
         };
 
+        var culture = UiCulture.ToCultureInfo(_localizer.CurrentCulture);
         var items = await query
             .OrderBy(m => m.DueDate ?? DateTime.MaxValue)
             .Select(m => new MyHomeMaintenanceItemViewModel
@@ -454,7 +460,7 @@ public class MyHomeController : Controller
                 Title = m.Title,
                 DueDate = m.DueDate,
                 Status = m.Status,
-                MonthLabel = (m.DueDate ?? m.FechaCreacion).ToString("MMMM yyyy", CultureInfo.InvariantCulture)
+                MonthLabel = (m.DueDate ?? m.FechaCreacion).ToString("MMMM yyyy", culture)
             })
             .ToListAsync();
 
@@ -647,11 +653,11 @@ public class MyHomeController : Controller
 
         if (file == null || file.Length == 0)
         {
-            ModelState.AddModelError("file", "Please attach a file to upload.");
+            ModelState.AddModelError("file", _localizer["Please attach a file to upload."]);
         }
         else if (file.Length > MaxDocumentBytes)
         {
-            ModelState.AddModelError("file", $"File is too large. Maximum size is {MaxDocumentBytes / 1_000_000} MB.");
+            ModelState.AddModelError("file", _localizer.T("File is too large. Maximum size is {0} MB.", MaxDocumentBytes / 1_000_000));
         }
 
         if (!ModelState.IsValid) return View(model);
@@ -698,7 +704,7 @@ public class MyHomeController : Controller
                 try { System.IO.File.Delete(physical); } catch { /* best effort */ }
             }
 
-            ModelState.AddModelError(string.Empty, "Could not save the document. Please try again.");
+            ModelState.AddModelError(string.Empty, _localizer["Could not save the document. Please try again."]);
             return View(model);
         }
 

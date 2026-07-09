@@ -9,8 +9,8 @@
 }
 
 <section class="rl-ready-hero">
-    <h1>Your profile is ready</h1>
-    <p>You can now enter as a Realtor.</p>
+    <h1>@L["Your profile is ready"]</h1>
+    <p>@L["You can now enter as a Realtor."]</p>
     <span class="rl-badge"><i class="fas fa-star"></i> @Model.BadgeLabel</span>
 </section>
 
@@ -34,17 +34,17 @@
     <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-verify-cta">
         <i class="fas fa-id-card"></i>
         <div>
-            <strong>Complete verification</strong>
-            <span>Upload your license and ID to earn the Verified Realtor badge.</span>
+            <strong>@L["Complete verification"]</strong>
+            <span>@L["Upload your license and ID to earn the Verified Realtor badge."]</span>
         </div>
         <i class="fas fa-chevron-right"></i>
     </a>
 }
 
 <div class="rl-ready-actions">
-    <a asp-controller="Realtor" asp-action="Dashboard" class="ob-btn ob-btn-primary">Go to Home</a>
+    <a asp-controller="Realtor" asp-action="Dashboard" class="ob-btn ob-btn-primary">@L["Go to Home"]</a>
     @if (Model.CanUpgradeToVerified)
     {
-        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-later-link">I'll do it later</a>
+        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-later-link">@L["I'll do it later"]</a>
     }
 </div>

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PestControlPlanViewModel
 @{
-    ViewData["Title"] = "Choose reminder or service - INDOR";
+    ViewData["Title"] = L["Choose reminder or service - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("PestControlSetup", "PestControl", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -8,8 +8,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Choose reminder or service</h1>
-    <p class="page-lead" style="margin-bottom:16px;">You can set a yearly reminder or schedule protection now.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Choose reminder or service"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["You can set a yearly reminder or schedule protection now."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -24,38 +24,38 @@
                 <span class="radio"></span>
                 <i class="fas fa-calendar main"></i>
                 <div class="body">
-                    <strong>Reminder only</strong>
-                    <span>Get a yearly check-in reminder.</span>
+                    <strong>@L["Reminder only"]</strong>
+                    <span>@L["Get a yearly check-in reminder."]</span>
                 </div>
-                <span class="price-badge">Reminder: Free</span>
+                <span class="price-badge">@L["Reminder: Free"]</span>
             </button>
             <button type="button" class="service-option" data-service="AnnualInspection">
                 <span class="radio"></span>
                 <i class="fas fa-magnifying-glass main"></i>
                 <div class="body">
-                    <strong>Annual inspection</strong>
-                    <span>Professional inspection for signs of termites, rodents, and entry points.</span>
+                    <strong>@L["Annual inspection"]</strong>
+                    <span>@L["Professional inspection for signs of termites, rodents, and entry points."]</span>
                 </div>
-                <span class="price-badge">Inspection: From $99</span>
+                <span class="price-badge">@L["Inspection: From $99"]</span>
             </button>
             <button type="button" class="service-option" data-service="ProtectionPlan">
                 <span class="radio"></span>
                 <i class="fas fa-shield-halved main"></i>
                 <div class="body">
-                    <strong>Protection plan</strong>
-                    <span>Ongoing prevention with scheduled visits.</span>
+                    <strong>@L["Protection plan"]</strong>
+                    <span>@L["Ongoing prevention with scheduled visits."]</span>
                 </div>
-                <span class="price-badge">Plan: From $29/mo</span>
+                <span class="price-badge">@L["Plan: From $29/mo"]</span>
             </button>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred timing</span></div>
+            <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred timing"]</span></div>
             <div class="timing-chips">
-                <button type="button" class="timing-chip" data-timing="ThisMonth"><i class="fas fa-calendar"></i> This month</button>
-                <button type="button" class="timing-chip" data-timing="NextMonth"><i class="fas fa-calendar"></i> Next month</button>
-                <button type="button" class="timing-chip" data-timing="In3Months"><i class="fas fa-calendar"></i> In 3 months</button>
-                <button type="button" class="timing-chip" data-timing="EveryYearSpring"><i class="fas fa-seedling"></i> Every year in spring</button>
+                <button type="button" class="timing-chip" data-timing="ThisMonth"><i class="fas fa-calendar"></i> @L["This month"]</button>
+                <button type="button" class="timing-chip" data-timing="NextMonth"><i class="fas fa-calendar"></i> @L["Next month"]</button>
+                <button type="button" class="timing-chip" data-timing="In3Months"><i class="fas fa-calendar"></i> @L["In 3 months"]</button>
+                <button type="button" class="timing-chip" data-timing="EveryYearSpring"><i class="fas fa-seedling"></i> @L["Every year in spring"]</button>
             </div>
         </div>
 

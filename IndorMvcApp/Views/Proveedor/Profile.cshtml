@@ -2,7 +2,7 @@
 @using System.Globalization
 @using System.Text.RegularExpressions
 @{
-    ViewData["Title"] = "Profile - INDOR PRO";
+    ViewData["Title"] = L["Profile - INDOR PRO"];
     ViewData["ProviderProExtraCss"] = "provider-profile-hub.css";
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
@@ -16,10 +16,10 @@
         : !string.IsNullOrWhiteSpace(Model.DbaName) ? Model.DbaName : Model.CompanyName;
     var cityLabel = !string.IsNullOrWhiteSpace(Model.PrimaryCity)
         ? Model.PrimaryCity
-        : Model.ServiceAreas.FirstOrDefault(a => a.Contains(',')) ?? "Add your location";
+        : Model.ServiceAreas.FirstOrDefault(a => a.Contains(',')) ?? L["Add your location"];
     var locationLabel = !string.IsNullOrWhiteSpace(Model.ServiceAreaLabel)
         ? Model.ServiceAreaLabel
-        : $"Serving {cityLabel} and surrounding areas";
+        : L.T("Serving {0} and surrounding areas", cityLabel);
     var zipCodes = Model.ServiceAreas
         .Where(a => Regex.IsMatch(a.Trim(), @"^\d{5}$"))
         .Distinct()
@@ -32,11 +32,11 @@
         : Model.BusinessHours;
     string ScoreLabel(int score) => score switch
     {
-        >= 90 => "Excellent",
-        >= 75 => "Great",
-        >= 60 => "Good",
-        >= 40 => "Fair",
-        _ => "Building"
+        >= 90 => L["Excellent"],
+        >= 75 => L["Great"],
+        >= 60 => L["Good"],
+        >= 40 => L["Fair"],
+        _ => L["Building"]
     };
     string VerifyIcon(string label) => label switch
     {
@@ -51,8 +51,8 @@
     <div class="prv-pro-profile-v2-hero">
         @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
         <header class="prv-pro-profile-v2-page-head">
-            <h1>Profile</h1>
-            <p>Your business profile and control center.</p>
+            <h1>@L["Profile"]</h1>
+            <p>@L["Your business profile and control center."]</p>
         </header>
     </div>
 
@@ -60,7 +60,7 @@
         @if (TempData["ProfileSaved"] is true)
         {
             <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-                <i class="fas fa-circle-check"></i> Profile updated successfully.
+                <i class="fas fa-circle-check"></i> @L["Profile updated successfully."]
             </div>
         }
         @if (TempData["ProfileSectionError"] is string sectionError)
@@ -90,19 +90,19 @@
                     <h2>@displayName</h2>
                     @if (Model.IsVerified)
                     {
-                        <span class="prv-pro-profile-v2-badge"><i class="fas fa-circle-check"></i> Verified Provider</span>
+                        <span class="prv-pro-profile-v2-badge"><i class="fas fa-circle-check"></i> @L["Verified Provider"]</span>
                     }
                     <p class="prv-pro-profile-v2-location"><i class="fas fa-location-dot"></i> @locationLabel</p>
                 </div>
             </div>
             <div class="prv-pro-profile-v2-stats">
                 <div class="prv-pro-profile-v2-stat">
-                    <span class="prv-pro-profile-v2-stat-label">Provider Score <i class="fas fa-circle-info" aria-hidden="true"></i></span>
+                    <span class="prv-pro-profile-v2-stat-label">@L["Provider Score"]<i class="fas fa-circle-info" aria-hidden="true"></i></span>
                     <strong class="prv-pro-profile-v2-stat-value is-score">@Model.ProviderScore</strong>
                     <span class="prv-pro-profile-v2-stat-foot is-good"><i class="fas fa-star"></i> @ScoreLabel(Model.ProviderScore)</span>
                 </div>
                 <div class="prv-pro-profile-v2-stat">
-                    <span class="prv-pro-profile-v2-stat-label">Rating</span>
+                    <span class="prv-pro-profile-v2-stat-label">@L["Rating"]</span>
                     @if (ratingLabel is not null)
                     {
                         <strong class="prv-pro-profile-v2-stat-value"><i class="fas fa-star is-rating"></i> @ratingLabel</strong>
@@ -111,36 +111,36 @@
                     else
                     {
                         <strong class="prv-pro-profile-v2-stat-value"><i class="fas fa-star is-rating"></i> —</strong>
-                        <span class="prv-pro-profile-v2-stat-foot">No reviews yet</span>
+                        <span class="prv-pro-profile-v2-stat-foot">@L["No reviews yet"]</span>
                     }
                 </div>
                 <div class="prv-pro-profile-v2-stat">
-                    <span class="prv-pro-profile-v2-stat-label">Jobs Completed</span>
+                    <span class="prv-pro-profile-v2-stat-label">@L["Jobs Completed"]</span>
                     <strong class="prv-pro-profile-v2-stat-value is-jobs">@Model.JobsCompletedThisYear</strong>
-                    <span class="prv-pro-profile-v2-stat-foot">This Year</span>
+                    <span class="prv-pro-profile-v2-stat-foot">@L["This Year"]</span>
                 </div>
                 <div class="prv-pro-profile-v2-stat">
-                    <span class="prv-pro-profile-v2-stat-label">Home Records</span>
+                    <span class="prv-pro-profile-v2-stat-label">@L["Home Records"]</span>
                     <strong class="prv-pro-profile-v2-stat-value is-records">@Model.HomeRecordsCreated</strong>
-                    <span class="prv-pro-profile-v2-stat-foot">Created</span>
+                    <span class="prv-pro-profile-v2-stat-foot">@L["Created"]</span>
                 </div>
             </div>
         </section>
 
-        <nav class="prv-pro-profile-v2-actions" aria-label="Profile shortcuts">
+        <nav class="prv-pro-profile-v2-actions" aria-label="@L["Profile shortcuts"]">
             <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-profile-v2-action">
                 <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--edit"><i class="fas fa-pen"></i></span>
                 <span class="prv-pro-profile-v2-action-copy">
-                    <strong>Edit Profile</strong>
-                    <small>Update your business information</small>
+                    <strong>@L["Edit Profile"]</strong>
+                    <small>@L["Update your business information"]</small>
                 </span>
                 <i class="fas fa-chevron-right"></i>
             </a>
             <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-profile-v2-action">
                 <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--public"><i class="fas fa-globe"></i></span>
                 <span class="prv-pro-profile-v2-action-copy">
-                    <strong>Public Profile</strong>
-                    <small>View how customers see you</small>
+                    <strong>@L["Public Profile"]</strong>
+                    <small>@L["View how customers see you"]</small>
                 </span>
                 <i class="fas fa-chevron-right"></i>
             </a>
@@ -150,60 +150,60 @@
                data-provider-share
                data-share-url="@publicProfileUrl"
                data-share-title="@displayName - INDOR PRO"
-               data-share-text="View my provider profile on INDOR"
+               data-share-text="@L["View my provider profile on INDOR"]"
                role="button">
                 <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--share"><i class="fas fa-share-nodes"></i></span>
                 <span class="prv-pro-profile-v2-action-copy">
-                    <strong>Share</strong>
-                    <small>Share your profile with customers</small>
+                    <strong>@L["Share"]</strong>
+                    <small>@L["Share your profile with customers"]</small>
                 </span>
                 <i class="fas fa-chevron-right"></i>
             </a>
             <a asp-controller="Proveedor" asp-action="Settings" class="prv-pro-profile-v2-action">
                 <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--settings"><i class="fas fa-gear"></i></span>
                 <span class="prv-pro-profile-v2-action-copy">
-                    <strong>Settings</strong>
-                    <small>Manage preferences and account</small>
+                    <strong>@L["Settings"]</strong>
+                    <small>@L["Manage preferences and account"]</small>
                 </span>
                 <i class="fas fa-chevron-right"></i>
             </a>
         </nav>
 
         <div class="prv-pro-profile-v2-stack">
-            <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-v2-card" aria-label="Edit business information">
+            <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-v2-card" aria-label="@L["Edit business information"]">
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-building"></i></span>
-                        <div><h3>Business Information</h3></div>
+                        <div><h3>@L["Business Information"]</h3></div>
                     </div>
                 </header>
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-phone"></i></span>
-                    <span>Phone</span>
+                    <span>@L["Phone"]</span>
                     <strong>@phoneLabel</strong>
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-envelope"></i></span>
-                    <span>Email</span>
+                    <span>@L["Email"]</span>
                     <strong class="prv-pro-profile-v2-biz-value">@emailLabel</strong>
                     <i class="fas fa-chevron-right"></i>
                 </div>
                 <div class="prv-pro-profile-v2-biz-row">
                     <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-clock"></i></span>
-                    <span>Business Hours</span>
+                    <span>@L["Business Hours"]</span>
                     <strong>@hoursLabel</strong>
                     <i class="fas fa-chevron-right"></i>
                 </div>
             </a>
 
-            <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card prv-pro-profile-v2-card--areas" aria-label="Edit service areas">
+            <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card prv-pro-profile-v2-card--areas" aria-label="@L["Edit service areas"]">
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--areas">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-map-location-dot"></i></span>
                         <div>
-                            <h3>Service Areas</h3>
-                            <p>Where you provide your services</p>
+                            <h3>@L["Service Areas"]</h3>
+                            <p>@L["Where you provide your services"]</p>
                         </div>
                     </div>
                     <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
@@ -235,13 +235,13 @@
                 </div>
             </a>
 
-            <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card" aria-label="Edit services offered">
+            <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card" aria-label="@L["Edit services offered"]">
                 <header class="prv-pro-profile-v2-card-head">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-wrench"></i></span>
                         <div>
-                            <h3>Services Offered</h3>
-                            <p>Add and manage the services you provide</p>
+                            <h3>@L["Services Offered"]</h3>
+                            <p>@L["Add and manage the services you provide"]</p>
                         </div>
                     </div>
                     <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
@@ -250,8 +250,8 @@
                 {
                     <div class="prv-pro-profile-v2-empty">
                         <img src="~/images/profile-services-empty.png" alt="" aria-hidden="true" />
-                        <h4>No services selected yet</h4>
-                        <p>Add services to show customers what you offer.</p>
+                        <h4>@L["No services selected yet"]</h4>
+                        <p>@L["Add services to show customers what you offer."]</p>
                         <span class="prv-pro-profile-v2-add-btn"><i class="fas fa-plus"></i> Add Services</span>
                     </div>
                 }
@@ -266,13 +266,13 @@
                 }
             </a>
 
-            <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-pro-profile-v2-card" aria-label="Verification and documents">
+            <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-pro-profile-v2-card" aria-label="@L["Verification and documents"]">
                 <header class="prv-pro-profile-v2-card-head">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-shield-halved"></i></span>
                         <div>
-                            <h3>Verification &amp; Documents</h3>
-                            <p>Keep your documents up to date</p>
+                            <h3>@L["Verification &amp; Documents"]</h3>
+                            <p>@L["Keep your documents up to date"]</p>
                         </div>
                     </div>
                     <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
@@ -288,24 +288,24 @@
                 }
             </a>
 
-            <a asp-controller="Proveedor" asp-action="EditProfilePayments" class="prv-pro-profile-v2-card" aria-label="Payments and banking">
+            <a asp-controller="Proveedor" asp-action="EditProfilePayments" class="prv-pro-profile-v2-card" aria-label="@L["Payments and banking"]">
                 <header class="prv-pro-profile-v2-card-head">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-credit-card"></i></span>
-                        <div><h3>Payments &amp; Banking</h3></div>
+                        <div><h3>@L["Payments &amp; Banking"]</h3></div>
                     </div>
                     <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
                 </header>
                 <div class="prv-pro-profile-v2-kv">
-                    <span>Payout Account</span>
+                    <span>@L["Payout Account"]</span>
                     <strong class="@(Model.PayoutConnected ? "is-ok" : "")">@(Model.PayoutConnected ? "Connected" : "Not connected")</strong>
                 </div>
                 <div class="prv-pro-profile-v2-kv">
-                    <span>Payment Processing</span>
+                    <span>@L["Payment Processing"]</span>
                     <strong class="@(Model.PaymentProcessingActive ? "is-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
                 </div>
                 <div class="prv-pro-profile-v2-kv">
-                    <span>Next Payout</span>
+                    <span>@L["Next Payout"]</span>
                     <strong>@Model.NextPayoutAmount.ToString("C2", money)</strong>
                 </div>
             </a>
@@ -314,14 +314,14 @@
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-users"></i></span>
-                        <div><h3>Team Members</h3></div>
+                        <div><h3>@L["Team Members"]</h3></div>
                     </div>
                 </header>
                 @if (Model.TeamMembers.Count == 0)
                 {
                     <div class="prv-pro-profile-v2-team-empty">
                         <span class="prv-pro-profile-v2-team-empty-icon"><i class="fas fa-users"></i></span>
-                        <p>No team members listed yet.</p>
+                        <p>@L["No team members listed yet."]</p>
                     </div>
                 }
                 else
@@ -340,27 +340,27 @@
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-robot"></i></span>
-                        <div><h3>Automation &amp; Tools</h3></div>
+                        <div><h3>@L["Automation &amp; Tools"]</h3></div>
                     </div>
                 </header>
                 <div class="prv-pro-profile-v2-auto-row">
                     <i class="fas fa-bell"></i>
-                    <span>Auto reminders</span>
+                    <span>@L["Auto reminders"]</span>
                     <strong class="@(Model.AutoRemindersOn ? "is-ok" : "")">@(Model.AutoRemindersOn ? "ON" : "OFF")</strong>
                 </div>
                 <div class="prv-pro-profile-v2-auto-row">
                     <i class="fas fa-file-lines"></i>
-                    <span>Saved report templates</span>
+                    <span>@L["Saved report templates"]</span>
                     <strong>@Model.ReportTemplatesCount</strong>
                 </div>
                 <div class="prv-pro-profile-v2-auto-row">
                     <i class="fas fa-paper-plane"></i>
-                    <span>Follow-up campaigns</span>
+                    <span>@L["Follow-up campaigns"]</span>
                     <strong class="@(Model.FollowUpCampaignsActive ? "is-ok" : "")">@(Model.FollowUpCampaignsActive ? "Active" : "Inactive")</strong>
                 </div>
                 <div class="prv-pro-profile-v2-auto-row">
                     <i class="fas fa-wand-magic-sparkles"></i>
-                    <span>AI assistant</span>
+                    <span>@L["AI assistant"]</span>
                     <strong class="@(Model.AiAssistantEnabled ? "is-ok" : "")">@(Model.AiAssistantEnabled ? "Enabled" : "Disabled")</strong>
                 </div>
             </section>
@@ -369,29 +369,29 @@
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-chart-line"></i></span>
-                        <div><h3>Performance</h3></div>
+                        <div><h3>@L["Performance"]</h3></div>
                     </div>
                 </header>
                 <div class="prv-pro-profile-v2-perf">
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--time"><i class="fas fa-clock"></i></span>
                         <strong>@Model.Performance.AvgResponseTime</strong>
-                        <span class="prv-pro-profile-v2-perf-label">Avg. Response Time</span>
+                        <span class="prv-pro-profile-v2-perf-label">@L["Avg. Response Time"]</span>
                     </div>
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--check"><i class="fas fa-circle-check"></i></span>
                         <strong>@Model.Performance.CompletionRate</strong>
-                        <span class="prv-pro-profile-v2-perf-label">Completion Rate</span>
+                        <span class="prv-pro-profile-v2-perf-label">@L["Completion Rate"]</span>
                     </div>
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--thumb"><i class="fas fa-thumbs-up"></i></span>
                         <strong>@Model.Performance.HomeownerApproval</strong>
-                        <span class="prv-pro-profile-v2-perf-label">Homeowner Approval</span>
+                        <span class="prv-pro-profile-v2-perf-label">@L["Homeowner Approval"]</span>
                     </div>
                     <div class="prv-pro-profile-v2-perf-item">
                         <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--home"><i class="fas fa-house"></i></span>
                         <strong class="is-facts">@Model.Performance.HouseFactsAdded</strong>
-                        <span class="prv-pro-profile-v2-perf-label">House Facts Added</span>
+                        <span class="prv-pro-profile-v2-perf-label">@L["House Facts Added"]</span>
                     </div>
                 </div>
             </section>
@@ -400,7 +400,7 @@
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-star"></i></span>
-                        <div><h3>Reviews</h3></div>
+                        <div><h3>@L["Reviews"]</h3></div>
                     </div>
                 </header>
                 @if (Model.Reviews.Count == 0)
@@ -408,8 +408,8 @@
                 <div class="prv-pro-profile-v2-reviews-empty">
                     <img src="~/images/profile-reviews-illustration.png" alt="" class="prv-pro-profile-v2-reviews-illus" aria-hidden="true" asp-append-version="true" />
                     <div class="prv-pro-profile-v2-reviews-copy">
-                        <h4>No reviews yet</h4>
-                        <p>Customer reviews will appear here after completed jobs.</p>
+                        <h4>@L["No reviews yet"]</h4>
+                        <p>@L["Customer reviews will appear here after completed jobs."]</p>
                     </div>
                 </div>
                 }
@@ -429,12 +429,12 @@
                 <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
                     <div class="prv-pro-profile-v2-card-head-main">
                         <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-life-ring"></i></span>
-                        <div><h3>Support &amp; Account</h3></div>
+                        <div><h3>@L["Support &amp; Account"]</h3></div>
                     </div>
                 </header>
                 <a asp-controller="Proveedor" asp-action="HelpCenter" class="prv-pro-profile-link-row">
                     <i class="fas fa-book"></i>
-                    <span>Help Center</span>
+                    <span>@L["Help Center"]</span>
                     <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
                 </a>
                 <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-profile-link-row prv-pro-profile-link-row--plan">
@@ -444,7 +444,7 @@
                 </a>
                 <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-profile-link-row">
                     <i class="fas fa-bell"></i>
-                    <span>Notifications</span>
+                    <span>@L["Notifications"]</span>
                     <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
                 </a>
                 <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
@@ -471,10 +471,10 @@
                 <div class="prv-pro-profile-v2-activation-copy">
                     <div class="prv-pro-profile-v2-activation-title">
                         <span class="prv-pro-profile-v2-activation-icon"><i class="fas fa-shield-halved"></i></span>
-                        <strong>Complete your activation</strong>
+                        <strong>@L["Complete your activation"]</strong>
                     </div>
-                    <p>Finish verification to unlock your full public profile and INDOR leads.</p>
-                    <a asp-controller="Proveedor" asp-action="ProfileCompletion">Complete activation</a>
+                    <p>@L["Finish verification to unlock your full public profile and INDOR leads."]</p>
+                    <a asp-controller="Proveedor" asp-action="ProfileCompletion">@L["Complete activation"]</a>
                 </div>
             </div>
         }

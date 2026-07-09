@@ -47,7 +47,7 @@
 <div class="rl-error-banner @(formErrors.Count == 0 ? "is-hidden" : null)" id="profileFormErrorBanner" role="alert">
     <i class="fas fa-triangle-exclamation"></i>
     <div>
-        <span id="profileFormErrorSummary">@(formErrors.Count > 0 ? "Please fix the following before continuing:" : "")</span>
+        <span id="profileFormErrorSummary">@(formErrors.Count > 0 ? L["Please fix the following before continuing:"] : "")</span>
         <ul class="rl-error-list" id="profileFormErrorList">
             @foreach (var msg in formErrors)
             {
@@ -63,7 +63,7 @@
 
     <div class="rl-field-block">
 
-        <span class="rl-field-label">Brokerage / Company Name <span class="rl-required" aria-hidden="true">*</span></span>
+        <span class="rl-field-label">@L["Brokerage / Company Name"] <span class="rl-required" aria-hidden="true">*</span></span>
 
         <label class="rl-field @(brokerageError.Length > 0 ? "is-error" : "")">
 
@@ -75,7 +75,7 @@
 
                    value="@s.BrokerageName"
 
-                   placeholder="Keller Williams Realty"
+                   placeholder="@L["Keller Williams Realty"]"
 
                    autocomplete="organization"
 
@@ -94,7 +94,7 @@
 
     <div class="rl-field-block">
 
-        <span class="rl-field-label">Real Estate License Number <span class="rl-required" aria-hidden="true">*</span></span>
+        <span class="rl-field-label">@L["Real Estate License Number"] <span class="rl-required" aria-hidden="true">*</span></span>
 
         <label class="rl-field @(licenseError.Length > 0 ? "is-error" : "")">
 
@@ -106,7 +106,7 @@
 
                    value="@s.LicenseNumber"
 
-                   placeholder="BRE123456"
+                   placeholder="@L["BRE123456"]"
 
                    inputmode="text"
 
@@ -127,7 +127,7 @@
 
     <div class="rl-field-block">
 
-        <span class="rl-field-label">License State <span class="rl-required" aria-hidden="true">*</span></span>
+        <span class="rl-field-label">@L["License State"] <span class="rl-required" aria-hidden="true">*</span></span>
 
         <label class="rl-field @(licenseStateError.Length > 0 ? "is-error" : "")">
 
@@ -141,7 +141,7 @@
 
                     @(licenseStateError.Length > 0 ? Html.Raw("aria-describedby=\"licenseStateError\"") : null)>
 
-                <option value="">Select state</option>
+                <option value="">@L["Select state"]</option>
 
                 @foreach (var st in Model.LicenseStates)
 
@@ -159,13 +159,13 @@
     </div>
 
     <div class="rl-field-block">
-        <span class="rl-field-label">City / Market Area <span class="rl-required" aria-hidden="true">*</span></span>
+        <span class="rl-field-label">@L["City / Market Area"] <span class="rl-required" aria-hidden="true">*</span></span>
         <label class="rl-field @(serviceAreasError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-map"></i>
             <input type="text"
                    name="serviceAreas"
                    value="@s.ServiceAreas"
-                   placeholder="Charlotte, NC"
+                   placeholder="@L["Charlotte, NC"]"
                    aria-required="true"
                    aria-invalid="@(serviceAreasError.Length > 0)"
                    @(serviceAreasError.Length > 0 ? Html.Raw("aria-describedby=\"serviceAreasError\"") : null) />
@@ -174,14 +174,14 @@
     </div>
 
     <div class="rl-field-block rl-field-block--address">
-        <span class="rl-field-label">Office Address <span class="rl-required" aria-hidden="true">*</span></span>
+        <span class="rl-field-label">@L["Office Address"] <span class="rl-required" aria-hidden="true">*</span></span>
         <label class="rl-field @(officeAddressError.Length > 0 ? "is-error" : "")">
             <i class="fas fa-location-dot"></i>
             <input type="text"
                    id="rr-office-address"
                    name="officeAddress"
                    value="@s.OfficeAddress"
-                   placeholder="House number and street name"
+                   placeholder="@L["House number and street name"]"
                    autocomplete="address-line1"
                    data-address-autocomplete
                    data-ac-street-only="true"
@@ -192,20 +192,20 @@
                    aria-invalid="@(officeAddressError.Length > 0)"
                    @(officeAddressError.Length > 0 ? Html.Raw("aria-describedby=\"officeAddressError\"") : null) />
         </label>
-        <p class="rl-field-hint">As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available.</p>
+        <p class="rl-field-hint">@L["As you type, we'll suggest US addresses and auto-fill city, state, and ZIP when available."]</p>
         <span class="rl-field-error" id="officeAddressError">@officeAddressError</span>
 
         <div class="rl-reg-office-grid">
-            <p class="rl-field-hint rl-field-hint--section">Complete city, state, and ZIP for your office address.</p>
+            <p class="rl-field-hint rl-field-hint--section">@L["Complete city, state, and ZIP for your office address."]</p>
             <div class="rl-field-block rl-field-block--compact">
-                <span class="rl-field-label">City <span class="rl-required" aria-hidden="true">*</span></span>
+                <span class="rl-field-label">@L["City"] <span class="rl-required" aria-hidden="true">*</span></span>
                 <label class="rl-field @(officeCityError.Length > 0 ? "is-error" : "")">
                     <i class="fas fa-building"></i>
                     <input type="text"
                            id="rr-office-city"
                            name="officeCity"
                            value="@s.OfficeCity"
-                           placeholder="City"
+                           placeholder="@L["City"]"
                            autocomplete="address-level2"
                            data-city-autocomplete
                            data-ac-state="rr-office-state"
@@ -218,7 +218,7 @@
             </div>
 
             <div class="rl-field-block rl-field-block--compact">
-                <span class="rl-field-label">State <span class="rl-required" aria-hidden="true">*</span></span>
+                <span class="rl-field-label">@L["State"] <span class="rl-required" aria-hidden="true">*</span></span>
                 <label class="rl-field @(officeStateError.Length > 0 ? "is-error" : "")">
                     <i class="fas fa-map"></i>
                     <select id="rr-office-state"
@@ -228,7 +228,7 @@
                             aria-required="true"
                             aria-invalid="@(officeStateError.Length > 0)"
                             @(officeStateError.Length > 0 ? Html.Raw("aria-describedby=\"officeStateError\"") : null)>
-                        <option value="">State</option>
+                        <option value="">@L["State"]</option>
                         @foreach (var st in Model.LicenseStates)
                         {
                             <option value="@st" selected="@(s.OfficeState == st)">@st</option>
@@ -239,14 +239,14 @@
             </div>
 
             <div class="rl-field-block rl-field-block--compact">
-                <span class="rl-field-label">ZIP <span class="rl-required" aria-hidden="true">*</span></span>
+                <span class="rl-field-label">@L["ZIP"] <span class="rl-required" aria-hidden="true">*</span></span>
                 <label class="rl-field @(officeZipError.Length > 0 ? "is-error" : "")">
                     <i class="fas fa-envelope"></i>
                     <input type="text"
                            id="rr-office-zip"
                            name="officeZip"
                            value="@s.OfficeZip"
-                           placeholder="ZIP"
+                           placeholder="@L["ZIP"]"
                            inputmode="numeric"
                            autocomplete="postal-code"
                            maxlength="10"
@@ -255,7 +255,7 @@
                            aria-invalid="@(officeZipError.Length > 0)"
                            @(officeZipError.Length > 0 ? Html.Raw("aria-describedby=\"officeZipError\"") : null) />
                 </label>
-                <span class="rl-field-hint" id="rr-office-zip-hint" data-ac-zip-hint-for="rr-office-zip" hidden>Suggested from city and state. Change it if your office uses a different ZIP.</span>
+                <span class="rl-field-hint" id="rr-office-zip-hint" data-ac-zip-hint-for="rr-office-zip" hidden>@L["Suggested from city and state. Change it if your office uses a different ZIP."]</span>
                 <span class="rl-field-error" id="officeZipError">@officeZipError</span>
             </div>
         </div>
@@ -265,9 +265,9 @@
 
     <div class="rl-field-block">
 
-        <span class="rl-field-label">Languages <span class="rl-required" aria-hidden="true">*</span></span>
+        <span class="rl-field-label">@L["Languages"] <span class="rl-required" aria-hidden="true">*</span></span>
 
-        <p class="rl-field-hint">Select one or more: English and Spanish only.</p>
+        <p class="rl-field-hint">@L["Select one or more: English and Spanish only."]</p>
 
         <div class="rl-lang-options @(languagesError.Length > 0 ? "is-error" : "")"
 
@@ -312,9 +312,9 @@
 
         <div>
 
-            <strong class="rl-info-box-title">License Verification</strong>
+            <strong class="rl-info-box-title">@L["License Verification"]</strong>
 
-            <p>Your realtor license verification may take up to 24 hours. You can continue using Home Indor while we review your information. If there is any issue with your license or we need more information, we will notify you.</p>
+            <p>@L["Your realtor license verification may take up to 24 hours. You can continue using Home Indor while we review your information. If there is any issue with your license or we need more information, we will notify you."]</p>
 
         </div>
 
@@ -342,7 +342,7 @@
 
                @(termsError.Length > 0 ? Html.Raw("aria-describedby=\"termsError\"") : null) />
 
-        <span>I authorize Home Indor to verify my real estate license using the information provided. <span class="rl-required" aria-hidden="true">*</span></span>
+        <span>@L["I authorize Home Indor to verify my real estate license using the information provided."] <span class="rl-required" aria-hidden="true">*</span></span>
 
     </label>
 
@@ -351,12 +351,12 @@
     <div class="rl-error-banner rl-error-banner--inline is-hidden" id="profileFormContinueAlert" role="alert" aria-live="polite">
         <i class="fas fa-triangle-exclamation"></i>
         <div>
-            <strong id="profileFormContinueAlertTitle">Please complete the required fields above.</strong>
+            <strong id="profileFormContinueAlertTitle">@L["Please complete the required fields above."]</strong>
             <ul class="rl-error-list" id="profileFormContinueAlertList"></ul>
         </div>
     </div>
 
-    <button type="submit" id="rlRegProfileContinueBtn" class="ob-btn ob-btn-primary">Continue</button>
+    <button type="submit" id="rlRegProfileContinueBtn" class="ob-btn ob-btn-primary">@L["Continue"]</button>
 
 </form>
 

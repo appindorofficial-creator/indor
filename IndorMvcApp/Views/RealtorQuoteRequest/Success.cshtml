@@ -4,7 +4,7 @@
 
     Layout = "_RealtorLayout";
 
-    ViewData["Title"] = "Quote Request Sent";
+    ViewData["Title"] = L["Quote Request Sent"];
 
     ViewBag.NavActive = "quotes";
 
@@ -26,15 +26,15 @@
 
         </div>
 
-        <h1>Quote Request Sent</h1>
+        <h1>@L["Quote Request Sent"]</h1>
 
-        <p>Your request was sent successfully.</p>
+        <p>@L["Your request was sent successfully."]</p>
 
     </section>
 
 
 
-    <nav class="rl-invite-stepper rl-invite-stepper--success" aria-label="Completed steps">
+    <nav class="rl-invite-stepper rl-invite-stepper--success" aria-label="@L["Completed steps"]">
 
         @foreach (var step in new[] { "Property", "Items & Details", "Providers", "Review & Send" })
 
@@ -72,15 +72,15 @@
 
         </div>
 
-        <div class="rl-success-detail"><strong>Property:</strong> @Model.PropertyAddress</div>
+        <div class="rl-success-detail"><strong>@L["Property:"]</strong> @Model.PropertyAddress</div>
 
-        <div class="rl-success-detail"><strong>Request Type:</strong> @Model.RequestTypeLabel</div>
+        <div class="rl-success-detail"><strong>@L["Request Type:"]</strong> @Model.RequestTypeLabel</div>
 
-        <div class="rl-success-detail"><strong>Sent To:</strong> @Model.ProvidersSummary</div>
+        <div class="rl-success-detail"><strong>@L["Sent To:"]</strong> @Model.ProvidersSummary</div>
 
-        <div class="rl-success-detail"><strong>Sent When:</strong> @Model.SentWhenLabel</div>
+        <div class="rl-success-detail"><strong>@L["Sent When:"]</strong> @Model.SentWhenLabel</div>
 
-        <div class="rl-success-detail"><strong>Response Deadline:</strong> @Model.ResponseDeadlineHours hours</div>
+        <div class="rl-success-detail"><strong>@L["Response Deadline:"]</strong> @Model.ResponseDeadlineHours hours</div>
 
     </div>
 
@@ -88,17 +88,17 @@
 
     <div class="rl-review-card">
 
-        <h2 class="rl-invite-section-title">What happens next?</h2>
+        <h2 class="rl-invite-section-title">@L["What happens next?"]</h2>
 
         <ol class="rl-next-steps">
 
-            <li><span>1</span> Providers receive the request in INDOR Pro.</li>
+            <li><span>1</span> @L["Providers receive the request in INDOR Pro."]</li>
 
-            <li><span>2</span> They review the file or selected repair items.</li>
+            <li><span>2</span> @L["They review the file or selected repair items."]</li>
 
-            <li><span>3</span> They send a full quote or itemized quote back.</li>
+            <li><span>3</span> @L["They send a full quote or itemized quote back."]</li>
 
-            <li><span>4</span> You compare the quotes and choose the best one.</li>
+            <li><span>4</span> @L["You compare the quotes and choose the best one."]</li>
 
         </ol>
 
@@ -108,7 +108,7 @@
 
     <div class="rl-review-card rl-provider-preview-card">
 
-        <h2 class="rl-invite-section-title">Provider view preview</h2>
+        <h2 class="rl-invite-section-title">@L["Provider view preview"]</h2>
 
         <div class="rl-open-quote-card">
 
@@ -128,7 +128,7 @@
 
                 }
 
-                <span class="rl-status-badge rl-status-badge--pending">New Request</span>
+                <span class="rl-status-badge rl-status-badge--pending">@L["New Request"]</span>
 
                 <span><i class="fas fa-clock"></i> Deadline @Model.ResponseDeadlineHours h</span>
 
@@ -142,9 +142,9 @@
 
 
 
-    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">Track Quotes</a>
+    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">@L["Track Quotes"]</a>
 
-    <a asp-controller="Realtor" asp-action="Quotes" class="rl-later-link">Done</a>
+    <a asp-controller="Realtor" asp-action="Quotes" class="rl-later-link">@L["Done"]</a>
 
 </div>
 

@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.RoofDetailsViewModel
+@model IndorMvcApp.ViewModels.RoofDetailsViewModel
 @{
-    ViewData["Title"] = "Roof Details - INDOR";
-    ViewData["WizardTitle"] = "Roof Details";
+    ViewData["Title"] = L["Roof Details - INDOR"];
+    ViewData["WizardTitle"] = L["Roof Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
 
 }
 
-<h1 class="page-heading">Tell us about your roof concern</h1>
-    <p class="page-lead">This helps us send the right provider and prepare the inspection faster.</p>
+<h1 class="page-heading">@L["Tell us about your roof concern"]</h1>
+    <p class="page-lead">@L["This helps us send the right provider and prepare the inspection faster."]</p>
 
     <form asp-controller="Inspecciones" asp-action="RoofDetails" method="post">
         <input type="hidden" asp-for="InspeccionId" />
@@ -21,52 +21,52 @@
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
         <div class="field-card">
-            <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+            <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
             <div class="address-summary" style="padding:0;border:none;background:transparent;">
                 <div class="left" style="flex:1;">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" class="form-input" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" class="form-input" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What's the main issue?</span>
+            <span class="field-label">@L["What's the main issue?"]</span>
             <div class="chip-grid" id="tiposGroup">
-                <button type="button" class="chip-btn" data-value="ActiveLeak"><span class="check"><i class="fas fa-check"></i></span>Active leak</button>
-                <button type="button" class="chip-btn" data-value="MissingShingles"><span class="check"><i class="fas fa-check"></i></span>Missing shingles</button>
-                <button type="button" class="chip-btn" data-value="StormDamage"><span class="check"><i class="fas fa-check"></i></span>Storm damage</button>
-                <button type="button" class="chip-btn" data-value="CeilingStain"><span class="check"><i class="fas fa-check"></i></span>Ceiling stain</button>
-                <button type="button" class="chip-btn" data-value="GutterIssue"><span class="check"><i class="fas fa-check"></i></span>Gutter issue</button>
-                <button type="button" class="chip-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>General review</button>
+                <button type="button" class="chip-btn" data-value="ActiveLeak"><span class="check"><i class="fas fa-check"></i></span>@L["Active leak"]</button>
+                <button type="button" class="chip-btn" data-value="MissingShingles"><span class="check"><i class="fas fa-check"></i></span>@L["Missing shingles"]</button>
+                <button type="button" class="chip-btn" data-value="StormDamage"><span class="check"><i class="fas fa-check"></i></span>@L["Storm damage"]</button>
+                <button type="button" class="chip-btn" data-value="CeilingStain"><span class="check"><i class="fas fa-check"></i></span>@L["Ceiling stain"]</button>
+                <button type="button" class="chip-btn" data-value="GutterIssue"><span class="check"><i class="fas fa-check"></i></span>@L["Gutter issue"]</button>
+                <button type="button" class="chip-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>@L["General review"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Where is it happening?</span>
+            <span class="field-label">@L["Where is it happening?"]</span>
             <div class="chip-grid" data-target="UbicacionProblema" data-multi="false">
-                <button type="button" class="chip-btn" data-value="MainRoof"><span class="check"><i class="fas fa-check"></i></span>Main roof</button>
-                <button type="button" class="chip-btn" data-value="AroundChimney"><span class="check"><i class="fas fa-check"></i></span>Around chimney</button>
-                <button type="button" class="chip-btn" data-value="AroundVent"><span class="check"><i class="fas fa-check"></i></span>Around vent</button>
-                <button type="button" class="chip-btn" data-value="GutterEdge"><span class="check"><i class="fas fa-check"></i></span>Gutter / edge</button>
-                <button type="button" class="chip-btn" data-value="AtticCeiling"><span class="check"><i class="fas fa-check"></i></span>Attic / ceiling</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="MainRoof"><span class="check"><i class="fas fa-check"></i></span>@L["Main roof"]</button>
+                <button type="button" class="chip-btn" data-value="AroundChimney"><span class="check"><i class="fas fa-check"></i></span>@L["Around chimney"]</button>
+                <button type="button" class="chip-btn" data-value="AroundVent"><span class="check"><i class="fas fa-check"></i></span>@L["Around vent"]</button>
+                <button type="button" class="chip-btn" data-value="GutterEdge"><span class="check"><i class="fas fa-check"></i></span>@L["Gutter / edge"]</button>
+                <button type="button" class="chip-btn" data-value="AtticCeiling"><span class="check"><i class="fas fa-check"></i></span>@L["Attic / ceiling"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is it?</span>
+            <span class="field-label">@L["How urgent is it?"]</span>
             <div class="segmented-3" data-target="Urgencia">
-                <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                <button type="button" class="segment-btn emergency" data-value="Emergency">Emergency</button>
+                <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                <button type="button" class="segment-btn emergency" data-value="Emergency">@L["Emergency"]</button>
             </div>
         </div>
 
-        <div class="info-box"><i class="fas fa-circle-info"></i><div>If there is active leaking or visible storm damage, upload photos in the next step for a faster review.</div></div>
+        <div class="info-box"><i class="fas fa-circle-info"></i><div>@L["If there is active leaking or visible storm damage, upload photos in the next step for a faster review."]</div></div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> Upload photos or report</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> @L["Upload photos or report"]</button>
     </form>
 </div>
 @section Scripts {

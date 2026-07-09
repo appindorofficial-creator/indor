@@ -7,19 +7,19 @@
     var showQuickHelpHero = Model.ActiveFilter is "All" or "NeighborRequests";
     var emptyFilterMessage = Model.ActiveFilter switch
     {
-        "Homes" => "No nearby home listings yet. Check back soon or browse all categories.",
-        "Providers" => "No nearby service providers yet. Try All or browse available services.",
-        "Promotions" => "No promotions in your area yet. Check back soon.",
-        "NeighborRequests" => "No neighbor help requests nearby yet. Be the first to post one.",
-        "Emergency" => "No emergency providers nearby right now.",
-        _ => "No nearby items match your filters yet."
+        "Homes" => L["No nearby home listings yet. Check back soon or browse all categories."],
+        "Providers" => L["No nearby service providers yet. Try All or browse available services."],
+        "Promotions" => L["No promotions in your area yet. Check back soon."],
+        "NeighborRequests" => L["No neighbor help requests nearby yet. Be the first to post one."],
+        "Emergency" => L["No emergency providers nearby right now."],
+        _ => L["No nearby items match your filters yet."]
     };
     var mapConfigJson = isMapView && Model.HasGoogleMaps
         ? JsonSerializer.Serialize(new
         {
             home = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
             center = new { lat = Model.CenterLatitude, lng = Model.CenterLongitude },
-            homeLabel = Model.MapCenterLabel,
+            homeLabel = L["Your home"],
             propertyAddress = Model.PropertyAddress,
             radiusMiles = Model.RadiusMiles,
             activeFilter = Model.ActiveFilter,
@@ -52,8 +52,8 @@
     {
         <div class="hn-network-empty">
             <i class="fas fa-house"></i>
-            <p>Add your home to explore the Nearby Network.</p>
-            <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">Add your home</a>
+            <p>@L["Add your home to explore the Nearby Network."]</p>
+            <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">@L["Add your home"]</a>
         </div>
     }
     else if (isMapView)
@@ -64,19 +64,19 @@
                 <a href="@BuildFilterUrl(chip.Value)"
                    class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
                    aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
-                    <i class="fas @chip.Icon"></i> @chip.Label
+                    <i class="fas @chip.Icon"></i> @L[chip.Label]
                 </a>
             }
         </div>
 
         @if (Model.HasGoogleMaps)
         {
-            <section class="hn-map-shell" aria-label="Nearby map">
+            <section class="hn-map-shell" aria-label="@L["Nearby map"]">
                 <div id="hnNearbyNetworkMap" class="hn-map-canvas"></div>
 
                 <div class="hn-map-radius-badge" aria-hidden="true">@Model.RadiusMiles.ToString("0.#") mi</div>
 
-                <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="Recenter on your home">
+                <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="@L["Recenter on your home"]">
                     <i class="fas fa-location-arrow"></i>
                 </button>
 
@@ -90,12 +90,12 @@
 
             <div class="hn-privacy-banner hn-privacy-banner--map">
                 <i class="fas fa-lock"></i>
-                All communication happens in INDOR. No phone numbers shared.
+                @L["All communication happens in INDOR. No phone numbers shared."]
             </div>
         }
         else
         {
-            <section class="hn-map-fallback" aria-label="Nearby map">
+            <section class="hn-map-fallback" aria-label="@L["Nearby map"]">
                 <div class="hn-map-stage">
                     @foreach (var pin in Model.MapPins)
                     {
@@ -117,7 +117,7 @@
             <div class="hn-search-row">
                 <div class="hn-search-bar">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input type="text" name="q" value="@Model.SearchQuery" placeholder="Search in my neighborhood..." inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="Search in my neighborhood" />
+                    <input type="text" name="q" value="@Model.SearchQuery" placeholder="@L["Search in my neighborhood..."]" inputmode="search" enterkeyhint="search" autocomplete="off" aria-label="@L["Search in my neighborhood"]" />
                 </div>
                 <input type="hidden" name="view" value="@Model.ActiveView" />
                 <input type="hidden" name="filter" value="@Model.ActiveFilter" />
@@ -130,19 +130,19 @@
                 <a href="@BuildFilterUrl(chip.Value)"
                    class="hn-filter-chip @(Model.ActiveFilter == chip.Value ? "is-active" : null)"
                    aria-current="@(Model.ActiveFilter == chip.Value ? "page" : null)">
-                    <i class="fas @chip.Icon"></i> @chip.Label
+                    <i class="fas @chip.Icon"></i> @L[chip.Label]
                 </a>
             }
         </div>
 
         @if (Model.QuickActions.Count > 0)
         {
-            <section class="hn-quick-actions" aria-label="Nearby network shortcuts">
+            <section class="hn-quick-actions" aria-label="@L["Nearby network shortcuts"]">
                 @foreach (var action in Model.QuickActions)
                 {
                     <a href="@action.Url" class="hn-quick-action">
                         <span class="hn-quick-action-icon"><i class="fas @action.Icon"></i></span>
-                        <span class="hn-quick-action-label">@action.Label</span>
+                        <span class="hn-quick-action-label">@L[action.Label]</span>
                         @if (!string.IsNullOrWhiteSpace(action.Subtitle))
                         {
                             <span class="hn-quick-action-sub">@action.Subtitle</span>
@@ -154,17 +154,17 @@
 
         @if (showQuickHelpHero)
         {
-        <section class="hn-quick-help-hero" aria-label="Quick Help Nearby">
+        <section class="hn-quick-help-hero" aria-label="@L["Quick Help Nearby"]">
             <span class="hn-quick-help-badge">NEW</span>
             <div class="hn-quick-help-copy">
-                <h2 class="hn-quick-help-title">Quick Help Nearby</h2>
-                <p class="hn-quick-help-sub">Post a quick job and get help from neighbors or local helpers in your area.</p>
+                <h2 class="hn-quick-help-title">@L["Quick Help Nearby"]</h2>
+                <p class="hn-quick-help-sub">@L["Post a quick job and get help from neighbors or local helpers in your area."]</p>
                 <div class="hn-quick-help-actions">
                     <a href="@Model.PostQuickJobUrl" class="hn-quick-help-btn hn-quick-help-btn--primary">
-                        <i class="fas fa-plus"></i> Post Quick Job
+                        <i class="fas fa-plus"></i> @L["Post Quick Job"]
                     </a>
                     <a href="@Model.BrowseHelpersUrl" class="hn-quick-help-btn hn-quick-help-btn--secondary">
-                        <i class="fas fa-users"></i> Browse Helpers
+                        <i class="fas fa-users"></i> @L["Browse Helpers"]
                     </a>
                 </div>
             </div>
@@ -176,19 +176,19 @@
 
         @if (Model.ActiveFilter is "All" or "NeighborRequests")
         {
-        <section class="hn-mgmt-cards" aria-label="Manage quick help">
+        <section class="hn-mgmt-cards" aria-label="@L["Manage quick help"]">
             <a href="@Model.MyQuickJobsUrl" class="hn-mgmt-card hn-mgmt-card--jobs">
                 <span class="hn-mgmt-card-icon"><i class="fas fa-clipboard-list"></i></span>
                 <span class="hn-mgmt-card-copy">
-                    <span class="hn-mgmt-card-title">My Quick Jobs</span>
-                    <span class="hn-mgmt-card-sub">Track jobs you posted</span>
+                    <span class="hn-mgmt-card-title">@L["My Quick Jobs"]</span>
+                    <span class="hn-mgmt-card-sub">@L["Track jobs you posted"]</span>
                 </span>
             </a>
             <a href="@Model.MyRequestsUrl" class="hn-mgmt-card hn-mgmt-card--requests">
                 <span class="hn-mgmt-card-icon"><i class="fas fa-comments"></i></span>
                 <span class="hn-mgmt-card-copy">
-                    <span class="hn-mgmt-card-title">My Requests</span>
-                    <span class="hn-mgmt-card-sub">Offers &amp; messages</span>
+                    <span class="hn-mgmt-card-title">@L["My Requests"]</span>
+                    <span class="hn-mgmt-card-sub">@L["Offers & messages"]</span>
                 </span>
             </a>
         </section>
@@ -211,16 +211,16 @@
         <a href="@(Url.Action("Index", "Home") + "#section-services")" class="hn-emergency-banner nav-jump" data-target="section-services" data-scroll-target="emergency-services">
             <span class="hn-emergency-banner-icon"><i class="fas fa-bell"></i></span>
             <span class="hn-emergency-banner-copy">
-                <span class="hn-emergency-banner-badge">EMERGENCY</span>
-                <span class="hn-emergency-banner-title">Emergency Help Nearby</span>
-                <span class="hn-emergency-banner-sub">Certified plumbers, electricians &amp; more — often arriving within 60 minutes.</span>
+                <span class="hn-emergency-banner-badge">@L["EMERGENCY"]</span>
+                <span class="hn-emergency-banner-title">@L["Emergency Help Nearby"]</span>
+                <span class="hn-emergency-banner-sub">@L["Certified plumbers, electricians & more — often arriving within 60 minutes."]</span>
             </span>
-            <span class="hn-emergency-banner-distance"><i class="fas fa-location-dot"></i> Nearby</span>
+            <span class="hn-emergency-banner-distance"><i class="fas fa-location-dot"></i> @L["Nearby"]</span>
         </a>
 
         <div class="hn-privacy-banner">
             <i class="fas fa-lock"></i>
-            All communication happens in INDOR. No phone numbers shared.
+            @L["All communication happens in INDOR. No phone numbers shared."]
         </div>
     }
 </div>

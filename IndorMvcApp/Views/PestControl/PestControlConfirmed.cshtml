@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PestControlConfirmedViewModel
 @{
-    ViewData["Title"] = "You're all set - INDOR";
+    ViewData["Title"] = L["You're all set - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 }
@@ -8,22 +8,22 @@
 
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">You're all set</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your pest control reminder or service has been saved.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["You're all set"]</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L["Your pest control reminder or service has been saved."]</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-house-medical"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.ServiceLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Timing</div><div class="summary-value">@Model.TimingLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Home concerns</div><div class="summary-value">@Model.ConcernsLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-people-group"></i><div><div class="summary-label">Pets/children</div><div class="summary-value">@Model.PetsChildrenLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-circle-check"></i><div><div class="summary-label">Status</div><div class="summary-value">@Model.StatusLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-house-medical"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.ServiceLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timing"]</div><div class="summary-value">@Model.TimingLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["Home concerns"]</div><div class="summary-value">@Model.ConcernsLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-people-group"></i><div><div class="summary-label">@L["Pets/children"]</div><div class="summary-value">@Model.PetsChildrenLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-circle-check"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value">@Model.StatusLabel</div></div></div>
     </div>
 
     @if (Model.WhyYearlyItems.Count > 0)
     {
         <div class="why-matters-box">
-            <h4><i class="fas fa-shield-halved"></i> Why yearly matters</h4>
+            <h4><i class="fas fa-shield-halved"></i> @L["Why yearly matters"]</h4>
             <ul>
                 @foreach (var item in Model.WhyYearlyItems)
                 {

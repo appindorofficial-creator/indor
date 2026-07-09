@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProEditProfileVerificationViewModel
 @{
-    ViewData["Title"] = "Verification & Documents - INDOR PRO";
+    ViewData["Title"] = L["Verification & Documents - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -12,16 +12,15 @@
     <header class="prv-pro-jobs-head">
         <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Verification &amp; Documents</h1>
-            <p>Upload credentials so INDOR can verify your provider account.</p>
+            <h1>@L["Verification &amp; Documents"]</h1>
+            <p>@L["Upload credentials so INDOR can verify your provider account."]</p>
         </div>
     </header>
 
     @if (TempData["ProfileSaved"] is true)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-            <i class="fas fa-circle-check"></i> Document uploaded successfully.
-        </div>
+            <i class="fas fa-circle-check"></i> @L["Document uploaded successfully."]</div>
     }
     @if (TempData["ProfileSectionError"] is string sectionError)
     {
@@ -31,7 +30,7 @@
     }
 
     <section class="prv-pro-wizard-card">
-        <h2>Verification status</h2>
+        <h2>@L["Verification status"]</h2>
         @foreach (var item in Model.Items)
         {
             <div class="prv-pro-profile-check @(item.IsComplete ? "is-complete" : "")">
@@ -62,11 +61,11 @@
                 </div>
                 @if (slot.IsUploaded)
                 {
-                    <span class="prv-pro-pill prv-pro-pill--on-file">On file</span>
+                    <span class="prv-pro-pill prv-pro-pill--on-file">@L["On file"]</span>
                 }
                 else
                 {
-                    <span class="prv-pro-pill prv-pro-pill--pending">Required</span>
+                    <span class="prv-pro-pill prv-pro-pill--pending">@L["Required"]</span>
                 }
             </div>
 
@@ -85,7 +84,7 @@
                             </span>
                         }
                         <span class="prv-pro-doc-file-meta">
-                            <span>Tap to open full document</span>
+                            <span>@L["Tap to open full document"]</span>
                         </span>
                         <span class="prv-pro-doc-file-open" aria-hidden="true"><i class="fas fa-arrow-up-right-from-square"></i></span>
                     </a>
@@ -93,7 +92,7 @@
                         <span class="prv-pro-doc-empty-icon prv-pro-doc-empty-icon--btn" aria-hidden="true">
                             <i class="fas fa-cloud-arrow-up"></i>
                         </span>
-                        <span>Replace</span>
+                        <span>@L["Replace"]</span>
                     </label>
                 </div>
             }
@@ -115,8 +114,8 @@
                     <label class="prv-pro-doc-empty" for="@fileInputId" data-role="file-trigger">
                         <span class="prv-pro-doc-empty-icon" aria-hidden="true"><i class="fas fa-cloud-arrow-up"></i></span>
                         <div class="prv-pro-doc-empty-copy">
-                            <strong>Upload a clear photo or PDF</strong>
-                            <span>JPG, PNG, WEBP or PDF · Max 10 MB</span>
+                            <strong>@L["Upload a clear photo or PDF"]</strong>
+                            <span>@L["JPG, PNG, WEBP or PDF · Max 10 MB"]</span>
                         </div>
                     </label>
                 }
@@ -126,22 +125,21 @@
                     <span class="prv-pro-doc-file-icon prv-pro-doc-pending-icon is-hidden"><i class="fas fa-file"></i></span>
                     <span class="prv-pro-doc-file-meta">
                         <strong class="prv-pro-doc-pending-name"></strong>
-                        <span>Ready to upload</span>
+                        <span>@L["Ready to upload"]</span>
                     </span>
-                    <button type="button" class="prv-pro-doc-pending-clear" data-role="clear-pending" aria-label="Clear selected file">
+                    <button type="button" class="prv-pro-doc-pending-clear" data-role="clear-pending" aria-label="@L["Clear selected file"]">
                         <i class="fas fa-xmark"></i>
                     </button>
                 </div>
 
                 <button type="submit" class="prv-pro-btn prv-pro-btn--primary is-hidden" data-role="upload-btn">
-                    <i class="fas fa-cloud-arrow-up"></i> Upload
-                </button>
+                    <i class="fas fa-cloud-arrow-up"></i> @L["Upload"]</button>
             </form>
         </section>
     }
 
     <footer class="prv-pro-edit-profile-actions">
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--primary">Back to profile</a>
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--primary">@L["Back to profile"]</a>
     </footer>
 </div>
 

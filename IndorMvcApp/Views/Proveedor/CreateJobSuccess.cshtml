@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateJobSuccessViewModel
 @{
-    ViewData["Title"] = "Job Created - INDOR PRO";
+    ViewData["Title"] = L["Job Created - INDOR PRO"];
     Layout = "_ProviderProLayout";
     var createJobFrom = (ViewBag.CreateJobFrom as string) ?? "jobs";
     ViewBag.NavActive = createJobFrom;
@@ -12,21 +12,21 @@
 
     <section class="prv-pro-job-success-hero">
         <div class="prv-pro-job-success-icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Job Created Successfully!</h1>
-        <p>Your job has been scheduled and is ready to go.</p>
+        <h1>@L["Job Created Successfully!"]</h1>
+        <p>@L["Your job has been scheduled and is ready to go."]</p>
     </section>
 
     <section class="prv-pro-job-success-card">
         <div class="prv-pro-job-success-card-head">
-            <h3><i class="fas fa-clipboard-list"></i> Job Summary</h3>
+            <h3><i class="fas fa-clipboard-list"></i> @L["Job Summary"]</h3>
             <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.StatusLabel</span>
         </div>
         <dl class="prv-pro-job-success-list">
-            <div><dt><i class="fas fa-wrench"></i> Service</dt><dd>@Model.Title</dd></div>
-            <div><dt><i class="fas fa-calendar"></i> Date &amp; Time</dt><dd>@Model.ScheduleLabel</dd></div>
-            <div><dt><i class="fas fa-location-dot"></i> Address</dt><dd>@Model.Address</dd></div>
-            <div><dt><i class="fas fa-hashtag"></i> Job Number</dt><dd>@Model.JobCode</dd></div>
-            <div><dt><i class="fas fa-clock"></i> Status</dt><dd>@Model.StatusLabel</dd></div>
+            <div><dt><i class="fas fa-wrench"></i> @L["Service"]</dt><dd>@Model.Title</dd></div>
+            <div><dt><i class="fas fa-calendar"></i> @L["Date &amp; Time"]</dt><dd>@Model.ScheduleLabel</dd></div>
+            <div><dt><i class="fas fa-location-dot"></i> @L["Address"]</dt><dd>@Model.Address</dd></div>
+            <div><dt><i class="fas fa-hashtag"></i> @L["Job Number"]</dt><dd>@Model.JobCode</dd></div>
+            <div><dt><i class="fas fa-clock"></i> @L["Status"]</dt><dd>@Model.StatusLabel</dd></div>
         </dl>
     </section>
 

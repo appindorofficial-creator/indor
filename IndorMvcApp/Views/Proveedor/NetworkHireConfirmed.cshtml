@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NetworkHireConfirmedViewModel
 @{
-    ViewData["Title"] = "Hire Confirmed";
+    ViewData["Title"] = L["Hire Confirmed"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-network.css";
     ViewBag.NavActive = "jobs";
@@ -10,11 +10,11 @@
     <div class="prv-net-success">
         <span class="prv-net-success-ic"><i class="fas fa-handshake-simple"></i></span>
         <h1>@Model.StatusLabel!</h1>
-        <p>You've brought <strong>@Model.SubcontractorName</strong> onto your project. They've been notified.</p>
+        <p>@L["You've brought"]<strong>@Model.SubcontractorName</strong> onto your project. They've been notified.</p>
     </div>
 
     <section class="prv-net-hire-card" style="margin-top:22px;">
-        <div class="prv-net-card-label">Subcontractor</div>
+        <div class="prv-net-card-label">@L["Subcontractor"]</div>
         <div class="prv-net-sub-top">
             <span class="prv-net-avatar prv-net-avatar--trade"><i class="fas @Model.IconClass"></i></span>
             <div class="prv-net-sub-main">
@@ -36,17 +36,17 @@
         <div class="prv-net-summary-grid">
             <div class="prv-net-summary-cell">
                 <i class="fas fa-clipboard"></i>
-                <small>Project</small>
+                <small>@L["Project"]</small>
                 <strong>@(string.IsNullOrWhiteSpace(Model.ProjectTitle) ? "—" : Model.ProjectTitle)</strong>
             </div>
             <div class="prv-net-summary-cell">
                 <i class="fas fa-dollar-sign"></i>
-                <small>Budget</small>
+                <small>@L["Budget"]</small>
                 <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? "—" : Model.BudgetRange)</strong>
             </div>
             <div class="prv-net-summary-cell">
                 <i class="fas fa-calendar"></i>
-                <small>Start</small>
+                <small>@L["Start"]</small>
                 <strong>@Model.StartDateLabel</strong>
             </div>
         </div>

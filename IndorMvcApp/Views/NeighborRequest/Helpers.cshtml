@@ -1,9 +1,9 @@
 @model IndorMvcApp.ViewModels.NeighborRequestHelpersStepViewModel
 @{
-    ViewData["Title"] = "Helpers Nearby";
+    ViewData["Title"] = L["Helpers Nearby"];
 }
 
-<div class="nr-helpers-top-badge"><i class="fas fa-check"></i> Job posted</div>
+<div class="nr-helpers-top-badge"><i class="fas fa-check"></i> @L["Job posted"]</div>
 
 <section class="nr-job-summary">
     <div class="nr-job-summary-copy">
@@ -22,14 +22,14 @@
 
 <div class="nr-helpers-toolbar">
     <div class="nr-helpers-view-toggle">
-        <button type="button" class="is-active"><i class="fas fa-list"></i> List</button>
-        <button type="button" disabled><i class="fas fa-map"></i> Map</button>
+        <button type="button" class="is-active"><i class="fas fa-list"></i> @L["List"]</button>
+        <button type="button" disabled><i class="fas fa-map"></i> @L["Map"]</button>
     </div>
 </div>
 
 <header class="nr-helpers-head">
-    <h3>Available helpers near you</h3>
-    <p>Based on your location and job details.</p>
+    <h3>@L["Available helpers near you"]</h3>
+    <p>@L["Based on your location and job details."]</p>
 </header>
 
 <form id="nrInviteHelpersForm" method="post" action="@Model.InviteUrl" autocomplete="off">
@@ -57,7 +57,7 @@
                     }
                     @if (card.IsOnline)
                     {
-                        <span class="nr-helper-online" aria-label="Online"></span>
+                        <span class="nr-helper-online" aria-label="@L["Online"]"></span>
                     }
                 </div>
                 <div class="nr-helper-body">
@@ -65,7 +65,7 @@
                         <strong>@card.Name</strong>
                         @if (card.IsVerified)
                         {
-                            <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                            <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
                         }
                     </div>
                     <div class="nr-helper-meta">
@@ -86,8 +86,8 @@
                     <strong>@card.PriceLabel</strong>
                     <small>@card.MinHoursLabel</small>
                     <div class="nr-helper-actions">
-                        <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
-                        <button type="button" class="nr-btn-primary nr-btn-primary--sm" data-nr-helper-invite="true">Invite</button>
+                        <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">@L["Message"]</a>
+                        <button type="button" class="nr-btn-primary nr-btn-primary--sm" data-nr-helper-invite="true">@L["Invite"]</button>
                     </div>
                 </div>
             </article>
@@ -98,8 +98,8 @@
 <div class="nr-trust-banner">
     <i class="fas fa-shield-halved"></i>
     <div>
-        <strong>Background checked helpers</strong>
-        <p>All helpers are ID verified and background checked for your safety.</p>
+        <strong>@L["Background checked helpers"]</strong>
+        <p>@L["All helpers are ID verified and background checked for your safety."]</p>
     </div>
 </div>
 
@@ -108,7 +108,7 @@
         <div class="nr-wizard-footer-inner">
             <button type="submit" form="nrInviteHelpersForm" class="nr-btn-primary" id="nrInviteHelpersBtn">
                 <i class="fas fa-user-group"></i>
-                <span id="nrInviteHelpersLabel">Invite selected helpers (0)</span>
+                <span id="nrInviteHelpersLabel">@L.T("Invite selected helpers ({0})", 0)</span>
             </button>
         </div>
     </div>
@@ -127,14 +127,16 @@
                 return form.querySelectorAll('[data-nr-helper-checkbox]:checked').length;
             }
 
+            var inviteManyTemplate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Invite selected helpers ({0})"]));
+
             function inviteLabel(count) {
                 if (count === 0) {
-                    return 'Continue without inviting';
+                    return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Continue without inviting"]));
                 }
                 if (count === 1) {
-                    return 'Invite selected helper (1)';
+                    return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Invite selected helper (1)"]));
                 }
-                return 'Invite selected helpers (' + count + ')';
+                return inviteManyTemplate.replace('{0}', String(count));
             }
 
             function updateInviteLabel() {
@@ -163,7 +165,7 @@
     </script>
 }
 
-<p class="nr-helpers-footnote"><i class="fas fa-lock"></i> Helpers will be notified and can accept your job.</p>
+<p class="nr-helpers-footnote"><i class="fas fa-lock"></i> @L["Helpers will be notified and can accept your job."]</p>
 <p class="nr-helpers-home-link">
-    <a href="@Model.CloseUrl"><i class="fas fa-house"></i> Return to dashboard</a>
+    <a href="@Model.CloseUrl"><i class="fas fa-house"></i> @L["Return to dashboard"]</a>
 </p>

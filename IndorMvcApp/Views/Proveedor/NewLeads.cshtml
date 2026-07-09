@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProNewLeadsPageViewModel
 @{
-    ViewData["Title"] = "New Leads - INDOR PRO";
+    ViewData["Title"] = L["New Leads - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var filters = new (string Id, string Label, int Count)[]
@@ -18,26 +18,26 @@
     <header class="prv-pro-new-leads-head">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>New Leads</h1>
+            <h1>@L["New Leads"]</h1>
             <small>@Model.NewCount new · @Model.HighUrgencyCount high urgency</small>
         </div>
-        <button type="button" class="prv-pro-lead-share" aria-label="Notifications"><i class="fas fa-bell"></i></button>
+        <button type="button" class="prv-pro-lead-share" aria-label="@L["Notifications"]"><i class="fas fa-bell"></i></button>
     </header>
 
     @if (TempData["LeadAccepted"] as bool? == true)
     {
-        <div class="prv-pro-lead-toast">Lead accepted successfully.</div>
+        <div class="prv-pro-lead-toast">@L["Lead accepted successfully."]</div>
     }
 
     <form method="get" asp-controller="Proveedor" asp-action="NewLeads" class="prv-pro-jobs-search">
         <input type="hidden" name="filter" value="@Model.ActiveFilter" />
         <div class="prv-pro-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, service or customer" />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search by address, service or customer"]" />
         </div>
     </form>
 
-    <nav class="prv-pro-lead-tabs" aria-label="Lead tabs">
+    <nav class="prv-pro-lead-tabs" aria-label="@L["Lead tabs"]">
         @foreach (var (id, label, count) in filters)
         {
             <a asp-controller="Proveedor" asp-action="NewLeads"
@@ -53,7 +53,7 @@
         @if (Model.Leads.Count == 0)
         {
             <div class="prv-pro-panel">
-                <p class="prv-pro-empty">No leads in this view yet. New opportunities from INDOR will appear here.</p>
+                <p class="prv-pro-empty">@L["No leads in this view yet. New opportunities from INDOR will appear here."]</p>
             </div>
         }
         else
@@ -82,13 +82,13 @@
                         </div>
                         <div class="prv-pro-new-lead-actions">
                             <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@lead.Id"
-                               class="prv-pro-btn prv-pro-btn--primary">View Lead</a>
+                               class="prv-pro-btn prv-pro-btn--primary">@L["View Lead"]</a>
                             @if (lead.CanDecline)
                             {
                                 <form asp-controller="Proveedor" asp-action="DeclineLead" method="post">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@lead.Id" />
-                                    <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">Decline</button>
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--ghost">@L["Decline"]</button>
                                 </form>
                             }
                         </div>

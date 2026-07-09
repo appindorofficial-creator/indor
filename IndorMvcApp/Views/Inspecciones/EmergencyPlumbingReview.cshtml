@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyPlumbingReviewViewModel
+@model IndorMvcApp.ViewModels.EmergencyPlumbingReviewViewModel
 @{
-    ViewData["Title"] = "Review & Confirm - INDOR";
-    ViewData["WizardTitle"] = "Review & Confirm";
+    ViewData["Title"] = L["Review & Confirm - INDOR"];
+    ViewData["WizardTitle"] = L["Review & Confirm"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyPlumbingContact", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<h1 class="page-heading">Confirm your emergency request</h1>
-    <p class="page-lead">Check the basics before we send it.</p>
+<h1 class="page-heading">@L["Confirm your emergency request"]</h1>
+    <p class="page-lead">@L["Check the basics before we send it."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyPlumbingReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -21,56 +21,56 @@
             <div class="summary-row">
                 <i class="fas fa-droplet"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Service</div>
+                    <div class="summary-label">@L["Service"]</div>
                     <div class="summary-value">@Model.TituloServicio</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-house"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Property</div>
+                    <div class="summary-label">@L["Property"]</div>
                     <div class="summary-value">@Model.DireccionPropiedad</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-faucet-drip"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Problem</div>
+                    <div class="summary-label">@L["Problem"]</div>
                     <div class="summary-value">@Model.ProblemaResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-water"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Water status</div>
+                    <div class="summary-label">@L["Water status"]</div>
                     <div class="summary-value">@Model.AguaFluyendoResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-faucet"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Shutoff</div>
+                    <div class="summary-label">@L["Shutoff"]</div>
                     <div class="summary-value">@Model.CierreAguaResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-bell"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Urgency</div>
+                    <div class="summary-label">@L["Urgency"]</div>
                     <div class="summary-value">@Model.UrgenciaResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-phone"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Contact</div>
+                    <div class="summary-label">@L["Contact"]</div>
                     <div class="summary-value">@Model.TelefonoContacto</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Files</div>
+                    <div class="summary-label">@L["Files"]</div>
                     <div class="summary-value">@Model.ArchivosResumen</div>
                 </div>
             </div>
@@ -78,17 +78,17 @@
 
         <div class="disclaimer-box">
             <i class="fas fa-circle-info"></i>
-            <div>A provider will review this request immediately and contact you if more information is needed.</div>
+            <div>@L["A provider will review this request immediately and contact you if more information is needed."]</div>
         </div>
 
         <div class="arrival-card">
             <i class="fas fa-stopwatch"></i>
             <div>
-                <div class="arrival-label">Avg. arrival</div>
+                <div class="arrival-label">@L["Avg. arrival"]</div>
                 <div class="arrival-value">@Model.TiempoLlegadaMinutos min</div>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-paper-plane"></i> Request emergency help</button>
-        <button type="submit" class="btn-outline" name="action" value="back"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-paper-plane"></i> @L["Request emergency help"]</button>
+        <button type="submit" class="btn-outline" name="action" value="back"><i class="fas fa-arrow-left"></i> @L["Back"]</button>
     </form>

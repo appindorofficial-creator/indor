@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProSendEstimatePageViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Send Estimate - INDOR PRO";
+    ViewData["Title"] = L["Send Estimate - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -24,7 +24,7 @@
         <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Step @Model.StepNumber of @Model.TotalSteps · Send Estimate</h1>
-            <p>Choose how to deliver the estimate and what happens after you send.</p>
+            <p>@L["Choose how to deliver the estimate and what happens after you send."]</p>
         </div>
     </header>
 
@@ -40,7 +40,7 @@
             <small>@Model.Address</small>
             <small>@Model.DateLabel</small>
             <div class="prv-pro-est-send-total">
-                <span>Total estimate</span>
+                <span>@L["Total estimate"]</span>
                 <strong>@Model.TotalAmount.ToString("C2", money)</strong>
             </div>
         </div>
@@ -51,7 +51,7 @@
         <input type="hidden" name="EstimateId" value="@Model.EstimateId" />
 
         <section class="prv-pro-wizard-card">
-            <h2>Delivery method</h2>
+            <h2>@L["Delivery method"]</h2>
             @foreach (var (id, label, hint) in deliveryOptions)
             {
                 <label class="prv-pro-est-radio">
@@ -65,13 +65,13 @@
         </section>
 
         <section class="prv-pro-wizard-card">
-            <h2>Message to customer</h2>
+            <h2>@L["Message to customer"]</h2>
             <textarea name="CustomerMessage" rows="4" maxlength="250">@Model.CustomerMessage</textarea>
             <small class="prv-pro-wizard-hint">@(Model.CustomerMessage.Length)/250</small>
         </section>
 
         <section class="prv-pro-wizard-card">
-            <h2>Attachments (included)</h2>
+            <h2>@L["Attachments (included)"]</h2>
             <ul class="prv-pro-est-send-attachments">
                 @if (Model.HasEstimatePdf)
                 {
@@ -89,7 +89,7 @@
         </section>
 
         <section class="prv-pro-wizard-card">
-            <h2>Next step after send</h2>
+            <h2>@L["Next step after send"]</h2>
             @foreach (var option in postSendOptions)
             {
                 <label class="prv-pro-est-radio">

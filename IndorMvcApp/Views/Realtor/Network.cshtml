@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RealtorNearbyNetworkViewModel
 @using System.Text.Json
 @{
-    ViewData["Title"] = "Nearby Network";
+    ViewData["Title"] = L["Nearby Network"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "network";
     var isMapView = Model.ActiveView == "map";
@@ -54,7 +54,7 @@
             }
         </div>
 
-        <div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
+        <div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="@L["Network view"]">
             <a asp-action="Network"
                asp-route-view="map"
                asp-route-filter="@Model.ActiveFilter"
@@ -92,7 +92,7 @@
                 <div class="rl-search-row">
                     <div class="rl-search-bar">
                         <i class="fas fa-magnifying-glass"></i>
-                        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search your network..." />
+                        <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search your network..."]" />
                     </div>
                     <input type="hidden" name="view" value="@Model.ActiveView" />
                     <input type="hidden" name="filter" value="@Model.ActiveFilter" />
@@ -118,7 +118,7 @@
     {
         @if (Model.HasGoogleMaps)
         {
-            <section class="rl-zillow-map-shell" aria-label="Nearby map">
+            <section class="rl-zillow-map-shell" aria-label="@L["Nearby map"]">
                 <div id="rlNearbyNetworkMap" class="rl-zillow-map-canvas" style="min-height:420px;"></div>
 
                 <form class="rl-zillow-map-search" id="rlMapSearchForm" autocomplete="off">
@@ -127,14 +127,14 @@
                         <input type="search"
                                id="rlMapSearchInput"
                                value="@Model.SearchQuery"
-                               placeholder="Search address or neighborhood" />
+                               placeholder="@L["Search address or neighborhood"]" />
                     </div>
-                    <button type="button" class="rl-zillow-map-filter-btn" id="rlMapFilterBtn" aria-label="Filters">
+                    <button type="button" class="rl-zillow-map-filter-btn" id="rlMapFilterBtn" aria-label="@L["Filters"]">
                         <i class="fas fa-sliders"></i>
                     </button>
                 </form>
 
-                <button type="button" class="rl-zillow-map-locate" id="rlMapLocateBtn" aria-label="My location">
+                <button type="button" class="rl-zillow-map-locate" id="rlMapLocateBtn" aria-label="@L["My location"]">
                     <i class="fas fa-location-crosshairs"></i>
                 </button>
 
@@ -149,7 +149,7 @@
         }
         else
         {
-            <section class="rl-network-map-panel" aria-label="Nearby map">
+            <section class="rl-network-map-panel" aria-label="@L["Nearby map"]">
                 <div class="rl-network-map-stage">
                     <div class="rl-network-map-canvas rl-network-map-canvas--mock">
                         <div class="rl-network-map-radius"></div>
@@ -187,7 +187,7 @@
         <section class="rl-network-feed">
             @if (Model.FeedCards.Count == 0)
             {
-                <div class="rl-dash-empty">No nearby items match your filters.</div>
+                <div class="rl-dash-empty">@L["No nearby items match your filters."]</div>
             }
             else
             {

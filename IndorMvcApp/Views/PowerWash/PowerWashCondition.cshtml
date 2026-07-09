@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PowerWashConditionViewModel
 @{
-    ViewData["Title"] = "Condition & Access - INDOR";
+    ViewData["Title"] = L["Condition & Access - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("PowerWashDetails", "PowerWash", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -9,8 +9,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Condition & Access</h1>
-    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Help us understand buildup and access.</span></p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Condition & Access"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">@L["Help us understand buildup and access."]</span></p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -24,44 +24,44 @@
         <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-eye"></i><span>What are you seeing?</span></div>
+            <div class="field-head"><i class="fas fa-eye"></i><span>@L["What are you seeing?"]</span></div>
             <div class="issue-grid">
-                <button type="button" class="issue-card" data-issue="LightDirt"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Light dirt</span></button>
-                <button type="button" class="issue-card" data-issue="HeavyDirt"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">Heavy dirt</span></button>
-                <button type="button" class="issue-card" data-issue="MoldAlgae"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-leaf main"></i><span class="label">Mold / algae</span></button>
-                <button type="button" class="issue-card" data-issue="Pollen"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Pollen</span></button>
-                <button type="button" class="issue-card" data-issue="RustStains"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-droplet main"></i><span class="label">Rust stains</span></button>
+                <button type="button" class="issue-card" data-issue="LightDirt"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">@L["Light dirt"]</span></button>
+                <button type="button" class="issue-card" data-issue="HeavyDirt"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-house main"></i><span class="label">@L["Heavy dirt"]</span></button>
+                <button type="button" class="issue-card" data-issue="MoldAlgae"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-leaf main"></i><span class="label">@L["Mold / algae"]</span></button>
+                <button type="button" class="issue-card" data-issue="Pollen"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">@L["Pollen"]</span></button>
+                <button type="button" class="issue-card" data-issue="RustStains"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-droplet main"></i><span class="label">@L["Rust stains"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-triangle-exclamation"></i><span>Any delicate areas?</span></div>
+            <div class="field-head"><i class="fas fa-triangle-exclamation"></i><span>@L["Any delicate areas?"]</span></div>
             <div class="issue-grid" style="grid-template-columns:repeat(2,1fr);">
-                <button type="button" class="issue-card" data-delicate="LoosePaint"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paint-roller main"></i><span class="label">Loose paint</span></button>
-                <button type="button" class="issue-card" data-delicate="CrackedSiding"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Cracked siding</span></button>
-                <button type="button" class="issue-card" data-delicate="OldCaulking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spray-can main"></i><span class="label">Old caulking</span></button>
-                <button type="button" class="issue-card" data-delicate="None"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">None</span></button>
+                <button type="button" class="issue-card" data-delicate="LoosePaint"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paint-roller main"></i><span class="label">@L["Loose paint"]</span></button>
+                <button type="button" class="issue-card" data-delicate="CrackedSiding"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">@L["Cracked siding"]</span></button>
+                <button type="button" class="issue-card" data-delicate="OldCaulking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spray-can main"></i><span class="label">@L["Old caulking"]</span></button>
+                <button type="button" class="issue-card" data-delicate="None"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">@L["None"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-faucet"></i><span>Do you have water spigot access?</span></div>
+            <div class="field-head"><i class="fas fa-faucet"></i><span>@L["Do you have water spigot access?"]</span></div>
             <div class="spigot-grid">
-                <button type="button" class="spigot-card" data-spigot="Yes"><i class="fas fa-droplet main"></i><span class="label">Yes</span></button>
-                <button type="button" class="spigot-card" data-spigot="No"><i class="fas fa-ban main"></i><span class="label">No</span></button>
+                <button type="button" class="spigot-card" data-spigot="Yes"><i class="fas fa-droplet main"></i><span class="label">@L["Yes"]</span></button>
+                <button type="button" class="spigot-card" data-spigot="No"><i class="fas fa-ban main"></i><span class="label">@L["No"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-camera"></i><span>Upload photos (optional)</span></div>
-            <p class="field-hint" style="margin-top:0;margin-bottom:10px;">Add up to 5 photos to help our pros prepare.</p>
+            <div class="field-head"><i class="fas fa-camera"></i><span>@L["Upload photos (optional)"]</span></div>
+            <p class="field-hint" style="margin-top:0;margin-bottom:10px;">@L["Add up to 5 photos to help our pros prepare."]</p>
             <div class="upload-drop-wrap">
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
                        accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
                 <label class="upload-drop" id="photoDropzone" for="photoInput">
                     <i class="fas fa-camera"></i>
-                    <strong>Tap to upload photos</strong>
-                    <span>JPG or PNG, up to 10 MB each</span>
+                    <strong>@L["Tap to upload photos"]</strong>
+                    <span>@L["JPG or PNG, up to 10 MB each"]</span>
                 </label>
             </div>
             <div class="upload-selected-list" id="photoSelectedList" hidden></div>
@@ -80,23 +80,23 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred timing</span></div>
+            <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred timing"]</span></div>
             <div class="time-grid-3" style="margin-bottom:10px;">
-                <button type="button" class="time-card" data-timing="NextWeek"><span class="radio"></span><i class="fas fa-calendar main"></i><span class="label">Next week</span></button>
-                <button type="button" class="time-card" data-timing="ThisMonth"><span class="radio"></span><i class="fas fa-calendar-days main"></i><span class="label">This month</span></button>
-                <button type="button" class="time-card" data-timing="Flexible"><span class="radio"></span><i class="fas fa-clock main"></i><span class="label">Flexible</span></button>
+                <button type="button" class="time-card" data-timing="NextWeek"><span class="radio"></span><i class="fas fa-calendar main"></i><span class="label">@L["Next week"]</span></button>
+                <button type="button" class="time-card" data-timing="ThisMonth"><span class="radio"></span><i class="fas fa-calendar-days main"></i><span class="label">@L["This month"]</span></button>
+                <button type="button" class="time-card" data-timing="Flexible"><span class="radio"></span><i class="fas fa-clock main"></i><span class="label">@L["Flexible"]</span></button>
             </div>
-            <div class="field-head" style="margin-top:8px;"><i class="fas fa-sun"></i><span>Preferred time window</span></div>
+            <div class="field-head" style="margin-top:8px;"><i class="fas fa-sun"></i><span>@L["Preferred time window"]</span></div>
             <div class="time-grid-3">
-                <button type="button" class="time-card" data-window="Morning"><span class="radio"></span><i class="fas fa-sun main"></i><span class="label">Morning</span></button>
-                <button type="button" class="time-card" data-window="Midday"><span class="radio"></span><i class="fas fa-sun main"></i><span class="label">Midday</span></button>
-                <button type="button" class="time-card" data-window="Afternoon"><span class="radio"></span><i class="fas fa-cloud-sun main"></i><span class="label">Afternoon</span></button>
+                <button type="button" class="time-card" data-window="Morning"><span class="radio"></span><i class="fas fa-sun main"></i><span class="label">@L["Morning"]</span></button>
+                <button type="button" class="time-card" data-window="Midday"><span class="radio"></span><i class="fas fa-sun main"></i><span class="label">@L["Midday"]</span></button>
+                <button type="button" class="time-card" data-window="Afternoon"><span class="radio"></span><i class="fas fa-cloud-sun main"></i><span class="label">@L["Afternoon"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
-            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
+            <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.InfoCondicionTexto))

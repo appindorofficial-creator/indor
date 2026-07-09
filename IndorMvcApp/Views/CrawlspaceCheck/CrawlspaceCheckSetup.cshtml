@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckSetupViewModel
 @{
-    ViewData["Title"] = "Tell us about your crawlspace - INDOR";
+    ViewData["Title"] = L["Tell us about your crawlspace - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckService", "CrawlspaceCheck", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
@@ -9,8 +9,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your crawlspace</h1>
-    <p class="page-lead" style="margin-bottom:16px;">A few details help us prepare the right inspection. Select an answer for each question below.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your crawlspace"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us prepare the right inspection. Select an answer for each question below."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -24,54 +24,54 @@
         <input type="hidden" asp-for="UltimaRevision" id="UltimaRevision" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-layer-group"></i><span>Do you have encapsulation?</span></div>
+            <div class="field-head"><i class="fas fa-layer-group"></i><span>@L["Do you have encapsulation?"]</span></div>
             <div class="choice-grid-3">
-                <button type="button" class="choice-card" data-enc="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">Yes</span></button>
-                <button type="button" class="choice-card" data-enc="No"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-xmark main"></i><span class="label">No</span></button>
-                <button type="button" class="choice-card" data-enc="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="choice-card" data-enc="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">@L["Yes"]</span></button>
+                <button type="button" class="choice-card" data-enc="No"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-xmark main"></i><span class="label">@L["No"]</span></button>
+                <button type="button" class="choice-card" data-enc="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-scroll"></i><span>Is there insulation?</span></div>
+            <div class="field-head"><i class="fas fa-scroll"></i><span>@L["Is there insulation?"]</span></div>
             <div class="choice-grid-3">
-                <button type="button" class="choice-card" data-ins="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">Yes</span></button>
-                <button type="button" class="choice-card" data-ins="No"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-xmark main"></i><span class="label">No</span></button>
-                <button type="button" class="choice-card" data-ins="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="choice-card" data-ins="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">@L["Yes"]</span></button>
+                <button type="button" class="choice-card" data-ins="No"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-xmark main"></i><span class="label">@L["No"]</span></button>
+                <button type="button" class="choice-card" data-ins="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-droplet"></i><span>Ground vapor barrier</span></div>
+            <div class="field-head"><i class="fas fa-droplet"></i><span>@L["Ground vapor barrier"]</span></div>
             <div class="choice-grid-3">
-                <button type="button" class="choice-card" data-vap="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">Yes</span></button>
-                <button type="button" class="choice-card" data-vap="No"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-xmark main"></i><span class="label">No</span></button>
-                <button type="button" class="choice-card" data-vap="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="choice-card" data-vap="Yes"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-check main"></i><span class="label">@L["Yes"]</span></button>
+                <button type="button" class="choice-card" data-vap="No"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-xmark main"></i><span class="label">@L["No"]</span></button>
+                <button type="button" class="choice-card" data-vap="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-door-open"></i><span>Access type</span></div>
+            <div class="field-head"><i class="fas fa-door-open"></i><span>@L["Access type"]</span></div>
             <div class="access-grid">
-                <button type="button" class="choice-card" data-access="InteriorHatch"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-square main"></i><span class="label">Interior hatch</span></button>
-                <button type="button" class="choice-card" data-access="ExteriorDoor"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-door-closed main"></i><span class="label">Exterior door</span></button>
-                <button type="button" class="choice-card" data-access="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="choice-card" data-access="InteriorHatch"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-square main"></i><span class="label">@L["Interior hatch"]</span></button>
+                <button type="button" class="choice-card" data-access="ExteriorDoor"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-door-closed main"></i><span class="label">@L["Exterior door"]</span></button>
+                <button type="button" class="choice-card" data-access="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>Last crawlspace check</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Last crawlspace check"]</span></div>
             <div class="segment-row">
-                <button type="button" class="segment-btn" data-last="Within1Year"><i class="fas fa-calendar"></i> Within 1 year</button>
-                <button type="button" class="segment-btn" data-last="OneToTwoYears"><i class="fas fa-calendar"></i> 1–2 years</button>
-                <button type="button" class="segment-btn" data-last="TwoPlusYears"><i class="fas fa-calendar"></i> 2+ years</button>
-                <button type="button" class="segment-btn" data-last="NotSure"><i class="fas fa-circle-question"></i> Not sure</button>
+                <button type="button" class="segment-btn" data-last="Within1Year"><i class="fas fa-calendar"></i> @L["Within 1 year"]</button>
+                <button type="button" class="segment-btn" data-last="OneToTwoYears"><i class="fas fa-calendar"></i> @L["1–2 years"]</button>
+                <button type="button" class="segment-btn" data-last="TwoPlusYears"><i class="fas fa-calendar"></i> @L["2+ years"]</button>
+                <button type="button" class="segment-btn" data-last="NotSure"><i class="fas fa-circle-question"></i> @L["Not sure"]</button>
             </div>
         </div>
 
         <div class="info-box-blue">
             <i class="fas fa-circle-info"></i>
-            <span>Annual checks help catch moisture, air leaks, and structural issues early.</span>
+            <span>@L["Annual checks help catch moisture, air leaks, and structural issues early."]</span>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">

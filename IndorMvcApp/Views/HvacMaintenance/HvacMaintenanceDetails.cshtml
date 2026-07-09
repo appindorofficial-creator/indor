@@ -2,7 +2,7 @@
 @using System.Globalization
 @using IndorMvcApp.Validation
 @{
-    ViewData["Title"] = "Tell us about your system - INDOR";
+    ViewData["Title"] = L["Tell us about your system - INDOR"];
 var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("HvacMaintenanceService", "HvacMaintenance", new { id = Model.HomeCarePriorityId });
@@ -12,8 +12,8 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your system</h1>
-    <p class="page-lead" style="margin-bottom:16px;">A few details help us prepare the right tune-up.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your system"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us prepare the right tune-up."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -22,9 +22,9 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         <input type="hidden" asp-for="HomeCarePriorityId" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-barcode"></i><span>AC serial number</span></div>
+            <div class="field-head"><i class="fas fa-barcode"></i><span>@L["AC serial number"]</span></div>
             <input asp-for="NumeroSerieAc"
-                   placeholder="e.g. M123456789"
+                   placeholder="@L["e.g. M123456789"]"
                    id="serialInput"
                    maxlength="@EquipmentSerialNumberAttribute.MaxLength"
                    autocomplete="off"
@@ -32,7 +32,7 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
             <span class="field-hint">@EquipmentSerialNumberAttribute.HintText</span>
             <span asp-validation-for="NumeroSerieAc" class="text-danger"></span>
             <div class="toggle-row" style="margin-top:12px;">
-                <span><i class="fas fa-circle-question"></i> I don't know the serial number</span>
+                <span><i class="fas fa-circle-question"></i> @L["I don't know the serial number"]</span>
                 <label class="toggle-switch">
                     <input asp-for="SerialDesconocido" type="checkbox" id="serialToggle" />
                     <span class="toggle-slider"></span>
@@ -41,14 +41,14 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-camera"></i><span>Photo of model / serial label</span></div>
+            <div class="field-head"><i class="fas fa-camera"></i><span>@L["Photo of model / serial label"]</span></div>
             <div class="upload-drop-wrap">
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
                        accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
                 <label class="upload-drop" id="photoDropzone" for="photoInput">
                     <i class="fas fa-camera"></i>
-                    <strong>Add photo</strong>
-                    <span>JPG, PNG, or HEIC — up to 10 MB</span>
+                    <strong>@L["Add photo"]</strong>
+                    <span>@L["JPG, PNG, or HEIC — up to 10 MB"]</span>
                 </label>
             </div>
             <div class="upload-selected-list" id="photoSelectedList" hidden></div>
@@ -67,17 +67,17 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>Last maintenance</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Last maintenance"]</span></div>
             <input asp-for="FechaUltimoMantenimiento"
                    type="date"
                    id="maintenanceInput"
                    class="form-input"
                    max="@maxMaintenanceDate"
-                   aria-label="Last maintenance date" />
-            <span class="field-hint">Select the date of your last tune-up, if you know it.</span>
+                   aria-label="@L["Last maintenance date"]" />
+            <span class="field-hint">@L["Select the date of your last tune-up, if you know it."]</span>
             <span asp-validation-for="FechaUltimoMantenimiento" class="text-danger"></span>
             <div class="toggle-row" style="margin-top:12px;">
-                <span>Not sure</span>
+                <span>@L["Not sure"]</span>
                 <label class="toggle-switch">
                     <input asp-for="UltimoMantenimientoDesconocido" type="checkbox" id="maintenanceToggle" />
                     <span class="toggle-slider"></span>
@@ -86,17 +86,17 @@ var maxMaintenanceDate = DateTime.Today.ToString("yyyy-MM-dd", CultureInfo.Invar
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-filter"></i><span>Filter size (optional)</span></div>
-            <input asp-for="TamanioFiltro" placeholder="16x20x1 or I don't know" />
+            <div class="field-head"><i class="fas fa-filter"></i><span>@L["Filter size (optional)"]</span></div>
+            <input asp-for="TamanioFiltro" placeholder="@L["16x20x1 or I don't know"]" />
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes for technician</span></div>
-            <textarea asp-for="NotasTecnico" placeholder="Tell us anything helpful (e.g., weak cooling, strange noise, etc.)"></textarea>
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes for technician"]</span></div>
+            <textarea asp-for="NotasTecnico" placeholder="@L["Tell us anything helpful (e.g., weak cooling, strange noise, etc.)"]"></textarea>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar"></i> Continue <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-calendar"></i> @L["Continue"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 </div>

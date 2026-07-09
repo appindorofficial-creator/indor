@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadReportFilesViewModel
 @{
-    ViewData["Title"] = "Upload Files - INDOR PRO";
+    ViewData["Title"] = L["Upload Files - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
 }
@@ -12,7 +12,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Upload Files &amp; Photos</h1>
+            <h1>@L["Upload Files &amp; Photos"]</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -24,10 +24,10 @@
         @Html.AntiForgeryToken()
 
         <section class="prv-pro-upload-report-section">
-            <h3>Photos</h3>
+            <h3>@L["Photos"]</h3>
             <div class="prv-pro-upload-photo-grid">
                 <label class="prv-pro-upload-slot">
-                    <span>Before</span>
+                    <span>@L["Before"]</span>
                     <input type="file" name="photoBefore" accept=".jpg,.jpeg,.png" />
                     @if (!string.IsNullOrWhiteSpace(Model.PhotoSlots.FirstOrDefault(s => s.Slot == "Before")?.FileName))
                     {
@@ -35,23 +35,23 @@
                     }
                 </label>
                 <label class="prv-pro-upload-slot">
-                    <span>During</span>
+                    <span>@L["During"]</span>
                     <input type="file" name="photoDuring" accept=".jpg,.jpeg,.png" />
                 </label>
                 <label class="prv-pro-upload-slot">
-                    <span>After</span>
+                    <span>@L["After"]</span>
                     <input type="file" name="photoAfter" accept=".jpg,.jpeg,.png" />
                 </label>
                 <label class="prv-pro-upload-slot">
-                    <span>Final Result</span>
+                    <span>@L["Final Result"]</span>
                     <input type="file" name="photoFinal" accept=".jpg,.jpeg,.png" />
                 </label>
             </div>
-            <span class="prv-pro-upload-badge">Before/After Required</span>
+            <span class="prv-pro-upload-badge">@L["Before/After Required"]</span>
         </section>
 
         <section class="prv-pro-upload-report-section">
-            <h3>Documents</h3>
+            <h3>@L["Documents"]</h3>
             @foreach (var doc in Model.DocumentSlots)
             {
                 var inputName = doc.Slot switch
@@ -76,19 +76,19 @@
 
         <section class="prv-pro-upload-dropzone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <strong>Add photos or files</strong>
-            <small>JPG, PNG, PDF up to 10MB</small>
+            <strong>@L["Add photos or files"]</strong>
+            <small>@L["JPG, PNG, PDF up to 10MB"]</small>
             <input type="file" name="generalFiles" multiple accept=".pdf,.jpg,.jpeg,.png" class="prv-pro-upload-dropzone-input" />
         </section>
 
         <label class="prv-pro-create-toggle">
-            <div><i class="fas fa-house"></i><div><strong>Attach to House Facts</strong><small>Attach this report and files to the property's House Facts.</small></div></div>
+            <div><i class="fas fa-house"></i><div><strong>@L["Attach to House Facts"]</strong><small>@L["Attach this report and files to the property's House Facts."]</small></div></div>
             <input type="checkbox" name="AttachToHouseFacts" value="true" @(Model.AttachToHouseFacts ? "checked" : "") />
         </label>
 
         <div class="prv-pro-upload-report-actions">
-            <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+            <a asp-controller="Proveedor" asp-action="UploadReportType" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>
 </div>

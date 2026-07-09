@@ -11,7 +11,7 @@
 {
     <div class="hf-empty-state">
         <div><i class="fas fa-file-circle-question"></i></div>
-        <div>No House Fact data is available yet for this property.</div>
+        <div>@L["No House Fact data is available yet for this property."]</div>
     </div>
 }
 else if (compact)
@@ -50,12 +50,12 @@ else
 
         <div class="hf-screen hf-screen-detail" data-hf-screen="detail" hidden>
             <div class="hf-detail-top">
-                <button type="button" class="hf-detail-back" data-hf-back-overview aria-label="Back to overview">
+                <button type="button" class="hf-detail-back" data-hf-back-overview aria-label="@L["Back to overview"]">
                     <i class="fas fa-arrow-left"></i>
                 </button>
                 <div class="hf-detail-title-wrap">
-                    <div class="hf-detail-kicker">House Facts</div>
-                    <h2 class="hf-detail-title" data-hf-detail-title>Section details</h2>
+                    <div class="hf-detail-kicker">@L["House Facts"]</div>
+                    <h2 class="hf-detail-title" data-hf-detail-title>@L["Section details"]</h2>
                 </div>
             </div>
 
@@ -80,7 +80,7 @@ else
                             <div class="hf-accordion-meta">
                                 @if (factSection.ItemCount > 0)
                                 {
-                                    <span class="hf-accordion-count">@factSection.ItemCount items</span>
+                                    <span class="hf-accordion-count">@factSection.ItemCount @L["items"]</span>
                                 }
                                 <i class="fas fa-chevron-down hf-accordion-chevron"></i>
                             </div>
@@ -99,27 +99,27 @@ else
         @if (propiedadId.HasValue)
         {
             <section class="hf-property-management">
-                <h3 class="hf-property-management-title">Property Management</h3>
-                <p class="hf-property-management-sub">Tools to help you manage your property with ease.</p>
+                <h3 class="hf-property-management-title">@L["Property Management"]</h3>
+                <p class="hf-property-management-sub">@L["Tools to help you manage your property with ease."]</p>
                 <div class="hf-mgmt-grid">
                     <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-clock-rotate-left"></i></span>
-                        <span class="hf-mgmt-copy"><strong>History</strong><span>View property history &amp; changes</span></span>
+                        <span class="hf-mgmt-copy"><strong>@L["History"]</strong><span>@L["View property history & changes"]</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
                     <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-file-lines"></i></span>
-                        <span class="hf-mgmt-copy"><strong>Documents</strong><span>Reports &amp; disclosures</span></span>
+                        <span class="hf-mgmt-copy"><strong>@L["Documents"]</strong><span>@L["Reports & disclosures"]</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
                     <a asp-controller="MyHome" asp-action="Providers" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-user-group"></i></span>
-                        <span class="hf-mgmt-copy"><strong>Providers</strong><span>Your saved service providers</span></span>
+                        <span class="hf-mgmt-copy"><strong>@L["Providers"]</strong><span>@L["Your saved service providers"]</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
                     <a asp-controller="MyHome" asp-action="Maintenance" asp-route-id="@propiedadId.Value" asp-route-from="housefacts" class="hf-mgmt-card">
                         <span class="hf-mgmt-icon"><i class="fas fa-clipboard-check"></i></span>
-                        <span class="hf-mgmt-copy"><strong>Maintenance</strong><span>Track tasks &amp; requests</span></span>
+                        <span class="hf-mgmt-copy"><strong>@L["Maintenance"]</strong><span>@L["Track tasks & requests"]</span></span>
                         <i class="fas fa-chevron-right"></i>
                     </a>
                 </div>
@@ -129,7 +129,7 @@ else
         @if (showJson && !string.IsNullOrWhiteSpace(Model.RawJsonPretty))
         {
             <details class="hf-json-panel hf-json-panel-app">
-                <summary><i class="fas fa-code"></i> View complete JSON response</summary>
+                <summary><i class="fas fa-code"></i> @L["View complete JSON response"]</summary>
                 <pre class="hf-json-block">@Model.RawJsonPretty</pre>
             </details>
         }

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestCancelViewModel
 @{
-    ViewData["Title"] = "Cancel request";
+    ViewData["Title"] = L["Cancel request"];
     Layout = null;
 }
 <!DOCTYPE html>
@@ -8,17 +8,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Cancel request - INDOR</title>
+    <title>@L["Cancel request"] - INDOR</title>
     @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-cancel.css" asp-append-version="true" />
 </head>
 <body class="nr-cancel-page">
     <div class="nr-cancel-shell">
         <header class="nr-cancel-top">
-            <a href="@Model.BackUrl" class="nr-cancel-nav-btn" aria-label="Back">
+            <a href="@Model.BackUrl" class="nr-cancel-nav-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <strong class="nr-cancel-top-title">Cancel request</strong>
+            <strong class="nr-cancel-top-title">@L["Cancel request"]</strong>
             <span class="nr-cancel-nav-btn nr-cancel-nav-btn--spacer" aria-hidden="true"></span>
         </header>
 
@@ -26,8 +26,8 @@
             <div class="nr-cancel-warning" aria-hidden="true">
                 <i class="fas fa-triangle-exclamation"></i>
             </div>
-            <h1>Cancel this request?</h1>
-            <p>Your request will no longer be visible and you will stop receiving new offers.</p>
+            <h1>@L["Cancel this request?"]</h1>
+            <p>@L["Your request will no longer be visible and you will stop receiving new offers."]</p>
         </section>
 
         <article class="nr-cancel-summary">
@@ -74,10 +74,10 @@
             <input type="hidden" asp-for="PropiedadId" />
 
             <div class="nr-cancel-field">
-                <label for="CancelReasonCode">Reason <span>(optional)</span></label>
+                <label for="CancelReasonCode">@L["Reason"] <span>@L["(optional)"]</span></label>
                 <div class="nr-cancel-select-wrap">
                     <select asp-for="CancelReasonCode" class="nr-cancel-select" id="CancelReasonCode">
-                        <option value="">Select a reason</option>
+                        <option value="">@L["Select a reason"]</option>
                         @foreach (var reason in Model.ReasonOptions)
                         {
                             <option value="@reason.Value">@reason.Label</option>
@@ -88,18 +88,18 @@
             </div>
 
             <div class="nr-cancel-field">
-                <label for="CancelNote">Add note <span>(optional)</span></label>
-                <textarea asp-for="CancelNote" class="nr-cancel-textarea" id="CancelNote" maxlength="500" placeholder="Add note"></textarea>
+                <label for="CancelNote">@L["Add note"] <span>@L["(optional)"]</span></label>
+                <textarea asp-for="CancelNote" class="nr-cancel-textarea" id="CancelNote" maxlength="500" placeholder="@L["Add note"]"></textarea>
             </div>
 
-            <p class="nr-cancel-hint">You can create a new request anytime.</p>
+            <p class="nr-cancel-hint">@L["You can create a new request anytime."]</p>
 
             <div class="nr-cancel-actions">
                 <button type="submit" class="nr-cancel-submit">
                     <i class="far fa-trash-can" aria-hidden="true"></i>
-                    <span>Cancel request</span>
+                    <span>@L["Cancel request"]</span>
                 </button>
-                <a href="@Model.KeepUrl" class="nr-cancel-keep">Keep request</a>
+                <a href="@Model.KeepUrl" class="nr-cancel-keep">@L["Keep request"]</a>
             </div>
         </form>
     </div>

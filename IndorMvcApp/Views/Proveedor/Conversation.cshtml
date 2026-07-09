@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProConversationViewModel
 @{
-    ViewData["Title"] = "Conversation - INDOR PRO";
+    ViewData["Title"] = L["Conversation - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
 }
@@ -12,7 +12,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="Messages" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Conversation</h1>
+            <h1>@L["Conversation"]</h1>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
     </header>
@@ -23,15 +23,15 @@
             <strong>@Model.CustomerName</strong>
             @if (Model.IsCustomerOnline)
             {
-                <span class="prv-pro-online"><i></i> Online</span>
+                <span class="prv-pro-online"><i></i> @L["Online"]</span>
             }
         </div>
         <div class="prv-pro-conversation-contact-actions">
             @if (!string.IsNullOrEmpty(Model.CustomerPhone))
             {
-                <a href="tel:@Model.CustomerPhone" class="prv-pro-icon-btn" title="Call"><i class="fas fa-phone"></i></a>
+                <a href="tel:@Model.CustomerPhone" class="prv-pro-icon-btn" title="@L["Call"]"><i class="fas fa-phone"></i></a>
             }
-            <button type="button" class="prv-pro-icon-btn" title="Info"><i class="fas fa-circle-info"></i></button>
+            <button type="button" class="prv-pro-icon-btn" title="@L["Info"]"><i class="fas fa-circle-info"></i></button>
         </div>
     </section>
 
@@ -40,7 +40,7 @@
         {
             <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-context-card">
                 <i class="fas fa-briefcase"></i>
-                <span>View Job</span>
+                <span>@L["View Job"]</span>
                 <strong>#@Model.JobCode</strong>
                 <small>@Model.JobTitle</small>
             </a>
@@ -49,7 +49,7 @@
         {
             <div class="prv-pro-context-card prv-pro-context-card--static">
                 <i class="fas fa-house"></i>
-                <span>View Property</span>
+                <span>@L["View Property"]</span>
                 <small>@Model.PropertyAddress</small>
             </div>
         }
@@ -57,7 +57,7 @@
         {
             <a asp-controller="Proveedor" asp-action="EditEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-context-card">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <span>View Estimate</span>
+                <span>@L["View Estimate"]</span>
                 <strong>#@Model.EstimateCode</strong>
                 <small>@Model.EstimateAmountLabel</small>
             </a>
@@ -65,7 +65,7 @@
     </div>
 
     <section class="prv-pro-chat-history">
-        <div class="prv-pro-chat-date">Today</div>
+        <div class="prv-pro-chat-date">@L["Today"]</div>
         @foreach (var msg in Model.Messages)
         {
             <div class="prv-pro-chat-bubble prv-pro-chat-bubble--@(msg.SenderType == "Provider" ? "out" : "in")">
@@ -83,24 +83,24 @@
 
     <div class="prv-pro-chat-quick-bar">
         <a asp-controller="Proveedor" asp-action="MessageQuickActions" asp-route-id="@Model.ConversationId" class="prv-pro-chat-quick-item">
-            <i class="fas fa-paper-plane"></i><span>Send update</span>
+            <i class="fas fa-paper-plane"></i><span>@L["Send update"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="MessageQuickActions" asp-route-id="@Model.ConversationId" asp-route-action="estimate" class="prv-pro-chat-quick-item">
-            <i class="fas fa-file-invoice-dollar"></i><span>Share estimate</span>
+            <i class="fas fa-file-invoice-dollar"></i><span>@L["Share estimate"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-chat-quick-item">
-            <i class="fas fa-camera"></i><span>Upload photos</span>
+            <i class="fas fa-camera"></i><span>@L["Upload photos"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="MessageQuickActions" asp-route-id="@Model.ConversationId" class="prv-pro-chat-quick-item">
-            <i class="fas fa-ellipsis"></i><span>More actions</span>
+            <i class="fas fa-ellipsis"></i><span>@L["More actions"]</span>
         </a>
     </div>
 
     <form method="post" asp-controller="Proveedor" asp-action="Conversation" class="prv-pro-chat-compose">
         @Html.AntiForgeryToken()
         <input type="hidden" name="ConversationId" value="@Model.ConversationId" />
-        <button type="button" class="prv-pro-chat-attach" title="Attach"><i class="fas fa-plus"></i></button>
-        <input type="text" name="Body" placeholder="Write a message..." required />
-        <button type="submit" class="prv-pro-chat-send" title="Send"><i class="fas fa-paper-plane"></i></button>
+        <button type="button" class="prv-pro-chat-attach" title="@L["Attach"]"><i class="fas fa-plus"></i></button>
+        <input type="text" name="Body" placeholder="@L["Write a message..."]" required />
+        <button type="submit" class="prv-pro-chat-send" title="@L["Send"]"><i class="fas fa-paper-plane"></i></button>
     </form>
 </div>

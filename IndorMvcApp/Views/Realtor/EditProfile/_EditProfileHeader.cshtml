@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RealtorEditProfileWizardViewModel
 
 <header class="rl-ep-header">
-    <a asp-controller="@Model.BackController" asp-action="@Model.BackAction" class="rl-ep-back" aria-label="Back">
+    <a asp-controller="@Model.BackController" asp-action="@Model.BackAction" class="rl-ep-back" aria-label="@L["Back"]">
         <i class="fas fa-chevron-left"></i>
     </a>
     <a asp-controller="Realtor" asp-action="Dashboard" class="rl-ep-logo">
@@ -25,8 +25,8 @@
     {
         <p class="rl-ep-subtitle">@Model.Subtitle</p>
     }
-    <p class="rl-ep-step-label">Step @Model.DisplayStep of @Model.TotalSteps</p>
-    <div class="rl-ep-stepper" aria-label="Edit profile progress">
+    <p class="rl-ep-step-label">@L.T("Step {0} of {1}", Model.DisplayStep, Model.TotalSteps)</p>
+    <div class="rl-ep-stepper" aria-label="@L["Edit profile progress"]">
         @for (var i = 1; i <= Model.TotalSteps; i++)
         {
             <span class="rl-ep-step-segment @(i <= Model.DisplayStep ? "is-active" : "")"></span>

@@ -4,9 +4,9 @@
     <div class="rl-dash-shell">
         @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
         {
-            Title = "Schedule",
-            Subtitle = "Stay on top of maintenance and home tasks.",
-            BadgeLabel = "Free",
+            Title = L["Schedule"],
+            Subtitle = L["Stay on top of maintenance and home tasks."],
+            BadgeLabel = L["Free"],
             BadgeIconClass = "fa-gift"
         })
         @if (TempData["ScheduleSaved"] is string scheduleMsg)
@@ -17,16 +17,16 @@
     @if (Model.QuickAddItems.Count > 0)
     {
         <div class="sch-quick-head">
-            <span class="sch-quick-label">Quick add</span>
+            <span class="sch-quick-label">@L["Quick add"]</span>
             <button type="button" class="sch-link-btn nav-jump" data-target="section-services">
-                Add common reminders
+                @L["Add common reminders"]
             </button>
         </div>
         <div class="sch-quick-grid">
             @foreach (var quick in Model.QuickAddItems)
             {
                 <div class="sch-quick-card">
-                    <a href="@quick.Url" class="sch-quick-tap" aria-label="Add @quick.Label reminder">
+                    <a href="@quick.Url" class="sch-quick-tap" aria-label="@L.T("Add {0} reminder", quick.Label)">
                         <span class="sch-quick-visual">
                             <span class="sch-quick-icon @quick.ToneClass @(string.IsNullOrWhiteSpace(quick.ImageUrl) ? "" : "has-image")">
                                 @if (!string.IsNullOrWhiteSpace(quick.ImageUrl))
@@ -50,10 +50,10 @@
     <div class="sch-coming-head">
         <span class="sch-coming-label">
             <i class="far fa-calendar"></i>
-            Coming up
+            @L["Coming up"]
         </span>
         <a href="#section-schedule" class="sch-link-btn sch-link-inline">
-            View calendar
+            @L["View calendar"]
             <i class="fas fa-chevron-right"></i>
         </a>
     </div>
@@ -62,8 +62,8 @@
     {
         <div class="sch-empty">
             <img class="sch-empty-art" src="~/images/schedule/schedule-empty-calendar.png" alt="" loading="lazy" decoding="async" asp-append-version="true" />
-            <p>No reminders yet.</p>
-            <small>Add trash, lawn, AC, filter, or gutter reminders using Quick add above.</small>
+            <p>@L["No reminders yet."]</p>
+            <small>@L["Add trash, lawn, AC, filter, or gutter reminders using Quick add above."]</small>
         </div>
     }
     else

@@ -11,9 +11,9 @@
 <div class="rl-prop-summary-card">
     <img src="@(Model.PhotoUrl ?? "/welcome-house.png")" alt="" />
     <div>
-        <span>Property</span>
+        <span>@L["Property"]</span>
         <strong>@Model.PropertyDisplay</strong>
-        <span>File Type</span>
+        <span>@L["File Type"]</span>
         <strong>@Model.FilePhaseLabel</strong>
     </div>
 </div>
@@ -27,7 +27,7 @@
         <div class="rl-error-banner" role="alert" id="propFileAddItemsFormErrors">
             <i class="fas fa-circle-exclamation"></i>
             <div>
-                <strong>Please fix the following to continue:</strong>
+                <strong>@L["Please fix the following to continue:"]</strong>
                 <ul class="rl-error-list">
                     @foreach (var msg in formErrors)
                     {
@@ -38,7 +38,7 @@
         </div>
     }
 
-    <h2 class="rl-invite-section-title">Select what to add <span class="rl-required" aria-hidden="true">*</span></h2>
+    <h2 class="rl-invite-section-title">@L["Select what to add"] <span class="rl-required" aria-hidden="true">*</span></h2>
     <div class="rl-category-grid">
         @foreach (var cat in Model.Categories)
         {
@@ -54,13 +54,13 @@
 
     <div class="rl-info-box">
         <i class="fas fa-circle-info"></i>
-        <p>You can add these now and add more later from inside the file.</p>
+        <p>@L["You can add these now and add more later from inside the file."]</p>
     </div>
 </form>
 
 <div class="rl-invite-actions">
-    <a asp-action="Details" class="rl-invite-cancel">Back</a>
-    <button type="submit" form="addItemsForm" class="ob-btn ob-btn-primary">Next</button>
+    <a asp-action="Details" class="rl-invite-cancel">@L["Back"]</a>
+    <button type="submit" form="addItemsForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
 </div>
 
 @section Scripts {

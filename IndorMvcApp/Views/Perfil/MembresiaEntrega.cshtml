@@ -2,7 +2,6 @@
     var signup = (IndorMvcApp.ViewModels.MembershipSignupState)ViewBag.Signup!;
     ViewData["MembershipTotalSteps"] = 6;
     var deliveryDate = signup.FirstDeliveryDate ?? DateTime.Today.AddDays(30);
-    var displayDate = deliveryDate.ToString("MMMM d");
 }
 
 <form method="post" asp-action="MembresiaEntrega">
@@ -12,7 +11,7 @@
         <div class="mem-wizard-row">
             <span class="mw-icon"><i class="fas fa-house"></i></span>
             <div class="mw-body">
-                <strong>Shipping address</strong>
+                <strong>@L["Shipping address"]</strong>
                 <textarea class="mw-value" name="shippingAddress" rows="2" placeholder="123 Main Street&#10;Austin, TX 78701" required>@signup.ShippingAddress</textarea>
             </div>
             <i class="fas fa-chevron-right mw-chevron"></i>
@@ -20,15 +19,15 @@
         <div class="mem-wizard-row">
             <span class="mw-icon"><i class="fas fa-rotate"></i></span>
             <div class="mw-body">
-                <strong>Delivery cycle</strong>
-                <input class="mw-value blue" type="text" name="deliveryCycle" value="@signup.DeliveryCycle" />
+                <strong>@L["Delivery cycle"]</strong>
+                <input class="mw-value blue" type="text" name="deliveryCycle" value="@(signup.DeliveryCycle ?? L["Every 3 months"])" />
             </div>
             <i class="fas fa-chevron-right mw-chevron"></i>
         </div>
         <div class="mem-wizard-row">
             <span class="mw-icon"><i class="far fa-calendar"></i></span>
             <div class="mw-body">
-                <strong>First delivery date</strong>
+                <strong>@L["First delivery date"]</strong>
                 <input class="mw-value blue" type="date" name="firstDeliveryDate" value="@deliveryDate.ToString("yyyy-MM-dd")" />
             </div>
             <i class="fas fa-chevron-right mw-chevron"></i>
@@ -36,23 +35,23 @@
     </div>
 
     <div class="mem-delivery-card reminder-toggles">
-        <div style="padding:12px 0 4px;"><strong style="font-size:.9rem;">Reminder preferences</strong></div>
+        <div style="padding:12px 0 4px;"><strong style="font-size:.9rem;">@L["Reminder preferences"]</strong></div>
         <div class="rt-row">
-            <span>Shipment reminder</span>
+            <span>@L["Shipment reminder"]</span>
             <label class="mem-switch">
                 <input type="checkbox" name="shipmentReminder" value="true" @(signup.ShipmentReminder ? "checked" : "") />
                 <span class="slider"></span>
             </label>
         </div>
         <div class="rt-row">
-            <span>Replace filter reminder</span>
+            <span>@L["Replace filter reminder"]</span>
             <label class="mem-switch">
                 <input type="checkbox" name="replaceFilterReminder" value="true" @(signup.ReplaceFilterReminder ? "checked" : "") />
                 <span class="slider"></span>
             </label>
         </div>
         <div class="rt-row">
-            <span>Low inventory reminder</span>
+            <span>@L["Low inventory reminder"]</span>
             <label class="mem-switch">
                 <input type="checkbox" name="lowInventoryReminder" value="true" @(signup.LowInventoryReminder ? "checked" : "") />
                 <span class="slider"></span>
@@ -62,10 +61,10 @@
 
     <div class="mem-info-banner">
         <i class="fas fa-circle-info"></i>
-        <span>Your first reminder will arrive 1 week before delivery.</span>
+        <span>@L["Your first reminder will arrive 1 week before delivery."]</span>
     </div>
 
     <div class="mem-sticky-footer">
-        <button type="submit" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="pf-btn" style="width:100%;">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
     </div>
 </form>

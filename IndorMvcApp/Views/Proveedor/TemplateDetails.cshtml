@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ReportTemplateView
 @{
-    ViewData["Title"] = "Template Details - INDOR PRO";
+    ViewData["Title"] = L["Template Details - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "templates-flow.css";
@@ -11,12 +11,12 @@
     @await Html.PartialAsync("_TemplatesHead")
 
     <section class="tpl-head">
-        <h1>Template Details</h1>
-        <p>Review sections included in this template.</p>
+        <h1>@L["Template Details"]</h1>
+        <p>@L["Review sections included in this template."]</p>
     </section>
 
     <div class="tpl-subrow">
-        <span class="tpl-step">Step 2 of 3</span>
+        <span class="tpl-step">@L["Step 2 of 3"]</span>
     </div>
 
     <section class="tpl-selected">
@@ -31,7 +31,7 @@
         }
     </section>
 
-    <h2 class="tpl-section">Included Sections</h2>
+    <h2 class="tpl-section">@L["Included Sections"]</h2>
     <div class="tpl-sections">
         @foreach (var s in Model.Sections)
         {
@@ -43,7 +43,7 @@
         }
     </div>
 
-    <h2 class="tpl-section">Options</h2>
+    <h2 class="tpl-section">@L["Options"]</h2>
     <div class="tpl-options">
         @foreach (var (icon, label) in options)
         {
@@ -56,7 +56,7 @@
     </div>
 
     <div class="tpl-actions">
-        <a asp-controller="Proveedor" asp-action="TemplateReady" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--primary">Use Template</a>
-        <a asp-controller="Proveedor" asp-action="Templates" class="tpl-btn-text">Back</a>
+        <a asp-controller="Proveedor" asp-action="TemplateReady" asp-route-key="@Model.Key" class="tpl-btn tpl-btn--primary">@L["Use Template"]</a>
+        <a asp-controller="Proveedor" asp-action="Templates" class="tpl-btn-text">@L["Back"]</a>
     </div>
 </div>

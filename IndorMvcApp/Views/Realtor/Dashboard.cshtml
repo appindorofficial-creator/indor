@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorHomeViewModel
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = L["Home"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "home";
 }
@@ -19,7 +19,7 @@
                 <span class="rl-home-avatar rl-home-avatar--placeholder"><i class="fas fa-user"></i></span>
             }
             <div>
-                <h1>Hello @Model.DisplayName</h1>
+                <h1>@L.T("Hello {0}", Model.DisplayName)</h1>
                 <div class="rl-home-badge-row">
                     <span class="rl-dash-badge @(Model.IsVerified ? "is-verified" : null)">
                         <i class="fas @(Model.IsVerified ? "fa-circle-check" : "fa-star")"></i>
@@ -27,7 +27,7 @@
                     </span>
                     @if (!Model.IsVerified)
                     {
-                        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-verify-link">Verify profile <i class="fas fa-chevron-right"></i></a>
+                        <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-verify-link">@L["Verify profile"] <i class="fas fa-chevron-right"></i></a>
                     }
                 </div>
             </div>
@@ -48,21 +48,21 @@
 
     <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-network-banner rl-network-banner--home rl-network-banner--link">
         <div>
-            <strong>Grow with INDOR's Provider Network</strong>
-            <p>Connect with trusted inspectors, contractors and more.</p>
-            <span class="rl-network-btn">Browse Network <i class="fas fa-chevron-right"></i></span>
+            <strong>@L["Grow with INDOR's Provider Network"]</strong>
+            <p>@L["Connect with trusted inspectors, contractors and more."]</p>
+            <span class="rl-network-btn">@L["Browse Network"] <i class="fas fa-chevron-right"></i></span>
         </div>
         <span class="rl-network-icon" aria-hidden="true"><i class="fas fa-people-group"></i></span>
     </a>
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Active Property Files</h2>
-            <a asp-controller="Realtor" asp-action="Files">View all <i class="fas fa-chevron-right"></i></a>
+            <h2>@L["Active Property Files"]</h2>
+            <a asp-controller="Realtor" asp-action="Files">@L["View all"] <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.PropertyFiles.Count == 0)
         {
-            <div class="rl-dash-empty">No property files yet.</div>
+            <div class="rl-dash-empty">@L["No property files yet."]</div>
         }
         else
         {
@@ -70,7 +70,7 @@
                 @foreach (var file in Model.PropertyFiles)
                 {
                     <article class="rl-premium-card rl-premium-card--file">
-                        <button type="button" class="rl-card-menu" aria-label="Options"><i class="fas fa-ellipsis-vertical"></i></button>
+                        <button type="button" class="rl-card-menu" aria-label="@L["Options"]"><i class="fas fa-ellipsis-vertical"></i></button>
                         <div class="rl-premium-card-media">
                             <img src="@file.PhotoUrl" alt="" class="rl-premium-card-img" />
                             <span class="rl-card-image-badge rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusLabel</span>
@@ -95,12 +95,12 @@
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Pending Quotes</h2>
-            <a asp-controller="Realtor" asp-action="Quotes">View all <i class="fas fa-chevron-right"></i></a>
+            <h2>@L["Pending Quotes"]</h2>
+            <a asp-controller="Realtor" asp-action="Quotes">@L["View all"] <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.PendingQuotes.Count == 0)
         {
-            <div class="rl-dash-empty">No pending quote requests.</div>
+            <div class="rl-dash-empty">@L["No pending quote requests."]</div>
         }
         else
         {
@@ -143,12 +143,12 @@
 
     <section class="rl-dash-section" id="shared-packages">
         <div class="rl-dash-section-head">
-            <h2>Shared Packages</h2>
-            <a asp-controller="Realtor" asp-action="Files" asp-route-filter="Shared">View all <i class="fas fa-chevron-right"></i></a>
+            <h2>@L["Shared Packages"]</h2>
+            <a asp-controller="Realtor" asp-action="Files" asp-route-filter="Shared">@L["View all"] <i class="fas fa-chevron-right"></i></a>
         </div>
         @if (Model.SharedPackages.Count == 0)
         {
-            <div class="rl-dash-empty">No shared packages yet.</div>
+            <div class="rl-dash-empty">@L["No shared packages yet."]</div>
         }
         else
         {
@@ -176,7 +176,7 @@
     <section class="rl-bottom-grid">
         <div class="rl-insights-card">
             <div class="rl-insights-head">
-                <span><i class="fas fa-lightbulb"></i> Smart Insights</span>
+                <span><i class="fas fa-lightbulb"></i> @L["Smart Insights"]</span>
             </div>
             <ul class="rl-insights-list">
                 @foreach (var insight in Model.Insights)

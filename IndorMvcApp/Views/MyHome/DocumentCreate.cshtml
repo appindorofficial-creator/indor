@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.MyHomeDocumentFormViewModel
 @{
-    ViewData["Title"] = "Upload Document";
+    ViewData["Title"] = L["Upload Document"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "documents";
@@ -30,24 +30,24 @@
     </style>
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Upload document</h1>
+    <h1 class="hf-title">@L["Upload document"]</h1>
 </div>
 <form asp-action="DocumentCreate" method="post" enctype="multipart/form-data" class="hf-document-form" id="documentCreateForm">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="PropiedadId" />
     <div asp-validation-summary="All" class="hf-validation-summary"></div>
-    <label asp-for="Category" class="hf-label">Category</label>
+    <label asp-for="Category" class="hf-label">@L["Category"]</label>
     <select asp-for="Category" class="hf-select" required>
         @foreach (var cat in IndorMvcApp.Services.MyHomeDisplayService.DocumentCategories)
         {
-            <option value="@cat">@cat</option>
+            <option value="@cat">@L[cat]</option>
         }
     </select>
     <span asp-validation-for="Category" class="hf-field-error"></span>
-    <label asp-for="Title" class="hf-label">Title</label>
-    <input asp-for="Title" class="hf-input" required maxlength="200" placeholder="Document title" />
+    <label asp-for="Title" class="hf-label">@L["Title"]</label>
+    <input asp-for="Title" class="hf-input" required maxlength="200" placeholder="@L["Document title"]" />
     <span asp-validation-for="Title" class="hf-field-error"></span>
-    <label for="documentFile" class="hf-label">File</label>
+    <label for="documentFile" class="hf-label">@L["File"]</label>
     <input type="file" name="file" id="documentFile" class="hf-input hf-file-input" accept="image/*,.pdf,.doc,.docx,.heic,.heif" required />
     <span id="documentFileName" class="hf-file-name" hidden></span>
     @if (ViewData.ModelState["file"]?.Errors.Count > 0)
@@ -56,7 +56,7 @@
     }
     <div class="hf-form-actions">
         <div class="hf-form-actions-inner">
-            <button type="submit" class="hf-btn hf-btn-primary">Save document</button>
+            <button type="submit" class="hf-btn hf-btn-primary">@L["Save document"]</button>
         </div>
     </div>
 </form>

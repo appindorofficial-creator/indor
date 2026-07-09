@@ -34,12 +34,12 @@
 <div class="prv-exam-stats">
     <div class="prv-exam-stat">
         <i class="fas fa-bullseye"></i>
-        <span>Passing score</span>
+        <span>@L["Passing score"]</span>
         <strong>@passing%</strong>
     </div>
     <div class="prv-exam-stat">
         <i class="fas fa-file-circle-question"></i>
-        <span>Questions</span>
+        <span>@L["Questions"]</span>
         <strong>@questionCount</strong>
     </div>
 </div>
@@ -58,7 +58,7 @@
             @for (var i = 0; i < q.Options.Count; i++)
             {
                 <div class="prv-exam-opt">
-                    <input type="radio" name="answers[@q.Number]" id="q@(q.Number)_@i" value="@i" @(selected == i.ToString() ? "checked" : "") required data-field-label="an answer" />
+                    <input type="radio" name="answers[@q.Number]" id="q@(q.Number)_@i" value="@i" @(selected == i.ToString() ? "checked" : "") required data-field-label="@L["an answer"]" />
                     <label for="q@(q.Number)_@i">@q.Options[i]</label>
                 </div>
             }
@@ -70,7 +70,7 @@
     </div>
     @if (examPage >= totalPages && !isHandyman)
     {
-        <p class="prv-exam-review-hint">Review your answers before submitting.</p>
+        <p class="prv-exam-review-hint">@L["Review your answers before submitting."]</p>
     }
     @if (examPage >= totalPages && (isHandyman || isConstruction))
     {
@@ -79,7 +79,7 @@
     <div class="prv-exam-nav">
         @if (!string.IsNullOrEmpty(Model.BackUrl))
         {
-            <a href="@Model.BackUrl" class="ob-btn ob-btn-outline">Back</a>
+            <a href="@Model.BackUrl" class="ob-btn ob-btn-outline">@L["Back"]</a>
         }
         <button type="submit" class="ob-btn ob-btn-primary">
             @(examPage >= totalPages ? "Submit exam" : "Continue exam")

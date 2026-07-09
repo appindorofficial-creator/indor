@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorMovingHelpReviewViewModel
 @{
-    ViewData["Title"] = "Review moving request";
+    ViewData["Title"] = L["Review moving request"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Review moving request</h1>
-        <p>Confirm the details before we schedule your team.</p>
+        <h1>@L["Review moving request"]</h1>
+        <p>@L["Confirm the details before we schedule your team."]</p>
     </section>
 
     <article class="pa-moving-review-card">
@@ -30,30 +30,30 @@
         <span class="pa-moving-availability-art"><i class="fas fa-truck-ramp-box"></i></span>
         <div>
             <strong>@Model.TeamEtaLabel</strong>
-            <small>Background checked • On-time • Host-ready</small>
+            <small>@L["Background checked • On-time • Host-ready"]</small>
         </div>
     </article>
 
     <article class="pa-moving-pricing-card">
         <div class="pa-moving-pricing-row">
-            <span><i class="fas fa-dollar-sign"></i> Estimated service visit</span>
+            <span><i class="fas fa-dollar-sign"></i> @L["Estimated service visit"]</span>
             <strong>@Model.EstimatedPrice</strong>
         </div>
         <button type="button" class="pa-moving-addon-row">
-            <span><i class="fas fa-box-open"></i> Extra supplies / staging help if needed</span>
+            <span><i class="fas fa-box-open"></i> @L["Extra supplies / staging help if needed"]</span>
             <i class="fas fa-chevron-right"></i>
         </button>
     </article>
 
     <div class="pa-moving-trust-grid">
-        <div><i class="fas fa-shield-halved"></i><span>Trusted team</span></div>
-        <div><i class="fas fa-user-check"></i><span>Background checked</span></div>
-        <div><i class="fas fa-bolt"></i><span>Fast response</span></div>
+        <div><i class="fas fa-shield-halved"></i><span>@L["Trusted team"]</span></div>
+        <div><i class="fas fa-user-check"></i><span>@L["Background checked"]</span></div>
+        <div><i class="fas fa-bolt"></i><span>@L["Fast response"]</span></div>
     </div>
 
     <div class="pa-moving-info-box">
         <i class="fas fa-circle-info"></i>
-        <p>Great for Airbnb turnovers, furniture resets, and rental home move support.</p>
+        <p>@L["Great for Airbnb turnovers, furniture resets, and rental home move support."]</p>
     </div>
 
     <form asp-action="MovingHelpReview" method="post">
@@ -74,7 +74,7 @@
             <input type="hidden" name="UpdateRecipientsList" value="@recipient" />
         }
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request moving help</button>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request moving help"]</button>
     </form>
-    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">Edit details</a>
+    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
 </div>

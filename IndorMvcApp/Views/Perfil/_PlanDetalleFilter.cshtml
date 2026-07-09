@@ -1,49 +1,50 @@
 @model IndorMvcApp.Models.PlanMembresia
 @{
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    var es = L.IsSpanish;
 }
 
 <div class="mem-filter-hero">
     <img class="filter-art" src="~/images/filter-plan-icon.svg" alt="" asp-append-version="true" />
     <div class="mf-body">
-        <h2>@Model.Nombre</h2>
-        <span class="mem-badge-star"><i class="fas fa-star"></i> Best for easy home care</span>
+        <h2>@Model.LocalizedNombre(es)</h2>
+        <span class="mem-badge-star"><i class="fas fa-star"></i> @L["Best for easy home care"]</span>
     </div>
-    <div class="plan-pick-price">@Model.PrecioMensual.ToString("C0", culture)<em>/mo</em></div>
+    <div class="plan-pick-price">@Model.PrecioMensual.ToString("C0", culture)<em>@L["/mo"]</em></div>
 </div>
 
 <div class="mem-benefit-card">
     <span class="mb-icon"><i class="fas fa-truck"></i></span>
     <div class="mb-text">
-        <strong>Filter delivery every 3 months</strong>
-        <small>We'll ship your filters on schedule so you never run out.</small>
+        <strong>@L["Filter delivery every 3 months"]</strong>
+        <small>@L["We'll ship your filters on schedule so you never run out."]</small>
     </div>
     <i class="fas fa-chevron-right mb-chevron"></i>
 </div>
 <div class="mem-benefit-card">
     <span class="mb-icon"><i class="fas fa-bell"></i></span>
     <div class="mb-text">
-        <strong>Maintenance reminders</strong>
-        <small>Get timely alerts to keep your home running smoothly.</small>
+        <strong>@L["Maintenance reminders"]</strong>
+        <small>@L["Get timely alerts to keep your home running smoothly."]</small>
     </div>
     <i class="fas fa-chevron-right mb-chevron"></i>
 </div>
 <div class="mem-benefit-card">
     <span class="mb-icon"><i class="fas fa-rotate-left"></i></span>
     <div class="mb-text">
-        <strong>Easy cancel anytime</strong>
-        <small>No long-term contracts. Cancel anytime with just a tap.</small>
+        <strong>@L["Easy cancel anytime"]</strong>
+        <small>@L["No long-term contracts. Cancel anytime with just a tap."]</small>
     </div>
     <i class="fas fa-chevron-right mb-chevron"></i>
 </div>
 
 <div class="mem-how-works">
-    <div class="hw-step"><i class="far fa-file-alt"></i>1. Add your filter details</div>
-    <div class="hw-step"><i class="fas fa-location-dot"></i>2. Set delivery address</div>
-    <div class="hw-step"><i class="fas fa-box"></i>3. Receive reminders and shipments</div>
+    <div class="hw-step"><i class="far fa-file-alt"></i>@L["1. Add your filter details"]</div>
+    <div class="hw-step"><i class="fas fa-location-dot"></i>@L["2. Set delivery address"]</div>
+    <div class="hw-step"><i class="fas fa-box"></i>@L["3. Receive reminders and shipments"]</div>
 </div>
 
 <div class="mem-sticky-footer">
-    <a asp-action="MembresiaFiltro" class="pf-btn" style="width:100%;">Set up my Filter Plan <i class="fas fa-chevron-right"></i></a>
-    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-shield-check"></i> Cancel anytime. No long-term contracts.</div>
+    <a asp-action="MembresiaFiltro" class="pf-btn" style="width:100%;">@L["Set up my Filter Plan"] <i class="fas fa-chevron-right"></i></a>
+    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-shield-check"></i> @L["Cancel anytime. No long-term contracts."]</div>
 </div>

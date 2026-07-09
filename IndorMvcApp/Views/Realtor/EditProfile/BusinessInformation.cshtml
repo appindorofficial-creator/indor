@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorBusinessInformationViewModel
 @{
-    ViewData["Title"] = "Business Information";
+    ViewData["Title"] = L["Business Information"];
     ViewBag.NavActive = "profile";
 }
 
@@ -16,8 +16,8 @@
 </div>
 
 <section class="rl-ep-photo-card">
-    <h2>Profile photo</h2>
-    <p>Upload a photo. It will appear on your realtor profile.</p>
+    <h2>@L["Profile photo"]</h2>
+    <p>@L["Upload a photo. It will appear on your realtor profile."]</p>
     <form asp-controller="Realtor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="rlBusinessPhotoForm">
         @Html.AntiForgeryToken()
         <div class="rl-ep-photo-row">
@@ -34,7 +34,7 @@
                         <img src="" alt="" class="rl-profile-photo" id="rlBusinessPhotoImg" hidden />
                     }
                 </div>
-                <button type="button" class="rl-profile-photo-edit" id="rlBusinessPhotoBtn" aria-label="Change profile photo" aria-haspopup="true" aria-expanded="false">
+                <button type="button" class="rl-profile-photo-edit" id="rlBusinessPhotoBtn" aria-label="@L["Change profile photo"]" aria-haspopup="true" aria-expanded="false">
                     <i class="fas fa-camera"></i>
                 </button>
             </div>
@@ -52,7 +52,7 @@
                 </div>
                 <input type="file" id="rlBusinessPhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
                 <input type="file" id="rlBusinessPhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
-                <small class="rl-ep-photo-hint">JPG, PNG or WEBP · Max 10 MB</small>
+                <small class="rl-ep-photo-hint">@L["JPG, PNG or WEBP · Max 10 MB"]</small>
             </div>
         </div>
     </form>
@@ -64,12 +64,12 @@
     </div>
     <div class="rl-ep-progress-copy">
         <strong>Profile @Model.ProfileCompletionPercent% complete</strong>
-        <p>Complete your business information to build trust and grow your visibility.</p>
+        <p>@L["Complete your business information to build trust and grow your visibility."]</p>
     </div>
     <img src="~/welcome-house.png" alt="" class="rl-ep-progress-art" />
 </section>
 
-<nav class="rl-ep-summary-list" aria-label="Business information fields">
+<nav class="rl-ep-summary-list" aria-label="@L["Business information fields"]">
     @foreach (var row in Model.Rows)
     {
         var rowClass = $"rl-ep-summary-row{(row.IsEmpty ? " is-empty" : "")}";
@@ -115,11 +115,11 @@
 
 <div class="rl-ep-privacy">
     <i class="fas fa-lock"></i>
-    <p>Your phone number stays private. Clients contact you through INDOR messaging.</p>
+    <p>@L["Your phone number stays private. Clients contact you through INDOR messaging."]</p>
 </div>
 
 <footer class="rl-ep-footer">
-    <a asp-controller="Realtor" asp-action="EditProfileContact" class="rl-ep-btn-primary">Continue</a>
+    <a asp-controller="Realtor" asp-action="EditProfileContact" class="rl-ep-btn-primary">@L["Continue"]</a>
 </footer>
 
 @section Scripts {

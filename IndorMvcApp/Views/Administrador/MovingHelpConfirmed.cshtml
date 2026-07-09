@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorMovingHelpConfirmedViewModel
 @{
-    ViewData["Title"] = "Moving Help scheduled";
+    ViewData["Title"] = L["Moving Help scheduled"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -14,15 +14,15 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Moving Help scheduled</h1>
+        <h1>@L["Moving Help scheduled"]</h1>
         <p>Your team is confirmed for @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
     </section>
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
-            <strong>Request received</strong>
-            <span>We've scheduled your moving team.</span>
+            <strong>@L["Request received"]</strong>
+            <span>@L["We've scheduled your moving team."]</span>
         </div>
     </div>
 
@@ -35,18 +35,18 @@
                 <small>@Model.TechnicianTitle</small>
                 <small class="pa-tech-role">@Model.TechnicianRole</small>
             </div>
-            <span class="pa-verified-badge"><i class="fas fa-check"></i> Verified</span>
+            <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
         </div>
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-calendar"></i>
                 <strong>@Model.ScheduleLabel</strong>
-                <small>ETA</small>
+                <small>@L["ETA"]</small>
             </div>
             <div>
                 <i class="fas fa-clock"></i>
                 <strong>@Model.TimeWindowLabel</strong>
-                <small>Window</small>
+                <small>@L["Window"]</small>
             </div>
             <div>
                 <i class="fas fa-house"></i>
@@ -58,7 +58,7 @@
 
     <div class="pa-confirm-split">
         <article class="pa-summary-card-block">
-            <h2>Booking details</h2>
+            <h2>@L["Booking details"]</h2>
             <ul class="pa-booking-detail-list pa-booking-detail-list--blue">
                 @foreach (var item in Model.BookingDetails)
                 {
@@ -74,7 +74,7 @@
         </article>
 
         <article class="pa-timeline-card pa-timeline-card--inline">
-            <h2>Request timeline</h2>
+            <h2>@L["Request timeline"]</h2>
             <ul class="pa-timeline">
                 @foreach (var step in Model.Timeline)
                 {
@@ -91,11 +91,11 @@
     </div>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message team</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>Reschedule</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>Add recurring</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message team"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>@L["Add recurring"]</span></button>
         <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>View details</span>
+            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
     </div>
 

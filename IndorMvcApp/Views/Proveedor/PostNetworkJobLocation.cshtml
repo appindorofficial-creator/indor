@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PostJobLocationViewModel
 @{
-    ViewData["Title"] = "Post a Job";
+    ViewData["Title"] = L["Post a Job"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-network.css";
     ViewBag.NavActive = "jobs";
@@ -18,18 +18,18 @@
         </div>
         <div class="prv-net-hero-title">
             <div>
-                <h1>Post a Job</h1>
-                <p>Add location and budget.</p>
+                <h1>@L["Post a Job"]</h1>
+                <p>@L["Add location and budget."]</p>
             </div>
         </div>
     </header>
 
     <div class="prv-net-stepper">
-        <div class="prv-net-step is-done"><span class="prv-net-step-num"><i class="fas fa-check"></i></span><span class="prv-net-step-label">Details</span></div>
+        <div class="prv-net-step is-done"><span class="prv-net-step-num"><i class="fas fa-check"></i></span><span class="prv-net-step-label">@L["Details"]</span></div>
         <span class="prv-net-step-line is-done"></span>
-        <div class="prv-net-step is-active"><span class="prv-net-step-num">2</span><span class="prv-net-step-label">Location &amp; Budget</span></div>
+        <div class="prv-net-step is-active"><span class="prv-net-step-num">2</span><span class="prv-net-step-label">@L["Location &amp; Budget"]</span></div>
         <span class="prv-net-step-line"></span>
-        <div class="prv-net-step"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">Review</span></div>
+        <div class="prv-net-step"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">@L["Review"]</span></div>
     </div>
 
     <form method="post" id="locForm" asp-controller="Proveedor" asp-action="PostNetworkJobLocation" class="prv-net-wizard-form">
@@ -39,12 +39,12 @@
         <input type="hidden" name="Longitude" id="Longitude" value="@lng" />
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">Job Location</h3>
+            <h3 class="prv-net-card-title">@L["Job Location"]</h3>
             <div class="prv-net-input-wrap">
                 <i class="fas fa-location-dot prv-net-input-ic"></i>
                 <input type="text" id="Location" name="Location" value="@Model.Location" maxlength="200"
-                       placeholder="Enter address or neighborhood" class="prv-net-input prv-net-input--ic" />
-                <button type="button" class="prv-net-input-clear" id="locClear" aria-label="Clear"><i class="fas fa-xmark"></i></button>
+                       placeholder="@L["Enter address or neighborhood"]" class="prv-net-input prv-net-input--ic" />
+                <button type="button" class="prv-net-input-clear" id="locClear" aria-label="@L["Clear"]"><i class="fas fa-xmark"></i></button>
             </div>
             <div class="prv-net-map prv-net-map--sm">
                 <div id="prvJobMap" class="prv-net-map-canvas"></div>
@@ -52,7 +52,7 @@
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">Property Type</h3>
+            <h3 class="prv-net-card-title">@L["Property Type"]</h3>
             <div class="prv-net-optionchips prv-net-optionchips--wrap">
                 @foreach (var (id, icon) in propertyTypes)
                 {
@@ -63,7 +63,7 @@
                 }
             </div>
 
-            <h3 class="prv-net-card-title" style="margin-top:16px;">Who will meet the pro?</h3>
+            <h3 class="prv-net-card-title" style="margin-top:16px;">@L["Who will meet the pro?"]</h3>
             <div class="prv-net-optionchips prv-net-optionchips--wrap">
                 @foreach (var (id, icon) in whoOptions)
                 {
@@ -76,7 +76,7 @@
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">Budget</h3>
+            <h3 class="prv-net-card-title">@L["Budget"]</h3>
             <div class="prv-net-optionchips prv-net-optionchips--wrap">
                 @foreach (var budget in Model.BudgetOptions)
                 {
@@ -87,14 +87,14 @@
                 }
             </div>
 
-            <h3 class="prv-net-card-title" style="margin-top:16px;">Quote Type</h3>
+            <h3 class="prv-net-card-title" style="margin-top:16px;">@L["Quote Type"]</h3>
             <div class="prv-net-radio-cards">
                 <label class="prv-net-radio-card">
                     <input type="radio" name="QuoteType" value="Fixed" checked="@(Model.QuoteType != "Hourly")" />
                     <span class="prv-net-radio-card-body">
                         <span class="prv-net-radio-card-ic prv-net-tool-ic--blue"><i class="fas fa-tag"></i></span>
-                        <strong>Fixed Price</strong>
-                        <small>Get a set price for the entire job.</small>
+                        <strong>@L["Fixed Price"]</strong>
+                        <small>@L["Get a set price for the entire job."]</small>
                         <i class="fas fa-circle-check prv-net-radio-tick"></i>
                     </span>
                 </label>
@@ -102,8 +102,8 @@
                     <input type="radio" name="QuoteType" value="Hourly" checked="@(Model.QuoteType == "Hourly")" />
                     <span class="prv-net-radio-card-body">
                         <span class="prv-net-radio-card-ic prv-net-radio-card-ic--muted"><i class="fas fa-clock"></i></span>
-                        <strong>Hourly Estimate</strong>
-                        <small>Pay for time and materials as the job goes.</small>
+                        <strong>@L["Hourly Estimate"]</strong>
+                        <small>@L["Pay for time and materials as the job goes."]</small>
                         <i class="fas fa-circle-check prv-net-radio-tick"></i>
                     </span>
                 </label>
@@ -111,13 +111,13 @@
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">Access Notes <span class="prv-net-optional">(Optional)</span></h3>
+            <h3 class="prv-net-card-title">@L["Access Notes"]<span class="prv-net-optional">(Optional)</span></h3>
             <textarea id="AccessNotes" name="AccessNotes" maxlength="200" class="prv-net-textarea"
-                      placeholder="Add any details about access, gate codes, parking, etc.">@Model.AccessNotes</textarea>
+                      placeholder="@L["Add any details about access, gate codes, parking, etc."]">@Model.AccessNotes</textarea>
             <div class="prv-net-field-hint"><span id="notesCount">0</span>/200</div>
         </div>
 
-        <button type="submit" name="Mode" value="continue" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard">Continue</button>
+        <button type="submit" name="Mode" value="continue" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard">@L["Continue"]</button>
     </form>
 </div>
 

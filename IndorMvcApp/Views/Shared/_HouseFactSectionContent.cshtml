@@ -28,7 +28,7 @@
 {
     <div class="hf-schools-intro">
         <i class="fas fa-graduation-cap"></i>
-        <span>Nearby and assigned schools based on public listing and district data. Confirm assignments with the school district before enrolling.</span>
+        <span>@L["Nearby and assigned schools based on public listing and district data. Confirm assignments with the school district before enrolling."]</span>
     </div>
     <div class="hf-school-grid">
         @foreach (var school in Model.Schools)
@@ -86,7 +86,7 @@ else if (Model.SectionKind == "sources")
                 @if (!string.IsNullOrWhiteSpace(source.Link))
                 {
                     <a class="hf-source-link" href="@source.Link" target="_blank" rel="noopener noreferrer">
-                        <i class="fas fa-arrow-up-right-from-square"></i> Open source
+                        <i class="fas fa-arrow-up-right-from-square"></i> @L["Open source"]
                     </a>
                 }
                 <div class="hf-source-info">@source.InformationFound</div>

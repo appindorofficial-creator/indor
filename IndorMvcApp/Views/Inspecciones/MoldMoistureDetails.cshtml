@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.MoldMoistureDetailsViewModel
+@model IndorMvcApp.ViewModels.MoldMoistureDetailsViewModel
 @{
-    ViewData["Title"] = "Mold & Moisture Details - INDOR";
-    ViewData["WizardTitle"] = "Mold & Moisture Details";
+    ViewData["Title"] = L["Mold & Moisture Details - INDOR"];
+    ViewData["WizardTitle"] = L["Mold & Moisture Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
 
 }
 
-<h1 class="page-heading">Tell us about your mold or moisture concern</h1>
-    <p class="page-lead">This helps us send the right provider and prepare the inspection faster.</p>
+<h1 class="page-heading">@L["Tell us about your mold or moisture concern"]</h1>
+    <p class="page-lead">@L["This helps us send the right provider and prepare the inspection faster."]</p>
 
     <form asp-controller="Inspecciones" asp-action="MoldMoistureDetails" method="post">
         <input type="hidden" asp-for="InspeccionId" />
@@ -22,69 +22,69 @@
         <input type="hidden" asp-for="HumedadActiva" id="HumedadActiva" />
 
         <div class="field-card">
-            <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+            <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
             <div class="address-summary">
                 <div class="left" style="flex:1;">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What's the main issue?</span>
+            <span class="field-label">@L["What's the main issue?"]</span>
             <div class="chip-grid" id="tiposGroup">
-                <button type="button" class="chip-btn" data-value="MustySmell"><span class="check"><i class="fas fa-check"></i></span>Musty smell</button>
-                <button type="button" class="chip-btn" data-value="VisibleMold"><span class="check"><i class="fas fa-check"></i></span>Visible mold</button>
-                <button type="button" class="chip-btn" data-value="WaterStain"><span class="check"><i class="fas fa-check"></i></span>Water stain</button>
-                <button type="button" class="chip-btn" data-value="ActiveLeak"><span class="check"><i class="fas fa-check"></i></span>Active leak</button>
-                <button type="button" class="chip-btn" data-value="Condensation"><span class="check"><i class="fas fa-check"></i></span>Condensation</button>
-                <button type="button" class="chip-btn" data-value="CrawlSpaceHumidity"><span class="check"><i class="fas fa-check"></i></span>Crawl space humidity</button>
-                <button type="button" class="chip-btn" data-value="BathroomMoisture"><span class="check"><i class="fas fa-check"></i></span>Bathroom moisture</button>
-                <button type="button" class="chip-btn" data-value="AtticMoisture"><span class="check"><i class="fas fa-check"></i></span>Attic moisture</button>
-                <button type="button" class="chip-btn" data-value="HvacMoisture"><span class="check"><i class="fas fa-check"></i></span>HVAC moisture</button>
-                <button type="button" class="chip-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>General review</button>
+                <button type="button" class="chip-btn" data-value="MustySmell"><span class="check"><i class="fas fa-check"></i></span>@L["Musty smell"]</button>
+                <button type="button" class="chip-btn" data-value="VisibleMold"><span class="check"><i class="fas fa-check"></i></span>@L["Visible mold"]</button>
+                <button type="button" class="chip-btn" data-value="WaterStain"><span class="check"><i class="fas fa-check"></i></span>@L["Water stain"]</button>
+                <button type="button" class="chip-btn" data-value="ActiveLeak"><span class="check"><i class="fas fa-check"></i></span>@L["Active leak"]</button>
+                <button type="button" class="chip-btn" data-value="Condensation"><span class="check"><i class="fas fa-check"></i></span>@L["Condensation"]</button>
+                <button type="button" class="chip-btn" data-value="CrawlSpaceHumidity"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space humidity"]</button>
+                <button type="button" class="chip-btn" data-value="BathroomMoisture"><span class="check"><i class="fas fa-check"></i></span>@L["Bathroom moisture"]</button>
+                <button type="button" class="chip-btn" data-value="AtticMoisture"><span class="check"><i class="fas fa-check"></i></span>@L["Attic moisture"]</button>
+                <button type="button" class="chip-btn" data-value="HvacMoisture"><span class="check"><i class="fas fa-check"></i></span>@L["HVAC moisture"]</button>
+                <button type="button" class="chip-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>@L["General review"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Where is it happening?</span>
+            <span class="field-label">@L["Where is it happening?"]</span>
             <div class="chip-grid" data-target="UbicacionProblema">
-                <button type="button" class="chip-btn" data-value="Bathroom"><span class="check"><i class="fas fa-check"></i></span>Bathroom</button>
-                <button type="button" class="chip-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>Kitchen</button>
-                <button type="button" class="chip-btn" data-value="Ceiling"><span class="check"><i class="fas fa-check"></i></span>Ceiling</button>
-                <button type="button" class="chip-btn" data-value="Wall"><span class="check"><i class="fas fa-check"></i></span>Wall</button>
-                <button type="button" class="chip-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>Crawl space</button>
-                <button type="button" class="chip-btn" data-value="Attic"><span class="check"><i class="fas fa-check"></i></span>Attic</button>
-                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>Basement</button>
-                <button type="button" class="chip-btn" data-value="HvacCloset"><span class="check"><i class="fas fa-check"></i></span>HVAC closet</button>
-                <button type="button" class="chip-btn" data-value="AroundWindow"><span class="check"><i class="fas fa-check"></i></span>Around window</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="Bathroom"><span class="check"><i class="fas fa-check"></i></span>@L["Bathroom"]</button>
+                <button type="button" class="chip-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>@L["Kitchen"]</button>
+                <button type="button" class="chip-btn" data-value="Ceiling"><span class="check"><i class="fas fa-check"></i></span>@L["Ceiling"]</button>
+                <button type="button" class="chip-btn" data-value="Wall"><span class="check"><i class="fas fa-check"></i></span>@L["Wall"]</button>
+                <button type="button" class="chip-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space"]</button>
+                <button type="button" class="chip-btn" data-value="Attic"><span class="check"><i class="fas fa-check"></i></span>@L["Attic"]</button>
+                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>@L["Basement"]</button>
+                <button type="button" class="chip-btn" data-value="HvacCloset"><span class="check"><i class="fas fa-check"></i></span>@L["HVAC closet"]</button>
+                <button type="button" class="chip-btn" data-value="AroundWindow"><span class="check"><i class="fas fa-check"></i></span>@L["Around window"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is it?</span>
+            <span class="field-label">@L["How urgent is it?"]</span>
             <div class="segmented-3" data-target="Urgencia">
-                <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                <button type="button" class="segment-btn emergency" data-value="Emergency">Emergency</button>
+                <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                <button type="button" class="segment-btn emergency" data-value="Emergency">@L["Emergency"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Is moisture active right now?</span>
+            <span class="field-label">@L["Is moisture active right now?"]</span>
             <div class="segmented-3" data-target="HumedadActiva">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <div class="info-box"><i class="fas fa-circle-info"></i><div>If you see spreading stains, strong odor, active leak, or visible mold growth, choose <strong>Priority</strong> or contact support immediately.</div></div>
+        <div class="info-box"><i class="fas fa-circle-info"></i><div>@L["If you see spreading stains, strong odor, active leak, or visible mold growth, choose"] <strong>@L["Priority"]</strong> @L["or contact support immediately."]</div></div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> Upload photos or report</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos or report"]</button>
     </form>
 </div>
 @section Scripts {

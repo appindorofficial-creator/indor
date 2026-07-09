@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProReviewInvoiceViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Review Invoice - INDOR PRO";
+    ViewData["Title"] = L["Review Invoice - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "invoices";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -14,26 +14,26 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="CreateInvoice" asp-route-estimateId="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Review Invoice</h1>
+            <h1>@L["Review Invoice"]</h1>
             <small>@Model.InvoiceCode</small>
         </div>
     </header>
 
     <section class="prv-pro-lead-section">
-        <h3>Invoice Summary</h3>
+        <h3>@L["Invoice Summary"]</h3>
         <div class="prv-pro-status-card">
-            <div class="prv-pro-status-card-row"><span>Property</span><strong>@Model.Address</strong></div>
-            <div class="prv-pro-status-card-row"><span>Customer</span><strong>@Model.CustomerName</strong></div>
-            <div class="prv-pro-status-card-row"><span>Invoice Date</span><strong>@Model.InvoiceDateLabel</strong></div>
+            <div class="prv-pro-status-card-row"><span>@L["Property"]</span><strong>@Model.Address</strong></div>
+            <div class="prv-pro-status-card-row"><span>@L["Customer"]</span><strong>@Model.CustomerName</strong></div>
+            <div class="prv-pro-status-card-row"><span>@L["Invoice Date"]</span><strong>@Model.InvoiceDateLabel</strong></div>
             @if (!string.IsNullOrWhiteSpace(Model.DueDateLabel))
             {
-                <div class="prv-pro-status-card-row"><span>Due Date</span><strong>@Model.DueDateLabel</strong></div>
+                <div class="prv-pro-status-card-row"><span>@L["Due Date"]</span><strong>@Model.DueDateLabel</strong></div>
             }
         </div>
     </section>
 
     <section class="prv-pro-lead-section">
-        <h3>Work Completed</h3>
+        <h3>@L["Work Completed"]</h3>
         <ul class="prv-pro-invoice-work-list">
             @foreach (var item in Model.LineItems)
             {
@@ -43,7 +43,7 @@
     </section>
 
     <section class="prv-pro-lead-section prv-pro-est-breakdown">
-        <h3>Price Breakdown</h3>
+        <h3>@L["Price Breakdown"]</h3>
         @foreach (var item in Model.LineItems)
         {
             <div class="prv-pro-ai-estimate-row">
@@ -52,14 +52,14 @@
             </div>
         }
         <div class="prv-pro-est-breakdown-total">
-            <span>Total due</span>
+            <span>@L["Total due"]</span>
             <strong>@Model.TotalAmount.ToString("C2", money)</strong>
         </div>
         <p class="prv-pro-lead-hint">Payment terms: @Model.PaymentTerms</p>
     </section>
 
     <section class="prv-pro-lead-section">
-        <h3>Payment Method</h3>
+        <h3>@L["Payment Method"]</h3>
         <div class="prv-pro-payment-methods">
             <span class="prv-pro-payment-method is-active"><i class="fas fa-credit-card"></i> Card</span>
             <span class="prv-pro-payment-method"><i class="fas fa-building-columns"></i> ACH</span>
@@ -70,7 +70,7 @@
 
     <footer class="prv-pro-workflow-footer prv-pro-workflow-footer--actions">
         <a asp-controller="Proveedor" asp-action="CreateInvoice" asp-route-estimateId="@Model.EstimateId"
-           class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full">Edit Invoice</a>
+           class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full">@L["Edit Invoice"]</a>
         <form asp-controller="Proveedor" asp-action="SendInvoice" method="post">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.InvoiceId" />

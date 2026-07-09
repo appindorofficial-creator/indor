@@ -10,7 +10,7 @@
 
 
 <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
-    <p class="page-lead" style="margin-top:-8px;text-align:center;">Describe the request and add key details.</p>
+    <p class="page-lead" style="margin-top:-8px;text-align:center;">@L["Describe the request and add key details."]</p>
 
     <div class="location-card">
         <i class="fas fa-house main"></i>
@@ -30,41 +30,41 @@
         <input type="hidden" asp-for="NotasAcceso" id="NotasAcceso" />
 
         <div class="field-card">
-            <span class="field-label">Tell us more</span>
+            <span class="field-label">@L["Tell us more"]</span>
             <div class="input-wrap" style="align-items:flex-start;">
                 <i class="fas fa-note-sticky" style="margin-top:12px;"></i>
-                <textarea asp-for="Descripcion" id="Descripcion" rows="4" maxlength="500" required placeholder="Need help picking up a few extra moving supplies and carrying two items into the apartment..."></textarea>
+                <textarea asp-for="Descripcion" id="Descripcion" rows="4" maxlength="500" required placeholder="@L["Need help picking up a few extra moving supplies and carrying two items into the apartment..."]"></textarea>
             </div>
             <div class="char-count"><span id="charCount">0</span>/500</div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Best contact</span>
+            <span class="field-label">@L["Best contact"]</span>
             <div class="chip-scroll" id="contactGroup">
-                <button type="button" class="chip-option" data-value="Call"><i class="fas fa-phone"></i> Call</button>
-                <button type="button" class="chip-option" data-value="Text"><i class="fas fa-comment"></i> Text</button>
-                <button type="button" class="chip-option" data-value="Either"><i class="fas fa-right-left"></i> Either</button>
+                <button type="button" class="chip-option" data-value="Call"><i class="fas fa-phone"></i> @L["Call"]</button>
+                <button type="button" class="chip-option" data-value="Text"><i class="fas fa-comment"></i> @L["Text"]</button>
+                <button type="button" class="chip-option" data-value="Either"><i class="fas fa-right-left"></i> @L["Either"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Access notes</span>
+            <span class="field-label">@L["Access notes"]</span>
             <div class="help-grid" id="accessGroup" style="grid-template-columns:repeat(3,1fr);">
-                <button type="button" class="help-tile" data-value="Apartment"><i class="fas fa-building"></i>Apartment</button>
-                <button type="button" class="help-tile" data-value="House"><i class="fas fa-house"></i>House</button>
-                <button type="button" class="help-tile" data-value="GateCode"><i class="fas fa-keyboard"></i>Gate code</button>
-                <button type="button" class="help-tile" data-value="Stairs"><i class="fas fa-stairs"></i>Stairs</button>
-                <button type="button" class="help-tile" data-value="Elevator"><i class="fas fa-elevator"></i>Elevator</button>
+                <button type="button" class="help-tile" data-value="Apartment"><i class="fas fa-building"></i>@L["Apartment"]</button>
+                <button type="button" class="help-tile" data-value="House"><i class="fas fa-house"></i>@L["House"]</button>
+                <button type="button" class="help-tile" data-value="GateCode"><i class="fas fa-keyboard"></i>@L["Gate code"]</button>
+                <button type="button" class="help-tile" data-value="Stairs"><i class="fas fa-stairs"></i>@L["Stairs"]</button>
+                <button type="button" class="help-tile" data-value="Elevator"><i class="fas fa-elevator"></i>@L["Elevator"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Add photos (optional)</span>
+            <span class="field-label">@L["Add photos (optional)"]</span>
             <div class="upload-row">
                 <div class="upload-drop">
                     <i class="fas fa-cloud-arrow-up"></i>
-                    <p><strong>Drag and drop photos here</strong></p>
-                    <p>Up to 5 photos, max 10MB each</p>
+                    <p><strong>@L["Drag and drop photos here"]</strong></p>
+                    <p>@L["Up to 5 photos, max 10MB each"]</p>
                     <input type="file" name="files" accept=".jpg,.jpeg,.png" multiple style="margin-top:8px;width:100%;font-size:0.72rem;" />
                 </div>
             </div>
@@ -74,10 +74,10 @@
             }
         </div>
 
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>The more details you provide, the faster our team can help.</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["The more details you provide, the faster our team can help."]</span></div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

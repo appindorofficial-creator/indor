@@ -1,11 +1,14 @@
 ﻿@model IndorMvcApp.ViewModels.SelectRoleViewModel
 @{
-    ViewData["Title"] = "Create your profile - INDOR";
+    ViewData["Title"] = L["Create your profile - INDOR"];
     Layout = "_LayoutAuth";
+    ViewData["LanguageSelectorVariant"] = "inline";
 }
 
 <div class="login-container login-container--select-role">
-    <nav class="auth-stepper" aria-label="Progress">
+    @await Html.PartialAsync("_LanguageSelector")
+
+    <nav class="auth-stepper" aria-label="@L["Onboarding progress"]">
             <div class="auth-stepper-seg is-done"></div>
             <div class="auth-stepper-seg is-active"></div>
             <div class="auth-stepper-seg"></div>
@@ -13,20 +16,20 @@
             <div class="auth-stepper-seg"></div>
         </nav>
         <div class="top-bar">
-            <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="Back">
+            <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div style="width:44px;"></div>
         </div>
 
         <div class="logo-container">
-            <img src="~/logoindor.png" alt="Indor - The Home Operating System" class="smart-home-logo" />
+            <img src="~/logoindor.png" alt="@L["Indor - The Home Operating System"]" class="smart-home-logo" />
         </div>
 
         <div class="brand-section">
-            <h1 class="brand-title">Create your profile</h1>
+            <h1 class="brand-title">@L["Create your profile"]</h1>
             <p class="brand-tagline">
-                Start with your personal profile. You can add or edit your home, address, or role later inside INDOR.
+                @L["Start with your personal profile. You can add or edit your home, address, or role later inside INDOR."]
             </p>
         </div>
 
@@ -42,13 +45,13 @@
                     <div class="role-icon"><i class="fas fa-user"></i></div>
                     <div class="role-primary-body">
                         <div class="role-primary-header">
-                            <div class="role-primary-title">Personal Profile</div>
-                            <span class="role-recommended"><i class="fas fa-star"></i> Recommended</span>
+                            <div class="role-primary-title">@L["Personal Profile"]</div>
+                            <span class="role-recommended"><i class="fas fa-star"></i> @L["Recommended"]</span>
                         </div>
-                        <div class="role-primary-subtitle">Neighbor / Personal Profile</div>
+                        <div class="role-primary-subtitle">@L["Neighbor / Personal Profile"]</div>
                         <p class="role-primary-desc">
-                            For anyone joining INDOR&mdash;whether you own a home, rent, or are just getting started.
-                            <strong>Add your address or home later.</strong>
+                            @L["For anyone joining INDOR—whether you own a home, rent, or are just getting started."]
+                            <strong>@L["Add your address or home later."]</strong>
                         </p>
                     </div>
                     <span class="role-check" aria-hidden="true"><i class="fas fa-check"></i></span>
@@ -56,38 +59,38 @@
 
                 <div class="roles-divider">
                     <i class="fas fa-shield-halved"></i>
-                    <span>You can change or expand your role later.</span>
+                    <span>@L["You can change or expand your role later."]</span>
                 </div>
 
                 <div class="roles-secondary">
                     <div class="role-card-secondary" data-role="Realtor" onclick="selectRole(this)" role="button" tabindex="0">
                         <div class="role-icon"><i class="fas fa-user-tie"></i></div>
-                        <div class="role-name">Realtor</div>
-                        <div class="role-desc">Manage client properties and transactions.</div>
+                        <div class="role-name">@L["Realtor"]</div>
+                        <div class="role-desc">@L["Manage client properties and transactions."]</div>
                     </div>
 
                     <div class="role-card-secondary" data-role="AdministradorPropiedades" onclick="selectRole(this)" role="button" tabindex="0">
                         <div class="role-icon"><i class="fas fa-building"></i></div>
-                        <div class="role-name">Multi-Property Owner</div>
-                        <div class="role-desc">Manage Airbnbs, rentals &amp; multiple homes.</div>
+                        <div class="role-name">@L["Multi-Property Owner"]</div>
+                        <div class="role-desc">@L["Manage Airbnbs, rentals & multiple homes."]</div>
                     </div>
 
                     <div class="role-card-secondary" data-role="ProveedorServicios" onclick="selectRole(this)" role="button" tabindex="0">
                         <div class="role-icon"><i class="fas fa-tools"></i></div>
-                        <div class="role-name">Service Provider</div>
-                        <div class="role-desc">Manage services and maintenance work.</div>
+                        <div class="role-name">@L["Service Provider"]</div>
+                        <div class="role-desc">@L["Manage services and maintenance work."]</div>
                     </div>
                 </div>
 
                 <div class="role-form-actions">
                 <button type="submit" class="btn btn-primary" id="continueBtn">
                     <i class="fas fa-circle-check btn-icon btn-icon-left"></i>
-                    <span class="btn-label">Continue</span>
+                    <span class="btn-label">@L["Continue"]</span>
                     <i class="fas fa-chevron-right btn-icon btn-icon-right"></i>
                 </button>
 
                 <div class="skip-link">
-                    <button type="submit" name="skipLater" value="true">I'll choose later</button>
+                    <button type="submit" name="skipLater" value="true">@L["I'll choose later"]</button>
                 </div>
                 </div>
             </form>
@@ -111,7 +114,7 @@
             var selectedRole = document.getElementById('selectedRoleInput').value;
             if (!selectedRole) {
                 e.preventDefault();
-                alert('Please select a profile before continuing.');
+                alert('@Html.Raw(L["Please select a profile before continuing."].Replace("'", "\\'"))');
             }
         });
     </script>

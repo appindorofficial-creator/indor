@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.InvestorDetailsViewModel
+@model IndorMvcApp.ViewModels.InvestorDetailsViewModel
 @{
-    ViewData["Title"] = "Investor Details - INDOR";
-    ViewData["WizardTitle"] = "Investor Details";
+    ViewData["Title"] = L["Investor Details - INDOR"];
+    ViewData["WizardTitle"] = L["Investor Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
 
 }
 
-<h1 class="page-heading">Tell us about your investment goal</h1>
-    <p class="page-lead">This helps INDOR prepare the right checklist and the right provider.</p>
+<h1 class="page-heading">@L["Tell us about your investment goal"]</h1>
+    <p class="page-lead">@L["This helps INDOR prepare the right checklist and the right provider."]</p>
 
     <form asp-controller="Inspecciones" asp-action="InvestorDetails" method="post">
         <input type="hidden" asp-for="InspeccionId" />
@@ -20,52 +20,52 @@
         <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
         <div class="field-card">
-            <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+            <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
             <div class="address-summary">
                 <div class="left" style="flex:1;">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What kind of investment is this?</span>
+            <span class="field-label">@L["What kind of investment is this?"]</span>
             <div class="chip-grid" data-target="TipoInversion">
-                <button type="button" class="chip-btn" data-value="Flip"><span class="check"><i class="fas fa-check"></i></span>Flip</button>
-                <button type="button" class="chip-btn" data-value="RentalProperty"><span class="check"><i class="fas fa-check"></i></span>Rental property</button>
-                <button type="button" class="chip-btn" data-value="BuyAndHold"><span class="check"><i class="fas fa-check"></i></span>Buy and hold</button>
-                <button type="button" class="chip-btn" data-value="BRRRR"><span class="check"><i class="fas fa-check"></i></span>BRRRR</button>
-                <button type="button" class="chip-btn" data-value="BeforeOffer"><span class="check"><i class="fas fa-check"></i></span>Before offer</button>
-                <button type="button" class="chip-btn" data-value="BeforeClosing"><span class="check"><i class="fas fa-check"></i></span>Before closing</button>
+                <button type="button" class="chip-btn" data-value="Flip"><span class="check"><i class="fas fa-check"></i></span>@L["Flip"]</button>
+                <button type="button" class="chip-btn" data-value="RentalProperty"><span class="check"><i class="fas fa-check"></i></span>@L["Rental property"]</button>
+                <button type="button" class="chip-btn" data-value="BuyAndHold"><span class="check"><i class="fas fa-check"></i></span>@L["Buy and hold"]</button>
+                <button type="button" class="chip-btn" data-value="BRRRR"><span class="check"><i class="fas fa-check"></i></span>@L["BRRRR"]</button>
+                <button type="button" class="chip-btn" data-value="BeforeOffer"><span class="check"><i class="fas fa-check"></i></span>@L["Before offer"]</button>
+                <button type="button" class="chip-btn" data-value="BeforeClosing"><span class="check"><i class="fas fa-check"></i></span>@L["Before closing"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What would you like us to focus on?</span>
+            <span class="field-label">@L["What would you like us to focus on?"]</span>
             <div class="chip-grid" id="enfoquesGroup">
-                <button type="button" class="chip-btn" data-value="GeneralAssessment"><span class="check"><i class="fas fa-check"></i></span>General assessment</button>
-                <button type="button" class="chip-btn" data-value="RepairRisk"><span class="check"><i class="fas fa-check"></i></span>Repair risk</button>
-                <button type="button" class="chip-btn" data-value="RehabBudget"><span class="check"><i class="fas fa-check"></i></span>Rehab budget</button>
-                <button type="button" class="chip-btn" data-value="RentReadiness"><span class="check"><i class="fas fa-check"></i></span>Rent readiness</button>
-                <button type="button" class="chip-btn" data-value="ResalePotential"><span class="check"><i class="fas fa-check"></i></span>Resale potential</button>
-                <button type="button" class="chip-btn" data-value="NegotiationSupport"><span class="check"><i class="fas fa-check"></i></span>Negotiation support</button>
+                <button type="button" class="chip-btn" data-value="GeneralAssessment"><span class="check"><i class="fas fa-check"></i></span>@L["General assessment"]</button>
+                <button type="button" class="chip-btn" data-value="RepairRisk"><span class="check"><i class="fas fa-check"></i></span>@L["Repair risk"]</button>
+                <button type="button" class="chip-btn" data-value="RehabBudget"><span class="check"><i class="fas fa-check"></i></span>@L["Rehab budget"]</button>
+                <button type="button" class="chip-btn" data-value="RentReadiness"><span class="check"><i class="fas fa-check"></i></span>@L["Rent readiness"]</button>
+                <button type="button" class="chip-btn" data-value="ResalePotential"><span class="check"><i class="fas fa-check"></i></span>@L["Resale potential"]</button>
+                <button type="button" class="chip-btn" data-value="NegotiationSupport"><span class="check"><i class="fas fa-check"></i></span>@L["Negotiation support"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is this inspection?</span>
+            <span class="field-label">@L["How urgent is this inspection?"]</span>
             <div class="segmented-3" data-target="Urgencia">
-                <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <div class="info-box"><i class="fas fa-circle-info"></i><div>Choose the goals that matter most so your provider can review the property from an investor perspective.</div></div>
+        <div class="info-box"><i class="fas fa-circle-info"></i><div>@L["Choose the goals that matter most so your provider can review the property from an investor perspective."]</div></div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> Upload photos or report</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos or report"]</button>
     </form>
 </div>
 @section Scripts {

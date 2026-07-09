@@ -1,6 +1,6 @@
 @model string
 @{
-    ViewData["Title"] = "Report Templates - INDOR PRO";
+    ViewData["Title"] = L["Report Templates - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "report-templates.css";
@@ -24,10 +24,10 @@
 
 <div class="prv-pro-shell prv-pro-shell--report-templates">
     <header class="prv-pro-rt-topbar">
-        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-rt-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="Reports" class="prv-pro-rt-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div class="prv-pro-brand">
-            <span class="prv-pro-brand-indor">INDOR</span>
-            <span class="prv-pro-brand-pro">PRO</span>
+            <span class="prv-pro-brand-indor">@L["INDOR"]</span>
+            <span class="prv-pro-brand-pro">@L["PRO"]</span>
         </div>
         <div class="prv-pro-rt-topbar-actions">
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
@@ -36,15 +36,15 @@
 
     <section class="prv-pro-rt-head">
         <div class="prv-pro-rt-head-text">
-            <h1>Report Templates</h1>
-            <p>Choose the type of report you want to create.</p>
+            <h1>@L["Report Templates"]</h1>
+            <p>@L["Choose the type of report you want to create."]</p>
         </div>
         <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-fresh="true" class="prv-pro-rt-add">
             <i class="fas fa-plus"></i> Add Custom
         </a>
     </section>
 
-    <h2 class="prv-pro-rt-section">Most Used</h2>
+    <h2 class="prv-pro-rt-section">@L["Most Used"]</h2>
     <div class="prv-pro-rt-grid">
         @foreach (var t in mostUsed)
         {
@@ -56,7 +56,7 @@
         }
     </div>
 
-    <h2 class="prv-pro-rt-section">More Report Types</h2>
+    <h2 class="prv-pro-rt-section">@L["More Report Types"]</h2>
     <div class="prv-pro-rt-list">
         @foreach (var t in moreTypes)
         {
@@ -73,6 +73,6 @@
 
     <div class="prv-pro-rt-note">
         <i class="fas fa-circle-info"></i>
-        <span>You can customize any report after choosing a template.</span>
+        <span>@L["You can customize any report after choosing a template."]</span>
     </div>
 </div>

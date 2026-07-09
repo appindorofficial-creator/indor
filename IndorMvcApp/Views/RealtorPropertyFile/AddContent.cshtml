@@ -2,9 +2,9 @@
 
 <div class="rl-prop-summary-card rl-prop-summary-card--compact">
     <div>
-        <span>Property</span>
+        <span>@L["Property"]</span>
         <strong>@Model.PropertyDisplay</strong>
-        <span>File Type</span>
+        <span>@L["File Type"]</span>
         <strong>@Model.FilePhaseLabel</strong>
     </div>
 </div>
@@ -53,9 +53,9 @@
             <form asp-action="UploadContent" method="post" class="rl-warranty-form">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="categoryType" value="@sec.CategoryType" />
-                <input type="text" name="warrantyLabel" placeholder="Warranty name (e.g. HVAC Warranty)" class="rl-field-inline" />
+                <input type="text" name="warrantyLabel" placeholder="@L["Warranty name (e.g. HVAC Warranty)"]" class="rl-field-inline" />
                 <input type="date" name="expirationDate" class="rl-field-inline" />
-                <button type="submit" class="ob-btn ob-btn-outline">Add Warranty</button>
+                <button type="submit" class="ob-btn ob-btn-outline">@L["Add Warranty"]</button>
             </form>
             @foreach (var item in sec.Items)
             {
@@ -73,11 +73,11 @@
             <form asp-action="UploadContent" method="post" enctype="multipart/form-data">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="categoryType" value="@sec.CategoryType" />
-                <textarea name="noteText" rows="3" class="rl-note-area" placeholder="Add a note...">@sec.NoteText</textarea>
+                <textarea name="noteText" rows="3" class="rl-note-area" placeholder="@L["Add a note..."]">@sec.NoteText</textarea>
                 <label class="rl-attach-link"><i class="fas fa-paperclip"></i> Attach Document
                     <input type="file" name="uploadFile" accept=".pdf,.jpg,.jpeg,.png" hidden onchange="this.form.submit()" />
                 </label>
-                <button type="submit" class="ob-btn ob-btn-outline">Save Note</button>
+                <button type="submit" class="ob-btn ob-btn-outline">@L["Save Note"]</button>
             </form>
         }
         else
@@ -99,13 +99,13 @@
 
 <div class="rl-info-box">
     <i class="fas fa-circle-info"></i>
-    <p>All uploaded items will stay organized inside this property file and can be shared later.</p>
+    <p>@L["All uploaded items will stay organized inside this property file and can be shared later."]</p>
 </div>
 
 <form asp-action="CompleteContent" method="post">
     @Html.AntiForgeryToken()
     <div class="rl-invite-actions">
-        <a asp-action="AddItems" class="rl-invite-cancel">Back</a>
-        <button type="submit" class="ob-btn ob-btn-primary">Next</button>
+        <a asp-action="AddItems" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" class="ob-btn ob-btn-primary">@L["Next"]</button>
     </div>
 </form>

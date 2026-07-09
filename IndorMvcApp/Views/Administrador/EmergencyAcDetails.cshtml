@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyAcFormViewModel
 @{
-    ViewData["Title"] = "Emergency AC";
+    ViewData["Title"] = L["Emergency AC"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Emergency AC</h1>
-        <p>Tell us what's happening and how the technician can get in.</p>
+        <h1>@L["Emergency AC"]</h1>
+        <p>@L["Tell us what's happening and how the technician can get in."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -24,7 +24,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label>What's the problem?</label>
+            <label>@L["What's the problem?"]</label>
             <div class="pa-chip-grid">
                 @{
                     var problems = new (string Value, string Label, string Icon)[]
@@ -50,7 +50,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>Is the home occupied right now?</label>
+            <label>@L["Is the home occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
@@ -63,7 +63,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>Are guests currently inside?</label>
+            <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
@@ -76,22 +76,22 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>How urgent is it?</label>
-            <p class="pa-flow-urgent">Emergency — technician needed ASAP</p>
+            <label>@L["How urgent is it?"]</label>
+            <p class="pa-flow-urgent">@L["Emergency — technician needed ASAP"]</p>
         </div>
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Current indoor temperature</label>
+            <label>@L["Current indoor temperature"]</label>
             <div class="pa-field">
                 <i class="fas fa-temperature-half"></i>
-                <input type="text" name="IndoorTemperature" value="@Model.IndoorTemperature" placeholder="e.g. 82°F" />
+                <input type="text" name="IndoorTemperature" value="@Model.IndoorTemperature" placeholder="@L["e.g. 82°F"]" />
             </div>
         </div>
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label>Can the technician enter now?</label>
+            <label>@L["Can the technician enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @{
                     var entry = new (string Value, string Label)[]
@@ -113,16 +113,16 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">7</span>
-            <label>Smart lock / entry code</label>
+            <label>@L["Smart lock / entry code"]</label>
             <div class="pa-field">
                 <i class="fas fa-key"></i>
-                <input type="text" name="EntryCode" value="@Model.EntryCode" placeholder="Front door code" />
+                <input type="text" name="EntryCode" value="@Model.EntryCode" placeholder="@L["Front door code"]" />
             </div>
         </div>
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">8</span>
-            <label>Who should receive updates?</label>
+            <label>@L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @{
                     var recipients = Model.UpdateRecipients.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).ToHashSet(StringComparer.OrdinalIgnoreCase);
@@ -139,7 +139,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">9</span>
-            <label>Best phone number for urgent contact</label>
+            <label>@L["Best phone number for urgent contact"]</label>
             <div class="pa-field">
                 <i class="fas fa-phone"></i>
                 <input type="tel" name="ContactPhone" value="@Model.ContactPhone" placeholder="(555) 555-0100" />
@@ -148,25 +148,25 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">10</span>
-            <label>Add details</label>
-            <textarea class="pa-textarea" name="Details" rows="3" placeholder="Describe what guests or tenants are experiencing...">@Model.Details</textarea>
+            <label>@L["Add details"]</label>
+            <textarea class="pa-textarea" name="Details" rows="3" placeholder="@L["Describe what guests or tenants are experiencing..."]">@Model.Details</textarea>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
         </div>
 
         <div class="pa-flow-summary-grid">
             <div class="pa-flow-summary-card">
-                <h3>Request summary</h3>
+                <h3>@L["Request summary"]</h3>
                 <ul class="pa-summary-list">
                     <li><i class="fas fa-house"></i> @(Model.ViewingProperty?.PropertyName ?? "Property")</li>
-                    <li><i class="fas fa-snowflake"></i> No cooling</li>
-                    <li><i class="fas fa-users"></i> Occupied • Guests inside</li>
+                    <li><i class="fas fa-snowflake"></i> @L["No cooling"]</li>
+                    <li><i class="fas fa-users"></i> @L["Occupied • Guests inside"]</li>
                     <li><i class="fas fa-temperature-half"></i> @Model.IndoorTemperature</li>
-                    <li><i class="fas fa-key"></i> Smart lock access</li>
-                    <li><i class="fas fa-bell"></i> Updates to you & guest</li>
+                    <li><i class="fas fa-key"></i> @L["Smart lock access"]</li>
+                    <li><i class="fas fa-bell"></i> @L["Updates to you & guest"]</li>
                 </ul>
             </div>
             <div class="pa-flow-pro-card">
@@ -176,23 +176,23 @@
                         <strong>@Model.ProEtaLabel</strong>
                     </div>
                 </div>
-                <p>Estimated diagnostic visit: <strong>@Model.EstimatedPrice</strong></p>
-                <p>Emergency priority fee: <span class="pa-included">Included</span></p>
+                <p>@L["Estimated diagnostic visit:"] <strong>@Model.EstimatedPrice</strong></p>
+                <p>@L["Emergency priority fee:"] <span class="pa-included">@L["Included"]</span></p>
                 <div class="pa-trust-badges">
-                    <span>Licensed</span>
-                    <span>Insured</span>
-                    <span>Fast response</span>
+                    <span>@L["Licensed"]</span>
+                    <span>@L["Insured"]</span>
+                    <span>@L["Fast response"]</span>
                 </div>
             </div>
         </div>
 
         <div class="pa-notify-banner">
             <i class="fas fa-bell"></i>
-            <span>We'll send status updates to you and the guest.</span>
+            <span>@L["We'll send status updates to you and the guest."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request emergency service</button>
-        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">Edit details</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
     </form>
 </div>
 

@@ -41,7 +41,7 @@ else if (TempData["PropertyAdminError"] is string err)
 @if (Model.ImportErrors.Count > 0)
 {
     <div class="pa-summary-warning">
-        <strong>Some rows were skipped:</strong>
+        <strong>@L["Some rows were skipped:"]</strong>
         <ul class="pa-summary-warning-list">
             @foreach (var importError in Model.ImportErrors)
             {
@@ -60,20 +60,20 @@ else if (TempData["PropertyAdminError"] is string err)
             <small>@property.Location</small>
             <div class="pa-badge-row">
                 <span class="pa-badge pa-badge-type"><i class="fas fa-building"></i> @property.PropertyTypeLabel</span>
-                <span class="pa-badge pa-badge-added"><i class="fas fa-check"></i> Added</span>
+                <span class="pa-badge pa-badge-added"><i class="fas fa-check"></i> @L["Added"]</span>
             </div>
         </div>
         <form asp-action="RemoveProperty" method="post" style="align-self:flex-start;">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@property.Id" />
-            <button type="submit" class="ob-nav-back" aria-label="Remove" style="width:32px;height:32px;font-size:.8rem;"><i class="fas fa-times"></i></button>
+            <button type="submit" class="ob-nav-back" aria-label="@L["Remove"]" style="width:32px;height:32px;font-size:.8rem;"><i class="fas fa-times"></i></button>
         </form>
     </div>
 }
 
 <details class="pa-add-property-panel" @(Model.Properties.Count == 0 || draft != null ? "open" : null)>
     <summary class="pa-add-property-summary">
-        <span><i class="fas fa-house"></i> Add property manually</span>
+        <span><i class="fas fa-house"></i> @L["Add property manually"]</span>
         <i class="fas fa-chevron-up"></i>
     </summary>
     <form asp-action="AddProperty" method="post" id="pa-manual-property-form" class="pa-add-property-form pa-properties-step-form"
@@ -88,7 +88,7 @@ else if (TempData["PropertyAdminError"] is string err)
                        id="pa-prop-house"
                        name="houseNumber"
                        value="@formHouseNumber"
-                       placeholder="House number"
+                       placeholder="@L["House number"]"
                        inputmode="numeric"
                        required
                        autocomplete="address-line2" />
@@ -99,7 +99,7 @@ else if (TempData["PropertyAdminError"] is string err)
                        id="pa-prop-street"
                        name="streetName"
                        value="@formStreetName"
-                       placeholder="Street name"
+                       placeholder="@L["Street name"]"
                        autocomplete="off"
                        required
                        data-address-autocomplete
@@ -118,7 +118,7 @@ else if (TempData["PropertyAdminError"] is string err)
                        id="pa-prop-city"
                        name="city"
                        value="@formCity"
-                       placeholder="City"
+                       placeholder="@L["City"]"
                        autocomplete="off"
                        required
                        data-city-autocomplete
@@ -135,14 +135,14 @@ else if (TempData["PropertyAdminError"] is string err)
                         required
                         data-ac-zip="pa-prop-zip"
                         data-ac-city="pa-prop-city"
-                        aria-label="State">
+                        aria-label="@L["State"]">
                     @if (string.IsNullOrWhiteSpace(formState))
                     {
-                        <option value="" disabled selected>State</option>
+                        <option value="" disabled selected>@L["State"]</option>
                     }
                     else
                     {
-                        <option value="" disabled>State</option>
+                        <option value="" disabled>@L["State"]</option>
                     }
                     @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                     {
@@ -163,13 +163,13 @@ else if (TempData["PropertyAdminError"] is string err)
                        id="pa-prop-zip"
                        name="zipCode"
                        value="@formZipCode"
-                       placeholder="ZIP code"
+                       placeholder="@L["ZIP code"]"
                        inputmode="numeric"
                        autocomplete="postal-code"
                        maxlength="10"
                        data-zip-input
                        data-zip-required="true"
-                       aria-label="ZIP code"
+                       aria-label="@L["ZIP code"]"
                        required />
             </label>
         </div>
@@ -182,11 +182,11 @@ else if (TempData["PropertyAdminError"] is string err)
             <select id="pa-prop-type" name="propertyType" required>
                 @if (string.IsNullOrWhiteSpace(formPropertyType))
                 {
-                    <option value="" disabled selected hidden>Property type</option>
+                    <option value="" disabled selected hidden>@L["Property type"]</option>
                 }
                 else
                 {
-                    <option value="" disabled hidden>Property type</option>
+                    <option value="" disabled hidden>@L["Property type"]</option>
                 }
                 @foreach (var item in PropertyAdministratorCatalog.PropertyTypes)
                 {
@@ -204,18 +204,18 @@ else if (TempData["PropertyAdminError"] is string err)
 
         <label class="pa-field">
             <i class="fas fa-pen"></i>
-            <input type="text" name="propertyNickname" value="@formNickname" placeholder="Property nickname (optional)" />
+            <input type="text" name="propertyNickname" value="@formNickname" placeholder="@L["Property nickname (optional)"]" />
         </label>
 
-        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">Save property</button>
+        <button type="submit" class="ob-btn ob-btn-outline pa-save-property-btn">@L["Save property"]</button>
     </form>
 </details>
 
 <a asp-action="ImportPortfolio" class="pa-action-row pa-action-row--property-option">
-    <span><i class="fas fa-file-import"></i> Import portfolio</span>
+    <span><i class="fas fa-file-import"></i> @L["Import portfolio"]</span>
     <i class="fas fa-chevron-right"></i>
 </a>
 <a asp-action="UploadPropertyDocuments" class="pa-action-row pa-action-row--property-option">
-    <span><i class="fas fa-file-lines"></i> Scan or upload documents</span>
+    <span><i class="fas fa-file-lines"></i> @L["Scan or upload documents"]</span>
     <i class="fas fa-chevron-right"></i>
 </a>

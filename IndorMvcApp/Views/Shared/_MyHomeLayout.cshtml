@@ -1,4 +1,7 @@
 @using IndorMvcApp.Helpers
+@using IndorMvcApp.Localization
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
 @{
     Layout = null;
     var propiedadId = ViewBag.PropiedadId as int? ?? 0;
@@ -13,7 +16,7 @@
         propiedadId);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -86,10 +89,10 @@
 </head>
 <body>
     <div class="hf-top">
-        <a href="@backUrl" class="app-back-btn" aria-label="Back">
+        <a href="@backUrl" class="app-back-btn" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
-        <div class="hf-brand"><i class="fas fa-house-circle-check"></i> HOUSE FACTS</div>
+        <div class="hf-brand"><i class="fas fa-house-circle-check"></i> @L["HOUSE FACTS"]</div>
         <span class="hf-top-spacer" aria-hidden="true"></span>
     </div>
     <div class="hf-content">
@@ -97,11 +100,11 @@
     </div>
     @if (propiedadId > 0)
     {
-        <nav class="bottom-nav" aria-label="My Home navigation">
-            <a asp-controller="Home" asp-action="Index" asp-fragment="section-home" class="nav-item @(activeNav == "home" ? "active" : "")"><i class="fas fa-location-dot"></i><span>Nearby</span></a>
-            <a asp-controller="MyHome" asp-action="Index" asp-route-id="@propiedadId" class="nav-item @(activeNav == "summary" || activeNav == "maintenance" ? "active" : "")"><i class="fas fa-clipboard"></i><span>Summary</span></a>
-            <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId" class="nav-item @(activeNav == "history" ? "active" : "")"><i class="fas fa-clock-rotate-left"></i><span>History</span></a>
-            <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId" class="nav-item @(activeNav == "documents" ? "active" : "")"><i class="fas fa-file-lines"></i><span>Documents</span></a>
+        <nav class="bottom-nav" aria-label="@L["My Home navigation"]">
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-home" class="nav-item @(activeNav == "home" ? "active" : "")"><i class="fas fa-location-dot"></i><span>@L["Nearby"]</span></a>
+            <a asp-controller="MyHome" asp-action="Index" asp-route-id="@propiedadId" class="nav-item @(activeNav == "summary" || activeNav == "maintenance" ? "active" : "")"><i class="fas fa-clipboard"></i><span>@L["Summary"]</span></a>
+            <a asp-controller="MyHome" asp-action="History" asp-route-id="@propiedadId" class="nav-item @(activeNav == "history" ? "active" : "")"><i class="fas fa-clock-rotate-left"></i><span>@L["History"]</span></a>
+            <a asp-controller="MyHome" asp-action="Documents" asp-route-id="@propiedadId" class="nav-item @(activeNav == "documents" ? "active" : "")"><i class="fas fa-file-lines"></i><span>@L["Documents"]</span></a>
         </nav>
     }
     @await RenderSectionAsync("Scripts", required: false)

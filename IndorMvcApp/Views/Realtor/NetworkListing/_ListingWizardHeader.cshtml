@@ -3,19 +3,19 @@
 <div class="rl-listing-wizard-topnav">
     @if (Model.DisplayStep == 0)
     {
-        <a asp-action="Network" class="rl-listing-wizard-back" aria-label="Back to feed">
+        <a asp-action="Network" class="rl-listing-wizard-back" aria-label="@L["Back to feed"]">
             <i class="fas fa-chevron-left"></i>
         </a>
     }
     else if (Model.DisplayStep == 1)
     {
-        <a asp-action="CreateNetworkListing" class="rl-listing-wizard-back" aria-label="Back">
+        <a asp-action="CreateNetworkListing" class="rl-listing-wizard-back" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
     }
     else
     {
-        <a asp-action="PostListingBenefits" class="rl-listing-wizard-back" aria-label="Back">
+        <a asp-action="PostListingBenefits" class="rl-listing-wizard-back" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
     }

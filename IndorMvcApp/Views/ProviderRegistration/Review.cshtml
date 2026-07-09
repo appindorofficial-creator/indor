@@ -178,7 +178,7 @@
         {
         <a asp-action="Services" class="prv-review-link">
             <i class="fas fa-house-chimney"></i>
-            <div><strong>Roofing specialties</strong><span>@servicesSummary</span></div>
+            <div><strong>@L["Roofing specialties"]</strong><span>@servicesSummary</span></div>
             <i class="fas fa-chevron-right"></i>
         </a>
         }
@@ -188,14 +188,14 @@
         <a asp-action="@(examCompleted ? "Exam" : "ExamIntro")" asp-route-page="@(examCompleted ? 5 : null)" class="prv-review-link">
             <i class="fas fa-award"></i>
             <div>
-                <strong>Qualification</strong>
+                <strong>@L["Qualification"]</strong>
                 @if (examCompleted)
                 {
                     <span class="prv-status-pill prv-status-pill--ok"><i class="fas fa-circle-check"></i> Passed @s.ExamScorePercent%</span>
                 }
                 else if (s.ExamPassed == false)
                 {
-                    <span>Not passed</span>
+                    <span>@L["Not passed"]</span>
                 }
                 else
                 {
@@ -211,22 +211,22 @@
         <a asp-action="@(examCompleted ? "Exam" : "ExamIntro")" asp-route-page="@(examCompleted ? 5 : null)" class="prv-review-link">
             <i class="fas fa-award"></i>
             <div>
-                <strong>Qualification status</strong>
+                <strong>@L["Qualification status"]</strong>
                 @if (examCompleted)
                 {
                     <span class="prv-status-pill prv-status-pill--ok"><i class="fas fa-circle-check"></i> Passed @s.ExamScorePercent%</span>
                     @if (isLandscaping && !string.IsNullOrWhiteSpace(qualificationSummary)) { <span>@qualificationSummary</span> }
-                    @if (isPest && s.IsInsured) { <span>Insured</span> }
-                    <span>All requirements met</span>
+                    @if (isPest && s.IsInsured) { <span>@L["Insured"]</span> }
+                    <span>@L["All requirements met"]</span>
                 }
                 else if (s.ExamPassed == false)
                 {
-                    <span>Not passed</span>
+                    <span>@L["Not passed"]</span>
                 }
                 else
                 {
                     <span class="prv-status-pill prv-status-pill--ok"><i class="fas fa-circle-check"></i> Ready for exam</span>
-                    @if (isPest) { <span>All requirements met</span> }
+                    @if (isPest) { <span>@L["All requirements met"]</span> }
                 }
             </div>
             <i class="fas fa-chevron-right"></i>
@@ -291,7 +291,7 @@
                 }
                 else if (s.ExamPassed == false)
                 {
-                    <span>Not passed</span>
+                    <span>@L["Not passed"]</span>
                 }
                 else
                 {
@@ -306,7 +306,7 @@
         {
         <a asp-action="Business" class="prv-review-link">
             <i class="fas fa-location-dot"></i>
-            <div><strong>Service area</strong><span>@serviceAreaSummary</span><span>Primary service area</span></div>
+            <div><strong>@L["Service area"]</strong><span>@serviceAreaSummary</span><span>@L["Primary service area"]</span></div>
             <i class="fas fa-chevron-right"></i>
         </a>
         }
@@ -315,7 +315,7 @@
         {
         <div class="prv-rule-banner" style="margin-top:12px">
             <i class="fas fa-shield-halved"></i>
-            <span>INDOR rule: one provider category per account.</span>
+            <span>@L["INDOR rule: one provider category per account."]</span>
         </div>
         }
 
@@ -329,7 +329,7 @@
 
             <strong>@(isAppliance ? "Applications are reviewed before approval." : isPest ? "After submission, INDOR will review your profile and documents." : isLandscaping ? "INDOR will review your profile after submission." : isCleaning ? "Your application will be reviewed before your provider account is activated." : isFlooring || isPainting ? "INDOR will review your application before activating your account." : isRoofing ? "INDOR will review your roofing application before activating your account." : (isBathroom || isKitchen) ? "Your application will be reviewed by the INDOR team before approval." : isConstruction ? "Once submitted, INDOR will review your profile, license, insurance, and qualifications before activation." : isHandyman ? "Applications are reviewed before activation." : "INDOR reviews each provider manually before activating job access.")</strong>
 
-            @if (!isHandyman && !isConstruction) { <span>You'll receive an email once your application is reviewed.</span> }
+            @if (!isHandyman && !isConstruction) { <span>@L["You'll receive an email once your application is reviewed."]</span> }
 
         </div>
 
@@ -343,11 +343,11 @@ else
 
     <div class="ob-review-stack prv-review-card">
 
-        <div class="ob-review-item"><i class="fas fa-faucet"></i><span><strong>Selected trade:</strong> @tradeName</span></div>
+        <div class="ob-review-item"><i class="fas fa-faucet"></i><span><strong>@L["Selected trade:"]</strong> @tradeName</span></div>
 
-        <div class="ob-review-item"><i class="fas fa-id-card"></i><span><strong>Business type:</strong> @providerTypeLabel</span></div>
+        <div class="ob-review-item"><i class="fas fa-id-card"></i><span><strong>@L["Business type:"]</strong> @providerTypeLabel</span></div>
 
-        <div class="ob-review-item"><i class="fas fa-list-check"></i><span><strong>Services selected:</strong> @(serviceCount > 0 ? $"{serviceCount} services" : "—")</span></div>
+        <div class="ob-review-item"><i class="fas fa-list-check"></i><span><strong>@L["Services selected:"]</strong> @(serviceCount > 0 ? $"{serviceCount} services" : "—")</span></div>
 
         @if (s.ExamPassed.HasValue)
 
@@ -355,11 +355,11 @@ else
 
             var examLabel = s.ExamPassed == true ? $"Passed ({s.ExamScorePercent}%)" : "Not passed";
 
-            <div class="ob-review-item"><i class="fas fa-award"></i><span><strong>Exam status:</strong> @examLabel</span></div>
+            <div class="ob-review-item"><i class="fas fa-award"></i><span><strong>@L["Exam status:"]</strong> @examLabel</span></div>
 
         }
 
-        <div class="ob-review-item"><i class="fas fa-file-lines"></i><span><strong>Documents:</strong> @uploadedDocCount uploaded</span></div>
+        <div class="ob-review-item"><i class="fas fa-file-lines"></i><span><strong>@L["Documents:"]</strong> @uploadedDocCount uploaded</span></div>
 
     </div>
 
@@ -393,7 +393,7 @@ else
         {
             <label class="prv-check-row">
                 <input type="checkbox" name="agreeToReview" value="true" />
-                <span>I agree to INDOR provider review and verification</span>
+                <span>@L["I agree to INDOR provider review and verification"]</span>
             </label>
         }
     }
@@ -401,7 +401,7 @@ else
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="prvReviewForm" class="ob-btn ob-btn-primary">Submit application</button>
+    <button type="submit" form="prvReviewForm" class="ob-btn ob-btn-primary">@L["Submit application"]</button>
     <a asp-action="Documents" class="ob-btn ob-btn-outline prv-review-edit-btn">@(isAppliance ? "Back" : isPest || isLandscaping ? "Edit information" : isRoofing ? "Edit answers" : usesTradeReview ? "Edit information" : "Edit application")</a>
 </div>
 

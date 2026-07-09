@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadPhotosReviewViewModel
 @{
-    ViewData["Title"] = "Review Photos - INDOR PRO";
+    ViewData["Title"] = L["Review Photos - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "upload-photos.css";
@@ -18,12 +18,12 @@
     @await Html.PartialAsync("_UploadPhotosHead")
 
     <section class="upp-head">
-        <h1>Review Photos</h1>
-        <p>Check photos before saving the update.</p>
+        <h1>@L["Review Photos"]</h1>
+        <p>@L["Check photos before saving the update."]</p>
     </section>
 
     <div class="upp-progress">
-        <span class="upp-step">Step 3 of 3</span>
+        <span class="upp-step">@L["Step 3 of 3"]</span>
         <div class="upp-bar"><span style="width:100%"></span></div>
     </div>
 
@@ -47,7 +47,7 @@
         <i class="fas fa-chevron-right upp-job-summary-chevron"></i>
     </a>
 
-    <h2 class="upp-section">Uploaded Photos</h2>
+    <h2 class="upp-section">@L["Uploaded Photos"]</h2>
     <div class="upp-review-grid">
         @foreach (var photo in Model.Photos)
         {
@@ -67,13 +67,13 @@
         @Html.AntiForgeryToken()
         <input type="hidden" name="action" id="uppReviewAction" value="save" />
 
-        <h2 class="upp-section">Notes</h2>
-        <textarea name="notes" rows="3" class="upp-notes" placeholder="Add a note about this update...">@Model.Notes</textarea>
+        <h2 class="upp-section">@L["Notes"]</h2>
+        <textarea name="notes" rows="3" class="upp-notes" placeholder="@L["Add a note about this update..."]">@Model.Notes</textarea>
 
         <div class="upp-actions">
-            <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppReviewAction').value='save';">Save Update</button>
-            <button type="submit" class="upp-btn upp-btn--outline" onclick="document.getElementById('uppReviewAction').value='send';">Send to Report</button>
-            <a asp-controller="Proveedor" asp-action="AddPhotos" class="upp-btn-text">Back</a>
+            <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppReviewAction').value='save';">@L["Save Update"]</button>
+            <button type="submit" class="upp-btn upp-btn--outline" onclick="document.getElementById('uppReviewAction').value='send';">@L["Send to Report"]</button>
+            <a asp-controller="Proveedor" asp-action="AddPhotos" class="upp-btn-text">@L["Back"]</a>
         </div>
     </form>
 </div>

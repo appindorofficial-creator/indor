@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateJobSendViewModel
 @{
-    ViewData["Title"] = "Review & Send - INDOR PRO";
+    ViewData["Title"] = L["Review & Send - INDOR PRO"];
     Layout = "_ProviderProLayout";
     var deliveryOptions = new[] {
         ("indor", "Send in INDOR", "fa-comment-dots"),
@@ -37,9 +37,9 @@
     {
         <section class="prv-pro-wizard-card prv-pro-send-quote-card">
             <div class="prv-pro-send-quote-head">
-                <h2>Quote preview</h2>
+                <h2>@L["Quote preview"]</h2>
                 <div>
-                    <small>Total estimate</small>
+                    <small>@L["Total estimate"]</small>
                     <strong>@Model.EstimateTotalLabel</strong>
                 </div>
             </div>
@@ -69,8 +69,8 @@
         @if (Model.SendQuote)
         {
             <section class="prv-pro-wizard-card">
-                <h2>Delivery method</h2>
-                <div class="prv-pro-delivery-grid" role="radiogroup" aria-label="Delivery method">
+                <h2>@L["Delivery method"]</h2>
+                <div class="prv-pro-delivery-grid" role="radiogroup" aria-label="@L["Delivery method"]">
                     @foreach (var (id, label, icon) in deliveryOptions)
                     {
                         var selected = Model.DeliveryMethod == id;
@@ -85,7 +85,7 @@
             </section>
 
             <section class="prv-pro-wizard-card">
-                <h2>Message to customer</h2>
+                <h2>@L["Message to customer"]</h2>
                 <label class="prv-pro-send-message">
                     <textarea name="CustomerMessage" rows="4">@Model.CustomerMessage</textarea>
                     <i class="fas fa-pen"></i>
@@ -93,34 +93,32 @@
             </section>
 
             <section class="prv-pro-wizard-card">
-                <h2>Attachments</h2>
+                <h2>@L["Attachments"]</h2>
                 <div class="prv-pro-send-attachment-chips">
                     <label class="prv-pro-send-chip">
                         <input type="checkbox" name="IncludeAiSummary" value="true" @(Model.IncludeAiSummary ? "checked" : "") />
-                        <i class="fas fa-wand-magic-sparkles"></i> AI summary attached
-                    </label>
+                        <i class="fas fa-wand-magic-sparkles"></i> @L["AI summary attached"]</label>
                     @if (Model.IncludeVoiceTranscript)
                     {
                         <label class="prv-pro-send-chip">
                             <input type="checkbox" name="IncludeVoiceTranscript" value="true" checked />
-                            <i class="fas fa-wave-square"></i> Voice transcript attached
-                        </label>
+                            <i class="fas fa-wave-square"></i> @L["Voice transcript attached"]</label>
                     }
                 </div>
             </section>
         }
 
         <div class="prv-pro-send-final-actions">
-            <button type="submit" class="prv-pro-send-link" name="SubmitAction" value="save_draft">Save draft</button>
+            <button type="submit" class="prv-pro-send-link" name="SubmitAction" value="save_draft">@L["Save draft"]</button>
             <div class="prv-pro-send-buttons">
-                <button type="submit" class="prv-pro-btn prv-pro-btn--outline" name="SubmitAction" value="job_only">Create job only</button>
+                <button type="submit" class="prv-pro-btn prv-pro-btn--outline" name="SubmitAction" value="job_only">@L["Create job only"]</button>
                 @if (Model.SendQuote)
                 {
-                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary" name="SubmitAction" value="job_and_quote">Create job &amp; send quote</button>
+                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary" name="SubmitAction" value="job_and_quote">@L["Create job &amp; send quote"]</button>
                 }
                 else
                 {
-                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary" name="SubmitAction" value="job_only">Create job</button>
+                    <button type="submit" class="prv-pro-btn prv-pro-btn--primary" name="SubmitAction" value="job_only">@L["Create job"]</button>
                 }
             </div>
         </div>
@@ -128,13 +126,13 @@
         @if (Model.SendQuote)
         {
             <div class="prv-pro-wizard-actions prv-pro-wizard-actions--single">
-                <a asp-controller="Proveedor" asp-action="CreateJobAiDraft" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+                <a asp-controller="Proveedor" asp-action="CreateJobAiDraft" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
             </div>
         }
         else
         {
             <div class="prv-pro-wizard-actions prv-pro-wizard-actions--single">
-                <a asp-controller="Proveedor" asp-action="CreateJobQuote" class="prv-pro-btn prv-pro-btn--outline">Back</a>
+                <a asp-controller="Proveedor" asp-action="CreateJobQuote" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
             </div>
         }
     </form>

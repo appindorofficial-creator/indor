@@ -1,6 +1,6 @@
 @model List<IndorMvcApp.ViewModels.ProviderProWizardStepViewModel>
 
-<nav class="prv-pro-wizard-stepper@(ViewBag.WizardStepperPosition as string == "top" ? " prv-pro-wizard-stepper--top" : "")" aria-label="Create job progress">
+<nav class="prv-pro-wizard-stepper@(ViewBag.WizardStepperPosition as string == "top" ? " prv-pro-wizard-stepper--top" : "")" aria-label="@L["Create job progress"]">
     @for (var i = 0; i < Model.Count; i++)
     {
         var step = Model[i];
@@ -14,7 +14,7 @@
             {
                 <span>@step.Number</span>
             }
-            <small>@step.Label</small>
+            <small>@L[step.Label]</small>
         </div>
         @if (i < Model.Count - 1)
         {

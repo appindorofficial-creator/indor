@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProMessageSentSuccessViewModel
 @{
-    ViewData["Title"] = "Message Sent - INDOR PRO";
+    ViewData["Title"] = L["Message Sent - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
 }
@@ -11,7 +11,7 @@
 
     <section class="prv-pro-job-success-hero">
         <div class="prv-pro-job-success-icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Message sent successfully</h1>
+        <h1>@L["Message sent successfully"]</h1>
     </section>
 
     <section class="prv-pro-job-success-card">

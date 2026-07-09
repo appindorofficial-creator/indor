@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.RealtorPropertyFileViewViewModel
 @{
     Layout = "_RealtorLayout";
-    ViewData["Title"] = "Property File";
+    ViewData["Title"] = L["Property File"];
     ViewBag.NavActive = "files";
 }
 
@@ -9,7 +9,7 @@
     @await Html.PartialAsync("~/Views/Realtor/_RealtorTopbar.cshtml", Model)
 
     <div class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Files" class="rl-back-link"><i class="fas fa-chevron-left"></i> Property Files</a>
+        <a asp-controller="Realtor" asp-action="Files" class="rl-back-link"><i class="fas fa-chevron-left"></i> @L["Property Files"]</a>
         <h1 class="rl-page-title">@Model.Address</h1>
         @if (!string.IsNullOrWhiteSpace(Model.CityRegion))
         {
@@ -59,11 +59,11 @@
         <div class="rl-dash-empty">
             @if (string.Equals(Model.PrimaryActionLabel, "Continue Inspection", StringComparison.Ordinal))
             {
-                <span>Inspection report uploaded. Continue analysis to add findings to this file.</span>
+                <span>@L["Inspection report uploaded. Continue analysis to add findings to this file."]</span>
             }
             else
             {
-                <span>No items in this file yet. Upload an inspection report or add content to get started.</span>
+                <span>@L["No items in this file yet. Upload an inspection report or add content to get started."]</span>
             }
         </div>
     }
@@ -98,7 +98,7 @@
                                 <button type="button"
                                         class="rl-btn-outline rl-btn-outline--sm rl-file-open-btn"
                                         data-file-url="@fileOpenUrl"
-                                        aria-label="Open @item.ItemLabel">
+                                        aria-label="@L["Open @item.ItemLabel"]">
                                     Open <i class="fas fa-arrow-up-right-from-square" aria-hidden="true"></i>
                                 </button>
                             }

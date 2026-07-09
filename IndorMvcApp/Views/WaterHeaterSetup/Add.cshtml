@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.WaterHeaterSetupStartViewModel
 @{
-    ViewData["Title"] = "Scan Water Heater Label";
+    ViewData["Title"] = L["Scan Water Heater Label"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
     ViewData["WizardStep"] = 
@@ -13,27 +13,27 @@ Model.CurrentStep
 
         @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
 
-        <p class="hvac-lead">Scan the label on your water heater to automatically fill in brand, model, serial number, and maintenance reminders.</p>
+        <p class="hvac-lead">@L["Scan the label on your water heater to automatically fill in brand, model, serial number, and maintenance reminders."]</p>
 
         <div class="wh-scan-intro">
             <div class="wh-scan-intro-icon"><i class="fas fa-camera"></i></div>
-            <strong>Scan the equipment label</strong>
-            <p>Point your camera at the manufacturer label on your water heater.</p>
+            <strong>@L["Scan the equipment label"]</strong>
+            <p>@L["Point your camera at the manufacturer label on your water heater."]</p>
         </div>
 
         <a asp-action="ScanLabel" asp-route-propiedadId="@Model.PropiedadId" class="hvac-save-btn hvac-btn-with-icon">
-            <i class="fas fa-camera"></i> Scan label now
+            <i class="fas fa-camera"></i> @L["Scan label now"]
         </a>
 
         <div class="wh-or-divider"><span>OR</span></div>
 
         <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn hvac-btn-with-icon">
-            <i class="fas fa-pen-to-square"></i> Enter details manually
+            <i class="fas fa-pen-to-square"></i> @L["Enter details manually"]
         </a>
 
         <div class="hvac-info-banner">
             <i class="fas fa-circle-info"></i>
-            <span>Scanning helps INDOR organize your equipment, estimate age, and set up maintenance reminders.</span>
+            <span>@L["Scanning helps INDOR organize your equipment, estimate age, and set up maintenance reminders."]</span>
         </div>
     </div>
 

@@ -4,7 +4,7 @@
     var isMyHome = activeView == "myhome";
 }
 
-<div class="hv-view-switcher" role="tablist" aria-label="Home view">
+<div class="hv-view-switcher" role="tablist" aria-label="@L["Home view"]">
     <button type="button"
             class="hv-view-card @(isNetwork ? "is-active" : null) nav-jump"
             data-target="section-home"
@@ -12,8 +12,8 @@
             aria-selected="@(isNetwork ? "true" : "false")">
         <i class="fas fa-users hv-view-icon" aria-hidden="true"></i>
         <span class="hv-view-copy">
-            <strong>Nearby Network</strong>
-            <small>Feed, neighbors, local help</small>
+            <strong>@L["Nearby Network"]</strong>
+            <small>@L["Feed, neighbors, local help"]</small>
         </span>
     </button>
     <button type="button"
@@ -23,8 +23,8 @@
             aria-selected="@(isMyHome ? "true" : "false")">
         <i class="fas fa-house hv-view-icon" aria-hidden="true"></i>
         <span class="hv-view-copy">
-            <strong>My Home</strong>
-            <small>Your home dashboard</small>
+            <strong>@L["My Home"]</strong>
+            <small>@L["Your home dashboard"]</small>
         </span>
     </button>
 </div>

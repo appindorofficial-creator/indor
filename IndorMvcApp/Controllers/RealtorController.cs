@@ -20,7 +20,8 @@ public class RealtorController(
     RealtorSharedQuoteService sharedQuoteService,
     UserManager<ApplicationUser> userManager,
     AppDbContext db,
-    IWebHostEnvironment env) : Controller
+    IWebHostEnvironment env,
+    IIndorLocalizer localizer) : Controller
 {
     private const long MaxDocumentBytes = 10 * 1024 * 1024;
     private const long MaxProfilePhotoBytes = 10_000_000;
@@ -1092,7 +1093,7 @@ public class RealtorController(
                 return BadRequest(new { ok = false, message = error });
             }
 
-            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+            return Json(new { ok = true, message = localizer["Profile photo updated."], photoUrl });
         }
 
         if (!string.IsNullOrWhiteSpace(error))
@@ -1101,7 +1102,7 @@ public class RealtorController(
         }
         else
         {
-            TempData["ProfilePhotoOk"] = "Profile photo updated.";
+            TempData["ProfilePhotoOk"] = localizer["Profile photo updated."];
         }
 
         return RedirectToAction(nameof(BusinessInformation));

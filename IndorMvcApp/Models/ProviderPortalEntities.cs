@@ -12,11 +12,17 @@ public class IndorProveedorCategoriaCatalogo
     [Required, MaxLength(120)]
     public string LabelEn { get; set; } = string.Empty;
 
+    [MaxLength(120)]
+    public string? LabelEs { get; set; }
+
     [Required, MaxLength(60)]
     public string IconClass { get; set; } = string.Empty;
 
     [MaxLength(200)]
     public string? DescriptionEn { get; set; }
+
+    [MaxLength(200)]
+    public string? DescriptionEs { get; set; }
 
     public int SortOrder { get; set; }
 
@@ -33,6 +39,9 @@ public class IndorProveedorOfertaCatalogo
 
     [Required, MaxLength(120)]
     public string LabelEn { get; set; } = string.Empty;
+
+    [MaxLength(120)]
+    public string? LabelEs { get; set; }
 
     [Required, MaxLength(60)]
     public string IconClass { get; set; } = string.Empty;
@@ -277,6 +286,9 @@ public class IndorProveedorAlcanceRegla
 
     [Required, MaxLength(120)]
     public string LabelEn { get; set; } = string.Empty;
+
+    [MaxLength(120)]
+    public string? LabelEs { get; set; }
 
     public bool IsAllowed { get; set; }
 

@@ -15,7 +15,7 @@
     </div>
 </div>
 
-<h2 class="rl-invite-section-title">Included Items</h2>
+<h2 class="rl-invite-section-title">@L["Included Items"]</h2>
 <ul class="rl-included-list">
     @foreach (var item in Model.IncludedItems)
     {
@@ -23,28 +23,28 @@
     }
 </ul>
 
-<h2 class="rl-invite-section-title">What will be created</h2>
+<h2 class="rl-invite-section-title">@L["What will be created"]</h2>
 <ul class="rl-next-steps">
-    <li><span><i class="fas fa-check"></i></span> One organized property file</li>
-    <li><span><i class="fas fa-check"></i></span> Stored under Files &gt; Active</li>
-    <li><span><i class="fas fa-check"></i></span> Easy to update later</li>
-    <li><span><i class="fas fa-check"></i></span> Ready to share with clients or team members</li>
+    <li><span><i class="fas fa-check"></i></span> @L["One organized property file"]</li>
+    <li><span><i class="fas fa-check"></i></span> @L["Stored under Files &gt; Active"]</li>
+    <li><span><i class="fas fa-check"></i></span> @L["Easy to update later"]</li>
+    <li><span><i class="fas fa-check"></i></span> @L["Ready to share with clients or team members"]</li>
 </ul>
 
 <form asp-action="Create" method="post">
     @Html.AntiForgeryToken()
     <label class="rl-check-row">
         <input type="checkbox" name="createAndContinueLater" value="true" @(Model.CreateAndContinueLater ? "checked" : null) />
-        <span>Create file now and continue adding items later</span>
+        <span>@L["Create file now and continue adding items later"]</span>
     </label>
 
     <div class="rl-info-box rl-info-box--muted">
         <i class="fas fa-circle-info"></i>
-        <p>You can open the file after creation to upload more photos, inspection reports, warranties, repair items, quotes, and notes.</p>
+        <p>@L["You can open the file after creation to upload more photos, inspection reports, warranties, repair items, quotes, and notes."]</p>
     </div>
 
     <div class="rl-invite-actions">
-        <a asp-action="AddContent" class="rl-invite-cancel">Back</a>
-        <button type="submit" class="ob-btn ob-btn-primary">Create File</button>
+        <a asp-action="AddContent" class="rl-invite-cancel">@L["Back"]</a>
+        <button type="submit" class="ob-btn ob-btn-primary">@L["Create File"]</button>
     </div>
 </form>

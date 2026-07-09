@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.HomeSafetyUploadViewModel
+@model IndorMvcApp.ViewModels.HomeSafetyUploadViewModel
 @{
-    ViewData["Title"] = "Photos & Notes - INDOR";
-    ViewData["WizardTitle"] = "Photos & Notes";
+    ViewData["Title"] = L["Photos & Notes - INDOR"];
+    ViewData["WizardTitle"] = L["Photos & Notes"];
     ViewData["WizardBackUrl"] = Url.Action("HomeSafetyPropertyContext", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
 
 }
 
-<h1 class="page-heading">Upload photos and add comments</h1>
-    <p class="page-lead">Help INDOR understand the issue before scheduling the right provider.</p>
+<h1 class="page-heading">@L["Upload photos and add comments"]</h1>
+    <p class="page-lead">@L["Help INDOR understand the issue before scheduling the right provider."]</p>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -25,38 +25,38 @@
         <div class="field-card">
             <div class="address-display">
                 <div class="left"><i class="fas fa-house"></i><span>@Model.DireccionPropiedad</span></div>
-                <a asp-action="HomeSafetyPropertyContext" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit</a>
+                <a asp-action="HomeSafetyPropertyContext" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">@L["Edit"]</a>
             </div>
         </div>
 
         <div class="dropzone" id="dropzone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong style="color:#0066CC;">Drag files here or browse</strong></p>
-            <p style="margin-top:6px;font-size:0.82rem;color:#64748B;">JPG, PNG, PDF up to 25 MB each</p>
+            <p><strong style="color:#0066CC;">@L["Drag files here or browse"]</strong></p>
+            <p style="margin-top:6px;font-size:0.82rem;color:#64748B;">@L["JPG, PNG, PDF up to 25 MB each"]</p>
         </div>
         <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov,.webm,application/pdf,image/*,video/*" />
 
         <div class="action-list">
             <label class="action-item" for="fileInputCamera">
                 <i class="fas fa-camera icon"></i>
-                <div class="action-text"><strong>Take photo</strong></div>
+                <div class="action-text"><strong>@L["Take photo"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
             <label class="action-item" for="fileInput">
                 <i class="fas fa-images icon"></i>
-                <div class="action-text"><strong>Upload photos</strong></div>
+                <div class="action-text"><strong>@L["Upload photos"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <label class="action-item" for="fileInputReport">
                 <i class="fas fa-file-lines icon"></i>
-                <div class="action-text"><strong>Upload inspection report</strong></div>
+                <div class="action-text"><strong>@L["Upload inspection report"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputReport" class="hidden-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" />
             <label class="action-item" for="fileInputVideo">
                 <i class="fas fa-video icon"></i>
-                <div class="action-text"><strong>Add video</strong></div>
+                <div class="action-text"><strong>@L["Add video"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
@@ -69,7 +69,7 @@
                 {
                     <div class="file-item">
                         <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
-                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a>
                     </div>
                 }
             </div>
@@ -78,19 +78,19 @@
         <div id="selectedFiles" class="file-list"></div>
 
         <div class="field-card">
-            <label asp-for="ComentariosProveedor" class="field-label">Comments for the provider</label>
+            <label asp-for="ComentariosProveedor" class="field-label">@L["Comments for the provider"]</label>
             <textarea asp-for="ComentariosProveedor" class="form-textarea" maxlength="1000"
-                      placeholder="Smoke alarm in hallway chirps often, one bedroom may not have a detector, and the stairs feel unsafe for small children..."></textarea>
+                      placeholder="@L["Smoke alarm in hallway chirps often, one bedroom may not have a detector, and the stairs feel unsafe for small children..."]"></textarea>
             <div class="char-count"><span id="charCount">0</span>/1000</div>
         </div>
 
         <div class="tip-box">
             <i class="fas fa-circle-info"></i>
-            <div>Helpful photos include smoke detectors, CO alarms, stair railings, child safety concerns, doors, exits, and any visible hazards.</div>
+            <div>@L["Helpful photos include smoke detectors, CO alarms, stair railings, child safety concerns, doors, exits, and any visible hazards."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="continue">Continue <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+        <button type="submit" class="btn-primary" name="action" value="continue">@L["Continue"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
     </form>
 </div>
 @section Scripts {

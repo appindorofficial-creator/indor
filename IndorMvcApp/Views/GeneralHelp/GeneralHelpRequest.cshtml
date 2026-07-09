@@ -14,7 +14,7 @@
     </div>
 
     <h2 class="page-heading" style="font-size:1.1rem;text-align:center;">@Model.PageTitle</h2>
-    <p class="page-lead" style="margin-top:-8px;text-align:center;">Tell us what kind of moving help you need.</p>
+    <p class="page-lead" style="margin-top:-8px;text-align:center;">@L["Tell us what kind of moving help you need."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -28,47 +28,47 @@
         <div class="location-card">
             <i class="fas fa-house main"></i>
             <div class="meta">
-                <input asp-for="DireccionPropiedad" placeholder="Service address" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
+                <input asp-for="DireccionPropiedad" placeholder="@L["Service address"]" required style="border:none;background:transparent;width:100%;font-family:inherit;font-weight:600;font-size:0.88rem;" />
                 <a asp-controller="Home" asp-action="Index" class="change">Change address ></a>
             </div>
         </div>
         <span asp-validation-for="DireccionPropiedad" style="color:#B91C1C;font-size:0.82rem;display:block;margin:-8px 0 12px;"></span>
 
         <div class="field-card">
-            <span class="field-label">What do you need help with?</span>
+            <span class="field-label">@L["What do you need help with?"]</span>
             <div class="help-grid" id="helpTypeGroup">
-                <button type="button" class="help-tile" data-value="MovingQuestion"><i class="fas fa-circle-question"></i>Moving question</button>
-                <button type="button" class="help-tile" data-value="ExtraHands"><i class="fas fa-people-carry-box"></i>Extra hands</button>
-                <button type="button" class="help-tile" data-value="SmallTask"><i class="fas fa-wrench"></i>Small task</button>
-                <button type="button" class="help-tile" data-value="SuppliesPickup"><i class="fas fa-box"></i>Supplies pickup</button>
-                <button type="button" class="help-tile" data-value="DonationDropOff"><i class="fas fa-hand-holding-heart"></i>Donation drop-off</button>
-                <button type="button" class="help-tile" data-value="Other"><i class="fas fa-ellipsis"></i>Other</button>
+                <button type="button" class="help-tile" data-value="MovingQuestion"><i class="fas fa-circle-question"></i>@L["Moving question"]</button>
+                <button type="button" class="help-tile" data-value="ExtraHands"><i class="fas fa-people-carry-box"></i>@L["Extra hands"]</button>
+                <button type="button" class="help-tile" data-value="SmallTask"><i class="fas fa-wrench"></i>@L["Small task"]</button>
+                <button type="button" class="help-tile" data-value="SuppliesPickup"><i class="fas fa-box"></i>@L["Supplies pickup"]</button>
+                <button type="button" class="help-tile" data-value="DonationDropOff"><i class="fas fa-hand-holding-heart"></i>@L["Donation drop-off"]</button>
+                <button type="button" class="help-tile" data-value="Other"><i class="fas fa-ellipsis"></i>@L["Other"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">When do you need help?</span>
+            <span class="field-label">@L["When do you need help?"]</span>
             <div class="chip-scroll" id="timingGroup">
-                <button type="button" class="chip-option" data-value="Today"><i class="fas fa-calendar-day"></i> Today</button>
-                <button type="button" class="chip-option" data-value="Tomorrow"><i class="fas fa-calendar"></i> Tomorrow</button>
-                <button type="button" class="chip-option" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> This week</button>
-                <button type="button" class="chip-option" data-value="Flexible"><i class="fas fa-clock"></i> Flexible</button>
+                <button type="button" class="chip-option" data-value="Today"><i class="fas fa-calendar-day"></i> @L["Today"]</button>
+                <button type="button" class="chip-option" data-value="Tomorrow"><i class="fas fa-calendar"></i> @L["Tomorrow"]</button>
+                <button type="button" class="chip-option" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> @L["This week"]</button>
+                <button type="button" class="chip-option" data-value="Flexible"><i class="fas fa-clock"></i> @L["Flexible"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is it?</span>
+            <span class="field-label">@L["How urgent is it?"]</span>
             <div class="chip-scroll" id="urgencyGroup">
-                <button type="button" class="chip-option" data-value="Normal"><i class="fas fa-flag"></i> Normal</button>
-                <button type="button" class="chip-option" data-value="Priority"><i class="fas fa-shield"></i> Priority</button>
-                <button type="button" class="chip-option" data-value="Urgent"><i class="fas fa-bolt"></i> Urgent</button>
+                <button type="button" class="chip-option" data-value="Normal"><i class="fas fa-flag"></i> @L["Normal"]</button>
+                <button type="button" class="chip-option" data-value="Priority"><i class="fas fa-shield"></i> @L["Priority"]</button>
+                <button type="button" class="chip-option" data-value="Urgent"><i class="fas fa-bolt"></i> @L["Urgent"]</button>
             </div>
         </div>
 
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>Choose the option that best matches your situation. You can describe the details on the next step.</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Choose the option that best matches your situation. You can describe the details on the next step."]</span></div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">Next</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back to Moving Setup</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L["Next"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back to Moving Setup"]</button>
     </form>
 </div>
 @section Scripts {

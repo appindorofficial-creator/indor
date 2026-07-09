@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.GeneralHelpSentViewModel
 @{
-    ViewData["Title"] = "Request Sent - INDOR";
+    ViewData["Title"] = L["Request Sent - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
@@ -8,18 +8,18 @@
 
 
 <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading" style="text-align:center;font-size:1.15rem;">Request Sent</h1>
-    <p class="page-lead" style="text-align:center;">Your general help request has been submitted.</p>
+    <h1 class="page-heading" style="text-align:center;font-size:1.15rem;">@L["Request Sent"]</h1>
+    <p class="page-lead" style="text-align:center;">@L["Your general help request has been submitted."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Address</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Requested time</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Status</div><div class="summary-value"><span class="status-pending">@Model.EstadoLabel</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Requested time"]</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pending">@Model.EstadoLabel</span></div></div></div>
     </div>
 
-    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>We're reviewing your request and will contact you shortly with next steps.</span></div>
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["We're reviewing your request and will contact you shortly with next steps."]</span></div>
 
-    <a asp-action="GeneralHelpReview" asp-route-id="@Model.SolicitudId" class="btn-primary">View request</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline">Go to Schedule</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline">Back to Moving Setup</a>
+    <a asp-action="GeneralHelpReview" asp-route-id="@Model.SolicitudId" class="btn-primary">@L["View request"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline">@L["Go to Schedule"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline">@L["Back to Moving Setup"]</a>

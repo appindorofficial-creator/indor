@@ -5,13 +5,13 @@
         (Url.Action("Index", "Home", new { filter = Model.ActiveFilter, view, q = Model.SearchQuery }) ?? "/") + "#section-home";
 }
 
-<div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="Network view">
+<div class="rl-network-view-toggle @(isMapView ? "rl-network-view-toggle--map" : "")" role="tablist" aria-label="@L["Network view"]">
     <a href="@BuildViewUrl("map")"
        class="rl-network-view-btn @(Model.ActiveView == "map" ? "is-active" : null)">
-        <i class="fas fa-map"></i> Map
+        <i class="fas fa-map"></i> @L["Map"]
     </a>
     <a href="@BuildViewUrl("feed")"
        class="rl-network-view-btn @(Model.ActiveView == "feed" ? "is-active" : null)">
-        <i class="fas fa-list"></i> Feed
+        <i class="fas fa-list"></i> @L["Feed"]
     </a>
 </div>

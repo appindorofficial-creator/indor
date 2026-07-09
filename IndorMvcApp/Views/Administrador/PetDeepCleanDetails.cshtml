@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPetDeepCleanFormViewModel
 @{
-    ViewData["Title"] = "Pet Deep Cleaning";
+    ViewData["Title"] = L["Pet Deep Cleaning"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Pet Deep Cleaning</h1>
-        <p>Tell us a few details so we can get this right.</p>
+        <h1>@L["Pet Deep Cleaning"]</h1>
+        <p>@L["Tell us a few details so we can get this right."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -29,7 +29,7 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
         </div>
     }
 
@@ -39,7 +39,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-wand-magic-sparkles pa-q-icon pa-q-icon--purple"></i> What type of service do you need?</label>
+            <label><i class="fas fa-wand-magic-sparkles pa-q-icon pa-q-icon--purple"></i> @L["What type of service do you need?"]</label>
             <div class="pa-chip-grid pa-chip-grid--scroll">
                 @foreach (var s in new (string Value, string Label)[]
                 {
@@ -58,7 +58,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label><i class="fas fa-paw pa-q-icon pa-q-icon--purple"></i> How many pets were in the home?</label>
+            <label><i class="fas fa-paw pa-q-icon pa-q-icon--purple"></i> @L["How many pets were in the home?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--4">
                 @foreach (var c in new (string Value, string Label)[] { ("1", "1"), ("2", "2"), ("3", "3"), ("FourPlus", "4+") })
                 {
@@ -72,7 +72,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label><i class="fas fa-dog pa-q-icon pa-q-icon--purple"></i> What kind of pets?</label>
+            <label><i class="fas fa-dog pa-q-icon pa-q-icon--purple"></i> @L["What kind of pets?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var p in new (string Value, string Label, string Icon)[] { ("Dog", "Dog", "fa-dog"), ("Cat", "Cat", "fa-cat"), ("Other", "Other", "fa-paw") })
                 {
@@ -86,7 +86,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label><i class="fas fa-bullseye pa-q-icon pa-q-icon--purple"></i> What do you want us to focus on? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-bullseye pa-q-icon pa-q-icon--purple"></i> @L["What do you want us to focus on?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-pet-focus-grid">
                 @foreach (var f in new (string Value, string Label, string Icon)[]
                 {
@@ -110,7 +110,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> When do you need it?</label>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> @L["When do you need it?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
                 {
@@ -127,7 +127,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> Can the team enter?</label>
+            <label><i class="fas fa-lock pa-q-icon pa-q-icon--purple"></i> @L["Can the team enter?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Smart lock"), ("HostMeet", "Host will meet"), ("GuestStillInside", "Guest still inside") })
                 {
@@ -141,21 +141,21 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">7</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> Add notes</label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> @L["Add notes"]</label>
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="petDetails">@Model.Details</textarea>
             <div class="pa-media-actions">
-                <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-                <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+                <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+                <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
             </div>
         </div>
 
         <article class="pa-pet-info-box">
             <i class="fas fa-house-chimney-user"></i>
-            <p>Great for Airbnb turnovers and rental homes after dog stays. Our pet deep cleaning removes hair, dander, and odors so your next guests walk into a fresh, clean home.</p>
+            <p>@L["Great for Airbnb turnovers and rental homes after dog stays. Our pet deep cleaning removes hair, dander, and odors so your next guests walk into a fresh, clean home."]</p>
         </article>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue <i class="fas fa-arrow-right"></i></button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"] <i class="fas fa-arrow-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to start"]</a>
     </form>
 </div>
 

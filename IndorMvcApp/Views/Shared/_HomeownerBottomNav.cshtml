@@ -27,31 +27,31 @@
     var moreUrl = Url.Action("Index", "Home") + "#section-more";
 }
 
-<nav class="bottom-nav" aria-label="Home navigation">
+<nav class="bottom-nav" aria-label="@L["Home navigation"]">
     @if (spaMode)
     {
         <button type="button" class="nav-item @IsActive("nearby")" data-target="section-home">
-            <i class="fas fa-location-dot"></i><span>Nearby</span>
+            <i class="fas fa-location-dot"></i><span>@L["Nearby"]</span>
         </button>
         <button type="button" class="nav-item @IsActive("services")" data-target="section-services">
-            <i class="fas fa-screwdriver-wrench"></i><span>Services</span>
+            <i class="fas fa-screwdriver-wrench"></i><span>@L["Services"]</span>
         </button>
         <button type="button" class="nav-item @IsActive("housefacts")" data-target="section-myhome">
-            <i class="fas fa-house-circle-check"></i><span>House Facts</span>
+            <i class="fas fa-house-circle-check"></i><span>@L["House Facts"]</span>
         </button>
         <button type="button" class="nav-item @IsActive("schedule")" data-target="section-schedule">
-            <i class="fas fa-clipboard-list"></i><span>Schedule</span>
+            <i class="fas fa-clipboard-list"></i><span>@L["Schedule"]</span>
         </button>
         <button type="button" class="nav-item @IsActive("more")" data-target="section-more">
-            <i class="fas fa-ellipsis"></i><span>More</span>
+            <i class="fas fa-ellipsis"></i><span>@L["More"]</span>
         </button>
     }
     else
     {
-        <a href="@nearbyUrl" class="nav-item @IsActive("nearby")"><i class="fas fa-location-dot"></i><span>Nearby</span></a>
-        <a href="@servicesUrl" class="nav-item @IsActive("services")"><i class="fas fa-screwdriver-wrench"></i><span>Services</span></a>
-        <a href="@houseFactsUrl" class="nav-item @IsActive("housefacts")"><i class="fas fa-house-circle-check"></i><span>House Facts</span></a>
-        <a href="@scheduleUrl" class="nav-item @IsActive("schedule")"><i class="fas fa-clipboard-list"></i><span>Schedule</span></a>
-        <a href="@moreUrl" class="nav-item @IsActive("more")"><i class="fas fa-ellipsis"></i><span>More</span></a>
+        <a href="@nearbyUrl" class="nav-item @IsActive("nearby")"><i class="fas fa-location-dot"></i><span>@L["Nearby"]</span></a>
+        <a href="@servicesUrl" class="nav-item @IsActive("services")"><i class="fas fa-screwdriver-wrench"></i><span>@L["Services"]</span></a>
+        <a href="@houseFactsUrl" class="nav-item @IsActive("housefacts")"><i class="fas fa-house-circle-check"></i><span>@L["House Facts"]</span></a>
+        <a href="@scheduleUrl" class="nav-item @IsActive("schedule")"><i class="fas fa-clipboard-list"></i><span>@L["Schedule"]</span></a>
+        <a href="@moreUrl" class="nav-item @IsActive("more")"><i class="fas fa-ellipsis"></i><span>@L["More"]</span></a>
     }
 </nav>

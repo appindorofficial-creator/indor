@@ -38,7 +38,7 @@ public partial class ProviderRegistrationController
 
         if (!termsAccepted)
         {
-            ModelState.AddModelError(string.Empty, "Please agree to INDOR's Terms & Conditions.");
+            ModelState.AddModelError(string.Empty, localizer["Please agree to INDOR's Terms & Conditions."]);
             return View(StepVm(1, "Service Provider",
                 "Choose how you want to get started with INDOR.",
                 state, Url.Action("SelectRole", "Account")));
@@ -107,22 +107,22 @@ public partial class ProviderRegistrationController
 
         if (!termsAccepted)
         {
-            ModelState.AddModelError(string.Empty, "Please agree to INDOR's Terms & Conditions.");
+            ModelState.AddModelError(string.Empty, localizer["Please agree to INDOR's Terms & Conditions."]);
         }
 
         if (string.IsNullOrWhiteSpace(businessName))
         {
-            ModelState.AddModelError(string.Empty, "Company name is required.");
+            ModelState.AddModelError(string.Empty, localizer["Company name is required."]);
         }
 
         if (string.IsNullOrWhiteSpace(primaryContact))
         {
-            ModelState.AddModelError(string.Empty, "Contact name is required.");
+            ModelState.AddModelError(string.Empty, localizer["Contact name is required."]);
         }
 
         if (string.IsNullOrWhiteSpace(email))
         {
-            ModelState.AddModelError(string.Empty, "Email address is required.");
+            ModelState.AddModelError(string.Empty, localizer["Email address is required."]);
         }
 
         if (!UsPhoneOptionalAttribute.IsValidOptional(phone))
@@ -306,7 +306,7 @@ public partial class ProviderRegistrationController
 
         if (picked.Count == 0)
         {
-            ModelState.AddModelError(string.Empty, "Select at least one service category.");
+            ModelState.AddModelError(string.Empty, localizer["Select at least one service category."]);
             ViewBag.Categories = await registration.GetCategoriesAsync();
             ViewBag.SelectedIds = state.SelectedCategoryIds;
             return View(StepVm(4, "Service Categories & Assessment",
@@ -378,7 +378,7 @@ public partial class ProviderRegistrationController
 
         if (!termsAccepted)
         {
-            ModelState.AddModelError(string.Empty, "Please agree to INDOR's Terms & Conditions.");
+            ModelState.AddModelError(string.Empty, localizer["Please agree to INDOR's Terms & Conditions."]);
             ViewBag.HasDocuments = await registration.HasRequiredDocumentsAsync();
             ViewBag.AssessmentComplete = state.ExamPassed == true;
             ViewBag.AssessmentSkipped = state.AssessmentSkipped;

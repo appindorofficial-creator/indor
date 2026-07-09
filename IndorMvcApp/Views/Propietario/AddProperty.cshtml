@@ -1,12 +1,13 @@
 @model IndorMvcApp.ViewModels.AddPropertyViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Models
 @{
-    ViewData["Title"] = "Add Your Property - INDOR";
+    ViewData["Title"] = L["Add Your Property - INDOR"];
     Layout = null;
     ViewBag.OnboardingStep = 3;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -24,8 +25,8 @@
             @await Html.PartialAsync("_OnboardingStepper")
 
             <div class="ob-head-block">
-                <h1>Add Your Property</h1>
-                <p>Start with the house number and street name. We'll auto-fill the city, state, ZIP code, and property details when available.</p>
+                <h1>@L["Add Your Property"]</h1>
+                <p>@L["Start with the house number and street name. We'll auto-fill the city, state, ZIP code, and property details when available."]</p>
             </div>
 
             <div class="ob-form-card">
@@ -38,13 +39,13 @@
                     @Html.AntiForgeryToken()
 
                     <div class="ob-field">
-                        <label asp-for="StreetAddress" class="ob-label">Street Address</label>
+                        <label asp-for="StreetAddress" class="ob-label">@L["Street Address"]</label>
                         <div class="ob-search">
                             <i class="fas fa-magnifying-glass"></i>
                             <input asp-for="StreetAddress"
                                    id="street-address"
                                    name="StreetAddress"
-                                   placeholder="Enter house number and street name"
+                                   placeholder="@L["Enter house number and street name"]"
                                    autocomplete="address-line1"
                                    inputmode="text"
                                    data-address-autocomplete
@@ -58,23 +59,23 @@
 
                     <div class="ob-address-row ob-address-row--2">
                         <div class="ob-field">
-                            <label asp-for="City" class="ob-label">City</label>
+                            <label asp-for="City" class="ob-label">@L["City"]</label>
                             <input asp-for="City"
                                    id="city"
                                    name="City"
                                    class="ob-control"
-                                   placeholder="City"
+                                   placeholder="@L["City"]"
                                    autocomplete="address-level2" />
                             <span asp-validation-for="City" class="ob-error"></span>
                         </div>
                         <div class="ob-field">
-                            <label asp-for="State" class="ob-label">State</label>
+                            <label asp-for="State" class="ob-label">@L["State"]</label>
                             <select asp-for="State"
                                     id="state"
                                     name="State"
                                     class="ob-control ob-control--select"
                                     autocomplete="address-level1">
-                                <option value="">State</option>
+                                <option value="">@L["State"]</option>
                                 @foreach (var stateCode in PropertyAdministratorCatalog.UsStateCodes)
                                 {
                                     <option value="@stateCode">@stateCode</option>
@@ -86,24 +87,24 @@
 
                     <div class="ob-address-row ob-address-row--2">
                         <div class="ob-field">
-                            <label asp-for="ZipCode" class="ob-label">ZIP Code</label>
+                            <label asp-for="ZipCode" class="ob-label">@L["ZIP Code"]</label>
                             <input asp-for="ZipCode"
                                    id="zip"
                                    name="ZipCode"
                                    class="ob-control"
-                                   placeholder="ZIP Code"
+                                   placeholder="@L["ZIP Code"]"
                                    autocomplete="postal-code"
                                    inputmode="numeric"
                                    maxlength="10" />
                             <span asp-validation-for="ZipCode" class="ob-error"></span>
                         </div>
                         <div class="ob-field">
-                            <label asp-for="Unit" class="ob-label">Unit / Apt <span class="ob-label-optional">(Optional)</span></label>
+                            <label asp-for="Unit" class="ob-label">@L["Unit / Apt"] <span class="ob-label-optional">(@L["Optional"])</span></label>
                             <input asp-for="Unit"
                                    id="unit"
                                    name="Unit"
                                    class="ob-control"
-                                   placeholder="Unit, Apt, Suite, etc."
+                                   placeholder="@L["Unit, Apt, Suite, etc."]"
                                    autocomplete="address-line2" />
                             <span asp-validation-for="Unit" class="ob-error"></span>
                         </div>
@@ -111,10 +112,10 @@
 
                     <p class="ob-address-hint">
                         <i class="fas fa-circle-info" aria-hidden="true"></i>
-                        As you type your street address, we'll automatically find and fill the city, state, ZIP, and property info when available.
+                        @L["As you type your street address, we'll automatically find and fill the city, state, ZIP, and property info when available."]
                     </p>
 
-                    <button type="submit" class="ob-btn ob-btn-primary">Find Property</button>
+                    <button type="submit" class="ob-btn ob-btn-primary">@L["Find Property"]</button>
                 </form>
             </div>
         </div>

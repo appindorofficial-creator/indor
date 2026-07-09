@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RoofInspectionDetailsViewModel
 @{
-    ViewData["Title"] = "Roof details - INDOR";
+    ViewData["Title"] = L["Roof details - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionService", "RoofInspection", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 1;
@@ -12,8 +12,8 @@
     </div>
 
     
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Roof details</h1>
-    <p class="page-lead" style="margin-bottom:16px;">Help us understand your roof so we can schedule the right inspection. Select an answer for each question below.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Roof details"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["Help us understand your roof so we can schedule the right inspection. Select an answer for each question below."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -26,57 +26,57 @@
         <input type="hidden" asp-for="UltimaInspeccion" id="UltimaInspeccion" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-magnifying-glass"></i><span>Why do you need a roof check?</span></div>
+            <div class="field-head"><i class="fas fa-magnifying-glass"></i><span>@L["Why do you need a roof check?"]</span></div>
             <div class="reason-grid">
-                <button type="button" class="reason-card" data-reason="RoutineInspection"><i class="fas fa-calendar main"></i><span class="label">Routine inspection</span></button>
-                <button type="button" class="reason-card" data-reason="AfterStorm"><i class="fas fa-cloud-bolt main"></i><span class="label">After a storm</span></button>
-                <button type="button" class="reason-card" data-reason="RoofLeakSigns"><i class="fas fa-droplet main"></i><span class="label">Roof leak signs</span></button>
-                <button type="button" class="reason-card" data-reason="MissingShingles"><i class="fas fa-house-chimney main"></i><span class="label">Missing shingles</span></button>
-                <button type="button" class="reason-card" data-reason="FlashingConcern" style="grid-column:1/-1;"><i class="fas fa-spray-can main"></i><span class="label">Flashing / sealant concern</span></button>
+                <button type="button" class="reason-card" data-reason="RoutineInspection"><i class="fas fa-calendar main"></i><span class="label">@L["Routine inspection"]</span></button>
+                <button type="button" class="reason-card" data-reason="AfterStorm"><i class="fas fa-cloud-bolt main"></i><span class="label">@L["After a storm"]</span></button>
+                <button type="button" class="reason-card" data-reason="RoofLeakSigns"><i class="fas fa-droplet main"></i><span class="label">@L["Roof leak signs"]</span></button>
+                <button type="button" class="reason-card" data-reason="MissingShingles"><i class="fas fa-house-chimney main"></i><span class="label">@L["Missing shingles"]</span></button>
+                <button type="button" class="reason-card" data-reason="FlashingConcern" style="grid-column:1/-1;"><i class="fas fa-spray-can main"></i><span class="label">@L["Flashing / sealant concern"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-house-chimney"></i><span>Roof type</span></div>
+            <div class="field-head"><i class="fas fa-house-chimney"></i><span>@L["Roof type"]</span></div>
             <div class="reason-grid">
-                <button type="button" class="reason-card" data-roof="AsphaltShingle"><i class="fas fa-house-chimney main"></i><span class="label">Asphalt shingle</span></button>
-                <button type="button" class="reason-card" data-roof="Metal"><i class="fas fa-layer-group main"></i><span class="label">Metal</span></button>
-                <button type="button" class="reason-card" data-roof="Tile"><i class="fas fa-table-cells main"></i><span class="label">Tile</span></button>
-                <button type="button" class="reason-card" data-roof="Flat"><i class="fas fa-square main"></i><span class="label">Flat</span></button>
-                <button type="button" class="reason-card" data-roof="NotSure" style="grid-column:1/-1;"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="reason-card" data-roof="AsphaltShingle"><i class="fas fa-house-chimney main"></i><span class="label">@L["Asphalt shingle"]</span></button>
+                <button type="button" class="reason-card" data-roof="Metal"><i class="fas fa-layer-group main"></i><span class="label">@L["Metal"]</span></button>
+                <button type="button" class="reason-card" data-roof="Tile"><i class="fas fa-table-cells main"></i><span class="label">@L["Tile"]</span></button>
+                <button type="button" class="reason-card" data-roof="Flat"><i class="fas fa-square main"></i><span class="label">@L["Flat"]</span></button>
+                <button type="button" class="reason-card" data-roof="NotSure" style="grid-column:1/-1;"><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock"></i><span>Approx. roof age</span></div>
+            <div class="field-head"><i class="fas fa-clock"></i><span>@L["Approx. roof age"]</span></div>
             <div class="pill-row">
-                <button type="button" class="segment-btn" data-age="ZeroToTen">0–10 yrs</button>
-                <button type="button" class="segment-btn" data-age="ElevenToTwenty">11–20 yrs</button>
-                <button type="button" class="segment-btn" data-age="TwentyPlus">20+ yrs</button>
-                <button type="button" class="segment-btn" data-age="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-age="ZeroToTen">@L["0–10 yrs"]</button>
+                <button type="button" class="segment-btn" data-age="ElevenToTwenty">@L["11–20 yrs"]</button>
+                <button type="button" class="segment-btn" data-age="TwentyPlus">@L["20+ yrs"]</button>
+                <button type="button" class="segment-btn" data-age="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>Last roof inspection</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Last roof inspection"]</span></div>
             <div class="pill-row">
-                <button type="button" class="segment-btn" data-last="ThisYear">This year</button>
-                <button type="button" class="segment-btn" data-last="OneToTwoYears">1–2 years ago</button>
-                <button type="button" class="segment-btn" data-last="ThreePlusYears">3+ years ago</button>
-                <button type="button" class="segment-btn" data-last="DontKnow">I don't know</button>
+                <button type="button" class="segment-btn" data-last="ThisYear">@L["This year"]</button>
+                <button type="button" class="segment-btn" data-last="OneToTwoYears">@L["1–2 years ago"]</button>
+                <button type="button" class="segment-btn" data-last="ThreePlusYears">@L["3+ years ago"]</button>
+                <button type="button" class="segment-btn" data-last="DontKnow">@L["I don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-camera"></i><span>Add roof photos (optional)</span></div>
-            <p class="field-hint" style="margin-top:0;margin-bottom:10px;">Add up to 5 photos to help our pros prepare.</p>
+            <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add roof photos (optional)"]</span></div>
+            <p class="field-hint" style="margin-top:0;margin-bottom:10px;">@L["Add up to 5 photos to help our pros prepare."]</p>
             <div class="upload-drop-wrap">
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
                        accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
                 <label class="upload-drop" id="photoDropzone" for="photoInput">
                     <i class="fas fa-camera"></i>
-                    <strong>Add photos</strong>
-                    <span>JPG or PNG, up to 10 MB each</span>
+                    <strong>@L["Add photos"]</strong>
+                    <span>@L["JPG or PNG, up to 10 MB each"]</span>
                 </label>
             </div>
             <div class="upload-selected-list" id="photoSelectedList" hidden></div>
@@ -95,9 +95,9 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar"></i> Next <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-calendar"></i> @L["Next"] <i class="fas fa-chevron-right"></i>
         </button>
-        <div class="trust-footer" style="margin-top:12px;"><i class="fas fa-shield-halved"></i><span>Your information is secure and never shared.</span></div>
+        <div class="trust-footer" style="margin-top:12px;"><i class="fas fa-shield-halved"></i><span>@L["Your information is secure and never shared."]</span></div>
     </form>
 </div>
 @section Scripts {

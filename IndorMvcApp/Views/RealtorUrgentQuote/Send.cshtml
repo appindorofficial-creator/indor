@@ -6,7 +6,7 @@
 
     <i class="fas fa-circle-info"></i>
 
-    <p>Review the essentials and send the request. INDOR can automatically match providers so you can save time during closing.</p>
+    <p>@L["Review the essentials and send the request. INDOR can automatically match providers so you can save time during closing."]</p>
 
 </div>
 
@@ -22,13 +22,13 @@
 
         <div class="rl-urgent-review-grid">
 
-            <div><i class="fas fa-wrench"></i><small>Issue</small><strong>@Model.Property.ServiceType</strong></div>
+            <div><i class="fas fa-wrench"></i><small>@L["Issue"]</small><strong>@Model.Property.ServiceType</strong></div>
 
-            <div><i class="fas fa-clock"></i><small>Response needed</small><strong>@Model.Property.UrgencyLabel</strong></div>
+            <div><i class="fas fa-clock"></i><small>@L["Response needed"]</small><strong>@Model.Property.UrgencyLabel</strong></div>
 
-            <div><i class="fas fa-image"></i><small>Photos</small><strong>@Model.PhotoCount Photo@(Model.PhotoCount == 1 ? "" : "s")</strong></div>
+            <div><i class="fas fa-image"></i><small>@L["Photos"]</small><strong>@Model.PhotoCount Photo@(Model.PhotoCount == 1 ? "" : "s")</strong></div>
 
-            <div><i class="fas fa-comment"></i><small>Description</small><strong>@(Model.Property.QuickDescription ?? "—")</strong></div>
+            <div><i class="fas fa-comment"></i><small>@L["Description"]</small><strong>@(Model.Property.QuickDescription ?? "—")</strong></div>
 
         </div>
 
@@ -46,7 +46,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">How should this be sent?</h2>
+    <h2 class="rl-invite-section-title">@L["How should this be sent?"]</h2>
 
     <div class="rl-file-type-list">
 
@@ -58,9 +58,9 @@
 
             <span>
 
-                <strong>INDOR chooses providers for me</strong>
+                <strong>@L["INDOR chooses providers for me"]</strong>
 
-                <small>Fastest option — we match 2–3 providers automatically.</small>
+                <small>@L["Fastest option — we match 2–3 providers automatically."]</small>
 
             </span>
 
@@ -74,9 +74,9 @@
 
             <span>
 
-                <strong>I want to choose providers myself</strong>
+                <strong>@L["I want to choose providers myself"]</strong>
 
-                <small>Search and choose providers manually.</small>
+                <small>@L["Search and choose providers manually."]</small>
 
             </span>
 
@@ -86,7 +86,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">Send what?</h2>
+    <h2 class="rl-invite-section-title">@L["Send what?"]</h2>
 
     <div class="rl-delivery-row">
 
@@ -112,7 +112,7 @@
 
     <label class="rl-toggle-row rl-toggle-row--card">
 
-        <span>Notify client</span>
+        <span>@L["Notify client"]</span>
 
         <input type="checkbox" name="notifyClient" value="true" @(Model.NotifyClient ? "checked" : null) />
 
@@ -126,7 +126,7 @@
 
         <i class="fas fa-circle-info"></i>
 
-        <p>Fast mode keeps this simple so you can send the request in minutes.</p>
+        <p>@L["Fast mode keeps this simple so you can send the request in minutes."]</p>
 
     </div>
 
@@ -136,9 +136,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="Photos" class="rl-invite-cancel">Back</a>
+    <a asp-action="Photos" class="rl-invite-cancel">@L["Back"]</a>
 
-    <button type="submit" form="urgentSendForm" class="ob-btn ob-btn-primary">Send Request</button>
+    <button type="submit" form="urgentSendForm" class="ob-btn ob-btn-primary">@L["Send Request"]</button>
 
 </div>
 

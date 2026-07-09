@@ -14,7 +14,7 @@
 
         <div class="rl-review-row">
 
-            <span class="rl-review-label">Property</span>
+            <span class="rl-review-label">@L["Property"]</span>
 
             <strong>@Model.PropertyDisplay</strong>
 
@@ -22,7 +22,7 @@
 
         <div class="rl-review-row">
 
-            <span class="rl-review-label">Request Type</span>
+            <span class="rl-review-label">@L["Request Type"]</span>
 
             <strong>@Model.RequestTypeLabel</strong>
 
@@ -30,7 +30,7 @@
 
         <div class="rl-review-row">
 
-            <span class="rl-review-label">Shared With Providers</span>
+            <span class="rl-review-label">@L["Shared With Providers"]</span>
 
             <span>@Model.SharedSummary</span>
 
@@ -38,7 +38,7 @@
 
         <div class="rl-review-row">
 
-            <span class="rl-review-label">Providers</span>
+            <span class="rl-review-label">@L["Providers"]</span>
 
             <strong>@Model.ProvidersSummary</strong>
 
@@ -46,11 +46,11 @@
 
         <div class="rl-review-row">
 
-            <span class="rl-review-label">Provider Selection</span>
+            <span class="rl-review-label">@L["Provider Selection"]</span>
 
             <strong>@Model.ProviderSelectionLabel</strong>
 
-            <span>You can also switch to INDOR Recommended</span>
+            <span>@L["You can also switch to INDOR Recommended"]</span>
 
         </div>
 
@@ -58,7 +58,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">When should this be sent?</h2>
+    <h2 class="rl-invite-section-title">@L["When should this be sent?"]</h2>
 
     <div class="rl-file-type-list">
 
@@ -68,9 +68,9 @@
 
             <span>
 
-                <strong>Send Now</strong>
+                <strong>@L["Send Now"]</strong>
 
-                <small>Send the request to providers right away.</small>
+                <small>@L["Send the request to providers right away."]</small>
 
             </span>
 
@@ -82,9 +82,9 @@
 
             <span>
 
-                <strong>Schedule for Later</strong>
+                <strong>@L["Schedule for Later"]</strong>
 
-                <small>Choose a date and time to send this request.</small>
+                <small>@L["Choose a date and time to send this request."]</small>
 
             </span>
 
@@ -100,21 +100,21 @@
 
 
 
-    <h2 class="rl-invite-section-title">Response preferences</h2>
+    <h2 class="rl-invite-section-title">@L["Response preferences"]</h2>
 
     <div class="rl-review-card">
 
         <div class="rl-review-row">
 
-            <span class="rl-review-label">Response deadline</span>
+            <span class="rl-review-label">@L["Response deadline"]</span>
 
             <select name="responseDeadlineHours" class="rl-field-select">
 
-                <option value="24" selected="@(Model.ResponseDeadlineHours == 24)">24 hours</option>
+                <option value="24" selected="@(Model.ResponseDeadlineHours == 24)">@L["24 hours"]</option>
 
-                <option value="48" selected="@(Model.ResponseDeadlineHours == 48)">48 hours</option>
+                <option value="48" selected="@(Model.ResponseDeadlineHours == 48)">@L["48 hours"]</option>
 
-                <option value="72" selected="@(Model.ResponseDeadlineHours == 72)">72 hours</option>
+                <option value="72" selected="@(Model.ResponseDeadlineHours == 72)">@L["72 hours"]</option>
 
             </select>
 
@@ -122,7 +122,7 @@
 
         <label class="rl-toggle-row rl-toggle-row--card">
 
-            <span>Allow provider questions</span>
+            <span>@L["Allow provider questions"]</span>
 
             <input type="checkbox" name="allowProviderQuestions" value="true" @(Model.AllowProviderQuestions ? "checked" : null) />
 
@@ -132,7 +132,7 @@
 
         <label class="rl-toggle-row rl-toggle-row--card">
 
-            <span>Allow full project quote</span>
+            <span>@L["Allow full project quote"]</span>
 
             <input type="checkbox" name="allowFullProjectQuote" value="true" @(Model.AllowFullProjectQuote ? "checked" : null) />
 
@@ -142,7 +142,7 @@
 
         <label class="rl-toggle-row rl-toggle-row--card">
 
-            <span>Allow itemized quote</span>
+            <span>@L["Allow itemized quote"]</span>
 
             <input type="checkbox" name="allowItemizedQuote" value="true" @(Model.AllowItemizedQuote ? "checked" : null) />
 
@@ -154,7 +154,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">Optional message</h2>
+    <h2 class="rl-invite-section-title">@L["Optional message"]</h2>
 
     <textarea name="optionalMessage" class="rl-note-area" maxlength="500" rows="4"
               placeholder="@Model.OptionalMessagePlaceholder">@Model.OptionalMessage</textarea>
@@ -167,9 +167,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="BackToProviders" class="rl-invite-cancel">Back</a>
+    <a asp-action="BackToProviders" class="rl-invite-cancel">@L["Back"]</a>
 
-    <button type="submit" form="quoteReviewForm" class="ob-btn ob-btn-primary">Send Request</button>
+    <button type="submit" form="quoteReviewForm" class="ob-btn ob-btn-primary">@L["Send Request"]</button>
 
 </div>
 

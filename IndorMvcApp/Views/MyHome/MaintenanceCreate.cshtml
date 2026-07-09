@@ -1,29 +1,29 @@
 @model IndorMvcApp.ViewModels.MyHomeMaintenanceFormViewModel
 @{
     var isEdit = Model.Id.HasValue;
-    ViewData["Title"] = isEdit ? "Edit Maintenance" : "Add Maintenance";
+    ViewData["Title"] = isEdit ? L["Edit Maintenance"] : L["Add Maintenance"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "maintenance";
     ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">@(isEdit ? "Edit maintenance" : "Add maintenance")</h1>
+    <h1 class="hf-title">@(isEdit ? L["Edit maintenance"] : L["Add maintenance"])</h1>
 </div>
 <form asp-action="@(isEdit ? "MaintenanceEdit" : "MaintenanceCreate")" method="post">
     @if (isEdit) { <input type="hidden" asp-for="Id" /> }
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="NavigationFrom" />
-    <label asp-for="Title" class="hf-label">Task title</label>
-    <input asp-for="Title" class="hf-input" placeholder="Check AC system" />
-    <label asp-for="DueDate" class="hf-label">Due date</label>
+    <label asp-for="Title" class="hf-label">@L["Task title"]</label>
+    <input asp-for="Title" class="hf-input" placeholder="@L["Check AC system"]" />
+    <label asp-for="DueDate" class="hf-label">@L["Due date"]</label>
     <input asp-for="DueDate" class="hf-input" type="date" />
-    <label asp-for="Status" class="hf-label">Status</label>
+    <label asp-for="Status" class="hf-label">@L["Status"]</label>
     <select asp-for="Status" class="hf-select">
-        <option value="Upcoming">Upcoming</option>
-        <option value="Completed">Completed</option>
+        <option value="Upcoming">@L["Upcoming"]</option>
+        <option value="Completed">@L["Completed"]</option>
     </select>
-    <label asp-for="Notes" class="hf-label">Notes</label>
+    <label asp-for="Notes" class="hf-label">@L["Notes"]</label>
     <textarea asp-for="Notes" class="hf-textarea" rows="3"></textarea>
-    <button type="submit" class="hf-btn hf-btn-primary">Save task</button>
+    <button type="submit" class="hf-btn hf-btn-primary">@L["Save task"]</button>
 </form>

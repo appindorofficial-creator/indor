@@ -2,7 +2,7 @@
 
 <details class="prv-pro-lead-job-context">
     <summary class="prv-pro-lead-job-context-head">
-        <h3><i class="fas fa-clipboard-list"></i> Job details for your estimate</h3>
+        <h3><i class="fas fa-clipboard-list"></i> @L["Job details for your estimate"]</h3>
         @if (!string.IsNullOrWhiteSpace(Model.LeadCode))
         {
             <small>@Model.LeadCode</small>
@@ -16,7 +16,7 @@
             <span>@Model.SourceBadge</span>
             @if (!string.IsNullOrWhiteSpace(Model.InspectionReportUrl))
             {
-                <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener">View inspection PDF</a>
+                <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener">@L["View inspection PDF"]</a>
             }
         </div>
     }
@@ -47,7 +47,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.ProblemDescription))
     {
         <div class="prv-pro-lead-section prv-pro-lead-section--compact">
-            <h4>Problem description</h4>
+            <h4>@L["Problem description"]</h4>
             <p class="prv-pro-lead-description">@Model.ProblemDescription</p>
         </div>
     }
@@ -57,7 +57,7 @@
         <div class="prv-pro-lead-photos prv-pro-lead-photos--compact">
             @foreach (var photo in Model.PhotoUrls.Take(3))
             {
-                <img src="@Url.Content($"~{photo}")" alt="Property photo" />
+                <img src="@Url.Content($"~{photo}")" alt="@L["Property photo"]" />
             }
         </div>
     }

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Validation;
 
 namespace IndorMvcApp.ViewModels;
@@ -29,4 +30,6 @@ public class RegisterViewModel
 
     public string Nombre { get; set; } = string.Empty;
     public string Apellidos { get; set; } = string.Empty;
+
+    public string UiCulture { get; set; } = Localization.UiCulture.English;
 }

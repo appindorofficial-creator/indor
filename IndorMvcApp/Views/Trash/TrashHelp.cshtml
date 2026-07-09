@@ -7,7 +7,7 @@
     ViewData["WizardTotalSteps"] = 3;
 }
 
-<h2 class="page-heading" style="font-size:1.05rem;">How should INDOR help?</h2>
+<h2 class="page-heading" style="font-size:1.05rem;">@L["How should INDOR help?"]</h2>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -22,57 +22,57 @@
             <div class="help-list" id="helpGroup">
                 <button type="button" class="help-row" data-value="ReminderOnly">
                     <i class="fas fa-bell main"></i>
-                    <span class="copy"><strong>Reminder only</strong><span>Get notified before pickup day</span></span>
+                    <span class="copy"><strong>@L["Reminder only"]</strong><span>@L["Get notified before pickup day"]</span></span>
                     <span class="radio"></span>
                 </button>
                 <button type="button" class="help-row" data-value="TakeOut">
                     <i class="fas fa-trash-can main"></i>
-                    <span class="copy"><strong>Take bins out</strong><span>INDOR takes bins to the curb</span></span>
+                    <span class="copy"><strong>@L["Take bins out"]</strong><span>@L["INDOR takes bins to the curb"]</span></span>
                     <span class="radio"></span>
                 </button>
                 <button type="button" class="help-row" data-value="TakeOutReturn">
                     <i class="fas fa-arrows-rotate main"></i>
-                    <span class="copy"><strong>Take out + bring back</strong><span>Full weekly service</span></span>
+                    <span class="copy"><strong>@L["Take out + bring back"]</strong><span>@L["Full weekly service"]</span></span>
                     <span class="radio"></span>
                 </button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Reminder settings</span>
+            <span class="field-label">@L["Reminder settings"]</span>
             <div class="reminder-row" id="reminderGroup">
-                <button type="button" class="reminder-btn" data-value="OneDayBefore"><i class="fas fa-bell"></i> 1 day before</button>
-                <button type="button" class="reminder-btn" data-value="EveningBefore"><i class="fas fa-moon"></i> Evening before</button>
-                <button type="button" class="reminder-btn" data-value="MorningOf"><i class="fas fa-sun"></i> Morning of</button>
+                <button type="button" class="reminder-btn" data-value="OneDayBefore"><i class="fas fa-bell"></i> @L["1 day before"]</button>
+                <button type="button" class="reminder-btn" data-value="EveningBefore"><i class="fas fa-moon"></i> @L["Evening before"]</button>
+                <button type="button" class="reminder-btn" data-value="MorningOf"><i class="fas fa-sun"></i> @L["Morning of"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Pickup time window</span>
+            <span class="field-label">@L["Pickup time window"]</span>
             <div class="picker-row">
                 <div class="left">
                     <i class="fas fa-clock" style="color:#0066CC;"></i>
-                    <select id="VentanaRecoleccionSelect" aria-label="Pickup time window">
-                        <option value="Morning7_12">07:00 &ndash; 12:00</option>
-                        <option value="Afternoon12_5">12:00 &ndash; 17:00</option>
-                        <option value="Flexible">Flexible</option>
+                    <select id="VentanaRecoleccionSelect" aria-label="@L["Pickup time window"]">
+                        <option value="Morning7_12">@L["07:00 &ndash; 12:00"]</option>
+                        <option value="Afternoon12_5">@L["12:00 &ndash; 17:00"]</option>
+                        <option value="Flexible">@L["Flexible"]</option>
                     </select>
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Special notes (optional)</span>
+            <span class="field-label">@L["Special notes (optional)"]</span>
             <div class="input-wrap">
                 <i class="fas fa-pen"></i>
-                <input asp-for="NotasEspeciales" placeholder="Gate code, where bins are stored" />
+                <input asp-for="NotasEspeciales" placeholder="@L["Gate code, where bins are stored"]" />
             </div>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
             <i class="fas fa-calendar-plus"></i> Review request
         </button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 
 @section Scripts {

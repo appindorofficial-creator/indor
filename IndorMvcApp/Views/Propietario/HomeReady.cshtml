@@ -1,10 +1,11 @@
+@using IndorMvcApp.Localization
 @{
-    ViewData["Title"] = "Welcome to INDOR";
+    ViewData["Title"] = L["Welcome to INDOR"];
     Layout = null;
     var propiedadId = ViewBag.PropiedadId as int? ?? 0;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -21,18 +22,18 @@
             <div class="ob-success-check"><i class="fas fa-check"></i></div>
         </div>
 
-        <h1>Welcome to INDOR!</h1>
-        <p>Your account has been created successfully.</p>
+        <h1>@L["Welcome to INDOR!"]</h1>
+        <p>@L["Your account has been created successfully."]</p>
 
         @if (propiedadId <= 0)
         {
-            <p class="ob-success-sub">Add your home address in Edit Profile anytime — AI will build your House Facts when you're ready.</p>
-            <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="ob-btn ob-btn-primary">Add my home</a>
-            <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-outline ob-success-skip">Explore dashboard</a>
+            <p class="ob-success-sub">@L["Add your home address in Edit Profile anytime — AI will build your House Facts when you're ready."]</p>
+            <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="ob-btn ob-btn-primary">@L["Add my home"]</a>
+            <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-outline ob-success-skip">@L["Explore dashboard"]</a>
         }
         else
         {
-            <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="ob-btn ob-btn-primary">Let's Go</a>
+            <a asp-controller="Home" asp-action="Index" asp-fragment="section-myhome" class="ob-btn ob-btn-primary">@L["Let's Go"]</a>
         }
     </div>
 </body>

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorEmergencySewerBackupReviewViewModel
 @{
-    ViewData["Title"] = "Review emergency request";
+    ViewData["Title"] = L["Review emergency request"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Review emergency request</h1>
-        <p>Make sure everything looks right before we dispatch help.</p>
+        <h1>@L["Review emergency request"]</h1>
+        <p>@L["Make sure everything looks right before we dispatch help."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -32,7 +32,7 @@
         <span class="pa-sewer-pro-bar-icon"><i class="fas fa-clock"></i></span>
         <div>
             <strong>@Model.ProEtaLabel</strong>
-            <small>Licensed • Insured • Background checked</small>
+            <small>@L["Licensed • Insured • Background checked"]</small>
         </div>
         <i class="fas fa-chevron-right"></i>
     </article>
@@ -41,14 +41,14 @@
         <div class="pa-tree-pro-head">
             <span class="pa-tree-pro-icon"><i class="fas fa-toilet"></i></span>
             <div>
-                <strong>Estimated diagnostic visit</strong>
+                <strong>@L["Estimated diagnostic visit"]</strong>
                 <div class="pa-trust-badges">
-                    <span>Licensed</span><span>Insured</span><span>Fast response</span>
+                    <span>@L["Licensed"]</span><span>@L["Insured"]</span><span>@L["Fast response"]</span>
                 </div>
             </div>
         </div>
-        <p>Estimated diagnostic visit: <strong>@Model.EstimatedPrice</strong></p>
-        <p>Emergency priority fee: <span class="pa-included">Included</span></p>
+        <p>@L["Estimated diagnostic visit:"] <strong>@Model.EstimatedPrice</strong></p>
+        <p>@L["Emergency priority fee:"] <span class="pa-included">@L["Included"]</span></p>
     </article>
 
     <form asp-action="SewerBackupReview" method="post">
@@ -73,10 +73,10 @@
 
         <div class="pa-notify-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>We'll send status updates to you and the guest.</span>
+            <span>@L["We'll send status updates to you and the guest."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request emergency service</button>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
     </form>
-    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">Edit details</a>
+    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
 </div>

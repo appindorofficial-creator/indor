@@ -23,7 +23,7 @@
     @if (Model.RecommendationItems.Count > 0)
     {
         <div class="preview-box">
-            <div class="preview-label">Recommendations</div>
+            <div class="preview-label">@L["Recommendations"]</div>
             @foreach (var item in Model.RecommendationItems)
             {
                 <details class="roof-rec-item">
@@ -43,7 +43,7 @@
     @if (Model.CheckItems.Count > 0)
     {
         <div class="includes-box">
-            <div class="includes-label">What we check</div>
+            <div class="includes-label">@L["What we check"]</div>
             <div class="check-grid-3">
                 @foreach (var item in Model.CheckItems)
                 {

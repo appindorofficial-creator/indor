@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.GutterCleaningSetupViewModel
 @{
-    ViewData["Title"] = "Tell us about your home - INDOR";
+    ViewData["Title"] = L["Tell us about your home - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("GutterCleaningService", "GutterCleaning", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
@@ -9,7 +9,7 @@
 
 
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
-    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Tell us about your home</span></p>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">@L["Tell us about your home"]</span></p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -23,46 +23,46 @@
         <input type="hidden" asp-for="CantidadBajantes" id="CantidadBajantes" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-building"></i><span>Home size</span></div>
+            <div class="field-head"><i class="fas fa-building"></i><span>@L["Home size"]</span></div>
             <div class="stories-grid">
-                <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">1 story</span></button>
-                <button type="button" class="story-card" data-stories="Two"><i class="fas fa-building main"></i><span class="label">2 stories</span></button>
-                <button type="button" class="story-card" data-stories="ThreePlus"><i class="fas fa-city main"></i><span class="label">3+ stories</span></button>
+                <button type="button" class="story-card" data-stories="One"><i class="fas fa-house main"></i><span class="label">@L["1 story"]</span></button>
+                <button type="button" class="story-card" data-stories="Two"><i class="fas fa-building main"></i><span class="label">@L["2 stories"]</span></button>
+                <button type="button" class="story-card" data-stories="ThreePlus"><i class="fas fa-city main"></i><span class="label">@L["3+ stories"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-water"></i><span>What type of gutters do you have?</span></div>
+            <div class="field-head"><i class="fas fa-water"></i><span>@L["What type of gutters do you have?"]</span></div>
             <div class="gutter-grid">
-                <button type="button" class="gutter-card" data-gutter="Aluminum"><i class="fas fa-grip-lines main"></i><span class="label">Aluminum</span></button>
-                <button type="button" class="gutter-card" data-gutter="Vinyl"><i class="fas fa-grip-lines main"></i><span class="label">Vinyl</span></button>
-                <button type="button" class="gutter-card" data-gutter="Copper"><i class="fas fa-grip-lines main"></i><span class="label">Copper</span></button>
-                <button type="button" class="gutter-card" data-gutter="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="gutter-card" data-gutter="Aluminum"><i class="fas fa-grip-lines main"></i><span class="label">@L["Aluminum"]</span></button>
+                <button type="button" class="gutter-card" data-gutter="Vinyl"><i class="fas fa-grip-lines main"></i><span class="label">@L["Vinyl"]</span></button>
+                <button type="button" class="gutter-card" data-gutter="Copper"><i class="fas fa-grip-lines main"></i><span class="label">@L["Copper"]</span></button>
+                <button type="button" class="gutter-card" data-gutter="NotSure"><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-shield-halved"></i><span>Do you have gutter guards?</span></div>
+            <div class="field-head"><i class="fas fa-shield-halved"></i><span>@L["Do you have gutter guards?"]</span></div>
             <div class="choice-grid-3">
-                <button type="button" class="choice-card" data-guard="Yes"><i class="fas fa-shield-halved main"></i><span class="label">Yes</span></button>
-                <button type="button" class="choice-card" data-guard="No"><i class="fas fa-xmark main"></i><span class="label">No</span></button>
-                <button type="button" class="choice-card" data-guard="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="choice-card" data-guard="Yes"><i class="fas fa-shield-halved main"></i><span class="label">@L["Yes"]</span></button>
+                <button type="button" class="choice-card" data-guard="No"><i class="fas fa-xmark main"></i><span class="label">@L["No"]</span></button>
+                <button type="button" class="choice-card" data-guard="NotSure"><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>When were they last cleaned?</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["When were they last cleaned?"]</span></div>
             <div class="gutter-grid" style="grid-template-columns:repeat(4,1fr);">
-                <button type="button" class="gutter-card" data-last="LessThan6Months"><i class="fas fa-calendar main"></i><span class="label">&lt; 6 months</span></button>
-                <button type="button" class="gutter-card" data-last="SixToTwelveMonths"><i class="fas fa-calendar main"></i><span class="label">6–12 months</span></button>
-                <button type="button" class="gutter-card" data-last="OnePlusYear"><i class="fas fa-calendar main"></i><span class="label">1+ year</span></button>
-                <button type="button" class="gutter-card" data-last="NotSure"><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
+                <button type="button" class="gutter-card" data-last="LessThan6Months"><i class="fas fa-calendar main"></i><span class="label">@L["&lt; 6 months"]</span></button>
+                <button type="button" class="gutter-card" data-last="SixToTwelveMonths"><i class="fas fa-calendar main"></i><span class="label">@L["6–12 months"]</span></button>
+                <button type="button" class="gutter-card" data-last="OnePlusYear"><i class="fas fa-calendar main"></i><span class="label">@L["1+ year"]</span></button>
+                <button type="button" class="gutter-card" data-last="NotSure"><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-faucet"></i><span>Downspout count (optional)</span></div>
-            <p style="font-size:0.74rem;color:#64748B;margin-bottom:10px;">Help us estimate the scope of the job.</p>
+            <div class="field-head"><i class="fas fa-faucet"></i><span>@L["Downspout count (optional)"]</span></div>
+            <p style="font-size:0.74rem;color:#64748B;margin-bottom:10px;">@L["Help us estimate the scope of the job."]</p>
             <div class="stepper-control">
                 <button type="button" id="downMinus">−</button>
                 <span class="value" id="downValue">@(Model.CantidadBajantes ?? 0)</span>

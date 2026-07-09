@@ -1,35 +1,35 @@
 @model IndorMvcApp.ViewModels.MyHomeEditViewModel
 @{
-    ViewData["Title"] = "Edit Property";
+    ViewData["Title"] = L["Edit Property"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "summary";
     ViewBag.MyHomeBackUrl = Url.Action("Index", "MyHome", new { id = Model.PropiedadId });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Edit property</h1>
+    <h1 class="hf-title">@L["Edit property"]</h1>
 </div>
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="PropiedadId" />
-    <label asp-for="Address" class="hf-label">Address</label>
+    <label asp-for="Address" class="hf-label">@L["Address"]</label>
     <input asp-for="Address" class="hf-input" />
-    <label asp-for="PropertyType" class="hf-label">Property type</label>
+    <label asp-for="PropertyType" class="hf-label">@L["Property type"]</label>
     <input asp-for="PropertyType" class="hf-input" />
     <div class="hf-grid-2">
-        <div><label asp-for="YearBuilt" class="hf-label">Year built</label><input asp-for="YearBuilt" class="hf-input" type="number" /></div>
-        <div><label asp-for="LivingArea" class="hf-label">Living area (sq ft)</label><input asp-for="LivingArea" class="hf-input" type="number" /></div>
-        <div><label asp-for="Bedrooms" class="hf-label">Bedrooms</label><input asp-for="Bedrooms" class="hf-input" type="number" /></div>
-        <div><label asp-for="Bathrooms" class="hf-label">Bathrooms</label><input asp-for="Bathrooms" class="hf-input" type="number" step="0.5" /></div>
-        <div><label asp-for="LotSizeAcres" class="hf-label">Lot size (acres)</label><input asp-for="LotSizeAcres" class="hf-input" type="number" step="0.01" /></div>
-        <div><label asp-for="EstimatedValue" class="hf-label">Estimated value</label><input asp-for="EstimatedValue" class="hf-input" type="number" step="1000" /></div>
+        <div><label asp-for="YearBuilt" class="hf-label">@L["Year built"]</label><input asp-for="YearBuilt" class="hf-input" type="number" /></div>
+        <div><label asp-for="LivingArea" class="hf-label">@L["Living area (sq ft)"]</label><input asp-for="LivingArea" class="hf-input" type="number" /></div>
+        <div><label asp-for="Bedrooms" class="hf-label">@L["Bedrooms"]</label><input asp-for="Bedrooms" class="hf-input" type="number" /></div>
+        <div><label asp-for="Bathrooms" class="hf-label">@L["Bathrooms"]</label><input asp-for="Bathrooms" class="hf-input" type="number" step="0.5" /></div>
+        <div><label asp-for="LotSizeAcres" class="hf-label">@L["Lot size (acres)"]</label><input asp-for="LotSizeAcres" class="hf-input" type="number" step="0.01" /></div>
+        <div><label asp-for="EstimatedValue" class="hf-label">@L["Estimated value"]</label><input asp-for="EstimatedValue" class="hf-input" type="number" step="1000" /></div>
     </div>
-    <label asp-for="AnnualTaxAmount" class="hf-label">Annual tax</label>
+    <label asp-for="AnnualTaxAmount" class="hf-label">@L["Annual tax"]</label>
     <input asp-for="AnnualTaxAmount" class="hf-input" type="number" step="1" />
-    <label asp-for="ParcelId" class="hf-label">Parcel ID</label>
+    <label asp-for="ParcelId" class="hf-label">@L["Parcel ID"]</label>
     <input asp-for="ParcelId" class="hf-input" />
-    <label asp-for="Zoning" class="hf-label">Zoning</label>
+    <label asp-for="Zoning" class="hf-label">@L["Zoning"]</label>
     <input asp-for="Zoning" class="hf-input" />
-    <label asp-for="AssignedSchool" class="hf-label">Assigned school</label>
+    <label asp-for="AssignedSchool" class="hf-label">@L["Assigned school"]</label>
     <input asp-for="AssignedSchool" class="hf-input" />
-    <button type="submit" class="hf-btn hf-btn-primary">Save changes</button>
+    <button type="submit" class="hf-btn hf-btn-primary">@L["Save changes"]</button>
 </form>

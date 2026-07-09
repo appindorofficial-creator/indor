@@ -1,12 +1,12 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorProfileViewModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = L["Profile"];
     Layout = "_PropertyAdminLayout";
 }
 
 <div class="pa-portal-shell pa-portal-shell--profile">
     <header class="pa-profile-header">
-        <a asp-controller="Administrador" asp-action="Index" class="pa-profile-back" aria-label="Back">
+        <a asp-controller="Administrador" asp-action="Index" class="pa-profile-back" aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
     </header>
@@ -62,8 +62,8 @@
     </div>
 
     <section class="pa-profile-menu" id="account-preferences">
-        <h2>Account &amp; preferences</h2>
-        <nav class="pa-profile-menu-list" aria-label="Account and preferences">
+        <h2>@L["Account &amp; preferences"]</h2>
+        <nav class="pa-profile-menu-list" aria-label="@L["Account and preferences"]">
             @foreach (var item in Model.MenuItems.Where(i => !i.IsDanger))
             {
                 <a href="@item.Url" class="pa-profile-menu-item">
@@ -79,12 +79,12 @@
             <form asp-controller="Account" asp-action="Logout" method="post" class="pa-profile-signout-form">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
-                    <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+                    <span><i class="fas fa-right-from-bracket"></i> @L["Sign Out"]</span>
                     <i class="fas fa-chevron-right"></i>
                 </button>
             </form>
             <a asp-controller="Account" asp-action="DeleteAccount" class="pa-profile-row pa-profile-row--danger pa-profile-row--center">
-                <span><i class="fas fa-user-xmark"></i> Delete account</span>
+                <span><i class="fas fa-user-xmark"></i> @L["Delete account"]</span>
                 <i class="fas fa-chevron-right"></i>
             </a>
         </nav>

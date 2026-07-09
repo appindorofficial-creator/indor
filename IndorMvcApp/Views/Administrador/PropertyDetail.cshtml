@@ -8,14 +8,14 @@
 
 <div class="pa-portal-shell pa-portal-shell--property-detail">
     <header class="pa-property-detail-header">
-        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="pa-property-detail-header-text">
             <h1>@Model.PropertyName</h1>
             <p>@Model.Location</p>
         </div>
-        <a href="@Model.EditUrl" class="pa-property-detail-edit">Edit</a>
+        <a href="@Model.EditUrl" class="pa-property-detail-edit">@L["Edit"]</a>
     </header>
 
     <section class="pa-property-detail-hero">
@@ -26,7 +26,7 @@
         </span>
     </section>
 
-    <nav class="pa-property-detail-tabs" aria-label="Property sections">
+    <nav class="pa-property-detail-tabs" aria-label="@L["Property sections"]">
         @foreach (var tab in tabs)
         {
             var label = char.ToUpper(tab[0]) + tab[1..];
@@ -40,31 +40,31 @@
     @if (Model.ActiveTab == "overview")
     {
         <section class="pa-property-detail-card">
-            <h2>Property overview</h2>
+            <h2>@L["Property overview"]</h2>
             <div class="pa-property-overview-list">
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-house"></i></span>
-                    <span class="pa-property-overview-label">Property type</span>
+                    <span class="pa-property-overview-label">@L["Property type"]</span>
                     <span class="pa-property-overview-value">@Model.PropertyTypeLabel</span>
                 </div>
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-calendar"></i></span>
-                    <span class="pa-property-overview-label">Year built</span>
+                    <span class="pa-property-overview-label">@L["Year built"]</span>
                     <span class="pa-property-overview-value">@Model.YearBuiltLabel</span>
                 </div>
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-ruler-combined"></i></span>
-                    <span class="pa-property-overview-label">Square footage</span>
+                    <span class="pa-property-overview-label">@L["Square footage"]</span>
                     <span class="pa-property-overview-value">@Model.SquareFootageLabel</span>
                 </div>
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon"><i class="fas fa-bed"></i></span>
-                    <span class="pa-property-overview-label">Bedrooms / Bathrooms</span>
+                    <span class="pa-property-overview-label">@L["Bedrooms / Bathrooms"]</span>
                     <span class="pa-property-overview-value">@Model.BedsBathsLabel</span>
                 </div>
                 <div class="pa-property-overview-row">
                     <span class="pa-property-overview-icon is-status"><i class="fas fa-circle"></i></span>
-                    <span class="pa-property-overview-label">Status</span>
+                    <span class="pa-property-overview-label">@L["Status"]</span>
                     <span class="pa-portfolio-status is-active">
                         <span class="pa-portfolio-status-dot" aria-hidden="true"></span>
                         @Model.StatusLabel
@@ -74,7 +74,7 @@
         </section>
 
         <section class="pa-property-detail-card">
-            <h2>Quick actions</h2>
+            <h2>@L["Quick actions"]</h2>
             <div class="pa-property-quick-actions">
                 @foreach (var action in Model.QuickActions)
                 {
@@ -93,7 +93,7 @@
     else if (Model.ActiveTab == "details")
     {
         <section class="pa-property-detail-card">
-            <h2>Property details</h2>
+            <h2>@L["Property details"]</h2>
             <div class="pa-property-overview-list">
                 @foreach (var row in Model.DetailRows)
                 {
@@ -109,17 +109,17 @@
     else if (Model.ActiveTab == "documents")
     {
         <section class="pa-property-detail-card">
-            <h2>Documents</h2>
-            <div class="pa-empty-card">No documents uploaded for this property yet.</div>
+            <h2>@L["Documents"]</h2>
+            <div class="pa-empty-card">@L["No documents uploaded for this property yet."]</div>
         </section>
     }
     else
     {
         <section class="pa-property-detail-card">
-            <h2>Activity</h2>
+            <h2>@L["Activity"]</h2>
             @if (Model.ActivityItems.Count == 0)
             {
-                <div class="pa-empty-card">No service activity for this property yet.</div>
+                <div class="pa-empty-card">@L["No service activity for this property yet."]</div>
             }
             else
             {

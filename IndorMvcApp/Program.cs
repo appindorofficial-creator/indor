@@ -55,10 +55,17 @@ builder.Services.AddSession(options =>
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     var enUs = new CultureInfo("en-US");
+    var esUs = new CultureInfo("es-US");
     options.DefaultRequestCulture = new RequestCulture(enUs);
-    options.SupportedCultures = [enUs];
-    options.SupportedUICultures = [enUs];
+    options.SupportedCultures = [enUs, esUs];
+    options.SupportedUICultures = [enUs, esUs];
+    options.RequestCultureProviders.Clear();
+    options.RequestCultureProviders.Add(new UserProfileRequestCultureProvider());
 });
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<IUiCultureCookieService, UiCultureCookieService>();
+builder.Services.AddScoped<IIndorLocalizer, IndorLocalizer>();
 
 // Configurar Entity Framework con SQL Server LocalDB
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -266,7 +273,7 @@ app.UseStaticFiles(new StaticFileOptions
         }
     }
 });
-app.UseRequestLocalization();
+app.UseRequestLocalization(app.Services.GetRequiredService<IOptions<RequestLocalizationOptions>>().Value);
 app.UseMiddleware<PreventWebViewCacheMiddleware>();
 app.UseRouting();
 app.UseSession();

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorProfileViewModel
 @{
-    ViewData["Title"] = "Profile";
+    ViewData["Title"] = L["Profile"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "profile";
     var profileCardController = Model.IsVerified ? "Realtor" : "RealtorRegistration";
@@ -13,8 +13,8 @@
     <section class="rl-profile-hero">
         <div class="rl-profile-hero-inner">
             <div class="rl-profile-hero-copy">
-                <h1 class="rl-profile-hero-title">Profile</h1>
-                <p class="rl-profile-hero-subtitle">Manage your realtor account, branding, and settings.</p>
+                <h1 class="rl-profile-hero-title">@L["Profile"]</h1>
+                <p class="rl-profile-hero-subtitle">@L["Manage your realtor account, branding, and settings."]</p>
             </div>
             <div class="rl-profile-hero-visual" aria-hidden="true">
                 <i class="fas fa-user rl-profile-hero-icon"></i>
@@ -35,7 +35,7 @@
                 }
                 @if (Model.IsVerified)
                 {
-                    <span class="rl-profile-photo-badge" aria-label="Verified"><i class="fas fa-circle-check"></i></span>
+                    <span class="rl-profile-photo-badge" aria-label="@L["Verified"]"><i class="fas fa-circle-check"></i></span>
                 }
             </div>
             <div class="rl-profile-card-info">
@@ -47,7 +47,7 @@
                     </span>
                     @if (!Model.IsVerified)
                     {
-                        <span class="rl-verify-link">Verify profile <i class="fas fa-chevron-right"></i></span>
+                        <span class="rl-verify-link">@L["Verify profile"] <i class="fas fa-chevron-right"></i></span>
                     }
                 </div>
             </div>
@@ -67,15 +67,15 @@
     <section class="rl-quick-actions rl-quick-actions--profile">
         <a asp-controller="Realtor" asp-action="PublicProfile" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-globe"></i></span>
-            <span>Public Profile</span>
+            <span>@L["Public Profile"]</span>
         </a>
         <button type="button" class="rl-quick-action" id="rlShareBtn">
             <span class="rl-quick-action-icon"><i class="fas fa-share-from-square"></i></span>
-            <span>Share</span>
+            <span>@L["Share"]</span>
         </button>
         <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-quick-action">
             <span class="rl-quick-action-icon"><i class="fas fa-gear"></i></span>
-            <span>Settings</span>
+            <span>@L["Settings"]</span>
         </a>
     </section>
 
@@ -83,32 +83,32 @@
         <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-building"></i></span>
             <div>
-                <strong>Business Information</strong>
-                <span class="rl-profile-nav-desc">Manage your contact details, brokerage and license.</span>
+                <strong>@L["Business Information"]</strong>
+                <span class="rl-profile-nav-desc">@L["Manage your contact details, brokerage and license."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Realtor" asp-action="EditProfileServiceArea" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-location-dot"></i></span>
             <div>
-                <strong>Service Area / Market Area</strong>
-                <span class="rl-profile-nav-desc">Define the areas and neighborhoods you serve.</span>
+                <strong>@L["Service Area / Market Area"]</strong>
+                <span class="rl-profile-nav-desc">@L["Define the areas and neighborhoods you serve."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Realtor" asp-action="SharedPackages" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-share-nodes"></i></span>
             <div>
-                <strong>Shared Packages</strong>
-                <span class="rl-profile-nav-desc">View the packages you've shared with clients.</span>
+                <strong>@L["Shared Packages"]</strong>
+                <span class="rl-profile-nav-desc">@L["View the packages you've shared with clients."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Realtor" asp-action="SupportAccount" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-shield-halved"></i></span>
             <div>
-                <strong>Account Settings</strong>
-                <span class="rl-profile-nav-desc">Update your preferences and security settings.</span>
+                <strong>@L["Account Settings"]</strong>
+                <span class="rl-profile-nav-desc">@L["Update your preferences and security settings."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
@@ -118,15 +118,15 @@
         <form asp-controller="Realtor" asp-action="ProfileNotificationPreferences" method="post" class="rl-settings-card" id="rl-notify-form">
             @Html.AntiForgeryToken()
             <div class="rl-settings-head">
-                <span><i class="fas fa-bell"></i> Notifications</span>
-                <small>Choose what updates you want to receive.</small>
+                <span><i class="fas fa-bell"></i> @L["Notifications"]</span>
+                <small>@L["Choose what updates you want to receive."]</small>
             </div>
             @if (Model.NotificationsSaved)
             {
-                <div class="rl-notify-saved" role="status">Notification preferences saved.</div>
+                <div class="rl-notify-saved" role="status">@L["Notification preferences saved."]</div>
             }
             <label class="rl-toggle-row">
-                <span>Email alerts</span>
+                <span>@L["Email alerts"]</span>
                 <span class="rl-toggle-control">
                     <input type="hidden" name="EmailAlertsEnabled" value="false" />
                     <input type="checkbox" name="EmailAlertsEnabled" value="true" class="rl-notify-checkbox" @(Model.EmailAlertsEnabled ? "checked" : null) />
@@ -134,7 +134,7 @@
                 </span>
             </label>
             <label class="rl-toggle-row">
-                <span>Quote updates</span>
+                <span>@L["Quote updates"]</span>
                 <span class="rl-toggle-control">
                     <input type="hidden" name="QuoteUpdatesEnabled" value="false" />
                     <input type="checkbox" name="QuoteUpdatesEnabled" value="true" class="rl-notify-checkbox" @(Model.QuoteUpdatesEnabled ? "checked" : null) />
@@ -142,7 +142,7 @@
                 </span>
             </label>
             <label class="rl-toggle-row">
-                <span>Report notifications</span>
+                <span>@L["Report notifications"]</span>
                 <span class="rl-toggle-control">
                     <input type="hidden" name="ReportNotificationsEnabled" value="false" />
                     <input type="checkbox" name="ReportNotificationsEnabled" value="true" class="rl-notify-checkbox" @(Model.ReportNotificationsEnabled ? "checked" : null) />
@@ -150,7 +150,7 @@
                 </span>
             </label>
             <label class="rl-toggle-row">
-                <span>Package-view alerts</span>
+                <span>@L["Package-view alerts"]</span>
                 <span class="rl-toggle-control">
                     <input type="hidden" name="PackageViewAlertsEnabled" value="false" />
                     <input type="checkbox" name="PackageViewAlertsEnabled" value="true" class="rl-notify-checkbox" @(Model.PackageViewAlertsEnabled ? "checked" : null) />
@@ -160,18 +160,18 @@
         </form>
         <div class="rl-settings-card">
             <div class="rl-settings-head">
-                <span><i class="fas fa-chart-line"></i> Performance Snapshot</span>
-                <small>Your activity at a glance.</small>
+                <span><i class="fas fa-chart-line"></i> @L["Performance Snapshot"]</span>
+                <small>@L["Your activity at a glance."]</small>
             </div>
             <div class="rl-perf-row">
-                <span>Response Time</span>
+                <span>@L["Response Time"]</span>
                 <div>
                     <strong>@Model.ResponseTimeLabel</strong>
                     <span class="rl-perf-good">@Model.ResponseTimeStatus</span>
                 </div>
             </div>
             <div class="rl-perf-row">
-                <span>Files This Month</span>
+                <span>@L["Files This Month"]</span>
                 <div>
                     <strong>@Model.FilesThisMonth</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.FilesTrendLabel))
@@ -181,7 +181,7 @@
                 </div>
             </div>
             <div class="rl-perf-row">
-                <span>Client Connections</span>
+                <span>@L["Client Connections"]</span>
                 <div>
                     <strong>@Model.ClientConnections</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.ClientsTrendLabel))
@@ -204,7 +204,7 @@
                     id="rlInsightsToggle"
                     aria-expanded="false"
                     aria-controls="rlPerfDetails">
-                <span class="rl-insights-toggle-label">View full insights</span>
+                <span class="rl-insights-toggle-label">@L["View full insights"]</span>
                 <i class="fas fa-chevron-right"></i>
             </button>
         </div>
@@ -214,24 +214,24 @@
         <a asp-controller="Realtor" asp-action="Network" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-map-location-dot"></i></span>
             <div>
-                <strong>Nearby Network</strong>
-                <span class="rl-profile-nav-desc">See listings, leads, providers and open houses within 3 miles.</span>
+                <strong>@L["Nearby Network"]</strong>
+                <span class="rl-profile-nav-desc">@L["See listings, leads, providers and open houses within 3 miles."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Realtor" asp-action="ProviderNetwork" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-people-group"></i></span>
             <div>
-                <strong>Connected Provider Network</strong>
-                <span class="rl-profile-nav-desc">Manage and connect with trusted inspectors and providers.</span>
+                <strong>@L["Connected Provider Network"]</strong>
+                <span class="rl-profile-nav-desc">@L["Manage and connect with trusted inspectors and providers."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Realtor" asp-action="SupportAccount" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-headset"></i></span>
             <div>
-                <strong>Support &amp; Account</strong>
-                <span class="rl-profile-nav-desc">Get help, manage your subscription and account.</span>
+                <strong>@L["Support &amp; Account"]</strong>
+                <span class="rl-profile-nav-desc">@L["Get help, manage your subscription and account."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
@@ -242,9 +242,9 @@
         <section class="rl-verify-banner rl-verify-banner--compact">
             <i class="fas fa-shield-halved"></i>
             <div>
-                <strong>Become a Verified Realtor</strong>
-                <p>Upload your license and ID to unlock the Verified Realtor badge.</p>
-                <a asp-controller="RealtorRegistration" asp-action="Verification" class="ob-btn ob-btn-primary">Verify now</a>
+                <strong>@L["Become a Verified Realtor"]</strong>
+                <p>@L["Upload your license and ID to unlock the Verified Realtor badge."]</p>
+                <a asp-controller="RealtorRegistration" asp-action="Verification" class="ob-btn ob-btn-primary">@L["Verify now"]</a>
             </div>
         </section>
     }
@@ -252,13 +252,13 @@
     <form asp-controller="Account" asp-action="Logout" method="post" class="rl-signout-form">
         @Html.AntiForgeryToken()
         <button type="submit" class="rl-profile-row rl-profile-row--danger rl-profile-row--center">
-            <span><i class="fas fa-right-from-bracket"></i> Sign Out</span>
+            <span><i class="fas fa-right-from-bracket"></i> @L["Sign Out"]</span>
             <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 
     <a asp-controller="Account" asp-action="DeleteAccount" class="rl-profile-row rl-profile-row--danger rl-profile-row--center">
-        <span><i class="fas fa-user-xmark"></i> Delete account</span>
+        <span><i class="fas fa-user-xmark"></i> @L["Delete account"]</span>
         <i class="fas fa-chevron-right"></i>
     </a>
 

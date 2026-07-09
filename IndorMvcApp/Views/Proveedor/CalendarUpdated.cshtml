@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCalendarUpdatedViewModel
 @{
-    ViewData["Title"] = "Calendar Updated - INDOR PRO";
+    ViewData["Title"] = L["Calendar Updated - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
 }
@@ -11,8 +11,8 @@
 
     <section class="prv-pro-job-success-hero">
         <div class="prv-pro-job-success-icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Schedule Updated Successfully!</h1>
-        <p>Your schedule changes have been saved. The customer and technician have been notified.</p>
+        <h1>@L["Schedule Updated Successfully!"]</h1>
+        <p>@L["Your schedule changes have been saved. The customer and technician have been notified."]</p>
     </section>
 
     <section class="prv-pro-job-success-card">
@@ -22,17 +22,17 @@
         </div>
         <p class="prv-pro-calendar-updated-address">@Model.Address</p>
         <dl class="prv-pro-job-success-list">
-            <div><dt><i class="fas fa-calendar"></i> Updated Date</dt><dd>@Model.UpdatedDateLabel</dd></div>
-            <div><dt><i class="fas fa-clock"></i> Updated Time</dt><dd>@Model.UpdatedTimeLabel</dd></div>
-            <div><dt><i class="fas fa-user-gear"></i> Assigned Technician</dt><dd>@Model.AssignedTechnician</dd></div>
-            <div><dt><i class="fas fa-tag"></i> Status</dt><dd>@Model.StatusLabel</dd></div>
+            <div><dt><i class="fas fa-calendar"></i> @L["Updated Date"]</dt><dd>@Model.UpdatedDateLabel</dd></div>
+            <div><dt><i class="fas fa-clock"></i> @L["Updated Time"]</dt><dd>@Model.UpdatedTimeLabel</dd></div>
+            <div><dt><i class="fas fa-user-gear"></i> @L["Assigned Technician"]</dt><dd>@Model.AssignedTechnician</dd></div>
+            <div><dt><i class="fas fa-tag"></i> @L["Status"]</dt><dd>@Model.StatusLabel</dd></div>
         </dl>
     </section>
 
     <div class="prv-pro-customer-success-actions">
-        <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block"><i class="fas fa-calendar-week"></i> View Calendar</a>
-        <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" asp-route-fromCalendar="true" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block"><i class="fas fa-briefcase"></i> View Job</a>
-        <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block"><i class="fas fa-message"></i> Message Customer</a>
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-customer-add-another"><i class="fas fa-chevron-left"></i> Back to Home</a>
+        <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--block"><i class="fas fa-calendar-week"></i> @L["View Calendar"]</a>
+        <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" asp-route-fromCalendar="true" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block"><i class="fas fa-briefcase"></i> @L["View Job"]</a>
+        <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--outline prv-pro-btn--block"><i class="fas fa-message"></i> @L["Message Customer"]</a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-customer-add-another"><i class="fas fa-chevron-left"></i> @L["Back to Home"]</a>
     </div>
 </div>

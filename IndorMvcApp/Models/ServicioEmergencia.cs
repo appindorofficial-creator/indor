@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using IndorMvcApp.Localization;
 
 namespace IndorMvcApp.Models;
 
@@ -14,8 +15,14 @@ public class ServicioEmergencia
     [Required, MaxLength(150)]
     public string TituloEmergencia { get; set; } = string.Empty;
 
+    [MaxLength(150)]
+    public string? TituloEmergenciaEs { get; set; }
+
     [Required, MaxLength(300)]
     public string Descripcion { get; set; } = string.Empty;
+
+    [MaxLength(300)]
+    public string? DescripcionEs { get; set; }
 
     public int TiempoLlegadaMinutos { get; set; } = 45;
 
@@ -28,26 +35,35 @@ public class ServicioEmergencia
     [MaxLength(80)]
     public string? BadgeTexto { get; set; }
 
+    [MaxLength(80)]
+    public string? BadgeTextoEs { get; set; }
+
     public bool EsPredeterminado { get; set; }
 
-    /// <summary>
-    /// Lista separada por '|', ej: Arrives fast|Trusted pros|Upfront pricing
-    /// </summary>
     [MaxLength(500)]
     public string? Caracteristicas { get; set; }
 
-    /// <summary>
-    /// Iconos Font Awesome separados por '|', alineados con Caracteristicas.
-    /// </summary>
+    [MaxLength(500)]
+    public string? CaracteristicasEs { get; set; }
+
     [MaxLength(200)]
     public string? IconosCaracteristicas { get; set; }
 
     [MaxLength(80)]
     public string CtaTexto { get; set; } = "Request help";
 
+    [MaxLength(80)]
+    public string? CtaTextoEs { get; set; }
+
     public bool Activo { get; set; } = true;
 
     public int Orden { get; set; }
 
     public DateTime FechaCreacion { get; set; } = DateTime.Now;
+
+    public string LocalizedTitulo(bool isSpanish) => CatalogText.Pick(TituloEmergencia, TituloEmergenciaEs, isSpanish);
+    public string LocalizedDescripcion(bool isSpanish) => CatalogText.Pick(Descripcion, DescripcionEs, isSpanish);
+    public string LocalizedCtaTexto(bool isSpanish) => CatalogText.Pick(CtaTexto, CtaTextoEs, isSpanish);
+    public string? LocalizedCaracteristicas(bool isSpanish) => CatalogText.PickPipeList(Caracteristicas, CaracteristicasEs, isSpanish);
+    public string? LocalizedBadgeTexto(bool isSpanish) => CatalogText.Pick(BadgeTexto, BadgeTextoEs, isSpanish);
 }

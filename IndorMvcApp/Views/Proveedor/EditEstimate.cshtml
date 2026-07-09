@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProQuickEstimateViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Edit Estimate - INDOR PRO";
+    ViewData["Title"] = L["Edit Estimate - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -14,7 +14,7 @@
         <a asp-controller="Proveedor" asp-action="ReviewEstimate" asp-route-id="@Model.EstimateId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Step @Model.StepNumber of @Model.TotalSteps · Edit Estimate</h1>
-            <p>Adjust line items, prices, quantities, materials, and notes before sending.</p>
+            <p>@L["Adjust line items, prices, quantities, materials, and notes before sending."]</p>
         </div>
     </header>
 
@@ -45,9 +45,9 @@
 
         <section class="prv-pro-wizard-card prv-pro-est-line-items">
             <div class="prv-pro-est-line-head">
-                <span>Line items</span>
-                <span>Qty / Hours</span>
-                <span>Price</span>
+                <span>@L["Line items"]</span>
+                <span>@L["Qty / Hours"]</span>
+                <span>@L["Price"]</span>
             </div>
             <div id="lineItemsList">
                 @for (var i = 0; i < Model.ScopeItems.Count; i++)
@@ -56,11 +56,11 @@
                     var qty = item.Qty > 0 ? item.Qty : 1m;
                     var unitPrice = item.UnitPrice > 0 ? item.UnitPrice : item.Amount;
                     <div class="prv-pro-est-line-row">
-                        <input type="text" name="ScopeLabels" value="@item.Label" placeholder="Description" />
+                        <input type="text" name="ScopeLabels" value="@item.Label" placeholder="@L["Description"]" />
                         <input type="number" name="ScopeQtys" value="@qty.ToString("0.##", CultureInfo.InvariantCulture)" step="0.25" min="0" class="est-qty" />
                         <input type="number" name="ScopeUnitPrices" value="@unitPrice.ToString("0.##", CultureInfo.InvariantCulture)" step="0.01" min="0" class="est-price" />
                         <input type="hidden" name="ScopeAmounts" value="@item.Amount.ToString("0.##", CultureInfo.InvariantCulture)" class="est-amount" />
-                        <button type="button" class="prv-pro-est-line-remove" aria-label="Remove line"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="prv-pro-est-line-remove" aria-label="@L["Remove line"]"><i class="fas fa-trash"></i></button>
                     </div>
                 }
             </div>
@@ -68,20 +68,20 @@
         </section>
 
         <section class="prv-pro-wizard-card">
-            <h2>Customer notes</h2>
-            <textarea name="HomeownerNotes" rows="4" placeholder="Notes visible to the customer">@Model.HomeownerNotes</textarea>
+            <h2>@L["Customer notes"]</h2>
+            <textarea name="HomeownerNotes" rows="4" placeholder="@L["Notes visible to the customer"]">@Model.HomeownerNotes</textarea>
             <div class="prv-pro-est-attachments">
                 <div class="prv-pro-est-attachment">
                     <i class="fas fa-camera"></i>
                     <div>
-                        <strong>Photos</strong>
+                        <strong>@L["Photos"]</strong>
                         <small>@Model.PhotoCount attached</small>
                     </div>
                 </div>
                 <div class="prv-pro-est-attachment">
                     <i class="fas fa-microphone"></i>
                     <div>
-                        <strong>Voice transcript</strong>
+                        <strong>@L["Voice transcript"]</strong>
                         <small>@Model.VoiceTranscriptCount attached</small>
                     </div>
                 </div>
@@ -89,20 +89,18 @@
         </section>
 
         <section class="prv-pro-est-edit-totals">
-            <div><span>Subtotal</span><strong id="estSubtotal">@Model.SubtotalAmount.ToString("C2", money)</strong></div>
+            <div><span>@L["Subtotal"]</span><strong id="estSubtotal">@Model.SubtotalAmount.ToString("C2", money)</strong></div>
             <div class="prv-pro-est-breakdown-total">
-                <span>Total estimate</span>
+                <span>@L["Total estimate"]</span>
                 <strong id="estTotal">@Model.TotalAmount.ToString("C2", money)</strong>
             </div>
         </section>
 
         <footer class="prv-pro-est-review-actions">
             <button type="submit" name="SaveAsDraft" value="true" class="prv-pro-btn prv-pro-btn--ghost">
-                <i class="fas fa-floppy-disk"></i> Save draft
-            </button>
+                <i class="fas fa-floppy-disk"></i> @L["Save draft"]</button>
             <button type="submit" name="GoToSend" value="true" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-paper-plane"></i> Update estimate / Next: Send Estimate
-            </button>
+                <i class="fas fa-paper-plane"></i> @L["Update estimate / Next: Send Estimate"]</button>
         </footer>
     </form>
 </div>
@@ -147,11 +145,11 @@
         const row = document.createElement('div');
         row.className = 'prv-pro-est-line-row';
         row.innerHTML = `
-            <input type="text" name="ScopeLabels" placeholder="Description" />
+            <input type="text" name="ScopeLabels" placeholder="@L["Description"]" />
             <input type="number" name="ScopeQtys" value="1" step="0.25" min="0" class="est-qty" />
             <input type="number" name="ScopeUnitPrices" value="0" step="0.01" min="0" class="est-price" />
             <input type="hidden" name="ScopeAmounts" value="0" class="est-amount" />
-            <button type="button" class="prv-pro-est-line-remove" aria-label="Remove line"><i class="fas fa-trash"></i></button>`;
+            <button type="button" class="prv-pro-est-line-remove" aria-label="@L["Remove line"]"><i class="fas fa-trash"></i></button>`;
         list.appendChild(row);
         bindRow(row);
     });

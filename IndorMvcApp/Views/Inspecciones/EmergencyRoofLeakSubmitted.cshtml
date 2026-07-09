@@ -1,35 +1,35 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyRoofLeakSubmittedViewModel
+@model IndorMvcApp.ViewModels.EmergencyRoofLeakSubmittedViewModel
 @{
-    ViewData["Title"] = "Emergency request received - INDOR";
-    ViewData["WizardTitle"] = "Emergency request received";
+    ViewData["Title"] = L["Emergency request received - INDOR"];
+    ViewData["WizardTitle"] = L["Emergency request received"];
 var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
-<div style="margin-bottom:12px;"><strong>Roof Leak Emergency</strong><span class="badge-247">24/7</span></div>
-    <p class="page-lead-header">Fast help for active roof leaks and water intrusion.</p>
+<div style="margin-bottom:12px;"><strong>@L["Roof Leak Emergency"]</strong><span class="badge-247">24/7</span></div>
+    <p class="page-lead-header">@L["Fast help for active roof leaks and water intrusion."]</p>
 
     <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading">Emergency request received</h1>
-    <p class="page-lead">We've sent your roof leak request to the dispatch team.</p>
+    <h1 class="page-heading">@L["Emergency request received"]</h1>
+    <p class="page-lead">@L["We've sent your roof leak request to the dispatch team."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-house-chimney-crack"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-droplet"></i><div style="flex:1;"><div class="summary-label">Issue</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-map-pin"></i><div style="flex:1;"><div class="summary-label">Area</div><div class="summary-value">@Model.AreaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-circle-exclamation"></i><div style="flex:1;"><div class="summary-label">Priority</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">Photos</div><div class="summary-value photos">@Model.ArchivosResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">Estimated arrival</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
-        <div class="summary-row"><i class="fas fa-truck-fast"></i><div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-house-chimney-crack"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-droplet"></i><div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-map-pin"></i><div style="flex:1;"><div class="summary-label">@L["Area"]</div><div class="summary-value">@Model.AreaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-circle-exclamation"></i><div style="flex:1;"><div class="summary-label">@L["Priority"]</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value photos">@Model.ArchivosResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Estimated arrival"]</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
+        <div class="summary-row"><i class="fas fa-truck-fast"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div></div></div>
     </div>
 
     <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <div>If conditions worsen, keep away from wet electrical fixtures and call emergency support immediately.</div>
+        <div>@L["If conditions worsen, keep away from wet electrical fixtures and call emergency support immediately."]</div>
     </div>
 
-    <a asp-action="EmergencyRoofLeakSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">Track request <i class="fas fa-chevron-right"></i></a>
-    <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> Call support</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to Home</a>
+    <a asp-action="EmergencyRoofLeakSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">@L["Track request"] <i class="fas fa-chevron-right"></i></a>
+    <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> @L["Call support"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> @L["Go to Home"]</a>

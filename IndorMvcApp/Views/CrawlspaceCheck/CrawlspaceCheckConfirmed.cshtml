@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckConfirmedViewModel
 @{
-    ViewData["Title"] = "Crawlspace Check Scheduled - INDOR";
+    ViewData["Title"] = L["Crawlspace Check Scheduled - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
@@ -9,39 +9,39 @@
 
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Crawlspace Check Scheduled</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your crawlspace inspection request has been submitted.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["Crawlspace Check Scheduled"]</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L["Your crawlspace inspection request has been submitted."]</p>
     </div>
 
     <div class="summary-grid">
         <div class="summary-mini">
             <i class="fas fa-layer-group"></i>
-            <div class="summary-label">Encapsulation</div>
+            <div class="summary-label">@L["Encapsulation"]</div>
             <div class="summary-value">@Model.EncapsulacionLabel</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-scroll"></i>
-            <div class="summary-label">Insulation</div>
+            <div class="summary-label">@L["Insulation"]</div>
             <div class="summary-value">@Model.AislamientoLabel</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-droplet"></i>
-            <div class="summary-label">Vapor barrier</div>
+            <div class="summary-label">@L["Vapor barrier"]</div>
             <div class="summary-value">@Model.BarreraVaporLabel</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-bug"></i>
-            <div class="summary-label">Concerns</div>
+            <div class="summary-label">@L["Concerns"]</div>
             <div class="summary-value">@Model.ConcernsLabel</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-calendar"></i>
-            <div class="summary-label">Timing</div>
+            <div class="summary-label">@L["Timing"]</div>
             <div class="summary-value">@Model.TimingLabel</div>
         </div>
         <div class="summary-mini">
             <i class="fas fa-clock-rotate-left"></i>
-            <div class="summary-label">Reminder</div>
+            <div class="summary-label">@L["Reminder"]</div>
             <div class="summary-value">@Model.ReminderLabel</div>
         </div>
     </div>

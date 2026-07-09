@@ -57,7 +57,7 @@ public partial class ProveedorController
 
         if (string.Equals(mode, "request", StringComparison.OrdinalIgnoreCase))
         {
-            TempData["VerifyToast"] = "Info requested — contractor moved to Flagged.";
+            TempData["VerifyToast"] = localizer["Info requested — contractor moved to Flagged."];
             return RedirectToAction(nameof(VerifyContractors), new { tab = "flagged" });
         }
 
@@ -95,7 +95,7 @@ public partial class ProveedorController
             return NotFound();
         }
 
-        TempData["VerifyToast"] = "Contractor approved and verified.";
+        TempData["VerifyToast"] = localizer["Contractor approved and verified."];
         return RedirectToAction(nameof(VerifyContractors), new { tab = "approved" });
     }
 }

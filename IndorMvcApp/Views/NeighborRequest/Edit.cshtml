@@ -3,7 +3,7 @@
 @using IndorMvcApp.ViewModels
 @model IndorMvcApp.ViewModels.NeighborRequestEditDetailsStepViewModel
 @{
-    ViewData["Title"] = "Edit request";
+    ViewData["Title"] = L["Edit request"];
     var categories = Model.Categories;
     var timeWindowOptions = Model.TimeWindowOptions ?? IndorMvcApp.Services.NeighborRequestWizardService.GetTimeWindowOptions();
     var selectedCategory = categories.FirstOrDefault(c => c.Id == Model.CategoryId) ?? categories.FirstOrDefault();
@@ -23,15 +23,15 @@
 
     <div class="nr-edit-panel">
         <section class="nr-edit-section">
-            <h2 class="nr-edit-section-title">What do you need help with?</h2>
+            <h2 class="nr-edit-section-title">@L["What do you need help with?"]</h2>
             <div class="nr-edit-picker" id="nrCategoryPicker">
                 @if (categories.Count == 0)
                 {
-                    <p class="nr-empty">Categories are not available yet. Run the database script and try again.</p>
+                    <p class="nr-empty">@L["Categories are not available yet. Run the database script and try again."]</p>
                 }
                 else
                 {
-                <select name="CategoryId" id="CategoryId" class="nr-edit-picker-native" aria-label="Category" required>
+                <select name="CategoryId" id="CategoryId" class="nr-edit-picker-native" aria-label="@L["Category"]" required>
                     @foreach (var category in categories)
                     {
                         if (category.Id == Model.CategoryId)
@@ -59,23 +59,23 @@
         </section>
 
         <section class="nr-edit-section">
-            <h2 class="nr-edit-section-title">Details</h2>
+            <h2 class="nr-edit-section-title">@L["Details"]</h2>
             <div class="nr-edit-field nr-field--count">
                 <div class="nr-counted-control">
-                    <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="2 bedrooms, 2 bathrooms, 1 cat" maxlength="200" aria-describedby="nrEditSummaryCount" />
+                    <input asp-for="DetailsSummary" class="nr-edit-input" placeholder="@L["2 bedrooms, 2 bathrooms, 1 cat"]" maxlength="200" aria-describedby="nrEditSummaryCount" />
                 </div>
                 <span class="nr-char-count" id="nrEditSummaryCount"><span id="nrEditSummaryCountValue">0</span>/200</span>
             </div>
             <div class="nr-edit-field nr-field--count">
                 <div class="nr-counted-control">
-                    <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy." aria-describedby="nrEditDescCount"></textarea>
+                    <textarea asp-for="Description" class="nr-edit-textarea" maxlength="1000" placeholder="@L["Looking for a reliable and detail-oriented cleaner to help keep my home fresh and tidy."]" aria-describedby="nrEditDescCount"></textarea>
                 </div>
                 <span class="nr-char-count" id="nrEditDescCount"><span id="nrEditDescCountValue">0</span>/1000</span>
             </div>
         </section>
 
         <section class="nr-edit-section">
-            <h2 class="nr-edit-section-title">Preferred date</h2>
+            <h2 class="nr-edit-section-title">@L["Preferred date"]</h2>
             <label class="nr-edit-picker nr-edit-picker--date">
                 <span class="nr-edit-picker-icon"><i class="far fa-calendar"></i></span>
                 <input name="NeededByDate"
@@ -85,7 +85,7 @@
                        data-min-date="@Model.MinNeededByDateIso"
                        value="@(Model.NeededByDate?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture) ?? "")" />
                 <span class="nr-edit-picker-label" id="nrPreferredDateLabel">
-                    @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? "Select a date")
+                    @(Model.NeededByDate?.ToString("dddd, MMMM d") ?? L["Select a date"])
                 </span>
                 <i class="fas fa-chevron-right nr-edit-picker-chevron" aria-hidden="true"></i>
             </label>
@@ -93,9 +93,9 @@
         </section>
 
         <section class="nr-edit-section">
-            <h2 class="nr-edit-section-title">Time window</h2>
+            <h2 class="nr-edit-section-title">@L["Time window"]</h2>
             <div class="nr-edit-picker">
-                <select name="TimeWindowPreset" id="TimeWindowPreset" class="nr-edit-picker-native" aria-label="Time window">
+                <select name="TimeWindowPreset" id="TimeWindowPreset" class="nr-edit-picker-native" aria-label="@L["Time window"]">
                     @foreach (var option in timeWindowOptions)
                     {
                         if (option.Value == selectedTimeWindow)
@@ -117,32 +117,32 @@
         </section>
 
         <section class="nr-edit-section nr-edit-section--last">
-            <h2 class="nr-edit-section-title">Who can help?</h2>
-            <div class="nr-edit-audience" role="radiogroup" aria-label="Who can help">
+            <h2 class="nr-edit-section-title">@L["Who can help?"]</h2>
+            <div class="nr-edit-audience" role="radiogroup" aria-label="@L["Who can help?"]">
                 <label class="nr-edit-audience-btn@(Model.AudienceCode == NeighborRequestAudienceCodes.Neighbors ? " is-selected" : string.Empty)">
                     <input type="radio" asp-for="AudienceCode" value="@NeighborRequestAudienceCodes.Neighbors" />
                     <i class="fas fa-users" aria-hidden="true"></i>
-                    <span>Neighbors</span>
+                    <span>@L["Neighbors"]</span>
                 </label>
                 <label class="nr-edit-audience-btn@(Model.AudienceCode == NeighborRequestAudienceCodes.CertifiedProviders ? " is-selected" : string.Empty)">
                     <input type="radio" asp-for="AudienceCode" value="@NeighborRequestAudienceCodes.CertifiedProviders" />
                     <i class="fas fa-user-shield" aria-hidden="true"></i>
-                    <span>INDOR Providers</span>
+                    <span>@L["INDOR Providers"]</span>
                 </label>
                 <label class="nr-edit-audience-btn@(Model.AudienceCode == NeighborRequestAudienceCodes.Both ? " is-selected" : string.Empty)">
                     <input type="radio" asp-for="AudienceCode" value="@NeighborRequestAudienceCodes.Both" />
                     <i class="fas fa-user-group" aria-hidden="true"></i>
-                    <span>Both</span>
+                    <span>@L["Both"]</span>
                 </label>
             </div>
             <div class="nr-edit-info">
                 <i class="fas fa-circle-info" aria-hidden="true"></i>
-                <p>You can switch from neighbors to <strong>INDOR Providers</strong> anytime before booking.</p>
+                <p>@L["You can switch from neighbors to"] <strong>@L["INDOR Providers"]</strong> @L["anytime before booking."]</p>
             </div>
         </section>
     </div>
 
-    <button type="submit" class="nr-btn-primary nr-edit-continue">Continue</button>
+    <button type="submit" class="nr-btn-primary nr-edit-continue">@L["Continue"]</button>
 </form>
 
 @section Scripts {
@@ -162,8 +162,9 @@
             var dateInput = document.querySelector('[name="NeededByDate"]');
             var dateLabel = document.getElementById('nrPreferredDateLabel');
             if (dateInput && dateLabel) {
+                var selectDateLabel = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Select a date"]));
                 var formatDate = function (value) {
-                    if (!value) return 'Select a date';
+                    if (!value) return selectDateLabel;
                     var date = new Date(value + 'T12:00:00');
                     return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
                 };

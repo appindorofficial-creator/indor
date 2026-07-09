@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.StructuralPropertyContextViewModel
+@model IndorMvcApp.ViewModels.StructuralPropertyContextViewModel
 @{
-    ViewData["Title"] = "Property & Context - INDOR";
-    ViewData["WizardTitle"] = "Property & Context";
+    ViewData["Title"] = L["Property & Context - INDOR"];
+    ViewData["WizardTitle"] = L["Property & Context"];
     ViewData["WizardBackUrl"] = Url.Action("StructuralMoreDetails", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 4;
     ViewData["WizardTotalSteps"] = 6;
 
 }
 
-<h1 class="page-heading">Property &amp; Context</h1>
-    <p class="page-lead">Share property background so the inspector can prepare correctly.</p>
+<h1 class="page-heading">@L["Property &amp; Context"]</h1>
+    <p class="page-lead">@L["Share property background so the inspector can prepare correctly."]</p>
 
     <form asp-controller="Inspecciones" asp-action="StructuralPropertyContext" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -26,84 +26,84 @@
         <input type="hidden" asp-for="AreasEnfoque" id="AreasEnfoque" />
 
         <div class="field-card">
-            <span class="field-label">Property address</span>
+            <span class="field-label">@L["Property address"]</span>
             <div class="address-summary"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Reason for inspection</span>
+            <span class="field-label">@L["Reason for inspection"]</span>
             <div class="chip-grid" data-target="MotivoRevision" data-multi="false">
-                <button type="button" class="chip-btn" data-value="BeforePurchase"><span class="check"><i class="fas fa-check"></i></span>Before purchase</button>
-                <button type="button" class="chip-btn" data-value="AfterDamage"><span class="check"><i class="fas fa-check"></i></span>After damage</button>
-                <button type="button" class="chip-btn" data-value="Remodeling"><span class="check"><i class="fas fa-check"></i></span>Remodeling</button>
-                <button type="button" class="chip-btn" data-value="AnnualReview"><span class="check"><i class="fas fa-check"></i></span>Annual review</button>
-                <button type="button" class="chip-btn" data-value="InsuranceClaim"><span class="check"><i class="fas fa-check"></i></span>Insurance claim</button>
-                <button type="button" class="chip-btn" data-value="SecondOpinion"><span class="check"><i class="fas fa-check"></i></span>Second opinion</button>
+                <button type="button" class="chip-btn" data-value="BeforePurchase"><span class="check"><i class="fas fa-check"></i></span>@L["Before purchase"]</button>
+                <button type="button" class="chip-btn" data-value="AfterDamage"><span class="check"><i class="fas fa-check"></i></span>@L["After damage"]</button>
+                <button type="button" class="chip-btn" data-value="Remodeling"><span class="check"><i class="fas fa-check"></i></span>@L["Remodeling"]</button>
+                <button type="button" class="chip-btn" data-value="AnnualReview"><span class="check"><i class="fas fa-check"></i></span>@L["Annual review"]</button>
+                <button type="button" class="chip-btn" data-value="InsuranceClaim"><span class="check"><i class="fas fa-check"></i></span>@L["Insurance claim"]</button>
+                <button type="button" class="chip-btn" data-value="SecondOpinion"><span class="check"><i class="fas fa-check"></i></span>@L["Second opinion"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Property type</span>
+            <span class="field-label">@L["Property type"]</span>
             <div class="chip-grid" data-target="TipoPropiedad" data-multi="false">
-                <button type="button" class="chip-btn" data-value="SingleFamily"><span class="check"><i class="fas fa-check"></i></span>Single family</button>
-                <button type="button" class="chip-btn" data-value="Townhome"><span class="check"><i class="fas fa-check"></i></span>Townhome</button>
-                <button type="button" class="chip-btn" data-value="Duplex"><span class="check"><i class="fas fa-check"></i></span>Duplex</button>
-                <button type="button" class="chip-btn" data-value="Condo"><span class="check"><i class="fas fa-check"></i></span>Condo</button>
+                <button type="button" class="chip-btn" data-value="SingleFamily"><span class="check"><i class="fas fa-check"></i></span>@L["Single family"]</button>
+                <button type="button" class="chip-btn" data-value="Townhome"><span class="check"><i class="fas fa-check"></i></span>@L["Townhome"]</button>
+                <button type="button" class="chip-btn" data-value="Duplex"><span class="check"><i class="fas fa-check"></i></span>@L["Duplex"]</button>
+                <button type="button" class="chip-btn" data-value="Condo"><span class="check"><i class="fas fa-check"></i></span>@L["Condo"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Property age</span>
+            <span class="field-label">@L["Property age"]</span>
             <div class="chip-grid" data-target="EdadPropiedad" data-multi="false">
-                <button type="button" class="chip-btn" data-value="LessThan10"><span class="check"><i class="fas fa-check"></i></span>Less than 10 years</button>
-                <button type="button" class="chip-btn" data-value="TenTo30"><span class="check"><i class="fas fa-check"></i></span>10 to 30 years</button>
-                <button type="button" class="chip-btn" data-value="ThirtyPlus"><span class="check"><i class="fas fa-check"></i></span>30+ years</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="LessThan10"><span class="check"><i class="fas fa-check"></i></span>@L["Less than 10 years"]</button>
+                <button type="button" class="chip-btn" data-value="TenTo30"><span class="check"><i class="fas fa-check"></i></span>@L["10 to 30 years"]</button>
+                <button type="button" class="chip-btn" data-value="ThirtyPlus"><span class="check"><i class="fas fa-check"></i></span>@L["30+ years"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Foundation type</span>
+            <span class="field-label">@L["Foundation type"]</span>
             <div class="chip-grid" data-target="TipoFundacion" data-multi="false">
-                <button type="button" class="chip-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>Crawl space</button>
-                <button type="button" class="chip-btn" data-value="Slab"><span class="check"><i class="fas fa-check"></i></span>Slab</button>
-                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>Basement</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space"]</button>
+                <button type="button" class="chip-btn" data-value="Slab"><span class="check"><i class="fas fa-check"></i></span>@L["Slab"]</button>
+                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>@L["Basement"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Do you already have a report?</span>
+            <span class="field-label">@L["Do you already have a report?"]</span>
             <div class="chip-grid" data-target="TieneReporte" data-multi="false">
-                <button type="button" class="chip-btn" data-value="Yes"><span class="check"><i class="fas fa-check"></i></span>Yes</button>
-                <button type="button" class="chip-btn" data-value="No"><span class="check"><i class="fas fa-check"></i></span>No</button>
+                <button type="button" class="chip-btn" data-value="Yes"><span class="check"><i class="fas fa-check"></i></span>@L["Yes"]</button>
+                <button type="button" class="chip-btn" data-value="No"><span class="check"><i class="fas fa-check"></i></span>@L["No"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Recent changes</span>
+            <span class="field-label">@L["Recent changes"]</span>
             <div class="chip-grid" data-target="CambiosRecientes" data-multi="true">
-                <button type="button" class="chip-btn" data-value="NewCracks"><span class="check"><i class="fas fa-check"></i></span>New cracks</button>
-                <button type="button" class="chip-btn" data-value="WorseningCracks"><span class="check"><i class="fas fa-check"></i></span>Worsening cracks</button>
-                <button type="button" class="chip-btn" data-value="StickingDoors"><span class="check"><i class="fas fa-check"></i></span>Sticking doors</button>
-                <button type="button" class="chip-btn" data-value="FloorUneven"><span class="check"><i class="fas fa-check"></i></span>Floor uneven</button>
-                <button type="button" class="chip-btn" data-value="WaterAfterRain"><span class="check"><i class="fas fa-check"></i></span>Water after rain</button>
-                <button type="button" class="chip-btn" data-value="NoChange"><span class="check"><i class="fas fa-check"></i></span>No change</button>
+                <button type="button" class="chip-btn" data-value="NewCracks"><span class="check"><i class="fas fa-check"></i></span>@L["New cracks"]</button>
+                <button type="button" class="chip-btn" data-value="WorseningCracks"><span class="check"><i class="fas fa-check"></i></span>@L["Worsening cracks"]</button>
+                <button type="button" class="chip-btn" data-value="StickingDoors"><span class="check"><i class="fas fa-check"></i></span>@L["Sticking doors"]</button>
+                <button type="button" class="chip-btn" data-value="FloorUneven"><span class="check"><i class="fas fa-check"></i></span>@L["Floor uneven"]</button>
+                <button type="button" class="chip-btn" data-value="WaterAfterRain"><span class="check"><i class="fas fa-check"></i></span>@L["Water after rain"]</button>
+                <button type="button" class="chip-btn" data-value="NoChange"><span class="check"><i class="fas fa-check"></i></span>@L["No change"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Preferred access</span>
+            <span class="field-label">@L["Preferred access"]</span>
             <div class="chip-grid" data-target="AccesoPreferido" data-multi="false">
-                <button type="button" class="chip-btn" data-value="SomeoneHome"><span class="check"><i class="fas fa-check"></i></span>Someone home</button>
-                <button type="button" class="chip-btn" data-value="Lockbox"><span class="check"><i class="fas fa-check"></i></span>Lockbox</button>
-                <button type="button" class="chip-btn" data-value="RealtorAccess"><span class="check"><i class="fas fa-check"></i></span>Realtor access</button>
-                <button type="button" class="chip-btn" data-value="Vacant"><span class="check"><i class="fas fa-check"></i></span>Vacant</button>
+                <button type="button" class="chip-btn" data-value="SomeoneHome"><span class="check"><i class="fas fa-check"></i></span>@L["Someone home"]</button>
+                <button type="button" class="chip-btn" data-value="Lockbox"><span class="check"><i class="fas fa-check"></i></span>@L["Lockbox"]</button>
+                <button type="button" class="chip-btn" data-value="RealtorAccess"><span class="check"><i class="fas fa-check"></i></span>@L["Realtor access"]</button>
+                <button type="button" class="chip-btn" data-value="Vacant"><span class="check"><i class="fas fa-check"></i></span>@L["Vacant"]</button>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> @L["Back"]</button>
     </form>
 </div>
 @section Scripts {

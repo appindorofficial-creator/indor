@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RequestDetailsViewModel
 @{
-    ViewData["Title"] = "Request Details";
+    ViewData["Title"] = L["Request Details"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-requests.css";
     ViewBag.NavActive = "jobs";
@@ -9,15 +9,15 @@
 <div class="prv-req-shell">
     <header class="prv-req-hero prv-req-hero--detail">
         <div class="prv-req-hero-top">
-            <a asp-controller="Proveedor" asp-action="MyRequests" class="prv-req-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
-            <span class="prv-req-brand-word">INDOR</span>
-            <span class="prv-req-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="MyRequests" class="prv-req-back" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
+            <span class="prv-req-brand-word">@L["INDOR"]</span>
+            <span class="prv-req-brand-pro">@L["PRO"]</span>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-req-hero-title">
             <div>
-                <h1>Request Details</h1>
-                <p>See status, timeline, and activity.</p>
+                <h1>@L["Request Details"]</h1>
+                <p>@L["See status, timeline, and activity."]</p>
             </div>
             <span class="prv-req-hero-status prv-req-hero-status--@Model.StatusKind">
                 <i class="fas fa-quote-right"></i> @Model.StatusLabel
@@ -40,7 +40,7 @@
                 }
             </div>
             <div class="prv-req-budget">
-                <span>Budget</span>
+                <span>@L["Budget"]</span>
                 <strong>@(Model.BudgetRange ?? "—")</strong>
                 <span class="prv-req-posted-inline">Posted @Model.PostedLabel</span>
             </div>
@@ -62,7 +62,7 @@
     </section>
 
     <section class="prv-req-panel">
-        <h2 class="prv-req-panel-title">Activity</h2>
+        <h2 class="prv-req-panel-title">@L["Activity"]</h2>
         <div class="prv-req-activity">
             @foreach (var a in Model.Activity)
             {
@@ -83,10 +83,10 @@
 
     <section class="prv-req-panel">
         <div class="prv-req-panel-head">
-            <h2 class="prv-req-panel-title">Quotes Available <span class="prv-req-count">@Model.QuoteCount</span></h2>
+            <h2 class="prv-req-panel-title">@L["Quotes Available"]<span class="prv-req-count">@Model.QuoteCount</span></h2>
             @if (Model.QuoteCount > 0)
             {
-                <a asp-controller="Proveedor" asp-action="CompareQuotes" asp-route-id="@Model.Id" class="prv-req-link">View all quotes <i class="fas fa-chevron-right"></i></a>
+                <a asp-controller="Proveedor" asp-action="CompareQuotes" asp-route-id="@Model.Id" class="prv-req-link">@L["View all quotes"]<i class="fas fa-chevron-right"></i></a>
             }
         </div>
 
@@ -94,7 +94,7 @@
         {
             <div class="prv-req-nowuotes">
                 <i class="fas fa-hourglass-half"></i>
-                <span>Waiting for subcontractors to send quotes. We'll notify you as they arrive.</span>
+                <span>@L["Waiting for subcontractors to send quotes. We'll notify you as they arrive."]</span>
             </div>
         }
         else

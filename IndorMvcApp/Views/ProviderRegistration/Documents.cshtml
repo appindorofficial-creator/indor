@@ -33,7 +33,7 @@
         <div class="prv-doc-row-icon"><i class="fas @(uploaded ? "fa-circle-check" : "fa-file-lines")"></i></div>
         <div class="prv-doc-row-body">
             <strong>@slot.Label</strong>
-            @if (!slot.Required) { <span class="prv-doc-optional">Optional</span> }
+            @if (!slot.Required) { <span class="prv-doc-optional">@L["Optional"]</span> }
             @if (uploaded && !string.IsNullOrWhiteSpace(slot.DisplayFileName))
             {
                 <span class="prv-doc-file-name">@slot.DisplayFileName</span>
@@ -47,124 +47,124 @@
     @Html.AntiForgeryToken()
     @if (isRoofing)
     {
-        <div class="prv-doc-upload"><label for="roofingLicenseFile">Roofing license</label><input type="file" id="roofingLicenseFile" name="roofingLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">General liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration or W-9</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Project photos</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
-        <div class="prv-doc-upload"><label for="tradeCertsFile">Additional certification (optional)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="roofingLicenseFile">@L["Roofing license"]</label><input type="file" id="roofingLicenseFile" name="roofingLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["General liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration or W-9"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Project photos"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">@L["Additional certification (optional)"]</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isKitchen)
     {
-        <div class="prv-doc-upload"><label for="governmentIdFile">Photo ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="licenseFile">License / qualification proof</label><input type="file" id="licenseFile" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Certificate of insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Portfolio photos</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
-        <div class="prv-doc-upload"><label for="referencesFile">Customer references (optional)</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Photo ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="licenseFile">@L["License / qualification proof"]</label><input type="file" id="licenseFile" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Certificate of insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Portfolio photos"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="referencesFile">@L["Customer references (optional)"]</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isBathroom)
     {
-        <div class="prv-doc-upload"><label for="governmentIdFile">Photo ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="licenseFile">License / qualification proof</label><input type="file" id="licenseFile" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Certificate of insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Portfolio photos</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
-        <div class="prv-doc-upload"><label for="referencesFile">Customer references (optional)</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Photo ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="licenseFile">@L["License / qualification proof"]</label><input type="file" id="licenseFile" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Certificate of insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Portfolio photos"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="referencesFile">@L["Customer references (optional)"]</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isPainting)
     {
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="paintingProjectPhotosFile">Painting project photos</label><input type="file" id="paintingProjectPhotosFile" name="paintingProjectPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
-        <div class="prv-doc-upload"><label for="tradeCertsFile">Certifications (if applicable)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business license"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="paintingProjectPhotosFile">@L["Painting project photos"]</label><input type="file" id="paintingProjectPhotosFile" name="paintingProjectPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">@L["Certifications (if applicable)"]</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isFlooring)
     {
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="flooringProjectPhotosFile">Flooring project photos</label><input type="file" id="flooringProjectPhotosFile" name="flooringProjectPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
-        <div class="prv-doc-upload"><label for="tradeCertsFile">Certifications (if applicable)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business license"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="flooringProjectPhotosFile">@L["Flooring project photos"]</label><input type="file" id="flooringProjectPhotosFile" name="flooringProjectPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">@L["Certifications (if applicable)"]</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isPest)
     {
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="pestControlLicenseFile">Pest control license</label><input type="file" id="pestControlLicenseFile" name="pestControlLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Insurance certificate</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="tradeCertsFile">Optional certifications</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business license"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="pestControlLicenseFile">@L["Pest control license"]</label><input type="file" id="pestControlLicenseFile" name="pestControlLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Insurance certificate"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">@L["Optional certifications"]</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isAppliance)
     {
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Photo ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Proof of insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="applianceRepairCertificationFile">Appliance repair certification (if applicable)</label><input type="file" id="applianceRepairCertificationFile" name="applianceRepairCertificationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 / tax form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Portfolio or job photos</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business license"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Photo ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Proof of insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="applianceRepairCertificationFile">@L["Appliance repair certification (if applicable)"]</label><input type="file" id="applianceRepairCertificationFile" name="applianceRepairCertificationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 / tax form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Portfolio or job photos"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     else if (isLandscaping)
     {
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">General liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Photo ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Project photos / past work</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business license"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["General liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Photo ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Project photos / past work"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     else if (isCleaning)
     {
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business license (if applicable)</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 / Tax form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="cleaningWorkPhotosFile">Before &amp; after work photos</label><input type="file" id="cleaningWorkPhotosFile" name="cleaningWorkPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business license (if applicable)"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 / Tax form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="cleaningWorkPhotosFile">@L["Before &amp; after work photos"]</label><input type="file" id="cleaningWorkPhotosFile" name="cleaningWorkPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     else if (isConstruction)
     {
-        <div class="prv-doc-upload"><label for="contractorLicenseFile">General contractor license</label><input type="file" id="contractorLicenseFile" name="contractorLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">Certificate of insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Project photos / portfolio (optional)</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="contractorLicenseFile">@L["General contractor license"]</label><input type="file" id="contractorLicenseFile" name="contractorLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["Certificate of insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Project photos / portfolio (optional)"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     else if (isHandyman)
     {
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">General liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration (if applicable)</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="workPhotosFile">Photos of completed handyman work</label><input type="file" id="workPhotosFile" name="workPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
-        <div class="prv-doc-upload"><label for="referencesFile">References (optional)</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="tradeCertsFile">Certifications (optional)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["General liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration (if applicable)"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="workPhotosFile">@L["Photos of completed handyman work"]</label><input type="file" id="workPhotosFile" name="workPhotosFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="referencesFile">@L["References (optional)"]</label><input type="file" id="referencesFile" name="referencesFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">@L["Certifications (optional)"]</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isHvac)
     {
-        <div class="prv-doc-upload"><label for="hvacLicenseFile">HVAC contractor license</label><input type="file" id="hvacLicenseFile" name="hvacLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="epaCertFile">EPA certification</label><input type="file" id="epaCertFile" name="epaCertFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">General liability insurance</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="governmentIdFile">Government ID</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="hvacLicenseFile">@L["HVAC contractor license"]</label><input type="file" id="hvacLicenseFile" name="hvacLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="epaCertFile">@L["EPA certification"]</label><input type="file" id="epaCertFile" name="epaCertFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="liabilityInsuranceFile">@L["General liability insurance"]</label><input type="file" id="liabilityInsuranceFile" name="liabilityInsuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="governmentIdFile">@L["Government ID"]</label><input type="file" id="governmentIdFile" name="governmentIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
     }
     else if (isPlumbing)
     {
-        <div class="prv-doc-upload"><label for="plumbingLicenseFile">Plumbing license</label><input type="file" id="plumbingLicenseFile" name="plumbingLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="photoIdFile">Photo ID</label><input type="file" id="photoIdFile" name="photoIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="insuranceFile">Certificate of insurance</label><input type="file" id="insuranceFile" name="insuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="businessRegistrationFile">Business registration</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="w9File">W-9 form</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="tradeCertsFile">Trade certifications (optional)</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="portfolioFile">Portfolio photos (optional)</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="plumbingLicenseFile">@L["Plumbing license"]</label><input type="file" id="plumbingLicenseFile" name="plumbingLicenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="photoIdFile">@L["Photo ID"]</label><input type="file" id="photoIdFile" name="photoIdFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="insuranceFile">@L["Certificate of insurance"]</label><input type="file" id="insuranceFile" name="insuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="businessRegistrationFile">@L["Business registration"]</label><input type="file" id="businessRegistrationFile" name="businessRegistrationFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="w9File">@L["W-9 form"]</label><input type="file" id="w9File" name="w9File" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="tradeCertsFile">@L["Trade certifications (optional)"]</label><input type="file" id="tradeCertsFile" name="tradeCertsFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="portfolioFile">@L["Portfolio photos (optional)"]</label><input type="file" id="portfolioFile" name="portfolioFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     else
     {
-        <div class="prv-doc-upload"><label for="licenseFile">Trade license</label><input type="file" id="licenseFile" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="insuranceFile">Proof of insurance</label><input type="file" id="insuranceFile" name="insuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
-        <div class="prv-doc-upload"><label for="logoFile">Company logo (optional)</label><input type="file" id="logoFile" name="logoFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
+        <div class="prv-doc-upload"><label for="licenseFile">@L["Trade license"]</label><input type="file" id="licenseFile" name="licenseFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="insuranceFile">@L["Proof of insurance"]</label><input type="file" id="insuranceFile" name="insuranceFile" accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" /></div>
+        <div class="prv-doc-upload"><label for="logoFile">@L["Company logo (optional)"]</label><input type="file" id="logoFile" name="logoFile" accept="image/*,.jpg,.jpeg,.png,.webp" /></div>
     }
     <div class="prv-rule-banner">
         <i class="fas @(isHvac ? "fa-shield-halved" : "fa-circle-info")"></i>
@@ -173,7 +173,7 @@
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="prvDocumentsForm" name="action" value="continue" class="ob-btn ob-btn-primary">Continue</button>
-    <button type="submit" form="prvDocumentsForm" name="action" value="upload" class="ob-btn ob-btn-outline">Save uploads</button>
-    <a href="@Model.BackUrl" class="prv-save-later">Back</a>
+    <button type="submit" form="prvDocumentsForm" name="action" value="continue" class="ob-btn ob-btn-primary">@L["Continue"]</button>
+    <button type="submit" form="prvDocumentsForm" name="action" value="upload" class="ob-btn ob-btn-outline">@L["Save uploads"]</button>
+    <a href="@Model.BackUrl" class="prv-save-later">@L["Back"]</a>
 </div>

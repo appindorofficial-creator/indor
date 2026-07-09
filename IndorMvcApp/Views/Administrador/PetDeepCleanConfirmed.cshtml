@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPetDeepCleanConfirmedViewModel
 @{
-    ViewData["Title"] = "Pet Deep Cleaning scheduled";
+    ViewData["Title"] = L["Pet Deep Cleaning scheduled"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -16,8 +16,8 @@
     <div class="pa-pet-success-card">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
-            <strong>Pet Deep Cleaning scheduled</strong>
-            <p>You're all set! We've scheduled a licensed pro to get your rental guest-ready after a pet stay.</p>
+            <strong>@L["Pet Deep Cleaning scheduled"]</strong>
+            <p>@L["You're all set! We've scheduled a licensed pro to get your rental guest-ready after a pet stay."]</p>
         </div>
     </div>
 
@@ -43,13 +43,13 @@
                 <strong>@Model.ViewingProperty.PropertyName</strong>
                 <small>@propertyLabel</small>
             </div>
-            <span>View property <i class="fas fa-chevron-right"></i></span>
+            <span>@L["View property"] <i class="fas fa-chevron-right"></i></span>
         </a>
     }
 
     <div class="pa-confirm-split">
         <article class="pa-summary-card-block">
-            <h2>Booking details</h2>
+            <h2>@L["Booking details"]</h2>
             <ul class="pa-booking-detail-list">
                 @foreach (var item in Model.BookingDetails)
                 {
@@ -66,7 +66,7 @@
         </article>
 
         <article class="pa-timeline-card pa-timeline-card--inline">
-            <h2>Request timeline</h2>
+            <h2>@L["Request timeline"]</h2>
             <ul class="pa-timeline">
                 @foreach (var step in Model.Timeline)
                 {
@@ -83,11 +83,11 @@
     </div>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message co-host</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>Reschedule</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>Add recurring</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message co-host"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-rotate"></i><span>@L["Add recurring"]</span></button>
         <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>View details</span>
+            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
     </div>
 

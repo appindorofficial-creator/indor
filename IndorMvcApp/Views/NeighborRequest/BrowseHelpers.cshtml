@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestBrowseHelpersViewModel
 @{
-    ViewData["Title"] = "Browse Helpers";
+    ViewData["Title"] = L["Browse Helpers"];
     Layout = null;
 }
 <!DOCTYPE html>
@@ -8,15 +8,15 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Browse Helpers - INDOR</title>
+    <title>@L["Browse Helpers"] - INDOR</title>
     @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-wizard.css" asp-append-version="true" />
 </head>
 <body class="nr-wizard-page">
     <div class="nr-wizard-shell">
         <header class="nr-wizard-top">
-            <a href="@Model.HomeUrl" class="nr-wizard-nav-btn" aria-label="Back to dashboard"><i class="fas fa-arrow-left"></i></a>
-            <strong class="nr-wizard-top-title">Browse Helpers</strong>
+            <a href="@Model.HomeUrl" class="nr-wizard-nav-btn" aria-label="@L["Back to dashboard"]"><i class="fas fa-arrow-left"></i></a>
+            <strong class="nr-wizard-top-title">@L["Browse Helpers"]</strong>
             <span class="nr-wizard-nav-btn nr-wizard-nav-btn--spacer" aria-hidden="true"></span>
         </header>
 
@@ -27,20 +27,20 @@
 
         <div class="nr-helpers-toolbar">
             <div class="nr-helpers-view-toggle">
-                <button type="button" class="is-active"><i class="fas fa-list"></i> List</button>
-                <button type="button" disabled><i class="fas fa-map"></i> Map</button>
+                <button type="button" class="is-active"><i class="fas fa-list"></i> @L["List"]</button>
+                <button type="button" disabled><i class="fas fa-map"></i> @L["Map"]</button>
             </div>
         </div>
 
         <header class="nr-helpers-head">
-            <h3>Available helpers near you</h3>
-            <p>Verified neighbors and local helpers ready to lend a hand.</p>
+            <h3>@L["Available helpers near you"]</h3>
+            <p>@L["Verified neighbors and local helpers ready to lend a hand."]</p>
         </header>
 
         @if (Model.Helpers.Count == 0)
         {
             <div class="nr-empty">
-                <p>No helpers found nearby yet.</p>
+                <p>@L["No helpers found nearby yet."]</p>
             </div>
         }
         else
@@ -60,7 +60,7 @@
                             }
                             @if (card.IsOnline)
                             {
-                                <span class="nr-helper-online" aria-label="Online"></span>
+                                <span class="nr-helper-online" aria-label="@L["Online"]"></span>
                             }
                         </div>
                         <div class="nr-helper-body">
@@ -68,7 +68,7 @@
                                 <strong>@card.Name</strong>
                                 @if (card.IsVerified)
                                 {
-                                    <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                                    <span class="nr-helper-verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
                                 }
                             </div>
                             <div class="nr-helper-meta">
@@ -89,7 +89,7 @@
                             <strong>@card.PriceLabel</strong>
                             <small>@card.MinHoursLabel</small>
                             <div class="nr-helper-actions">
-                                <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">Message</a>
+                                <a href="@card.MessageUrl" class="nr-btn-outline nr-btn-outline--sm">@L["Message"]</a>
                                 <a href="@Model.PostQuickJobUrl" class="nr-btn-primary nr-btn-primary--sm">Invite</a>
                             </div>
                         </div>
@@ -101,21 +101,21 @@
         <div class="nr-trust-banner">
             <i class="fas fa-shield-halved"></i>
             <div>
-                <strong>Background checked helpers</strong>
-                <p>All helpers are ID verified and background checked for your safety.</p>
+                <strong>@L["Background checked helpers"]</strong>
+                <p>@L["All helpers are ID verified and background checked for your safety."]</p>
             </div>
         </div>
 
         <div class="nr-browse-helpers-actions">
             <a href="@Model.PostQuickJobUrl" class="nr-btn-primary">
-                <i class="fas fa-plus"></i>&nbsp; Post a Quick Job
+                <i class="fas fa-plus"></i>&nbsp; @L["Post a Quick Job"]
             </a>
             <a href="@Model.HomeUrl" class="nr-btn-outline">
-                <i class="fas fa-house"></i>&nbsp; Return to dashboard
+                <i class="fas fa-house"></i>&nbsp; @L["Return to dashboard"]
             </a>
         </div>
 
-        <p class="nr-helpers-footnote"><i class="fas fa-lock"></i> All communication happens in INDOR. No phone numbers shared.</p>
+        <p class="nr-helpers-footnote"><i class="fas fa-lock"></i> @L["All communication happens in INDOR. No phone numbers shared."]</p>
     </div>
 </body>
 </html>

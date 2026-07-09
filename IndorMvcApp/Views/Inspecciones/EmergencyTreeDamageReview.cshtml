@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyTreeDamageReviewViewModel
 @{
-    ViewData["Title"] = "Tree Damage Details - INDOR";
-    ViewData["WizardTitle"] = "Tree Damage Details";
+    ViewData["Title"] = L["Tree Damage Details - INDOR"];
+    ViewData["WizardTitle"] = L["Tree Damage Details"];
 var isDanger = string.Equals(Model.PeligroInmediatoResumen, "Yes", StringComparison.OrdinalIgnoreCase);
     var hasPhotos = !Model.ArchivosResumen.StartsWith("None", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("EmergencyTreeDamagePhotos", "Inspecciones", new { id = Model.SolicitudId });
@@ -10,34 +10,34 @@ var isDanger = string.Equals(Model.PeligroInmediatoResumen, "Yes", StringCompari
 
 }
 
-    <strong style="display:block;margin-bottom:4px;">Tree Damage Details</strong>
-    <div class="step-sub">Step 3 of 3 &middot; Review and dispatch</div>
+    <strong style="display:block;margin-bottom:4px;">@L["Tree Damage Details"]</strong>
+    <div class="step-sub">@L["Step 3 of 3 &middot; Review and dispatch"]</div>
 
     
-<h2 class="page-heading">Review your request</h2>
+<h2 class="page-heading">@L["Review your request"]</h2>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyTreeDamageReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioEmergenciaId" />
 
         <div class="summary-card">
-            <div class="summary-row"><i class="fas fa-tree"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
-            <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-            <div class="summary-row"><i class="fas fa-triangle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">What happened</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">Location</div><div class="summary-value">@Model.UbicacionResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-circle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">Immediate danger</div><div class="summary-value @(isDanger ? "danger" : "")">@Model.PeligroInmediatoResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-bolt"></i><div style="flex:1;"><div class="summary-label">Utility risk</div><div class="summary-value">@Model.RiesgoUtilidadResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-road"></i><div style="flex:1;"><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoCasaResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">Photos</div><div class="summary-value @(hasPhotos ? "photos" : "")">@Model.ArchivosResumen</div></div></div>
-            <div class="summary-row"><i class="fas fa-phone"></i><div style="flex:1;"><div class="summary-label">Contact</div><div class="summary-value">@Model.TelefonoContacto</div></div></div>
-            <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">Estimated arrival</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
+            <div class="summary-row"><i class="fas fa-tree"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+            <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+            <div class="summary-row"><i class="fas fa-triangle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">@L["What happened"]</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Location"]</div><div class="summary-value">@Model.UbicacionResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-circle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">@L["Immediate danger"]</div><div class="summary-value @(isDanger ? "danger" : "")">@Model.PeligroInmediatoResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-bolt"></i><div style="flex:1;"><div class="summary-label">@L["Utility risk"]</div><div class="summary-value">@Model.RiesgoUtilidadResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-road"></i><div style="flex:1;"><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoCasaResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-images"></i><div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@Model.ArchivosResumen</div></div></div>
+            <div class="summary-row"><i class="fas fa-phone"></i><div style="flex:1;"><div class="summary-label">@L["Contact"]</div><div class="summary-value">@Model.TelefonoContacto</div></div></div>
+            <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Estimated arrival"]</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>Stay clear of the tree and any power lines until help arrives.</div>
+            <div>@L["Stay clear of the tree and any power lines until help arrives."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-paper-plane"></i> Request emergency help</button>
-        <button type="submit" class="btn-outline" name="action" value="back"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-paper-plane"></i> @L["Request emergency help"]</button>
+        <button type="submit" class="btn-outline" name="action" value="back"><i class="fas fa-arrow-left"></i> @L["Back"]</button>
     </form>

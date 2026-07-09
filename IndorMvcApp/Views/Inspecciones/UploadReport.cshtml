@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.UploadReportViewModel
+@model IndorMvcApp.ViewModels.UploadReportViewModel
 @{
-    ViewData["Title"] = "Upload Report - INDOR";
-    ViewData["WizardTitle"] = "Upload Report";
+    ViewData["Title"] = L["Upload Report - INDOR"];
+    ViewData["WizardTitle"] = L["Upload Report"];
     ViewData["WizardBackUrl"] = Url.Action("PurchaseDetails", "Inspecciones", new { id = Model.InspeccionId });
 
 }
 
 </div>
 
-        <h1 class="page-heading">Upload your inspection report</h1>
-        <p class="page-lead">Upload the home inspection report so INDOR can identify the priority items before scheduling.</p>
+        <h1 class="page-heading">@L["Upload your inspection report"]</h1>
+        <p class="page-lead">@L["Upload the home inspection report so INDOR can identify the priority items before scheduling."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -24,20 +24,20 @@
 
             <div class="dropzone" id="dropzone">
                 <i class="fas fa-cloud-arrow-up"></i>
-                <p>Drag files here or <strong>browse</strong></p>
-                <p style="margin-top:6px;font-size:0.82rem;">PDF, JPG, PNG</p>
+                <p>@L["Drag files here or"] <strong>@L["browse"]</strong></p>
+                <p style="margin-top:6px;font-size:0.82rem;">@L["PDF, JPG, PNG"]</p>
             </div>
             <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" />
 
             <div class="action-list">
                 <label class="action-item" for="fileInput">
-                    <i class="fas fa-file-pdf"></i><span>Upload PDF</span>
+                    <i class="fas fa-file-pdf"></i><span>@L["Upload PDF"]</span>
                 </label>
                 <label class="action-item" for="fileInput">
-                    <i class="fas fa-camera"></i><span>Take photo of report pages</span>
+                    <i class="fas fa-camera"></i><span>@L["Take photo of report pages"]</span>
                 </label>
                 <label class="action-item" for="fileInput">
-                    <i class="fas fa-images"></i><span>Upload screenshots</span>
+                    <i class="fas fa-images"></i><span>@L["Upload screenshots"]</span>
                 </label>
             </div>
 
@@ -48,7 +48,7 @@
                     {
                         <div class="file-item">
                             <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
-                            <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                            <a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a>
                         </div>
                     }
                 </div>
@@ -57,21 +57,21 @@
             <div id="selectedFiles" class="file-list"></div>
 
             <div class="field-card">
-                <label asp-for="NotasRevision" class="field-label">What would you like us to review first? (Optional)</label>
+                <label asp-for="NotasRevision" class="field-label">@L["What would you like us to review first? (Optional)"]</label>
                 <textarea asp-for="NotasRevision" class="form-textarea" maxlength="250"
-                          placeholder="Example: HVAC, roof leak, or electrical panel concerns..."></textarea>
+                          placeholder="@L["Example: HVAC, roof leak, or electrical panel concerns..."]"></textarea>
                 <div class="char-count"><span id="charCount">0</span>/250</div>
             </div>
 
             <div class="tip-box">
                 <i class="fas fa-circle-info"></i>
-                <div>Tip: Uploading the report first helps INDOR focus on the right issues and prepare a better assessment.</div>
+                <div>@L["Tip: Uploading the report first helps INDOR focus on the right issues and prepare a better assessment."]</div>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="upload">
                 Continue <i class="fas fa-arrow-right"></i>
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

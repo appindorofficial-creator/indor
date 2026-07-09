@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.WaterHeaterReviewViewModel
 @{
-    ViewData["Title"] = "Review & Save";
+    ViewData["Title"] = L["Review & Save"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
     ViewData["WizardStep"] = 
@@ -13,13 +13,13 @@ Model.CurrentStep
 
         @await Html.PartialAsync("_WaterHeaterPropertyCard", Model)
 
-        <h2 class="hvac-section-title">Review scanned information</h2>
-        <p class="hvac-lead">Please review the details below. You can edit any field before saving.</p>
+        <h2 class="hvac-section-title">@L["Review scanned information"]</h2>
+        <p class="hvac-lead">@L["Please review the details below. You can edit any field before saving."]</p>
 
         @if (!string.IsNullOrWhiteSpace(Model.LabelImageUrl))
         {
             <div class="hvac-review-label-photo">
-                <img src="@Url.Content($"~{Model.LabelImageUrl}")" alt="Your uploaded water heater label" />
+                <img src="@Url.Content($"~{Model.LabelImageUrl}")" alt="@L["Your uploaded water heater label"]" />
             </div>
         }
 
@@ -31,39 +31,39 @@ Model.CurrentStep
 
             <div class="hvac-review-card">
                 <div class="hvac-review-rows">
-                    <div class="hvac-review-row"><span>Water heater type</span><strong>@Model.HeaterTypeLabel</strong></div>
-                    <div class="hvac-review-row"><span>Brand</span><strong>@Model.Brand</strong></div>
-                    <div class="hvac-review-row"><span>Model</span><strong>@Model.EquipmentModel</strong></div>
-                    <div class="hvac-review-row"><span>Serial number</span><strong>@Model.SerialNumber</strong></div>
-                    <div class="hvac-review-row"><span>Approx. install year</span><strong>@Model.InstallYearLabel</strong></div>
+                    <div class="hvac-review-row"><span>@L["Water heater type"]</span><strong>@Model.HeaterTypeLabel</strong></div>
+                    <div class="hvac-review-row"><span>@L["Brand"]</span><strong>@Model.Brand</strong></div>
+                    <div class="hvac-review-row"><span>@L["Model"]</span><strong>@Model.EquipmentModel</strong></div>
+                    <div class="hvac-review-row"><span>@L["Serial number"]</span><strong>@Model.SerialNumber</strong></div>
+                    <div class="hvac-review-row"><span>@L["Approx. install year"]</span><strong>@Model.InstallYearLabel</strong></div>
                     @if (Model.HeaterTypeLabel == "Tank")
                     {
-                        <div class="hvac-review-row"><span>Capacity</span><strong>@Model.TankSizeLabel</strong></div>
+                        <div class="hvac-review-row"><span>@L["Capacity"]</span><strong>@Model.TankSizeLabel</strong></div>
                     }
                 </div>
             </div>
 
             <div class="hvac-info-banner">
                 <i class="fas fa-circle-info"></i>
-                <span>These values were scanned from the equipment label. You can edit them above before saving.</span>
+                <span>@L["These values were scanned from the equipment label. You can edit them above before saving."]</span>
             </div>
 
             <label class="hvac-consent-row">
                 <input asp-for="ConfirmSave" type="checkbox" />
-                <span>I confirm this information can be saved to my House Facts profile for maintenance and service recommendations.</span>
+                <span>@L["I confirm this information can be saved to my House Facts profile for maintenance and service recommendations."]</span>
             </label>
             <span asp-validation-for="ConfirmSave" class="text-danger"></span>
 
             <button type="submit" class="hvac-save-btn hvac-btn-with-icon">
-                <i class="fas fa-floppy-disk"></i> Save water heater
+                <i class="fas fa-floppy-disk"></i> @L["Save water heater"]
             </button>
             @if (!string.IsNullOrWhiteSpace(Model.LabelImageUrl))
             {
-                <a asp-action="DetailsFound" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">Edit details</a>
+                <a asp-action="DetailsFound" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">@L["Edit details"]</a>
             }
             else
             {
-                <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">Edit details</a>
+                <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">@L["Edit details"]</a>
             }
         </form>
     </div>

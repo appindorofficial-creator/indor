@@ -1,5 +1,5 @@
 (function () {
-    const STEPS = [
+    const STEPS = window.indorPropertyLoadingSteps || [
         "Geocoding your address…",
         "Searching public records…",
         "Checking Redfin & Realtor listings…",

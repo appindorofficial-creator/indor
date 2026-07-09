@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.InviteToJobViewModel
 @{
-    ViewData["Title"] = "Invite to Job";
+    ViewData["Title"] = L["Invite to Job"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-requests.css";
     ViewBag.NavActive = "jobs";
@@ -10,15 +10,15 @@
 <div class="prv-req-shell">
     <header class="prv-req-hero prv-req-hero--detail">
         <div class="prv-req-hero-top">
-            <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.Sub.Id" class="prv-req-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
-            <span class="prv-req-brand-word">INDOR</span>
-            <span class="prv-req-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="SubcontractorProfile" asp-route-id="@Model.Sub.Id" class="prv-req-back" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
+            <span class="prv-req-brand-word">@L["INDOR"]</span>
+            <span class="prv-req-brand-pro">@L["PRO"]</span>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-req-hero-title">
             <div>
-                <h1>Invite to Job</h1>
-                <p>Share project details with this subcontractor.</p>
+                <h1>@L["Invite to Job"]</h1>
+                <p>@L["Share project details with this subcontractor."]</p>
             </div>
         </div>
     </header>
@@ -42,22 +42,22 @@
 
         <section class="prv-inv-card">
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-file-lines"></i> <span>Job Title</span></div>
-                <input type="text" name="JobTitle" value="@Model.JobTitle" class="prv-inv-input" placeholder="e.g. Kitchen sink leak repair" />
+                <div class="prv-inv-row-head"><i class="fas fa-file-lines"></i> <span>@L["Job Title"]</span></div>
+                <input type="text" name="JobTitle" value="@Model.JobTitle" class="prv-inv-input" placeholder="@L["e.g. Kitchen sink leak repair"]" />
             </div>
 
             <div class="prv-inv-row">
-                <div class="prv-inv-row-head"><i class="fas fa-screwdriver-wrench"></i> <span>Service Category</span></div>
+                <div class="prv-inv-row-head"><i class="fas fa-screwdriver-wrench"></i> <span>@L["Service Category"]</span></div>
                 <div class="prv-inv-value">@(Model.ServiceCategory ?? "General")</div>
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-location-dot"></i> <span>Property Address</span></div>
-                <input type="text" name="PropertyAddress" value="@Model.PropertyAddress" class="prv-inv-input" placeholder="Street, City, State ZIP" />
+                <div class="prv-inv-row-head"><i class="fas fa-location-dot"></i> <span>@L["Property Address"]</span></div>
+                <input type="text" name="PropertyAddress" value="@Model.PropertyAddress" class="prv-inv-input" placeholder="@L["Street, City, State ZIP"]" />
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-calendar"></i> <span>Schedule</span></div>
+                <div class="prv-inv-row-head"><i class="fas fa-calendar"></i> <span>@L["Schedule"]</span></div>
                 <div class="prv-inv-schedule">
                     <label class="prv-inv-seg @(Model.ScheduleToday ? "is-active" : "")">
                         <input type="radio" name="ScheduleToday" value="true" @(Model.ScheduleToday ? "checked" : "") /> Today
@@ -70,9 +70,9 @@
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-dollar-sign"></i> <span>Budget</span></div>
+                <div class="prv-inv-row-head"><i class="fas fa-dollar-sign"></i> <span>@L["Budget"]</span></div>
                 <select name="BudgetRange" class="prv-inv-input prv-inv-select">
-                    <option value="">Select a budget range</option>
+                    <option value="">@L["Select a budget range"]</option>
                     @foreach (var b in Model.BudgetOptions)
                     {
                         <option value="@b" selected="@(Model.BudgetRange == b)">@b</option>
@@ -81,12 +81,12 @@
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-file-lines"></i> <span>Description / Scope</span></div>
-                <textarea name="Description" rows="4" class="prv-inv-input prv-inv-textarea" placeholder="Describe the work, materials, and anything the pro should know.">@Model.Description</textarea>
+                <div class="prv-inv-row-head"><i class="fas fa-file-lines"></i> <span>@L["Description / Scope"]</span></div>
+                <textarea name="Description" rows="4" class="prv-inv-input prv-inv-textarea" placeholder="@L["Describe the work, materials, and anything the pro should know."]">@Model.Description</textarea>
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-clock"></i> <span>Timing Preference</span></div>
+                <div class="prv-inv-row-head"><i class="fas fa-clock"></i> <span>@L["Timing Preference"]</span></div>
                 <div class="prv-inv-timing">
                     @foreach (var (val, label, icon) in timings)
                     {
@@ -99,7 +99,7 @@
             </div>
 
             <div class="prv-inv-row prv-inv-row--stack">
-                <div class="prv-inv-row-head"><i class="fas fa-paperclip"></i> <span>Attachments</span></div>
+                <div class="prv-inv-row-head"><i class="fas fa-paperclip"></i> <span>@L["Attachments"]</span></div>
                 <div class="prv-inv-attachments" id="invAttachments">
                     @foreach (var a in Model.Attachments)
                     {
@@ -113,7 +113,7 @@
                     }
                     <label class="prv-inv-att prv-inv-att--add">
                         <i class="fas fa-plus"></i>
-                        <span>Add More</span>
+                        <span>@L["Add More"]</span>
                         <input type="file" name="Attachments" multiple accept="image/*,application/pdf" hidden id="invAttInput" />
                     </label>
                 </div>
@@ -127,11 +127,9 @@
 
         <div class="prv-inv-actions">
             <button type="submit" name="Mode" value="draft" class="prv-req-btn prv-req-btn--ghost">
-                <i class="fas fa-file-lines"></i> Save Draft
-            </button>
+                <i class="fas fa-file-lines"></i> @L["Save Draft"]</button>
             <button type="submit" name="Mode" value="send" class="prv-req-btn prv-req-btn--primary">
-                <i class="fas fa-paper-plane"></i> Send Request
-            </button>
+                <i class="fas fa-paper-plane"></i> @L["Send Request"]</button>
         </div>
     </form>
 </div>

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkViewModel
 @{
-    ViewData["Title"] = "Provider Network";
+    ViewData["Title"] = L["Provider Network"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "home";
 }
@@ -9,12 +9,12 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <header class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Dashboard" class="rl-network-back" aria-label="Back to dashboard">
+        <a asp-controller="Realtor" asp-action="Dashboard" class="rl-network-back" aria-label="@L["Back to dashboard"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div>
-            <h1 class="rl-page-title">Provider Network</h1>
-            <p class="rl-page-subtitle">Browse trusted inspectors, contractors, and service providers.</p>
+            <h1 class="rl-page-title">@L["Provider Network"]</h1>
+            <p class="rl-page-subtitle">@L["Browse trusted inspectors, contractors, and service providers."]</p>
         </div>
     </header>
 
@@ -22,9 +22,9 @@
         <div class="rl-search-row">
             <div class="rl-search-bar">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search company or service..." />
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search company or service..."]" />
             </div>
-            <button type="submit" class="rl-filter-btn">Search</button>
+            <button type="submit" class="rl-filter-btn">@L["Search"]</button>
         </div>
         <div class="rl-filter-chips">
             @foreach (var chip in Model.ProviderFilters)
@@ -38,7 +38,7 @@
     <section class="rl-dash-section">
         @if (Model.Providers.Count == 0)
         {
-            <div class="rl-dash-empty">No providers match your search yet.</div>
+            <div class="rl-dash-empty">@L["No providers match your search yet."]</div>
         }
         else
         {
@@ -52,12 +52,12 @@
                         {
                             <span class="rl-provider-badge">@provider.BadgeLabel</span>
                         }
-                        <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") · @provider.Categories</span>
+                        <span><i class="fas fa-star"></i> @provider.Rating.ToString("0.0") ï¿½ @provider.Categories</span>
                         <span>@provider.DistanceMiles.ToString("0.0") mi away</span>
                     </span>
                     @if (provider.IsVerified)
                     {
-                        <span class="rl-status-pill rl-status-pill--active">Verified</span>
+                        <span class="rl-status-pill rl-status-pill--active">@L["Verified"]</span>
                     }
                 </article>
             }

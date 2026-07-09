@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProProfilePageViewModel
 @{
-    ViewData["Title"] = "Public Profile - INDOR PRO";
+    ViewData["Title"] = L["Public Profile - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -15,12 +15,12 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-jobs-head prv-pro-public-head">
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="@L["Back to profile"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div>
-            <h1>Public Profile</h1>
-            <p>Preview how homeowners see your business on INDOR.</p>
+            <h1>@L["Public Profile"]</h1>
+            <p>@L["Preview how homeowners see your business on INDOR."]</p>
         </div>
     </header>
 
@@ -60,7 +60,7 @@
                data-provider-share
                data-share-url="@publicProfileUrl"
                data-share-title="@Model.CompanyName - INDOR PRO"
-               data-share-text="View my provider profile on INDOR"
+               data-share-text="@L["View my provider profile on INDOR"]"
                role="button">
                 <i class="fas fa-share-nodes"></i> Share
             </a>
@@ -74,11 +74,11 @@
             <div class="prv-pro-profile-kv"><i class="fas fa-clock"></i><span>@Model.BusinessHours</span></div>
             @if (Model.EmergencyService)
             {
-                <div class="prv-pro-profile-kv"><i class="fas fa-bolt"></i><span>Emergency service available</span></div>
+                <div class="prv-pro-profile-kv"><i class="fas fa-bolt"></i><span>@L["Emergency service available"]</span></div>
             }
             @if (Model.SameDayJobs)
             {
-                <div class="prv-pro-profile-kv"><i class="fas fa-calendar-day"></i><span>Same-day jobs available</span></div>
+                <div class="prv-pro-profile-kv"><i class="fas fa-calendar-day"></i><span>@L["Same-day jobs available"]</span></div>
             }
             @if (Model.TravelRadiusMiles > 0)
             {
@@ -90,7 +90,7 @@
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-wrench"></i> Services Offered</h3></header>
             @if (allServices.Count == 0)
             {
-                <p class="prv-pro-empty">No services selected yet.</p>
+                <p class="prv-pro-empty">@L["No services selected yet."]</p>
             }
             else
             {
@@ -121,15 +121,15 @@
         <section class="prv-pro-profile-card">
             <header class="prv-pro-profile-card-head"><h3><i class="fas fa-star"></i> Reputation</h3></header>
             <div class="prv-pro-profile-kv-row">
-                <span>Provider Score</span>
+                <span>@L["Provider Score"]</span>
                 <strong>@(Model.ProviderScore > 0 ? Model.ProviderScore.ToString() : "—")</strong>
             </div>
             <div class="prv-pro-profile-kv-row">
-                <span>Rating</span>
+                <span>@L["Rating"]</span>
                 <strong>@(Model.ReviewCount > 0 ? $"{Model.Rating:0.0} ★ ({Model.ReviewCount} reviews)" : "No reviews yet")</strong>
             </div>
             <div class="prv-pro-profile-kv-row">
-                <span>Jobs completed this year</span>
+                <span>@L["Jobs completed this year"]</span>
                 <strong>@Model.JobsCompletedThisYear</strong>
             </div>
         </section>

@@ -1,30 +1,30 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyTreeDamageSubmittedViewModel
+@model IndorMvcApp.ViewModels.EmergencyTreeDamageSubmittedViewModel
 @{
-    ViewData["Title"] = "Request Submitted - INDOR";
-    ViewData["WizardTitle"] = "Request Submitted";
+    ViewData["Title"] = L["Request Submitted - INDOR"];
+    ViewData["WizardTitle"] = L["Request Submitted"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
-<strong>Request Submitted</strong>
+<strong>@L["Request Submitted"]</strong>
         <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading">Your tree damage emergency request has been submitted</h1>
-    <p class="page-lead">We've shared your request with the dispatch team and nearby providers.</p>
+    <h1 class="page-heading">@L["Your tree damage emergency request has been submitted"]</h1>
+    <p class="page-lead">@L["We've shared your request with the dispatch team and nearby providers."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-tree"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-code-branch"></i><div style="flex:1;"><div class="summary-label">Reported issue</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">ETA</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
-        <div class="summary-row"><i class="fas fa-phone"></i><div style="flex:1;"><div class="summary-label">Contact</div><div class="summary-value">@Model.TelefonoContacto</div></div></div>
-        <div class="summary-row"><i class="fas fa-heart-pulse"></i><div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-tree"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-code-branch"></i><div style="flex:1;"><div class="summary-label">@L["Reported issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["ETA"]</div><div class="summary-value eta">@Model.TiempoLlegadaRango</div></div></div>
+        <div class="summary-row"><i class="fas fa-phone"></i><div style="flex:1;"><div class="summary-label">@L["Contact"]</div><div class="summary-value">@Model.TelefonoContacto</div></div></div>
+        <div class="summary-row"><i class="fas fa-heart-pulse"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div></div></div>
     </div>
 
     <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <div>If conditions worsen, call support or emergency services immediately.</div>
+        <div>@L["If conditions worsen, call support or emergency services immediately."]</div>
     </div>
 
-    <a asp-action="EmergencyTreeDamageSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-paper-plane"></i> Track request</a>
-    <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> Call support</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to Home</a>
+    <a asp-action="EmergencyTreeDamageSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-paper-plane"></i> @L["Track request"]</a>
+    <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> @L["Call support"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> @L["Go to Home"]</a>

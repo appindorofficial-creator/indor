@@ -8,12 +8,12 @@
         .ToList();
 }
 
-<h2 class="rl-invite-section-title">Property <span class="rl-required" aria-hidden="true">*</span></h2>
+<h2 class="rl-invite-section-title">@L["Property"] <span class="rl-required" aria-hidden="true">*</span></h2>
 
 <form asp-action="Details" method="get" class="rl-search-form">
     <div class="rl-search-bar">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search existing properties by address" />
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search existing properties by address"]" />
     </div>
 </form>
 
@@ -26,7 +26,7 @@
         <div class="rl-error-banner" role="alert" id="propFileDetailsFormErrors">
             <i class="fas fa-circle-exclamation"></i>
             <div>
-                <strong>Please fix the following to continue:</strong>
+                <strong>@L["Please fix the following to continue:"]</strong>
                 <ul class="rl-error-list">
                     @foreach (var msg in formErrors)
                     {
@@ -43,16 +43,16 @@
         {
             <div class="rl-prop-file-empty">
                 <p><strong>No property found for &ldquo;@Model.SearchQuery&rdquo;.</strong></p>
-                <p class="rl-prop-file-empty-hint">This step links a file to a property already in your account. Add the property first, then search again here.</p>
-                <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">Add property</a>
+                <p class="rl-prop-file-empty-hint">@L["This step links a file to a property already in your account. Add the property first, then search again here."]</p>
+                <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">@L["Add property"]</a>
             </div>
         }
         else
         {
             <div class="rl-prop-file-empty">
-                <p><strong>No properties in your account yet.</strong></p>
-                <p class="rl-prop-file-empty-hint">Add a property first, then return here to create a file for it.</p>
-                <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">Add property</a>
+                <p><strong>@L["No properties in your account yet."]</strong></p>
+                <p class="rl-prop-file-empty-hint">@L["Add a property first, then return here to create a file for it."]</p>
+                <a asp-controller="RealtorInviteClient" asp-action="CreateProperty" class="rl-btn-outline rl-btn-outline--sm">@L["Add property"]</a>
             </div>
         }
     }
@@ -76,7 +76,7 @@
         }
     }
 
-    <h2 class="rl-invite-section-title">File Type <span class="rl-required" aria-hidden="true">*</span></h2>
+    <h2 class="rl-invite-section-title">@L["File Type"] <span class="rl-required" aria-hidden="true">*</span></h2>
     <div class="rl-file-type-list">
         @foreach (var opt in Model.FilePhaseOptions)
         {
@@ -89,7 +89,7 @@
         }
     </div>
 
-    <h2 class="rl-invite-section-title">What this file can include</h2>
+    <h2 class="rl-invite-section-title">@L["What this file can include"]</h2>
     <div class="rl-include-grid">
         @foreach (var cat in IndorMvcApp.Models.RealtorPropertyFileCategoryTypes.All)
         {
@@ -99,16 +99,16 @@
 
     <div class="rl-info-box">
         <i class="fas fa-circle-info"></i>
-        <p>Create one organized property file so clients, reports, quotes, and documents stay connected in one place.</p>
+        <p>@L["Create one organized property file so clients, reports, quotes, and documents stay connected in one place."]</p>
     </div>
 </form>
 
 <div class="rl-invite-actions">
     <form asp-action="Cancel" method="post">
         @Html.AntiForgeryToken()
-        <button type="submit" class="rl-invite-cancel">Cancel</button>
+        <button type="submit" class="rl-invite-cancel">@L["Cancel"]</button>
     </form>
-    <button type="submit" form="propFileForm" class="ob-btn ob-btn-primary">Next</button>
+    <button type="submit" form="propFileForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
 </div>
 
 @section Scripts {

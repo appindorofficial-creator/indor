@@ -1,40 +1,40 @@
 @model IndorMvcApp.ViewModels.MyHomeSummaryViewModel
 @{
-    ViewData["Title"] = "My Property";
+    ViewData["Title"] = L["My Property"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "summary";
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">My Property</h1>
+    <h1 class="hf-title">@L["My Property"]</h1>
 </div>
-<img src="@Url.Content("~" + Model.HeroImageUrl)" alt="Property" class="hf-hero" />
+<img src="@Url.Content("~" + Model.HeroImageUrl)" alt="@L["Property"]" class="hf-hero" />
 <div class="hf-address-row">
     <span><i class="fas fa-location-dot" style="color:#0066CC;margin-right:6px;"></i>@Model.Address</span>
-    <a asp-action="Edit" asp-route-id="@Model.PropiedadId" class="hf-btn" style="border:none;padding:0;">Edit</a>
+    <a asp-action="Edit" asp-route-id="@Model.PropiedadId" class="hf-btn" style="border:none;padding:0;">@L["Edit"]</a>
 </div>
 <div class="hf-grid-2" style="margin-bottom:16px;">
-    <div class="hf-stat"><i class="fas fa-calendar"></i><div class="k">Year built</div><div class="v">@(Model.YearBuilt?.ToString() ?? "—")</div></div>
-    <div class="hf-stat"><i class="fas fa-ruler-combined"></i><div class="k">Living area</div><div class="v">@IndorMvcApp.Services.MyHomeDisplayService.FormatArea(Model.LivingArea)</div></div>
-    <div class="hf-stat"><i class="fas fa-bed"></i><div class="k">Bedrooms</div><div class="v">@(Model.Bedrooms?.ToString() ?? "—")</div></div>
-    <div class="hf-stat"><i class="fas fa-bath"></i><div class="k">Bathrooms</div><div class="v">@(Model.Bathrooms?.ToString("0.#") ?? "—")</div></div>
-    <div class="hf-stat"><i class="fas fa-vector-square"></i><div class="k">Lot size</div><div class="v">@IndorMvcApp.Services.MyHomeDisplayService.FormatLot(Model.LotSizeAcres)</div></div>
-    <div class="hf-stat"><i class="fas fa-house-circle-dollar"></i><div class="k">Estimated value</div><div class="v">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.EstimatedValue)</div></div>
+    <div class="hf-stat"><i class="fas fa-calendar"></i><div class="k">@L["Year built"]</div><div class="v">@(Model.YearBuilt?.ToString() ?? "—")</div></div>
+    <div class="hf-stat"><i class="fas fa-ruler-combined"></i><div class="k">@L["Living area"]</div><div class="v">@IndorMvcApp.Services.MyHomeDisplayService.FormatArea(Model.LivingArea)</div></div>
+    <div class="hf-stat"><i class="fas fa-bed"></i><div class="k">@L["Bedrooms"]</div><div class="v">@(Model.Bedrooms?.ToString() ?? "—")</div></div>
+    <div class="hf-stat"><i class="fas fa-bath"></i><div class="k">@L["Bathrooms"]</div><div class="v">@(Model.Bathrooms?.ToString("0.#") ?? "—")</div></div>
+    <div class="hf-stat"><i class="fas fa-vector-square"></i><div class="k">@L["Lot size"]</div><div class="v">@IndorMvcApp.Services.MyHomeDisplayService.FormatLot(Model.LotSizeAcres)</div></div>
+    <div class="hf-stat"><i class="fas fa-house-circle-dollar"></i><div class="k">@L["Estimated value"]</div><div class="v">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.EstimatedValue)</div></div>
 </div>
 <div class="hf-action-grid">
-    <a asp-action="History" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-clock-rotate-left"></i>History <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
-    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-file-lines"></i>Documents <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
-    <a asp-action="Providers" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-user-group"></i>Providers <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
-    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-clipboard-check"></i>Maintenance <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
+    <a asp-action="History" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-clock-rotate-left"></i>@L["History"] <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
+    <a asp-action="Documents" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-file-lines"></i>@L["Documents"] <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
+    <a asp-action="Providers" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-user-group"></i>@L["Providers"] <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
+    <a asp-action="Maintenance" asp-route-id="@Model.PropiedadId" class="hf-action"><i class="fas fa-clipboard-check"></i>@L["Maintenance"] <i class="fas fa-chevron-right" style="font-size:0.7rem;color:#CBD5E1;"></i></a>
 </div>
 <div class="hf-banner" style="margin-top:16px;">
     <i class="fas fa-shield-check"></i>
     <div>
-        Data source: <strong>@Model.DataSource</strong>
-        @if (Model.AttomPropertyId.HasValue) { <span> · External ID @Model.AttomPropertyId</span> }
-        @if (Model.AttomLastSyncUtc.HasValue) { <span> · Last synced @Model.AttomLastSyncUtc.Value.ToLocalTime().ToString("MMM dd, yyyy")</span> }
-        @if (Model.HasAttomData) { <span> · @Model.AttomFieldCount House Fact fields saved</span> }
+        @L["Data source:"] <strong>@Model.DataSource</strong>
+        @if (Model.AttomPropertyId.HasValue) { <span> · @L["External ID"] @Model.AttomPropertyId</span> }
+        @if (Model.AttomLastSyncUtc.HasValue) { <span> · @L["Last synced"] @Model.AttomLastSyncUtc.Value.ToLocalTime().ToString("MMM dd, yyyy")</span> }
+        @if (Model.HasAttomData) { <span> · @Model.AttomFieldCount @L["House Fact fields saved"]</span> }
     </div>
 </div>
-<a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hf-btn" style="margin-top:8px;width:100%;justify-content:center;">View House Fact profile (@Model.AttomFieldCount fields) <i class="fas fa-chevron-right"></i></a>
-<a asp-action="Details" asp-route-id="@Model.PropiedadId" class="hf-btn hf-btn-primary" style="margin-top:8px;">View property details <i class="fas fa-chevron-right"></i></a>
+<a asp-action="Details" asp-route-id="@Model.PropiedadId" asp-route-tab="attom" class="hf-btn" style="margin-top:8px;width:100%;justify-content:center;">@L.T("View House Fact profile ({0} fields)", Model.AttomFieldCount) <i class="fas fa-chevron-right"></i></a>
+<a asp-action="Details" asp-route-id="@Model.PropiedadId" class="hf-btn hf-btn-primary" style="margin-top:8px;">@L["View property details"] <i class="fas fa-chevron-right"></i></a>

@@ -1,14 +1,15 @@
 @model IndorMvcApp.ViewModels.PropertyInfoViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Services
 @using IndorMvcApp.ViewModels
 @{
-    ViewData["Title"] = "Edit Address - INDOR";
+    ViewData["Title"] = L["Edit Address - INDOR"];
     Layout = null;
     var devices = Model.Devices ?? new List<IndorMvcApp.ViewModels.DeviceInfoViewModel>();
     var houseFact = HouseFactDisplayService.BuildProfile(Model.AttomRawJson, Model.DataSource, Model.FormattedAddress);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -308,7 +309,7 @@
 <body>
     <div class="page-container">
         <div class="top-bar">
-            <a asp-controller="Propietario" asp-action="PropertyDetails" class="app-back-btn" aria-label="Back">
+            <a asp-controller="Propietario" asp-action="PropertyDetails" class="app-back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-chevron-left"></i>
             </a>
             <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
@@ -316,7 +317,7 @@
         </div>
 
         <div class="brand-section">
-            <p class="brand-tagline">Review and <span class="highlight">confirm</span> your property details</p>
+            <p class="brand-tagline">@L["Review and"] <span class="highlight">@L["confirm"]</span> @L["your property details"]</p>
         </div>
 
         @if (houseFact.HasData)
@@ -332,7 +333,7 @@
             @if (!ViewData.ModelState.IsValid)
             {
                 <div class="form-alert error" role="alert">
-                    @Html.ValidationSummary(excludePropertyErrors: false, message: "We couldn't save your property yet. Please review the fields and try again.")
+                    @Html.ValidationSummary(excludePropertyErrors: false, message: L["We couldn't save your property yet. Please review the fields and try again."])
                 </div>
             }
 
@@ -340,59 +341,59 @@
                 <div class="section-head">
                     <div class="section-icon"><i class="fas fa-map-marker-alt"></i></div>
                     <div>
-                        <h2 class="page-title">Address</h2>
-                        <p class="page-subtitle">Verify the location information</p>
+                        <h2 class="page-title">@L["Address"]</h2>
+                        <p class="page-subtitle">@L["Verify the location information"]</p>
                     </div>
                 </div>
 
                 <div class="field-grid">
                     <div class="field-group full">
-                        <label asp-for="FormattedAddress" class="input-label">Full address</label>
+                        <label asp-for="FormattedAddress" class="input-label">@L["Full address"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-location-dot input-icon"></i>
-                            <input asp-for="FormattedAddress" class="form-input" placeholder="123 Main Street, Miami, FL" />
+                            <input asp-for="FormattedAddress" class="form-input" placeholder="@L["123 Main Street, Miami, FL"]" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label asp-for="Street" class="input-label">Street</label>
+                        <label asp-for="Street" class="input-label">@L["Street"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-road input-icon"></i>
-                            <input asp-for="Street" class="form-input" placeholder="Main Street" />
+                            <input asp-for="Street" class="form-input" placeholder="@L["Main Street"]" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label asp-for="HouseNumber" class="input-label">Number</label>
+                        <label asp-for="HouseNumber" class="input-label">@L["Number"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-hashtag input-icon"></i>
                             <input asp-for="HouseNumber" class="form-input" placeholder="123" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label asp-for="City" class="input-label">City</label>
+                        <label asp-for="City" class="input-label">@L["City"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-city input-icon"></i>
                             <input asp-for="City" class="form-input" placeholder="Miami" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label asp-for="State" class="input-label">State / Province</label>
+                        <label asp-for="State" class="input-label">@L["State / Province"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-flag input-icon"></i>
                             <input asp-for="State" class="form-input" placeholder="FL" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label asp-for="PostalCode" class="input-label">Postal code</label>
+                        <label asp-for="PostalCode" class="input-label">@L["Postal code"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-mail-bulk input-icon"></i>
                             <input asp-for="PostalCode" class="form-input" placeholder="33101" />
                         </div>
                     </div>
                     <div class="field-group full">
-                        <label asp-for="Country" class="input-label">Country</label>
+                        <label asp-for="Country" class="input-label">@L["Country"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-globe input-icon"></i>
-                            <input asp-for="Country" class="form-input" placeholder="United States" />
+                            <input asp-for="Country" class="form-input" placeholder="@L["United States"]" />
                         </div>
                     </div>
                 </div>
@@ -402,48 +403,48 @@
                 <div class="section-head">
                     <div class="section-icon"><i class="fas fa-house"></i></div>
                     <div>
-                        <h2 class="page-title">Property details</h2>
-                        <p class="page-subtitle">Optional information about your home</p>
+                        <h2 class="page-title">@L["Property details"]</h2>
+                        <p class="page-subtitle">@L["Optional information about your home"]</p>
                     </div>
                 </div>
 
                 <div class="field-grid two-col">
                     <div class="field-group">
-                        <label class="input-label">Year built</label>
+                        <label class="input-label">@L["Year built"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-calendar input-icon"></i>
                             <input name="PropertyDetails.YearBuilt" class="form-input property-number" type="number" min="1800" max="2100"
-                                   data-range-message="Enter a year between 1800 and 2100."
+                                   data-range-message="@L["Enter a year between 1800 and 2100."]"
                                    placeholder="1998"
                                    value="@(Model.PropertyDetails?.YearBuilt)" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label class="input-label">Living area (sq ft)</label>
+                        <label class="input-label">@L["Living area (sq ft)"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-ruler-combined input-icon"></i>
                             <input name="PropertyDetails.LivingArea" class="form-input property-number" type="number" min="0"
-                                   data-range-message="Living area must be 0 or greater."
+                                   data-range-message="@L["Living area must be 0 or greater."]"
                                    placeholder="1800"
                                    value="@(Model.PropertyDetails?.LivingArea)" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label class="input-label">Lot size (acres)</label>
+                        <label class="input-label">@L["Lot size (acres)"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-tree input-icon"></i>
                             <input name="PropertyDetails.LotSize" class="form-input property-number" type="number" min="0" max="10000" step="0.01"
-                                   data-range-message="Lot size must be between 0 and 10,000 acres."
+                                   data-range-message="@L["Lot size must be between 0 and 10,000 acres."]"
                                    placeholder="0.25"
                                    value="@(Model.PropertyDetails?.LotSize)" />
                         </div>
                     </div>
                     <div class="field-group">
-                        <label class="input-label">Lot size (sq ft)</label>
+                        <label class="input-label">@L["Lot size (sq ft)"]</label>
                         <div class="input-wrapper">
                             <i class="fas fa-draw-polygon input-icon"></i>
                             <input name="PropertyDetails.LotSizeSqFt" class="form-input property-number" type="number" min="0"
-                                   data-range-message="Lot size must be 0 or greater."
+                                   data-range-message="@L["Lot size must be 0 or greater."]"
                                    placeholder="10890"
                                    value="@(Model.PropertyDetails?.LotSizeSqFt)" />
                         </div>
@@ -455,29 +456,29 @@
                 <div class="section-head">
                     <div class="section-icon"><i class="fas fa-microchip"></i></div>
                     <div>
-                        <h2 class="page-title">Devices</h2>
-                        <p class="page-subtitle">Add appliances and equipment with warranty dates</p>
+                        <h2 class="page-title">@L["Devices"]</h2>
+                        <p class="page-subtitle">@L["Add appliances and equipment with warranty dates"]</p>
                     </div>
                 </div>
 
                 <div class="device-form-card">
                     <div class="field-grid two-col">
                         <div class="field-group">
-                            <label class="input-label" for="deviceType">Device type</label>
+                            <label class="input-label" for="deviceType">@L["Device type"]</label>
                             <div class="input-wrapper">
                                 <i class="fas fa-fan input-icon"></i>
-                                <input id="deviceType" class="form-input" placeholder="Air conditioner" />
+                                <input id="deviceType" class="form-input" placeholder="@L["Air conditioner"]" />
                             </div>
                         </div>
                         <div class="field-group">
-                            <label class="input-label" for="deviceSerial">Serial</label>
+                            <label class="input-label" for="deviceSerial">@L["Serial"]</label>
                             <div class="input-wrapper">
                                 <i class="fas fa-barcode input-icon"></i>
-                                <input id="deviceSerial" class="form-input" placeholder="Serial number" />
+                                <input id="deviceSerial" class="form-input" placeholder="@L["Serial number"]" />
                             </div>
                         </div>
                         <div class="field-group full">
-                            <label class="input-label" for="deviceWarranty">Warranty date</label>
+                            <label class="input-label" for="deviceWarranty">@L["Warranty date"]</label>
                             <div class="input-wrapper">
                                 <i class="fas fa-shield-halved input-icon"></i>
                                 <input id="deviceWarranty" class="form-input" type="date" />
@@ -486,7 +487,7 @@
                     </div>
                     <div class="btn-row" style="justify-content: flex-end; margin-top: 4px;">
                         <button type="button" class="btn btn-secondary" onclick="saveDevice()">
-                            <i class="fas fa-plus"></i> Add device
+                            <i class="fas fa-plus"></i> @L["Add device"]
                         </button>
                     </div>
                 </div>
@@ -494,24 +495,24 @@
                 <div id="devices-list">
                     @if (devices.Count == 0)
                     {
-                        <div class="empty-devices" id="devicesEmpty">No devices added yet.</div>
+                        <div class="empty-devices" id="devicesEmpty">@L["No devices added yet."]</div>
                     }
                     else
                     {
                         @for (var i = 0; i < devices.Count; i++)
                         {
                             var dev = devices[i];
-                            var warrantyText = dev.WarrantyDate.HasValue ? dev.WarrantyDate.Value.ToString("yyyy-MM-dd") : "No date";
+                            var warrantyText = dev.WarrantyDate.HasValue ? dev.WarrantyDate.Value.ToString("yyyy-MM-dd") : L["No date"].ToString();
                             var warrantyValue = dev.WarrantyDate.HasValue ? dev.WarrantyDate.Value.ToString("yyyy-MM-dd") : "";
 
                             <div class="device-saved-card device-item">
                                 <div class="device-saved-meta">
-                                    <div><strong>Type:</strong> <span class="device-type">@dev.Type</span></div>
-                                    <div><strong>Serial:</strong> <span class="device-serial">@(string.IsNullOrWhiteSpace(dev.Serial) ? "N/A" : dev.Serial)</span></div>
-                                    <div><strong>Warranty:</strong> <span class="device-warranty">@warrantyText</span></div>
+                                    <div><strong>@L["Type:"]</strong> <span class="device-type">@dev.Type</span></div>
+                                    <div><strong>@L["Serial:"]</strong> <span class="device-serial">@(string.IsNullOrWhiteSpace(dev.Serial) ? L["N/A"] : dev.Serial)</span></div>
+                                    <div><strong>@L["Warranty:"]</strong> <span class="device-warranty">@warrantyText</span></div>
                                 </div>
                                 <button type="button" class="btn btn-danger-outline" onclick="removeDevice(this)">
-                                    <i class="fas fa-trash-alt"></i> Remove
+                                    <i class="fas fa-trash-alt"></i> @L["Remove"]
                                 </button>
                                 <input type="hidden" name="Devices[@i].Type" class="device-type-input" value="@dev.Type" />
                                 <input type="hidden" name="Devices[@i].Serial" class="device-serial-input" value="@dev.Serial" />
@@ -524,7 +525,7 @@
 
             <button type="submit" class="btn btn-primary">
                 <i class="fas fa-check"></i>
-                Save changes
+                @L["Save changes"]
             </button>
         </form>
     </div>
@@ -532,12 +533,12 @@
     <template id="device-template">
         <div class="device-saved-card device-item">
             <div class="device-saved-meta">
-                <div><strong>Type:</strong> <span class="device-type"></span></div>
-                <div><strong>Serial:</strong> <span class="device-serial"></span></div>
-                <div><strong>Warranty:</strong> <span class="device-warranty"></span></div>
+                <div><strong>@L["Type:"]</strong> <span class="device-type"></span></div>
+                <div><strong>@L["Serial:"]</strong> <span class="device-serial"></span></div>
+                <div><strong>@L["Warranty:"]</strong> <span class="device-warranty"></span></div>
             </div>
             <button type="button" class="btn btn-danger-outline" onclick="removeDevice(this)">
-                <i class="fas fa-trash-alt"></i> Remove
+                <i class="fas fa-trash-alt"></i> @L["Remove"]
             </button>
             <input type="hidden" name="Devices[__index__].Type" class="device-type-input" />
             <input type="hidden" name="Devices[__index__].Serial" class="device-serial-input" />
@@ -546,10 +547,17 @@
     </template>
 
     <script>
+        const msgValidValue = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Enter a valid value."]));
+        const msgValidNumber = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Enter a valid number."]));
+        const msgDeviceTypeRequired = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Device type is required."]));
+        const msgNoDate = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["No date"]));
+        const msgNa = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["N/A"]));
+        const msgNoDevices = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["No devices added yet."]));
+
         let deviceIndex = @devices.Count;
 
         function bindEnglishNumberValidation(input) {
-            const rangeMessage = input.getAttribute('data-range-message') || 'Enter a valid value.';
+            const rangeMessage = input.getAttribute('data-range-message') || msgValidValue;
             const max = input.max !== '' ? Number(input.max) : null;
             const min = input.min !== '' ? Number(input.min) : null;
 
@@ -560,7 +568,7 @@
 
                 const val = Number(raw);
                 if (Number.isNaN(val)) {
-                    input.setCustomValidity('Enter a valid number.');
+                    input.setCustomValidity(msgValidNumber);
                     return;
                 }
                 if (min !== null && val < min) {
@@ -575,7 +583,7 @@
                 if (input.validity.rangeUnderflow || input.validity.rangeOverflow) {
                     input.setCustomValidity(rangeMessage);
                 } else if (input.validity.badInput || input.validity.stepMismatch) {
-                    input.setCustomValidity('Enter a valid number.');
+                    input.setCustomValidity(msgValidNumber);
                 }
             });
         }
@@ -602,7 +610,7 @@
             const warranty = document.getElementById('deviceWarranty').value;
 
             if (!type) {
-                alert('Device type is required.');
+                alert(msgDeviceTypeRequired);
                 return;
             }
 
@@ -614,8 +622,8 @@
             div.innerHTML = html;
             const card = div.firstElementChild;
             card.querySelector('.device-type').textContent = type;
-            card.querySelector('.device-serial').textContent = serial || 'N/A';
-            card.querySelector('.device-warranty').textContent = warranty || 'No date';
+            card.querySelector('.device-serial').textContent = serial || msgNa;
+            card.querySelector('.device-warranty').textContent = warranty || msgNoDate;
             card.querySelector('.device-type-input').value = type;
             card.querySelector('.device-serial-input').value = serial;
             card.querySelector('.device-warranty-input').value = warranty;
@@ -633,7 +641,7 @@
             reindexDevices();
             if (deviceIndex === 0) {
                 const list = document.getElementById('devices-list');
-                list.innerHTML = '<div class="empty-devices" id="devicesEmpty">No devices added yet.</div>';
+                list.innerHTML = '<div class="empty-devices" id="devicesEmpty">' + msgNoDevices + '</div>';
             }
         }
     </script>

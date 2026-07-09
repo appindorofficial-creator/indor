@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.EmergencySmokeDetectorDetailsViewModel
+@model IndorMvcApp.ViewModels.EmergencySmokeDetectorDetailsViewModel
 @{
-    ViewData["Title"] = "Smoke & CO Details - INDOR";
-    ViewData["WizardTitle"] = "Smoke & CO Details";
+    ViewData["Title"] = L["Smoke & CO Details - INDOR"];
+    ViewData["WizardTitle"] = L["Smoke & CO Details"];
     ViewData["WizardBackUrl"] = HomeNavigationUrls.ServicesTab(Url, "emergency-services");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<h2 class="page-heading">Tell us what's happening</h2>
-    <p class="page-lead">Quick answers help us send the right support faster.</p>
+<h2 class="page-heading">@L["Tell us what's happening"]</h2>
+    <p class="page-lead">@L["Quick answers help us send the right support faster."]</p>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -31,63 +31,63 @@
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                    <input asp-for="DireccionPropiedad" placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required />
                 </div>
-                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What is the issue?</span>
+            <span class="field-label">@L["What is the issue?"]</span>
             <div class="issue-grid" id="issueGroup">
-                <button type="button" class="issue-btn" data-value="SmokeDetectorBeeping"><i class="fas fa-bell"></i>Smoke detector beeping</button>
-                <button type="button" class="issue-btn" data-value="SmokeDetectorNotWorking"><i class="fas fa-ban"></i>Smoke detector not working</button>
-                <button type="button" class="issue-btn" data-value="CoDetectorAlert"><i class="fas fa-circle-radiation"></i>CO detector alert</button>
-                <button type="button" class="issue-btn" data-value="LowBatteryChirp"><i class="fas fa-battery-quarter"></i>Low battery chirp</button>
-                <button type="button" class="issue-btn" data-value="SmellOfGas"><i class="fas fa-wind"></i>Smell of gas</button>
-                <button type="button" class="issue-btn" data-value="NeedDetectorCheck"><i class="fas fa-magnifying-glass"></i>Need detector check</button>
+                <button type="button" class="issue-btn" data-value="SmokeDetectorBeeping"><i class="fas fa-bell"></i>@L["Smoke detector beeping"]</button>
+                <button type="button" class="issue-btn" data-value="SmokeDetectorNotWorking"><i class="fas fa-ban"></i>@L["Smoke detector not working"]</button>
+                <button type="button" class="issue-btn" data-value="CoDetectorAlert"><i class="fas fa-circle-radiation"></i>@L["CO detector alert"]</button>
+                <button type="button" class="issue-btn" data-value="LowBatteryChirp"><i class="fas fa-battery-quarter"></i>@L["Low battery chirp"]</button>
+                <button type="button" class="issue-btn" data-value="SmellOfGas"><i class="fas fa-wind"></i>@L["Smell of gas"]</button>
+                <button type="button" class="issue-btn" data-value="NeedDetectorCheck"><i class="fas fa-magnifying-glass"></i>@L["Need detector check"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Where is the detector?</span>
+            <span class="field-label">@L["Where is the detector?"]</span>
             <div class="loc-grid" id="locationGroup">
-                <button type="button" class="loc-btn" data-value="Bedroom">Bedroom</button>
-                <button type="button" class="loc-btn" data-value="LivingRoom">Living room</button>
-                <button type="button" class="loc-btn" data-value="Hallway">Hallway</button>
-                <button type="button" class="loc-btn" data-value="Kitchen">Kitchen</button>
-                <button type="button" class="loc-btn" data-value="CommonArea">Common area</button>
-                <button type="button" class="loc-btn" data-value="Basement">Basement</button>
+                <button type="button" class="loc-btn" data-value="Bedroom">@L["Bedroom"]</button>
+                <button type="button" class="loc-btn" data-value="LivingRoom">@L["Living room"]</button>
+                <button type="button" class="loc-btn" data-value="Hallway">@L["Hallway"]</button>
+                <button type="button" class="loc-btn" data-value="Kitchen">@L["Kitchen"]</button>
+                <button type="button" class="loc-btn" data-value="CommonArea">@L["Common area"]</button>
+                <button type="button" class="loc-btn" data-value="Basement">@L["Basement"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What is happening right now?</span>
+            <span class="field-label">@L["What is happening right now?"]</span>
             <div class="segmented-5" data-target="SituacionActual">
-                <button type="button" class="segment-btn" data-value="AlarmSounding">Alarm sounding</button>
-                <button type="button" class="segment-btn" data-value="NoSound">No sound</button>
-                <button type="button" class="segment-btn" data-value="IntermittentChirp">Intermittent chirp</button>
-                <button type="button" class="segment-btn" data-value="GasSmell">Gas smell</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="AlarmSounding">@L["Alarm sounding"]</button>
+                <button type="button" class="segment-btn" data-value="NoSound">@L["No sound"]</button>
+                <button type="button" class="segment-btn" data-value="IntermittentChirp">@L["Intermittent chirp"]</button>
+                <button type="button" class="segment-btn" data-value="GasSmell">@L["Gas smell"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Can you stay inside safely?</span>
+            <span class="field-label">@L["Can you stay inside safely?"]</span>
             <div class="segmented-3" data-target="PuedePermanecerAdentro">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="warn-box">
             <i class="fas fa-triangle-exclamation"></i>
-            <div>If there is a strong gas smell or an active CO alarm, leave the home and <strong style="color:#DC2626;">call 911</strong>.</div>
+            <div>@L["If there is a strong gas smell or an active CO alarm, leave the home and"] <strong style="color:#DC2626;">@L["call 911"]</strong>.</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="immediate"><i class="fas fa-paper-plane"></i> Request immediate help</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="immediate"><i class="fas fa-paper-plane"></i> @L["Request immediate help"]</button>
     </form>
 </div>
 @section Scripts {

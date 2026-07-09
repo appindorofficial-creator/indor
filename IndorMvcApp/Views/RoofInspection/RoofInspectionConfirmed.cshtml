@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RoofInspectionConfirmedViewModel
 @{
-    ViewData["Title"] = "Roof check set - INDOR";
+    ViewData["Title"] = L["Roof check set - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
@@ -12,22 +12,22 @@
     
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Roof check set</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">Your roof inspection reminder has been created.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["Roof check set"]</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L["Your roof inspection reminder has been created."]</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-house-chimney"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Frequency</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-seedling"></i><div><div class="summary-label">Timing</div><div class="summary-value">@Model.TimingLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.PropertyLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Last inspection</div><div class="summary-value">@Model.LastInspectionLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-magnifying-glass"></i><div><div class="summary-label">Focus</div><div class="summary-value">@Model.FocusLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-house-chimney"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Frequency"]</div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-seedling"></i><div><div class="summary-label">@L["Timing"]</div><div class="summary-value">@Model.TimingLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.PropertyLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Last inspection"]</div><div class="summary-value">@Model.LastInspectionLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-magnifying-glass"></i><div><div class="summary-label">@L["Focus"]</div><div class="summary-value">@Model.FocusLabel</div></div></div>
     </div>
 
     <div class="storm-banner">
         <i class="fas fa-bell"></i>
-        <span>You'll also be prompted after major storms.</span>
+        <span>@L["You'll also be prompted after major storms."]</span>
     </div>
 
     @if (Model.PropiedadId.HasValue)
@@ -47,4 +47,4 @@
         <i class="fas fa-plus"></i> Set another reminder
     </a>
 
-    <div class="trust-footer" style="margin-top:14px;"><i class="fas fa-shield-halved"></i><span>Stay ahead of leaks and protect your roof.</span></div>
+    <div class="trust-footer" style="margin-top:14px;"><i class="fas fa-shield-halved"></i><span>@L["Stay ahead of leaks and protect your roof."]</span></div>

@@ -1,9 +1,10 @@
+@using IndorMvcApp.Localization
 @{
     var stepModel = Model as IndorMvcApp.ViewModels.RealtorQuoteRequestStepViewModel;
-    var pageTitle = stepModel?.Title ?? "Request Quote";
+    var pageTitle = stepModel?.Title ?? L["Request Quote"];
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />

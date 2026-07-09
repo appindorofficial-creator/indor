@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadReportSelectJobViewModel
 @{
-    ViewData["Title"] = "Select Job - INDOR PRO";
+    ViewData["Title"] = L["Select Job - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     var filters = new[] { ("all", "All", ""), ("completed", "Completed", "fa-circle-check"), ("inprogress", "In Progress", "fa-clock"), ("recent", "Recent", "fa-clock-rotate-left") };
@@ -13,21 +13,21 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Select Job or Property</h1>
-            <small>Choose the completed or active job this report belongs to.</small>
+            <h1>@L["Select Job or Property"]</h1>
+            <small>@L["Choose the completed or active job this report belongs to."]</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
     </header>
 
-    <p class="prv-pro-upload-report-hint">Search for a job, then tap <strong>Select</strong> on the matching card to continue.</p>
+    <p class="prv-pro-upload-report-hint">@L["Search for a job, then tap"]<strong>@L["Select"]</strong> on the matching card to continue.</p>
 
     <form method="get" asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-upload-report-search">
         <div class="prv-pro-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, service, or job ID..." />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search by address, service, or job ID..."]" />
         </div>
         <input type="hidden" name="filter" value="@Model.ActiveFilter" />
-        <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-upload-report-search-btn">Search</button>
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-upload-report-search-btn">@L["Search"]</button>
     </form>
 
     <div class="prv-pro-upload-report-filters">
@@ -47,19 +47,19 @@
             <div class="prv-pro-upload-report-empty">
                 @if (Model.HasSearchWithNoResults)
                 {
-                    <p>No jobs matched <strong>@Model.SearchQuery</strong>.</p>
-                    <p>Try a shorter address, job ID, or customer name, or clear the search to see all jobs.</p>
-                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@Model.ActiveFilter" class="prv-pro-btn prv-pro-btn--outline">Clear search</a>
+                    <p>@L["No jobs matched"]<strong>@Model.SearchQuery</strong>.</p>
+                    <p>@L["Try a shorter address, job ID, or customer name, or clear the search to see all jobs."]</p>
+                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-filter="@Model.ActiveFilter" class="prv-pro-btn prv-pro-btn--outline">@L["Clear search"]</a>
                 }
                 else if (Model.TotalJobsAvailable == 0)
                 {
-                    <p>You don't have any jobs yet. Create a job first, then return here to upload a report.</p>
-                    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary">Create Job</a>
+                    <p>@L["You don't have any jobs yet. Create a job first, then return here to upload a report."]</p>
+                    <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary">@L["Create Job"]</a>
                 }
                 else
                 {
-                    <p>No jobs match the current filter. Try <strong>All</strong> or another filter.</p>
-                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-q="@Model.SearchQuery" class="prv-pro-btn prv-pro-btn--outline">Show all jobs</a>
+                    <p>@L["No jobs match the current filter. Try"]<strong>@L["All"]</strong> or another filter.</p>
+                    <a asp-controller="Proveedor" asp-action="UploadReport" asp-route-q="@Model.SearchQuery" class="prv-pro-btn prv-pro-btn--outline">@L["Show all jobs"]</a>
                 }
             </div>
         }
@@ -88,13 +88,13 @@
                         <span>@job.DateLabel · @job.JobCode</span>
                         <span class="prv-pro-pill prv-pro-pill--@job.StatusClass">@job.StatusLabel</span>
                     </div>
-                    <button type="submit" class="prv-pro-btn prv-pro-btn--outline">Select</button>
+                    <button type="submit" class="prv-pro-btn prv-pro-btn--outline">@L["Select"]</button>
                 </form>
             }
         }
     </div>
 
     <div class="prv-pro-upload-report-actions">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
     </div>
 </div>

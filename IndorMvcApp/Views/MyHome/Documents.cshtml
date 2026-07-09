@@ -1,24 +1,24 @@
 @model IndorMvcApp.ViewModels.MyHomeDocumentsViewModel
 @{
-    ViewData["Title"] = "Documents";
+    ViewData["Title"] = L["Documents"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "documents";
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Documents</h1>
-    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">+ Upload document</a>
+    <h1 class="hf-title">@L["Documents"]</h1>
+    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">@L["+ Upload document"]</a>
 </div>
 <form method="get" asp-action="Documents" asp-route-id="@Model.PropiedadId" asp-route-from="@ViewBag.MyHomeNavFrom" style="margin-bottom:14px;">
-    <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="Search documents" style="margin:0;" />
+    <input type="search" name="search" value="@Model.Search" class="hf-input" placeholder="@L["Search documents"]" style="margin:0;" />
 </form>
 @foreach (var cat in Model.Categories)
 {
     <a asp-action="DocumentList" asp-route-id="@Model.PropiedadId" asp-route-category="@cat.Category" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-card hf-list-item" style="display:flex;margin-bottom:8px;">
         <i class="fas fa-folder icon"></i>
         <div class="meta">
-            <div class="value">@cat.Category</div>
-            <div class="label">@cat.Count document@(cat.Count == 1 ? "" : "s")</div>
+            <div class="value">@L[cat.Category]</div>
+            <div class="label">@(cat.Count == 1 ? L.T("{0} document", cat.Count) : L.T("{0} documents", cat.Count))</div>
         </div>
         <i class="fas fa-chevron-right" style="color:#CBD5E1;"></i>
     </a>

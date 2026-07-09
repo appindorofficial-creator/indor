@@ -15,7 +15,7 @@
         <div asp-validation-summary="All" class="pa-summary-error" role="alert"></div>
     }
 
-    <p class="ob-label">Number of properties</p>
+    <p class="ob-label">@L["Number of properties"]</p>
     <div class="pa-choice-grid">
         @foreach (var range in PropertyAdministratorCatalog.PropertyCountRanges)
         {
@@ -30,7 +30,7 @@
     <label class="pa-field">
         <i class="fas fa-house"></i>
         <select name="portfolioType" data-pa-required="true" data-field-label="a portfolio type">
-            <option value="">Portfolio type</option>
+            <option value="">@L["Portfolio type"]</option>
             @foreach (var item in PropertyAdministratorCatalog.PortfolioTypes)
             {
                 <option value="@item.Value" selected="@(s.PortfolioType == item.Value)">@item.Label</option>
@@ -41,7 +41,7 @@
     <label class="pa-field">
         <i class="fas fa-user"></i>
         <select name="ownershipType" data-pa-required="true" data-field-label="an ownership type">
-            <option value="">Ownership type</option>
+            <option value="">@L["Ownership type"]</option>
             @foreach (var item in PropertyAdministratorCatalog.OwnershipTypes)
             {
                 <option value="@item.Value" selected="@(s.OwnershipType == item.Value)">@item.Label</option>
@@ -52,7 +52,7 @@
     <label class="pa-field">
         <i class="fas fa-location-dot"></i>
         <select name="primaryMarket" data-pa-required="true" data-field-label="your primary market">
-            <option value="">Select your primary market or city</option>
+            <option value="">@L["Select your primary market or city"]</option>
             @foreach (var market in PropertyAdministratorCatalog.PrimaryMarkets)
             {
                 <option value="@market" selected="@(s.PrimaryMarket == market)">@market</option>
@@ -60,7 +60,7 @@
         </select>
     </label>
 
-    <p class="ob-label">Do you self-manage or use a team?</p>
+    <p class="ob-label">@L["Do you self-manage or use a team?"]</p>
     <div class="pa-choice-grid cols-3">
         @foreach (var item in PropertyAdministratorCatalog.ManagementStyles)
         {

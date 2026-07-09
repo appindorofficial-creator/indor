@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http.Timeouts;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
 using IndorMvcApp.Helpers;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.ViewModels;
@@ -28,17 +29,20 @@ public class PropietarioController : Controller
     private readonly ILogger<PropietarioController> _logger;
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IIndorLocalizer _localizer;
 
     public PropietarioController(
         IHomeownerPropertyService homeownerPropertyService,
         ILogger<PropietarioController> logger,
         AppDbContext db,
-        UserManager<ApplicationUser> userManager)
+        UserManager<ApplicationUser> userManager,
+        IIndorLocalizer localizer)
     {
         _homeownerPropertyService = homeownerPropertyService;
         _logger = logger;
         _db = db;
         _userManager = userManager;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -64,7 +68,7 @@ public class PropietarioController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Create Account";
+        ViewBag.OnboardingTitle = _localizer["Create Account"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(AddProperty));
         ViewBag.OnboardingShowBack = true;
         return View(new AddPropertyViewModel
@@ -105,7 +109,7 @@ public class PropietarioController : Controller
         }
 
         ViewBag.OnboardingStep = 3;
-        ViewBag.OnboardingTitle = "Create Account";
+        ViewBag.OnboardingTitle = _localizer["Create Account"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(ConfirmProperty));
         ViewBag.OnboardingShowBack = true;
 
@@ -157,6 +161,7 @@ public class PropietarioController : Controller
     [HttpGet]
     public IActionResult HomeReady(int id)
     {
+        ViewData["Title"] = _localizer["Welcome to INDOR"];
         ViewBag.PropiedadId = id;
         return View();
     }
@@ -222,13 +227,13 @@ public class PropietarioController : Controller
             var existing = await _homeownerPropertyService.GetPrimaryPropertyAsync(userId);
             await _homeownerPropertyService.SaveOrUpdatePropertyAsync(fullModel, userId, existing?.Id);
             ClearOnboardingProperty();
-            TempData["PropertySaved"] = "Property saved successfully.";
+            TempData["PropertySaved"] = _localizer["Property saved successfully."];
             return RedirectToAction("Index", "Home");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error saving edited address");
-            ModelState.AddModelError("", "An error occurred while saving the address. Please try again.");
+            ModelState.AddModelError("", _localizer["An error occurred while saving the address. Please try again."]);
             return View(model);
         }
     }

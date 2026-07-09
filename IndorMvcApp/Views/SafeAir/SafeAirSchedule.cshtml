@@ -7,8 +7,8 @@
     ViewData["WizardTotalSteps"] = 2;
 }
 
-<h2 class="page-heading" style="font-size:1.1rem;">Photos & schedule</h2>
-    <p class="page-lead" style="margin-top:-8px;">Add context so the provider arrives prepared.</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Photos & schedule"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Add context so the provider arrives prepared."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -20,17 +20,17 @@
         <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
 
         <div class="field-card">
-            <span class="field-label">Add a photo of the filter or vent</span>
+            <span class="field-label">@L["Add a photo of the filter or vent"]</span>
             <div class="photo-row">
                 <div class="photo-upload-slot">
                     <input type="file" name="files" id="safeAirPhotos" class="photo-input-sr-only" multiple
                            accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" tabindex="-1" aria-hidden="true" />
                     <input type="file" id="safeAirCamera" class="photo-input-sr-only"
                            accept="image/*" capture="environment" tabindex="-1" aria-hidden="true" />
-                    <div class="photo-upload" id="safeAirPhotoDropzone" role="button" tabindex="0" aria-label="Upload photos from gallery">
+                    <div class="photo-upload" id="safeAirPhotoDropzone" role="button" tabindex="0" aria-label="@L["Upload photos from gallery"]">
                         <i class="fas fa-images"></i>
-                        <p><strong>Upload photo</strong></p>
-                        <p>Tap to add (JPG, PNG, HEIC)</p>
+                        <p><strong>@L["Upload photo"]</strong></p>
+                        <p>@L["Tap to add (JPG, PNG, HEIC)"]</p>
                     </div>
                     <button type="button" class="photo-camera-btn" id="safeAirCameraBtn">
                         <i class="fas fa-camera"></i> Take photo
@@ -38,11 +38,11 @@
                     <div class="photo-selected-list" id="safeAirPhotoList" hidden></div>
                 </div>
                 <div class="photo-example">
-                    <span class="photo-badge">Good example</span>
+                    <span class="photo-badge">@L["Good example"]</span>
                     <img src="@Url.Content("~/aire.jpeg")" alt="Ceiling vent example" loading="lazy" onerror="this.style.display='none'" />
                 </div>
                 <div class="photo-example">
-                    <span class="photo-badge">Good example</span>
+                    <span class="photo-badge">@L["Good example"]</span>
                     <img src="@Url.Content("~/aire.jpeg")" alt="Filter size example" loading="lazy" onerror="this.style.display='none'" />
                 </div>
             </div>
@@ -61,7 +61,7 @@
                                 <i class="fas fa-image"></i>
                             }
                             <span>@file.NombreArchivo</span>
-                            <button type="submit" form="removeSafeAirPhoto@(file.Id)" class="photo-remove-btn" aria-label="Remove @file.NombreArchivo">
+                            <button type="submit" form="removeSafeAirPhoto@(file.Id)" class="photo-remove-btn" aria-label="@L["Remove @file.NombreArchivo"]">
                                 <i class="fas fa-xmark"></i>
                             </button>
                         </div>
@@ -70,55 +70,55 @@
             }
             <div class="info-box-blue" style="margin-top:10px;margin-bottom:0;">
                 <i class="fas fa-circle-info"></i>
-                <span>If you don't know the filter size, a photo helps us verify it.</span>
+                <span>@L["If you don't know the filter size, a photo helps us verify it."]</span>
             </div>
         </div>
 
         @if (Model.ShowScheduleOptions)
         {
             <div class="field-card">
-                <span class="field-label">Preferred time</span>
+                <span class="field-label">@L["Preferred time"]</span>
                 <div class="chip-scroll" id="timeGroup">
-                    <button type="button" class="chip-option" data-value="NextAvailable"><i class="fas fa-clock"></i> Next available</button>
-                    <button type="button" class="chip-option" data-value="Morning"><i class="fas fa-sun"></i> Morning</button>
-                    <button type="button" class="chip-option" data-value="Afternoon"><i class="fas fa-cloud-sun"></i> Afternoon</button>
-                    <button type="button" class="chip-option" data-value="Flexible"><i class="fas fa-calendar"></i> Flexible</button>
+                    <button type="button" class="chip-option" data-value="NextAvailable"><i class="fas fa-clock"></i> @L["Next available"]</button>
+                    <button type="button" class="chip-option" data-value="Morning"><i class="fas fa-sun"></i> @L["Morning"]</button>
+                    <button type="button" class="chip-option" data-value="Afternoon"><i class="fas fa-cloud-sun"></i> @L["Afternoon"]</button>
+                    <button type="button" class="chip-option" data-value="Flexible"><i class="fas fa-calendar"></i> @L["Flexible"]</button>
                 </div>
             </div>
         }
 
         <div class="field-card">
-            <span class="field-label">Access details</span>
+            <span class="field-label">@L["Access details"]</span>
             <div class="chip-scroll" id="accessGroup">
-                <button type="button" class="chip-option" data-value="House"><i class="fas fa-house"></i> House</button>
-                <button type="button" class="chip-option" data-value="Apartment"><i class="fas fa-building"></i> Apartment</button>
-                <button type="button" class="chip-option" data-value="AtticAccess"><i class="fas fa-stairs"></i> Attic access</button>
-                <button type="button" class="chip-option" data-value="GateCode"><i class="fas fa-lock"></i> Gate code</button>
+                <button type="button" class="chip-option" data-value="House"><i class="fas fa-house"></i> @L["House"]</button>
+                <button type="button" class="chip-option" data-value="Apartment"><i class="fas fa-building"></i> @L["Apartment"]</button>
+                <button type="button" class="chip-option" data-value="AtticAccess"><i class="fas fa-stairs"></i> @L["Attic access"]</button>
+                <button type="button" class="chip-option" data-value="GateCode"><i class="fas fa-lock"></i> @L["Gate code"]</button>
             </div>
             <div class="input-wrap" style="margin-top:10px;">
                 <i class="fas fa-note-sticky"></i>
-                <input asp-for="NotasAcceso" placeholder="Add any access notes (optional)" />
+                <input asp-for="NotasAcceso" placeholder="@L["Add any access notes (optional)"]" />
             </div>
         </div>
 
         <div class="summary-inline">
             <i class="fas fa-clipboard-list main"></i>
             <div>
-                <div class="line"><strong>Service:</strong> @Model.NombreServicio</div>
-                <div class="line"><strong>Filters:</strong> @Model.CantidadFiltrosLabel</div>
-                <div class="line"><strong>Size:</strong> @Model.FiltroTamanioLabel</div>
+                <div class="line"><strong>@L["Service:"]</strong> @Model.NombreServicio</div>
+                <div class="line"><strong>@L["Filters:"]</strong> @Model.CantidadFiltrosLabel</div>
+                <div class="line"><strong>@L["Size:"]</strong> @Model.FiltroTamanioLabel</div>
                 @if (Model.ShowScheduleOptions)
                 {
-                    <div class="line"><strong>Provider brings filter:</strong> @Model.ProveedorFiltroLabel</div>
+                    <div class="line"><strong>@L["Provider brings filter:"]</strong> @Model.ProveedorFiltroLabel</div>
                 }
-                <div class="line"><strong>Reminder:</strong> @Model.RecordatorioLabel</div>
+                <div class="line"><strong>@L["Reminder:"]</strong> @Model.RecordatorioLabel</div>
             </div>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
             <i class="fas fa-calendar-plus"></i> Confirm request
         </button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 
     @foreach (var file in Model.ArchivosExistentes)

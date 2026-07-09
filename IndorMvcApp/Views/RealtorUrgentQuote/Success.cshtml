@@ -4,7 +4,7 @@
 
     Layout = "_RealtorLayout";
 
-    ViewData["Title"] = "Urgente Quote Sent";
+    ViewData["Title"] = L["Urgente Quote Sent"];
 
     ViewBag.NavActive = "quotes";
 
@@ -26,7 +26,7 @@
 
         </div>
 
-        <h1>Urgente Quote Sent</h1>
+        <h1>@L["Urgente Quote Sent"]</h1>
 
         <p>Your urgent request was sent to @Model.ProviderCount provider@(Model.ProviderCount == 1 ? "" : "s").</p>
 
@@ -44,21 +44,21 @@
 
         </div>
 
-        <div class="rl-success-detail"><strong>Property:</strong> @Model.PropertyAddress</div>
+        <div class="rl-success-detail"><strong>@L["Property:"]</strong> @Model.PropertyAddress</div>
 
-        <div class="rl-success-detail"><strong>Issue:</strong> @Model.ServiceType</div>
+        <div class="rl-success-detail"><strong>@L["Issue:"]</strong> @Model.ServiceType</div>
 
-        <div class="rl-success-detail"><strong>Response needed:</strong> @Model.UrgencyLabel</div>
+        <div class="rl-success-detail"><strong>@L["Response needed:"]</strong> @Model.UrgencyLabel</div>
 
-        <div class="rl-success-detail"><strong>Sent:</strong> @Model.SentWhenLabel</div>
+        <div class="rl-success-detail"><strong>@L["Sent:"]</strong> @Model.SentWhenLabel</div>
 
     </div>
 
 
 
-    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">Track Quotes</a>
+    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">@L["Track Quotes"]</a>
 
-    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">Done</a>
+    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">@L["Done"]</a>
 
 </div>
 

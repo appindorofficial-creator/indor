@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateEstimatePricingViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Pricing & Line Items - INDOR PRO";
+    ViewData["Title"] = L["Pricing & Line Items - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -14,7 +14,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Pricing &amp; Line Items</h1>
+            <h1>@L["Pricing &amp; Line Items"]</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -39,24 +39,24 @@
                     </div>
                     <small>@line.Description</small>
                     <div class="prv-pro-pricing-line-fields">
-                        <label>Qty <input type="number" name="LineQtys" value="@line.Qty" step="0.01" min="0" /></label>
-                        <label>Unit <input type="text" name="LineUnits" value="@line.Unit" /></label>
-                        <label>Unit Price <input type="number" name="LineUnitPrices" value="@line.UnitPrice" step="0.01" min="0" /></label>
-                        <label>Amount <input type="number" name="LineAmounts" value="@line.Amount" step="0.01" min="0" /></label>
+                        <label>@L["Qty"]<input type="number" name="LineQtys" value="@line.Qty" step="0.01" min="0" /></label>
+                        <label>@L["Unit"]<input type="text" name="LineUnits" value="@line.Unit" /></label>
+                        <label>@L["Unit Price"]<input type="number" name="LineUnitPrices" value="@line.UnitPrice" step="0.01" min="0" /></label>
+                        <label>@L["Amount"]<input type="number" name="LineAmounts" value="@line.Amount" step="0.01" min="0" /></label>
                     </div>
                 </article>
             }
         </div>
 
         <section class="prv-pro-pricing-totals">
-            <div><span>Subtotal</span><strong>@Model.SubtotalAmount.ToString("C2", money)</strong></div>
+            <div><span>@L["Subtotal"]</span><strong>@Model.SubtotalAmount.ToString("C2", money)</strong></div>
             <div><span>Tax (@((Model.TaxRate * 100).ToString("0.##"))%)</span><strong>@Model.TaxAmount.ToString("C2", money)</strong></div>
-            <div class="prv-pro-pricing-total"><span>Total Estimate</span><strong>@Model.TotalAmount.ToString("C2", money)</strong></div>
+            <div class="prv-pro-pricing-total"><span>@L["Total Estimate"]</span><strong>@Model.TotalAmount.ToString("C2", money)</strong></div>
         </section>
 
         <div class="prv-pro-create-job-actions">
-            <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+            <a asp-controller="Proveedor" asp-action="CreateEstimateDetails" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>
 </div>

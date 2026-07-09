@@ -7,8 +7,8 @@
     ViewData["WizardTotalSteps"] = 2;
 }
 
-<h2 class="page-heading" style="font-size:1.1rem;">Filter details</h2>
-    <p class="page-lead" style="margin-top:-8px;">Help us identify the right filter for your home.</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Filter details"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Help us identify the right filter for your home."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -23,16 +23,16 @@
         <input type="hidden" asp-for="RecordatorioActivo" id="RecordatorioActivo" value="@(Model.RecordatorioActivo ? "true" : "false")" />
 
         <div class="field-card">
-            <div class="field-label-row"><span class="question-num">1</span><span class="field-label" style="margin:0;">What do you need today?</span></div>
+            <div class="field-label-row"><span class="question-num">1</span><span class="field-label" style="margin:0;">@L["What do you need today?"]</span></div>
             <div class="need-grid" id="needGroup">
-                <button type="button" class="need-card" data-value="IndorReplaces"><i class="fas fa-box"></i>INDOR replaces it</button>
-                <button type="button" class="need-card" data-value="ChangedMyself"><i class="fas fa-screwdriver-wrench"></i>I changed it myself</button>
-                <button type="button" class="need-card" data-value="RemindOnly"><i class="fas fa-bell"></i>Just remind me</button>
+                <button type="button" class="need-card" data-value="IndorReplaces"><i class="fas fa-box"></i>@L["INDOR replaces it"]</button>
+                <button type="button" class="need-card" data-value="ChangedMyself"><i class="fas fa-screwdriver-wrench"></i>@L["I changed it myself"]</button>
+                <button type="button" class="need-card" data-value="RemindOnly"><i class="fas fa-bell"></i>@L["Just remind me"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-label-row"><span class="question-num">2</span><span class="field-label" style="margin:0;">How many filters?</span></div>
+            <div class="field-label-row"><span class="question-num">2</span><span class="field-label" style="margin:0;">@L["How many filters?"]</span></div>
             <div class="count-row" id="countGroup">
                 <button type="button" class="count-btn" data-value="One">1</button>
                 <button type="button" class="count-btn" data-value="Two">2</button>
@@ -41,42 +41,42 @@
         </div>
 
         <div class="field-card" id="sizeSection">
-            <div class="field-label-row"><span class="question-num">3</span><span class="field-label" style="margin:0;">Do you know the filter size?</span></div>
+            <div class="field-label-row"><span class="question-num">3</span><span class="field-label" style="margin:0;">@L["Do you know the filter size?"]</span></div>
             <div class="size-row" id="sizeInputs">
                 <div class="size-field">
-                    <label>Width (in)</label>
+                    <label>@L["Width (in)"]</label>
                     <input asp-for="FiltroAncho" type="text" inputmode="decimal" autocomplete="off" class="filter-size-input" placeholder="20" />
                 </div>
-                <span class="size-sep">x</span>
+                <span class="size-sep">@L["x"]</span>
                 <div class="size-field">
-                    <label>Height (in)</label>
+                    <label>@L["Height (in)"]</label>
                     <input asp-for="FiltroAlto" type="text" inputmode="decimal" autocomplete="off" class="filter-size-input" placeholder="25" />
                 </div>
-                <span class="size-sep">x</span>
+                <span class="size-sep">@L["x"]</span>
                 <div class="size-field">
-                    <label>Depth (in)</label>
+                    <label>@L["Depth (in)"]</label>
                     <input asp-for="FiltroProfundidad" type="text" inputmode="decimal" autocomplete="off" class="filter-size-input" placeholder="1" />
                 </div>
             </div>
-            <button type="button" class="link-btn" id="unknownSizeBtn">I don't know</button>
+            <button type="button" class="link-btn" id="unknownSizeBtn">@L["I don't know"]</button>
         </div>
 
         <div class="field-card">
-            <div class="field-label-row"><span class="question-num">4</span><span class="field-label" style="margin:0;">Where is the filter located?</span></div>
+            <div class="field-label-row"><span class="question-num">4</span><span class="field-label" style="margin:0;">@L["Where is the filter located?"]</span></div>
             <div class="location-grid" id="locationGroup">
-                <button type="button" class="location-tile" data-value="Ceiling"><i class="fas fa-border-all"></i>Ceiling</button>
-                <button type="button" class="location-tile" data-value="WallReturn"><i class="fas fa-grip-lines"></i>Wall return</button>
-                <button type="button" class="location-tile" data-value="HvacUnit"><i class="fas fa-fan"></i>HVAC unit</button>
-                <button type="button" class="location-tile" data-value="Attic"><i class="fas fa-warehouse"></i>Attic</button>
-                <button type="button" class="location-tile" data-value="NotSure"><i class="fas fa-circle-question"></i>Not sure</button>
+                <button type="button" class="location-tile" data-value="Ceiling"><i class="fas fa-border-all"></i>@L["Ceiling"]</button>
+                <button type="button" class="location-tile" data-value="WallReturn"><i class="fas fa-grip-lines"></i>@L["Wall return"]</button>
+                <button type="button" class="location-tile" data-value="HvacUnit"><i class="fas fa-fan"></i>@L["HVAC unit"]</button>
+                <button type="button" class="location-tile" data-value="Attic"><i class="fas fa-warehouse"></i>@L["Attic"]</button>
+                <button type="button" class="location-tile" data-value="NotSure"><i class="fas fa-circle-question"></i>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card" id="providerSection">
-            <div class="field-label-row"><span class="question-num">5</span><span class="field-label" style="margin:0;">Who provides the filter?</span></div>
+            <div class="field-label-row"><span class="question-num">5</span><span class="field-label" style="margin:0;">@L["Who provides the filter?"]</span></div>
             <div class="provider-grid" id="providerGroup">
-                <button type="button" class="provider-card" data-value="IndorBrings"><i class="fas fa-truck"></i>INDOR brings it</button>
-                <button type="button" class="provider-card" data-value="IHaveFilter"><i class="fas fa-shopping-bag"></i>I have the filter</button>
+                <button type="button" class="provider-card" data-value="IndorBrings"><i class="fas fa-truck"></i>@L["INDOR brings it"]</button>
+                <button type="button" class="provider-card" data-value="IHaveFilter"><i class="fas fa-shopping-bag"></i>@L["I have the filter"]</button>
             </div>
         </div>
 
@@ -84,8 +84,8 @@
             <div class="field-label-row"><span class="question-num">6</span></div>
             <div class="toggle-row">
                 <div class="toggle-copy">
-                    <strong>Remind me every 3 months</strong>
-                    <span>We'll send reminders when it's time.</span>
+                    <strong>@L["Remind me every 3 months"]</strong>
+                    <span>@L["We'll send reminders when it's time."]</span>
                 </div>
                 <label class="toggle-switch">
                     <input type="checkbox" id="reminderToggle" @(Model.RecordatorioActivo ? "checked" : "") />
@@ -94,8 +94,8 @@
             </div>
         </div>
 
-        <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 
 @section Scripts {
@@ -160,7 +160,7 @@
                 return false;
             }
             const n = parseFloat(trimmed);
-            return !Number.isNaN(n) && n >= sizeMin && n <= sizeMax;
+            return !Number.isNaN(n) && n >@L["= sizeMin && n"] <= sizeMax;
         }
 
         function filterSizeErrorMessage(value) {

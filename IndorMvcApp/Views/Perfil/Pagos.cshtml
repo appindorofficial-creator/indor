@@ -1,6 +1,6 @@
 @{
-    ViewData["Title"] = "Payments & History";
-    ViewData["Subtitulo"] = "Track services, billing, and financing in one place.";
+    ViewData["Title"] = L["Payments & History"];
+    ViewData["Subtitulo"] = L["Track services, billing, and financing in one place."];
     var pagos = (IEnumerable<IndorMvcApp.Models.Pago>?)ViewBag.Pagos ?? Enumerable.Empty<IndorMvcApp.Models.Pago>();
     var metodos = (IEnumerable<IndorMvcApp.Models.MetodoPago>?)ViewBag.MetodosPago ?? Enumerable.Empty<IndorMvcApp.Models.MetodoPago>();
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
@@ -22,6 +22,8 @@
         .OrderBy(p => p.FechaVencimiento)
         .FirstOrDefault();
 
+    string BadgeLabel(string? estado) => IsPending(estado) ? L["Pending"] : IsPaid(estado) ? L["Paid"] : IsFinance(estado) ? L["Financing"] : estado ?? "—";
+
     var actividad = pagos
         .OrderByDescending(p => p.FechaCreacion)
         .Take(6)
@@ -30,7 +32,7 @@
             Sub = $"{(p.FechaPago ?? p.FechaVencimiento ?? p.FechaCreacion):MMM d, yyyy} · INV-{p.Id:D5}",
             Amount = p.Monto.ToString("C2", culture),
             Badge = IsPending(p.Estado) ? "pending" : IsPaid(p.Estado) ? "paid" : IsFinance(p.Estado) ? "finance" : "pending",
-            BadgeLabel = IsPending(p.Estado) ? "Pending" : IsPaid(p.Estado) ? "Paid" : IsFinance(p.Estado) ? "Financing" : p.Estado,
+            BadgeLabel = BadgeLabel(p.Estado),
             Icon = "fa-receipt"
         })
         .ToList();
@@ -38,8 +40,8 @@
 
 <div class="pay-hero-row">
     <div class="perfil-top-title" style="margin:0;">
-        <h1 style="font-size:1.35rem;">Payments &amp; History</h1>
-        <p>Track services, billing, and financing in one place.</p>
+        <h1 style="font-size:1.35rem;">@L["Payments & History"]</h1>
+        <p>@L["Track services, billing, and financing in one place."]</p>
     </div>
     <img class="pay-hero-art" src="~/images/pay-doc-house.svg" alt="" asp-append-version="true"
          onerror="this.outerHTML='<i class=\'fas fa-file-invoice-dollar pay-hero-art\' style=\'font-size:3rem;color:#0066CC;\'></i>'" />
@@ -48,36 +50,36 @@
 <div class="pay-summary-grid">
     <a href="#pending" class="pay-summary-card pending">
         <div class="psc-icon"><i class="far fa-clock"></i></div>
-        <div class="psc-label">Pending</div>
+        <div class="psc-label">@L["Pending"]</div>
         <div class="psc-amount">@pendingTotal.ToString("C2", culture)</div>
-        <div class="psc-sub">@pendientes.Count item@(pendientes.Count == 1 ? "" : "s")</div>
+        <div class="psc-sub">@L.T(pendientes.Count == 1 ? "{0} item" : "{0} items", pendientes.Count)</div>
     </a>
     <a href="#paid" class="pay-summary-card paid">
         <div class="psc-icon"><i class="fas fa-check-circle"></i></div>
-        <div class="psc-label">Paid</div>
+        <div class="psc-label">@L["Paid"]</div>
         <div class="psc-amount">@paidTotal.ToString("C2", culture)</div>
-        <div class="psc-sub">This year</div>
+        <div class="psc-sub">@L["This year"]</div>
     </a>
     <a href="#finance" class="pay-summary-card finance">
         <div class="psc-icon"><i class="far fa-credit-card"></i></div>
-        <div class="psc-label">Financing</div>
+        <div class="psc-label">@L["Financing"]</div>
         <div class="psc-amount">@financeTotal.ToString("C2", culture)</div>
         <div class="psc-sub">
             @(nextFinanceDue?.FechaVencimiento != null
-                ? $"Due {nextFinanceDue.FechaVencimiento:MMM d, yyyy}"
+                ? L.T("Due {0}", nextFinanceDue.FechaVencimiento.Value.ToString("MMM d, yyyy", culture))
                 : "—")
         </div>
     </a>
 </div>
 
 <div class="pay-section-head">
-    <h3>Recent Activity</h3>
-    <a asp-action="Historial">View all</a>
+    <h3>@L["Recent Activity"]</h3>
+    <a asp-action="Historial">@L["View all"]</a>
 </div>
 
 @if (!actividad.Any())
 {
-    <div class="empty">No payment activity yet.</div>
+    <div class="empty">@L["No payment activity yet."]</div>
 }
 else
 {
@@ -99,13 +101,13 @@ else
 }
 
 <div class="pay-section-head" style="margin-top:18px;">
-    <h3>Saved payment methods</h3>
-    <a asp-action="Opciones" asp-fragment="payment">Manage</a>
+    <h3>@L["Saved payment methods"]</h3>
+    <a asp-action="Opciones" asp-fragment="payment">@L["Manage"]</a>
 </div>
 
 @if (!metodos.Any())
 {
-    <div class="empty">You have no saved payment methods.</div>
+    <div class="empty">@L["You have no saved payment methods."]</div>
 }
 else
 {
@@ -114,43 +116,43 @@ else
         <div class="pm-saved-card">
             <i class="fab fa-cc-visa" style="font-size:1.8rem;color:#1A1F71;"></i>
             <div style="flex:1;">
-                <strong>@(string.IsNullOrWhiteSpace(m.Marca) ? "Card" : m.Marca) ending in @m.Ultimos4</strong>
-                <div style="font-size:.78rem;color:#6B7280;">Expires @m.Expiracion</div>
+                <strong>@L.T("{0} ending in {1}", string.IsNullOrWhiteSpace(m.Marca) ? L["Card"] : m.Marca, m.Ultimos4)</strong>
+                <div style="font-size:.78rem;color:#6B7280;">@L.T("Expires {0}", m.Expiracion)</div>
             </div>
             @if (m.EsPredeterminado)
             {
-                <span class="badge-status paid">Default</span>
+                <span class="badge-status paid">@L["Default"]</span>
             }
         </div>
     }
 }
 
 <a class="pm-add-btn" asp-action="Opciones" asp-fragment="payment">
-    <i class="fas fa-plus"></i> Add payment method
+    <i class="fas fa-plus"></i> @L["Add payment method"]
 </a>
 
 <div class="pay-quick-links">
     <a class="pay-quick-link" asp-action="Pagos" asp-fragment="finance">
         <i class="fas fa-landmark"></i>
-        <strong>Financing options</strong>
-        <small>Explore payment plans for larger services</small>
+        <strong>@L["Financing options"]</strong>
+        <small>@L["Explore payment plans for larger services"]</small>
     </a>
     <a class="pay-quick-link" asp-action="Historial">
         <i class="fas fa-clock-rotate-left"></i>
-        <strong>View billing history</strong>
-        <small>See all past invoices and receipts</small>
+        <strong>@L["View billing history"]</strong>
+        <small>@L["See all past invoices and receipts"]</small>
     </a>
 </div>
 
 <div id="pending" class="pf-card" style="margin-top:20px;">
-    <h3><i class="fas fa-hourglass-half"></i> Pending</h3>
-    @if (!pendientes.Any()) { <div class="empty">No pending payments.</div> }
+    <h3><i class="fas fa-hourglass-half"></i> @L["Pending"]</h3>
+    @if (!pendientes.Any()) { <div class="empty">@L["No pending payments."]</div> }
     else
     {
         @foreach (var p in pendientes)
         {
             <div class="pay-activity-item" style="margin-bottom:6px;">
-                <span class="pa-body"><strong>@p.Concepto</strong><small>Due @(p.FechaVencimiento?.ToString("MM/dd/yyyy") ?? "—")</small></span>
+                <span class="pa-body"><strong>@p.Concepto</strong><small>@L.T("Due {0}", p.FechaVencimiento?.ToString("MM/dd/yyyy") ?? "—")</small></span>
                 <span class="pa-amount">@p.Monto.ToString("C2", culture)</span>
             </div>
         }

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RemodelingSentViewModel
 @{
-    ViewData["Title"] = "Request sent - INDOR";
+    ViewData["Title"] = L["Request sent - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home", new { fragment = "section-services" });
 
@@ -11,14 +11,14 @@
         <div style="width:72px;height:72px;border-radius:50%;background:rgba(0,102,204,0.12);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
             <i class="fas fa-check" style="font-size:2rem;color:#0066CC;"></i>
         </div>
-        <h2 class="page-heading" style="font-size:1.2rem;">We received your request</h2>
-        <p class="page-lead">Our team will review <strong>@Model.NombreServicio</strong> and follow up about your quote.</p>
+        <h2 class="page-heading" style="font-size:1.2rem;">@L["We received your request"]</h2>
+        <p class="page-lead">@L["Our team will review"] <strong>@Model.NombreServicio</strong> @L["and follow up about your quote."]</p>
     </div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Address</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Timeline</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">Status</div><div class="summary-value"><span class="status-pending"><i class="fas fa-clock"></i> @Model.EstadoLabel</span></div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Address"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Timeline"]</div><div class="summary-value">@Model.VentanaTiempoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-hourglass-half"></i><div><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pending"><i class="fas fa-clock"></i> @Model.EstadoLabel</span></div></div></div>
     </div>
 
-    <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="btn-primary" style="display:block;text-align:center;text-decoration:none;">Back to Services</a>
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="btn-primary" style="display:block;text-align:center;text-decoration:none;">@L["Back to Services"]</a>

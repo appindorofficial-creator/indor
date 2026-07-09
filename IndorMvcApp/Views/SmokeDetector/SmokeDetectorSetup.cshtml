@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.SmokeDetectorSetupViewModel
 @{
-    ViewData["Title"] = "Tell us about your alarms - INDOR";
+    ViewData["Title"] = L["Tell us about your alarms - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("SmokeDetectorService", "SmokeDetector", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
@@ -8,8 +8,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your alarms</h1>
-    <p class="page-lead" style="margin-bottom:16px;">A few quick details to help us recommend the right care. Select an answer for each question below.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your alarms"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["A few quick details to help us recommend the right care. Select an answer for each question below."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -24,77 +24,77 @@
         <input type="hidden" asp-for="AnioInstalacionDesconocido" id="AnioInstalacionDesconocido" />
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">1</span><span>How many smoke alarms are in your home?</span></div>
+            <div class="field-head"><span class="question-num">1</span><span>@L["How many smoke alarms are in your home?"]</span></div>
             <div class="count-grid">
                 <button type="button" class="count-btn" data-count="One">1</button>
                 <button type="button" class="count-btn" data-count="Two">2</button>
                 <button type="button" class="count-btn" data-count="Three">3</button>
                 <button type="button" class="count-btn" data-count="Four">4</button>
                 <button type="button" class="count-btn" data-count="FivePlus">5+</button>
-                <button type="button" class="count-btn" data-count="DontKnow">I don't know</button>
+                <button type="button" class="count-btn" data-count="DontKnow">@L["I don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">2</span><span>Where are they located?</span></div>
+            <div class="field-head"><span class="question-num">2</span><span>@L["Where are they located?"]</span></div>
             <div class="area-grid">
-                <button type="button" class="area-chip" data-area="Bedrooms"><i class="fas fa-bed"></i> Bedrooms</button>
-                <button type="button" class="area-chip" data-area="Hallway"><i class="fas fa-door-open"></i> Hallway</button>
-                <button type="button" class="area-chip" data-area="LivingRoom"><i class="fas fa-couch"></i> Living room</button>
-                <button type="button" class="area-chip" data-area="Basement"><i class="fas fa-stairs"></i> Basement</button>
-                <button type="button" class="area-chip" data-area="UpstairsLanding"><i class="fas fa-arrow-up"></i> Upstairs landing</button>
-                <button type="button" class="area-chip" data-area="DontKnow"><i class="fas fa-circle-question"></i> I don't know</button>
+                <button type="button" class="area-chip" data-area="Bedrooms"><i class="fas fa-bed"></i> @L["Bedrooms"]</button>
+                <button type="button" class="area-chip" data-area="Hallway"><i class="fas fa-door-open"></i> @L["Hallway"]</button>
+                <button type="button" class="area-chip" data-area="LivingRoom"><i class="fas fa-couch"></i> @L["Living room"]</button>
+                <button type="button" class="area-chip" data-area="Basement"><i class="fas fa-stairs"></i> @L["Basement"]</button>
+                <button type="button" class="area-chip" data-area="UpstairsLanding"><i class="fas fa-arrow-up"></i> @L["Upstairs landing"]</button>
+                <button type="button" class="area-chip" data-area="DontKnow"><i class="fas fa-circle-question"></i> @L["I don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">3</span><span>What type of alarms do you have?</span></div>
+            <div class="field-head"><span class="question-num">3</span><span>@L["What type of alarms do you have?"]</span></div>
             <div class="sign-grid">
-                <button type="button" class="sign-card" data-type="Battery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-full main"></i><span class="label">Battery</span></button>
-                <button type="button" class="sign-card" data-type="Hardwired"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug main"></i><span class="label">Hardwired</span></button>
-                <button type="button" class="sign-card" data-type="TenYearSealed"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">10-year sealed</span></button>
-                <button type="button" class="sign-card" data-type="SmokeCoCombo"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle main"></i><span class="label">Smoke + CO combo</span></button>
-                <button type="button" class="sign-card" data-type="DontKnow"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">I don't know</span></button>
+                <button type="button" class="sign-card" data-type="Battery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-full main"></i><span class="label">@L["Battery"]</span></button>
+                <button type="button" class="sign-card" data-type="Hardwired"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-plug main"></i><span class="label">@L["Hardwired"]</span></button>
+                <button type="button" class="sign-card" data-type="TenYearSealed"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">@L["10-year sealed"]</span></button>
+                <button type="button" class="sign-card" data-type="SmokeCoCombo"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle main"></i><span class="label">@L["Smoke + CO combo"]</span></button>
+                <button type="button" class="sign-card" data-type="DontKnow"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["I don't know"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">4</span><span>When were they last tested?</span></div>
+            <div class="field-head"><span class="question-num">4</span><span>@L["When were they last tested?"]</span></div>
             <div class="segment-row">
-                <button type="button" class="segment-btn" data-test="WithinLastMonth"><i class="fas fa-calendar"></i> Within last month</button>
-                <button type="button" class="segment-btn" data-test="OneToSixMonths">1–6 months ago</button>
-                <button type="button" class="segment-btn" data-test="MoreThanSixMonths">More than 6 months ago</button>
-                <button type="button" class="segment-btn" data-test="DontKnow">I don't know</button>
+                <button type="button" class="segment-btn" data-test="WithinLastMonth"><i class="fas fa-calendar"></i> @L["Within last month"]</button>
+                <button type="button" class="segment-btn" data-test="OneToSixMonths">@L["1–6 months ago"]</button>
+                <button type="button" class="segment-btn" data-test="MoreThanSixMonths">@L["More than 6 months ago"]</button>
+                <button type="button" class="segment-btn" data-test="DontKnow">@L["I don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">5</span><span>When was the battery last changed?</span></div>
+            <div class="field-head"><span class="question-num">5</span><span>@L["When was the battery last changed?"]</span></div>
             <div class="segment-row">
-                <button type="button" class="segment-btn" data-battery="WithinLast6Months">Within last 6 months</button>
-                <button type="button" class="segment-btn" data-battery="SixToTwelveMonths">6–12 months ago</button>
-                <button type="button" class="segment-btn" data-battery="MoreThan12Months">More than 12 months ago</button>
-                <button type="button" class="segment-btn" data-battery="DontKnow">I don't know</button>
+                <button type="button" class="segment-btn" data-battery="WithinLast6Months">@L["Within last 6 months"]</button>
+                <button type="button" class="segment-btn" data-battery="SixToTwelveMonths">@L["6–12 months ago"]</button>
+                <button type="button" class="segment-btn" data-battery="MoreThan12Months">@L["More than 12 months ago"]</button>
+                <button type="button" class="segment-btn" data-battery="DontKnow">@L["I don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">6</span><span>What year were the alarms installed?</span></div>
+            <div class="field-head"><span class="question-num">6</span><span>@L["What year were the alarms installed?"]</span></div>
             <div class="year-row">
-                <input asp-for="AnioInstalacion" type="number" min="1990" max="@DateTime.Today.Year" placeholder="Select year or enter age" id="AnioInstalacion" />
-                <button type="button" class="segment-btn" id="year-unknown-btn">I don't know</button>
+                <input asp-for="AnioInstalacion" type="number" min="1990" max="@DateTime.Today.Year" placeholder="@L["Select year or enter age"]" id="AnioInstalacion" />
+                <button type="button" class="segment-btn" id="year-unknown-btn">@L["I don't know"]</button>
             </div>
             <span asp-validation-for="AnioInstalacion" class="text-danger"></span>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">7</span><span>Are you experiencing any issues with your alarms?</span></div>
+            <div class="field-head"><span class="question-num">7</span><span>@L["Are you experiencing any issues with your alarms?"]</span></div>
             <div class="sign-grid">
-                <button type="button" class="sign-card" data-issue="Chirping"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-volume-high main"></i><span class="label">Chirping</span></button>
-                <button type="button" class="sign-card" data-issue="MissingBattery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-empty main"></i><span class="label">Missing battery</span></button>
-                <button type="button" class="sign-card" data-issue="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">Not sure</span></button>
-                <button type="button" class="sign-card" data-issue="AllWorking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-check main"></i><span class="label">All working</span></button>
-                <button type="button" class="sign-card" data-issue="DontKnow"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ban main"></i><span class="label">I don't know</span></button>
+                <button type="button" class="sign-card" data-issue="Chirping"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-volume-high main"></i><span class="label">@L["Chirping"]</span></button>
+                <button type="button" class="sign-card" data-issue="MissingBattery"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-battery-empty main"></i><span class="label">@L["Missing battery"]</span></button>
+                <button type="button" class="sign-card" data-issue="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question main"></i><span class="label">@L["Not sure"]</span></button>
+                <button type="button" class="sign-card" data-issue="AllWorking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-check main"></i><span class="label">@L["All working"]</span></button>
+                <button type="button" class="sign-card" data-issue="DontKnow"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ban main"></i><span class="label">@L["I don't know"]</span></button>
             </div>
             <input type="hidden" asp-for="ProblemasSeleccionados" id="ProblemasSeleccionados" />
         </div>

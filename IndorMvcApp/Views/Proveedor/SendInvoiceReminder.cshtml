@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProSendInvoiceReminderViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Send Reminder - INDOR PRO";
+    ViewData["Title"] = L["Send Reminder - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -15,7 +15,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Send Reminder</h1>
+            <h1>@L["Send Reminder"]</h1>
             <small>Invoice @Model.InvoiceCode</small>
         </div>
     </header>
@@ -26,15 +26,15 @@
             <small>@Model.PropertyAddress · @Model.ServiceType</small>
             <div class="prv-pro-invoice-reminder-grid">
                 <div>
-                    <span>Amount Due</span>
+                    <span>@L["Amount Due"]</span>
                     <strong class="is-green">@Model.Amount.ToString("C0", money)</strong>
                 </div>
                 <div>
-                    <span>Due Date</span>
+                    <span>@L["Due Date"]</span>
                     <strong>@Model.DueDateLabel</strong>
                 </div>
                 <div>
-                    <span>Status</span>
+                    <span>@L["Status"]</span>
                     <span class="prv-pro-pill prv-pro-pill--@Model.StatusClass">@Model.Status</span>
                 </div>
             </div>
@@ -42,7 +42,7 @@
     </section>
 
     <section class="prv-pro-lead-section prv-pro-reminder-recipient">
-        <h3>To</h3>
+        <h3>@L["To"]</h3>
         <p><strong>@Model.CustomerName</strong></p>
         @if (!string.IsNullOrWhiteSpace(Model.CustomerEmail))
         {
@@ -61,7 +61,7 @@
         <input type="hidden" name="ReturnTab" value="@Model.ReturnTab" />
 
         <section class="prv-pro-lead-section">
-            <h3>Send via</h3>
+            <h3>@L["Send via"]</h3>
             <div class="prv-pro-reminder-channels">
                 @foreach (var channel in channels)
                 {
@@ -74,31 +74,31 @@
         </section>
 
         <section class="prv-pro-lead-section">
-            <h3>Message</h3>
+            <h3>@L["Message"]</h3>
             <textarea name="Message" rows="6" maxlength="500" class="prv-pro-textarea prv-pro-reminder-message">@Model.DefaultMessage</textarea>
             <small class="prv-pro-char-hint"><span id="reminder-char-count">@Model.DefaultMessage.Length</span>/500</small>
         </section>
 
         <section class="prv-pro-lead-section prv-pro-reminder-toggles">
             <label class="prv-pro-toggle-row">
-                <span>Attach invoice PDF</span>
+                <span>@L["Attach invoice PDF"]</span>
                 <input type="checkbox" name="AttachInvoicePdf" value="true" checked="@Model.AttachInvoicePdf" />
             </label>
             <label class="prv-pro-toggle-row">
-                <span>Send copy to my team</span>
+                <span>@L["Send copy to my team"]</span>
                 <input type="checkbox" name="SendCopyToTeam" value="true" checked="@Model.SendCopyToTeam" />
             </label>
             <label class="prv-pro-reminder-timing">
-                <span>Reminder timing</span>
+                <span>@L["Reminder timing"]</span>
                 <select name="ReminderTiming">
-                    <option value="Send now" selected>Send now</option>
-                    <option value="Schedule for tomorrow">Schedule for tomorrow</option>
+                    <option value="@L["Send now"]" selected>@L["Send now"]</option>
+                    <option value="@L["Schedule for tomorrow"]">@L["Schedule for tomorrow"]</option>
                 </select>
             </label>
         </section>
 
         <footer class="prv-pro-reminder-footer">
-            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">@L["Cancel"]</a>
             <button type="button" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-eye"></i> Preview</button>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-paper-plane"></i> Send Reminder</button>
         </footer>

@@ -1,26 +1,30 @@
 ﻿@model IndorMvcApp.ViewModels.LoginViewModel
+@using IndorMvcApp.Localization
 @{
-    ViewData["Title"] = "Sign In - INDOR";
+    ViewData["Title"] = L["Sign In - INDOR"];
     Layout = "_LayoutAuth";
     var returnUrl = ViewData["ReturnUrl"] as string;
+    ViewData["LanguageSelectorVariant"] = "inline";
 }
 
 <div class="login-container login-container--signin">
+        @await Html.PartialAsync("_LanguageSelector")
+
         <div class="top-bar">
-            <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="Back">
+            <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div style="width:44px;"></div>
         </div>
 
         <div class="logo-container">
-            <img src="~/images/indor-logo-transparent.png" alt="Indor - The Home Operating System" class="smart-home-logo smart-home-logo--login" asp-append-version="true" />
+            <img src="~/images/indor-logo-transparent.png" alt="@L["Indor - The Home Operating System"]" class="smart-home-logo smart-home-logo--login" asp-append-version="true" />
         </div>
 
         <div class="brand-section">
-            <h1 class="brand-title brand-title--login">Welcome back</h1>
+            <h1 class="brand-title brand-title--login">@L["Welcome back"]</h1>
             <p class="brand-tagline">
-                Sign in to access your <span class="highlight">smart home</span>.
+                @L["Sign in to access your"] <span class="highlight">@L["smart home"]</span>.
             </p>
         </div>
 
@@ -29,7 +33,7 @@
                 <div asp-validation-summary="ModelOnly" class="validation-error"></div>
 
                 <div class="input-group">
-                    <label asp-for="Email" class="input-label">Email</label>
+                    <label asp-for="Email" class="input-label">@L["Email"]</label>
                     <div class="input-wrapper">
                         <i class="fas fa-envelope input-icon"></i>
                         <input asp-for="Email" type="email" class="form-input" placeholder="you@email.com" autocomplete="email" />
@@ -38,11 +42,11 @@
                 </div>
 
                 <div class="input-group">
-                    <label asp-for="Password" class="input-label">Password</label>
+                    <label asp-for="Password" class="input-label">@L["Password"]</label>
                     <div class="input-wrapper password-field">
                         <i class="fas fa-lock input-icon"></i>
-                        <input asp-for="Password" type="password" id="loginPassword" class="form-input" placeholder="Enter your password" autocomplete="current-password" />
-                        <button type="button" class="password-toggle" id="loginPasswordToggle" aria-label="Show password" aria-pressed="false">
+                        <input asp-for="Password" type="password" id="loginPassword" class="form-input" placeholder="@L["Enter your password"]" autocomplete="current-password" />
+                        <button type="button" class="password-toggle" id="loginPasswordToggle" aria-label="@L["Show password"]" aria-pressed="false">
                             <i class="fas fa-eye-slash" aria-hidden="true"></i>
                         </button>
                     </div>
@@ -52,19 +56,19 @@
                 <div class="row-options">
                     <label class="remember-me">
                         <input asp-for="RememberMe" type="checkbox" />
-                        <span>Remember me</span>
+                        <span>@L["Remember me"]</span>
                     </label>
-                    <a asp-controller="Account" asp-action="ForgotPassword" class="forgot-link">Forgot your password?</a>
+                    <a asp-controller="Account" asp-action="ForgotPassword" class="forgot-link">@L["Forgot your password?"]</a>
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-primary--submit">
-                    <span class="btn-label">Sign In</span>
+                    <span class="btn-label">@L["Sign In"]</span>
                 </button>
 
-                <div class="auth-or"><span>or</span></div>
+                <div class="auth-or"><span>@L["or"]</span></div>
 
                 <div class="signup-link">
-                    Don't have an account? <a asp-controller="Account" asp-action="Register">Create account</a>
+                    @L["Don't have an account?"] <a asp-controller="Account" asp-action="Register">@L["Create account"]</a>
                 </div>
             </form>
         </div>

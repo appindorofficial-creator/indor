@@ -19,7 +19,7 @@
     {
         <div class="pc-hero-wrap">
             <img src="@Url.Content("~" + Model.ImagenUrl)" alt="@Model.LandingTitulo" class="hero-img" />
-            <span class="pc-yearly-badge">Yearly</span>
+            <span class="pc-yearly-badge">@L["Yearly"]</span>
             <span class="pc-hero-icon"><i class="fas fa-bug"></i></span>
         </div>
     }
@@ -27,7 +27,7 @@
     @if (Model.WhyItMattersItems.Count > 0)
     {
         <div class="why-matters-box">
-            <h4><i class="fas fa-shield-halved"></i> Why it matters</h4>
+            <h4><i class="fas fa-shield-halved"></i> @L["Why it matters"]</h4>
             <ul>
                 @foreach (var item in Model.WhyItMattersItems)
                 {
@@ -45,18 +45,18 @@
         <input type="hidden" asp-for="TipoAccionInicial" id="TipoAccionInicial" />
 
         <div class="field-card">
-            <div class="field-head"><span>What would you like to do?</span></div>
+            <div class="field-head"><span>@L["What would you like to do?"]</span></div>
             <div class="action-grid-2">
                 <button type="button" class="action-tile" data-action="Reminder">
                     <i class="fas fa-calendar main"></i>
-                    <strong>Set a reminder</strong>
-                    <span>We'll remind you when it's time.</span>
+                    <strong>@L["Set a reminder"]</strong>
+                    <span>@L["We'll remind you when it's time."]</span>
                     <i class="fas fa-chevron-right chev"></i>
                 </button>
                 <button type="button" class="action-tile" data-action="ScheduleService">
                     <i class="fas fa-user-gear main"></i>
-                    <strong>Schedule service</strong>
-                    <span>Book with a trusted professional.</span>
+                    <strong>@L["Schedule service"]</strong>
+                    <span>@L["Book with a trusted professional."]</span>
                     <i class="fas fa-chevron-right chev"></i>
                 </button>
             </div>

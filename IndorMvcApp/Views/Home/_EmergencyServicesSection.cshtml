@@ -1,4 +1,5 @@
 @model IndorMvcApp.ViewModels.EmergencyServicesSectionViewModel
+@using System.Text.Json
 @using IndorMvcApp.Services
 @if (Model.Items.Count > 0)
 {
@@ -10,25 +11,26 @@
         ? Url.Action(selectedAction, "Inspecciones", new { id = selected.Id })
         : string.Empty;
     var allCardsLinked = Model.Items.All(item => EmergencyFlowRules.GetDetailsActionName(item.Nombre) != null);
+    var requestHelpLabel = L["Request help"];
 
     <div class="emergency-section" id="emergency-services" data-emergency-section data-emergency-direct-nav="@(allCardsLinked ? "true" : "false")">
         <div class="emergency-header">
             <div class="emergency-header-left">
                 <div class="emergency-title-row">
                     <span class="emergency-siren"><i class="fas fa-truck-medical"></i></span>
-                    <h3 class="emergency-title">Emergency Services</h3>
+                    <h3 class="emergency-title">@L["Emergency Services"]</h3>
                     <span class="emergency-badge-247">24/7</span>
                 </div>
-                <p class="emergency-subtitle">Fast help for urgent home problems.</p>
+                <p class="emergency-subtitle">@L["Fast help for urgent home problems."]</p>
             </div>
             <a href="@(Model.ViewAllUrl ?? Url.Action("EmergencyGuide", "Home"))"
                class="emergency-view-all"
                data-emergency-view-all>
-                View all <i class="fas fa-chevron-right"></i>
+                @L["View all"] <i class="fas fa-chevron-right"></i>
             </a>
         </div>
 
-        <div class="emergency-grid" role="list" aria-label="Emergency services">
+        <div class="emergency-grid" role="list" aria-label="@L["Emergency services"]">
             @foreach (var item in Model.Items)
             {
                 var imgSrc = !string.IsNullOrWhiteSpace(item.ImagenUrl)
@@ -41,12 +43,13 @@
                     : string.Empty;
                 var cardClass = $"emergency-card{(isActive ? " active" : "")}";
                 var featuresData = string.Join("|", item.Caracteristicas.Select(c => $"{c.Icon}:{c.Text}"));
+                var displayLabel = item.TituloEmergencia;
 
                 if (!string.IsNullOrWhiteSpace(startUrl))
                 {
                     <a href="@startUrl"
                        class="@cardClass"
-                       aria-label="@item.Nombre emergency service"
+                       aria-label="@L.T("{0} emergency service", item.Nombre)"
                        data-id="@item.Id"
                        data-nombre="@item.Nombre"
                        data-start-url="@startUrl"
@@ -55,12 +58,12 @@
                        data-arrival="@item.TiempoLlegadaMinutos"
                        data-icon="@item.IconoClase"
                        data-badge="@(item.BadgeTexto ?? "")"
-                       data-cta="@item.CtaTexto"
+                       data-cta="@(item.CtaTexto ?? requestHelpLabel)"
                        data-features="@featuresData">
                         <div class="emergency-card-media">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
                             {
-                                <img src="@imgSrc" alt="@item.Nombre" loading="lazy" />
+                                <img src="@imgSrc" alt="@displayLabel" loading="lazy" />
                             }
                             else
                             {
@@ -68,7 +71,7 @@
                             }
                             <span class="emergency-card-icon"><i class="fas @item.IconoClase"></i></span>
                         </div>
-                        <span class="emergency-card-label">@item.Nombre</span>
+                        <span class="emergency-card-label">@displayLabel</span>
                         <span class="emergency-card-247">24/7</span>
                     </a>
                 }
@@ -78,6 +81,7 @@
                             class="@cardClass"
                             role="option"
                             aria-selected="@(isActive ? "true" : "false")"
+                            aria-label="@L.T("{0} emergency service", item.Nombre)"
                             data-id="@item.Id"
                             data-nombre="@item.Nombre"
                             data-start-url=""
@@ -86,12 +90,12 @@
                             data-arrival="@item.TiempoLlegadaMinutos"
                             data-icon="@item.IconoClase"
                             data-badge="@(item.BadgeTexto ?? "")"
-                            data-cta="@item.CtaTexto"
+                            data-cta="@(item.CtaTexto ?? requestHelpLabel)"
                             data-features="@featuresData">
                         <div class="emergency-card-media">
                             @if (!string.IsNullOrWhiteSpace(imgSrc))
                             {
-                                <img src="@imgSrc" alt="@item.Nombre" loading="lazy" />
+                                <img src="@imgSrc" alt="@displayLabel" loading="lazy" />
                             }
                             else
                             {
@@ -99,7 +103,7 @@
                             }
                             <span class="emergency-card-icon"><i class="fas @item.IconoClase"></i></span>
                         </div>
-                        <span class="emergency-card-label">@item.Nombre</span>
+                        <span class="emergency-card-label">@displayLabel</span>
                         <span class="emergency-card-247">24/7</span>
                     </button>
                 }
@@ -112,7 +116,7 @@
                 @if (selected == null)
                 {
                     <p class="emergency-detail-prompt" data-emergency-detail-prompt>
-                        Select an emergency service above to view details and request help.
+                        @L["Select an emergency service above to view details and request help."]
                     </p>
                 }
                 <div class="emergency-detail-content" data-emergency-detail-content @(selected == null ? "hidden" : "")>
@@ -131,7 +135,7 @@
                             <div class="emergency-detail-desc" data-emergency-detail-desc>@(selected?.Descripcion ?? "")</div>
                         </div>
                         <div class="emergency-detail-arrival">
-                            <span class="arrival-label">Avg. arrival</span>
+                            <span class="arrival-label">@L["Avg. arrival"]</span>
                             <span class="arrival-time" data-emergency-detail-arrival>@(selected != null ? $"{selected.TiempoLlegadaMinutos} min" : "")</span>
                         </div>
                     </div>
@@ -153,8 +157,9 @@
                             class="emergency-cta @(string.IsNullOrWhiteSpace(selectedStartUrl) ? "nav-jump" : "")"
                             data-emergency-detail-cta
                             data-start-url="@selectedStartUrl"
-                            data-target="section-more">
-                        <i class="fas fa-paper-plane"></i> @(selected?.CtaTexto ?? "Request help")
+                            data-target="section-more"
+                            data-default-cta="@requestHelpLabel">
+                        <i class="fas fa-paper-plane"></i> @(selected?.CtaTexto ?? requestHelpLabel)
                     </button>
                 </div>
             </div>

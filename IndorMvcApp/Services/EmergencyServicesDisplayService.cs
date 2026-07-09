@@ -8,7 +8,8 @@ public static class EmergencyServicesDisplayService
 {
     public static EmergencyServicesGuideViewModel? BuildGuide(
         IEnumerable<ServicioEmergencia> items,
-        IUrlHelper urlHelper)
+        IUrlHelper urlHelper,
+        bool isSpanish = false)
     {
         var cards = items
             .Where(s => s.Activo)
@@ -20,8 +21,10 @@ public static class EmergencyServicesDisplayService
                 return new EmergencyGuideCardViewModel
                 {
                     Id = s.Id,
-                    Title = s.Nombre,
-                    Subtitle = $"{s.TiempoLlegadaMinutos} min avg · 24/7",
+                    Title = s.LocalizedTitulo(isSpanish),
+                    Subtitle = isSpanish
+                        ? $"{s.TiempoLlegadaMinutos} min prom · 24/7"
+                        : $"{s.TiempoLlegadaMinutos} min avg · 24/7",
                     ImageUrl = s.ImagenUrl,
                     IconoClase = s.IconoClase,
                     Url = action != null
@@ -38,15 +41,16 @@ public static class EmergencyServicesDisplayService
 
         return new EmergencyServicesGuideViewModel
         {
-            Title = "Emergency Services",
-            Subtitle = "Fast help for urgent home problems.",
+            Title = isSpanish ? "Servicios de emergencia" : "Emergency Services",
+            Subtitle = isSpanish ? "Ayuda rápida para problemas urgentes del hogar." : "Fast help for urgent home problems.",
             Items = cards
         };
     }
 
     public static EmergencyServicesSectionViewModel? BuildSection(
         IEnumerable<ServicioEmergencia> items,
-        IUrlHelper urlHelper)
+        IUrlHelper urlHelper,
+        bool isSpanish = false)
     {
         var list = items.Where(s => s.Activo).OrderBy(s => s.Orden).ThenBy(s => s.Id).ToList();
         if (list.Count == 0)
@@ -56,7 +60,8 @@ public static class EmergencyServicesDisplayService
 
         var cards = list.Select(s =>
         {
-            var texts = SplitPipe(s.Caracteristicas);
+            var pipe = s.LocalizedCaracteristicas(isSpanish);
+            var texts = SplitPipe(pipe);
             var icons = SplitPipe(s.IconosCaracteristicas);
             var features = new List<EmergencyServiceFeatureViewModel>();
             for (var i = 0; i < texts.Length; i++)
@@ -72,13 +77,13 @@ public static class EmergencyServicesDisplayService
             {
                 Id = s.Id,
                 Nombre = s.Nombre,
-                TituloEmergencia = s.TituloEmergencia,
-                Descripcion = s.Descripcion,
+                TituloEmergencia = s.LocalizedTitulo(isSpanish),
+                Descripcion = s.LocalizedDescripcion(isSpanish),
                 TiempoLlegadaMinutos = s.TiempoLlegadaMinutos,
                 IconoClase = s.IconoClase,
                 ImagenUrl = s.ImagenUrl,
-                BadgeTexto = s.BadgeTexto,
-                CtaTexto = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Request help" : s.CtaTexto,
+                BadgeTexto = s.LocalizedBadgeTexto(isSpanish),
+                CtaTexto = s.LocalizedCtaTexto(isSpanish),
                 Caracteristicas = features
             };
         }).ToList();

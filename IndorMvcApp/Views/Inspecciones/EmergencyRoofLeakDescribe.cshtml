@@ -1,18 +1,18 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyRoofLeakDescribeViewModel
+@model IndorMvcApp.ViewModels.EmergencyRoofLeakDescribeViewModel
 @{
-    ViewData["Title"] = "Roof Leak Details - INDOR";
-    ViewData["WizardTitle"] = "Roof Leak Details";
+    ViewData["Title"] = L["Roof Leak Details - INDOR"];
+    ViewData["WizardTitle"] = L["Roof Leak Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<div class="step-sub">Step 1 of 3</div>
+<div class="step-sub">@L["Step 1 of 3"]</div>
 
     
-<h2 class="page-heading">Describe the roof leak</h2>
-    <p class="page-lead">A few quick answers help us send the right crew faster.</p>
+<h2 class="page-heading">@L["Describe the roof leak"]</h2>
+    <p class="page-lead">@L["A few quick answers help us send the right crew faster."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyRoofLeakDescribe" method="post">
         <input type="hidden" asp-for="ServicioEmergenciaId" />
@@ -27,52 +27,52 @@
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                    <input asp-for="DireccionPropiedad" placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required />
                 </div>
-                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">1. What are you seeing?</span>
+            <span class="field-label">@L["1. What are you seeing?"]</span>
             <div class="issue-grid" id="issueGroup">
-                <button type="button" class="issue-btn" data-value="ActiveDripping"><i class="fas fa-droplet"></i>Active dripping</button>
-                <button type="button" class="issue-btn" data-value="CeilingStain"><i class="fas fa-circle"></i>Ceiling stain</button>
-                <button type="button" class="issue-btn" data-value="WaterNearChimney"><i class="fas fa-house-chimney"></i>Water near chimney</button>
-                <button type="button" class="issue-btn" data-value="WaterNearSkylight"><i class="fas fa-sun"></i>Water near skylight</button>
-                <button type="button" class="issue-btn" data-value="MissingShingles"><i class="fas fa-th"></i>Missing shingles</button>
-                <button type="button" class="issue-btn" data-value="StormDamage"><i class="fas fa-cloud-bolt"></i>Storm damage</button>
+                <button type="button" class="issue-btn" data-value="ActiveDripping"><i class="fas fa-droplet"></i>@L["Active dripping"]</button>
+                <button type="button" class="issue-btn" data-value="CeilingStain"><i class="fas fa-circle"></i>@L["Ceiling stain"]</button>
+                <button type="button" class="issue-btn" data-value="WaterNearChimney"><i class="fas fa-house-chimney"></i>@L["Water near chimney"]</button>
+                <button type="button" class="issue-btn" data-value="WaterNearSkylight"><i class="fas fa-sun"></i>@L["Water near skylight"]</button>
+                <button type="button" class="issue-btn" data-value="MissingShingles"><i class="fas fa-th"></i>@L["Missing shingles"]</button>
+                <button type="button" class="issue-btn" data-value="StormDamage"><i class="fas fa-cloud-bolt"></i>@L["Storm damage"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">2. Where is it showing up?</span>
+            <span class="field-label">@L["2. Where is it showing up?"]</span>
             <div class="loc-grid" data-target="UbicacionFuga">
-                <button type="button" class="loc-btn" data-value="Attic"><i class="fas fa-warehouse"></i>Attic</button>
-                <button type="button" class="loc-btn" data-value="Ceiling"><i class="fas fa-lightbulb"></i>Ceiling</button>
-                <button type="button" class="loc-btn" data-value="Wall"><i class="fas fa-door-open"></i>Wall</button>
-                <button type="button" class="loc-btn" data-value="NearWindow"><i class="fas fa-window-maximize"></i>Near window</button>
-                <button type="button" class="loc-btn" data-value="GutterEdge"><i class="fas fa-grip-lines"></i>Gutter / edge</button>
-                <button type="button" class="loc-btn" data-value="Unknown"><i class="fas fa-circle-question"></i>Unknown</button>
+                <button type="button" class="loc-btn" data-value="Attic"><i class="fas fa-warehouse"></i>@L["Attic"]</button>
+                <button type="button" class="loc-btn" data-value="Ceiling"><i class="fas fa-lightbulb"></i>@L["Ceiling"]</button>
+                <button type="button" class="loc-btn" data-value="Wall"><i class="fas fa-door-open"></i>@L["Wall"]</button>
+                <button type="button" class="loc-btn" data-value="NearWindow"><i class="fas fa-window-maximize"></i>@L["Near window"]</button>
+                <button type="button" class="loc-btn" data-value="GutterEdge"><i class="fas fa-grip-lines"></i>@L["Gutter / edge"]</button>
+                <button type="button" class="loc-btn" data-value="Unknown"><i class="fas fa-circle-question"></i>@L["Unknown"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">3. How urgent is it?</span>
+            <span class="field-label">@L["3. How urgent is it?"]</span>
             <div class="urgency-grid" data-target="Urgencia">
-                <button type="button" class="urgency-btn" data-value="Normal"><i class="fas fa-clock" style="color:#16A34A;"></i>Normal</button>
-                <button type="button" class="urgency-btn" data-value="Priority"><i class="fas fa-circle-exclamation" style="color:#EA580C;"></i>Priority</button>
-                <button type="button" class="urgency-btn" data-value="Emergency"><i class="fas fa-bell" style="color:#DC2626;"></i>Emergency</button>
+                <button type="button" class="urgency-btn" data-value="Normal"><i class="fas fa-clock" style="color:#16A34A;"></i>@L["Normal"]</button>
+                <button type="button" class="urgency-btn" data-value="Priority"><i class="fas fa-circle-exclamation" style="color:#EA580C;"></i>@L["Priority"]</button>
+                <button type="button" class="urgency-btn" data-value="Emergency"><i class="fas fa-bell" style="color:#DC2626;"></i>@L["Emergency"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>If water is actively entering the home, choose Emergency and upload a photo if possible.</div>
+            <div>@L["If water is actively entering the home, choose Emergency and upload a photo if possible."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> Skip to photos</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-camera"></i> @L["Skip to photos"]</button>
     </form>
 </div>
 @section Scripts {

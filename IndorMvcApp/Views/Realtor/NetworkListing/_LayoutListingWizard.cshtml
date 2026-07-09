@@ -1,11 +1,12 @@
+@using IndorMvcApp.Localization
 @{
     ViewBag.NavActive = "network";
     var wizardModel = Model as IndorMvcApp.ViewModels.RealtorNetworkListingWizardViewModel;
     var formModel = Model as IndorMvcApp.ViewModels.RealtorNetworkListingFormViewModel;
-    var pageTitle = wizardModel?.Title ?? (formModel?.IsEdit == true ? "Edit Listing" : "Create Your Listing");
+    var pageTitle = wizardModel?.Title ?? (formModel?.IsEdit == true ? L["Edit Listing"] : L["Create Your Listing"]);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -38,10 +39,10 @@
                 BadgeLabel = formModel.BadgeLabel,
                 IsVerified = formModel.IsVerified,
                 HasNotifications = formModel.HasNotifications,
-                Title = formModel.IsEdit ? "Edit Listing" : "Create Your Listing",
+                Title = formModel.IsEdit ? L["Edit Listing"] : L["Create Your Listing"],
                 Subtitle = formModel.IsEdit
-                    ? "Update your Nearby Network listing."
-                    : "Add details to showcase your property",
+                    ? L["Update your Nearby Network listing."]
+                    : L["Add details to showcase your property"],
                 DisplayStep = formModel.WizardStep,
                 TotalSteps = formModel.WizardTotalSteps,
                 ShowStepper = false

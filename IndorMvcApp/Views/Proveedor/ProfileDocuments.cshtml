@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProfileDocumentsViewModel
 @{
-    ViewData["Title"] = "Documents & Verification - INDOR PRO";
+    ViewData["Title"] = L["Documents & Verification - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -12,12 +12,12 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-jobs-head prv-flow-page-head">
-        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-lead-back" aria-label="Back">
+        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-lead-back" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div>
-            <h1>Documents &amp; verification</h1>
-            <p>Upload credentials so INDOR can verify your account.</p>
+            <h1>@L["Documents &amp; verification"]</h1>
+            <p>@L["Upload credentials so INDOR can verify your account."]</p>
         </div>
     </header>
 
@@ -38,8 +38,8 @@
         <header class="prv-flow-setup-head">
             <span class="prv-flow-setup-icon"><i class="fas fa-clipboard-list"></i></span>
             <div>
-                <h2>Profile Setup</h2>
-                <p>Complete each section to verify your business.</p>
+                <h2>@L["Profile Setup"]</h2>
+                <p>@L["Complete each section to verify your business."]</p>
             </div>
         </header>
         <div class="prv-flow-setup-list">
@@ -70,7 +70,7 @@
             <section class="prv-flow-detail-card">
                 <header class="prv-flow-detail-head">
                     <h3>@activeSection.Title</h3>
-                    <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-detail-close" aria-label="Close section"><i class="fas fa-xmark"></i></a>
+                    <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-detail-close" aria-label="@L["Close section"]"><i class="fas fa-xmark"></i></a>
                 </header>
                 @await Html.PartialAsync("_ProfileDocumentSectionForm", activeSection)
                 <footer class="prv-flow-detail-actions">
@@ -94,7 +94,7 @@
         </a>
     }
 
-    <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-exit">Save &amp; Exit</a>
+    <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-exit">@L["Save &amp; Exit"]</a>
 
     @await Html.PartialAsync("_ProfileFlowStepper")
 </div>

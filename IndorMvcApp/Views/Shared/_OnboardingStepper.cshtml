@@ -2,7 +2,7 @@
     var step = ViewBag.OnboardingStep as int? ?? 1;
     var total = ViewBag.OnboardingTotalSteps as int? ?? 5;
 }
-<div class="ob-progress" aria-label="Onboarding progress">
+<div class="ob-progress" aria-label="@L["Onboarding progress"]">
     @for (var i = 1; i <= total; i++)
     {
         var cls = i < step ? "is-done" : i == step ? "is-active" : "";

@@ -9,9 +9,9 @@
 
 <div class="rl-lw" id="rlListingWizard" data-start-step="@startStep" data-feed-url="@feedUrl">
     <div class="rl-lw-topnav">
-        <button type="button" class="rl-lw-back" id="rlLwBack" aria-label="Back"><i class="fas fa-chevron-left"></i></button>
+        <button type="button" class="rl-lw-back" id="rlLwBack" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></button>
         <div class="rl-lw-topnav-title">
-            <h1 class="rl-lw-title" id="rlLwTitle">Post Listing with INDOR</h1>
+            <h1 class="rl-lw-title" id="rlLwTitle">@L["Post Listing with INDOR"]</h1>
             <p class="rl-lw-sub" id="rlLwSub"></p>
         </div>
     </div>
@@ -55,8 +55,8 @@
         <section class="rl-lw-step" data-step="1">
             <div class="rl-lw-hero">
                 <div class="rl-lw-hero-copy">
-                    <h2 class="rl-lw-hero-title">List smarter.<br /><span class="rl-lw-hero-accent">Reach closer.</span></h2>
-                    <p>Connect your property with nearby buyers, renters, and realtors who are ready to act.</p>
+                    <h2 class="rl-lw-hero-title">@L["List smarter."]<br /><span class="rl-lw-hero-accent">@L["Reach closer."]</span></h2>
+                    <p>@L["Connect your property with nearby buyers, renters, and realtors who are ready to act."]</p>
                 </div>
                 <div class="rl-lw-hero-visual">
                     <img src="~/welcome-house.png" alt="" />
@@ -67,26 +67,26 @@
             <div class="rl-lw-why-grid">
                 <article class="rl-lw-why-card">
                     <span class="rl-lw-why-icon"><i class="fas fa-location-dot"></i></span>
-                    <strong>Local exposure</strong>
-                    <span>Your listing is seen by people actively searching in your area.</span>
+                    <strong>@L["Local exposure"]</strong>
+                    <span>@L["Your listing is seen by people actively searching in your area."]</span>
                 </article>
                 <article class="rl-lw-why-card">
                     <span class="rl-lw-why-icon"><i class="fas fa-user-check"></i></span>
-                    <strong>Qualified leads</strong>
-                    <span>Connect with serious buyers and renters ready to act.</span>
+                    <strong>@L["Qualified leads"]</strong>
+                    <span>@L["Connect with serious buyers and renters ready to act."]</span>
                 </article>
                 <article class="rl-lw-why-card">
                     <span class="rl-lw-why-icon"><i class="fas fa-users"></i></span>
-                    <strong>Nearby network visibility</strong>
-                    <span>Realtors and local professionals see and share your listing.</span>
+                    <strong>@L["Nearby network visibility"]</strong>
+                    <span>@L["Realtors and local professionals see and share your listing."]</span>
                 </article>
             </div>
 
             <div class="rl-lw-actions rl-lw-actions--stack">
                 <button type="button" class="rl-listing-btn-primary rl-lw-next">
-                    <i class="fas fa-sparkles"></i> Get Started <i class="fas fa-arrow-right rl-lw-next-arrow"></i>
+                    <i class="fas fa-sparkles"></i> @L["Get Started"] <i class="fas fa-arrow-right rl-lw-next-arrow"></i>
                 </button>
-                <a asp-action="PostListingBenefits" class="rl-lw-learn-more">Learn More</a>
+                <a asp-action="PostListingBenefits" class="rl-lw-learn-more">@L["Learn More"]</a>
             </div>
         </section>
 
@@ -94,30 +94,30 @@
         <section class="rl-lw-step" data-step="2">
             <section class="rl-listing-section rl-lw-card">
                 <div class="rl-listing-section-head">
-                    <h2><span class="rl-lw-card-icon"><i class="fas fa-images"></i></span> Property Photos</h2>
+                    <h2><span class="rl-lw-card-icon"><i class="fas fa-images"></i></span> @L["Property Photos"]</h2>
                     <span class="rl-listing-photo-count" id="rlPhotoCount">0/20</span>
                 </div>
-                <p class="rl-listing-photo-lead">Add up to 20 photos. First photo will be the cover.</p>
+                <p class="rl-listing-photo-lead">@L["Add up to 20 photos. First photo will be the cover."]</p>
 
                 <div class="rl-listing-photo-grid" id="rlListingPhotoGrid">
-                    <button type="button" class="rl-listing-photo-add" id="rlListingPhotoAdd" aria-label="Add photo">
+                    <button type="button" class="rl-listing-photo-add" id="rlListingPhotoAdd" aria-label="@L["Add photo"]">
                         <i class="fas fa-plus"></i>
-                        <span>Add Photo</span>
+                        <span>@L["Add Photo"]</span>
                     </button>
                 </div>
 
                 <details class="rl-listing-photo-more">
-                    <summary>More photo options (gallery link or PDF)</summary>
+                    <summary>@L["More photo options (gallery link or PDF)"]</summary>
                     <div class="rl-listing-photo-sources">
                         <div class="rl-listing-photo-source-card">
                             <div class="rl-listing-photo-source-head">
                                 <i class="fas fa-link"></i>
                                 <div>
-                                    <strong>Photo gallery link</strong>
-                                    <span>Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)</span>
+                                    <strong>@L["Photo gallery link"]</strong>
+                                    <span>@L["Paste a link to your photos (Google Drive, Dropbox, MLS, etc.)"]</span>
                                 </div>
                             </div>
-                            <input asp-for="PhotoGalleryLink" class="rl-form-input" id="PhotoGalleryLink" type="url" placeholder="https://drive.google.com/..." />
+                            <input asp-for="PhotoGalleryLink" class="rl-form-input" id="PhotoGalleryLink" type="url" placeholder="@L["https://drive.google.com/..."]" />
                             <span asp-validation-for="PhotoGalleryLink" class="text-danger"></span>
                         </div>
 
@@ -125,19 +125,19 @@
                             <div class="rl-listing-photo-source-head">
                                 <i class="fas fa-file-pdf"></i>
                                 <div>
-                                    <strong>Upload photos as PDF</strong>
-                                    <span>Upload a PDF brochure with property photos (max 15 MB)</span>
+                                    <strong>@L["Upload photos as PDF"]</strong>
+                                    <span>@L["Upload a PDF brochure with property photos (max 15 MB)"]</span>
                                 </div>
                             </div>
                             <label class="rl-listing-pdf-drop" id="rlPdfDropZone">
                                 <input type="file" name="photoPdfFile" id="photoPdfFile" accept=".pdf,application/pdf" class="rl-listing-pdf-input" />
                                 <i class="fas fa-cloud-arrow-up"></i>
-                                <span class="rl-listing-pdf-label">Choose PDF or drag here</span>
+                                <span class="rl-listing-pdf-label">@L["Choose PDF or drag here"]</span>
                             </label>
                             <div class="rl-listing-pdf-current @(string.IsNullOrWhiteSpace(Model.PhotoPdfUrl) ? "is-hidden" : "")" id="rlPdfCurrent">
                                 <i class="fas fa-file-pdf"></i>
                                 <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" id="rlPdfCurrentLink">@(Model.PhotoPdfFileName ?? "Property photos.pdf")</a>
-                                <button type="button" class="rl-listing-pdf-remove" id="rlPdfRemove" aria-label="Remove PDF">&times;</button>
+                                <button type="button" class="rl-listing-pdf-remove" id="rlPdfRemove" aria-label="@L["Remove PDF"]">&times;</button>
                             </div>
                         </div>
                     </div>
@@ -146,25 +146,25 @@
 
             <section class="rl-listing-section rl-lw-card">
                 <div class="rl-form-field">
-                    <label asp-for="Address" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-location-dot"></i></span> Address</label>
+                    <label asp-for="Address" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-location-dot"></i></span> @L["Address"]</label>
                     <div class="rl-listing-address-row rl-listing-address-row--inline">
                         <div class="rl-listing-address-field">
                             <span class="rl-listing-input-icon"><i class="fas fa-location-dot"></i></span>
-                            <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="Enter street address, city, state, ZIP" />
+                            <input asp-for="Address" class="rl-form-input rl-form-input--with-icon" id="ListingAddress" placeholder="@L["Enter street address, city, state, ZIP"]" />
                         </div>
-                        <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation" aria-label="Use my location">
+                        <button type="button" class="rl-listing-locate-btn" id="rlUseMyLocation" aria-label="@L["Use my location"]">
                             <i class="fas fa-crosshairs"></i>
-                            <span>Use My Location</span>
+                            <span>@L["Use My Location"]</span>
                         </button>
                     </div>
                     <span asp-validation-for="Address" class="text-danger" data-step-error="2"></span>
-                    <p class="rl-lw-inline-error" id="rlAddressError" hidden>Please enter the property address.</p>
-                    <p class="rl-listing-field-hint" id="rlLocationHint" hidden>GPS coordinates captured. Your listing will appear on the Nearby map around this location.</p>
+                    <p class="rl-lw-inline-error" id="rlAddressError" hidden>@L["Please enter the property address."]</p>
+                    <p class="rl-listing-field-hint" id="rlLocationHint" hidden>@L["GPS coordinates captured. Your listing will appear on the Nearby map around this location."]</p>
                 </div>
             </section>
 
             <section class="rl-listing-section rl-lw-card">
-                <h2 class="rl-listing-section-title"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> Property Type</h2>
+                <h2 class="rl-listing-section-title"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> @L["Property Type"]</h2>
                 <div class="rl-listing-toggle-pair">
                     <label class="rl-listing-toggle-btn @(Model.ListingType == "sale" ? "is-active" : "")">
                         <input type="radio" asp-for="ListingType" value="sale" />
@@ -177,23 +177,23 @@
                 </div>
 
                 <div class="rl-form-field">
-                    <label asp-for="Price" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-dollar-sign"></i></span> Price</label>
+                    <label asp-for="Price" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-dollar-sign"></i></span> @L["Price"]</label>
                     <div class="rl-listing-price-input">
                         <span class="rl-listing-input-prefix">$</span>
-                        <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="Enter price" />
+                        <input asp-for="Price" class="rl-form-input" type="number" step="1000" placeholder="@L["Enter price"]" />
                     </div>
                     <span asp-validation-for="Price" class="text-danger"></span>
-                    <p class="rl-lw-inline-error" id="rlPriceError" hidden>Please enter a price.</p>
+                    <p class="rl-lw-inline-error" id="rlPriceError" hidden>@L["Please enter a price."]</p>
                 </div>
             </section>
 
             <div class="rl-info-box rl-info-box--muted rl-lw-secure">
                 <i class="fas fa-lock"></i>
-                <p>Your information is secure and never shared.</p>
+                <p>@L["Your information is secure and never shared."]</p>
             </div>
 
             <div class="rl-lw-actions">
-                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue</button>
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">@L["Continue"]</button>
             </div>
         </section>
 
@@ -201,15 +201,15 @@
         <section class="rl-lw-step" data-step="3">
             <section class="rl-listing-section rl-lw-card">
                 <div class="rl-form-field">
-                    <label asp-for="PropertySubtype" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> Property Subtype <span class="rl-required" aria-hidden="true">*</span></label>
+                    <label asp-for="PropertySubtype" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-house"></i></span> @L["Property Subtype"] <span class="rl-required" aria-hidden="true">*</span></label>
                     <select asp-for="PropertySubtype" class="rl-form-input" id="PropertySubtype" aria-required="true">
                         @if (string.IsNullOrWhiteSpace(Model.PropertySubtype))
                         {
-                            <option value="" disabled hidden selected>Select subtype</option>
+                            <option value="" disabled hidden selected>@L["Select subtype"]</option>
                         }
                         else
                         {
-                            <option value="" disabled hidden>Select subtype</option>
+                            <option value="" disabled hidden>@L["Select subtype"]</option>
                         }
                         @foreach (var subtype in Model.PropertySubtypes)
                         {
@@ -224,47 +224,47 @@
                         }
                     </select>
                     <span asp-validation-for="PropertySubtype" class="text-danger" data-step-error="3"></span>
-                    <p class="rl-lw-inline-error" id="rlSubtypeError" hidden>Please select a property subtype.</p>
+                    <p class="rl-lw-inline-error" id="rlSubtypeError" hidden>@L["Please select a property subtype."]</p>
                 </div>
             </section>
 
             <section class="rl-listing-section rl-lw-card">
-                <h2 class="rl-listing-section-title">Property Stats</h2>
+                <h2 class="rl-listing-section-title">@L["Property Stats"]</h2>
                 <div class="rl-lw-stat-grid">
                     <div class="rl-lw-stat">
                         <span class="rl-lw-stat-icon"><i class="fas fa-bed"></i></span>
-                        <label asp-for="Bedrooms">Beds</label>
-                        <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" placeholder="Enter" />
+                        <label asp-for="Bedrooms">@L["Beds"]</label>
+                        <input asp-for="Bedrooms" class="rl-form-input" type="number" step="0.5" placeholder="@L["Enter"]" />
                     </div>
                     <div class="rl-lw-stat">
                         <span class="rl-lw-stat-icon"><i class="fas fa-bath"></i></span>
-                        <label asp-for="Bathrooms">Baths</label>
-                        <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" placeholder="Enter" />
+                        <label asp-for="Bathrooms">@L["Baths"]</label>
+                        <input asp-for="Bathrooms" class="rl-form-input" type="number" step="0.5" placeholder="@L["Enter"]" />
                     </div>
                     <div class="rl-lw-stat">
                         <span class="rl-lw-stat-icon"><i class="fas fa-ruler-combined"></i></span>
-                        <label asp-for="SquareFeet">Sq Ft</label>
-                        <input asp-for="SquareFeet" class="rl-form-input" type="number" placeholder="Enter" />
+                        <label asp-for="SquareFeet">@L["Sq Ft"]</label>
+                        <input asp-for="SquareFeet" class="rl-form-input" type="number" placeholder="@L["Enter"]" />
                     </div>
                     <div class="rl-lw-stat">
                         <span class="rl-lw-stat-icon"><i class="fas fa-calendar"></i></span>
-                        <label asp-for="YearBuilt">Year Built</label>
-                        <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" placeholder="Enter" />
+                        <label asp-for="YearBuilt">@L["Year Built"]</label>
+                        <input asp-for="YearBuilt" class="rl-form-input" type="number" min="1800" max="2100" placeholder="@L["Enter"]" />
                     </div>
                 </div>
             </section>
 
             <section class="rl-listing-section rl-lw-card">
                 <div class="rl-listing-section-head">
-                    <label asp-for="Description" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-file-lines"></i></span> Short Description</label>
+                    <label asp-for="Description" class="rl-form-label"><span class="rl-lw-card-icon"><i class="fas fa-file-lines"></i></span> @L["Short Description"]</label>
                     <span class="rl-listing-photo-count" id="rlDescriptionCount">0/500</span>
                 </div>
-                <textarea asp-for="Description" class="rl-form-input rl-form-textarea" id="ListingDescription" maxlength="500" rows="4" placeholder="Describe your property in a few sentences..."></textarea>
+                <textarea asp-for="Description" class="rl-form-input rl-form-textarea" id="ListingDescription" maxlength="500" rows="4" placeholder="@L["Describe your property in a few sentences..."]"></textarea>
             </section>
 
             <section class="rl-listing-section rl-lw-card">
-                <h2 class="rl-listing-section-title">Key Highlights</h2>
-                <p class="rl-lw-card-sub">Select all that apply</p>
+                <h2 class="rl-listing-section-title">@L["Key Highlights"]</h2>
+                <p class="rl-lw-card-sub">@L["Select all that apply"]</p>
                 <div class="rl-lw-highlights" id="rlHighlights">
                     @foreach (var h in Model.HighlightOptions)
                     {
@@ -282,7 +282,7 @@
             </section>
 
             <div class="rl-lw-actions">
-                <button type="button" class="rl-listing-btn-primary rl-lw-next">Continue</button>
+                <button type="button" class="rl-listing-btn-primary rl-lw-next">@L["Continue"]</button>
             </div>
         </section>
 
@@ -290,42 +290,42 @@
         <section class="rl-lw-step" data-step="4">
             <section class="rl-listing-section rl-lw-card">
                 <div class="rl-lw-summary-head">
-                    <h2 class="rl-listing-section-title">Listing Summary</h2>
-                    <button type="button" class="rl-lw-edit-btn rl-lw-goto" data-goto="2"><i class="fas fa-pen"></i> Edit</button>
+                    <h2 class="rl-listing-section-title">@L["Listing Summary"]</h2>
+                    <button type="button" class="rl-lw-edit-btn rl-lw-goto" data-goto="2"><i class="fas fa-pen"></i> @L["Edit"]</button>
                 </div>
                 <div class="rl-lw-summary">
                     <img src="~/inspeccion2.jpeg" alt="" class="rl-lw-summary-photo" id="rlRvPhoto" />
                     <div class="rl-lw-summary-body">
-                        <span class="rl-lw-summary-type" id="rlRvType">For Sale</span>
+                        <span class="rl-lw-summary-type" id="rlRvType">@L["For Sale"]</span>
                         <strong class="rl-lw-summary-price" id="rlRvPrice">$0</strong>
-                        <span class="rl-lw-summary-address" id="rlRvAddress">Address not set</span>
+                        <span class="rl-lw-summary-address" id="rlRvAddress">@L["Address not set"]</span>
                     </div>
                 </div>
                 <div class="rl-lw-summary-stats">
-                    <div><span id="rlRvBeds">—</span><small>Beds</small></div>
-                    <div><span id="rlRvBaths">—</span><small>Baths</small></div>
-                    <div><span id="rlRvSqft">—</span><small>Sq Ft</small></div>
-                    <div><span id="rlRvYear">—</span><small>Year Built</small></div>
+                    <div><span id="rlRvBeds">—</span><small>@L["Beds"]</small></div>
+                    <div><span id="rlRvBaths">—</span><small>@L["Baths"]</small></div>
+                    <div><span id="rlRvSqft">—</span><small>@L["Sq Ft"]</small></div>
+                    <div><span id="rlRvYear">—</span><small>@L["Year Built"]</small></div>
                 </div>
             </section>
 
             <section class="rl-listing-section rl-lw-card">
-                <h2 class="rl-listing-section-title">INDOR Boost</h2>
+                <h2 class="rl-listing-section-title">@L["INDOR Boost"]</h2>
                 <div class="rl-lw-boost-grid">
                     <article class="rl-lw-boost-card">
                         <span class="rl-lw-boost-icon"><i class="fas fa-location-dot"></i></span>
-                        <strong>Shown nearby</strong>
-                        <span>Your listing is shown to nearby active buyers and renters.</span>
+                        <strong>@L["Shown nearby"]</strong>
+                        <span>@L["Your listing is shown to nearby active buyers and renters."]</span>
                     </article>
                     <article class="rl-lw-boost-card">
                         <span class="rl-lw-boost-icon"><i class="fas fa-comment-dots"></i></span>
-                        <strong>Buyer inquiries</strong>
-                        <span>Receive serious inquiries from motivated buyers.</span>
+                        <strong>@L["Buyer inquiries"]</strong>
+                        <span>@L["Receive serious inquiries from motivated buyers."]</span>
                     </article>
                     <article class="rl-lw-boost-card">
                         <span class="rl-lw-boost-icon"><i class="fas fa-users"></i></span>
-                        <strong>Realtor visibility</strong>
-                        <span>Seen by INDOR realtors and shared across the network.</span>
+                        <strong>@L["Realtor visibility"]</strong>
+                        <span>@L["Seen by INDOR realtors and shared across the network."]</span>
                     </article>
                 </div>
             </section>
@@ -333,11 +333,11 @@
             <div class="rl-lw-promote">
                 <span class="rl-lw-promote-icon"><i class="fas fa-bullhorn"></i></span>
                 <div class="rl-lw-promote-copy">
-                    <strong>Promote Your Listing <span class="rl-lw-optional">Optional</span></strong>
-                    <span>Increase visibility with open houses and neighborhood features.</span>
+                    <strong>@L["Promote Your Listing"] <span class="rl-lw-optional">@L["Optional"]</span></strong>
+                    <span>@L["Increase visibility with open houses and neighborhood features."]</span>
                 </div>
                 <label class="rl-toggle-row rl-toggle-row--compact">
-                    <span class="visually-hidden">Promote your listing</span>
+                    <span class="visually-hidden">@L["Promote your listing"]</span>
                     <input asp-for="PromoteInNearbyFeed" type="checkbox" />
                     <span class="rl-toggle"></span>
                 </label>
@@ -352,7 +352,7 @@
                 </button>
                 @if (Model.IsEdit)
                 {
-                    <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-lw-learn-more">Cancel</a>
+                    <a asp-action="Network" asp-route-filter="Homes" asp-route-scope="mine" class="rl-lw-learn-more">@L["Cancel"]</a>
                 }
             </div>
         </section>

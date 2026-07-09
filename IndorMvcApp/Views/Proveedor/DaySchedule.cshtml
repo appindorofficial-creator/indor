@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProDayScheduleViewModel
 @{
-    ViewData["Title"] = "Day Schedule - INDOR PRO";
+    ViewData["Title"] = L["Day Schedule - INDOR PRO"];
     Layout = "_ProviderProLayout";
     var fromHome = ViewBag.FromHome == true;
     var fromJobs = ViewBag.FromJobs == true;
@@ -44,19 +44,19 @@
         <article>
             <i class="fas fa-calendar-day"></i>
             <strong>@Model.EventsTodayCount</strong>
-            <span>Events Today</span>
+            <span>@L["Events Today"]</span>
             <small>@Model.EventsDeltaLabel</small>
         </article>
         <article>
             <i class="fas fa-heart-pulse"></i>
             <strong>@Model.InProgressCount</strong>
-            <span>In Progress</span>
+            <span>@L["In Progress"]</span>
             <small>@(Model.InProgressCount == 1 ? "1 job active" : $"{Model.InProgressCount} jobs active")</small>
         </article>
         <article>
             <i class="fas fa-clock"></i>
             <strong>@(Model.NextJobTime ?? "—")</strong>
-            <span>Next Job</span>
+            <span>@L["Next Job"]</span>
             <small>@(Model.NextJobTitle ?? "No upcoming jobs")</small>
         </article>
     </section>
@@ -64,7 +64,7 @@
     <section class="prv-pro-day-timeline">
         @if (Model.Items.Count == 0)
         {
-            <p class="prv-pro-empty">No events scheduled for this day.</p>
+            <p class="prv-pro-empty">@L["No events scheduled for this day."]</p>
         }
         else
         {
@@ -80,16 +80,16 @@
                         <span>@item.Address</span>
                         <span>Customer: @item.CustomerName</span>
                         <div class="prv-pro-day-timeline-actions">
-                            <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.Id" asp-route-fromCalendar="true" asp-route-date="@Model.DateIso" class="prv-pro-btn prv-pro-btn--ghost">View</a>
+                            <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@item.Id" asp-route-fromCalendar="true" asp-route-date="@Model.DateIso" class="prv-pro-btn prv-pro-btn--ghost">@L["View"]</a>
                             @if (item.CanStart)
                             {
                                 <form asp-controller="Proveedor" asp-action="StartJob" method="post" class="prv-pro-day-inline-form">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@item.Id" />
-                                    <button type="submit" class="prv-pro-btn prv-pro-btn--success"><i class="fas fa-play"></i> Start</button>
+                                    <button type="submit" class="prv-pro-btn prv-pro-btn--success"><i class="fas fa-play"></i> @L["Start"]</button>
                                 </form>
                             }
-                            <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@item.Id" class="prv-pro-btn prv-pro-btn--outline">Edit</a>
+                            <a asp-controller="Proveedor" asp-action="RescheduleJob" asp-route-id="@item.Id" class="prv-pro-btn prv-pro-btn--outline">@L["Edit"]</a>
                         </div>
                     </div>
                 </article>
@@ -98,21 +98,21 @@
     </section>
 
     <div class="prv-pro-calendar-footer-actions">
-        <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="@createJobFrom" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-plus"></i> Add Job</a>
+        <a asp-controller="Proveedor" asp-action="CreateJob" asp-route-from="@createJobFrom" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-plus"></i> @L["Add Job"]</a>
         @if (fromHome)
         {
-            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-week"></i> Full Calendar</a>
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-house"></i> Back to Home</a>
+            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-week"></i> @L["Full Calendar"]</a>
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-house"></i> @L["Back to Home"]</a>
         }
         else if (fromJobs)
         {
-            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-week"></i> Full Calendar</a>
-            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-briefcase"></i> Back to Jobs</a>
+            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-week"></i> @L["Full Calendar"]</a>
+            <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="today" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-briefcase"></i> @L["Back to Jobs"]</a>
         }
         else
         {
-            <button type="button" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-clock"></i> Block Time</button>
-            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-calendar-week"></i> Back to Week</a>
+            <button type="button" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-clock"></i> @L["Block Time"]</button>
+            <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-calendar-week"></i> @L["Back to Week"]</a>
         }
     </div>
 </div>

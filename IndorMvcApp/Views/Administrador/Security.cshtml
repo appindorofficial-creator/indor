@@ -1,23 +1,23 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorSecurityViewModel
 @{
-    ViewData["Title"] = "Security";
+    ViewData["Title"] = L["Security"];
     Layout = "_PropertyAdminLayout";
 }
 
 <div class="pa-portal-shell pa-portal-shell--security">
     <header class="pa-personal-header">
-        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="pa-personal-header-text">
-            <h1>Security</h1>
-            <p>Manage your password and account security settings.</p>
+            <h1>@L["Security"]</h1>
+            <p>@L["Manage your password and account security settings."]</p>
         </div>
     </header>
 
     @if (Model.PasswordChanged)
     {
-        <div class="pa-notify-saved" role="status">Password updated successfully.</div>
+        <div class="pa-notify-saved" role="status">@L["Password updated successfully."]</div>
     }
 
     @if (!string.IsNullOrWhiteSpace(Model.ErrorMessage))
@@ -26,19 +26,19 @@
     }
 
     <section class="pa-personal-section">
-        <h2>Password</h2>
+        <h2>@L["Password"]</h2>
         <form asp-controller="Administrador" asp-action="Security" method="post" class="pa-security-form">
             @Html.AntiForgeryToken()
             <label class="pa-security-field">
-                <span>Current password</span>
+                <span>@L["Current password"]</span>
                 <input type="password" name="currentPassword" value="@Model.CurrentPassword" required autocomplete="current-password" />
             </label>
             <label class="pa-security-field">
-                <span>New password</span>
+                <span>@L["New password"]</span>
                 <input type="password" name="newPassword" value="@Model.NewPassword" required autocomplete="new-password" />
             </label>
             <label class="pa-security-field">
-                <span>Confirm new password</span>
+                <span>@L["Confirm new password"]</span>
                 <input type="password" name="confirmPassword" value="@Model.ConfirmPassword" required autocomplete="new-password" />
             </label>
             <button type="submit" class="pa-security-submit">
@@ -49,8 +49,8 @@
 
     <section class="pa-personal-info-card">
         <div>
-            <strong>Account protection</strong>
-            <p>We never share your credentials. Learn more in our <a href="@Model.PrivacyPolicyUrl">Privacy Policy</a>.</p>
+            <strong>@L["Account protection"]</strong>
+            <p>@L["We never share your credentials. Learn more in our"] <a href="@Model.PrivacyPolicyUrl">@L["Privacy Policy"]</a>.</p>
         </div>
         <i class="fas fa-chevron-right"></i>
     </section>

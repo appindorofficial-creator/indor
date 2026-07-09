@@ -1,6 +1,6 @@
 @{
-    ViewData["Title"] = "Support";
-    ViewData["Subtitulo"] = "Chat with our team";
+    ViewData["Title"] = L["Support"];
+    ViewData["Subtitulo"] = L["Chat with our team"];
     var mensajes = (IEnumerable<IndorMvcApp.Models.MensajeSoporte>?)ViewBag.MensajesSoporte ?? Enumerable.Empty<IndorMvcApp.Models.MensajeSoporte>();
 }
 
@@ -25,11 +25,11 @@
 </style>
 
 <div class="pf-card">
-    <h3><i class="fas fa-headset"></i> Conversation</h3>
+    <h3><i class="fas fa-headset"></i> @L["Conversation"]</h3>
     <div class="chat-box" id="chatBox">
         @if (!mensajes.Any())
         {
-            <div class="empty">Start a conversation with our support team.</div>
+            <div class="empty">@L["Start a conversation with our support team."]</div>
         }
         else
         {
@@ -46,7 +46,7 @@
     </div>
     <form class="chat-form" method="post" asp-controller="Perfil" asp-action="EnviarMensajeSoporte">
         @Html.AntiForgeryToken()
-        <input type="text" name="contenido" placeholder="Type your message..." required autocomplete="off" />
+        <input type="text" name="contenido" placeholder="@L["Type your message..."]" required autocomplete="off" />
         <button type="submit"><i class="fas fa-paper-plane"></i></button>
     </form>
 </div>

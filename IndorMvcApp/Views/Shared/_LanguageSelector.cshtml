@@ -1,0 +1,36 @@
+@using IndorMvcApp.Localization
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
+@{
+    var variant = ViewData["LanguageSelectorVariant"] as string ?? "pill";
+    var current = UiCulture.Normalize(L.CurrentCulture);
+    var isEnglish = current == UiCulture.English;
+    var returnUrl = Context.Request.Path + Context.Request.QueryString;
+}
+
+<div class="indor-lang indor-lang--@variant" role="group" aria-label="@L["Choose your language"]">
+    @if (variant == "card")
+    {
+        <p class="indor-lang-card-label">@L["Language"]</p>
+        <p class="indor-lang-card-hint">@L["Select the language for the entire app"]</p>
+    }
+
+    <form asp-controller="Account" asp-action="SetLanguage" method="post" class="indor-lang-form">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@returnUrl" />
+
+        <button type="submit" name="culture" value="@UiCulture.English"
+                class="indor-lang-option @(isEnglish ? "is-active" : "")"
+                aria-pressed="@(isEnglish ? "true" : "false")">
+            <span class="indor-lang-flag" aria-hidden="true">🇺🇸</span>
+            <span class="indor-lang-name">@L["English"]</span>
+        </button>
+
+        <button type="submit" name="culture" value="@UiCulture.Spanish"
+                class="indor-lang-option @(!isEnglish ? "is-active" : "")"
+                aria-pressed="@(!isEnglish ? "true" : "false")">
+            <span class="indor-lang-flag" aria-hidden="true">🇪🇸</span>
+            <span class="indor-lang-name">@L["Spanish"]</span>
+        </button>
+    </form>
+</div>

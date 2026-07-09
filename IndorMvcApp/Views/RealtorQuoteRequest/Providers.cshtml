@@ -20,7 +20,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">Who should choose the companies?</h2>
+    <h2 class="rl-invite-section-title">@L["Who should choose the companies?"]</h2>
 
     <div class="rl-file-type-list">
 
@@ -52,13 +52,13 @@
 
     <div id="manualProviderSection" class="@(isIndorMode ? "rl-hidden" : "")">
 
-        <h2 class="rl-invite-section-title">Search companies</h2>
+        <h2 class="rl-invite-section-title">@L["Search companies"]</h2>
 
         <div class="rl-search-bar rl-search-bar--inline">
 
             <i class="fas fa-magnifying-glass"></i>
 
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search company or service" formmethod="get" formaction="@Url.Action("Providers")" />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search company or service"]" formmethod="get" formaction="@Url.Action("Providers")" />
 
         </div>
 
@@ -80,7 +80,7 @@
 
             <i class="fas fa-circle-info"></i>
 
-            <p>Recommended to send to 2–3 providers.</p>
+            <p>@L["Recommended to send to 2–3 providers."]</p>
 
         </div>
 
@@ -90,13 +90,13 @@
 
     <div id="indorProviderSection" class="@(isIndorMode ? "" : "rl-hidden")">
 
-        <h2 class="rl-invite-section-title">How should INDOR match providers?</h2>
+        <h2 class="rl-invite-section-title">@L["How should INDOR match providers?"]</h2>
 
         <div class="rl-review-card">
 
             <div class="rl-review-row">
 
-                <span class="rl-review-label"><i class="fas fa-wrench"></i> Service Needed</span>
+                <span class="rl-review-label"><i class="fas fa-wrench"></i> @L["Service Needed"]</span>
 
                 <select name="serviceType" class="rl-field-select">
 
@@ -114,13 +114,13 @@
 
             <div class="rl-review-row">
 
-                <span class="rl-review-label"><i class="fas fa-users"></i> Send to</span>
+                <span class="rl-review-label"><i class="fas fa-users"></i> @L["Send to"]</span>
 
                 <select name="providerCountTarget" class="rl-field-select">
 
-                    <option value="2" selected="@(Model.ProviderCountTarget == 2)">2 providers</option>
+                    <option value="2" selected="@(Model.ProviderCountTarget == 2)">@L["2 providers"]</option>
 
-                    <option value="3" selected="@(Model.ProviderCountTarget == 3)">2–3 providers</option>
+                    <option value="3" selected="@(Model.ProviderCountTarget == 3)">@L["2–3 providers"]</option>
 
                 </select>
 
@@ -128,7 +128,7 @@
 
             <label class="rl-toggle-row rl-toggle-row--card">
 
-                <span>Verified providers only</span>
+                <span>@L["Verified providers only"]</span>
 
                 <input type="checkbox" name="verifiedOnly" value="true" @(Model.VerifiedOnly ? "checked" : null) />
 
@@ -138,7 +138,7 @@
 
             <div class="rl-review-row">
 
-                <span class="rl-review-label">Priority</span>
+                <span class="rl-review-label">@L["Priority"]</span>
 
                 <div class="rl-filter-chips">
 
@@ -162,13 +162,13 @@
 
             <div class="rl-review-row">
 
-                <span class="rl-review-label"><i class="fas fa-location-dot"></i> Coverage</span>
+                <span class="rl-review-label"><i class="fas fa-location-dot"></i> @L["Coverage"]</span>
 
                 <select name="coverageMiles" class="rl-field-select">
 
-                    <option value="10" selected="@(Model.CoverageMiles == 10)">Within 10 miles</option>
+                    <option value="10" selected="@(Model.CoverageMiles == 10)">@L["Within 10 miles"]</option>
 
-                    <option value="25" selected="@(Model.CoverageMiles == 25)">Within 25 miles</option>
+                    <option value="25" selected="@(Model.CoverageMiles == 25)">@L["Within 25 miles"]</option>
 
                 </select>
 
@@ -228,7 +228,7 @@
 
             <i class="fas fa-circle-info"></i>
 
-            <p>INDOR will send the request to the top matching providers based on your settings.</p>
+            <p>@L["INDOR will send the request to the top matching providers based on your settings."]</p>
 
         </div>
 
@@ -248,9 +248,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="BackToRequestDetails" class="rl-invite-cancel">Back</a>
+    <a asp-action="BackToRequestDetails" class="rl-invite-cancel">@L["Back"]</a>
 
-    <button type="submit" form="quoteProvidersForm" class="ob-btn ob-btn-primary">Next</button>
+    <button type="submit" form="quoteProvidersForm" class="ob-btn ob-btn-primary">@L["Next"]</button>
 
 </div>
 

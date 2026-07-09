@@ -31,7 +31,7 @@
     @if (Model.IncludedItems.Count > 0)
     {
         <div class="includes-box">
-            <div class="includes-label">Includes</div>
+            <div class="includes-label">@L["Includes"]</div>
             <ul>
                 @foreach (var item in Model.IncludedItems)
                 {
@@ -44,7 +44,7 @@
     @if (Model.PreviewItems.Count > 0)
     {
         <div class="preview-box">
-            <div class="preview-label">What we'll ask</div>
+            <div class="preview-label">@L["What we'll ask"]</div>
             @foreach (var item in Model.PreviewItems)
             {
                 <div class="preview-row">

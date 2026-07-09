@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushSetupViewModel
 @using IndorMvcApp.Validation
 @{
-    ViewData["Title"] = "Tell us about your water heater - INDOR";
+    ViewData["Title"] = L["Tell us about your water heater - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("WaterHeaterFlushService", "WaterHeaterFlush", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
@@ -9,8 +9,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your water heater</h1>
-    <p class="page-lead" style="margin-bottom:16px;">A few details help us bring the right maintenance plan.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your water heater"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us bring the right maintenance plan."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -22,27 +22,27 @@
         <input type="hidden" asp-for="Ubicacion" id="Ubicacion" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-water"></i><span>Heater type</span></div>
+            <div class="field-head"><i class="fas fa-water"></i><span>@L["Heater type"]</span></div>
             <div class="choice-grid-2">
-                <button type="button" class="choice-card" data-heater="Tank"><i class="fas fa-droplet main"></i><span class="label">Tank</span></button>
-                <button type="button" class="choice-card" data-heater="Tankless"><i class="fas fa-water main"></i><span class="label">Tankless</span></button>
+                <button type="button" class="choice-card" data-heater="Tank"><i class="fas fa-droplet main"></i><span class="label">@L["Tank"]</span></button>
+                <button type="button" class="choice-card" data-heater="Tankless"><i class="fas fa-water main"></i><span class="label">@L["Tankless"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-bolt"></i><span>Power source</span></div>
+            <div class="field-head"><i class="fas fa-bolt"></i><span>@L["Power source"]</span></div>
             <div class="choice-grid-2">
-                <button type="button" class="choice-card" data-power="Electric"><i class="fas fa-bolt main"></i><span class="label">Electric</span></button>
-                <button type="button" class="choice-card" data-power="Gas"><i class="fas fa-fire-flame-simple main"></i><span class="label">Gas</span></button>
+                <button type="button" class="choice-card" data-power="Electric"><i class="fas fa-bolt main"></i><span class="label">@L["Electric"]</span></button>
+                <button type="button" class="choice-card" data-power="Gas"><i class="fas fa-fire-flame-simple main"></i><span class="label">@L["Gas"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-barcode"></i><span>Serial number</span></div>
-            <input asp-for="NumeroSerie" placeholder="Enter serial number" id="serialInput" maxlength="@EquipmentSerialNumberAttribute.MaxLength" autocomplete="off" autocapitalize="characters" spellcheck="false" />
+            <div class="field-head"><i class="fas fa-barcode"></i><span>@L["Serial number"]</span></div>
+            <input asp-for="NumeroSerie" placeholder="@L["Enter serial number"]" id="serialInput" maxlength="@EquipmentSerialNumberAttribute.MaxLength" autocomplete="off" autocapitalize="characters" spellcheck="false" />
             <div class="field-hint" style="margin-top:6px;font-size:0.75rem;color:#64748B;">@EquipmentSerialNumberAttribute.HintText</div>
             <div class="toggle-row" style="margin-top:12px;">
-                <span>I don't know</span>
+                <span>@L["I don't know"]</span>
                 <label class="toggle-switch">
                     <input asp-for="SerialDesconocido" type="checkbox" id="serialToggle" />
                     <span class="toggle-slider"></span>
@@ -51,30 +51,30 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-tag"></i><span>Brand / model (optional)</span></div>
-            <input asp-for="MarcaModelo" placeholder="Enter brand or model" />
+            <div class="field-head"><i class="fas fa-tag"></i><span>@L["Brand / model (optional)"]</span></div>
+            <input asp-for="MarcaModelo" placeholder="@L["Enter brand or model"]" />
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-location-dot"></i><span>Location</span></div>
+            <div class="field-head"><i class="fas fa-location-dot"></i><span>@L["Location"]</span></div>
             <div class="location-grid">
-                <button type="button" class="location-btn" data-location="Garage"><i class="fas fa-warehouse"></i>Garage</button>
-                <button type="button" class="location-btn" data-location="Basement"><i class="fas fa-stairs"></i>Basement</button>
-                <button type="button" class="location-btn" data-location="Closet"><i class="fas fa-door-closed"></i>Closet</button>
-                <button type="button" class="location-btn" data-location="Attic"><i class="fas fa-house"></i>Attic</button>
-                <button type="button" class="location-btn" data-location="Other"><i class="fas fa-ellipsis"></i>Other</button>
+                <button type="button" class="location-btn" data-location="Garage"><i class="fas fa-warehouse"></i>@L["Garage"]</button>
+                <button type="button" class="location-btn" data-location="Basement"><i class="fas fa-stairs"></i>@L["Basement"]</button>
+                <button type="button" class="location-btn" data-location="Closet"><i class="fas fa-door-closed"></i>@L["Closet"]</button>
+                <button type="button" class="location-btn" data-location="Attic"><i class="fas fa-house"></i>@L["Attic"]</button>
+                <button type="button" class="location-btn" data-location="Other"><i class="fas fa-ellipsis"></i>@L["Other"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-camera"></i><span>Add a photo of the label</span></div>
+            <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add a photo of the label"]</span></div>
             <div class="upload-drop-wrap">
                 <input type="file" name="files" id="photoInput" class="upload-input-hidden" multiple
                        accept="image/*,.jpg,.jpeg,.png,.webp,.heic,.heif" />
                 <label class="upload-drop" id="photoDropzone" for="photoInput">
                     <i class="fas fa-camera"></i>
-                    <strong>Tap to take a photo or choose from gallery</strong>
-                    <span>JPG or PNG, up to 10 MB</span>
+                    <strong>@L["Tap to take a photo or choose from gallery"]</strong>
+                    <span>@L["JPG or PNG, up to 10 MB"]</span>
                 </label>
             </div>
             <div class="upload-selected-list" id="photoSelectedList" hidden></div>
@@ -92,7 +92,7 @@
             }
             <div class="info-box-blue" style="margin-top:10px;margin-bottom:0;">
                 <i class="fas fa-circle-info"></i>
-                <span>A photo helps us identify the right unit if you don't know the serial number.</span>
+                <span>@L["A photo helps us identify the right unit if you don't know the serial number."]</span>
             </div>
         </div>
 

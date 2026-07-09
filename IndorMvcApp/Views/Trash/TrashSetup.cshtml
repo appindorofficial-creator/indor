@@ -21,8 +21,8 @@
         <input type="hidden" asp-for="PrecioMensual" id="PrecioMensual" />
 
         <div class="field-card">
-            <span class="field-label">What bins should we manage?</span>
-            <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">Select all that apply.</p>
+            <span class="field-label">@L["What bins should we manage?"]</span>
+            <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">@L["Select all that apply."]</p>
             <div class="bin-grid" id="binGroup">
                 @foreach (var bin in TrashPricingService.BinOptions)
                 {
@@ -45,38 +45,38 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label">How many bins?</span>
+            <span class="field-label">@L["How many bins?"]</span>
             <div class="count-grid" id="countGroup">
-                <button type="button" class="count-card" data-value="One" data-price="20"><span class="check"><i class="fas fa-check"></i></span><strong>1 bin</strong><span>$20 /mo</span></button>
-                <button type="button" class="count-card" data-value="Two" data-price="25"><span class="check"><i class="fas fa-check"></i></span><strong>2 bins</strong><span>$25 /mo</span></button>
-                <button type="button" class="count-card" data-value="Three" data-price="30"><span class="check"><i class="fas fa-check"></i></span><strong>3 bins</strong><span>$30 /mo</span></button>
+                <button type="button" class="count-card" data-value="One" data-price="20"><span class="check"><i class="fas fa-check"></i></span><strong>@L["1 bin"]</strong><span>@L["$20 /mo"]</span></button>
+                <button type="button" class="count-card" data-value="Two" data-price="25"><span class="check"><i class="fas fa-check"></i></span><strong>@L["2 bins"]</strong><span>@L["$25 /mo"]</span></button>
+                <button type="button" class="count-card" data-value="Three" data-price="30"><span class="check"><i class="fas fa-check"></i></span><strong>@L["3 bins"]</strong><span>@L["$30 /mo"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How often?</span>
+            <span class="field-label">@L["How often?"]</span>
             <div class="freq-grid" id="freqGroup">
                 <button type="button" class="freq-card" data-value="OneTime">
                     <span class="freq-card-head"><span class="check"><i class="fas fa-check"></i></span></span>
                     <i class="fas fa-calendar-day"></i>
-                    <span class="freq-label">One-time</span>
+                    <span class="freq-label">@L["One-time"]</span>
                 </button>
                 <button type="button" class="freq-card" data-value="Weekly">
                     <span class="freq-card-head"><span class="check"><i class="fas fa-check"></i></span></span>
                     <i class="fas fa-rotate"></i>
-                    <span class="freq-label">Weekly</span>
+                    <span class="freq-label">@L["Weekly"]</span>
                 </button>
                 <button type="button" class="freq-card" data-value="ReminderOnly">
                     <span class="freq-card-head"><span class="check"><i class="fas fa-check"></i></span></span>
                     <i class="fas fa-bell"></i>
-                    <span class="freq-label">Reminder only</span>
+                    <span class="freq-label">@L["Reminder only"]</span>
                 </button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Your pickup day</span>
-            <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">You can update this anytime.</p>
+            <span class="field-label">@L["Your pickup day"]</span>
+            <p class="page-lead" style="margin-top:-6px;margin-bottom:10px;">@L["You can update this anytime."]</p>
             <div class="day-row" id="dayGroup">
                 @foreach (var day in new[] { "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" })
                 {
@@ -87,11 +87,11 @@
 
         <div class="sticky-total">
             <div class="sticky-total-row">
-                <span class="label">Monthly total</span>
+                <span class="label">@L["Monthly total"]</span>
                 <span class="value" id="totalDisplay">$@Model.PrecioMensual.ToString("0")</span>
             </div>
-            <button type="submit" name="action" value="continue" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+            <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
     </form>
 

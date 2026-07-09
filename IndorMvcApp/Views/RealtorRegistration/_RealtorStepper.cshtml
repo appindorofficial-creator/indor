@@ -2,7 +2,7 @@
 <header class="rl-reg-header">
     @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
     {
-        <a href="@Model.BackUrl" class="ob-back" aria-label="Back">
+        <a href="@Model.BackUrl" class="ob-back" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
     }
@@ -13,9 +13,9 @@
     <a asp-controller="Account" asp-action="Welcome" class="rl-reg-logo">
         <i class="fas fa-house"></i> INDOR
     </a>
-    <small>Step @Model.DisplayStep of @Model.TotalSteps</small>
+    <small>@L.T("Step {0} of {1}", Model.DisplayStep, Model.TotalSteps)</small>
 </header>
-<nav class="rl-reg-stepper" aria-label="Realtor registration progress">
+<nav class="rl-reg-stepper" aria-label="@L["Realtor registration progress"]">
     @for (var i = 1; i <= Model.TotalSteps; i++)
     {
         var cls = i < Model.DisplayStep ? "is-done" : i == Model.DisplayStep ? "is-active" : "";

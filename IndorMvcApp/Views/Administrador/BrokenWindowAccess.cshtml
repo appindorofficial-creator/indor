@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorBrokenWindowBoardUpStep2ViewModel
 @{
-    ViewData["Title"] = "Broken Window / Board-Up";
+    ViewData["Title"] = L["Broken Window / Board-Up"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -14,8 +14,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Broken Window / Board-Up</h1>
-        <p>Help us secure access and confirm the request.</p>
+        <h1>@L["Broken Window / Board-Up"]</h1>
+        <p>@L["Help us secure access and confirm the request."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -32,7 +32,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label>Can the technician access the property now?</label>
+            <label>@L["Can the technician access the property now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @foreach (var e in new[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet"), ("GuestApproval", "Need guest approval") })
                 {
@@ -46,7 +46,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>Entry instructions</label>
+            <label>@L["Entry instructions"]</label>
             <div class="pa-field">
                 <i class="fas fa-key"></i>
                 <input type="text" name="EntryInstructions" value="@Model.EntryInstructions" />
@@ -55,7 +55,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>Temporary security concern</label>
+            <label>@L["Temporary security concern"]</label>
             <div class="pa-chip-grid pa-chip-grid--4">
                 @foreach (var c in new (string Value, string Label)[]
                 {
@@ -75,7 +75,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>Who should receive updates?</label>
+            <label>@L["Who should receive updates?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
                 {
@@ -89,7 +89,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Best phone number for urgent contact</label>
+            <label>@L["Best phone number for urgent contact"]</label>
             <div class="pa-field">
                 <i class="fas fa-phone"></i>
                 <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
@@ -98,7 +98,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label>Do you need emergency board-up tonight?</label>
+            <label>@L["Do you need emergency board-up tonight?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.EmergencyBoardUpTonight == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="EmergencyBoardUpTonight" value="Yes" @(Model.EmergencyBoardUpTonight == "Yes" ? "checked" : null) /> Yes
@@ -114,8 +114,8 @@
             <span>@Model.ProEtaLabel</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back"]</a>
     </form>
 </div>
 

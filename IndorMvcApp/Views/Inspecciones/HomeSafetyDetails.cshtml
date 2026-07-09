@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.HomeSafetyDetailsViewModel
+@model IndorMvcApp.ViewModels.HomeSafetyDetailsViewModel
 @{
-    ViewData["Title"] = "Home Safety Details - INDOR";
-    ViewData["WizardTitle"] = "Home Safety Details";
+    ViewData["Title"] = L["Home Safety Details - INDOR"];
+    ViewData["WizardTitle"] = L["Home Safety Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 4;
 
 }
 
-<h1 class="page-heading">Tell us about your safety concern</h1>
-    <p class="page-lead">This helps INDOR understand the issue and prepare the right provider.</p>
+<h1 class="page-heading">@L["Tell us about your safety concern"]</h1>
+    <p class="page-lead">@L["This helps INDOR understand the issue and prepare the right provider."]</p>
 
     <form asp-controller="Inspecciones" asp-action="HomeSafetyDetails" method="post">
         <input type="hidden" asp-for="InspeccionId" />
@@ -23,71 +23,71 @@
         <input type="hidden" asp-for="RiesgoActivo" id="RiesgoActivo" />
 
         <div class="field-card">
-            <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+            <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
             <div class="address-summary">
                 <div class="left" style="flex:1;">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" style="border:none;background:transparent;padding:0;font-weight:600;width:100%;font-family:inherit;font-size:0.92rem;" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What's the main issue?</span>
+            <span class="field-label">@L["What's the main issue?"]</span>
             <div class="chip-grid" id="tiposGroup">
-                <button type="button" class="chip-btn" data-value="SmokeDetectorConcern"><span class="check"><i class="fas fa-check"></i></span>Smoke detector concern</button>
-                <button type="button" class="chip-btn" data-value="CoDetectorConcern"><span class="check"><i class="fas fa-check"></i></span>CO detector concern</button>
-                <button type="button" class="chip-btn" data-value="NoDetectors"><span class="check"><i class="fas fa-check"></i></span>No detectors</button>
-                <button type="button" class="chip-btn" data-value="ChirpingAlarm"><span class="check"><i class="fas fa-check"></i></span>Chirping alarm</button>
-                <button type="button" class="chip-btn" data-value="FireExtinguisherConcern"><span class="check"><i class="fas fa-check"></i></span>Fire extinguisher concern</button>
-                <button type="button" class="chip-btn" data-value="TripFallHazard"><span class="check"><i class="fas fa-check"></i></span>Trip / fall hazard</button>
-                <button type="button" class="chip-btn" data-value="StairRailingConcern"><span class="check"><i class="fas fa-check"></i></span>Stair / railing concern</button>
-                <button type="button" class="chip-btn" data-value="DoorLockSafety"><span class="check"><i class="fas fa-check"></i></span>Door / lock safety</button>
-                <button type="button" class="chip-btn" data-value="OutletBasicHazard"><span class="check"><i class="fas fa-check"></i></span>Outlet / basic hazard</button>
-                <button type="button" class="chip-btn" data-value="ChildSafetyConcern"><span class="check"><i class="fas fa-check"></i></span>Child safety concern</button>
-                <button type="button" class="chip-btn" data-value="GeneralSafetyReview"><span class="check"><i class="fas fa-check"></i></span>General safety review</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="SmokeDetectorConcern"><span class="check"><i class="fas fa-check"></i></span>@L["Smoke detector concern"]</button>
+                <button type="button" class="chip-btn" data-value="CoDetectorConcern"><span class="check"><i class="fas fa-check"></i></span>@L["CO detector concern"]</button>
+                <button type="button" class="chip-btn" data-value="NoDetectors"><span class="check"><i class="fas fa-check"></i></span>@L["No detectors"]</button>
+                <button type="button" class="chip-btn" data-value="ChirpingAlarm"><span class="check"><i class="fas fa-check"></i></span>@L["Chirping alarm"]</button>
+                <button type="button" class="chip-btn" data-value="FireExtinguisherConcern"><span class="check"><i class="fas fa-check"></i></span>@L["Fire extinguisher concern"]</button>
+                <button type="button" class="chip-btn" data-value="TripFallHazard"><span class="check"><i class="fas fa-check"></i></span>@L["Trip / fall hazard"]</button>
+                <button type="button" class="chip-btn" data-value="StairRailingConcern"><span class="check"><i class="fas fa-check"></i></span>@L["Stair / railing concern"]</button>
+                <button type="button" class="chip-btn" data-value="DoorLockSafety"><span class="check"><i class="fas fa-check"></i></span>@L["Door / lock safety"]</button>
+                <button type="button" class="chip-btn" data-value="OutletBasicHazard"><span class="check"><i class="fas fa-check"></i></span>@L["Outlet / basic hazard"]</button>
+                <button type="button" class="chip-btn" data-value="ChildSafetyConcern"><span class="check"><i class="fas fa-check"></i></span>@L["Child safety concern"]</button>
+                <button type="button" class="chip-btn" data-value="GeneralSafetyReview"><span class="check"><i class="fas fa-check"></i></span>@L["General safety review"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Which area needs attention?</span>
+            <span class="field-label">@L["Which area needs attention?"]</span>
             <div class="chip-grid" id="areasGroup">
-                <button type="button" class="chip-btn" data-value="Hallway"><span class="check"><i class="fas fa-check"></i></span>Hallway</button>
-                <button type="button" class="chip-btn" data-value="Bedroom"><span class="check"><i class="fas fa-check"></i></span>Bedroom</button>
-                <button type="button" class="chip-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>Kitchen</button>
-                <button type="button" class="chip-btn" data-value="Garage"><span class="check"><i class="fas fa-check"></i></span>Garage</button>
-                <button type="button" class="chip-btn" data-value="Stairway"><span class="check"><i class="fas fa-check"></i></span>Stairway</button>
-                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>Basement</button>
-                <button type="button" class="chip-btn" data-value="Exterior"><span class="check"><i class="fas fa-check"></i></span>Exterior</button>
-                <button type="button" class="chip-btn" data-value="WholeHouse"><span class="check"><i class="fas fa-check"></i></span>Whole house</button>
-                <button type="button" class="chip-btn" data-value="Laundry"><span class="check"><i class="fas fa-check"></i></span>Laundry</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="Hallway"><span class="check"><i class="fas fa-check"></i></span>@L["Hallway"]</button>
+                <button type="button" class="chip-btn" data-value="Bedroom"><span class="check"><i class="fas fa-check"></i></span>@L["Bedroom"]</button>
+                <button type="button" class="chip-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>@L["Kitchen"]</button>
+                <button type="button" class="chip-btn" data-value="Garage"><span class="check"><i class="fas fa-check"></i></span>@L["Garage"]</button>
+                <button type="button" class="chip-btn" data-value="Stairway"><span class="check"><i class="fas fa-check"></i></span>@L["Stairway"]</button>
+                <button type="button" class="chip-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>@L["Basement"]</button>
+                <button type="button" class="chip-btn" data-value="Exterior"><span class="check"><i class="fas fa-check"></i></span>@L["Exterior"]</button>
+                <button type="button" class="chip-btn" data-value="WholeHouse"><span class="check"><i class="fas fa-check"></i></span>@L["Whole house"]</button>
+                <button type="button" class="chip-btn" data-value="Laundry"><span class="check"><i class="fas fa-check"></i></span>@L["Laundry"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How urgent is it?</span>
+            <span class="field-label">@L["How urgent is it?"]</span>
             <div class="segmented-3" data-target="Urgencia">
-                <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Is there an active safety risk right now?</span>
+            <span class="field-label">@L["Is there an active safety risk right now?"]</span>
             <div class="segmented-3" data-target="RiesgoActivo">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <div class="info-box"><i class="fas fa-circle-info"></i><div>If detectors are missing, chirping, expired, or not working, include that in the next step.</div></div>
+        <div class="info-box"><i class="fas fa-circle-info"></i><div>@L["If detectors are missing, chirping, expired, or not working, include that in the next step."]</div></div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> Upload photos or report</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos or report"]</button>
     </form>
 </div>
 @section Scripts {

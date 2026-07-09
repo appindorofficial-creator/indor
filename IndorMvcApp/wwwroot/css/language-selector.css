@@ -1,0 +1,125 @@
+.indor-lang {
+    --indor-lang-blue: #1867F2;
+    --indor-lang-blue-soft: rgba(24, 103, 242, 0.12);
+    --indor-lang-border: rgba(15, 23, 42, 0.08);
+}
+
+.indor-lang-form {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.92);
+    border: 1px solid var(--indor-lang-border);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+    backdrop-filter: blur(8px);
+}
+
+.indor-lang-option {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    background: transparent;
+    color: #334155;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    padding: 10px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.indor-lang-option:hover {
+    background: rgba(24, 103, 242, 0.06);
+}
+
+.indor-lang-option.is-active {
+    background: linear-gradient(135deg, #1867F2 0%, #0B5BD3 100%);
+    color: #fff;
+    box-shadow: 0 10px 22px rgba(24, 103, 242, 0.28);
+}
+
+.indor-lang-flag {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.indor-lang-name {
+    line-height: 1;
+}
+
+/* Floating pill on welcome / auth headers */
+.indor-lang--pill {
+    display: flex;
+    justify-content: center;
+}
+
+.indor-lang--corner {
+    position: absolute;
+    top: max(14px, env(safe-area-inset-top));
+    right: max(14px, env(safe-area-inset-right));
+    z-index: 20;
+}
+
+.indor-lang--corner .indor-lang-form {
+    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+}
+
+/* Card variant for register / settings */
+.indor-lang--card {
+    margin-bottom: 18px;
+}
+
+.indor-lang-card-label {
+    margin: 0 0 4px;
+    font-size: 14px;
+    font-weight: 800;
+    color: #0F172A;
+}
+
+.indor-lang-card-hint {
+    margin: 0 0 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    color: #64748B;
+}
+
+.indor-lang--card .indor-lang-form {
+    width: 100%;
+    justify-content: stretch;
+    border-radius: 18px;
+    padding: 6px;
+}
+
+.indor-lang--card .indor-lang-option {
+    flex: 1;
+    justify-content: center;
+    padding: 14px 12px;
+    border-radius: 14px;
+    font-size: 14px;
+}
+
+.indor-lang--inline {
+    margin: 0 auto 16px;
+}
+
+@media (max-width: 420px) {
+    .indor-lang--corner {
+        position: static;
+        display: flex;
+        justify-content: center;
+        margin-bottom: 12px;
+    }
+
+    .indor-lang-option {
+        padding: 9px 12px;
+    }
+
+    .indor-lang-name {
+        font-size: 12px;
+    }
+}

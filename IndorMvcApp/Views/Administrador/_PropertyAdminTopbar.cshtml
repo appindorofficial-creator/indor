@@ -1,10 +1,10 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPortalShellViewModel
 <header class="pa-portal-topbar">
-    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="INDOR Portfolio">
+    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo" aria-label="@L["INDOR Portfolio"]">
         <span class="pa-portal-logo-main">
             <i class="fas fa-house" aria-hidden="true"></i> INDOR
         </span>
-        <span class="pa-portal-logo-label">Portfolio</span>
+        <span class="pa-portal-logo-label">@L["Portfolio"]</span>
     </a>
 
     <div class="pa-portal-topbar-actions">
@@ -13,26 +13,26 @@
             <button type="button"
                     class="pa-portal-icon-btn pa-portal-icon-btn--notify @(Model.HasNotifications ? "has-dot" : null)"
                     id="paNotifyBtn"
-                    aria-label="Notifications"
+                    aria-label="@L["Notifications"]"
                     aria-haspopup="true"
                     aria-expanded="false"
                     aria-controls="paNotifyPanel">
                 <i class="fas fa-bell"></i>
             </button>
-            <div class="pa-notify-panel" id="paNotifyPanel" role="dialog" aria-label="Recent activity" hidden>
+            <div class="pa-notify-panel" id="paNotifyPanel" role="dialog" aria-label="@L["Recent activity"]" hidden>
                 <div class="pa-notify-panel-head">
-                    <strong>Notifications</strong>
+                    <strong>@L["Notifications"]</strong>
                     @if (Model.HasNotifications)
                     {
-                        <span class="pa-notify-badge" id="paNotifyNewBadge">New</span>
+                        <span class="pa-notify-badge" id="paNotifyNewBadge">@L["New"]</span>
                     }
                 </div>
                 @if (Model.RecentNotifications.Count == 0)
                 {
                     <div class="pa-notify-empty">
                         <i class="fas fa-bell-slash"></i>
-                        <p>No recent activity yet.</p>
-                        <span>Request a service or schedule a visit to see updates here.</span>
+                        <p>@L["No recent activity yet."]</p>
+                        <span>@L["Request a service or schedule a visit to see updates here."]</span>
                     </div>
                 }
                 else

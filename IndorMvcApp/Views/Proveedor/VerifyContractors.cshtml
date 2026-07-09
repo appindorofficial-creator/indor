@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.VerificationQueueViewModel
 @{
-    ViewData["Title"] = "Verify Contractors";
+    ViewData["Title"] = L["Verify Contractors"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-verify.css";
     ViewBag.NavActive = "verify";
@@ -9,23 +9,23 @@
 <div class="prv-vf-shell">
     <header class="prv-vf-hero">
         <div class="prv-vf-hero-top">
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-vf-brand" aria-label="INDOR PRO home">
-                <span class="prv-vf-brand-word">INDOR</span>
-                <span class="prv-vf-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-vf-brand" aria-label="@L["INDOR PRO home"]">
+                <span class="prv-vf-brand-word">@L["INDOR"]</span>
+                <span class="prv-vf-brand-pro">@L["PRO"]</span>
             </a>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
 
         <div class="prv-vf-hero-title">
-            <h1>Verify Contractors</h1>
-            <p>Review documents, insurance, and verification status.</p>
+            <h1>@L["Verify Contractors"]</h1>
+            <p>@L["Review documents, insurance, and verification status."]</p>
         </div>
 
         <form method="get" asp-controller="Proveedor" asp-action="VerifyContractors" class="prv-vf-searchbar">
             <input type="hidden" name="tab" value="@Model.ActiveTab" />
             <div class="prv-vf-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.Query" placeholder="Search contractors or companies" />
+                <input type="search" name="q" value="@Model.Query" placeholder="@L["Search contractors or companies"]" />
             </div>
             <button type="submit" class="prv-vf-filter"><i class="fas fa-sliders"></i> Filter</button>
         </form>
@@ -50,8 +50,8 @@
     {
         <div class="prv-vf-empty">
             <i class="fas fa-clipboard-check"></i>
-            <strong>No contractors here</strong>
-            <span>There is nothing in this queue right now.</span>
+            <strong>@L["No contractors here"]</strong>
+            <span>@L["There is nothing in this queue right now."]</span>
         </div>
     }
     else
@@ -109,7 +109,7 @@
                             <span>@c.ItemsComplete / @c.TotalItems items complete</span>
                             <div class="prv-vf-bar"><i style="width:@(c.ProgressPercent)%"></i></div>
                         </div>
-                        <span class="prv-vf-review">Review <i class="fas fa-arrow-right"></i></span>
+                        <span class="prv-vf-review">@L["Review"]<i class="fas fa-arrow-right"></i></span>
                     </div>
                 </a>
             }

@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.ElectricalDetailsViewModel
+@model IndorMvcApp.ViewModels.ElectricalDetailsViewModel
 @{
-    ViewData["Title"] = "Electrical Details - INDOR";
-    ViewData["WizardTitle"] = "Electrical Details";
+    ViewData["Title"] = L["Electrical Details - INDOR"];
+    ViewData["WizardTitle"] = L["Electrical Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
 </div>
 
-        <h1 class="page-heading">Tell us about your electrical concern</h1>
-        <p class="page-lead">This helps INDOR prepare the right checklist and send the right provider.</p>
+        <h1 class="page-heading">@L["Tell us about your electrical concern"]</h1>
+        <p class="page-lead">@L["This helps INDOR prepare the right checklist and send the right provider."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -26,15 +26,15 @@
             <input type="hidden" asp-for="Urgencia" id="Urgencia" />
 
             <div class="field-card">
-                <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+                <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">Why do you need this review?</span>
+                <span class="field-label">@L["Why do you need this review?"]</span>
                 <div class="chip-group" data-target="MotivoRevision">
                     <button type="button" class="chip-btn" data-value="BuyingHome">
                         <span class="check"><i class="fas fa-check"></i></span>Buying a home
@@ -52,7 +52,7 @@
             </div>
 
             <div class="field-card">
-                <span class="field-label">What is the main concern?</span>
+                <span class="field-label">@L["What is the main concern?"]</span>
                 <div class="concern-grid" data-target="PreocupacionPrincipal">
                     <button type="button" class="concern-btn" data-value="BreakerTrips">
                         <span class="check"><i class="fas fa-check"></i></span>Breaker trips
@@ -76,32 +76,32 @@
             </div>
 
             <div class="field-card">
-                <span class="field-label">Is this happening right now?</span>
+                <span class="field-label">@L["Is this happening right now?"]</span>
                 <div class="segmented-3" data-target="OcurreAhora">
-                    <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="segment-btn" data-value="No">No</button>
-                    <button type="button" class="segment-btn" data-value="Sometimes">Sometimes</button>
+                    <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="segment-btn" data-value="Sometimes">@L["Sometimes"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">How urgent is it?</span>
+                <span class="field-label">@L["How urgent is it?"]</span>
                 <div class="segmented-3" data-target="Urgencia">
-                    <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                    <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                    <button type="button" class="segment-btn" data-value="Emergency">Emergency</button>
+                    <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                    <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                    <button type="button" class="segment-btn" data-value="Emergency">@L["Emergency"]</button>
                 </div>
             </div>
 
             <div class="info-box">
                 <i class="fas fa-circle-info"></i>
-                <div>If there is heat, smoke, or a burning smell, choose <strong>Emergency</strong> or contact support immediately.</div>
+                <div>@L["If there is heat, smoke, or a burning smell, choose"] <strong>@L["Emergency"]</strong> @L["or contact support immediately."]</div>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">
                 Next <i class="fas fa-arrow-right"></i>
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

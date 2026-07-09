@@ -21,15 +21,18 @@ public class HvacSetupController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     public HvacSetupController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -70,11 +73,11 @@ public class HvacSetupController : Controller
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 2,
-            PageTitle = "Scan HVAC Label",
+            PageTitle = _localizer["Scan HVAC Label"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = ResolvePropertyImage(propiedad, info),
             BackUrl = Url.Action(nameof(Add), new { propiedadId = propiedad.Id }) ?? "/",
-            ScanHint = "We'll scan the manufacturer label to fill in your system details automatically.",
+            ScanHint = _localizer["We'll scan the manufacturer label to fill in your system details automatically."],
             PreviewImageUrl = draft.LabelImagePath
         });
     }
@@ -143,14 +146,14 @@ public class HvacSetupController : Controller
     {
         if (viewModel.PropiedadId <= 0)
         {
-            ModelState.AddModelError(nameof(viewModel.PropiedadId), "Your property could not be identified. Please start again from Home.");
+            ModelState.AddModelError(nameof(viewModel.PropiedadId), _localizer["Your property could not be identified. Please start again from Home."]);
             return RedirectToAction(nameof(Add));
         }
 
         var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
         if (propiedad == null)
         {
-            TempData["HvacSetupError"] = "We could not find your property. Please try again from Home.";
+            TempData["HvacSetupError"] = _localizer["We could not find your property. Please try again from Home."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -196,13 +199,13 @@ public class HvacSetupController : Controller
         var draft = GetDraft();
         if (draft == null || draft.PropiedadId != propiedad.Id)
         {
-            TempData["HvacSetupError"] = "Your HVAC draft expired. Please enter your system details again.";
+            TempData["HvacSetupError"] = _localizer["Your HVAC draft expired. Please enter your system details again."];
             return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
         if (string.Equals(draft.EntryMode, "manual", StringComparison.OrdinalIgnoreCase) && !IsManualDraftComplete(draft))
         {
-            TempData["HvacSetupError"] = "Please complete all required system details before continuing.";
+            TempData["HvacSetupError"] = _localizer["Please complete all required system details before continuing."];
             return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
@@ -225,7 +228,7 @@ public class HvacSetupController : Controller
         var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
         if (propiedad == null)
         {
-            TempData["HvacSetupError"] = "We could not find your property. Please try again from Home.";
+            TempData["HvacSetupError"] = _localizer["We could not find your property. Please try again from Home."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -237,7 +240,7 @@ public class HvacSetupController : Controller
         var draft = GetDraft();
         if (draft == null || draft.PropiedadId != propiedad.Id)
         {
-            TempData["HvacSetupError"] = "Your HVAC draft expired. Please enter your system details again.";
+            TempData["HvacSetupError"] = _localizer["Your HVAC draft expired. Please enter your system details again."];
             return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
@@ -245,12 +248,12 @@ public class HvacSetupController : Controller
         {
             if (!viewModel.ConfirmInfo)
             {
-                ModelState.AddModelError(nameof(viewModel.ConfirmInfo), "Please confirm your equipment information.");
+                ModelState.AddModelError(nameof(viewModel.ConfirmInfo), _localizer["Please confirm your equipment information."]);
             }
 
             if (!viewModel.AuthorizeStorage)
             {
-                ModelState.AddModelError(nameof(viewModel.AuthorizeStorage), "Please authorize INDOR to store this equipment data.");
+                ModelState.AddModelError(nameof(viewModel.AuthorizeStorage), _localizer["Please authorize INDOR to store this equipment data."]);
             }
         }
 
@@ -288,7 +291,7 @@ public class HvacSetupController : Controller
         catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
         {
             ModelState.AddModelError(string.Empty,
-                "HVAC storage is not available yet. Run Scripts/CreatePropiedadHvacTables.sql on the database.");
+                _localizer["HVAC storage is not available yet. Run Scripts/CreatePropiedadHvacTables.sql on the database."]);
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
             return View(BuildReviewModel(propiedad, info, draft, viewModel));
         }
@@ -319,14 +322,14 @@ public class HvacSetupController : Controller
 
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
         var estimatedAge = record.InstallYear.HasValue
-            ? $"{Math.Max(0, DateTime.Today.Year - record.InstallYear.Value)} years"
+            ? _localizer.T("{0} years", Math.Max(0, DateTime.Today.Year - record.InstallYear.Value))
             : "—";
 
         return View(new HvacSavedViewModel
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 5,
-            PageTitle = "HVAC system added",
+            PageTitle = _localizer["HVAC system added"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = ResolvePropertyImage(propiedad, info),
             BackUrl = Url.Action("Index", "Home") ?? "/",
@@ -353,7 +356,7 @@ public class HvacSetupController : Controller
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 1,
-            PageTitle = "Add HVAC System",
+            PageTitle = _localizer["Add HVAC System"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = ResolvePropertyImage(propiedad, info),
             BackUrl = Url.Action("Index", "Home") ?? "/",
@@ -383,13 +386,13 @@ public class HvacSetupController : Controller
         AddHvacSystemViewModel posted)
     {
         posted.CurrentStep = 3;
-        posted.PageTitle = "Enter system details";
+        posted.PageTitle = _localizer["Enter system details"];
         posted.Address = FormatAddress(propiedad, info);
         posted.ImageUrl = ResolvePropertyImage(propiedad, info);
         posted.BackUrl = Url.Action(nameof(Add), new { propiedadId = propiedad.Id }) ?? "/";
         posted.InstallYearOptions = HvacOpenAiHintsService.BuildInstallYearOptions();
         posted.FilterSizeOptions = HvacOpenAiHintsService.CommonFilterSizes.ToList();
-        posted.OpenAiHintNote = "Confirm or edit the details before continuing.";
+        posted.OpenAiHintNote = _localizer["Confirm or edit the details before continuing."];
         return posted;
     }
 
@@ -402,7 +405,7 @@ public class HvacSetupController : Controller
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 4,
-            PageTitle = "Review & consent",
+            PageTitle = _localizer["Review & consent"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = ResolvePropertyImage(propiedad, info),
             BackUrl = draft.EntryMode == "scan"
@@ -500,14 +503,14 @@ public class HvacSetupController : Controller
     {
         var brandModel = string.Join(" ", new[] { record.Brand, record.Model }.Where(s => !string.IsNullOrWhiteSpace(s)));
         var description = string.IsNullOrWhiteSpace(brandModel)
-            ? $"{HvacOpenAiHintsService.SystemTypeLabel(record.SystemType)} added to your home."
-            : $"{brandModel.Trim()} added to your home.";
+            ? _localizer.T("{0} added to your home.", HvacOpenAiHintsService.SystemTypeLabel(record.SystemType))
+            : _localizer.T("{0} added to your home.", brandModel.Trim());
 
         _db.PropiedadHistorial.Add(new PropiedadHistorial
         {
             PropiedadId = propiedad.Id,
             RecordType = "System",
-            Title = "HVAC system added",
+            Title = _localizer["HVAC system added"],
             Description = description,
             CompletionDate = DateTime.UtcNow,
             Source = "User",

@@ -9,8 +9,8 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;">Access, room and schedule</h2>
-    <p class="page-lead" style="margin-top:-8px;">Tell us where the items are and when you need help.</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Access, room and schedule"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Tell us where the items are and when you need help."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -27,64 +27,64 @@
             <div class="left">
                 <i class="fas fa-house" style="color:#0066CC;"></i>
                 <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
-                       placeholder="123 Riverside Dr, Mount Holly, NC 28120" required readonly />
+                       placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required readonly />
             </div>
             <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Where will the assembly happen?</span>
+            <span class="field-label">@L["Where will the assembly happen?"]</span>
             <div class="chip-row" id="roomGroup" style="flex-wrap:wrap;">
-                <button type="button" class="chip-btn" data-value="LivingRoom"><i class="fas fa-couch"></i> Living room</button>
-                <button type="button" class="chip-btn" data-value="Bedroom"><i class="fas fa-bed"></i> Bedroom</button>
-                <button type="button" class="chip-btn" data-value="Office"><i class="fas fa-desktop"></i> Office</button>
-                <button type="button" class="chip-btn" data-value="DiningRoom"><i class="fas fa-utensils"></i> Dining room</button>
-                <button type="button" class="chip-btn" data-value="Patio"><i class="fas fa-umbrella-beach"></i> Patio</button>
-                <button type="button" class="chip-btn" data-value="MultipleRooms"><i class="fas fa-house"></i> Multiple rooms</button>
+                <button type="button" class="chip-btn" data-value="LivingRoom"><i class="fas fa-couch"></i> @L["Living room"]</button>
+                <button type="button" class="chip-btn" data-value="Bedroom"><i class="fas fa-bed"></i> @L["Bedroom"]</button>
+                <button type="button" class="chip-btn" data-value="Office"><i class="fas fa-desktop"></i> @L["Office"]</button>
+                <button type="button" class="chip-btn" data-value="DiningRoom"><i class="fas fa-utensils"></i> @L["Dining room"]</button>
+                <button type="button" class="chip-btn" data-value="Patio"><i class="fas fa-umbrella-beach"></i> @L["Patio"]</button>
+                <button type="button" class="chip-btn" data-value="MultipleRooms"><i class="fas fa-house"></i> @L["Multiple rooms"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Access details</span>
+            <span class="field-label">@L["Access details"]</span>
             <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
-                <button type="button" class="chip-btn" data-value="FirstFloor"><i class="fas fa-stairs"></i> 1st floor</button>
-                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> Stairs</button>
-                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> Elevator</button>
-                <button type="button" class="chip-btn" data-value="ParkingNearby"><i class="fas fa-square-parking"></i> Parking nearby</button>
+                <button type="button" class="chip-btn" data-value="FirstFloor"><i class="fas fa-stairs"></i> @L["1st floor"]</button>
+                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> @L["Stairs"]</button>
+                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> @L["Elevator"]</button>
+                <button type="button" class="chip-btn" data-value="ParkingNearby"><i class="fas fa-square-parking"></i> @L["Parking nearby"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Do you need help moving the boxes or furniture?</span>
+            <span class="field-label">@L["Do you need help moving the boxes or furniture?"]</span>
             <div class="segment-row" data-target="AyudaMover">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Preferred date</span>
+            <span class="field-label">@L["Preferred date"]</span>
             <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" min="@Model.MinServiceDateIso" required /></div>
             <span asp-validation-for="FechaServicio" class="text-danger"></span>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Preferred time</span>
+            <span class="field-label">@L["Preferred time"]</span>
             <div class="tile-grid" style="grid-template-columns:1fr;" data-target="VentanaHorario">
-                <button type="button" class="time-slot" data-value="Morning">Morning<span class="sub">8AM - 12PM</span></button>
-                <button type="button" class="time-slot" data-value="Afternoon">Afternoon<span class="sub">12PM - 5PM</span></button>
-                <button type="button" class="time-slot" data-value="Evening">Evening<span class="sub">5PM - 8PM</span></button>
+                <button type="button" class="time-slot" data-value="Morning">@L["Morning"]<span class="sub">@L["8AM - 12PM"]</span></button>
+                <button type="button" class="time-slot" data-value="Afternoon">@L["Afternoon"]<span class="sub">@L["12PM - 5PM"]</span></button>
+                <button type="button" class="time-slot" data-value="Evening">@L["Evening"]<span class="sub">@L["5PM - 8PM"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Anything else we should know?</span>
-            <div class="input-wrap"><i class="fas fa-note-sticky"></i><textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="Heavy dresser for upstairs bedroom, assembly manual available."></textarea></div>
+            <span class="field-label">@L["Anything else we should know?"]</span>
+            <div class="input-wrap"><i class="fas fa-note-sticky"></i><textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="@L["Heavy dresser for upstairs bedroom, assembly manual available."]"></textarea></div>
         </div>
 
-        <button type="submit" class="btn-primary">Continue</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" class="btn-primary">@L["Continue"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

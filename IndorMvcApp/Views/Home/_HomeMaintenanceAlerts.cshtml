@@ -6,8 +6,8 @@
     <section class="hd-maint-alerts" id="hd-maintenance-alerts" aria-labelledby="hd-maint-title">
         <div class="hd-maint-head">
             <div>
-                <p class="hd-maint-eyebrow"><i class="fas fa-wand-magic-sparkles"></i> AI Maintenance Plan</p>
-                <h3 id="hd-maint-title">Recommended for your home</h3>
+                <p class="hd-maint-eyebrow"><i class="fas fa-wand-magic-sparkles"></i> @L["AI Maintenance Plan"]</p>
+                <h3 id="hd-maint-title">@L["Recommended for your home"]</h3>
                 @if (!string.IsNullOrWhiteSpace(Model.Summary))
                 {
                     <p class="hd-maint-summary">@Model.Summary</p>
@@ -17,7 +17,7 @@
             {
                 <span class="hd-maint-alert-pill">
                     <i class="fas fa-bell"></i>
-                    @(Model.UrgentCount + Model.HighCount) alerts
+                    @L.T("{0} alerts", Model.UrgentCount + Model.HighCount)
                 </span>
             }
         </div>
@@ -38,7 +38,7 @@
                         <div class="hd-maint-body">
                             <div class="hd-maint-row">
                                 <strong>@item.Title</strong>
-                                <span class="hd-maint-priority">@item.Priority</span>
+                                <span class="hd-maint-priority">@L[item.Priority]</span>
                             </div>
                             <p>@item.Description</p>
                             <div class="hd-maint-tags">
@@ -59,7 +59,7 @@
                         <div class="hd-maint-body">
                             <div class="hd-maint-row">
                                 <strong>@item.Title</strong>
-                                <span class="hd-maint-priority">@item.Priority</span>
+                                <span class="hd-maint-priority">@L[item.Priority]</span>
                             </div>
                             <p>@item.Description</p>
                             <div class="hd-maint-tags">
@@ -73,7 +73,7 @@
         </div>
 
         <a href="@($"{Url.Action("Index", "Home")}#home-care-priorities")" class="hd-maint-cta">
-            Browse all maintenance services
+            @L["Browse all maintenance services"]
             <i class="fas fa-chevron-right"></i>
         </a>
     </section>

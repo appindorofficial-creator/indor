@@ -1,37 +1,37 @@
-﻿@model IndorMvcApp.ViewModels.EmergencySmokeDetectorSubmittedViewModel
+@model IndorMvcApp.ViewModels.EmergencySmokeDetectorSubmittedViewModel
 @{
-    ViewData["Title"] = "Request received - INDOR";
-    ViewData["WizardTitle"] = "Request received";
+    ViewData["Title"] = L["Request received - INDOR"];
+    ViewData["WizardTitle"] = L["Request received"];
 var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
 <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading">Your smoke detector emergency request has been received</h1>
-    <p class="page-lead">We're reviewing your request and coordinating the right provider now.</p>
+    <h1 class="page-heading">@L["Your smoke detector emergency request has been received"]</h1>
+    <p class="page-lead">@L["We're reviewing your request and coordinating the right provider now."]</p>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-wrench"></i><div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">Concern</div><div class="summary-value">@Model.PreocupacionResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">Locations</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-triangle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">Priority</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value status">@Model.EstadoResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-wrench"></i><div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-circle-radiation"></i><div style="flex:1;"><div class="summary-label">@L["Concern"]</div><div class="summary-value">@Model.PreocupacionResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div style="flex:1;"><div class="summary-label">@L["Locations"]</div><div class="summary-value">@Model.UbicacionesResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-triangle-exclamation danger"></i><div style="flex:1;"><div class="summary-label">@L["Priority"]</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value status">@Model.EstadoResumen</div></div></div>
     </div>
 
     <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <div>If you smell gas or the CO alarm becomes active, leave immediately and <strong style="color:#0066CC;">call 911</strong>.</div>
+        <div>@L["If you smell gas or the CO alarm becomes active, leave immediately and"] <strong style="color:#0066CC;">@L["call 911"]</strong>.</div>
     </div>
 
     <div class="callback-box">
-        <div class="label"><i class="fas fa-clock"></i> Estimated callback</div>
+        <div class="label"><i class="fas fa-clock"></i> @L["Estimated callback"]</div>
         <div class="value">@Model.TiempoCallbackRango</div>
     </div>
 
-    <a asp-action="EmergencySmokeDetectorSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">View request <i class="fas fa-chevron-right"></i></a>
+    <a asp-action="EmergencySmokeDetectorSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">@L["View request"] <i class="fas fa-chevron-right"></i></a>
     <div class="btn-row">
-        <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to Home</a>
-        <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> Call support</a>
+        <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> @L["Go to Home"]</a>
+        <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> @L["Call support"]</a>
     </div>

@@ -155,8 +155,14 @@ public class LawnCatalogOption
     [Required, MaxLength(80)]
     public string LabelEn { get; set; } = string.Empty;
 
+    [MaxLength(80)]
+    public string? LabelEs { get; set; }
+
     [MaxLength(200)]
     public string? DescriptionEn { get; set; }
+
+    [MaxLength(200)]
+    public string? DescriptionEs { get; set; }
 
     [Column(TypeName = "decimal(10,2)")]
     public decimal Price { get; set; }

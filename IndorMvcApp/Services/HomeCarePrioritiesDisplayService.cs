@@ -1,3 +1,5 @@
+using System.Globalization;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -10,7 +12,8 @@ public static class HomeCarePrioritiesDisplayService
         HomeCarePrioritiesConfig? config,
         IEnumerable<HomeCarePriority> items,
         int? propiedadId,
-        IUrlHelper urlHelper)
+        IUrlHelper urlHelper,
+        bool isSpanish = false)
     {
         if (config == null || !config.Activo)
         {
@@ -44,12 +47,21 @@ public static class HomeCarePrioritiesDisplayService
         {
             PropiedadId = propiedadId,
             Title = config.Titulo,
-            Subtitle = $"{cards.Count} maintenance task{(cards.Count == 1 ? "" : "s")} for your home",
+            Subtitle = FormatCountSubtitle(cards.Count, isSpanish),
             IconClass = config.IconoClase,
             ViewAllText = config.ViewAllTexto,
             ViewAllUrl = ResolveViewAllUrl(urlHelper, config, propiedadId),
             Items = cards
         };
+    }
+
+    private static string FormatCountSubtitle(int count, bool isSpanish)
+    {
+        var key = count == 1
+            ? "{0} maintenance task for your home"
+            : "{0} maintenance tasks for your home";
+        var template = isSpanish && UiTranslations.Spanish.TryGetValue(key, out var es) ? es : key;
+        return string.Format(CultureInfo.CurrentCulture, template, count);
     }
 
     private static string? ResolveViewAllUrl(

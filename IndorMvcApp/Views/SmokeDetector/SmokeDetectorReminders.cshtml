@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.SmokeDetectorRemindersViewModel
 @{
-    ViewData["Title"] = "Set your reminders - INDOR";
+    ViewData["Title"] = L["Set your reminders - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("SmokeDetectorSetup", "SmokeDetector", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -8,14 +8,14 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Set your reminders</h1>
-    <p class="page-lead" style="margin-bottom:16px;">Turn reminders on or off and choose how you'd like help.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Set your reminders"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["Turn reminders on or off and choose how you'd like help."]</p>
 
     <div class="setup-summary">
         <div class="badge">@Model.AlarmCountLabel</div>
-        <div class="row"><span class="label">Type</span><span class="value">@Model.AlarmTypeLabel</span></div>
-        <div class="row"><span class="label">Locations</span><span class="value">@Model.LocationsLabel</span></div>
-        <div class="row"><span class="label">Installed</span><span class="value">@Model.InstalledLabel</span></div>
+        <div class="row"><span class="label">@L["Type"]</span><span class="value">@Model.AlarmTypeLabel</span></div>
+        <div class="row"><span class="label">@L["Locations"]</span><span class="value">@Model.LocationsLabel</span></div>
+        <div class="row"><span class="label">@L["Installed"]</span><span class="value">@Model.InstalledLabel</span></div>
     </div>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
@@ -28,8 +28,8 @@
         <div class="field-card">
             <div class="toggle-row">
                 <div class="left">
-                    <strong>Monthly test reminder</strong>
-                    <span>We'll remind you to test your alarms.</span>
+                    <strong>@L["Monthly test reminder"]</strong>
+                    <span>@L["We'll remind you to test your alarms."]</span>
                     <span class="next">Next: @Model.NextMonthlyTestLabel</span>
                 </div>
                 <label class="toggle-switch">
@@ -39,8 +39,8 @@
             </div>
             <div class="toggle-row">
                 <div class="left">
-                    <strong>Yearly battery reminder</strong>
-                    <span>Check and replace batteries once a year.</span>
+                    <strong>@L["Yearly battery reminder"]</strong>
+                    <span>@L["Check and replace batteries once a year."]</span>
                     <span class="next">Next: @Model.NextBatteryLabel</span>
                 </div>
                 <label class="toggle-switch">
@@ -50,8 +50,8 @@
             </div>
             <div class="toggle-row">
                 <div class="left">
-                    <strong>Replace unit in 10 years</strong>
-                    <span>Alarms should be replaced 10 years from installation.</span>
+                    <strong>@L["Replace unit in 10 years"]</strong>
+                    <span>@L["Alarms should be replaced 10 years from installation."]</span>
                     <span class="next">Next: @Model.NextReplacementLabel</span>
                 </div>
                 <label class="toggle-switch">
@@ -61,8 +61,8 @@
             </div>
             <div class="toggle-row">
                 <div class="left">
-                    <strong>Seasonal home safety review</strong>
-                    <span>A quick check to keep your home safe year-round.</span>
+                    <strong>@L["Seasonal home safety review"]</strong>
+                    <span>@L["A quick check to keep your home safe year-round."]</span>
                     <span class="next">Next: @Model.NextSeasonalLabel</span>
                 </div>
                 <label class="toggle-switch">
@@ -73,7 +73,7 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span>Need help now?</span></div>
+            <div class="field-head"><span>@L["Need help now?"]</span></div>
             <div class="help-grid">
                 <button type="button" class="help-btn" data-help="ReminderOnly">
                     <i class="fas fa-bell"></i> Reminder only
@@ -85,7 +85,7 @@
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-shield-halved"></i> Review and confirm <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-shield-halved"></i> @L["Review and confirm"] <i class="fas fa-chevron-right"></i>
         </button>
     </form>
 

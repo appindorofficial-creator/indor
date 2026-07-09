@@ -1,12 +1,12 @@
 ﻿@{
-    ViewData["Title"] = "Access denied";
+    ViewData["Title"] = L["Access denied"];
     Layout = "_LayoutAuthOnboarding";
 }
 
 <div class="ob-shell">
         <div class="ob-shell-inner ob-success-wrap">
-            <h1>Access denied</h1>
-            <p>You do not have permission to view this page. Sign in again or choose a different account.</p>
-            <a asp-controller="Account" asp-action="Welcome" class="ob-btn ob-btn-primary">Back to welcome</a>
+            <h1>@L["Access denied"]</h1>
+            <p>@L["You do not have permission to view this page. Sign in again or choose a different account."]</p>
+            <a asp-controller="Account" asp-action="Welcome" class="ob-btn ob-btn-primary">@L["Back to welcome"]</a>
         </div>
     </div>

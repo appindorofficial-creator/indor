@@ -1,5 +1,5 @@
 @model List<IndorMvcApp.ViewModels.ProviderProFlowStepViewModel>
-<nav class="prv-pro-flow-path" aria-label="Flow path">
+<nav class="prv-pro-flow-path" aria-label="@L["Flow path"]">
     @for (var i = 0; i < Model.Count; i++)
     {
         var step = Model[i];

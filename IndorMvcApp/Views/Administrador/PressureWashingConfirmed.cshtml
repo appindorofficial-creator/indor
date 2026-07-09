@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPressureWashingConfirmedViewModel
 @{
-    ViewData["Title"] = "Pressure Washing scheduled";
+    ViewData["Title"] = L["Pressure Washing scheduled"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -14,15 +14,15 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Pressure Washing scheduled</h1>
+        <h1>@L["Pressure Washing scheduled"]</h1>
         <p>Your service has been booked for @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
     </section>
 
     <div class="pa-success-banner pa-success-banner--green">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
-            <strong>Request received</strong>
-            <span>Crew confirmed for tomorrow.</span>
+            <strong>@L["Request received"]</strong>
+            <span>@L["Crew confirmed for tomorrow."]</span>
         </div>
     </div>
 
@@ -34,13 +34,13 @@
                 <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0") (@Model.TechnicianReviewCount jobs)</span>
                 <small>@Model.TechnicianSubtitle</small>
             </div>
-            <span class="pa-verified-badge"><i class="fas fa-check"></i> Verified</span>
+            <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
         </div>
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-clock"></i>
                 <strong>@Model.EtaLabel</strong>
-                <small>Arrival window</small>
+                <small>@L["Arrival window"]</small>
             </div>
             <div>
                 <i class="fas fa-house"></i>
@@ -50,13 +50,13 @@
             <div>
                 <i class="fas fa-border-all"></i>
                 <strong>@Model.ServiceAreasLabel</strong>
-                <small>Service area</small>
+                <small>@L["Service area"]</small>
             </div>
         </div>
     </article>
 
     <article class="pa-lawn-progress-card">
-        <h2>Request timeline</h2>
+        <h2>@L["Request timeline"]</h2>
         <div class="pa-lawn-progress-track">
             @foreach (var step in Model.Timeline)
             {
@@ -79,7 +79,7 @@
     </article>
 
     <article class="pa-summary-card-block">
-        <h2>Service summary</h2>
+        <h2>@L["Service summary"]</h2>
         <ul class="pa-summary-detail-list pa-summary-detail-list--green">
             @foreach (var item in Model.Summary)
             {
@@ -90,21 +90,21 @@
                 </li>
             }
         </ul>
-        <p class="pa-pw-eco-note"><i class="fas fa-leaf"></i> Eco-safe wash included</p>
+        <p class="pa-pw-eco-note"><i class="fas fa-leaf"></i> @L["Eco-safe wash included"]</p>
     </article>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>Call crew</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message guest</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>Reschedule</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>@L["Call crew"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message guest"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-calendar"></i><span>@L["Reschedule"]</span></button>
         <a asp-controller="Administrador" asp-action="Tasks" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>View details</span>
+            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
     </div>
 
     <div class="pa-lawn-tip-banner">
         <i class="fas fa-lightbulb"></i>
-        <p><strong>Tip:</strong> @Model.Tip</p>
+        <p><strong>@L["Tip:"]</strong> @Model.Tip</p>
     </div>
 
     <a asp-controller="Administrador" asp-action="Tasks" class="ob-btn ob-btn-primary pa-flow-submit">

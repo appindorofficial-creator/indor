@@ -1,6 +1,9 @@
+@using IndorMvcApp.Localization
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 
 <head>
 
@@ -38,4 +41,3 @@
 </body>
 
 </html>
-

@@ -1,36 +1,32 @@
 ﻿@model IndorMvcApp.ViewModels.LoginViewModel
 @{
-    ViewData["Title"] = "Sign In - INDOR";
+    ViewData["Title"] = L["Sign In - INDOR"];
     Layout = "_LayoutAuth";
 }
 
 <div class="login-container">
-        <!-- Logo Smart Home -->
         <div class="logo-container">
-            <img src="~/logoindor.png" alt="Indor - The Home Operating System" class="smart-home-logo" />
+            <img src="~/logoindor.png" alt="@L["Indor - The Home Operating System"]" class="smart-home-logo" />
         </div>
 
-        <!-- Brand -->
         <div class="brand-section">
             <p class="brand-tagline">
-                Your smart home,<br>
-                your life <span class="highlight">made simple</span>.
+                @L["Your smart home,"]<br>
+                @L["your life"] <span class="highlight">@L["made simple"]</span>.
             </p>
         </div>
 
-        <!-- Page Indicators -->
         <div class="page-indicators">
             <div class="indicator-dot active"></div>
             <div class="indicator-dot"></div>
             <div class="indicator-dot"></div>
         </div>
 
-        <!-- Buttons -->
         <div class="buttons-container">
             <a asp-controller="Account" asp-action="LoginForm" class="btn btn-primary">
                 <div class="btn-content">
                     <i class="fas fa-right-to-bracket btn-icon"></i>
-                    <span>Sign In</span>
+                    <span>@L["Sign In"]</span>
                 </div>
                 <i class="fas fa-chevron-right btn-arrow"></i>
             </a>
@@ -38,43 +34,41 @@
             <a asp-controller="Account" asp-action="Register" class="btn btn-secondary">
                 <div class="btn-content">
                     <i class="fas fa-user-plus btn-icon"></i>
-                    <span>Create account</span>
+                    <span>@L["Create account"]</span>
                 </div>
                 <i class="fas fa-chevron-right btn-arrow"></i>
             </a>
         </div>
 
-        <!-- Features Grid -->
         <div class="features-grid">
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="fas fa-shield-halved"></i>
                 </div>
-                <span class="feature-label">Secure</span>
+                <span class="feature-label">@L["Secure"]</span>
             </div>
 
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="fas fa-house-signal"></i>
                 </div>
-                <span class="feature-label">Smart</span>
+                <span class="feature-label">@L["Smart"]</span>
             </div>
 
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="fas fa-bolt"></i>
                 </div>
-                <span class="feature-label">Efficient</span>
+                <span class="feature-label">@L["Efficient"]</span>
             </div>
 
             <div class="feature-item">
                 <div class="feature-icon">
                     <i class="fas fa-heart"></i>
                 </div>
-                <span class="feature-label">Connected</span>
+                <span class="feature-label">@L["Connected"]</span>
             </div>
         </div>
 
-        <!-- Version -->
-        <p class="version-text">Version 1.0.0</p>
+        <p class="version-text">@L["Version 1.0.0"]</p>
     </div>

@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyFloodSafetyViewModel
 @{
-    ViewData["Title"] = "Flood Details - INDOR";
-    ViewData["WizardTitle"] = "Flood Details";
+    ViewData["Title"] = L["Flood Details - INDOR"];
+    ViewData["WizardTitle"] = L["Flood Details"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyFloodDetails", "Inspecciones", new { id = Model.ServicioEmergenciaId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
@@ -10,19 +10,19 @@
 
 
     <div class="title-row">
-        <h1>Flood Details</h1>
+        <h1>@L["Flood Details"]</h1>
         <span class="badge-247">24/7</span>
     </div>
-    <p class="page-lead">This helps us guide you while help is on the way.</p>
+    <p class="page-lead">@L["This helps us guide you while help is on the way."]</p>
 
     
-<h2 class="page-heading">Can you stop the water safely?</h2>
+<h2 class="page-heading">@L["Can you stop the water safely?"]</h2>
 
     <div class="property-card">
         <div class="thumb"><i class="fas fa-water"></i></div>
         <div>
             <strong><i class="fas fa-house" style="color:#0066CC;margin-right:4px;"></i> @Model.DireccionPropiedad</strong>
-            <span>Flood Emergency</span>
+            <span>@L["Flood Emergency"]</span>
         </div>
     </div>
 
@@ -38,48 +38,48 @@
         <input type="hidden" asp-for="CantidadAgua" id="CantidadAgua" />
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-faucet-drip"></i> Can you shut off the water right now?</span>
+            <span class="field-label"><i class="fas fa-faucet-drip"></i> @L["Can you shut off the water right now?"]</span>
             <div class="segmented-3" data-target="PuedeCerrarAgua">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-gauge-high"></i> Where is the main shutoff?</span>
+            <span class="field-label"><i class="fas fa-gauge-high"></i> @L["Where is the main shutoff?"]</span>
             <div class="segmented-3" data-target="UbicacionCierreAgua">
-                <button type="button" class="segment-btn" data-value="InsideHome">Inside home</button>
-                <button type="button" class="segment-btn" data-value="Outside">Outside</button>
-                <button type="button" class="segment-btn" data-value="DontKnow">Don't know</button>
+                <button type="button" class="segment-btn" data-value="InsideHome">@L["Inside home"]</button>
+                <button type="button" class="segment-btn" data-value="Outside">@L["Outside"]</button>
+                <button type="button" class="segment-btn" data-value="DontKnow">@L["Don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-bolt"></i> Can you safely turn off power near the water?</span>
+            <span class="field-label"><i class="fas fa-bolt"></i> @L["Can you safely turn off power near the water?"]</span>
             <div class="segmented-3" data-target="PuedeApagarElectricidad">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NeedHelp">Need help</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NeedHelp">@L["Need help"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-water"></i> How much water is there?</span>
+            <span class="field-label"><i class="fas fa-water"></i> @L["How much water is there?"]</span>
             <div class="segmented-3" data-target="CantidadAgua">
-                <button type="button" class="segment-btn" data-value="SmallArea">Small area</button>
-                <button type="button" class="segment-btn" data-value="OneRoom">One room</button>
-                <button type="button" class="segment-btn" data-value="SeveralRooms">Several rooms</button>
+                <button type="button" class="segment-btn" data-value="SmallArea">@L["Small area"]</button>
+                <button type="button" class="segment-btn" data-value="OneRoom">@L["One room"]</button>
+                <button type="button" class="segment-btn" data-value="SeveralRooms">@L["Several rooms"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>If water is near outlets or appliances, avoid touching wet electrical equipment.</div>
+            <div>@L["If water is near outlets or appliances, avoid touching wet electrical equipment."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

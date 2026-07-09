@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyWaterHeaterReviewViewModel
 @{
-    ViewData["Title"] = "Review - INDOR";
-    ViewData["WizardTitle"] = "Review";
+    ViewData["Title"] = L["Review - INDOR"];
+    ViewData["WizardTitle"] = L["Review"];
 var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
     var hasPhotos = !Model.ArchivosResumen.StartsWith("None", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("EmergencyWaterHeaterUpload", "Inspecciones", new { id = Model.SolicitudId });
@@ -12,14 +12,14 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
 
 
     <div class="title-row">
-        <h1>Emergency Water Heater</h1>
+        <h1>@L["Emergency Water Heater"]</h1>
         <span class="badge-247">24/7</span>
     </div>
-    <p class="page-lead">Fast help for leaks, no hot water, or unsafe units.</p>
+    <p class="page-lead">@L["Fast help for leaks, no hot water, or unsafe units."]</p>
 
     
-<h2 class="page-heading">Review your request</h2>
-    <p class="page-lead" style="margin-top:-4px;">Make sure everything looks right before we dispatch help.</p>
+<h2 class="page-heading">@L["Review your request"]</h2>
+    <p class="page-lead" style="margin-top:-4px;">@L["Make sure everything looks right before we dispatch help."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyWaterHeaterReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -28,47 +28,47 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
         <div class="summary-card">
             <div class="summary-row">
                 <i class="fas fa-wrench"></i>
-                <div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-house"></i>
-                <div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-droplet"></i>
-                <div style="flex:1;"><div class="summary-label">Issue</div><div class="summary-value">@Model.ProblemaResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Issue"]</div><div class="summary-value">@Model.ProblemaResumen</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-fire"></i>
-                <div style="flex:1;"><div class="summary-label">Unit type</div><div class="summary-value">@Model.TipoUnidadResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Unit type"]</div><div class="summary-value">@Model.TipoUnidadResumen</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-location-dot"></i>
-                <div style="flex:1;"><div class="summary-label">Location</div><div class="summary-value">@Model.UbicacionResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Location"]</div><div class="summary-value">@Model.UbicacionResumen</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-circle-exclamation"></i>
-                <div style="flex:1;"><div class="summary-label">Priority</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Priority"]</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-power-off"></i>
-                <div style="flex:1;"><div class="summary-label">Unit running</div><div class="summary-value">@Model.UnidadFuncionandoResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Unit running"]</div><div class="summary-value">@Model.UnidadFuncionandoResumen</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
-                <div style="flex:1;"><div class="summary-label">Photos</div><div class="summary-value @(hasPhotos ? "photos" : "")">@Model.ArchivosResumen</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Photos"]</div><div class="summary-value @(hasPhotos ? "photos" : "")">@Model.ArchivosResumen</div></div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-key"></i>
-                <div style="flex:1;"><div class="summary-label">Access details</div><div class="summary-value">@Model.DetallesAcceso</div></div>
+                <div style="flex:1;"><div class="summary-label">@L["Access details"]</div><div class="summary-value">@Model.DetallesAcceso</div></div>
             </div>
         </div>
 
         <div class="disclaimer-box">
             <i class="fas fa-circle-info"></i>
-            <div>If this becomes unsafe before arrival, leave the area and call emergency services if needed.</div>
+            <div>@L["If this becomes unsafe before arrival, leave the area and call emergency services if needed."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="confirm">Request emergency service <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="edit">Back to edit</button>
+        <button type="submit" class="btn-primary" name="action" value="confirm">@L["Request emergency service"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="edit">@L["Back to edit"]</button>
     </form>

@@ -2,7 +2,7 @@
 <header class="iw-wizard-top">
     @if (!string.IsNullOrWhiteSpace(Model.BackUrl))
     {
-        <a href="@Model.BackUrl" class="iw-wizard-nav-btn" data-smart-back aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <a href="@Model.BackUrl" class="iw-wizard-nav-btn" data-smart-back aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
     }
     else
     {
@@ -12,12 +12,12 @@
         <strong class="iw-wizard-top-title">@Model.PageTitle</strong>
         @if (Model.DisplayStep > 0 && Model.TotalSteps > 0)
         {
-            <span class="iw-wizard-top-sub">Step @Model.DisplayStep of @Model.TotalSteps</span>
+            <span class="iw-wizard-top-sub">@L.T("Step {0} of {1}", Model.DisplayStep, Model.TotalSteps)</span>
         }
     </div>
     @if (Model.ShowClose && !string.IsNullOrWhiteSpace(Model.CloseUrl))
     {
-        <a href="@Model.CloseUrl" class="iw-wizard-nav-btn" aria-label="Close"><i class="fas fa-xmark"></i></a>
+        <a href="@Model.CloseUrl" class="iw-wizard-nav-btn" aria-label="@L["Close"]"><i class="fas fa-xmark"></i></a>
     }
     else
     {

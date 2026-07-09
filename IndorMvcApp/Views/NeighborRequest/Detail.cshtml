@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestDetailViewModel
 @{
-    ViewData["Title"] = "Request details";
+    ViewData["Title"] = L["Request details"];
     Layout = null;
     var descriptionText = Model.DescriptionBody ?? string.Empty;
     var hasStory = !Model.HasNeighborOffers && (!string.IsNullOrWhiteSpace(descriptionText) || !string.IsNullOrWhiteSpace(Model.HeroImageUrl));
@@ -11,17 +11,17 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Request details - INDOR</title>
+    <title>@L["Request details"] - INDOR</title>
     @await Html.PartialAsync("_IndorStandalonePageHead")
     <link rel="stylesheet" href="~/css/neighbor-request-detail.css" asp-append-version="true" />
 </head>
 <body class="nr-detail-page">
     <div class="nr-detail-shell">
         <header class="nr-detail-top">
-            <a href="@Model.BackUrl" class="nr-detail-nav-btn" aria-label="Back">
+            <a href="@Model.BackUrl" class="nr-detail-nav-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <strong class="nr-detail-top-title">Request details</strong>
+            <strong class="nr-detail-top-title">@L["Request details"]</strong>
             <span class="nr-detail-nav-btn nr-detail-nav-btn--spacer" aria-hidden="true"></span>
         </header>
 
@@ -94,7 +94,7 @@
                                class="nr-detail-story-preview@(Model.IsDescriptionLong ? " is-collapsed" : string.Empty)">@descriptionText</p>
                             @if (Model.IsDescriptionLong)
                             {
-                                <button type="button" class="nr-detail-toggle" id="nrDetailToggle" aria-expanded="false">See more</button>
+                                <button type="button" class="nr-detail-toggle" id="nrDetailToggle" aria-expanded="false">@L["See more"]</button>
                             }
                         </div>
                     }
@@ -106,11 +106,11 @@
                 <div class="nr-detail-actions">
                     <a href="@Model.EditUrl" class="nr-detail-btn nr-detail-btn--edit">
                         <i class="far fa-pen-to-square" aria-hidden="true"></i>
-                        <span>Edit request</span>
+                        <span>@L["Edit request"]</span>
                     </a>
                     <a href="@Model.CancelUrl" class="nr-detail-btn nr-detail-btn--cancel">
                         <i class="far fa-trash-can" aria-hidden="true"></i>
-                        <span>Cancel request</span>
+                        <span>@L["Cancel request"]</span>
                     </a>
                 </div>
             }
@@ -123,7 +123,7 @@
                     <h2>@Model.OfferCountLabel</h2>
                     @if (Model.TotalNeighborOfferCount > 1)
                     {
-                        <a href="@Model.SeeAllOffersUrl">See all</a>
+                        <a href="@Model.SeeAllOffersUrl">@L["See all"]</a>
                     }
                 </div>
                 @if (previewOffer != null)
@@ -150,7 +150,7 @@
                     <path d="M36 54H52M40 48V60" stroke="#0066CC" stroke-width="2.5" stroke-linecap="round" />
                     <path d="M168 54H184M176 48V60" stroke="#0066CC" stroke-width="2.5" stroke-linecap="round" />
                 </svg>
-                <p class="nr-detail-empty-copy">Your request is visible in the Nearby Network feed.</p>
+                <p class="nr-detail-empty-copy">@L["Your request is visible in the Nearby Network feed."]</p>
             </section>
         }
 
@@ -160,20 +160,20 @@
                 <div class="nr-detail-providers-banner">
                     <span class="nr-detail-providers-icon" aria-hidden="true"><i class="fas fa-shield-halved"></i></span>
                     <div class="nr-detail-providers-copy">
-                        <strong>INDOR Providers</strong>
-                        <p>Hire vetted professionals with insurance and top ratings.</p>
+                        <strong>@L["INDOR Providers"]</strong>
+                        <p>@L["Hire vetted professionals with insurance and top ratings."]</p>
                     </div>
-                    <a href="@Model.ViewProvidersUrl" class="nr-detail-providers-cta">View providers</a>
+                    <a href="@Model.ViewProvidersUrl" class="nr-detail-providers-cta">@L["View providers"]</a>
                 </div>
 
                 <div class="nr-detail-info nr-detail-info--inline">
                     <i class="fas fa-circle-info" aria-hidden="true"></i>
-                    <p>You can keep your current request open or switch to <a href="@Model.ProvidersUrl">INDOR Providers</a>.</p>
+                    <p>@L["You can keep your current request open or switch to"] <a href="@Model.ProvidersUrl">@L["INDOR Providers"]</a>.</p>
                 </div>
 
                 @if (Model.ProviderOffers.Count > 0)
                 {
-                    <h3 class="nr-detail-providers-list-title">INDOR Providers offers</h3>
+                    <h3 class="nr-detail-providers-list-title">@L["INDOR Providers offers"]</h3>
                     <div class="nr-detail-provider-list">
                         @foreach (var offer in Model.ProviderOffers)
                         {
@@ -204,7 +204,7 @@
         {
             <div class="nr-detail-info">
                 <i class="fas fa-circle-info" aria-hidden="true"></i>
-                <p>You can edit your request anytime or switch later to <a href="@Model.ProvidersUrl">INDOR Providers</a>.</p>
+                <p>@L["You can edit your request anytime or switch later to"] <a href="@Model.ProvidersUrl">@L["INDOR Providers"]</a>.</p>
             </div>
         }
     </div>
@@ -217,9 +217,11 @@
                 var toggle = document.getElementById('nrDetailToggle');
                 if (!description || !toggle) return;
 
+                var seeMore = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["See more"]));
+                var seeLess = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["See less"]));
                 toggle.addEventListener('click', function () {
                     var collapsed = description.classList.toggle('is-collapsed');
-                    toggle.textContent = collapsed ? 'See more' : 'See less';
+                    toggle.textContent = collapsed ? seeMore : seeLess;
                     toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
                 });
             })();

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorEmergencyTreeBranchReviewViewModel
 @{
-    ViewData["Title"] = "Review tree emergency request";
+    ViewData["Title"] = L["Review tree emergency request"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,14 +13,14 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Review tree emergency request</h1>
-        <p>Make sure everything looks right before we dispatch help.</p>
+        <h1>@L["Review tree emergency request"]</h1>
+        <p>@L["Make sure everything looks right before we dispatch help."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
     <article class="pa-tree-review-section">
-        <h2><i class="fas fa-list-check"></i> Request summary</h2>
+        <h2><i class="fas fa-list-check"></i> @L["Request summary"]</h2>
         <div class="pa-moving-review-card">
             @foreach (var row in Model.RequestSummaryRows)
             {
@@ -40,7 +40,7 @@
     </article>
 
     <article class="pa-tree-review-section">
-        <h2><i class="fas fa-user-check"></i> Access &amp; contact</h2>
+        <h2><i class="fas fa-user-check"></i> @L["Access &amp; contact"]</h2>
         <div class="pa-moving-review-card">
             @foreach (var row in Model.AccessContactRows)
             {
@@ -58,13 +58,13 @@
             <div>
                 <strong>@Model.ProEtaLabel</strong>
                 <div class="pa-trust-badges">
-                    <span>Licensed</span><span>Insured</span><span>Storm response</span>
+                    <span>@L["Licensed"]</span><span>@L["Insured"]</span><span>@L["Storm response"]</span>
                 </div>
             </div>
         </div>
-        <p>Estimated service visit: <strong>@Model.EstimatedPrice</strong></p>
-        <p>Emergency dispatch: <span class="pa-included">Included</span></p>
-        <button type="button" class="pa-tree-pro-link">View pro details <i class="fas fa-chevron-right"></i></button>
+        <p>@L["Estimated service visit:"] <strong>@Model.EstimatedPrice</strong></p>
+        <p>@L["Emergency dispatch:"] <span class="pa-included">@L["Included"]</span></p>
+        <button type="button" class="pa-tree-pro-link">@L["View pro details"] <i class="fas fa-chevron-right"></i></button>
     </article>
 
     <form asp-action="EmergencyTreeBranchReview" method="post">
@@ -91,10 +91,10 @@
 
         <div class="pa-notify-banner pa-notify-banner--warn">
             <i class="fas fa-circle-info"></i>
-            <span>We'll send status updates to you and the guest.</span>
+            <span>@L["We'll send status updates to you and the guest."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request emergency service</button>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request emergency service"]</button>
     </form>
-    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">Edit details</a>
+    <a href="@ViewBag.FlowBackUrl" class="ob-btn ob-btn-outline pa-flow-edit">@L["Edit details"]</a>
 </div>

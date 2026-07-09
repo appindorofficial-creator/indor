@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorTrashOutStep1ViewModel
 @{
-    ViewData["Title"] = "Trash Out Service";
+    ViewData["Title"] = L["Trash Out Service"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-trash-can pa-flow-title-icon pa-flow-title-icon--purple"></i> Trash Out Service</h1>
-        <p>Set up curbside bin service for your rental or Airbnb property.</p>
+        <h1><i class="fas fa-trash-can pa-flow-title-icon pa-flow-title-icon--purple"></i> @L["Trash Out Service"]</h1>
+        <p>@L["Set up curbside bin service for your rental or Airbnb property."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -29,7 +29,7 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
         </div>
     }
 
@@ -39,7 +39,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-trash-arrow-up pa-q-icon pa-q-icon--purple"></i> What do you need?</label>
+            <label><i class="fas fa-trash-arrow-up pa-q-icon pa-q-icon--purple"></i> @L["What do you need?"]</label>
             <div class="pa-trash-service-row">
                 @foreach (var s in new (string Value, string Label, string Icon)[]
                 {
@@ -60,7 +60,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label><i class="fas fa-recycle pa-q-icon pa-q-icon--purple"></i> Which bins? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-recycle pa-q-icon pa-q-icon--purple"></i> @L["Which bins?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-trash-bins-row">
                 @foreach (var b in new (string Value, string Label, string Icon)[] { ("Trash", "Trash", "fa-trash-can"), ("Recycle", "Recycle", "fa-recycle"), ("YardWaste", "Yard waste", "fa-leaf") })
                 {
@@ -76,7 +76,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>How many bins?</label>
+            <label>@L["How many bins?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var c in new (string Value, string Label)[] { ("One", "1"), ("Two", "2"), ("ThreePlus", "3+") })
                 {
@@ -90,7 +90,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label><i class="fas fa-location-dot pa-q-icon pa-q-icon--purple"></i> Where are the bins now?</label>
+            <label><i class="fas fa-location-dot pa-q-icon pa-q-icon--purple"></i> @L["Where are the bins now?"]</label>
             <div class="pa-trash-location-grid">
                 @foreach (var l in new (string Value, string Label, string Icon)[] { ("Garage", "Garage", "fa-warehouse"), ("SideYard", "Side yard", "fa-fence"), ("Backyard", "Backyard", "fa-tree"), ("FrontCurb", "Front curb", "fa-road") })
                 {
@@ -106,7 +106,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> Pickup day</label>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--purple"></i> @L["Pickup day"]</label>
             <div class="pa-trash-pickup-row">
                 @foreach (var d in new[] { "Today", "Tomorrow", "Later" })
                 {
@@ -121,7 +121,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> Quick notes <small>(optional)</small></label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--purple"></i> @L["Quick notes"] <small>@L["(optional)"]</small></label>
             <textarea class="pa-textarea" name="QuickNotes" rows="3" maxlength="250" id="toNotes">@Model.QuickNotes</textarea>
             <small class="pa-char-count"><span id="toNotesCount">@Model.QuickNotes.Length</span> / 250</small>
         </div>
@@ -130,13 +130,13 @@
             <i class="fas fa-circle-info"></i>
             <div>
                 <strong>Flat rate: @Model.FlatRateLabel for take-out and return service.</strong>
-                <small>Includes taking bins out for collection and bringing them back in.</small>
+                <small>@L["Includes taking bins out for collection and bringing them back in."]</small>
             </div>
             <i class="fas fa-tag"></i>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

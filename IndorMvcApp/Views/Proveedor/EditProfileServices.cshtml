@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProEditProfileServicesViewModel
 @{
-    ViewData["Title"] = "Edit Services - INDOR PRO";
+    ViewData["Title"] = L["Edit Services - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -12,8 +12,8 @@
     <header class="prv-pro-jobs-head">
         <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Services Offered</h1>
-            <p>Select the categories and services your business provides.</p>
+            <h1>@L["Services Offered"]</h1>
+            <p>@L["Select the categories and services your business provides."]</p>
         </div>
     </header>
 
@@ -28,8 +28,8 @@
         @Html.AntiForgeryToken()
 
         <section class="prv-pro-wizard-card">
-            <h2>What services do you offer?</h2>
-            <p>Select at least one category or service. These appear on your public profile.</p>
+            <h2>@L["What services do you offer?"]</h2>
+            <p>@L["Select at least one category or service. These appear on your public profile."]</p>
             <div class="prv-pro-profile-tags prv-pro-edit-profile-service-grid">
                 @foreach (var option in Model.Options)
                 {
@@ -39,7 +39,7 @@
                         <span>@option.Label</span>
                         @if (option.IsCategory)
                         {
-                            <small>Category</small>
+                            <small>@L["Category"]</small>
                         }
                     </label>
                 }
@@ -47,10 +47,9 @@
         </section>
 
         <footer class="prv-pro-edit-profile-actions">
-            <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">@L["Cancel"]</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
-                <i class="fas fa-floppy-disk"></i> Save services
-            </button>
+                <i class="fas fa-floppy-disk"></i> @L["Save services"]</button>
         </footer>
     </form>
 </div>

@@ -1,3 +1,5 @@
+using System.Globalization;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +24,8 @@ public static class MovingSetupDisplayService
         MovingSetupConfig? config,
         IEnumerable<MovingSetupServicio> servicios,
         IEnumerable<MovingSetupEnlaceRapido> enlaces,
-        IUrlHelper urlHelper)
+        IUrlHelper urlHelper,
+        bool isSpanish = false)
     {
         if (config == null || !config.Activo)
         {
@@ -68,7 +71,7 @@ public static class MovingSetupDisplayService
         return new MovingSetupSectionViewModel
         {
             Titulo = config.Titulo,
-            Subtitulo = $"{serviceItems.Count} moving service{(serviceItems.Count == 1 ? "" : "s")} for your home",
+            Subtitulo = FormatCountSubtitle(serviceItems.Count, isSpanish),
             IconoClase = config.IconoClase,
             ViewAllTexto = config.ViewAllTexto,
             ViewAllUrl = string.IsNullOrWhiteSpace(config.ViewAllUrl)
@@ -94,6 +97,15 @@ public static class MovingSetupDisplayService
                 })
                 .ToList()
         };
+    }
+
+    private static string FormatCountSubtitle(int count, bool isSpanish)
+    {
+        var key = count == 1
+            ? "{0} moving service for your home"
+            : "{0} moving services for your home";
+        var template = isSpanish && UiTranslations.Spanish.TryGetValue(key, out var es) ? es : key;
+        return string.Format(CultureInfo.CurrentCulture, template, count);
     }
 
     private static string? ResolveServicioUrl(IUrlHelper urlHelper, MovingSetupServicio servicio)

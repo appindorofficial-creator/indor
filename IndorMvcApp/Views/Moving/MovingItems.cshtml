@@ -18,58 +18,58 @@
         <input type="hidden" asp-for="RequiereMontaje" id="RequiereMontaje" />
 
         <div class="field-card">
-            <span class="field-label">What needs to be moved?</span>
+            <span class="field-label">@L["What needs to be moved?"]</span>
             <div class="tile-grid" id="itemsGroup">
-                <button type="button" class="tile-btn" data-value="Sofa"><i class="fas fa-couch"></i>Sofa</button>
-                <button type="button" class="tile-btn" data-value="Bed"><i class="fas fa-bed"></i>Bed</button>
-                <button type="button" class="tile-btn" data-value="Mattress"><i class="fas fa-mattress-pillow"></i>Mattress</button>
-                <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>Dining table</button>
-                <button type="button" class="tile-btn" data-value="Appliances"><i class="fas fa-blender"></i>Appliances</button>
-                <button type="button" class="tile-btn" data-value="Boxes"><i class="fas fa-box"></i>Boxes</button>
-                <button type="button" class="tile-btn" data-value="OfficeDesk"><i class="fas fa-desktop"></i>Office desk</button>
-                <button type="button" class="tile-btn" data-value="Other"><i class="fas fa-ellipsis"></i>Other</button>
+                <button type="button" class="tile-btn" data-value="Sofa"><i class="fas fa-couch"></i>@L["Sofa"]</button>
+                <button type="button" class="tile-btn" data-value="Bed"><i class="fas fa-bed"></i>@L["Bed"]</button>
+                <button type="button" class="tile-btn" data-value="Mattress"><i class="fas fa-mattress-pillow"></i>@L["Mattress"]</button>
+                <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>@L["Dining table"]</button>
+                <button type="button" class="tile-btn" data-value="Appliances"><i class="fas fa-blender"></i>@L["Appliances"]</button>
+                <button type="button" class="tile-btn" data-value="Boxes"><i class="fas fa-box"></i>@L["Boxes"]</button>
+                <button type="button" class="tile-btn" data-value="OfficeDesk"><i class="fas fa-desktop"></i>@L["Office desk"]</button>
+                <button type="button" class="tile-btn" data-value="Other"><i class="fas fa-ellipsis"></i>@L["Other"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What's the size of your move?</span>
+            <span class="field-label">@L["What's the size of your move?"]</span>
             <div class="tile-grid" data-target="TamanoMovimiento">
-                <button type="button" class="tile-btn" data-value="FewItems"><i class="fas fa-box"></i>Few items<span class="sub">Just a few</span></button>
-                <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>Studio<span class="sub">Small space</span></button>
-                <button type="button" class="tile-btn" data-value="OneTwoBedroom"><i class="fas fa-door-open"></i>1-2 Bedroom<span class="sub">Medium home</span></button>
-                <button type="button" class="tile-btn" data-value="ThreePlusBedroom"><i class="fas fa-house-user"></i>3+ Bedroom<span class="sub">Large home</span></button>
+                <button type="button" class="tile-btn" data-value="FewItems"><i class="fas fa-box"></i>@L["Few items"]<span class="sub">@L["Just a few"]</span></button>
+                <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>@L["Studio"]<span class="sub">@L["Small space"]</span></button>
+                <button type="button" class="tile-btn" data-value="OneTwoBedroom"><i class="fas fa-door-open"></i>@L["1-2 Bedroom"]<span class="sub">@L["Medium home"]</span></button>
+                <button type="button" class="tile-btn" data-value="ThreePlusBedroom"><i class="fas fa-house-user"></i>@L["3+ Bedroom"]<span class="sub">@L["Large home"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What are the access conditions?</span>
+            <span class="field-label">@L["What are the access conditions?"]</span>
             <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
-                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> Stairs</button>
-                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> Elevator</button>
-                <button type="button" class="chip-btn" data-value="LongWalk"><i class="fas fa-person-walking"></i> Long walk</button>
-                <button type="button" class="chip-btn" data-value="TightHallway"><i class="fas fa-arrows-left-right"></i> Tight hallway</button>
-                <button type="button" class="chip-btn" data-value="ParkingIssue"><i class="fas fa-square-parking"></i> Parking issue</button>
+                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> @L["Stairs"]</button>
+                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> @L["Elevator"]</button>
+                <button type="button" class="chip-btn" data-value="LongWalk"><i class="fas fa-person-walking"></i> @L["Long walk"]</button>
+                <button type="button" class="chip-btn" data-value="TightHallway"><i class="fas fa-arrows-left-right"></i> @L["Tight hallway"]</button>
+                <button type="button" class="chip-btn" data-value="ParkingIssue"><i class="fas fa-square-parking"></i> @L["Parking issue"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Need assembly or disassembly?</span>
+            <span class="field-label">@L["Need assembly or disassembly?"]</span>
             <div class="tile-grid" style="grid-template-columns:1fr 1fr;" data-target="RequiereMontaje">
-                <button type="button" class="tile-btn" data-value="Yes"><i class="fas fa-screwdriver-wrench"></i>Yes</button>
-                <button type="button" class="tile-btn" data-value="No"><i class="fas fa-ban"></i>No</button>
+                <button type="button" class="tile-btn" data-value="Yes"><i class="fas fa-screwdriver-wrench"></i>@L["Yes"]</button>
+                <button type="button" class="tile-btn" data-value="No"><i class="fas fa-ban"></i>@L["No"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Add photos or notes (optional)</span>
-            <p class="photo-hint">Add up to 5 photos. Tap to add more — each photo stays until you remove it.</p>
+            <span class="field-label">@L["Add photos or notes (optional)"]</span>
+            <p class="photo-hint">@L["Add up to 5 photos. Tap to add more — each photo stays until you remove it."]</p>
             <div class="photo-upload-slot">
                 <input type="file" name="files" id="movingPhotos" class="photo-input-hidden" multiple
                        accept="image/*,.jpg,.jpeg,.png" />
                 <label class="photo-upload" id="movingPhotoDropzone" for="movingPhotos">
                     <i class="fas fa-camera"></i>
-                    <p><strong>Upload photos</strong></p>
-                    <p>JPG or PNG, up to 10 MB each</p>
+                    <p><strong>@L["Upload photos"]</strong></p>
+                    <p>@L["JPG or PNG, up to 10 MB each"]</p>
                 </label>
                 <div class="photo-selected-list" id="movingPhotoList" hidden></div>
             </div>
@@ -88,7 +88,7 @@
                                 <i class="fas fa-image"></i>
                             }
                             <span>@file.NombreArchivo</span>
-                            <button type="submit" form="removeMovingPhoto@(file.Id)" class="photo-remove-btn" aria-label="Remove @file.NombreArchivo">
+                            <button type="submit" form="removeMovingPhoto@(file.Id)" class="photo-remove-btn" aria-label="@L["Remove @file.NombreArchivo"]">
                                 <i class="fas fa-xmark"></i>
                             </button>
                         </div>
@@ -97,13 +97,13 @@
             }
             <div class="input-wrap" style="margin-top:10px;">
                 <i class="fas fa-note-sticky"></i>
-                <textarea asp-for="NotaCorta" rows="3" placeholder="Add notes"></textarea>
+                <textarea asp-for="NotaCorta" rows="3" placeholder="@L["Add notes"]"></textarea>
             </div>
         </div>
 
         <div class="cl-form-actions">
-            <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+            <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
     </form>
 

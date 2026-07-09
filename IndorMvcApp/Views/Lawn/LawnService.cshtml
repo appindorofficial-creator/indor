@@ -27,7 +27,7 @@
     @if (Model.IncludedItems.Count > 0)
     {
         <div class="includes-box">
-            <div class="includes-label">What's included</div>
+            <div class="includes-label">@L["What's included"]</div>
             <ul>
                 @foreach (var item in Model.IncludedItems)
                 {
@@ -40,7 +40,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.PrecioTexto))
     {
         <div class="lawn-price-row">
-            <span class="prefix">Starting at</span>
+            <span class="prefix">@L["Starting at"]</span>
             <span class="amount">$@Model.PrecioDesde.ToString("0")</span>
             <span class="prefix">USD</span>
         </div>

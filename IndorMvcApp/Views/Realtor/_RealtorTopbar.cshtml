@@ -11,26 +11,26 @@
             <button type="button"
                     class="rl-portal-icon-btn @(Model.HasNotifications ? "has-dot" : "")"
                     id="rlNotifyBtn"
-                    aria-label="Notifications"
+                    aria-label="@L["Notifications"]"
                     aria-haspopup="true"
                     aria-expanded="false"
                     aria-controls="rlNotifyPanel">
                 <i class="fas fa-bell"></i>
             </button>
-            <div class="rl-notify-panel" id="rlNotifyPanel" role="dialog" aria-label="Recent activity" hidden>
+            <div class="rl-notify-panel" id="rlNotifyPanel" role="dialog" aria-label="@L["Recent activity"]" hidden>
                 <div class="rl-notify-panel-head">
-                    <strong>Notifications</strong>
+                    <strong>@L["Notifications"]</strong>
                     @if (Model.HasNotifications)
                     {
-                        <span class="rl-notify-badge" id="rlNotifyNewBadge">New</span>
+                        <span class="rl-notify-badge" id="rlNotifyNewBadge">@L["New"]</span>
                     }
                 </div>
                 @if (Model.RecentNotifications.Count == 0)
                 {
                     <div class="rl-notify-empty">
                         <i class="fas fa-bell-slash"></i>
-                        <p>No recent activity yet.</p>
-                        <span>Upload a report, invite a client, or request a quote to see updates here.</span>
+                        <p>@L["No recent activity yet."]</p>
+                        <span>@L["Upload a report, invite a client, or request a quote to see updates here."]</span>
                     </div>
                 }
                 else
@@ -67,7 +67,7 @@
                 }
                 <div class="rl-notify-panel-foot">
                     <a asp-controller="Realtor" asp-action="Profile" class="rl-notify-settings-link">
-                        <i class="fas fa-gear"></i> Notification settings
+                        <i class="fas fa-gear"></i> @L["Notification settings"]
                     </a>
                 </div>
             </div>

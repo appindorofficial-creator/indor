@@ -1,26 +1,26 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorSavedProvidersViewModel
 @{
-    ViewData["Title"] = "Saved providers";
+    ViewData["Title"] = L["Saved providers"];
     Layout = "_PropertyAdminLayout";
 }
 
 <div class="pa-portal-shell pa-portal-shell--providers">
     <header class="pa-personal-header">
-        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="pa-personal-header-text">
-            <h1>Saved providers</h1>
-            <p>Your trusted pros from past service requests. Book them again anytime.</p>
+            <h1>@L["Saved providers"]</h1>
+            <p>@L["Your trusted pros from past service requests. Book them again anytime."]</p>
         </div>
     </header>
 
     <section class="pa-personal-section">
-        <h2>Your providers</h2>
+        <h2>@L["Your providers"]</h2>
         @if (!Model.Providers.Any())
         {
             <div class="pa-empty-note">
-                <p>You don't have any saved providers yet. Providers you work with on service requests will appear here.</p>
+                <p>@L["You don't have any saved providers yet. Providers you work with on service requests will appear here."]</p>
             </div>
         }
         <div class="pa-personal-list">
@@ -38,7 +38,7 @@
                         {
                             <span class="pa-provider-rating"><i class="fas fa-star"></i> @provider.RatingLabel</span>
                         }
-                        <a href="@provider.RequestUrl" class="pa-provider-request">Request again</a>
+                        <a href="@provider.RequestUrl" class="pa-provider-request">@L["Request again"]</a>
                     </div>
                 </div>
             }
@@ -47,10 +47,10 @@
 
     <section class="pa-personal-info-card">
         <div>
-            <strong>Need someone new?</strong>
-            <p>Browse the full service catalog to find more trusted pros for your portfolio.</p>
+            <strong>@L["Need someone new?"]</strong>
+            <p>@L["Browse the full service catalog to find more trusted pros for your portfolio."]</p>
         </div>
-        <a href="@Model.BrowseServicesUrl" class="pa-provider-browse" aria-label="Browse services">
+        <a href="@Model.BrowseServicesUrl" class="pa-provider-browse" aria-label="@L["Browse services"]">
             <i class="fas fa-chevron-right"></i>
         </a>
     </section>

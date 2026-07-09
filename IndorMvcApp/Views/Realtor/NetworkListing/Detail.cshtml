@@ -14,12 +14,12 @@
 
 <div class="rl-dash-shell rl-listing-detail-page">
     <header class="rl-listing-detail-head">
-        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-listing-detail-back" aria-label="Back to Nearby Network">
+        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-listing-detail-back" aria-label="@L["Back to Nearby Network"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div class="rl-listing-detail-head-copy">
             <h1>@(Model.IsOwned ? "My Listing" : "Property Details")</h1>
-            <p>Nearby Network</p>
+            <p>@L["Nearby Network"]</p>
         </div>
     </header>
 
@@ -56,19 +56,19 @@
         <div class="rl-listing-detail-stats">
             <div>
                 <strong>@(Model.Bedrooms?.ToString("0.#") ?? "—")</strong>
-                <span>Beds</span>
+                <span>@L["Beds"]</span>
             </div>
             <div>
                 <strong>@(Model.Bathrooms?.ToString("0.#") ?? "—")</strong>
-                <span>Baths</span>
+                <span>@L["Baths"]</span>
             </div>
             <div>
                 <strong>@(Model.SquareFeet is > 0 ? Model.SquareFeet.Value.ToString("N0") : "—")</strong>
-                <span>Sq Ft</span>
+                <span>@L["Sq Ft"]</span>
             </div>
             <div>
                 <strong>@(Model.YearBuilt?.ToString() ?? "—")</strong>
-                <span>Year Built</span>
+                <span>@L["Year Built"]</span>
             </div>
         </div>
 
@@ -86,7 +86,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.Description))
     {
         <section class="rl-listing-detail-card">
-            <h3>About this home</h3>
+            <h3>@L["About this home"]</h3>
             <p>@Model.Description</p>
         </section>
     }
@@ -94,7 +94,7 @@
     @if (Model.HighlightLabels.Count > 0)
     {
         <section class="rl-listing-detail-card">
-            <h3>Highlights</h3>
+            <h3>@L["Highlights"]</h3>
             <div class="rl-listing-detail-highlights">
                 @foreach (var highlight in Model.HighlightLabels)
                 {
@@ -107,7 +107,7 @@
     @if (extraPhotos.Count > 0)
     {
         <section class="rl-listing-detail-card">
-            <h3>More photos</h3>
+            <h3>@L["More photos"]</h3>
             <div class="rl-listing-detail-gallery">
                 @foreach (var photo in extraPhotos)
                 {
@@ -120,7 +120,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.PhotoGalleryLink))
     {
         <section class="rl-listing-detail-card">
-            <h3>Photo gallery</h3>
+            <h3>@L["Photo gallery"]</h3>
             <a href="@Model.PhotoGalleryLink" target="_blank" rel="noopener" class="rl-listing-detail-link">
                 <i class="fas fa-images"></i> View full gallery
             </a>
@@ -130,7 +130,7 @@
     @if (!string.IsNullOrWhiteSpace(Model.PhotoPdfUrl))
     {
         <section class="rl-listing-detail-card">
-            <h3>Property brochure</h3>
+            <h3>@L["Property brochure"]</h3>
             <a href="@Model.PhotoPdfUrl" target="_blank" rel="noopener" class="rl-listing-detail-link">
                 <i class="fas fa-file-pdf"></i> @(Model.PhotoPdfFileName ?? "Download PDF")
             </a>
@@ -140,7 +140,7 @@
     @if (mapsQuery is not null)
     {
         <section class="rl-listing-detail-card">
-            <h3>Location</h3>
+            <h3>@L["Location"]</h3>
             @if (Model.HasGoogleMaps && Model.Latitude is not null && Model.Longitude is not null)
             {
                 <div class="rl-listing-detail-map" id="rlListingDetailMap"
@@ -168,9 +168,9 @@
         }
         @if (Model.InterestSent)
         {
-            <p class="rl-listing-detail-notice"><i class="fas fa-circle-check"></i> Your interest was sent to the listing agent.</p>
+            <p class="rl-listing-detail-notice"><i class="fas fa-circle-check"></i> @L["Your interest was sent to the listing agent."]</p>
         }
-        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-btn-outline rl-btn-outline--sm">Back to Feed</a>
+        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Homes" class="rl-btn-outline rl-btn-outline--sm">@L["Back to Feed"]</a>
     </div>
 </div>
 

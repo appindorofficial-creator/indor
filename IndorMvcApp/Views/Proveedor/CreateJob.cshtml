@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateJobCategoriesViewModel
 @{
-    ViewData["Title"] = "Create Job - INDOR PRO";
+    ViewData["Title"] = L["Create Job - INDOR PRO"];
     Layout = "_ProviderProLayout";
     var createJobCancelAction = (ViewBag.CreateJobCancelAction as string) ?? "Jobs";
     var selectedId = Model.SelectedCategoryId ?? Model.Categories.FirstOrDefault()?.Id;
@@ -23,10 +23,10 @@
         @Html.AntiForgeryToken()
 
         <section class="prv-pro-wizard-card">
-            <h2>What type of job are you creating?</h2>
-            <p>Choose a category so INDOR can organize the work and prepare the right quote flow.</p>
+            <h2>@L["What type of job are you creating?"]</h2>
+            <p>@L["Choose a category so INDOR can organize the work and prepare the right quote flow."]</p>
 
-            <div class="prv-pro-type-grid" role="radiogroup" aria-label="Job type">
+            <div class="prv-pro-type-grid" role="radiogroup" aria-label="@L["Job type"]">
                 @foreach (var cat in Model.Categories)
                 {
                     var isSelected = cat.Id == selectedId;
@@ -46,17 +46,17 @@
         </section>
 
         <section class="prv-pro-wizard-card">
-            <h2>Job naming</h2>
+            <h2>@L["Job naming"]</h2>
             <label class="prv-pro-form-label">
                 Job name
-                <input type="text" name="Title" id="createJobTitle" value="@jobTitle" placeholder="Water Damage Inspection" required />
+                <input type="text" name="Title" id="createJobTitle" value="@jobTitle" placeholder="@L["Water Damage Inspection"]" required />
             </label>
-            <small class="prv-pro-wizard-hint">This will help classify the job in your list.</small>
+            <small class="prv-pro-wizard-hint">@L["This will help classify the job in your list."]</small>
         </section>
 
         <div class="prv-pro-wizard-actions">
-            <a asp-controller="Proveedor" asp-action="@createJobCancelAction" class="prv-pro-btn prv-pro-btn--outline">Cancel</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
+            <a asp-controller="Proveedor" asp-action="@createJobCancelAction" class="prv-pro-btn prv-pro-btn--outline">@L["Cancel"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Continue"]</button>
         </div>
     </form>
 </div>

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProJobCompletionReportViewModel
 @{
-    ViewData["Title"] = "Job Completion Report - INDOR PRO";
+    ViewData["Title"] = L["Job Completion Report - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
 }
@@ -12,10 +12,10 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="Jobs" asp-route-tab="completed" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Job Completion Report</h1>
+            <h1>@L["Job Completion Report"]</h1>
             <small>@Model.ReportCode</small>
         </div>
-        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+        <button type="button" class="prv-pro-lead-share" aria-label="@L["Share"]"><i class="fas fa-share-nodes"></i></button>
     </header>
 
     <section class="prv-pro-lead-summary">
@@ -24,7 +24,7 @@
             <h2>@Model.Title</h2>
             <small>@Model.Address</small>
             <div class="prv-pro-lead-badges">
-                <span class="prv-pro-pill prv-pro-pill--completed">Completed</span>
+                <span class="prv-pro-pill prv-pro-pill--completed">@L["Completed"]</span>
             </div>
             <p class="prv-pro-lead-timeline">@Model.CompletedLabel</p>
         </div>
@@ -34,7 +34,7 @@
     {
         <section class="prv-pro-lead-section">
             <div class="prv-pro-panel-head">
-                <h3>Before &amp; After Photos</h3>
+                <h3>@L["Before &amp; After Photos"]</h3>
                 <span class="prv-pro-count-muted">@Model.Photos.Count total</span>
             </div>
             <div class="prv-pro-report-photos">
@@ -59,7 +59,7 @@
 
     <section class="prv-pro-report-grid">
         <div class="prv-pro-lead-section">
-            <h3>Materials Used</h3>
+            <h3>@L["Materials Used"]</h3>
             <ul class="prv-pro-materials-list">
                 @foreach (var material in Model.Materials)
                 {
@@ -71,9 +71,9 @@
         @if (!string.IsNullOrWhiteSpace(Model.LaborWarranty))
         {
             <div class="prv-pro-lead-section">
-                <h3>Warranty</h3>
+                <h3>@L["Warranty"]</h3>
                 <strong>@Model.LaborWarranty</strong>
-                <small>Covers labor and installation</small>
+                <small>@L["Covers labor and installation"]</small>
             </div>
         }
     </section>

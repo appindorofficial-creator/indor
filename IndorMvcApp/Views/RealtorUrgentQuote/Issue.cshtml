@@ -14,13 +14,13 @@
 
         <i class="fas fa-circle-info"></i>
 
-        <p>Choose the type of problem and the response speed needed. Keep it short so INDOR can send it fast.</p>
+        <p>@L["Choose the type of problem and the response speed needed. Keep it short so INDOR can send it fast."]</p>
 
     </div>
 
 
 
-    <h2 class="rl-invite-section-title">1. What type of issue is it?</h2>
+    <h2 class="rl-invite-section-title">@L["1. What type of issue is it?"]</h2>
 
     <div class="rl-issue-grid">
 
@@ -46,7 +46,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">2. How fast do you need a response?</h2>
+    <h2 class="rl-invite-section-title">@L["2. How fast do you need a response?"]</h2>
 
     <div class="rl-urgency-row">
 
@@ -70,11 +70,11 @@
 
 
 
-    <h2 class="rl-invite-section-title">3. Quick description</h2>
+    <h2 class="rl-invite-section-title">@L["3. Quick description"]</h2>
 
     <input type="text" name="quickDescription" value="@Model.QuickDescription" class="rl-field-select rl-field-select--full"
 
-           placeholder="A/C not cooling upstairs." maxlength="200" />
+           placeholder="@L["A/C not cooling upstairs."]" maxlength="200" />
 
 
 
@@ -104,7 +104,7 @@
 
         <i class="fas fa-circle-info"></i>
 
-        <p>Fast mode is designed for urgent or closing-related quote requests.</p>
+        <p>@L["Fast mode is designed for urgent or closing-related quote requests."]</p>
 
     </div>
 
@@ -114,9 +114,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="Property" class="rl-invite-cancel">Back</a>
+    <a asp-action="Property" class="rl-invite-cancel">@L["Back"]</a>
 
-    <button type="submit" form="urgentIssueForm" class="ob-btn ob-btn-primary">Continue</button>
+    <button type="submit" form="urgentIssueForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
 
 </div>
 

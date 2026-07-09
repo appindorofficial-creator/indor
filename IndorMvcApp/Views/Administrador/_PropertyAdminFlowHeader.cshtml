@@ -8,14 +8,14 @@
 <header class="pa-flow-header">
     @if (showBack)
     {
-        <a href="@backUrl" class="pa-back-inline" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <a href="@backUrl" class="pa-back-inline" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
     }
     else
     {
         <span class="pa-back-inline" style="visibility:hidden" aria-hidden="true"></span>
     }
-    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo pa-portal-logo--center" aria-label="INDOR home">
-        <span class="pa-portal-logo-text">ÎNDÔR</span>
+    <a asp-controller="Administrador" asp-action="Index" class="pa-portal-logo pa-portal-logo--center" aria-label="@L["INDOR home"]">
+        <span class="pa-portal-logo-text">@L["ÎNDÔR"]</span>
     </a>
     <span class="pa-flow-step-pill pa-flow-step-pill--sm">Step @flowStep of @totalSteps</span>
 </header>

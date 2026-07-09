@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorCalendarViewModel
 @{
-    ViewData["Title"] = "Calendar";
+    ViewData["Title"] = L["Calendar"];
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "calendar";
 }
@@ -9,19 +9,19 @@
     @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
     <section class="pa-hero-block">
-        <h1>Calendar</h1>
-        <p>Upcoming visits and scheduled service across your portfolio.</p>
+        <h1>@L["Calendar"]</h1>
+        <p>@L["Upcoming visits and scheduled service across your portfolio."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
 
     <section class="pa-section">
         <div class="pa-section-head">
-            <h2>Scheduled visits</h2>
+            <h2>@L["Scheduled visits"]</h2>
         </div>
         @if (Model.Visits.Count == 0)
         {
-            <div class="pa-empty-card">No visits on the calendar yet.</div>
+            <div class="pa-empty-card">@L["No visits on the calendar yet."]</div>
         }
         else
         {
@@ -43,8 +43,8 @@
     {
         <section class="pa-section">
             <div class="pa-section-head">
-                <h2>Scheduled requests</h2>
-                <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="scheduled">View all <i class="fas fa-chevron-right"></i></a>
+                <h2>@L["Scheduled requests"]</h2>
+                <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="scheduled">@L["View all"] <i class="fas fa-chevron-right"></i></a>
             </div>
             @foreach (var request in Model.ScheduledRequests)
             {

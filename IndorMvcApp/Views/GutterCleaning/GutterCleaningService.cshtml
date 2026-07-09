@@ -39,28 +39,28 @@
         <input type="hidden" asp-for="TipoAccionInicial" id="TipoAccionInicial" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-list-check"></i><span>What would you like to do?</span></div>
+            <div class="field-head"><i class="fas fa-list-check"></i><span>@L["What would you like to do?"]</span></div>
             <button type="button" class="action-card" data-action="Reminder">
                 <span class="radio"></span>
                 <i class="fas fa-bell main"></i>
-                <div><strong>I need a reminder</strong><span>Remind me when it's time</span></div>
+                <div><strong>@L["I need a reminder"]</strong><span>@L["Remind me when it's time"]</span></div>
             </button>
             <button type="button" class="action-card" data-action="ScheduleService">
                 <span class="radio"></span>
                 <i class="fas fa-calendar main"></i>
-                <div><strong>I want to schedule service</strong><span>Book a pro to handle it</span></div>
+                <div><strong>@L["I want to schedule service"]</strong><span>@L["Book a pro to handle it"]</span></div>
             </button>
             <button type="button" class="action-card" data-action="AlreadyDone">
                 <span class="radio"></span>
                 <i class="fas fa-circle-check main"></i>
-                <div><strong>I already did it</strong><span>Mark this task as complete</span></div>
+                <div><strong>@L["I already did it"]</strong><span>@L["Mark this task as complete"]</span></div>
             </button>
         </div>
 
         @if (Model.WhyItMattersItems.Count > 0)
         {
             <div class="why-checklist">
-                <h4>Why this matters</h4>
+                <h4>@L["Why this matters"]</h4>
                 <ul>
                     @foreach (var item in Model.WhyItMattersItems)
                     {

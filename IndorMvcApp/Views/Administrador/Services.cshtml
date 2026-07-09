@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorServicesViewModel
 @{
-    ViewData["Title"] = "Services";
+    ViewData["Title"] = L["Services"];
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "services";
     var filters = new[] {
@@ -20,8 +20,8 @@
 
     <div class="pa-search-bar">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" placeholder="Search services (e.g., plumbing, cleaning)" aria-label="Search services" />
-        <button type="button" class="pa-portal-icon-btn" aria-label="Filter"><i class="fas fa-sliders"></i></button>
+        <input type="search" placeholder="@L["Search services (e.g., plumbing, cleaning)"]" aria-label="@L["Search services"]" />
+        <button type="button" class="pa-portal-icon-btn" aria-label="@L["Filter"]"><i class="fas fa-sliders"></i></button>
     </div>
 
     <div class="pa-filter-pills">
@@ -36,10 +36,10 @@
 
     <div class="pa-emergency-banner">
         <div>
-            <strong><i class="fas fa-phone"></i> Help is available 24/7</strong>
-            <p>Call now to connect with an emergency service pro.</p>
+            <strong><i class="fas fa-phone"></i> @L["Help is available 24/7"]</strong>
+            <p>@L["Call now to connect with an emergency service pro."]</p>
         </div>
-        <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">View emergency services</a>
+        <a asp-controller="Administrador" asp-action="Services" asp-route-filter="emergency" class="pa-emergency-btn">@L["View emergency services"]</a>
     </div>
 
     @foreach (var category in Model.Categories)
@@ -47,7 +47,7 @@
         <section class="pa-section">
             <div class="pa-section-head">
                 <h2>@category.CategoryTitle</h2>
-                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">View all <i class="fas fa-chevron-right"></i></a>
+                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="@category.CategoryKey">@L["View all"] <i class="fas fa-chevron-right"></i></a>
             </div>
             <div class="pa-service-grid">
                 @foreach (var item in category.Items)
@@ -65,8 +65,8 @@
     {
         <section class="pa-section">
             <div class="pa-section-head">
-                <h2>Your service plans</h2>
-                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="homecare">Manage all <i class="fas fa-chevron-right"></i></a>
+                <h2>@L["Your service plans"]</h2>
+                <a asp-controller="Administrador" asp-action="Services" asp-route-filter="homecare">@L["Manage all"] <i class="fas fa-chevron-right"></i></a>
             </div>
             <div class="pa-hscroll">
                 @foreach (var plan in Model.ActivePlans)
@@ -84,9 +84,9 @@
     }
 
     <div class="pa-trust-row">
-        <div><strong>Vetted & insured</strong><small>Service pros you can trust</small></div>
-        <div><strong>On-time guarantee</strong><small>We show up when we say</small></div>
-        <div><strong>Quality guarantee</strong><small>100% satisfaction promise</small></div>
-        <div><strong>Transparent pricing</strong><small>Upfront & always fair</small></div>
+        <div><strong>@L["Vetted & insured"]</strong><small>@L["Service pros you can trust"]</small></div>
+        <div><strong>@L["On-time guarantee"]</strong><small>@L["We show up when we say"]</small></div>
+        <div><strong>@L["Quality guarantee"]</strong><small>@L["100% satisfaction promise"]</small></div>
+        <div><strong>@L["Transparent pricing"]</strong><small>@L["Upfront & always fair"]</small></div>
     </div>
 </div>

@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.RoofReviewViewModel
+@model IndorMvcApp.ViewModels.RoofReviewViewModel
 @{
-    ViewData["Title"] = "Review & Confirm - INDOR";
-    ViewData["WizardTitle"] = "Review & Confirm";
+    ViewData["Title"] = L["Review & Confirm - INDOR"];
+    ViewData["WizardTitle"] = L["Review & Confirm"];
     ViewData["WizardBackUrl"] = Url.Action("RoofUpload", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 4;
     ViewData["WizardTotalSteps"] = 4;
 
 }
 
-<h1 class="page-heading">Review &amp; Confirm</h1>
-    <p class="page-lead">Please review your information before scheduling.</p>
+<h1 class="page-heading">@L["Review &amp; Confirm"]</h1>
+    <p class="page-lead">@L["Please review your information before scheduling."]</p>
 
     <form asp-controller="Inspecciones" asp-action="RoofReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -30,7 +30,7 @@
             <div class="summary-row">
                 <i class="fas fa-triangle-exclamation"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Main issue</div>
+                    <div class="summary-label">@L["Main issue"]</div>
                     <div class="chip-list">
                         @foreach (var issue in Model.ProblemasPrincipales)
                         {
@@ -42,7 +42,7 @@
             <div class="summary-row">
                 <i class="fas fa-house"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Property</div>
+                    <div class="summary-label">@L["Property"]</div>
                     <div class="summary-value">@Model.DireccionPropiedad</div>
                     <div class="summary-value" style="font-weight:500;color:#64748B;margin-top:4px;">@Model.PropiedadResumen</div>
                 </div>
@@ -50,28 +50,28 @@
             <div class="summary-row">
                 <i class="fas fa-user"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Access</div>
+                    <div class="summary-label">@L["Access"]</div>
                     <div class="summary-value">@Model.AccesoResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Files</div>
+                    <div class="summary-label">@L["Files"]</div>
                     <div class="summary-value">@Model.ArchivosResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-comment-dots"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Comments</div>
+                    <div class="summary-label">@L["Comments"]</div>
                     <div class="summary-value">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? "No additional comments were provided." : Model.ComentariosProveedor)</div>
                 </div>
             </div>
         </div>
 
-        <div class="secure-note"><i class="fas fa-lock"></i> Your inspection request will be sent after confirmation.</div>
+        <div class="secure-note"><i class="fas fa-lock"></i> @L["Your inspection request will be sent after confirmation."]</div>
 
-        <button type="submit" class="btn-primary" name="action" value="confirm">Confirm &amp; Schedule</button>
-        <button type="submit" class="btn-secondary" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="confirm">@L["Confirm &amp; Schedule"]</button>
+        <button type="submit" class="btn-secondary" name="action" value="back">@L["Back"]</button>
     </form>

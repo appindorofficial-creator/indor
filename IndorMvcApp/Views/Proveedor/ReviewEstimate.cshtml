@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProReviewEstimateViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Estimate Review - INDOR PRO";
+    ViewData["Title"] = L["Estimate Review - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -17,7 +17,7 @@
         <a asp-controller="Proveedor" asp-action="@(Model.LeadId > 0 ? "LeadDetails" : "PendingEstimates")" asp-route-id="@(Model.LeadId > 0 ? Model.LeadId : null)" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Step @Model.StepNumber of @Model.TotalSteps · Estimate Review</h1>
-            <p>Review the draft, total estimate, scope summary, and AI recommendations before sending.</p>
+            <p>@L["Review the draft, total estimate, scope summary, and AI recommendations before sending."]</p>
         </div>
     </header>
 
@@ -32,7 +32,7 @@
 
     <div class="prv-pro-wizard-info">
         <i class="fas fa-circle-info"></i>
-        <span>If it is already ready, you can continue to Send Estimate.</span>
+        <span>@L["If it is already ready, you can continue to Send Estimate."]</span>
     </div>
 
     <section class="prv-pro-est-review-job">
@@ -60,16 +60,16 @@
         @if (Model.ScopeItems.Count == 0)
         {
             <div class="prv-pro-ai-estimate-row">
-                <span>Labor</span>
+                <span>@L["Labor"]</span>
                 <span>@Model.LaborAmount.ToString("C2", money)</span>
             </div>
             <div class="prv-pro-ai-estimate-row">
-                <span>Materials</span>
+                <span>@L["Materials"]</span>
                 <span>@Model.MaterialsAmount.ToString("C2", money)</span>
             </div>
         }
         <div class="prv-pro-est-breakdown-total">
-            <span>Total estimate</span>
+            <span>@L["Total estimate"]</span>
             <strong>@Model.TotalAmount.ToString("C2", money)</strong>
         </div>
     </section>

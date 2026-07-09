@@ -1,9 +1,11 @@
 @model IndorMvcApp.ViewModels.ExploreViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.Services
 @using IndorMvcApp.ViewModels
 @{
-    ViewData["Title"] = "Explore Services - INDOR";
+    ViewData["Title"] = L["Explore Services - INDOR"];
     Layout = null;
+    var es = L.IsSpanish;
 
     bool IsPrePurchaseInspection(string? name) => string.Equals(name?.Trim(), "Pre-Purchase Home Inspection", StringComparison.OrdinalIgnoreCase);
     bool IsElectricalInspection(string? name) => string.Equals(name?.Trim(), "Electrical Inspection", StringComparison.OrdinalIgnoreCase);
@@ -67,21 +69,21 @@
     OfferingCarouselViewModel BuildMicroCarousel(IEnumerable<IndorMvcApp.Models.Microservicio> items, string subtitle) =>
         new()
         {
-            Title = "Home Care Essentials",
+            Title = L["Home Care Essentials"],
             Subtitle = subtitle,
             Icon = "fa-layer-group",
             BlockId = "home-care-essentials",
             Items = items.Select(s => new OfferingCardViewModel
             {
-                Name = s.Nombre,
-                Subtitle = s.Subtitulo,
-                Description = s.Descripcion,
-                Includes = SplitIncludes(s.Incluye),
-                Frequency = s.Frecuencia,
+                Name = s.LocalizedNombre(es),
+                Subtitle = s.LocalizedSubtitulo(es),
+                Description = CatalogText.Pick(s.Descripcion, s.DescripcionEs, es),
+                Includes = SplitIncludes(CatalogText.PickPipeList(s.Incluye, s.IncluyeEs, es)),
+                Frequency = CatalogText.Pick(s.Frecuencia, s.FrecuenciaEs, es),
                 Price = s.Valor,
-                PricePrefix = s.PrecioPrefijo,
+                PricePrefix = CatalogText.Pick(s.PrecioPrefijo, s.PrecioPrefijoEs, es),
                 Currency = s.Moneda,
-                Cta = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Schedule service" : s.CtaTexto,
+                Cta = string.IsNullOrWhiteSpace(s.LocalizedCtaTexto(es)) ? L["Schedule service"] : s.LocalizedCtaTexto(es)!,
                 ImageUrl = s.ImagenUrl,
                 ImageBase64 = s.ImagenBase64,
                 SourceId = s.Id,
@@ -98,7 +100,7 @@
         IReadOnlyDictionary<string, int> homeCarePriorityIds) =>
         new()
         {
-            Title = "Services",
+            Title = L["Services"],
             Subtitle = subtitle,
             Icon = "fa-screwdriver-wrench",
             BlockId = "services",
@@ -110,16 +112,16 @@
                 var link = ServicioFlowRules.BuildOfferingLink(sv, homeCarePriorityIds);
                 return new OfferingCardViewModel
                 {
-                    Name = sv.Nombre,
-                    Subtitle = sv.Subtitulo,
-                    Description = sv.Descripcion,
-                    Includes = SplitIncludes(sv.Incluye),
-                    Frequency = sv.Frecuencia,
+                    Name = sv.LocalizedNombre(es),
+                    Subtitle = sv.LocalizedSubtitulo(es),
+                    Description = CatalogText.Pick(sv.Descripcion, sv.DescripcionEs, es),
+                    Includes = SplitIncludes(CatalogText.PickPipeList(sv.Incluye, sv.IncluyeEs, es)),
+                    Frequency = CatalogText.Pick(sv.Frecuencia, sv.FrecuenciaEs, es),
                     Price = sv.Valor,
-                    PricePrefix = sv.PrecioPrefijo,
-                    PriceText = sv.PrecioTexto,
+                    PricePrefix = CatalogText.Pick(sv.PrecioPrefijo, sv.PrecioPrefijoEs, es),
+                    PriceText = CatalogText.Pick(sv.PrecioTexto, sv.PrecioTextoEs, es),
                     Currency = sv.Moneda,
-                    Cta = string.IsNullOrWhiteSpace(sv.CtaTexto) ? "Request quote" : sv.CtaTexto,
+                    Cta = string.IsNullOrWhiteSpace(sv.LocalizedCtaTexto(es)) ? L["Request quote"] : sv.LocalizedCtaTexto(es)!,
                     ImageUrl = sv.ImagenUrl,
                     FreqIcon = "fa-clock",
                     CtaIcon = ServicioFlowRules.HasFlow(sv.Nombre, sv.Orden) ? "fa-arrow-right" : "fa-paper-plane",
@@ -134,7 +136,7 @@
     OfferingCarouselViewModel BuildInspeccionCarousel(IEnumerable<IndorMvcApp.Models.Inspeccion> items, string subtitle) =>
         new()
         {
-            Title = "Inspections",
+            Title = L["Inspections"],
             Subtitle = subtitle,
             Icon = "fa-magnifying-glass-chart",
             BlockId = "inspections",
@@ -143,16 +145,18 @@
             BadgeClass = "category-badge-insp",
             Items = items.Select(ins => new OfferingCardViewModel
             {
-                Name = ins.Nombre,
-                Subtitle = ins.Subtitulo,
-                Description = ins.Descripcion,
-                Includes = SplitIncludes(ins.Incluye),
-                Frequency = ins.Frecuencia,
+                Name = ins.LocalizedNombre(es),
+                Subtitle = CatalogText.Pick(ins.Subtitulo, ins.SubtituloEs, es),
+                Description = ins.LocalizedDescripcion(es),
+                Includes = SplitIncludes(CatalogText.PickPipeList(ins.Incluye, ins.IncluyeEs, es)),
+                Frequency = CatalogText.Pick(ins.Frecuencia, ins.FrecuenciaEs, es),
                 Price = ins.Valor,
-                PricePrefix = ins.PrecioPrefijo,
-                PriceText = ins.PrecioTexto,
+                PricePrefix = CatalogText.Pick(ins.PrecioPrefijo, ins.PrecioPrefijoEs, es),
+                PriceText = CatalogText.Pick(ins.PrecioTexto, ins.PrecioTextoEs, es),
                 Currency = ins.Moneda,
-                Cta = HasInspectionFlow(ins.Nombre) ? "Continue" : (string.IsNullOrWhiteSpace(ins.CtaTexto) ? "Schedule inspection" : ins.CtaTexto),
+                Cta = HasInspectionFlow(ins.Nombre)
+                    ? L["Continue"]
+                    : (string.IsNullOrWhiteSpace(ins.LocalizedCtaTexto(es)) ? L["Schedule inspection"] : ins.LocalizedCtaTexto(es)!),
                 ImageUrl = ins.ImagenUrl,
                 FreqIcon = "fa-clipboard-check",
                 CtaIcon = HasInspectionFlow(ins.Nombre) ? "fa-arrow-right" : "fa-calendar-check",
@@ -170,10 +174,10 @@
     var serviciosEmergencia = catalog.ServiciosEmergencia;
     var homeCarePriorityIds = (IReadOnlyDictionary<string, int>)catalog.HomeCarePriorityIds;
     var totalOfferings = microservicios.Count + servicios.Count + inspecciones.Count + serviciosEmergencia.Count;
-    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url);
+    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url, es);
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -216,19 +220,19 @@
             R
         </span>
         <div class="xp-auth">
-            <a class="xp-login" asp-controller="Account" asp-action="LoginForm">Log In</a>
-            <a class="xp-register" asp-controller="Account" asp-action="Register">Sign Up</a>
+            <a class="xp-login" asp-controller="Account" asp-action="LoginForm">@L["Log In"]</a>
+            <a class="xp-register" asp-controller="Account" asp-action="Register">@L["Sign Up"]</a>
         </div>
     </header>
 
     <div class="xp-guest-note">
         <i class="fas fa-circle-info"></i>
-        <span>You're browsing as a guest. Explore all services, inspections and providers freely. Create a free account only when you're ready to book or request a quote.</span>
+        <span>@L["You're browsing as a guest. Explore all services, inspections and providers freely. Create a free account only when you're ready to book or request a quote."]</span>
     </div>
 
     <section class="section active" id="section-services">
         <div class="section-title">
-            Available services
+            @L["Available services"]
             <span class="services-count">@totalOfferings</span>
         </div>
 
@@ -236,7 +240,7 @@
         {
             <div class="empty-state">
                 <i class="fas fa-tools"></i>
-                <p>No services available right now.</p>
+                <p>@L["No services available right now."]</p>
             </div>
         }
         else
@@ -244,25 +248,25 @@
             <div class="services-catalog">
                 <div class="services-hero">
                     <div class="services-hero-text">
-                        <strong>Take care of your home effortlessly</strong>
-                        <small>Verified professionals with transparent pricing.</small>
+                        <strong>@L["Take care of your home effortlessly"]</strong>
+                        <small>@L["Verified professionals with transparent pricing."]</small>
                     </div>
                     <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
                 </div>
 
                 @if (microservicios.Any())
                 {
-                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildMicroCarousel(microservicios, $"{microservicios.Count} services available for your home"))
+                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildMicroCarousel(microservicios, L.T("{0} services available for your home", microservicios.Count)))
                 }
 
                 @if (servicios.Any())
                 {
-                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildServicioCarousel(servicios, $"{servicios.Count} remodeling and installation projects", homeCarePriorityIds))
+                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildServicioCarousel(servicios, L.T("{0} remodeling and installation projects", servicios.Count), homeCarePriorityIds))
                 }
 
                 @if (inspecciones.Any())
                 {
-                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count} professional inspections for your home"))
+                    @await Html.PartialAsync("~/Views/Home/_OfferingCarousel.cshtml", BuildInspeccionCarousel(inspecciones, L.T("{0} professional inspections for your home", inspecciones.Count)))
                 }
 
                 @if (emergencySection != null)
@@ -276,7 +280,7 @@
 
     <section class="section active xp-providers">
         <div class="section-title">
-            Service providers
+            @L["Service providers"]
             @if (Model.Providers.Count > 0)
             {
                 <span class="services-count">@Model.Providers.Count</span>
@@ -286,7 +290,7 @@
         @if (Model.Providers.Count == 0)
         {
             <div class="xp-provider-empty">
-                No providers are listed in your area yet. New verified providers join INDOR regularly &mdash; create a free account to be notified and to request quotes.
+                @L["No providers are listed in your area yet. New verified providers join INDOR regularly — create a free account to be notified and to request quotes."]
             </div>
         }
         else
@@ -304,7 +308,7 @@
                         </div>
                         @if (provider.IsVerified)
                         {
-                            <span class="xp-provider-verified"><i class="fas fa-circle-check"></i> Verified</span>
+                            <span class="xp-provider-verified"><i class="fas fa-circle-check"></i> @L["Verified"]</span>
                         }
                     </div>
                 }
@@ -313,7 +317,7 @@
 
         <div class="xp-cta">
             <a asp-controller="Account" asp-action="Register">
-                <i class="fas fa-user-plus"></i> Create a free account to book
+                <i class="fas fa-user-plus"></i> @L["Create a free account to book"]
             </a>
         </div>
     </section>

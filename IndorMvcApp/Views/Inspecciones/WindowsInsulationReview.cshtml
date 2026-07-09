@@ -1,7 +1,7 @@
-﻿@model IndorMvcApp.ViewModels.WindowsInsulationReviewViewModel
+@model IndorMvcApp.ViewModels.WindowsInsulationReviewViewModel
 @{
-    ViewData["Title"] = "Review & Confirm - INDOR";
-    ViewData["WizardTitle"] = "Review & Confirm";
+    ViewData["Title"] = L["Review & Confirm - INDOR"];
+    ViewData["WizardTitle"] = L["Review & Confirm"];
 var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.OrdinalIgnoreCase) ? "Starting at" : Model.PrecioPrefijo;
     ViewData["WizardBackUrl"] = Url.Action("WindowsInsulationUpload", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 4;
@@ -9,8 +9,8 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
 
 }
 
-<h1 class="page-heading">Review your inspection request</h1>
-    <p class="page-lead">Make sure everything looks right before we schedule your visit.</p>
+<h1 class="page-heading">@L["Review your inspection request"]</h1>
+    <p class="page-lead">@L["Make sure everything looks right before we schedule your visit."]</p>
 
     <form asp-controller="Inspecciones" asp-action="WindowsInsulationReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -35,14 +35,14 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
             <div class="summary-row">
                 <i class="fas fa-triangle-exclamation"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Main concern</div>
+                    <div class="summary-label">@L["Main concern"]</div>
                     <div class="summary-value">@Model.PreocupacionPrincipal</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-house"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Property</div>
+                    <div class="summary-label">@L["Property"]</div>
                     <div class="summary-value">@Model.DireccionPropiedad</div>
                     <div class="summary-value" style="font-weight:500;color:#64748B;margin-top:4px;">@Model.PropiedadResumen</div>
                 </div>
@@ -50,28 +50,28 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
             <div class="summary-row">
                 <i class="fas fa-bullseye"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Focus areas</div>
+                    <div class="summary-label">@L["Focus areas"]</div>
                     <div class="summary-value">@Model.AreasEnfoqueResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-user"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Access</div>
+                    <div class="summary-label">@L["Access"]</div>
                     <div class="summary-value">@Model.AccesoResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Files uploaded</div>
+                    <div class="summary-label">@L["Files uploaded"]</div>
                     <div class="summary-value">@Model.ArchivosResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-comment-dots"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Comments</div>
+                    <div class="summary-label">@L["Comments"]</div>
                     <div class="summary-value">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? "No additional comments were provided." : Model.ComentariosProveedor)</div>
                 </div>
             </div>
@@ -79,9 +79,9 @@ var priceLabel = string.Equals(Model.PrecioPrefijo, "From", StringComparison.Ord
 
         <div class="disclaimer-box">
             <i class="fas fa-circle-info"></i>
-            <div>This inspection helps identify visible efficiency, sealing, insulation, and moisture-related concerns. Repairs, insulation installation, window replacement, and specialty testing are not included unless stated.</div>
+            <div>@L["This inspection helps identify visible efficiency, sealing, insulation, and moisture-related concerns. Repairs, insulation installation, window replacement, and specialty testing are not included unless stated."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="far fa-calendar-check"></i> Confirm &amp; Schedule</button>
-        <button type="submit" class="btn-secondary" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="far fa-calendar-check"></i> @L["Confirm &amp; Schedule"]</button>
+        <button type="submit" class="btn-secondary" name="action" value="back">@L["Back"]</button>
     </form>

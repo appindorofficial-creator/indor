@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorQuoteDetailViewModel
 @{
-    ViewData["Title"] = "Quote Request Details";
+    ViewData["Title"] = L["Quote Request Details"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "quotes";
 }
@@ -9,8 +9,8 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <div class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> Quotes</a>
-        <h1 class="rl-page-title">Quote Request Details</h1>
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> @L["Quotes"]</a>
+        <h1 class="rl-page-title">@L["Quote Request Details"]</h1>
     </div>
 
     <div class="rl-qreq-hero">
@@ -21,22 +21,22 @@
                 <span class="rl-status-pill rl-status-pill--@Model.StatusCss">@Model.StatusLabel</span>
             </div>
             <div class="rl-qreq-meta-grid">
-                <div><span>Requested</span><strong>@Model.RequestedLabel.Replace("Requested ", "")</strong></div>
-                <div><span>Category</span><strong>@Model.ServiceType</strong></div>
-                <div><span>Requested by</span><strong>@Model.RequestedByLabel</strong></div>
-                <div><span>Requested providers</span><strong>@Model.ProvidersResponseLabel</strong></div>
+                <div><span>@L["Requested"]</span><strong>@Model.RequestedLabel.Replace("Requested ", "")</strong></div>
+                <div><span>@L["Category"]</span><strong>@Model.ServiceType</strong></div>
+                <div><span>@L["Requested by"]</span><strong>@Model.RequestedByLabel</strong></div>
+                <div><span>@L["Requested providers"]</span><strong>@Model.ProvidersResponseLabel</strong></div>
             </div>
         </div>
     </div>
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Requested Services</h2>
-            <p class="rl-section-caption">These items were identified in the inspection report.</p>
+            <h2>@L["Requested Services"]</h2>
+            <p class="rl-section-caption">@L["These items were identified in the inspection report."]</p>
         </div>
         @if (Model.RequestedServices.Count == 0)
         {
-            <div class="rl-dash-empty">No repair items linked to this request yet.</div>
+            <div class="rl-dash-empty">@L["No repair items linked to this request yet."]</div>
         }
         else
         {
@@ -56,8 +56,8 @@
     <div class="rl-qreq-info">
         <i class="fas fa-circle-info"></i>
         <div>
-            <strong>What happens next?</strong>
-            <p>Providers need to be invited to this request before they can review the details and submit quotes.</p>
+            <strong>@L["What happens next?"]</strong>
+            <p>@L["Providers need to be invited to this request before they can review the details and submit quotes."]</p>
         </div>
     </div>
 
@@ -68,6 +68,6 @@
         <a href="@Model.InviteProvidersUrl" class="rl-btn-outline rl-qreq-btn">
             <i class="fas fa-pen"></i> Edit Request
         </a>
-        <a asp-controller="Realtor" asp-action="Quotes" class="rl-qreq-cancel">Cancel Request</a>
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-qreq-cancel">@L["Cancel Request"]</a>
     </div>
 </div>

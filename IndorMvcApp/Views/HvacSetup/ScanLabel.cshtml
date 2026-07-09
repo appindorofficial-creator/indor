@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HvacScanLabelViewModel
 @{
-    ViewData["Title"] = "Scan HVAC Label";
+    ViewData["Title"] = L["Scan HVAC Label"];
     var hasSavedPreview = !string.IsNullOrWhiteSpace(Model.PreviewImageUrl);
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
@@ -18,28 +18,28 @@
 
             <div class="hvac-camera-panel">
                 <div class="hvac-camera-toolbar">
-                    <button type="button" class="hvac-camera-tool" aria-label="Flash"><i class="fas fa-bolt"></i></button>
-                    <button type="button" class="hvac-camera-tool" aria-label="Help"><i class="fas fa-circle-question"></i></button>
+                    <button type="button" class="hvac-camera-tool" aria-label="@L["Flash"]"><i class="fas fa-bolt"></i></button>
+                    <button type="button" class="hvac-camera-tool" aria-label="@L["Help"]"><i class="fas fa-circle-question"></i></button>
                 </div>
                 <div class="hvac-camera-view" id="cameraPreview">
                     <video id="cameraVideo" class="hvac-camera-live @(hasSavedPreview ? "is-hidden" : "")" autoplay playsinline muted></video>
                     <div id="cameraEmpty" class="hvac-camera-empty @(hasSavedPreview ? "is-hidden" : "")">
                         <i class="fas fa-camera"></i>
-                        <span>Open your camera or upload a label photo</span>
+                        <span>@L["Open your camera or upload a label photo"]</span>
                     </div>
                     <img src="@(hasSavedPreview ? Url.Content($"~{Model.PreviewImageUrl}") : "")"
-                         alt="Your HVAC label photo"
+                         alt="@L["Your HVAC label photo"]"
                          class="hvac-camera-sample @(hasSavedPreview ? "is-custom" : "is-hidden")"
                          id="previewImage" />
                     <div class="hvac-camera-frame" aria-hidden="true"></div>
-                    <div class="hvac-camera-hint">Center the manufacturer label in the frame</div>
+                    <div class="hvac-camera-hint">@L["Center the manufacturer label in the frame"]</div>
                 </div>
             </div>
 
             <div class="hvac-scan-tips">
-                <div><i class="fas fa-sun"></i><span>Good lighting</span></div>
-                <div><i class="fas fa-magnifying-glass"></i><span>Capture serial + model</span></div>
-                <div><i class="fas fa-camera-slash"></i><span>Avoid blurry photos</span></div>
+                <div><i class="fas fa-sun"></i><span>@L["Good lighting"]</span></div>
+                <div><i class="fas fa-magnifying-glass"></i><span>@L["Capture serial + model"]</span></div>
+                <div><i class="fas fa-camera-slash"></i><span>@L["Avoid blurry photos"]</span></div>
             </div>
 
             <input type="file" name="labelFile" id="labelFile" class="hvac-sr-only" accept="image/*" capture="environment" />
@@ -48,13 +48,13 @@
             <button type="button" class="hvac-save-btn hvac-btn-with-icon" id="captureBtn">
                 <i class="fas fa-camera"></i> <span id="captureBtnText">@(hasSavedPreview ? "Use this photo" : "Capture label")</span>
             </button>
-            <button type="button" class="hvac-text-btn" id="uploadBtn">Upload photo instead</button>
-            <button type="submit" class="hvac-text-btn">Continue with estimated details</button>
+            <button type="button" class="hvac-text-btn" id="uploadBtn">@L["Upload photo instead"]</button>
+            <button type="submit" class="hvac-text-btn">@L["Continue with estimated details"]</button>
         </form>
 
         <div class="hvac-info-banner">
             <i class="fas fa-wand-magic-sparkles"></i>
-            <span>Scanning helps INDOR pull brand, model, serial number, install-year estimate, and service insights automatically.</span>
+            <span>@L["Scanning helps INDOR pull brand, model, serial number, install-year estimate, and service insights automatically."]</span>
         </div>
     </div>
 
@@ -97,7 +97,7 @@
             hideElement(cameraVideo);
             hideElement(cameraEmpty);
             hasSelectedFile = true;
-            captureBtnText.textContent = 'Use this photo';
+            captureBtnText.textContent = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use this photo"]));
         }
 
         async function startCamera() {

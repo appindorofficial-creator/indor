@@ -6,7 +6,7 @@
 
     <i class="fas fa-circle-info"></i>
 
-    <p>Before sending, review which findings will be sent, which trades are included, and how INDOR will create separate quote requests by trade.</p>
+    <p>@L["Before sending, review which findings will be sent, which trades are included, and how INDOR will create separate quote requests by trade."]</p>
 
 </div>
 
@@ -44,21 +44,21 @@
 
 <div class="rl-review-card">
 
-    <div class="rl-review-row"><span class="rl-review-label">Findings selected</span><strong>@Model.FindingsSelected</strong></div>
+    <div class="rl-review-row"><span class="rl-review-label">@L["Findings selected"]</span><strong>@Model.FindingsSelected</strong></div>
 
-    <div class="rl-review-row"><span class="rl-review-label">Urgent items</span><strong>@Model.UrgentItems</strong></div>
+    <div class="rl-review-row"><span class="rl-review-label">@L["Urgent items"]</span><strong>@Model.UrgentItems</strong></div>
 
-    <div class="rl-review-row"><span class="rl-review-label">Trades included</span><span>@Model.TradesIncluded</span></div>
+    <div class="rl-review-row"><span class="rl-review-label">@L["Trades included"]</span><span>@Model.TradesIncluded</span></div>
 
-    <div class="rl-review-row"><span class="rl-review-label">Providers selected</span><strong>@Model.ProvidersSelected</strong></div>
+    <div class="rl-review-row"><span class="rl-review-label">@L["Providers selected"]</span><strong>@Model.ProvidersSelected</strong></div>
 
-    <div class="rl-review-row"><span class="rl-review-label">Response deadline</span><strong>@Model.ResponseDeadlineHours hours</strong></div>
+    <div class="rl-review-row"><span class="rl-review-label">@L["Response deadline"]</span><strong>@Model.ResponseDeadlineHours hours</strong></div>
 
 </div>
 
 
 
-<h2 class="rl-invite-section-title">Requests to be created</h2>
+<h2 class="rl-invite-section-title">@L["Requests to be created"]</h2>
 
 <div class="rl-review-card">
 
@@ -98,7 +98,7 @@
 
     <i class="fas fa-circle-info"></i>
 
-    <p>INDOR creates separate requests by trade so each contractor receives only the relevant items.</p>
+    <p>@L["INDOR creates separate requests by trade so each contractor receives only the relevant items."]</p>
 
 </div>
 
@@ -106,9 +106,9 @@
 
 <div class="rl-invite-actions">
 
-    <a asp-action="Providers" class="rl-invite-cancel">Back</a>
+    <a asp-action="Providers" class="rl-invite-cancel">@L["Back"]</a>
 
-    <button type="submit" form="reviewForm" class="ob-btn ob-btn-primary">Create Quote Requests</button>
+    <button type="submit" form="reviewForm" class="ob-btn ob-btn-primary">@L["Create Quote Requests"]</button>
 
 </div>
 

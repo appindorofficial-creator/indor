@@ -1,7 +1,7 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyHvacReviewViewModel
+@model IndorMvcApp.ViewModels.EmergencyHvacReviewViewModel
 @{
-    ViewData["Title"] = "Review - INDOR";
-    ViewData["WizardTitle"] = "Review";
+    ViewData["Title"] = L["Review - INDOR"];
+    ViewData["WizardTitle"] = L["Review"];
 var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("EmergencyHvacContact", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -9,8 +9,8 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
 
 }
 
-<h1 class="page-heading">Review your request</h1>
-    <p class="page-lead">Please confirm the details below before requesting help.</p>
+<h1 class="page-heading">@L["Review your request"]</h1>
+    <p class="page-lead">@L["Please confirm the details below before requesting help."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyHvacReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -22,49 +22,49 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
             <div class="summary-row">
                 <i class="fas fa-snowflake"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Service</div>
+                    <div class="summary-label">@L["Service"]</div>
                     <div class="summary-value">@Model.TituloServicio</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-location-dot"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Property</div>
+                    <div class="summary-label">@L["Property"]</div>
                     <div class="summary-value">@Model.DireccionPropiedad</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-temperature-half"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Issue</div>
+                    <div class="summary-label">@L["Issue"]</div>
                     <div class="summary-value">@Model.ProblemaResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-clock"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Status</div>
+                    <div class="summary-label">@L["Status"]</div>
                     <div class="summary-value">@Model.EstadoResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-triangle-exclamation"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Urgency</div>
+                    <div class="summary-label">@L["Urgency"]</div>
                     <div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-phone"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Contact</div>
+                    <div class="summary-label">@L["Contact"]</div>
                     <div class="summary-value">@Model.TelefonoContacto</div>
                 </div>
             </div>
             <div class="summary-row">
                 <i class="fas fa-images"></i>
                 <div style="flex:1;">
-                    <div class="summary-label">Photos</div>
+                    <div class="summary-label">@L["Photos"]</div>
                     <div class="summary-value">@Model.ArchivosResumen</div>
                 </div>
             </div>
@@ -72,22 +72,22 @@ var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringCompar
 
         <div class="next-card">
             <div class="next-list">
-                <div class="next-item"><i class="fas fa-tower-broadcast"></i> We notify nearby HVAC pros</div>
-                <div class="next-item"><i class="fas fa-user-check"></i> A provider reviews your request</div>
-                <div class="next-item"><i class="fas fa-phone-volume"></i> You get a call or update soon</div>
+                <div class="next-item"><i class="fas fa-tower-broadcast"></i> @L["We notify nearby HVAC pros"]</div>
+                <div class="next-item"><i class="fas fa-user-check"></i> @L["A provider reviews your request"]</div>
+                <div class="next-item"><i class="fas fa-phone-volume"></i> @L["You get a call or update soon"]</div>
             </div>
             <div class="arrival-box">
                 <i class="fas fa-stopwatch"></i>
-                <div class="arrival-label">Avg. arrival</div>
+                <div class="arrival-label">@L["Avg. arrival"]</div>
                 <div class="arrival-value">@Model.TiempoLlegadaMinutos min</div>
             </div>
         </div>
 
         <div class="disclaimer-box">
             <i class="fas fa-shield-halved"></i>
-            <div>If your system is smoking or smells like burning, keep it turned off until a provider arrives.</div>
+            <div>@L["If your system is smoking or smells like burning, keep it turned off until a provider arrives."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-arrow-right"></i> Request emergency help</button>
-        <button type="submit" class="btn-outline" name="action" value="edit"><i class="fas fa-pen"></i> Edit request</button>
+        <button type="submit" class="btn-primary" name="action" value="confirm"><i class="fas fa-arrow-right"></i> @L["Request emergency help"]</button>
+        <button type="submit" class="btn-outline" name="action" value="edit"><i class="fas fa-pen"></i> @L["Edit request"]</button>
     </form>

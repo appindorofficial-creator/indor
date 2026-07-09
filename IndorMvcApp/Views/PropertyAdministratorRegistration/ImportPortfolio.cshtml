@@ -11,9 +11,9 @@
 }
 
 <div class="pa-review-card" style="margin-bottom:16px;">
-    <p class="pa-step-hint" style="margin:0 0 10px;">Use a CSV file with one property per row. Required columns:</p>
-    <div class="pa-check-item"><i class="fas fa-circle-check"></i> HouseNumber, StreetName, City, State, ZipCode, PropertyType</div>
-    <div class="pa-check-item"><i class="fas fa-circle-check"></i> Nickname (optional)</div>
+    <p class="pa-step-hint" style="margin:0 0 10px;">@L["Use a CSV file with one property per row. Required columns:"]</p>
+    <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["HouseNumber, StreetName, City, State, ZipCode, PropertyType"]</div>
+    <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Nickname (optional)"]</div>
     <p class="pa-step-hint" style="margin:12px 0 0;">
         PropertyType values:
         @string.Join(", ", PropertyAdministratorCatalog.PropertyTypes.Select(type => type.Value))
@@ -37,11 +37,11 @@
                class="pa-file-picker-input"
                accept=".csv,text/csv,.txt"
                required />
-        <label for="csvFile" class="pa-file-picker-btn">Choose CSV file</label>
-        <span class="pa-file-picker-name" id="csvFileName" data-empty-label="No file selected">No file selected</span>
+        <label for="csvFile" class="pa-file-picker-btn">@L["Choose CSV file"]</label>
+        <span class="pa-file-picker-name" id="csvFileName" data-empty-label="No file selected">@L["No file selected"]</span>
     </div>
 
-    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">Import properties</button>
+    <button type="submit" class="ob-btn ob-btn-outline" style="width:100%;margin-top:4px;">@L["Import properties"]</button>
 </form>
 
 @section Scripts {
@@ -74,5 +74,5 @@
 }
 
 <div class="pa-reg-actions" style="margin-top:18px;">
-    <a href="@Model.BackUrl" class="pa-reg-action-back">Back to properties</a>
+    <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to properties"]</a>
 </div>

@@ -28,7 +28,7 @@
                 @Model.Name
                 @if (Model.IsVerified)
                 {
-                    <i class="fas fa-circle-check" title="Verified"></i>
+                    <i class="fas fa-circle-check" title="@L["Verified"]"></i>
                 }
             </p>
             @if (!string.IsNullOrWhiteSpace(Model.TradeLabel))
@@ -51,7 +51,7 @@
         <div class="prv-net-sub-side">
             @if (Model.IsRecommended)
             {
-                <span class="prv-net-reco-tag">Recommended</span>
+                <span class="prv-net-reco-tag">@L["Recommended"]</span>
             }
             <span class="prv-net-avail @(Model.IsAvailableNow ? null : "prv-net-avail--soft")">@Model.AvailabilityLabel</span>
             <i class="fas fa-chevron-right prv-net-chevron"></i>
@@ -83,7 +83,7 @@
             }
             else
             {
-                <span class="prv-net-sub-new">New</span>
+                <span class="prv-net-sub-new">@L["New"]</span>
             }
         </span>
         @if (Model.HasJobsCompleted)

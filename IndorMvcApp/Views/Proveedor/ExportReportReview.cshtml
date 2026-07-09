@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProExportReportViewModel
 @{
-    ViewData["Title"] = "Review Export Report - INDOR PRO";
+    ViewData["Title"] = L["Review Export Report - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "export-report.css";
@@ -25,12 +25,12 @@
     @await Html.PartialAsync("_ExportReportHead")
 
     <section class="exr-head">
-        <h1>Review Export Report</h1>
-        <p>Review the report before saving or sending it.</p>
+        <h1>@L["Review Export Report"]</h1>
+        <p>@L["Review the report before saving or sending it."]</p>
     </section>
 
     <div class="exr-progress">
-        <span class="exr-step">Step 3 of 3</span>
+        <span class="exr-step">@L["Step 3 of 3"]</span>
         <span class="exr-bar"><span class="exr-bar-fill" style="width:100%"></span></span>
     </div>
 
@@ -57,7 +57,7 @@
     @if (d.Photos.Count > 0)
     {
         <section class="exr-card">
-            <h2 class="exr-card-title">Photos</h2>
+            <h2 class="exr-card-title">@L["Photos"]</h2>
             <div class="exr-photos-grid">
                 @foreach (var p in d.Photos)
                 {
@@ -70,11 +70,11 @@
     <form method="post" asp-controller="Proveedor" asp-action="ExportReportComplete" class="exr-actions">
         @Html.AntiForgeryToken()
         <div class="exr-card exr-card--notes">
-            <h2 class="exr-card-title">Notes</h2>
-            <textarea class="exr-textarea" name="notes" rows="2" placeholder="Add a closing note...">@d.Notes</textarea>
+            <h2 class="exr-card-title">@L["Notes"]</h2>
+            <textarea class="exr-textarea" name="notes" rows="2" placeholder="@L["Add a closing note..."]">@d.Notes</textarea>
         </div>
-        <button type="submit" name="mode" value="save" class="exr-btn exr-btn--primary">Save Report</button>
-        <button type="submit" name="mode" value="send" class="exr-btn exr-btn--outline">Send Report</button>
-        <a asp-controller="Proveedor" asp-action="ExportReportDetails" class="exr-btn-text">Back</a>
+        <button type="submit" name="mode" value="save" class="exr-btn exr-btn--primary">@L["Save Report"]</button>
+        <button type="submit" name="mode" value="send" class="exr-btn exr-btn--outline">@L["Send Report"]</button>
+        <a asp-controller="Proveedor" asp-action="ExportReportDetails" class="exr-btn-text">@L["Back"]</a>
     </form>
 </div>

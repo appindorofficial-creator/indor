@@ -12,16 +12,16 @@
 <section class="hf-overview">
     <div class="hf-overview-heading">
         <div>
-            <h2 class="hf-overview-title">Property Overview</h2>
+            <h2 class="hf-overview-title">@L["Property Overview"]</h2>
         </div>
         <div class="hf-overview-actions">
             @if (!string.IsNullOrWhiteSpace(myPropertyUrl))
             {
-                <a href="@myPropertyUrl" class="hf-overview-property"><i class="fas fa-house"></i> My Property <i class="fas fa-chevron-down"></i></a>
+                <a href="@myPropertyUrl" class="hf-overview-property"><i class="fas fa-house"></i> @L["My Property"] <i class="fas fa-chevron-down"></i></a>
             }
             @if (!string.IsNullOrWhiteSpace(editUrl))
             {
-                <a href="@editUrl" class="hf-overview-edit"><i class="fas fa-pen"></i> Edit</a>
+                <a href="@editUrl" class="hf-overview-edit"><i class="fas fa-pen"></i> @L["Edit"]</a>
             }
         </div>
     </div>
@@ -30,25 +30,25 @@
     {
         <div class="hf-banner" style="display:flex;gap:10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:14px;padding:12px 14px;font-size:.82rem;color:#1E3A8A;margin-bottom:14px;">
             <i class="fas fa-circle-info" style="color:#0066CC;margin-top:2px;"></i>
-            <div>Preview mode — explore all House Fact flows before you save this property.</div>
+            <div>@L["Preview mode — explore all House Fact flows before you save this property."]</div>
         </div>
     }
 
     <article class="hf-property-card">
         <div class="hf-property-card-top">
-            <img src="@Url.Content($"~{propertyImage}")" alt="Your property" class="hf-property-photo" />
+            <img src="@Url.Content($"~{propertyImage}")" alt="@L["Your property"]" class="hf-property-photo" />
             <div class="hf-property-card-main">
-                <div class="hf-property-kicker">INDOR HOUSE FACT</div>
-                <div class="hf-property-address">@(Model.FormattedAddress ?? "Property address")</div>
+                <div class="hf-property-kicker">@L["INDOR HOUSE FACT"]</div>
+                <div class="hf-property-address">@(Model.FormattedAddress ?? L["Property address"])</div>
                 <div class="hf-property-badges">
                     @if (Model.ShowSuccessBadge)
                     {
-                        <span class="hf-property-badge hf-property-badge-success"><i class="fas fa-check"></i> Success</span>
+                        <span class="hf-property-badge hf-property-badge-success"><i class="fas fa-check"></i> @L["Success"]</span>
                     }
-                    <span class="hf-property-badge hf-property-badge-data"><i class="fas fa-database"></i> @Model.FieldCount fields saved</span>
+                    <span class="hf-property-badge hf-property-badge-data"><i class="fas fa-database"></i> @Model.FieldCount @L["fields saved"]</span>
                     @if (Model.NeedsReviewCount > 0)
                     {
-                        <span class="hf-property-badge hf-property-badge-review"><i class="fas fa-triangle-exclamation"></i> Needs review</span>
+                        <span class="hf-property-badge hf-property-badge-review"><i class="fas fa-triangle-exclamation"></i> @L["Needs review"]</span>
                     }
                 </div>
             </div>
@@ -68,8 +68,8 @@
     </article>
 
     <div class="hf-jump-row">
-        <div class="hf-jump-label">Jump to section</div>
-        <button type="button" class="hf-jump-view-all" data-hf-expand-all>View all sections <i class="fas fa-chevron-right"></i></button>
+        <div class="hf-jump-label">@L["Jump to section"]</div>
+        <button type="button" class="hf-jump-view-all" data-hf-expand-all>@L["View all sections"] <i class="fas fa-chevron-right"></i></button>
     </div>
 
     <div class="hf-jump-scroll">
@@ -428,8 +428,8 @@
     <button type="button" class="hf-explore-more" data-hf-expand-all>
         <span class="hf-explore-more-icon"><i class="fas fa-layer-group"></i></span>
         <span class="hf-explore-more-copy">
-            <strong>Explore more sections</strong>
-            <span>Dive deeper into every aspect of your home</span>
+            <strong>@L["Explore more sections"]</strong>
+            <span>@L["Dive deeper into every aspect of your home"]</span>
         </span>
         <i class="fas fa-chevron-right"></i>
     </button>

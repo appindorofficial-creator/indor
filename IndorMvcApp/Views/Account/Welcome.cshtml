@@ -1,9 +1,12 @@
 ﻿@{
-    ViewData["Title"] = "Welcome - INDOR";
+    ViewData["Title"] = L["Welcome - INDOR"];
     Layout = "_LayoutWelcome";
+    ViewData["LanguageSelectorVariant"] = "corner";
 }
 
 <div class="wl-screen">
+    @await Html.PartialAsync("_LanguageSelector")
+
     <header class="wl-top wl-reveal wl-reveal-1">
         <div class="wl-brand" aria-label="INDOR home Indor">
             <div class="wl-logo-main">
@@ -28,11 +31,11 @@
             <span class="wl-rule-line"></span>
         </div>
 
-        <h1 class="wl-title">The Home Operating System</h1>
-        <p class="wl-subtitle">Everything you need to manage your home with clarity and confidence.</p>
+        <h1 class="wl-title">@L["The Home Operating System"]</h1>
+        <p class="wl-subtitle">@L["Everything you need to manage your home with clarity and confidence."]</p>
     </header>
 
-    <div class="wl-hero wl-reveal wl-reveal-1" role="img" aria-label="Craftsman style home"></div>
+    <div class="wl-hero wl-reveal wl-reveal-1" role="img" aria-label="@L["Craftsman style home"]"></div>
 
     <div class="wl-badge-row wl-reveal wl-reveal-2">
         <span class="wl-badge">
@@ -40,7 +43,7 @@
                 <path d="M12 2.5l1.9 4.6 4.6 1.9-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9L12 2.5z" fill="#1867F2" />
                 <path d="M19 14.5l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8.8-2z" fill="#1867F2" />
             </svg>
-            ALL IN ONE PLACE
+            @L["ALL IN ONE PLACE"]
         </span>
     </div>
 
@@ -49,22 +52,22 @@
             <span class="wl-card-icon" aria-hidden="true">
                 <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M3 7a2 2 0 0 1 2-2h4.17a2 2 0 0 1 1.42.59L12 7h7a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" fill="#1867F2"/></svg>
             </span>
-            <strong>Home Records</strong>
-            <span>Store and access important home documents.</span>
+            <strong>@L["Home Records"]</strong>
+            <span>@L["Store and access important home documents."]</span>
         </article>
         <article class="wl-card">
             <span class="wl-card-icon" aria-hidden="true">
                 <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M12 2a7 7 0 0 0-7 7c0 5.1 7 13 7 13s7-7.9 7-13a7 7 0 0 0-7-7Zm0 9.6A2.6 2.6 0 1 1 12 6.4a2.6 2.6 0 0 1 0 5.2Z" fill="#1867F2"/></svg>
             </span>
-            <strong>Nearby Services</strong>
-            <span>Find trusted local professionals and services.</span>
+            <strong>@L["Nearby Services"]</strong>
+            <span>@L["Find trusted local professionals and services."]</span>
         </article>
         <article class="wl-card">
             <span class="wl-card-icon" aria-hidden="true">
                 <svg width="32" height="32" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2 4 5.4V11c0 5 3.4 8.9 8 10.1 4.6-1.2 8-5.1 8-10.1V5.4L12 2Z" fill="#1867F2"/><path d="M8.5 12l2.3 2.3 4.5-4.7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </span>
-            <strong>Trusted Local Help</strong>
-            <span>Connect with verified experts and get things done.</span>
+            <strong>@L["Trusted Local Help"]</strong>
+            <span>@L["Connect with verified experts and get things done."]</span>
         </article>
     </div>
 
@@ -72,26 +75,30 @@
         <a asp-action="Register" class="wl-btn wl-btn--primary">
             <span class="wl-btn-main">
                 <svg class="wl-btn-spark" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><path d="M12 2.5l1.9 4.6 4.6 1.9-4.6 1.9L12 15.5l-1.9-4.6L5.5 9l4.6-1.9L12 2.5z" fill="#ffffff"/></svg>
-                Create Account
+                @L["Create Account"]
             </span>
             <svg class="wl-btn-arrow" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 10h12M11 5l5 5-5 5" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
         </a>
         <a asp-action="LoginForm" class="wl-btn wl-btn--outline">
-            <span class="wl-btn-main">Log In</span>
+            <span class="wl-btn-main">@L["Log In"]</span>
             <svg class="wl-btn-arrow" width="18" height="18" viewBox="0 0 20 20" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
                 <path d="M4 10h12M11 5l5 5-5 5" fill="none" stroke="#1867F2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
         </a>
         <a asp-controller="Explore" asp-action="Index" class="wl-guest-link">
-            Browse services as a guest
+            @L["Browse services as a guest"]
         </a>
     </div>
 </div>
 
 @section Head {
     <style>
+        .wl-screen {
+            position: relative;
+        }
+
         .wl-guest-link {
             display: block;
             margin-top: 14px;

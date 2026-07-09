@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPreventiveReviewStepViewModel
 @{
-    ViewData["Title"] = "Preventive maintenance plan ready";
+    ViewData["Title"] = L["Preventive maintenance plan ready"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -11,14 +11,14 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Preventive maintenance plan ready</h1>
-        <p>Your homecare plan is ready to start.</p>
+        <h1>@L["Preventive maintenance plan ready"]</h1>
+        <p>@L["Your homecare plan is ready to start."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
 
     <section class="pa-prev-section">
-        <h2>Maintenance plan</h2>
+        <h2>@L["Maintenance plan"]</h2>
         <ul class="pa-prev-review-services">
             @foreach (var svc in Model.SelectedServices)
             {
@@ -34,7 +34,7 @@
     </section>
 
     <section class="pa-prev-section">
-        <h2>Schedule &amp; preferences</h2>
+        <h2>@L["Schedule &amp; preferences"]</h2>
         <ul class="pa-prev-review-prefs">
             @foreach (var pref in Model.Preferences)
             {
@@ -50,7 +50,7 @@
     </section>
 
     <section class="pa-prev-section">
-        <h2>What this helps prevent</h2>
+        <h2>@L["What this helps prevent"]</h2>
         <div class="pa-prev-benefits">
             @foreach (var benefit in Model.PreventionBenefits)
             {
@@ -66,17 +66,17 @@
                 <small>@Model.NextVisitLabel</small>
             </div>
             <div class="pa-prev-summary-price">
-                <span>Estimated bundle price</span>
+                <span>@L["Estimated bundle price"]</span>
                 <strong>@Model.BundlePriceLabel</strong>
             </div>
         </div>
-        <small class="pa-prev-summary-note">You can edit services anytime.</small>
+        <small class="pa-prev-summary-note">@L["You can edit services anytime."]</small>
     </article>
 
     <form asp-action="ActivatePreventivePlan" method="post">
         @Html.AntiForgeryToken()
         <input type="hidden" name="planId" value="@Model.PlanId" />
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Activate plan</button>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Activate plan"]</button>
     </form>
-    <a asp-action="Index" class="ob-btn ob-btn-outline pa-flow-edit">Back to dashboard</a>
+    <a asp-action="Index" class="ob-btn ob-btn-outline pa-flow-edit">@L["Back to dashboard"]</a>
 </div>

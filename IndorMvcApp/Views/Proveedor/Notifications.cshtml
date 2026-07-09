@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProNotificationsViewModel
 @{
-    ViewData["Title"] = "Notifications - INDOR PRO";
+    ViewData["Title"] = L["Notifications - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -10,12 +10,12 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-jobs-head prv-pro-settings-head">
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="Back to profile">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-lead-back" aria-label="@L["Back to profile"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div>
-            <h1>Notifications</h1>
-            <p>Choose what updates you want to receive.</p>
+            <h1>@L["Notifications"]</h1>
+            <p>@L["Choose what updates you want to receive."]</p>
         </div>
     </header>
 
@@ -30,7 +30,7 @@
         @Html.AntiForgeryToken()
 
         <label class="prv-pro-notify-row">
-            <span>Job alerts</span>
+            <span>@L["Job alerts"]</span>
             <span class="prv-pro-notify-toggle-wrap">
                 <input type="hidden" name="NotifyJobAlerts" value="false" />
                 <input type="checkbox" name="NotifyJobAlerts" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyJobAlerts ? "checked" : null) />
@@ -38,7 +38,7 @@
             </span>
         </label>
         <label class="prv-pro-notify-row">
-            <span>New lead updates</span>
+            <span>@L["New lead updates"]</span>
             <span class="prv-pro-notify-toggle-wrap">
                 <input type="hidden" name="NotifyLeadUpdates" value="false" />
                 <input type="checkbox" name="NotifyLeadUpdates" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyLeadUpdates ? "checked" : null) />
@@ -46,7 +46,7 @@
             </span>
         </label>
         <label class="prv-pro-notify-row">
-            <span>Payment alerts</span>
+            <span>@L["Payment alerts"]</span>
             <span class="prv-pro-notify-toggle-wrap">
                 <input type="hidden" name="NotifyPaymentAlerts" value="false" />
                 <input type="checkbox" name="NotifyPaymentAlerts" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyPaymentAlerts ? "checked" : null) />
@@ -54,7 +54,7 @@
             </span>
         </label>
         <label class="prv-pro-notify-row">
-            <span>Report reminders</span>
+            <span>@L["Report reminders"]</span>
             <span class="prv-pro-notify-toggle-wrap">
                 <input type="hidden" name="NotifyReportReminders" value="false" />
                 <input type="checkbox" name="NotifyReportReminders" value="true" class="prv-pro-notify-checkbox" @(Model.NotifyReportReminders ? "checked" : null) />
@@ -62,7 +62,7 @@
             </span>
         </label>
 
-        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Save preferences</button>
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Save preferences"]</button>
     </form>
 </div>
 

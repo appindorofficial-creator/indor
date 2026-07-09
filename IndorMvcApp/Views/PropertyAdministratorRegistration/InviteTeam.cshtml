@@ -34,7 +34,7 @@
         <input type="text"
                name="inviteName"
                value="@Model.InviteName"
-               placeholder="Name (optional)"
+               placeholder="@L["Name (optional)"]"
                autocomplete="name" />
     </label>
 
@@ -43,7 +43,7 @@
         <input type="email"
                name="inviteEmail"
                value="@Model.InviteEmail"
-               placeholder="Email address"
+               placeholder="@L["Email address"]"
                inputmode="email"
                autocomplete="email"
                required
@@ -55,7 +55,7 @@
     <p class="pa-form-hint" id="inviteEmailHint">
         @if (Model.PendingInvites.Count > 0)
         {
-            <text>Add another teammate below, or go back to review when you are done.</text>
+            <text>@L["Add another teammate below, or go back to review when you are done."]</text>
         }
         else
         {
@@ -69,7 +69,7 @@
 </form>
 
 <div class="pa-reg-actions" style="margin-top:18px;">
-    <a href="@Model.BackUrl" class="pa-reg-action-back">Back to review</a>
+    <a href="@Model.BackUrl" class="pa-reg-action-back">@L["Back to review"]</a>
 </div>
 
 @section Scripts {

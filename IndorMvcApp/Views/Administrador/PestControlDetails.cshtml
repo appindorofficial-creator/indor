@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPestControlStep1ViewModel
 @{
-    ViewData["Title"] = "Pest Control";
+    ViewData["Title"] = L["Pest Control"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-bug pa-flow-title-icon pa-flow-title-icon--green"></i> Pest Control</h1>
-        <p>Tell us what's happening so we can send the right pest control pro.</p>
+        <h1><i class="fas fa-bug pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Pest Control"]</h1>
+        <p>@L["Tell us what's happening so we can send the right pest control pro."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -24,7 +24,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-bug pa-q-icon pa-q-icon--green"></i> What pest issue do you need help with?</label>
+            <label><i class="fas fa-bug pa-q-icon pa-q-icon--green"></i> @L["What pest issue do you need help with?"]</label>
             <div class="pa-pc-options-grid">
                 @foreach (var p in new[] { ("Ants", "Ants"), ("Roaches", "Roaches"), ("Rodents", "Rodents"), ("Termites", "Termites"), ("WaspsBees", "Wasps / bees"), ("Spiders", "Spiders"), ("Other", "Other") })
                 {
@@ -38,7 +38,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>Where are you seeing the issue?</label>
+            <label>@L["Where are you seeing the issue?"]</label>
             <div class="pa-pc-options-grid">
                 @foreach (var l in new[] { ("Kitchen", "Kitchen"), ("Bathroom", "Bathroom"), ("Bedroom", "Bedroom"), ("PatioExterior", "Patio / exterior"), ("Garage", "Garage"), ("WholeProperty", "Whole property") })
                 {
@@ -52,7 +52,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>How urgent is it?</label>
+            <label>@L["How urgent is it?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
                 {
@@ -66,7 +66,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>Are guests currently staying at the property?</label>
+            <label>@L["Are guests currently staying at the property?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsStaying == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestsStaying" value="Yes" @(Model.GuestsStaying == "Yes" ? "checked" : null) /> Yes
@@ -79,7 +79,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Have you seen live pests today?</label>
+            <label>@L["Have you seen live pests today?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.LivePestsToday == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="LivePestsToday" value="Yes" @(Model.LivePestsToday == "Yes" ? "checked" : null) /> Yes
@@ -92,18 +92,18 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add quick details</label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> @L["Add quick details"]</label>
             <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="250" id="pcDetails">@Model.QuickDetails</textarea>
             <small class="pa-char-count"><span id="pcDetailsCount">@Model.QuickDetails.Length</span> / 250</small>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to services</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to services"]</a>
     </form>
 </div>
 

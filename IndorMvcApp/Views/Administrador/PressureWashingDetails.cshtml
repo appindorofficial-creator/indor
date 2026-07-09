@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPressureWashingStep1ViewModel
 @{
-    ViewData["Title"] = "Pressure Washing";
+    ViewData["Title"] = L["Pressure Washing"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-spray-can pa-flow-title-icon pa-flow-title-icon--green"></i> Pressure Washing</h1>
-        <p>Tell us what needs to be cleaned so we can prepare the right crew.</p>
+        <h1><i class="fas fa-spray-can pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Pressure Washing"]</h1>
+        <p>@L["Tell us what needs to be cleaned so we can prepare the right crew."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -25,7 +25,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-spray-can pa-q-icon pa-q-icon--green"></i> What needs pressure washing? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-spray-can pa-q-icon pa-q-icon--green"></i> @L["What needs pressure washing?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-pw-areas-grid">
                 @foreach (var a in new (string Value, string Label, string Icon)[]
                 {
@@ -51,7 +51,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>How large is the area?</label>
+            <label>@L["How large is the area?"]</label>
             <div class="pa-pw-size-row">
                 @foreach (var s in new (string Value, string Label, string Sub)[] {
                     ("Small", "Small", "Up to 500 sq ft"),
@@ -70,7 +70,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>What is the main reason for service?</label>
+            <label>@L["What is the main reason for service?"]</label>
             <div class="pa-pw-reason-row">
                 @foreach (var r in new (string Value, string Label, string Icon)[] {
                     ("GuestTurnover", "Guest turnover", "fa-calendar-check"),
@@ -90,7 +90,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>Is the property occupied right now?</label>
+            <label>@L["Is the property occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) />
@@ -105,7 +105,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Do guests need to be notified?</label>
+            <label>@L["Do guests need to be notified?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var n in new[] { ("Me", "Me"), ("Guest", "Guest"), ("Both", "Both") })
                 {
@@ -119,25 +119,25 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add quick notes <small>(optional)</small></label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> @L["Add quick notes"] <small>@L["(optional)"]</small></label>
             <textarea class="pa-textarea" name="QuickNotes" rows="3" maxlength="200" id="pwNotes">@Model.QuickNotes</textarea>
             <small class="pa-char-count"><span id="pwNotesCount">@Model.QuickNotes.Length</span> / 200</small>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
         </div>
 
         <div class="pa-lawn-availability-banner">
             <div>
-                <strong>Outdoor &amp; Exterior service</strong>
-                <small>Ideal for Airbnb turnovers and rental property upkeep.</small>
+                <strong>@L["Outdoor &amp; Exterior service"]</strong>
+                <small>@L["Ideal for Airbnb turnovers and rental property upkeep."]</small>
             </div>
             <i class="fas fa-leaf"></i>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue <i class="fas fa-chevron-right"></i></button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

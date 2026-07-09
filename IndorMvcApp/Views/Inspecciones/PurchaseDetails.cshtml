@@ -1,8 +1,8 @@
-﻿@model IndorMvcApp.ViewModels.PurchaseDetailsViewModel
+@model IndorMvcApp.ViewModels.PurchaseDetailsViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Purchase Details - INDOR";
-    ViewData["WizardTitle"] = "Purchase Details";
+    ViewData["Title"] = L["Purchase Details - INDOR"];
+    ViewData["WizardTitle"] = L["Purchase Details"];
 var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)
                            ?? DateTime.Today.AddDays(21).ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
     ViewData["WizardBackUrl"] = HomeNavigationUrls.ServicesTab(Url, "inspections");
@@ -11,8 +11,8 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
 
 </div>
 
-        <h1 class="page-heading">Tell us about this home purchase</h1>
-        <p class="page-lead">We&apos;ll use this information to prepare the right inspection flow.</p>
+        <h1 class="page-heading">@L["Tell us about this home purchase"]</h1>
+        <p class="page-lead">@L["We&apos;ll use this information to prepare the right inspection flow."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -32,26 +32,26 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
             <div class="field-card">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-house"></i></div>
-                    <div class="field-label">Property address</div>
+                    <div class="field-label">@L["Property address"]</div>
                 </div>
-                <input asp-for="DireccionPropiedad" class="form-input" placeholder="123 Main St, Charlotte, NC 28202" required />
+                <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
             </div>
 
             <div class="field-card">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-file-signature"></i></div>
-                    <div class="field-label">Are you under contract?</div>
+                    <div class="field-label">@L["Are you under contract?"]</div>
                 </div>
                 <div class="segmented" data-target="BajoContrato">
-                    <button type="button" class="segment-btn" data-value="true"><i class="fas fa-check"></i> Yes</button>
-                    <button type="button" class="segment-btn" data-value="false">No</button>
+                    <button type="button" class="segment-btn" data-value="true"><i class="fas fa-check"></i> @L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="false">@L["No"]</button>
                 </div>
             </div>
 
             <div class="field-card">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-calendar-day"></i></div>
-                    <div class="field-label">Estimated closing date</div>
+                    <div class="field-label">@L["Estimated closing date"]</div>
                 </div>
                 <input type="date" class="form-input" id="FechaCierreEstimada" name="FechaCierreEstimada" value="@closingDateValue" />
             </div>
@@ -59,47 +59,47 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
             <div class="field-card">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-clipboard-list"></i></div>
-                    <div class="field-label">Do you already have a home inspection report?</div>
+                    <div class="field-label">@L["Do you already have a home inspection report?"]</div>
                 </div>
                 <div class="segmented" data-target="TieneReporteExistente">
-                    <button type="button" class="segment-btn" data-value="true">Yes</button>
-                    <button type="button" class="segment-btn" data-value="false">No</button>
+                    <button type="button" class="segment-btn" data-value="true">@L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="false">@L["No"]</button>
                 </div>
             </div>
 
             <div class="field-card">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-user"></i></div>
-                    <div class="field-label">Who are you?</div>
+                    <div class="field-label">@L["Who are you?"]</div>
                 </div>
                 <div class="chip-group" data-target="RolComprador">
-                    <button type="button" class="chip-btn" data-value="Buyer">Buyer</button>
-                    <button type="button" class="chip-btn" data-value="Realtor">Realtor</button>
-                    <button type="button" class="chip-btn" data-value="Investor">Investor</button>
+                    <button type="button" class="chip-btn" data-value="Buyer">@L["Buyer"]</button>
+                    <button type="button" class="chip-btn" data-value="Realtor">@L["Realtor"]</button>
+                    <button type="button" class="chip-btn" data-value="Investor">@L["Investor"]</button>
                 </div>
             </div>
 
             <div class="field-card">
                 <div class="field-head">
                     <div class="field-icon"><i class="fas fa-bullseye"></i></div>
-                    <div class="field-label">Main goal</div>
+                    <div class="field-label">@L["Main goal"]</div>
                 </div>
                 <div class="goal-grid" data-target="ObjetivoPrincipal">
                     <button type="button" class="goal-btn" data-value="BuyWithConfidence">
                         <span class="check"><i class="fas fa-check"></i></span>
-                        <i class="fas fa-shield-heart"></i><span>Buy with confidence</span>
+                        <i class="fas fa-shield-heart"></i><span>@L["Buy with confidence"]</span>
                     </button>
                     <button type="button" class="goal-btn" data-value="UnderstandRepairRisks">
                         <span class="check"><i class="fas fa-check"></i></span>
-                        <i class="fas fa-magnifying-glass"></i><span>Understand repair risks</span>
+                        <i class="fas fa-magnifying-glass"></i><span>@L["Understand repair risks"]</span>
                     </button>
                     <button type="button" class="goal-btn" data-value="NegotiateRepairs">
                         <span class="check"><i class="fas fa-check"></i></span>
-                        <i class="fas fa-handshake"></i><span>Negotiate repairs</span>
+                        <i class="fas fa-handshake"></i><span>@L["Negotiate repairs"]</span>
                     </button>
                     <button type="button" class="goal-btn" data-value="SecondOpinion">
                         <span class="check"><i class="fas fa-check"></i></span>
-                        <i class="fas fa-comments"></i><span>Get a second opinion</span>
+                        <i class="fas fa-comments"></i><span>@L["Get a second opinion"]</span>
                     </button>
                 </div>
             </div>
@@ -107,7 +107,7 @@ var closingDateValue = Model.FechaCierreEstimada?.ToString("yyyy-MM-dd", Culture
             <button type="submit" class="btn-primary" name="action" value="next">
                 <i class="fas fa-arrow-right"></i> Next
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

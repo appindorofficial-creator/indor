@@ -1,48 +1,49 @@
 @model IndorMvcApp.Models.PlanMembresia
 @{
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+    var es = L.IsSpanish;
 }
 
 <div class="mem-filter-hero">
     <span class="plan-pick-icon" style="width:56px;height:56px;"><i class="fas fa-house-heart"></i></span>
     <div class="mf-body">
-        <h2>@Model.Nombre</h2>
+        <h2>@Model.LocalizedNombre(es)</h2>
     </div>
-    <div class="plan-pick-price">@Model.PrecioMensual.ToString("C0", culture)<em>/mo</em></div>
+    <div class="plan-pick-price">@Model.PrecioMensual.ToString("C0", culture)<em>@L["/mo"]</em></div>
 </div>
 
 <div class="pf-card" style="padding:12px 14px;">
     <div class="mem-benefit-card" style="border:none;box-shadow:none;margin:0;padding:10px 0;">
         <span class="mb-icon"><i class="fas fa-wind"></i></span>
-        <div class="mb-text"><strong>Filter delivery every 3 months</strong></div>
+        <div class="mb-text"><strong>@L["Filter delivery every 3 months"]</strong></div>
         <i class="fas fa-circle-check" style="color:#0066CC;"></i>
     </div>
     <div class="mem-benefit-card" style="border:none;box-shadow:none;margin:0;padding:10px 0;border-top:1px solid #F1F5F9;">
         <span class="mb-icon"><i class="fas fa-bell"></i></span>
-        <div class="mb-text"><strong>Maintenance reminders</strong></div>
+        <div class="mb-text"><strong>@L["Maintenance reminders"]</strong></div>
         <i class="fas fa-circle-check" style="color:#0066CC;"></i>
     </div>
     <div class="mem-benefit-card" style="border:none;box-shadow:none;margin:0;padding:10px 0;border-top:1px solid #F1F5F9;">
         <span class="mb-icon"><i class="fas fa-tag"></i></span>
-        <div class="mb-text"><strong>5% discount on INDOR services</strong></div>
+        <div class="mb-text"><strong>@L["5% discount on INDOR services"]</strong></div>
         <i class="fas fa-circle-check" style="color:#0066CC;"></i>
     </div>
     <div class="mem-benefit-card" style="border:none;box-shadow:none;margin:0;padding:10px 0;border-top:1px solid #F1F5F9;">
         <span class="mb-icon"><i class="fas fa-users"></i></span>
-        <div class="mb-text"><strong>Designed for homeowners who want convenience and savings.</strong></div>
+        <div class="mb-text"><strong>@L["Designed for homeowners who want convenience and savings."]</strong></div>
         <i class="fas fa-circle-check" style="color:#0066CC;"></i>
     </div>
 </div>
 
-<h3 style="font-size:.95rem;font-weight:800;margin:14px 0 10px;">How it works</h3>
+<h3 style="font-size:.95rem;font-weight:800;margin:14px 0 10px;">@L["How it works"]</h3>
 <div class="mem-hc-steps">
-    <div class="hc-step-box"><span class="hc-num">1</span> Choose your plan</div>
-    <div class="hc-step-box"><i class="fas fa-truck"></i> Set up your filter delivery</div>
-    <div class="hc-step-box"><i class="fas fa-gift"></i> Enjoy reminders + savings</div>
+    <div class="hc-step-box"><span class="hc-num">1</span> @L["1. Choose your plan"]</div>
+    <div class="hc-step-box"><i class="fas fa-truck"></i> @L["Set up your filter delivery"]</div>
+    <div class="hc-step-box"><i class="fas fa-gift"></i> @L["Enjoy reminders + savings"]</div>
 </div>
 
 <div class="mem-sticky-footer">
-    <a asp-action="MembresiaEntregaHogar" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></a>
-    <a asp-action="Suscripciones" class="mem-edit-link" style="margin-top:10px;">Back to plans</a>
-    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-shield-check"></i> Cancel anytime. No long-term contracts.</div>
+    <a asp-action="MembresiaEntregaHogar" class="pf-btn" style="width:100%;">@L["Continue"] <i class="fas fa-chevron-right"></i></a>
+    <a asp-action="Suscripciones" class="mem-edit-link" style="margin-top:10px;">@L["Back to plans"]</a>
+    <div class="mem-trust" style="margin-top:12px;"><i class="fas fa-shield-check"></i> @L["Cancel anytime. No long-term contracts."]</div>
 </div>

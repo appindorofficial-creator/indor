@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.InsuranceReviewViewModel
 @{
-    ViewData["Title"] = "Review & Payment - INDOR PRO";
+    ViewData["Title"] = L["Review & Payment - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     ViewData["ProviderProExtraCss"] = "insurance-quote.css";
@@ -15,10 +15,10 @@
 
 <div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
     <header class="ins-hd">
-        <a asp-controller="Proveedor" asp-action="InsuranceBusinessDetails" class="ins-hd-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="InsuranceBusinessDetails" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div class="ins-hd-text">
-            <h1>Review &amp; Payment</h1>
-            <p>Review your information and complete your payment.</p>
+            <h1>@L["Review &amp; Payment"]</h1>
+            <p>@L["Review your information and complete your payment."]</p>
         </div>
     </header>
 
@@ -28,28 +28,28 @@
         <div class="ins-rv-head">
             <span class="ins-rv-shield"><i class="fas fa-shield-halved"></i></span>
             <div class="ins-rv-head-main">
-                <span class="ins-rv-selected">Selected plan: <strong>@Model.PlanDisplayName</strong></span>
+                <span class="ins-rv-selected">@L["Selected plan:"]<strong>@Model.PlanDisplayName</strong></span>
                 <div class="ins-rv-priceband">
-                    <div><small>Pay today</small><strong>$@Model.PayToday.ToString("0")</strong></div>
-                    <div><small>Monthly plan</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
+                    <div><small>@L["Pay today"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
+                    <div><small>@L["Monthly plan"]</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
                 </div>
             </div>
         </div>
 
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-circle-check"></i></span><span class="ins-rv-k">Coverage</span><span class="ins-rv-v">@Model.Coverage</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-briefcase"></i></span><span class="ins-rv-k">Trade</span><span class="ins-rv-v">@OrDash(d.Trade)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-building"></i></span><span class="ins-rv-k">Business Name</span><span class="ins-rv-v">@OrDash(d.BusinessName)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-location-dot"></i></span><span class="ins-rv-k">Address</span><span class="ins-rv-v">@OrDash(d.FullAddress)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-user"></i></span><span class="ins-rv-k">Owner</span><span class="ins-rv-v">@OrDash(d.OwnerName)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-phone"></i></span><span class="ins-rv-k">Phone</span><span class="ins-rv-v">@OrDash(d.OwnerPhone)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-envelope"></i></span><span class="ins-rv-k">Email</span><span class="ins-rv-v">@OrDash(d.OwnerEmail)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-circle-check"></i></span><span class="ins-rv-k">@L["Coverage"]</span><span class="ins-rv-v">@Model.Coverage</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-briefcase"></i></span><span class="ins-rv-k">@L["Trade"]</span><span class="ins-rv-v">@OrDash(d.Trade)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-building"></i></span><span class="ins-rv-k">@L["Business Name"]</span><span class="ins-rv-v">@OrDash(d.BusinessName)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-location-dot"></i></span><span class="ins-rv-k">@L["Address"]</span><span class="ins-rv-v">@OrDash(d.FullAddress)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-user"></i></span><span class="ins-rv-k">@L["Owner"]</span><span class="ins-rv-v">@OrDash(d.OwnerName)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-phone"></i></span><span class="ins-rv-k">@L["Phone"]</span><span class="ins-rv-v">@OrDash(d.OwnerPhone)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-envelope"></i></span><span class="ins-rv-k">@L["Email"]</span><span class="ins-rv-v">@OrDash(d.OwnerEmail)</span></div>
 
         <div class="ins-rv-sep"></div>
 
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-people-group"></i></span><span class="ins-rv-k">Employees</span><span class="ins-rv-v">@empDisplay</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-money-bill-wave"></i></span><span class="ins-rv-k">Payroll</span><span class="ins-rv-v">@Money(d.EmployeePayroll)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-chart-line"></i></span><span class="ins-rv-k">Gross revenue</span><span class="ins-rv-v">@Money(d.CompanyGrossRevenue)</span></div>
-        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-file-shield"></i></span><span class="ins-rv-k">COI needed</span><span class="ins-rv-v">@(d.NeedsCOI != false ? "Yes" : "No")</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-people-group"></i></span><span class="ins-rv-k">@L["Employees"]</span><span class="ins-rv-v">@empDisplay</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-money-bill-wave"></i></span><span class="ins-rv-k">@L["Payroll"]</span><span class="ins-rv-v">@Money(d.EmployeePayroll)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-chart-line"></i></span><span class="ins-rv-k">@L["Gross revenue"]</span><span class="ins-rv-v">@Money(d.CompanyGrossRevenue)</span></div>
+        <div class="ins-rv-row"><span class="ins-rv-ic"><i class="fas fa-file-shield"></i></span><span class="ins-rv-k">@L["COI needed"]</span><span class="ins-rv-v">@(d.NeedsCOI != false ? "Yes" : "No")</span></div>
     </div>
 
     <div class="ins-fc">
@@ -67,14 +67,14 @@
 
     <form asp-controller="Proveedor" asp-action="InsurancePay" method="post">
         <div class="ins-fc">
-            <h3 class="ins-rv-title">Choose your payment method</h3>
+            <h3 class="ins-rv-title">@L["Choose your payment method"]</h3>
             <div class="ins-pm-grid">
                 <label class="ins-pm">
                     <input type="radio" name="paymentMethod" value="Card" checked="@(Model.PaymentMethod == "Card")" />
                     <span class="ins-pm-card">
                         <span class="ins-pm-radio"></span>
                         <i class="fas fa-credit-card"></i>
-                        <span class="ins-pm-txt"><strong>Card</strong><small>Pay with credit or debit card</small></span>
+                        <span class="ins-pm-txt"><strong>@L["Card"]</strong><small>@L["Pay with credit or debit card"]</small></span>
                     </span>
                 </label>
                 <label class="ins-pm">
@@ -82,7 +82,7 @@
                     <span class="ins-pm-card">
                         <span class="ins-pm-radio"></span>
                         <i class="fab fa-apple"></i>
-                        <span class="ins-pm-txt"><strong>Apple Pay</strong><small>Pay quickly and securely</small></span>
+                        <span class="ins-pm-txt"><strong>@L["Apple Pay"]</strong><small>@L["Pay quickly and securely"]</small></span>
                     </span>
                 </label>
                 <label class="ins-pm">
@@ -90,7 +90,7 @@
                     <span class="ins-pm-card">
                         <span class="ins-pm-radio"></span>
                         <i class="fas fa-building-columns"></i>
-                        <span class="ins-pm-txt"><strong>Bank Account</strong><small>Pay directly from your bank</small></span>
+                        <span class="ins-pm-txt"><strong>@L["Bank Account"]</strong><small>@L["Pay directly from your bank"]</small></span>
                     </span>
                 </label>
             </div>

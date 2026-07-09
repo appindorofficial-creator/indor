@@ -9,8 +9,8 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;">Add photos, access, and timing</h2>
-    <p class="page-lead" style="margin-top:-8px;">This helps us prepare for a smooth installation.</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Add photos, access, and timing"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["This helps us prepare for a smooth installation."]</p>
 
     <div class="location-card">
         <div class="thumb" style="display:flex;align-items:center;justify-content:center;"><i class="fas fa-couch" style="color:#94A3B8;"></i></div>
@@ -37,8 +37,8 @@
 
         <div class="upload-zone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong>Upload wall or TV photos</strong></p>
-            <p style="font-size:0.78rem;margin-top:4px;">Clear photos help us prepare the right tools and materials.</p>
+            <p><strong>@L["Upload wall or TV photos"]</strong></p>
+            <p style="font-size:0.78rem;margin-top:4px;">@L["Clear photos help us prepare the right tools and materials."]</p>
             <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf" multiple style="margin-top:10px;width:100%;" />
         </div>
         @foreach (var file in Model.ArchivosExistentes)
@@ -48,56 +48,56 @@
 
         <div class="field-card">
             <div class="picker-inline">
-                <div class="left"><i class="fas fa-plug"></i> Cable setup</div>
+                <div class="left"><i class="fas fa-plug"></i> @L["Cable setup"]</div>
                 <div class="option-row" data-target="ConfiguracionCables">
-                    <button type="button" class="option-btn" data-value="BasicVisible">Basic visible cables</button>
-                    <button type="button" class="option-btn" data-value="HideInCover">Hide cables in cover</button>
-                    <button type="button" class="option-btn" data-value="InWallConcealment">In-wall concealment</button>
-                    <button type="button" class="option-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="option-btn" data-value="BasicVisible">@L["Basic visible cables"]</button>
+                    <button type="button" class="option-btn" data-value="HideInCover">@L["Hide cables in cover"]</button>
+                    <button type="button" class="option-btn" data-value="InWallConcealment">@L["In-wall concealment"]</button>
+                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="picker-inline">
-                <div class="left"><i class="fas fa-outlet"></i> Is there an outlet near the TV location?</div>
+                <div class="left"><i class="fas fa-outlet"></i> @L["Is there an outlet near the TV location?"]</div>
                 <div class="option-row" data-target="TomaCercana">
-                    <button type="button" class="option-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="option-btn" data-value="No">No</button>
-                    <button type="button" class="option-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="option-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="option-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="picker-inline">
-                <div class="left"><i class="fas fa-tv"></i> Has a TV been mounted on this wall before?</div>
+                <div class="left"><i class="fas fa-tv"></i> @L["Has a TV been mounted on this wall before?"]</div>
                 <div class="option-row" data-target="MontajePrevio">
-                    <button type="button" class="option-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="option-btn" data-value="No">No</button>
-                    <button type="button" class="option-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="option-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="option-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="option-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="picker-inline">
-                <div class="left"><i class="fas fa-building"></i> Access details</div>
+                <div class="left"><i class="fas fa-building"></i> @L["Access details"]</div>
                 <div class="option-row" data-target="DetallesAcceso">
-                    <button type="button" class="option-btn" data-value="GroundFloor">Ground floor</button>
-                    <button type="button" class="option-btn" data-value="Stairs">Stairs</button>
-                    <button type="button" class="option-btn" data-value="Elevator">Elevator</button>
-                    <button type="button" class="option-btn" data-value="ParkingLimited">Parking limited</button>
+                    <button type="button" class="option-btn" data-value="GroundFloor">@L["Ground floor"]</button>
+                    <button type="button" class="option-btn" data-value="Stairs">@L["Stairs"]</button>
+                    <button type="button" class="option-btn" data-value="Elevator">@L["Elevator"]</button>
+                    <button type="button" class="option-btn" data-value="ParkingLimited">@L["Parking limited"]</button>
                 </div>
             </div>
 
             <div class="picker-inline">
-                <div class="left"><i class="fas fa-clock"></i> Preferred arrival</div>
+                <div class="left"><i class="fas fa-clock"></i> @L["Preferred arrival"]</div>
                 <div class="option-row" data-target="VentanaHorario">
-                    <button type="button" class="option-btn" data-value="Morning">Morning</button>
-                    <button type="button" class="option-btn" data-value="Afternoon">Afternoon</button>
-                    <button type="button" class="option-btn" data-value="Evening">Evening</button>
-                    <button type="button" class="option-btn" data-value="AsSoonAsPossible">As soon as possible</button>
+                    <button type="button" class="option-btn" data-value="Morning">@L["Morning"]</button>
+                    <button type="button" class="option-btn" data-value="Afternoon">@L["Afternoon"]</button>
+                    <button type="button" class="option-btn" data-value="Evening">@L["Evening"]</button>
+                    <button type="button" class="option-btn" data-value="AsSoonAsPossible">@L["As soon as possible"]</button>
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Preferred service date</span>
+            <span class="field-label">@L["Preferred service date"]</span>
             <div class="input-wrap">
                 <i class="fas fa-calendar"></i>
                 <input asp-for="FechaServicio" type="date" />
@@ -105,17 +105,17 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label">Notes for the installer</span>
+            <span class="field-label">@L["Notes for the installer"]</span>
             <div class="input-wrap">
                 <i class="fas fa-note-sticky"></i>
-                <textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="Customer would like centered placement above media console."></textarea>
+                <textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="@L["Customer would like centered placement above media console."]"></textarea>
             </div>
         </div>
 
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>Photos and access details help your provider bring the right tools and ensure a smooth installation.</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Photos and access details help your provider bring the right tools and ensure a smooth installation."]</span></div>
 
-        <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

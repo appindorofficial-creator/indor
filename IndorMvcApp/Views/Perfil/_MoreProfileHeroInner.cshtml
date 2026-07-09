@@ -5,7 +5,7 @@
     <div class="more-avatar">
         @if (!string.IsNullOrWhiteSpace(Model.PhotoUrl))
         {
-            <img src="@Url.Content("~" + Model.PhotoUrl)" alt="Profile photo" />
+            <img src="@Url.Content("~" + Model.PhotoUrl)" alt="@L["Profile Photo"]" />
         }
         else
         {
@@ -14,9 +14,9 @@
     </div>
 </div>
 <div class="more-profile-meta">
-    <p class="mp-name">@Model.FullName</p>
-    <div class="mp-row"><i class="far fa-envelope"></i><span>@Model.Email</span></div>
-    <div class="mp-row"><i class="fas fa-phone"></i><span>@Model.Phone</span></div>
+    <p class="mp-name">@(Model.FullName is "Your name" ? L["Your name"] : Model.FullName)</p>
+    <div class="mp-row"><i class="far fa-envelope"></i><span>@(Model.Email is "Add your email" ? L["Add your email"] : Model.Email)</span></div>
+    <div class="mp-row"><i class="fas fa-phone"></i><span>@(Model.Phone is "Add your phone" ? L["Add your phone"] : Model.Phone)</span></div>
     @if (ProfileDisplayService.PaidMembershipEnabled)
     {
         <div class="mp-row membership">
@@ -24,11 +24,11 @@
             <span>
                 @if (Model.HasActiveMembership)
                 {
-                    <strong>@Model.MembershipLabel</strong>
+                    <strong>@(Model.MembershipLabel is "No Membership" ? L["No Membership"] : Model.MembershipLabel)</strong>
                 }
                 else
                 {
-                    <span>No active membership</span>
+                    <span>@L["No active membership"]</span>
                 }
             </span>
         </div>
@@ -36,5 +36,5 @@
 </div>
 <div class="more-ring" style="--pct:@Model.ProfileCompletionPercent" aria-hidden="true">
     <span class="more-ring-pct">@Model.ProfileCompletionPercent%</span>
-    <span class="more-ring-label">Complete</span>
+    <span class="more-ring-label">@L["Complete"]</span>
 </div>

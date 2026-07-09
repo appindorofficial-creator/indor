@@ -1,8 +1,21 @@
 @{
-    ViewData["Title"] = "History";
-    ViewData["Subtitulo"] = "Microservices, inspections, and services";
+    ViewData["Title"] = L["History"];
+    ViewData["Subtitulo"] = L["Microservices, inspections, and services"];
     var historial = (IEnumerable<IndorMvcApp.Models.HistorialServicio>?)ViewBag.Historial ?? Enumerable.Empty<IndorMvcApp.Models.HistorialServicio>();
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+    string HistCls(string? s) => (s ?? "").ToLower() switch {
+        "completado" or "completed" => "badge-x b-com",
+        "pendiente" or "pending" => "badge-x b-pen",
+        "vencido" or "overdue" => "badge-x b-ven",
+        _ => "badge-x b-pen"
+    };
+    string HistLabel(string? s) => (s ?? "").ToLower() switch {
+        "completado" or "completed" => L["Completed"],
+        "pendiente" or "pending" => L["Pending"],
+        "vencido" or "overdue" => L["Overdue"],
+        _ => s ?? "—"
+    };
 }
 
 <style>
@@ -26,26 +39,11 @@
     .b-ven { background: #FEE2E2; color: #991B1B; }
 </style>
 
-@functions{
-    string Cls(string? s) => (s ?? "").ToLower() switch {
-        "completado" or "completed" => "badge-x b-com",
-        "pendiente" or "pending" => "badge-x b-pen",
-        "vencido" or "overdue" => "badge-x b-ven",
-        _ => "badge-x b-pen"
-    };
-    string Label(string? s) => (s ?? "").ToLower() switch {
-        "completado" or "completed" => "Completed",
-        "pendiente" or "pending" => "Pending",
-        "vencido" or "overdue" => "Overdue",
-        _ => s ?? "—"
-    };
-}
-
 <div class="pf-card">
     <div class="hist-tabs">
-        <button type="button" class="hist-tab active" data-hist="Microservicio">Microservices</button>
-        <button type="button" class="hist-tab" data-hist="Inspeccion">Inspections</button>
-        <button type="button" class="hist-tab" data-hist="Servicio">Services</button>
+        <button type="button" class="hist-tab active" data-hist="Microservicio">@L["Microservices"]</button>
+        <button type="button" class="hist-tab" data-hist="Inspeccion">@L["Inspections"]</button>
+        <button type="button" class="hist-tab" data-hist="Servicio">@L["Services"]</button>
     </div>
 
     @foreach (var grupo in new[] { "Microservicio", "Inspeccion", "Servicio" })
@@ -54,7 +52,7 @@
         <div data-hist-list="@grupo" style="@(grupo == "Microservicio" ? "" : "display:none;")">
             @if (!items.Any())
             {
-                <div class="empty">No records.</div>
+                <div class="empty">@L["No records."]</div>
             }
             else
             {
@@ -70,7 +68,7 @@
                             {
                                 <div style="font-weight:800;">@h.Monto.Value.ToString("C0", culture)</div>
                             }
-                            <span class="@Cls(h.Estado)">@Label(h.Estado)</span>
+                            <span class="@HistCls(h.Estado)">@HistLabel(h.Estado)</span>
                         </div>
                     </div>
                 }

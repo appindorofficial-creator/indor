@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorCompareQuotesPageViewModel
 @{
-    ViewData["Title"] = "Compare Quotes";
+    ViewData["Title"] = L["Compare Quotes"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "quotes";
 }
@@ -9,8 +9,8 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <div class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> Quotes</a>
-        <h1 class="rl-page-title">Compare Quotes</h1>
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> @L["Quotes"]</a>
+        <h1 class="rl-page-title">@L["Compare Quotes"]</h1>
     </div>
 
     <div class="rl-qcmp-hero">
@@ -21,14 +21,14 @@
             <span class="rl-status-pill rl-status-pill--received">@Model.StatusLabel</span>
         </div>
     </div>
-    <p class="rl-section-caption rl-qcmp-caption">Review and compare quotes from trusted providers.</p>
+    <p class="rl-section-caption rl-qcmp-caption">@L["Review and compare quotes from trusted providers."]</p>
 
     @foreach (var quote in Model.Quotes)
     {
         <article class="rl-qcmp-card @(quote.IsBestValue ? "is-best" : null)">
             @if (quote.IsBestValue)
             {
-                <span class="rl-qcmp-best"><i class="fas fa-star"></i> Best Value</span>
+                <span class="rl-qcmp-best"><i class="fas fa-star"></i> @L["Best Value"]</span>
             }
             <div class="rl-qcmp-card-head">
                 <span class="rl-provider-avatar">@quote.ProviderInitials</span>
@@ -43,37 +43,37 @@
             <div class="rl-qcmp-grid">
                 <div>
                     <i class="fas fa-dollar-sign"></i>
-                    <span>Total Price</span>
+                    <span>@L["Total Price"]</span>
                     <strong>@quote.AmountLabel</strong>
-                    @if (quote.IsBestValue) { <em>Best Value</em> }
+                    @if (quote.IsBestValue) { <em>@L["Best Value"]</em> }
                 </div>
                 <div>
                     <i class="fas fa-clock"></i>
-                    <span>Timeline</span>
+                    <span>@L["Timeline"]</span>
                     <strong>@quote.TimelineLabel</strong>
-                    <em>Estimated</em>
+                    <em>@L["Estimated"]</em>
                 </div>
                 <div>
                     <i class="fas fa-shield-halved"></i>
-                    <span>Warranty</span>
+                    <span>@L["Warranty"]</span>
                     <strong>@quote.WarrantyLabel</strong>
-                    <em>Included</em>
+                    <em>@L["Included"]</em>
                 </div>
                 <div>
                     <i class="fas fa-star"></i>
-                    <span>Rating</span>
+                    <span>@L["Rating"]</span>
                     <strong>@(quote.Rating > 0 ? quote.Rating.ToString("0.0") : "—")</strong>
-                    <em>@(quote.ReviewCount > 0 ? $"{quote.ReviewCount} reviews" : "No reviews yet")</em>
+                    <em>@(quote.ReviewCount > 0 ? L.T("{0} reviews", quote.ReviewCount) : L["No reviews yet"])</em>
                 </div>
             </div>
             <div class="rl-qcmp-card-foot">
-                <a href="@quote.ViewDetailsUrl" class="rl-qcmp-details">View Details</a>
+                <a href="@quote.ViewDetailsUrl" class="rl-qcmp-details">@L["View Details"]</a>
                 <form asp-controller="Realtor" asp-action="AcceptQuote" method="post" class="rl-qcmp-select-form">
                     @Html.AntiForgeryToken()
                     <input type="hidden" name="quoteId" value="@Model.QuoteId" />
                     <input type="hidden" name="bidId" value="@quote.BidId" />
                     <button type="submit" class="@(quote.IsBestValue ? "ob-btn ob-btn-primary" : "rl-btn-outline") rl-qcmp-select-btn">
-                        Select This Quote
+                        @L["Select This Quote"]
                     </button>
                 </form>
             </div>
@@ -83,12 +83,12 @@
     <div class="rl-qcmp-summary">
         <div>
             <i class="fas fa-chart-column"></i>
-            <span>Price Range</span>
+            <span>@L["Price Range"]</span>
             <strong>@Model.PriceRangeLabel</strong>
         </div>
         <div>
             <i class="fas fa-clock"></i>
-            <span>Timeline Range</span>
+            <span>@L["Timeline Range"]</span>
             <strong>@Model.TimelineRangeLabel</strong>
         </div>
     </div>

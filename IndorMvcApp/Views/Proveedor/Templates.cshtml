@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProTemplatesPageViewModel
 @{
-    ViewData["Title"] = "Templates - INDOR PRO";
+    ViewData["Title"] = L["Templates - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "templates-flow.css";
@@ -10,24 +10,24 @@
     @await Html.PartialAsync("_TemplatesHead")
 
     <section class="tpl-head">
-        <h1>Templates</h1>
-        <p>Choose a template to start faster.</p>
+        <h1>@L["Templates"]</h1>
+        <p>@L["Choose a template to start faster."]</p>
     </section>
 
     <div class="tpl-subrow">
-        <span class="tpl-step">Step 1 of 3</span>
+        <span class="tpl-step">@L["Step 1 of 3"]</span>
         <a asp-controller="Proveedor" asp-action="Templates" class="tpl-add-btn"><i class="fas fa-plus"></i> Add Custom Template</a>
     </div>
 
     <form class="tpl-search" onsubmit="return false;">
         <div class="tpl-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" placeholder="Search templates" />
+            <input type="search" placeholder="@L["Search templates"]" />
         </div>
-        <button type="button" class="tpl-filter-btn" aria-label="Filters"><i class="fas fa-sliders"></i></button>
+        <button type="button" class="tpl-filter-btn" aria-label="@L["Filters"]"><i class="fas fa-sliders"></i></button>
     </form>
 
-    <h2 class="tpl-section">Most Used</h2>
+    <h2 class="tpl-section">@L["Most Used"]</h2>
     <div class="tpl-list">
         @foreach (var t in Model.MostUsed)
         {
@@ -44,7 +44,7 @@
 
     @if (Model.MyTemplates.Count > 0)
     {
-        <h2 class="tpl-section">My Templates</h2>
+        <h2 class="tpl-section">@L["My Templates"]</h2>
         <div class="tpl-list">
             @foreach (var t in Model.MyTemplates)
             {

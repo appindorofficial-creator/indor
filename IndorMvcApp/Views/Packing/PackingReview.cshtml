@@ -9,23 +9,23 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;">Review your request</h2>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Review your request"]</h2>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-box"></i><div><div class="summary-label">Packing type</div><div class="summary-value">@Model.TipoEmpaqueLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Move date</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-building"></i><div><div class="summary-label">Property type</div><div class="summary-value">@Model.TipoPropiedadLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clipboard-list"></i><div><div class="summary-label">Scope</div><div class="summary-value">@Model.AlcanceLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-wine-glass"></i><div><div class="summary-label">Special items</div><div class="summary-value">@Model.ItemsEspecialesLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-tape"></i><div><div class="summary-label">Supplies</div><div class="summary-value">@Model.SuministrosLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-elevator"></i><div><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+        <div class="summary-row"><i class="fas fa-box"></i><div><div class="summary-label">@L["Packing type"]</div><div class="summary-value">@Model.TipoEmpaqueLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Move date"]</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-building"></i><div><div class="summary-label">@L["Property type"]</div><div class="summary-value">@Model.TipoPropiedadLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clipboard-list"></i><div><div class="summary-label">@L["Scope"]</div><div class="summary-value">@Model.AlcanceLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-wine-glass"></i><div><div class="summary-label">@L["Special items"]</div><div class="summary-value">@Model.ItemsEspecialesLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-tape"></i><div><div class="summary-label">@L["Supplies"]</div><div class="summary-value">@Model.SuministrosLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-elevator"></i><div><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
         @if (!string.IsNullOrWhiteSpace(Model.NotaCorta))
         {
-            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">Notes</div><div class="summary-value">@Model.NotaCorta</div></div></div>
+            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">@L["Notes"]</div><div class="summary-value">@Model.NotaCorta</div></div></div>
         }
     </div>
 
@@ -39,6 +39,6 @@
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
         <input type="hidden" asp-for="DisclaimerTexto" />
-        <button type="submit" class="btn-primary">Submit request</button>
-        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+        <button type="submit" class="btn-primary">@L["Submit request"]</button>
+        <button type="submit" name="action" value="edit" class="btn-outline">@L["Edit details"]</button>
     </form>

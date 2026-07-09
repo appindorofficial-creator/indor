@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PostJobDetailsViewModel
 @{
-    ViewData["Title"] = "Post a Job";
+    ViewData["Title"] = L["Post a Job"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-network.css";
     ViewBag.NavActive = "jobs";
@@ -9,26 +9,26 @@
 <div class="prv-net-shell">
     <header class="prv-net-hero prv-net-hero--wizard">
         <div class="prv-net-hero-top">
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-net-brand" aria-label="INDOR PRO">
-                <span class="prv-net-brand-word">INDOR</span>
-                <span class="prv-net-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-net-brand" aria-label="@L["INDOR PRO"]">
+                <span class="prv-net-brand-word">@L["INDOR"]</span>
+                <span class="prv-net-brand-pro">@L["PRO"]</span>
             </a>
-            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-close" aria-label="Close"><i class="fas fa-xmark"></i></a>
+            <a asp-controller="Proveedor" asp-action="Network" class="prv-net-close" aria-label="@L["Close"]"><i class="fas fa-xmark"></i></a>
         </div>
         <div class="prv-net-hero-title">
             <div>
-                <h1>Post a Job</h1>
-                <p>Tell us what you need and get matched fast.</p>
+                <h1>@L["Post a Job"]</h1>
+                <p>@L["Tell us what you need and get matched fast."]</p>
             </div>
         </div>
     </header>
 
     <div class="prv-net-stepper">
-        <div class="prv-net-step is-active"><span class="prv-net-step-num">1</span><span class="prv-net-step-label">Details</span></div>
+        <div class="prv-net-step is-active"><span class="prv-net-step-num">1</span><span class="prv-net-step-label">@L["Details"]</span></div>
         <span class="prv-net-step-line"></span>
-        <div class="prv-net-step"><span class="prv-net-step-num">2</span><span class="prv-net-step-label">Location &amp; Budget</span></div>
+        <div class="prv-net-step"><span class="prv-net-step-num">2</span><span class="prv-net-step-label">@L["Location &amp; Budget"]</span></div>
         <span class="prv-net-step-line"></span>
-        <div class="prv-net-step"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">Review</span></div>
+        <div class="prv-net-step"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">@L["Review"]</span></div>
     </div>
 
     <form method="post" asp-controller="Proveedor" asp-action="PostNetworkJobDetails" enctype="multipart/form-data" class="prv-net-wizard-form">
@@ -44,7 +44,7 @@
         }
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">What do you need help with?</h3>
+            <h3 class="prv-net-card-title">@L["What do you need help with?"]</h3>
             <div class="prv-net-optionchips">
                 @foreach (var trade in Model.TradeOptions)
                 {
@@ -55,41 +55,41 @@
                 }
             </div>
 
-            <label class="prv-net-flabel" for="JobTitle">Job title</label>
+            <label class="prv-net-flabel" for="JobTitle">@L["Job title"]</label>
             <div class="prv-net-input-wrap">
                 <input type="text" id="JobTitle" name="JobTitle" value="@Model.JobTitle" maxlength="160"
-                       placeholder="e.g. Fix leak under kitchen sink" class="prv-net-input" />
+                       placeholder="@L["e.g. Fix leak under kitchen sink"]" class="prv-net-input" />
                 <i class="fas fa-circle-check prv-net-input-ok" id="titleOk"></i>
             </div>
 
-            <label class="prv-net-flabel" for="Description">Describe the job</label>
+            <label class="prv-net-flabel" for="Description">@L["Describe the job"]</label>
             <textarea id="Description" name="Description" maxlength="500" class="prv-net-textarea"
-                      placeholder="Tell us more about the issue, what needs to be done, and any important details.">@Model.Description</textarea>
+                      placeholder="@L["Tell us more about the issue, what needs to be done, and any important details."]">@Model.Description</textarea>
             <div class="prv-net-field-hint"><span id="descCount">0</span>/500</div>
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">Add photos <span class="prv-net-optional">(optional)</span></h3>
-            <p class="prv-net-card-sub">Photos help pros understand the job</p>
+            <h3 class="prv-net-card-title">@L["Add photos"]<span class="prv-net-optional">(optional)</span></h3>
+            <p class="prv-net-card-sub">@L["Photos help pros understand the job"]</p>
             <div class="prv-net-photos" id="photoGrid">
                 @foreach (var photo in Model.Photos)
                 {
                     <div class="prv-net-photo" data-existing="@photo">
                         <img src="@photo" alt="Job photo" />
-                        <button type="button" class="prv-net-photo-x" aria-label="Remove"><i class="fas fa-xmark"></i></button>
+                        <button type="button" class="prv-net-photo-x" aria-label="@L["Remove"]"><i class="fas fa-xmark"></i></button>
                         <input type="hidden" name="ExistingPhotos" value="@photo" />
                     </div>
                 }
                 <label class="prv-net-photo-add" id="photoAdd">
                     <i class="fas fa-camera"></i>
-                    <span>Add Photo</span>
+                    <span>@L["Add Photo"]</span>
                     <input type="file" name="Photos" accept="image/png,image/jpeg,image/webp" multiple hidden />
                 </label>
             </div>
         </div>
 
         <div class="prv-net-card">
-            <h3 class="prv-net-card-title">When do you need it?</h3>
+            <h3 class="prv-net-card-title">@L["When do you need it?"]</h3>
             <div class="prv-net-optionchips prv-net-optionchips--3">
                 <label class="prv-net-optionchip">
                     <input type="radio" name="Urgency" value="ASAP" checked="@(Model.Urgency == "ASAP")" />
@@ -106,7 +106,7 @@
             </div>
         </div>
 
-        <button type="submit" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard">Continue</button>
+        <button type="submit" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard">@L["Continue"]</button>
     </form>
 </div>
 

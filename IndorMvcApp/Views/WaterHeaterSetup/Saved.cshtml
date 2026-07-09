@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.WaterHeaterSavedViewModel
 @{
-    ViewData["Title"] = "Water Heater Added";
+    ViewData["Title"] = L["Water Heater Added"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
 
@@ -11,37 +11,37 @@
 
         <div class="hvac-celebrate">
             <div class="hvac-celebrate-icon"><i class="fas fa-check"></i></div>
-            <h2>Water heater added successfully!</h2>
-            <p class="hvac-lead" style="text-align:center;margin-top:8px;">Your equipment has been saved and is ready to manage.</p>
+            <h2>@L["Water heater added successfully!"]</h2>
+            <p class="hvac-lead" style="text-align:center;margin-top:8px;">@L["Your equipment has been saved and is ready to manage."]</p>
         </div>
 
         <div class="hvac-summary-equipment @(string.IsNullOrWhiteSpace(Model.EquipmentImageUrl) ? "hvac-summary-equipment-no-image" : "")">
             @if (!string.IsNullOrWhiteSpace(Model.EquipmentImageUrl))
             {
-                <img src="@Url.Content($"~{Model.EquipmentImageUrl}")" alt="Your uploaded water heater label" />
+                <img src="@Url.Content($"~{Model.EquipmentImageUrl}")" alt="@L["Your uploaded water heater label"]" />
             }
             <div class="hvac-summary-list hvac-summary-list-inline">
-                <div class="hvac-summary-item"><i class="fas fa-droplet icon"></i><span class="k">Type</span><span class="v">@Model.HeaterTypeLabel</span></div>
-                <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">Brand</span><span class="v">@Model.Brand</span></div>
-                <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">Model</span><span class="v">@Model.EquipmentModel</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-droplet icon"></i><span class="k">@L["Type"]</span><span class="v">@Model.HeaterTypeLabel</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">@L["Brand"]</span><span class="v">@Model.Brand</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">@L["Model"]</span><span class="v">@Model.EquipmentModel</span></div>
                 @if (!string.IsNullOrWhiteSpace(Model.InstallYearLabel) && Model.InstallYearLabel != "—")
                 {
-                    <div class="hvac-summary-item"><i class="far fa-calendar icon"></i><span class="k">Install Year</span><span class="v">@Model.InstallYearLabel</span></div>
+                    <div class="hvac-summary-item"><i class="far fa-calendar icon"></i><span class="k">@L["Install Year"]</span><span class="v">@Model.InstallYearLabel</span></div>
                 }
             </div>
         </div>
 
         <div class="hvac-whats-next-box">
-            <div class="hvac-whats-next-item"><i class="fas fa-check"></i><span>Maintenance reminders ready</span></div>
-            <div class="hvac-whats-next-item"><i class="fas fa-check"></i><span>Equipment saved in House Facts</span></div>
-            <div class="hvac-whats-next-item"><i class="fas fa-check"></i><span>You can edit details anytime</span></div>
+            <div class="hvac-whats-next-item"><i class="fas fa-check"></i><span>@L["Maintenance reminders ready"]</span></div>
+            <div class="hvac-whats-next-item"><i class="fas fa-check"></i><span>@L["Equipment saved in House Facts"]</span></div>
+            <div class="hvac-whats-next-item"><i class="fas fa-check"></i><span>@L["You can edit details anytime"]</span></div>
         </div>
 
         <a href="@Model.HouseFactsUrl" class="hvac-save-btn hvac-btn-with-icon" style="text-decoration:none;">
-            <i class="fas fa-house"></i> Go to House Facts
+            <i class="fas fa-house"></i> @L["Go to House Facts"]
         </a>
         <a asp-controller="WaterHeaterFlushReminder" asp-action="Intro" asp-route-id="@Model.PropiedadId" class="hvac-outline-btn hvac-btn-with-icon">
-            <i class="fas fa-circle-plus"></i> Set annual flush reminder
+            <i class="fas fa-circle-plus"></i> @L["Set annual flush reminder"]
         </a>
     </div>
 

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadReportSuccessViewModel
 @{
-    ViewData["Title"] = "Report Uploaded - INDOR PRO";
+    ViewData["Title"] = L["Report Uploaded - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
 }
@@ -11,8 +11,8 @@
 
     <section class="prv-pro-job-success-hero">
         <div class="prv-pro-job-success-icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Report Uploaded Successfully!</h1>
-        <p>Your report is saved and ready to share.</p>
+        <h1>@L["Report Uploaded Successfully!"]</h1>
+        <p>@L["Your report is saved and ready to share."]</p>
     </section>
 
     <section class="prv-pro-job-success-card">

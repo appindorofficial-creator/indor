@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorEditSharedQuoteViewModel
 @{
-    ViewData["Title"] = "Edit Shared Quote";
+    ViewData["Title"] = L["Edit Shared Quote"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "quotes";
 }
@@ -12,7 +12,7 @@
         <a asp-controller="Realtor" asp-action="ViewQuote" asp-route-id="@Model.QuoteId" asp-route-bidId="@Model.BidId" class="rl-back-link">
             <i class="fas fa-chevron-left"></i> Quote Details
         </a>
-        <h1 class="rl-page-title">Edit Shared Quote</h1>
+        <h1 class="rl-page-title">@L["Edit Shared Quote"]</h1>
     </div>
 
     <div class="rl-qview-hero">
@@ -32,7 +32,7 @@
         <div class="rl-qshare-recipient">
             <span class="rl-provider-avatar">@Model.HomeownerInitials</span>
             <div>
-                <span class="rl-premium-muted">Send to Homeowner</span>
+                <span class="rl-premium-muted">@L["Send to Homeowner"]</span>
                 <strong>@Model.HomeownerName</strong>
                 <span class="rl-premium-muted">
                     @(string.IsNullOrWhiteSpace(Model.HomeownerEmail) ? "No email on file" : Model.HomeownerEmail)
@@ -44,48 +44,48 @@
 
         <section class="rl-dash-section">
             <div class="rl-dash-section-head">
-                <h2>What to share <i class="fas fa-circle-info rl-inline-info"></i></h2>
-                <p class="rl-section-caption">Choose what the homeowner will see.</p>
+                <h2>@L["What to share"] <i class="fas fa-circle-info rl-inline-info"></i></h2>
+                <p class="rl-section-caption">@L["Choose what the homeowner will see."]</p>
             </div>
             <div class="rl-qshare-check-grid">
-                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareProviderInfo" /><i class="fas fa-building rl-check-icon rl-check-icon--blue"></i> Provider info</label>
-                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareFullPriceBreakdown" /><i class="fas fa-receipt rl-check-icon rl-check-icon--purple"></i> Full price breakdown</label>
-                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareScopeOfWork" /><i class="fas fa-clipboard-list rl-check-icon rl-check-icon--blue"></i> Scope of work</label>
-                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareWarranty" /><i class="fas fa-shield-halved rl-check-icon rl-check-icon--green"></i> Warranty</label>
-                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareIncludedRepairs" /><i class="fas fa-wrench rl-check-icon rl-check-icon--blue"></i> Included repairs</label>
-                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareTimeline" /><i class="fas fa-clock rl-check-icon rl-check-icon--purple"></i> Timeline</label>
+                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareProviderInfo" /><i class="fas fa-building rl-check-icon rl-check-icon--blue"></i> @L["Provider info"]</label>
+                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareFullPriceBreakdown" /><i class="fas fa-receipt rl-check-icon rl-check-icon--purple"></i> @L["Full price breakdown"]</label>
+                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareScopeOfWork" /><i class="fas fa-clipboard-list rl-check-icon rl-check-icon--blue"></i> @L["Scope of work"]</label>
+                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareWarranty" /><i class="fas fa-shield-halved rl-check-icon rl-check-icon--green"></i> @L["Warranty"]</label>
+                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareIncludedRepairs" /><i class="fas fa-wrench rl-check-icon rl-check-icon--blue"></i> @L["Included repairs"]</label>
+                <label class="rl-qshare-check"><input type="checkbox" asp-for="ShareTimeline" /><i class="fas fa-clock rl-check-icon rl-check-icon--purple"></i> @L["Timeline"]</label>
             </div>
         </section>
 
         <section class="rl-dash-section">
-            <div class="rl-dash-section-head"><h2>How should pricing be shown?</h2></div>
+            <div class="rl-dash-section-head"><h2>@L["How should pricing be shown?"]</h2></div>
             <div class="rl-qshare-pricing-pick">
                 <label class="rl-qshare-pricing-card @(Model.PricingDisplayMode == "TotalOnly" ? "is-selected" : null)">
                     <input type="radio" asp-for="PricingDisplayMode" value="TotalOnly" />
-                    <strong>Show total only</strong>
-                    <span>Simplified for homeowner</span>
+                    <strong>@L["Show total only"]</strong>
+                    <span>@L["Simplified for homeowner"]</span>
                 </label>
                 <label class="rl-qshare-pricing-card @(Model.PricingDisplayMode == "FullDetails" ? "is-selected" : null)">
                     <input type="radio" asp-for="PricingDisplayMode" value="FullDetails" />
-                    <strong>Show full price details</strong>
-                    <span>Breakdown of costs</span>
+                    <strong>@L["Show full price details"]</strong>
+                    <span>@L["Breakdown of costs"]</span>
                 </label>
             </div>
         </section>
 
         <div class="rl-qshare-field">
-            <label asp-for="MessageToHomeowner">Message to homeowner <span class="rl-char-count">@(Model.MessageToHomeowner.Length)/500</span></label>
+            <label asp-for="MessageToHomeowner">@L["Message to homeowner"] <span class="rl-char-count">@(Model.MessageToHomeowner.Length)/500</span></label>
             <textarea asp-for="MessageToHomeowner" rows="4" maxlength="500"></textarea>
         </div>
 
         <div class="rl-qshare-field">
-            <label asp-for="InternalNotes">Internal notes (hidden from homeowner) <span class="rl-char-count">@(Model.InternalNotes.Length)/500</span></label>
+            <label asp-for="InternalNotes">@L["Internal notes (hidden from homeowner)"] <span class="rl-char-count">@(Model.InternalNotes.Length)/500</span></label>
             <textarea asp-for="InternalNotes" rows="3" maxlength="500"></textarea>
         </div>
 
         <div class="rl-qview-actions">
-            <button type="submit" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-eye"></i> Preview Shared Quote</button>
-            <button type="submit" name="action" value="draft" class="rl-btn-outline rl-qview-btn"><i class="fas fa-floppy-disk"></i> Save Draft</button>
+            <button type="submit" class="ob-btn ob-btn-primary rl-qview-btn"><i class="fas fa-eye"></i> @L["Preview Shared Quote"]</button>
+            <button type="submit" name="action" value="draft" class="rl-btn-outline rl-qview-btn"><i class="fas fa-floppy-disk"></i> @L["Save Draft"]</button>
         </div>
     </form>
 </div>

@@ -86,7 +86,7 @@
 
 {
 
-    <h2 class="rl-invite-section-title">Detected categories (so far)</h2>
+    <h2 class="rl-invite-section-title">@L["Detected categories (so far)"]</h2>
 
     <div class="rl-trade-chips">
 
@@ -111,8 +111,8 @@
         <form asp-action="Analyze" method="post">
             @Html.AntiForgeryToken()
             <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
-                <strong><i class="fas fa-list-check"></i> View AI findings</strong>
-                <span>Review issues, urgency, and priority before sending to providers.</span>
+                <strong><i class="fas fa-list-check"></i> @L["View AI findings"]</strong>
+                <span>@L["Review issues, urgency, and priority before sending to providers."]</span>
             </button>
         </form>
     }
@@ -123,8 +123,8 @@
             <p>@(string.IsNullOrWhiteSpace(Model.AnalysisSummary) ? "Analysis could not be completed." : Model.AnalysisSummary)</p>
         </div>
         <button type="button" id="analyzeRetryBtn" class="ob-btn ob-btn-primary rl-analyze-btn rl-analyze-btn--full">
-            <strong><i class="fas fa-rotate-right"></i> Retry analysis</strong>
-            <span>Run AI extraction again on your inspection report.</span>
+            <strong><i class="fas fa-rotate-right"></i> @L["Retry analysis"]</strong>
+            <span>@L["Run AI extraction again on your inspection report."]</span>
         </button>
     }
     else
@@ -136,8 +136,8 @@
         <form asp-action="Analyze" method="post" class="rl-analyze-secondary">
             @Html.AntiForgeryToken()
             <button type="submit" name="action" value="background" class="ob-btn ob-btn-outline rl-analyze-btn">
-                <strong>Run in background</strong>
-                <span>Return to dashboard — we'll keep analyzing.</span>
+                <strong>@L["Run in background"]</strong>
+                <span>@L["Return to dashboard — we'll keep analyzing."]</span>
             </button>
         </form>
     }
@@ -154,7 +154,7 @@
             var actionsEl = document.getElementById('analyzeActions');
             var runningHtml = actionsEl
                 ? actionsEl.querySelector('.rl-analyze-running')?.outerHTML
-                    || '<div class="rl-analyze-running"><i class="fas fa-wand-magic-sparkles fa-spin"></i><p>INDOR AI is reading your report and extracting repair items.</p></div>'
+                    || '<div class="rl-analyze-running"><i class="fas fa-wand-magic-sparkles fa-spin"></i><p>@L["INDOR AI is reading your report and extracting repair items."]</p></div>'
                 : '';
 
             function updateProgress(progress) {
@@ -238,7 +238,7 @@
                             retryBtn.disabled = false;
                             if (actionsEl && !document.getElementById('analyzeErrorBox')) {
                                 actionsEl.insertAdjacentHTML('afterbegin',
-                                    '<div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox"><i class="fas fa-triangle-exclamation"></i><p>Could not restart analysis. Please try again.</p></div>');
+                                    '<div class="rl-info-box rl-info-box--warn" id="analyzeErrorBox"><i class="fas fa-triangle-exclamation"></i><p>@L["Could not restart analysis. Please try again."]</p></div>');
                             }
                             var running = actionsEl && actionsEl.querySelector('.rl-analyze-running');
                             if (running) running.remove();

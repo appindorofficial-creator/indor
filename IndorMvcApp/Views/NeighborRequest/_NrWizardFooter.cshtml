@@ -1,7 +1,7 @@
-@{
+﻿@{
     var formId = ViewData["NrWizardFormId"] as string;
     var href = ViewData["NrWizardContinueHref"] as string;
-    var label = ViewData["NrWizardContinueLabel"] as string ?? "Continue";
+    var label = ViewData["NrWizardContinueLabel"] as string ?? L["Continue"];
     var iconBefore = ViewData["NrWizardContinueIconBefore"] as string;
     var iconAfter = ViewData["NrWizardContinueIconAfter"] as string;
     if (iconAfter == null && iconBefore == null && string.IsNullOrWhiteSpace(href))

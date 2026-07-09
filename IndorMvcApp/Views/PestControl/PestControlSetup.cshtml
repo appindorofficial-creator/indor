@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PestControlSetupViewModel
 @{
-    ViewData["Title"] = "Tell us about your home - INDOR";
+    ViewData["Title"] = L["Tell us about your home - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("PestControlService", "PestControl", new { id = Model.HomeCarePriorityId });
     ViewData["WizardStep"] = 2;
@@ -8,8 +8,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Tell us about your home</h1>
-    <p class="page-lead" style="margin-bottom:16px;">A few details help us recommend the right pest control approach.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Tell us about your home"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["A few details help us recommend the right pest control approach."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -22,50 +22,50 @@
         <input type="hidden" asp-for="MascotasONinos" id="MascotasONinos" />
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">1</span><span>When was your last pest service?</span></div>
+            <div class="field-head"><span class="question-num">1</span><span>@L["When was your last pest service?"]</span></div>
             <div class="segment-row">
-                <button type="button" class="segment-btn" data-last="Within12Months">Within 12 months</button>
-                <button type="button" class="segment-btn" data-last="MoreThan12Months">More than 12 months</button>
-                <button type="button" class="segment-btn" data-last="DontKnow">I don't know</button>
+                <button type="button" class="segment-btn" data-last="Within12Months">@L["Within 12 months"]</button>
+                <button type="button" class="segment-btn" data-last="MoreThan12Months">@L["More than 12 months"]</button>
+                <button type="button" class="segment-btn" data-last="DontKnow">@L["I don't know"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">2</span><span>Have you noticed any signs?</span></div>
+            <div class="field-head"><span class="question-num">2</span><span>@L["Have you noticed any signs?"]</span></div>
             <div class="sign-grid">
-                <button type="button" class="sign-card" data-sign="Ants"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bug main"></i><span class="label">Ants</span></button>
-                <button type="button" class="sign-card" data-sign="Roaches"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-locust main"></i><span class="label">Roaches</span></button>
-                <button type="button" class="sign-card" data-sign="TermitesWoodDamage"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">Termites / wood damage</span></button>
-                <button type="button" class="sign-card" data-sign="Rodents"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paw main"></i><span class="label">Rodents</span></button>
-                <button type="button" class="sign-card" data-sign="SpidersWasps"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spider main"></i><span class="label">Spiders / wasps</span></button>
-                <button type="button" class="sign-card" data-sign="NoSigns"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ban main"></i><span class="label">No signs</span></button>
+                <button type="button" class="sign-card" data-sign="Ants"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-bug main"></i><span class="label">@L["Ants"]</span></button>
+                <button type="button" class="sign-card" data-sign="Roaches"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-locust main"></i><span class="label">@L["Roaches"]</span></button>
+                <button type="button" class="sign-card" data-sign="TermitesWoodDamage"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-tree main"></i><span class="label">@L["Termites / wood damage"]</span></button>
+                <button type="button" class="sign-card" data-sign="Rodents"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-paw main"></i><span class="label">@L["Rodents"]</span></button>
+                <button type="button" class="sign-card" data-sign="SpidersWasps"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-spider main"></i><span class="label">@L["Spiders / wasps"]</span></button>
+                <button type="button" class="sign-card" data-sign="NoSigns"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-ban main"></i><span class="label">@L["No signs"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">3</span><span>Areas of concern</span></div>
+            <div class="field-head"><span class="question-num">3</span><span>@L["Areas of concern"]</span></div>
             <div class="area-grid">
-                <button type="button" class="area-chip" data-area="Kitchen"><i class="fas fa-utensils"></i> Kitchen</button>
-                <button type="button" class="area-chip" data-area="Bathrooms"><i class="fas fa-bath"></i> Bathrooms</button>
-                <button type="button" class="area-chip" data-area="Garage"><i class="fas fa-warehouse"></i> Garage</button>
-                <button type="button" class="area-chip" data-area="Attic"><i class="fas fa-house-chimney"></i> Attic</button>
-                <button type="button" class="area-chip" data-area="CrawlspaceBasement"><i class="fas fa-stairs"></i> Crawlspace / basement</button>
-                <button type="button" class="area-chip" data-area="ExteriorPerimeter"><i class="fas fa-border-all"></i> Exterior perimeter</button>
-                <button type="button" class="area-chip" data-area="Yard"><i class="fas fa-leaf"></i> Yard</button>
+                <button type="button" class="area-chip" data-area="Kitchen"><i class="fas fa-utensils"></i> @L["Kitchen"]</button>
+                <button type="button" class="area-chip" data-area="Bathrooms"><i class="fas fa-bath"></i> @L["Bathrooms"]</button>
+                <button type="button" class="area-chip" data-area="Garage"><i class="fas fa-warehouse"></i> @L["Garage"]</button>
+                <button type="button" class="area-chip" data-area="Attic"><i class="fas fa-house-chimney"></i> @L["Attic"]</button>
+                <button type="button" class="area-chip" data-area="CrawlspaceBasement"><i class="fas fa-stairs"></i> @L["Crawlspace / basement"]</button>
+                <button type="button" class="area-chip" data-area="ExteriorPerimeter"><i class="fas fa-border-all"></i> @L["Exterior perimeter"]</button>
+                <button type="button" class="area-chip" data-area="Yard"><i class="fas fa-leaf"></i> @L["Yard"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">4</span><span>Do you have pets or children at home?</span></div>
+            <div class="field-head"><span class="question-num">4</span><span>@L["Do you have pets or children at home?"]</span></div>
             <div class="yesno-row">
-                <button type="button" class="yesno-btn" data-pets="Yes">Yes</button>
-                <button type="button" class="yesno-btn" data-pets="No">No</button>
+                <button type="button" class="yesno-btn" data-pets="Yes">@L["Yes"]</button>
+                <button type="button" class="yesno-btn" data-pets="No">@L["No"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><span class="question-num">5</span><span>Any extra notes?</span></div>
-            <textarea asp-for="Notas" placeholder="Tell us anything else that might help..." maxlength="300"></textarea>
+            <div class="field-head"><span class="question-num">5</span><span>@L["Any extra notes?"]</span></div>
+            <textarea asp-for="Notas" placeholder="@L["Tell us anything else that might help..."]" maxlength="300"></textarea>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">

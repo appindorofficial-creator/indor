@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorLawnCareStep1ViewModel
 @{
-    ViewData["Title"] = "Lawn Care / Grass Cutting";
+    ViewData["Title"] = L["Lawn Care / Grass Cutting"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-seedling pa-flow-title-icon pa-flow-title-icon--green"></i> Lawn Care / Grass Cutting</h1>
-        <p>Tell us what your property needs so we can schedule yard service.</p>
+        <h1><i class="fas fa-seedling pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Lawn Care / Grass Cutting"]</h1>
+        <p>@L["Tell us what your property needs so we can schedule yard service."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -28,7 +28,7 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
         </div>
     }
 
@@ -38,7 +38,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-seedling pa-q-icon pa-q-icon--green"></i> What service do you need?</label>
+            <label><i class="fas fa-seedling pa-q-icon pa-q-icon--green"></i> @L["What service do you need?"]</label>
             <div class="pa-lawn-service-row">
                 @foreach (var s in new (string Value, string Label)[] { ("GrassCutting", "Grass cutting"), ("Edging", "Edging"), ("WeedTrimming", "Weed trimming"), ("FullYardRefresh", "Full yard refresh") })
                 {
@@ -53,7 +53,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>Which area?</label>
+            <label>@L["Which area?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var a in new[] { ("FrontYard", "Front yard"), ("Backyard", "Backyard"), ("Both", "Both") })
                 {
@@ -67,7 +67,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>How large is the yard?</label>
+            <label>@L["How large is the yard?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var s in new[] { "Small", "Medium", "Large" })
                 {
@@ -81,7 +81,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>How often?</label>
+            <label>@L["How often?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var f in new[] { ("OneTime", "One-time"), ("Weekly", "Weekly"), ("BiWeekly", "Bi-weekly") })
                 {
@@ -95,7 +95,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Is the property occupied right now?</label>
+            <label>@L["Is the property occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
@@ -108,7 +108,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Do we need gate or yard access details?</label>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> @L["Do we need gate or yard access details?"]</label>
             <div class="pa-field">
                 <i class="fas fa-door-open"></i>
                 <input type="text" name="AccessDetails" value="@Model.AccessDetails" />
@@ -117,14 +117,14 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">7</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add quick notes</label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> @L["Add quick notes"]</label>
             <textarea class="pa-textarea" name="QuickNotes" rows="3" maxlength="250" id="lcNotes">@Model.QuickNotes</textarea>
             <small class="pa-char-count"><span id="lcNotesCount">@Model.QuickNotes.Length</span> / 250</small>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
         </div>
 
         <div class="pa-lawn-availability-banner">
@@ -135,8 +135,8 @@
             <i class="fas fa-circle-check"></i>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

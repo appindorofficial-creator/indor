@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.StructuralSignsViewModel
+@model IndorMvcApp.ViewModels.StructuralSignsViewModel
 @{
-    ViewData["Title"] = "Structural Details - INDOR";
-    ViewData["WizardTitle"] = "Structural Details";
+    ViewData["Title"] = L["Structural Details - INDOR"];
+    ViewData["WizardTitle"] = L["Structural Details"];
     ViewData["WizardBackUrl"] = Url.Action("StructuralDetails", "Inspecciones", new { id = Model.InspeccionId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 6;
 
 }
 
-<h1 class="page-heading">Select the visible signs</h1>
-    <p class="page-lead">Choose all signs you can currently see around the property.</p>
+<h1 class="page-heading">@L["Select the visible signs"]</h1>
+    <p class="page-lead">@L["Choose all signs you can currently see around the property."]</p>
 
     <form asp-controller="Inspecciones" asp-action="StructuralSigns" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -19,45 +19,45 @@
         <input type="hidden" asp-for="SeveridadApariencia" id="SeveridadApariencia" />
 
         <div class="field-card">
-            <span class="field-label">Visible signs</span>
+            <span class="field-label">@L["Visible signs"]</span>
             <div class="chip-grid" id="signosGroup">
-                <button type="button" class="chip-btn" data-value="HairlineCrack"><span class="check"><i class="fas fa-check"></i></span>Hairline crack</button>
-                <button type="button" class="chip-btn" data-value="StairStepCrack"><span class="check"><i class="fas fa-check"></i></span>Stair-step crack</button>
-                <button type="button" class="chip-btn" data-value="HorizontalCrack"><span class="check"><i class="fas fa-check"></i></span>Horizontal crack</button>
-                <button type="button" class="chip-btn" data-value="VerticalCrack"><span class="check"><i class="fas fa-check"></i></span>Vertical crack</button>
-                <button type="button" class="chip-btn" data-value="WideCrack"><span class="check"><i class="fas fa-check"></i></span>Wide crack</button>
-                <button type="button" class="chip-btn" data-value="SeparationGap"><span class="check"><i class="fas fa-check"></i></span>Separation gap</button>
-                <button type="button" class="chip-btn" data-value="UnevenFloor"><span class="check"><i class="fas fa-check"></i></span>Uneven floor</button>
-                <button type="button" class="chip-btn" data-value="BouncyFloor"><span class="check"><i class="fas fa-check"></i></span>Bouncy floor</button>
-                <button type="button" class="chip-btn" data-value="WallBulging"><span class="check"><i class="fas fa-check"></i></span>Wall bulging</button>
-                <button type="button" class="chip-btn" data-value="CeilingCrack"><span class="check"><i class="fas fa-check"></i></span>Ceiling crack</button>
-                <button type="button" class="chip-btn" data-value="DoorSticking"><span class="check"><i class="fas fa-check"></i></span>Door sticking</button>
-                <button type="button" class="chip-btn" data-value="WindowNotClosing"><span class="check"><i class="fas fa-check"></i></span>Window not closing</button>
-                <button type="button" class="chip-btn" data-value="WaterIntrusion"><span class="check"><i class="fas fa-check"></i></span>Water intrusion</button>
-                <button type="button" class="chip-btn" data-value="CrawlSpaceMoisture"><span class="check"><i class="fas fa-check"></i></span>Crawl space moisture</button>
-                <button type="button" class="chip-btn" data-value="RotDecay"><span class="check"><i class="fas fa-check"></i></span>Rot or decay</button>
-                <button type="button" class="chip-btn" data-value="RustedSupport"><span class="check"><i class="fas fa-check"></i></span>Rusted support</button>
-                <button type="button" class="chip-btn" data-value="FoundationSettlement"><span class="check"><i class="fas fa-check"></i></span>Foundation settlement</button>
-                <button type="button" class="chip-btn" data-value="RoofSaggingSign"><span class="check"><i class="fas fa-check"></i></span>Roof sagging sign</button>
+                <button type="button" class="chip-btn" data-value="HairlineCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Hairline crack"]</button>
+                <button type="button" class="chip-btn" data-value="StairStepCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Stair-step crack"]</button>
+                <button type="button" class="chip-btn" data-value="HorizontalCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Horizontal crack"]</button>
+                <button type="button" class="chip-btn" data-value="VerticalCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Vertical crack"]</button>
+                <button type="button" class="chip-btn" data-value="WideCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Wide crack"]</button>
+                <button type="button" class="chip-btn" data-value="SeparationGap"><span class="check"><i class="fas fa-check"></i></span>@L["Separation gap"]</button>
+                <button type="button" class="chip-btn" data-value="UnevenFloor"><span class="check"><i class="fas fa-check"></i></span>@L["Uneven floor"]</button>
+                <button type="button" class="chip-btn" data-value="BouncyFloor"><span class="check"><i class="fas fa-check"></i></span>@L["Bouncy floor"]</button>
+                <button type="button" class="chip-btn" data-value="WallBulging"><span class="check"><i class="fas fa-check"></i></span>@L["Wall bulging"]</button>
+                <button type="button" class="chip-btn" data-value="CeilingCrack"><span class="check"><i class="fas fa-check"></i></span>@L["Ceiling crack"]</button>
+                <button type="button" class="chip-btn" data-value="DoorSticking"><span class="check"><i class="fas fa-check"></i></span>@L["Door sticking"]</button>
+                <button type="button" class="chip-btn" data-value="WindowNotClosing"><span class="check"><i class="fas fa-check"></i></span>@L["Window not closing"]</button>
+                <button type="button" class="chip-btn" data-value="WaterIntrusion"><span class="check"><i class="fas fa-check"></i></span>@L["Water intrusion"]</button>
+                <button type="button" class="chip-btn" data-value="CrawlSpaceMoisture"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space moisture"]</button>
+                <button type="button" class="chip-btn" data-value="RotDecay"><span class="check"><i class="fas fa-check"></i></span>@L["Rot or decay"]</button>
+                <button type="button" class="chip-btn" data-value="RustedSupport"><span class="check"><i class="fas fa-check"></i></span>@L["Rusted support"]</button>
+                <button type="button" class="chip-btn" data-value="FoundationSettlement"><span class="check"><i class="fas fa-check"></i></span>@L["Foundation settlement"]</button>
+                <button type="button" class="chip-btn" data-value="RoofSaggingSign"><span class="check"><i class="fas fa-check"></i></span>@L["Roof sagging sign"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Severity</span>
+            <span class="field-label">@L["Severity"]</span>
             <div class="segmented-3" id="severityGroup">
-                <button type="button" class="segment-btn" data-value="Mild">Mild</button>
-                <button type="button" class="segment-btn" data-value="Moderate">Moderate</button>
-                <button type="button" class="segment-btn" data-value="Severe">Severe</button>
+                <button type="button" class="segment-btn" data-value="Mild">@L["Mild"]</button>
+                <button type="button" class="segment-btn" data-value="Moderate">@L["Moderate"]</button>
+                <button type="button" class="segment-btn" data-value="Severe">@L["Severe"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>You can select more than one sign. Pick every symptom that applies right now for a better provider match.</div>
+            <div>@L["You can select more than one sign. Pick every symptom that applies right now for a better provider match."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> @L["Back"]</button>
     </form>
 </div>
 @section Scripts {

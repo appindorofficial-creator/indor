@@ -1,18 +1,18 @@
 @model IndorMvcApp.ViewModels.EmergencySmokeDetectorYourInfoViewModel
 @{
-    ViewData["Title"] = "Smoke & CO Details - INDOR";
-    ViewData["WizardTitle"] = "Smoke & CO Details";
+    ViewData["Title"] = L["Smoke & CO Details - INDOR"];
+    ViewData["WizardTitle"] = L["Smoke & CO Details"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencySmokeDetectorDetails", "Inspecciones", new { id = Model.ServicioEmergenciaId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-    <strong style="display:block;margin-bottom:4px;">Smoke &amp; CO Details</strong>
+    <strong style="display:block;margin-bottom:4px;">@L["Smoke &amp; CO Details"]</strong>
 
     
-<h2 class="page-heading">Your info</h2>
-    <p class="page-lead">Help us reach you and access the property if needed.</p>
+<h2 class="page-heading">@L["Your info"]</h2>
+    <p class="page-lead">@L["Help us reach you and access the property if needed."]</p>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -32,26 +32,26 @@
         <input type="hidden" asp-for="AccesoPropiedad" id="AccesoPropiedad" />
 
         <div class="field-card">
-            <span class="field-label">Who is at the property?</span>
+            <span class="field-label">@L["Who is at the property?"]</span>
             <div class="access-grid" data-target="AccesoPropiedad">
-                <button type="button" class="access-btn" data-value="AdultHomeNow">Adult home now</button>
-                <button type="button" class="access-btn" data-value="ChildrenHome">Children home now</button>
-                <button type="button" class="access-btn" data-value="NoOneHome">No one home</button>
-                <button type="button" class="access-btn" data-value="SomeoneArriving">Someone arriving soon</button>
-                <button type="button" class="access-btn" data-value="NotSure" style="grid-column:span 2;">Not sure</button>
+                <button type="button" class="access-btn" data-value="AdultHomeNow">@L["Adult home now"]</button>
+                <button type="button" class="access-btn" data-value="ChildrenHome">@L["Children home now"]</button>
+                <button type="button" class="access-btn" data-value="NoOneHome">@L["No one home"]</button>
+                <button type="button" class="access-btn" data-value="SomeoneArriving">@L["Someone arriving soon"]</button>
+                <button type="button" class="access-btn" data-value="NotSure" style="grid-column:span 2;">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <label asp-for="TelefonoContacto" class="field-label">Best callback number</label>
+            <label asp-for="TelefonoContacto" class="field-label">@L["Best callback number"]</label>
             <div class="input-wrap">
                 <i class="fas fa-phone"></i>
                 <input asp-for="TelefonoContacto" class="form-input" placeholder="(704) 555-0186" required />
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

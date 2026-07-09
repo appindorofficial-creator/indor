@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProMessagesInboxViewModel
 @{
-    ViewData["Title"] = "Messages - INDOR PRO";
+    ViewData["Title"] = L["Messages - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var tabs = new[] {
@@ -27,7 +27,7 @@
         <input type="hidden" name="tab" value="@Model.ActiveTab" />
         <div class="prv-pro-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search conversations" />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search conversations"]" />
         </div>
     </form>
 
@@ -44,7 +44,7 @@
         {
             <div class="prv-pro-messages-empty">
                 <i class="fas fa-inbox"></i>
-                <p>No conversations yet.</p>
+                <p>@L["No conversations yet."]</p>
             </div>
         }
         else

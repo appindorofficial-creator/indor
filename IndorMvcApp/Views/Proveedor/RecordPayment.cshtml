@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProRecordPaymentViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Record Payment - INDOR PRO";
+    ViewData["Title"] = L["Record Payment - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -15,7 +15,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Record Payment</h1>
+            <h1>@L["Record Payment"]</h1>
             <small>Invoice @Model.InvoiceCode</small>
         </div>
     </header>
@@ -24,7 +24,7 @@
         <strong>Invoice @Model.InvoiceCode</strong>
         <small>@Model.Address · @Model.ServiceType</small>
         <div class="prv-pro-record-payment-total">
-            <span>Total Amount Due</span>
+            <span>@L["Total Amount Due"]</span>
             <strong>@Model.AmountDue.ToString("C2", money)</strong>
         </div>
     </section>
@@ -35,17 +35,17 @@
         <input type="hidden" name="ReturnTab" value="@Model.ReturnTab" />
 
         <section class="prv-pro-lead-section">
-            <label class="prv-pro-field-label">Payment Amount <em>*</em></label>
+            <label class="prv-pro-field-label">@L["Payment Amount"]<em>*</em></label>
             <input type="number" name="PaymentAmount" step="0.01" min="0" value="@Model.PaymentAmount.ToString("0.00", CultureInfo.InvariantCulture)" class="prv-pro-input" required />
         </section>
 
         <section class="prv-pro-lead-section">
-            <label class="prv-pro-field-label">Payment Date <em>*</em></label>
+            <label class="prv-pro-field-label">@L["Payment Date"]<em>*</em></label>
             <input type="date" name="PaymentDate" value="@Model.PaymentDate" class="prv-pro-input" required />
         </section>
 
         <section class="prv-pro-lead-section">
-            <label class="prv-pro-field-label">Payment Method <em>*</em></label>
+            <label class="prv-pro-field-label">@L["Payment Method"]<em>*</em></label>
             <div class="prv-pro-payment-methods">
                 @foreach (var method in methods)
                 {
@@ -58,29 +58,29 @@
         </section>
 
         <section class="prv-pro-lead-section">
-            <label class="prv-pro-field-label">Reference / Check #</label>
-            <input type="text" name="PaymentReference" value="@Model.PaymentReference" class="prv-pro-input" placeholder="Optional" />
+            <label class="prv-pro-field-label">@L["Reference / Check #"]</label>
+            <input type="text" name="PaymentReference" value="@Model.PaymentReference" class="prv-pro-input" placeholder="@L["Optional"]" />
         </section>
 
         <section class="prv-pro-lead-section">
-            <label class="prv-pro-field-label">Internal Notes</label>
-            <textarea name="InternalNotes" rows="3" maxlength="250" class="prv-pro-textarea" placeholder="Notes for your team only">@Model.InternalNotes</textarea>
+            <label class="prv-pro-field-label">@L["Internal Notes"]</label>
+            <textarea name="InternalNotes" rows="3" maxlength="250" class="prv-pro-textarea" placeholder="@L["Notes for your team only"]">@Model.InternalNotes</textarea>
             <small class="prv-pro-char-hint">@(Model.InternalNotes?.Length ?? 0)/250</small>
         </section>
 
         <section class="prv-pro-lead-section prv-pro-reminder-toggles">
             <label class="prv-pro-toggle-row">
-                <span>Notify Homeowner<small>Send notification to the homeowner</small></span>
+                <span>@L["Notify Homeowner"]<small>@L["Send notification to the homeowner"]</small></span>
                 <input type="checkbox" name="NotifyHomeowner" value="true" checked="@Model.NotifyHomeowner" />
             </label>
             <label class="prv-pro-toggle-row">
-                <span>Send Receipt<small>Email payment receipt to the homeowner</small></span>
+                <span>@L["Send Receipt"]<small>@L["Email payment receipt to the homeowner"]</small></span>
                 <input type="checkbox" name="SendReceipt" value="true" checked="@Model.SendReceipt" />
             </label>
         </section>
 
         <footer class="prv-pro-record-payment-footer">
-            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--ghost">@L["Cancel"]</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--success-solid">
                 <i class="fas fa-circle-check"></i> Confirm Payment
             </button>

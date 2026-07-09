@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorPortalShellViewModel
 @{
-    ViewData["Title"] = "Support & Account";
+    ViewData["Title"] = L["Support & Account"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "profile";
 }
@@ -9,12 +9,12 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <header class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Profile" class="rl-network-back" aria-label="Back to profile">
+        <a asp-controller="Realtor" asp-action="Profile" class="rl-network-back" aria-label="@L["Back to profile"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div>
-            <h1 class="rl-page-title">Support &amp; Account</h1>
-            <p class="rl-page-subtitle">Help, account preferences, and INDOR resources for realtors.</p>
+            <h1 class="rl-page-title">@L["Support &amp; Account"]</h1>
+            <p class="rl-page-subtitle">@L["Help, account preferences, and INDOR resources for realtors."]</p>
         </div>
     </header>
 
@@ -22,40 +22,40 @@
         <a asp-controller="Realtor" asp-action="BusinessInformation" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-building"></i></span>
             <div>
-                <strong>Account settings</strong>
-                <span class="rl-profile-nav-desc">Update business details, license, and profile preferences.</span>
+                <strong>@L["Account settings"]</strong>
+                <span class="rl-profile-nav-desc">@L["Update business details, license, and profile preferences."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Realtor" asp-action="Profile" asp-fragment="rl-notify-form" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-bell"></i></span>
             <div>
-                <strong>Notifications</strong>
-                <span class="rl-profile-nav-desc">Manage alerts for clients, files, and quote updates.</span>
+                <strong>@L["Notifications"]</strong>
+                <span class="rl-profile-nav-desc">@L["Manage alerts for clients, files, and quote updates."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="RealtorRegistration" asp-action="Verification" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-shield-halved"></i></span>
             <div>
-                <strong>Verification</strong>
-                <span class="rl-profile-nav-desc">Upload license and ID to unlock the Verified Realtor badge.</span>
+                <strong>@L["Verification"]</strong>
+                <span class="rl-profile-nav-desc">@L["Upload license and ID to unlock the Verified Realtor badge."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Account" asp-action="Terms" asp-route-from="realtor-support" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-scale-balanced"></i></span>
             <div>
-                <strong>Terms &amp; Conditions</strong>
-                <span class="rl-profile-nav-desc">Review INDOR platform terms for real estate professionals.</span>
+                <strong>@L["Terms &amp; Conditions"]</strong>
+                <span class="rl-profile-nav-desc">@L["Review INDOR platform terms for real estate professionals."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
         <a asp-controller="Account" asp-action="Privacy" asp-route-from="realtor-support" class="rl-profile-nav-item">
             <span class="rl-profile-nav-icon"><i class="fas fa-user-shield"></i></span>
             <div>
-                <strong>Privacy Policy</strong>
-                <span class="rl-profile-nav-desc">How INDOR handles your account and client data.</span>
+                <strong>@L["Privacy Policy"]</strong>
+                <span class="rl-profile-nav-desc">@L["How INDOR handles your account and client data."]</span>
             </div>
             <i class="fas fa-chevron-right"></i>
         </a>
@@ -63,8 +63,8 @@
 
     <section class="rl-settings-card">
         <div class="rl-settings-head">
-            <span><i class="fas fa-headset"></i> Need help?</span>
+            <span><i class="fas fa-headset"></i> @L["Need help?"]</span>
         </div>
-        <p class="rl-support-copy">Contact INDOR support at <a href="mailto:support@homeindor.com">support@homeindor.com</a>.</p>
+        <p class="rl-support-copy">@L["Contact INDOR support at"] <a href="mailto:support@homeindor.com">support@homeindor.com</a>.</p>
     </section>
 </div>

@@ -18,15 +18,18 @@ public partial class InspeccionesController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     public InspeccionesController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -84,7 +87,7 @@ public partial class InspeccionesController : Controller
 
         if (string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase))
         {
-            TempData["InspectionSaved"] = "You can complete your inspection details anytime.";
+            TempData["InspectionSaved"] = _localizer["You can complete your inspection details anytime."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -193,7 +196,7 @@ public partial class InspeccionesController : Controller
             solicitud.Estado = "ReportPending";
             solicitud.FechaActualizacion = DateTime.Now;
             await _db.SaveChangesAsync();
-            TempData["InspectionSaved"] = "You can upload your report later from the Schedule tab.";
+            TempData["InspectionSaved"] = _localizer["You can upload your report later from the Schedule tab."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -718,7 +721,7 @@ public partial class InspeccionesController : Controller
 
         if (string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase))
         {
-            TempData["InspectionSaved"] = "You can complete your home review details anytime.";
+            TempData["InspectionSaved"] = _localizer["You can complete your home review details anytime."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -846,7 +849,7 @@ public partial class InspeccionesController : Controller
 
         if (string.Equals(action, "skip", StringComparison.OrdinalIgnoreCase))
         {
-            TempData["InspectionSaved"] = "You can complete your electrical inspection details anytime.";
+            TempData["InspectionSaved"] = _localizer["You can complete your electrical inspection details anytime."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -958,7 +961,7 @@ public partial class InspeccionesController : Controller
             solicitud.Estado = "FilesPending";
             solicitud.FechaActualizacion = DateTime.Now;
             await _db.SaveChangesAsync();
-            TempData["InspectionSaved"] = "You can upload photos later from the Schedule tab.";
+            TempData["InspectionSaved"] = _localizer["You can upload photos later from the Schedule tab."];
             return RedirectToAction("Index", "Home");
         }
 

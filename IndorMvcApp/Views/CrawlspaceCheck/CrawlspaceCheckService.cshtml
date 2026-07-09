@@ -31,8 +31,8 @@
     @if (Model.CheckItems.Count > 0)
     {
         <div class="includes-box">
-            <div class="includes-label">What we'll check</div>
-            <p class="csc-check-hint">Tap to choose the areas you want included in your check.</p>
+            <div class="includes-label">@L["What we'll check"]</div>
+            <p class="csc-check-hint">@L["Tap to choose the areas you want included in your check."]</p>
             <div class="csc-check-grid" id="checkAreasGroup">
                 @foreach (var item in Model.CheckItems)
                 {
@@ -43,7 +43,7 @@
                     </button>
                 }
             </div>
-            <span id="checkAreasClientError" class="field-error" hidden>Select at least one area to check.</span>
+            <span id="checkAreasClientError" class="field-error" hidden>@L["Select at least one area to check."]</span>
             <span asp-validation-for="CheckAreasSeleccionadas" class="field-error"></span>
         </div>
     }
@@ -53,7 +53,7 @@
         <div class="best-practice-box">
             <i class="fas fa-shield-halved"></i>
             <div>
-                <strong>Best practice</strong>
+                <strong>@L["Best practice"]</strong>
                 <p>@Model.BestPracticeTexto</p>
             </div>
         </div>

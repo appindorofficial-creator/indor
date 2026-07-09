@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyHvacContactViewModel
+@model IndorMvcApp.ViewModels.EmergencyHvacContactViewModel
 @{
-    ViewData["Title"] = "Emergency HVAC - INDOR";
-    ViewData["WizardTitle"] = "Emergency HVAC";
+    ViewData["Title"] = L["Emergency HVAC - INDOR"];
+    ViewData["WizardTitle"] = L["Emergency HVAC"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyHvacDetails", "Inspecciones", new { id = Model.ServicioEmergenciaId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<h1 class="page-heading">Add photos and contact details</h1>
-    <p class="page-lead">Optional photos help, but you can finish fast.</p>
+<h1 class="page-heading">@L["Add photos and contact details"]</h1>
+    <p class="page-lead">@L["Optional photos help, but you can finish fast."]</p>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -28,32 +28,32 @@
         <div class="field-card">
             <div class="address-display">
                 <div class="left"><i class="fas fa-house"></i><span>@Model.DireccionPropiedad</span></div>
-                <a asp-action="EmergencyHvacDetails" asp-route-id="@Model.ServicioEmergenciaId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit</a>
+                <a asp-action="EmergencyHvacDetails" asp-route-id="@Model.ServicioEmergenciaId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">@L["Edit"]</a>
             </div>
         </div>
 
         <div class="dropzone" id="dropzone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong style="color:#0066CC;">Add photos or video</strong></p>
-            <p style="margin-top:6px;font-size:0.82rem;color:#64748B;">JPG, PNG, MOV, MP4</p>
+            <p><strong style="color:#0066CC;">@L["Add photos or video"]</strong></p>
+            <p style="margin-top:6px;font-size:0.82rem;color:#64748B;">@L["JPG, PNG, MOV, MP4"]</p>
         </div>
         <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".jpg,.jpeg,.png,.mp4,.mov,.webm,image/*,video/*" />
 
         <div class="action-list">
             <label class="action-item" for="fileInputCamera">
                 <i class="fas fa-camera icon"></i>
-                <div class="action-text"><strong>Take photo</strong></div>
+                <div class="action-text"><strong>@L["Take photo"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
             <label class="action-item" for="fileInput">
                 <i class="fas fa-images icon"></i>
-                <div class="action-text"><strong>Upload photos</strong></div>
+                <div class="action-text"><strong>@L["Upload photos"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <label class="action-item" for="fileInputVideo">
                 <i class="fas fa-video icon"></i>
-                <div class="action-text"><strong>Add video</strong></div>
+                <div class="action-text"><strong>@L["Add video"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
@@ -66,7 +66,7 @@
                 {
                     <div class="file-item">
                         <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
-                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a>
                     </div>
                 }
             </div>
@@ -75,12 +75,12 @@
         <div id="selectedFiles" class="file-list"></div>
 
         <div class="field-card">
-            <label asp-for="NotaCorta" class="field-label">Short note (optional)</label>
-            <textarea asp-for="NotaCorta" class="form-textarea" maxlength="500" placeholder="Outdoor unit is running but the house is warm. Thermostat set to 68. No cool air coming out."></textarea>
+            <label asp-for="NotaCorta" class="field-label">@L["Short note (optional)"]</label>
+            <textarea asp-for="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Outdoor unit is running but the house is warm. Thermostat set to 68. No cool air coming out."]"></textarea>
         </div>
 
         <div class="field-card">
-            <label asp-for="TelefonoContacto" class="field-label">Best contact number</label>
+            <label asp-for="TelefonoContacto" class="field-label">@L["Best contact number"]</label>
             <div class="input-wrap">
                 <i class="fas fa-phone"></i>
                 <input asp-for="TelefonoContacto" class="form-input" placeholder="(704) 555-0186" required />
@@ -88,30 +88,30 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label">Can we call you right away?</span>
+            <span class="field-label">@L["Can we call you right away?"]</span>
             <div class="segmented-3" data-target="PuedeLlamarYa">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="CallFirst">Call first</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="CallFirst">@L["Call first"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Are you home now?</span>
+            <span class="field-label">@L["Are you home now?"]</span>
             <div class="segmented-3" data-target="EnCasaAhora">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="OnMyWay">On my way</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="OnMyWay">@L["On my way"]</button>
             </div>
         </div>
 
         <div class="tip-box">
             <i class="fas fa-circle-info"></i>
-            <div>Photos of the thermostat, indoor unit, outdoor condenser, and any leaking water help us respond faster.</div>
+            <div>@L["Photos of the thermostat, indoor unit, outdoor condenser, and any leaking water help us respond faster."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="continue">Continue <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="skip">Skip for now</button>
+        <button type="submit" class="btn-primary" name="action" value="continue">@L["Continue"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="skip">@L["Skip for now"]</button>
     </form>
 </div>
 @section Scripts {

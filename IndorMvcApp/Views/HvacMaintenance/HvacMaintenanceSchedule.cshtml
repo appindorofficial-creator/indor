@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HvacMaintenanceScheduleViewModel
 @{
-    ViewData["Title"] = "Choose your visit - INDOR";
+    ViewData["Title"] = L["Choose your visit - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("HvacMaintenanceDetails", "HvacMaintenance", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -9,8 +9,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Choose your visit</h1>
-    <p class="page-lead" style="margin-bottom:16px;">Pick the best time for your yearly tune-up.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Choose your visit"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["Pick the best time for your yearly tune-up."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -21,37 +21,37 @@
         <input type="hidden" asp-for="TipoServicio" id="TipoServicio" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
             <input asp-for="FechaVisita" type="date" id="visitDateInput" data-min-date="@Model.MinVisitDateIso" />
             <span asp-validation-for="FechaVisita" class="text-danger"></span>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred time window</span></div>
+            <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred time window"]</span></div>
             <div class="time-grid-3">
                 <button type="button" class="time-card" data-window="Morning">
                     <span class="radio"></span>
                     <i class="fas fa-sun main"></i>
-                    <span class="label">Morning</span>
-                    <span class="sub">8–11 AM</span>
+                    <span class="label">@L["Morning"]</span>
+                    <span class="sub">@L["8–11 AM"]</span>
                 </button>
                 <button type="button" class="time-card" data-window="Midday">
                     <span class="radio"></span>
                     <i class="fas fa-sun main"></i>
-                    <span class="label">Midday</span>
-                    <span class="sub">11 AM–2 PM</span>
+                    <span class="label">@L["Midday"]</span>
+                    <span class="sub">@L["11 AM–2 PM"]</span>
                 </button>
                 <button type="button" class="time-card" data-window="Afternoon">
                     <span class="radio"></span>
                     <i class="fas fa-cloud-sun main"></i>
-                    <span class="label">Afternoon</span>
-                    <span class="sub">2–5 PM</span>
+                    <span class="label">@L["Afternoon"]</span>
+                    <span class="sub">@L["2–5 PM"]</span>
                 </button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-wrench"></i><span>Service type</span></div>
+            <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service type"]</span></div>
             <div class="service-type-row">
                 <button type="button" class="service-type-btn" data-type="OneTime">
                     <i class="fas fa-check"></i> One-time tune-up
@@ -63,7 +63,7 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-house"></i><span>Your contact</span></div>
+            <div class="field-head"><i class="fas fa-house"></i><span>@L["Your contact"]</span></div>
             <div class="contact-card">
                 <div class="row"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
                 <div class="row"><i class="fas fa-phone"></i><span>@Model.TelefonoContacto</span></div>
@@ -83,7 +83,7 @@
         <div class="sticky-footer">
             <div class="sticky-footer-row">
                 <div>
-                    <div class="price-label"><i class="fas fa-tag"></i> Estimated starting price</div>
+                    <div class="price-label"><i class="fas fa-tag"></i> @L["Estimated starting price"]</div>
                     <div class="price-value">@(Model.PrecioTexto ?? $"from ${Model.PrecioEstimado:0}")</div>
                 </div>
             </div>

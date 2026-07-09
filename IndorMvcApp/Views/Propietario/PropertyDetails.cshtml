@@ -1,13 +1,14 @@
 @model IndorMvcApp.ViewModels.PropertyInfoViewModel
+@using IndorMvcApp.Localization
 @using IndorMvcApp.ViewModels
 @{
-    ViewData["Title"] = "House Facts - INDOR";
+    ViewData["Title"] = L["House Facts - INDOR"];
     Layout = null;
     var houseFact = ViewBag.HouseFactProfile as HouseFactProfileViewModel
         ?? new HouseFactProfileViewModel();
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -93,10 +94,10 @@
 <body>
     <div class="page-container">
         <header class="app-header">
-            <a asp-action="AddProperty" class="app-back-btn" aria-label="Back">
+            <a asp-action="AddProperty" class="app-back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-chevron-left"></i>
             </a>
-            <div class="app-header-title"><i class="fas fa-house"></i> Your Home</div>
+            <div class="app-header-title"><i class="fas fa-house"></i> @L["Your Home"]</div>
             <span class="app-back-btn" style="visibility:hidden;" aria-hidden="true"></span>
         </header>
 
@@ -114,10 +115,10 @@
 
         <div class="actions">
             <a asp-action="EditAddress" class="btn btn-primary">
-                <i class="fas fa-check"></i> Continue to confirm property
+                <i class="fas fa-check"></i> @L["Continue to confirm property"]
             </a>
             <a asp-action="AddProperty" class="btn btn-secondary">
-                <i class="fas fa-magnifying-glass"></i> Search another address
+                <i class="fas fa-magnifying-glass"></i> @L["Search another address"]
             </a>
         </div>
     </div>

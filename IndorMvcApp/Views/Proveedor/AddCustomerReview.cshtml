@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProAddCustomerReviewViewModel
 @{
-    ViewData["Title"] = "Review Customer - INDOR PRO";
+    ViewData["Title"] = L["Review Customer - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "customers";
 }
@@ -12,7 +12,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Review Customer</h1>
+            <h1>@L["Review Customer"]</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -20,55 +20,55 @@
 
     <section class="prv-pro-review-card">
         <div class="prv-pro-review-card-head">
-            <h3>Customer Information</h3>
-            <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> Edit</a>
+            <h3>@L["Customer Information"]</h3>
+            <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <dl class="prv-pro-review-list">
-            <div><dt>Customer Type</dt><dd>@Model.CustomerType</dd></div>
-            <div><dt>Name</dt><dd>@Model.FullName</dd></div>
-            <div><dt>Phone</dt><dd>@Model.Phone</dd></div>
-            <div><dt>Email</dt><dd>@Model.Email</dd></div>
-            <div><dt>Preferred Contact</dt><dd>@Model.PreferredContactMethod</dd></div>
+            <div><dt>@L["Customer Type"]</dt><dd>@Model.CustomerType</dd></div>
+            <div><dt>@L["Name"]</dt><dd>@Model.FullName</dd></div>
+            <div><dt>@L["Phone"]</dt><dd>@Model.Phone</dd></div>
+            <div><dt>@L["Email"]</dt><dd>@Model.Email</dd></div>
+            <div><dt>@L["Preferred Contact"]</dt><dd>@Model.PreferredContactMethod</dd></div>
         </dl>
     </section>
 
     <section class="prv-pro-review-card">
         <div class="prv-pro-review-card-head">
-            <h3>Property Details</h3>
-            <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> Edit</a>
+            <h3>@L["Property Details"]</h3>
+            <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <dl class="prv-pro-review-list">
-            <div><dt>Address</dt><dd>@Model.FullAddress</dd></div>
-            <div><dt>Property Type</dt><dd>@Model.PropertyType</dd></div>
-            <div><dt>Beds / Baths</dt><dd>@Model.BedsBathsLabel</dd></div>
-            <div><dt>Billing same as property</dt><dd>@Model.BillingLabel</dd></div>
+            <div><dt>@L["Address"]</dt><dd>@Model.FullAddress</dd></div>
+            <div><dt>@L["Property Type"]</dt><dd>@Model.PropertyType</dd></div>
+            <div><dt>@L["Beds / Baths"]</dt><dd>@Model.BedsBathsLabel</dd></div>
+            <div><dt>@L["Billing same as property"]</dt><dd>@Model.BillingLabel</dd></div>
         </dl>
     </section>
 
     <section class="prv-pro-review-card">
         <div class="prv-pro-review-card-head">
-            <h3>Preferences</h3>
-            <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> Edit</a>
+            <h3>@L["Preferences"]</h3>
+            <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-btn prv-pro-btn--ghost"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <dl class="prv-pro-review-list">
-            <div><dt>Estimate Delivery</dt><dd>@Model.EstimateDeliveryPref</dd></div>
-            <div><dt>Invoice Delivery</dt><dd>@Model.InvoiceDeliveryPref</dd></div>
-            <div><dt>Language</dt><dd>@Model.PreferredLanguage</dd></div>
-            <div><dt>Source</dt><dd>@Model.CustomerSource</dd></div>
+            <div><dt>@L["Estimate Delivery"]</dt><dd>@Model.EstimateDeliveryPref</dd></div>
+            <div><dt>@L["Invoice Delivery"]</dt><dd>@Model.InvoiceDeliveryPref</dd></div>
+            <div><dt>@L["Language"]</dt><dd>@Model.PreferredLanguage</dd></div>
+            <div><dt>@L["Source"]</dt><dd>@Model.CustomerSource</dd></div>
             @if (Model.Tags.Count > 0)
             {
-                <div><dt>Tags</dt><dd>@string.Join(", ", Model.Tags)</dd></div>
+                <div><dt>@L["Tags"]</dt><dd>@string.Join(", ", Model.Tags)</dd></div>
             }
             @if (!string.IsNullOrWhiteSpace(Model.InternalNotes))
             {
-                <div><dt>Notes</dt><dd>@Model.InternalNotes</dd></div>
+                <div><dt>@L["Notes"]</dt><dd>@Model.InternalNotes</dd></div>
             }
         </dl>
     </section>
 
     <form asp-controller="Proveedor" asp-action="ConfirmAddCustomer" method="post" class="prv-pro-add-customer-actions">
         @Html.AntiForgeryToken()
-        <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Save Customer</button>
+        <a asp-controller="Proveedor" asp-action="AddCustomerPreferences" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+        <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Save Customer"]</button>
     </form>
 </div>

@@ -20,7 +20,7 @@
 {
     <div class="rl-success-banner">
         <i class="fas fa-circle-check"></i>
-        <span>Saved in Step 2 — License number: <strong>@licenseNumber</strong></span>
+        <span>@L["Saved in Step 2 — License number:"] <strong>@licenseNumber</strong></span>
     </div>
 }
 
@@ -42,10 +42,10 @@
         <div class="rl-doc-card-icon"><i class="fas fa-id-card"></i></div>
         <div>
             <strong>@slot.Label</strong>
-            @if (!slot.Required) { <small>Optional</small> }
+            @if (!slot.Required) { <small>@L["Optional"]</small> }
             @if (slot.Uploaded)
             {
-                <span class="rl-doc-uploaded" data-uploaded-badge><i class="fas fa-check"></i> Uploaded</span>
+                <span class="rl-doc-uploaded" data-uploaded-badge><i class="fas fa-check"></i> @L["Uploaded"]</span>
             }
         </div>
     </div>
@@ -83,7 +83,7 @@
                         value="remove"
                         class="rl-file-remove-btn rl-file-remove-uploaded"
                         data-document-type="@field.DocumentType"
-                        aria-label="Remove @field.Label">
+                        aria-label="@L["Remove @field.Label"]">
                     <i class="fas fa-xmark"></i>
                 </button>
             </div>
@@ -92,7 +92,7 @@
                 <img src="" alt="" class="rl-file-preview-thumb rl-file-pending-thumb is-hidden" />
                 <span class="rl-file-preview-icon rl-file-pending-icon is-hidden"><i class="fas fa-file"></i></span>
                 <span class="rl-file-pending-name"></span>
-                <button type="button" class="rl-file-remove-btn rl-file-pending-remove" aria-label="Remove selected file">
+                <button type="button" class="rl-file-remove-btn rl-file-pending-remove" aria-label="@L["Remove selected file"]">
                     <i class="fas fa-xmark"></i>
                 </button>
             </div>
@@ -103,21 +103,21 @@
                        name="@field.InputName"
                        class="rl-file-picker-input"
                        accept=".pdf,.jpg,.jpeg,.png,.webp,image/*,application/pdf" />
-                <span class="rl-file-picker-btn">Choose file</span>
-                <span class="rl-file-picker-name">No file selected</span>
+                <span class="rl-file-picker-btn">@L["Choose file"]</span>
+                <span class="rl-file-picker-name">@L["No file selected"]</span>
             </label>
         </div>
     }
 
     <input type="hidden" name="documentType" id="removeDocType" value="" />
 
-    <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">Upload files</button>
-    <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">Save and continue</button>
-    <button type="submit" name="action" value="skip" class="ob-btn ob-btn-outline">Skip for now</button>
+    <button type="submit" name="action" value="upload" class="ob-btn ob-btn-outline">@L["Upload files"]</button>
+    <button type="submit" name="action" value="continue" class="ob-btn ob-btn-primary">@L["Save and continue"]</button>
+    <button type="submit" name="action" value="skip" class="ob-btn ob-btn-outline">@L["Skip for now"]</button>
 
     <div class="rl-info-box">
         <i class="fas fa-circle-info"></i>
-        <p>Without these documents, you can continue with a Basic profile and complete your verification later.</p>
+        <p>@L["Without these documents, you can continue with a Basic profile and complete your verification later."]</p>
     </div>
 </form>
 

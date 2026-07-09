@@ -1,18 +1,18 @@
 @model IndorMvcApp.ViewModels.MyHomeDocumentListViewModel
 @{
-    ViewData["Title"] = Model.Category;
+    ViewData["Title"] = L[Model.Category];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "documents";
     ViewBag.MyHomeBackUrl = Url.Action("Documents", "MyHome", new { id = Model.PropiedadId, from = ViewBag.MyHomeNavFrom });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">@Model.Category</h1>
-    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-category="@Model.Category" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">+ Add</a>
+    <h1 class="hf-title">@L[Model.Category]</h1>
+    <a asp-action="DocumentCreate" asp-route-id="@Model.PropiedadId" asp-route-category="@Model.Category" asp-route-from="@ViewBag.MyHomeNavFrom" class="hf-btn">@L["+ Add"]</a>
 </div>
 @if (Model.Items.Count == 0)
 {
-    <div class="hf-card" style="text-align:center;color:#64748B;">No documents in this category yet.</div>
+    <div class="hf-card" style="text-align:center;color:#64748B;">@L["No documents in this category yet."]</div>
 }
 else
 {
@@ -22,18 +22,18 @@ else
             <i class="fas fa-file-lines" style="color:#0066CC;width:20px;"></i>
             <div style="flex:1;">
                 <div style="font-weight:700;">@doc.Title</div>
-                <div style="font-size:0.78rem;color:#64748B;">@(doc.FileName ?? "Document") · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
+                <div style="font-size:0.78rem;color:#64748B;">@(doc.FileName ?? L["Document"]) · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
             </div>
             <div class="hf-doc-actions" style="display:flex;align-items:center;gap:16px;">
                 @if (!string.IsNullOrWhiteSpace(doc.StoragePath))
                 {
-                    <a href="@doc.StoragePath" target="_blank" rel="noopener" style="color:#0066CC;" aria-label="Download document"><i class="fas fa-download"></i></a>
+                    <a href="@doc.StoragePath" target="_blank" rel="noopener" style="color:#0066CC;" aria-label="@L["Download document"]"><i class="fas fa-download"></i></a>
                 }
-                <form asp-action="DocumentDelete" method="post" onsubmit="return confirm('Delete this document?');" style="margin:0;display:inline;">
+                <form asp-action="DocumentDelete" method="post" onsubmit="return confirm('@L["Delete this document?"]');" style="margin:0;display:inline;">
                     <input type="hidden" name="id" value="@doc.Id" />
                     <input type="hidden" name="propiedadId" value="@Model.PropiedadId" />
                     <input type="hidden" name="category" value="@Model.Category" />
-                    <button type="submit" aria-label="Delete document" style="border:none;background:transparent;color:#DC2626;cursor:pointer;padding:0;font-size:1rem;line-height:1;"><i class="fas fa-trash"></i></button>
+                    <button type="submit" aria-label="@L["Delete document"]" style="border:none;background:transparent;color:#DC2626;cursor:pointer;padding:0;font-size:1rem;line-height:1;"><i class="fas fa-trash"></i></button>
                 </form>
             </div>
         </div>

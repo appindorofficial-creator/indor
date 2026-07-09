@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPoolHotTubStep1ViewModel
 @{
-    ViewData["Title"] = "Pool & Hot Tub Repair";
+    ViewData["Title"] = L["Pool & Hot Tub Repair"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-water-ladder pa-flow-title-icon pa-flow-title-icon--green"></i> Pool &amp; Hot Tub Repair</h1>
-        <p>Tell us what needs attention so we can send the right service pro.</p>
+        <h1><i class="fas fa-water-ladder pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Pool &amp; Hot Tub Repair"]</h1>
+        <p>@L["Tell us what needs attention so we can send the right service pro."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -24,7 +24,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-water-ladder pa-q-icon pa-q-icon--green"></i> What do you need help with?</label>
+            <label><i class="fas fa-water-ladder pa-q-icon pa-q-icon--green"></i> @L["What do you need help with?"]</label>
             <div class="pa-pool-service-row">
                 @foreach (var s in new (string Value, string Label, string Icon)[] {
                     ("PoolRepair", "Pool repair", "fa-screwdriver-wrench"),
@@ -44,7 +44,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>What's the main issue?</label>
+            <label>@L["What's the main issue?"]</label>
             <div class="pa-pool-issue-grid">
                 @foreach (var i in new (string Value, string Label, string Icon)[] {
                     ("PumpNotWorking", "Pump not working", "fa-gears"),
@@ -66,7 +66,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>Is a guest stay affected?</label>
+            <label>@L["Is a guest stay affected?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestStayAffected == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestStayAffected" value="Yes" @(Model.GuestStayAffected == "Yes" ? "checked" : null) /> Yes
@@ -79,7 +79,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>How urgent is it?</label>
+            <label>@L["How urgent is it?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var u in new[] { ("Routine", "Routine"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
                 {
@@ -93,26 +93,26 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> Add quick details</label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--green"></i> @L["Add quick details"]</label>
             <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="250" id="poolDetails">@Model.QuickDetails</textarea>
             <small class="pa-char-count"><span id="poolDetailsCount">@Model.QuickDetails.Length</span> / 250</small>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-video"></i> Add video</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-video"></i> @L["Add video"]</button>
         </div>
 
         <div class="pa-lawn-photo-banner">
             <i class="fas fa-circle-info"></i>
             <div>
-                <strong>We'll match you with a pool or spa pro based on the issue.</strong>
-                <small>Licensed, insured, and background-checked technicians.</small>
+                <strong>@L["We'll match you with a pool or spa pro based on the issue."]</strong>
+                <small>@L["Licensed, insured, and background-checked technicians."]</small>
             </div>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to services</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to services"]</a>
     </form>
 </div>
 

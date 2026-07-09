@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorMovingHelpFormViewModel
 @{
-    ViewData["Title"] = "Moving Help";
+    ViewData["Title"] = L["Moving Help"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Moving Help</h1>
-        <p>Tell us what needs to be moved so we can schedule the right team.</p>
+        <h1>@L["Moving Help"]</h1>
+        <p>@L["Tell us what needs to be moved so we can schedule the right team."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -29,7 +29,7 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
         </div>
     }
 
@@ -39,7 +39,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-dolly pa-q-icon pa-q-icon--blue"></i> What type of moving help do you need?</label>
+            <label><i class="fas fa-dolly pa-q-icon pa-q-icon--blue"></i> @L["What type of moving help do you need?"]</label>
             <div class="pa-moving-service-grid">
                 @foreach (var s in new (string Value, string Label, string Icon)[]
                 {
@@ -61,7 +61,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label><i class="fas fa-boxes-stacked pa-q-icon pa-q-icon--blue"></i> What needs to be moved? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-boxes-stacked pa-q-icon pa-q-icon--blue"></i> @L["What needs to be moved?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-moving-items-row">
                 @foreach (var i in new (string Value, string Label, string Icon)[]
                 {
@@ -83,7 +83,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label><i class="fas fa-users pa-q-icon pa-q-icon--blue"></i> How much help do you need?</label>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--blue"></i> @L["How much help do you need?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var h in new (string Value, string Label, string Icon)[] { ("One", "1 helper", "fa-user"), ("Two", "2 helpers", "fa-user-group"), ("ThreePlus", "3+ helpers", "fa-users") })
                 {
@@ -97,7 +97,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--blue"></i> When do you need it?</label>
+            <label><i class="fas fa-calendar pa-q-icon pa-q-icon--blue"></i> @L["When do you need it?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var w in new[] { "Today", "Tomorrow", "Later" })
                 {
@@ -120,7 +120,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-key pa-q-icon pa-q-icon--blue"></i> Can the team enter?</label>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--blue"></i> @L["Can the team enter?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var a in new (string Value, string Label, string Icon)[] { ("SmartLock", "Smart lock", "fa-lock"), ("HostMeet", "Host will meet", "fa-user"), ("GuestOnSite", "Guest on-site", "fa-user-check") })
                 {
@@ -134,23 +134,23 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--blue"></i> Add notes</label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--blue"></i> @L["Add notes"]</label>
             <textarea class="pa-textarea" name="Details" rows="3" maxlength="250" id="mhDetails">@Model.Details</textarea>
             <small class="pa-char-count"><span id="mhDetailsCount">@Model.Details.Length</span> / 250</small>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
         </div>
 
         <div class="pa-moving-info-box">
             <i class="fas fa-circle-info"></i>
-            <p>Great for Airbnb turnovers and rental property move support. Trusted teams. On-time. Background checked.</p>
+            <p>@L["Great for Airbnb turnovers and rental property move support. Trusted teams. On-time. Background checked."]</p>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back to start</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back to start"]</a>
     </form>
 </div>
 

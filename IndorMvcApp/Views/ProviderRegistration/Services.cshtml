@@ -44,49 +44,49 @@
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>You will only receive roofing jobs that match your selected specialties.</span>
+            <span>@L["You will only receive roofing jobs that match your selected specialties."]</span>
         </div>
     }
     else if (isKitchen)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>You can only receive kitchen remodeling jobs related to the services selected here.</span>
+            <span>@L["You can only receive kitchen remodeling jobs related to the services selected here."]</span>
         </div>
     }
     else if (isPainting)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>Only painting-related services can be activated under this provider account.</span>
+            <span>@L["Only painting-related services can be activated under this provider account."]</span>
         </div>
     }
     else if (isFlooring)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>INDOR rule: only flooring-related services can be enabled on this account.</span>
+            <span>@L["INDOR rule: only flooring-related services can be enabled on this account."]</span>
         </div>
     }
     else if (isLandscaping)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>INDOR rule: stay within your landscaping specialty only.</span>
+            <span>@L["INDOR rule: stay within your landscaping specialty only."]</span>
         </div>
     }
     else if (isPest)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>Only choose services your company is trained and licensed to perform.</span>
+            <span>@L["Only choose services your company is trained and licensed to perform."]</span>
         </div>
     }
     else if (isAppliance)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-circle-info"></i>
-            <span>Only choose appliance types your team is qualified to repair.</span>
+            <span>@L["Only choose appliance types your team is qualified to repair."]</span>
         </div>
     }
     else if (isCleaning)
@@ -98,40 +98,40 @@
         </div>
         <div class="prv-rule-banner">
             <i class="fas fa-circle-info"></i>
-            <span>INDOR will only send cleaning jobs that match your approved service scope.</span>
+            <span>@L["INDOR will only send cleaning jobs that match your approved service scope."]</span>
         </div>
     }
     else if (isBathroom)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-circle-info"></i>
-            <span>Only choose services your business is trained and insured to perform.</span>
+            <span>@L["Only choose services your business is trained and insured to perform."]</span>
         </div>
     }
     else if (isHandyman)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>INDOR rule: Handyman providers cannot perform HVAC, plumbing, or electrical work unless separately licensed and approved.</span>
+            <span>@L["INDOR rule: Handyman providers cannot perform HVAC, plumbing, or electrical work unless separately licensed and approved."]</span>
         </div>
     }
     else if (isConstruction)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-shield-halved"></i>
-            <span>Only select work your company is licensed, insured, and qualified to perform.</span>
+            <span>@L["Only select work your company is licensed, insured, and qualified to perform."]</span>
         </div>
     }
     else if (isHvac)
     {
         <div class="prv-rule-banner">
             <i class="fas fa-circle-info"></i>
-            <span>You will only receive HVAC jobs that match your approved specialties.</span>
+            <span>@L["You will only receive HVAC jobs that match your approved specialties."]</span>
         </div>
     }
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="prvServicesForm" class="ob-btn ob-btn-primary">Continue</button>
-    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">Save and finish later</a>
+    <button type="submit" form="prvServicesForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-save-later">@L["Save and finish later"]</a>
 </div>

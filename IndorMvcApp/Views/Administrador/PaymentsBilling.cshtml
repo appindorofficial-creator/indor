@@ -1,33 +1,33 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPaymentsBillingViewModel
 @{
-    ViewData["Title"] = "Payments & billing";
+    ViewData["Title"] = L["Payments & billing"];
     Layout = "_PropertyAdminLayout";
 }
 
 <div class="pa-portal-shell pa-portal-shell--billing">
     <header class="pa-personal-header">
-        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+        <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
             <i class="fas fa-arrow-left"></i>
         </a>
         <div class="pa-personal-header-text">
-            <h1>Payments &amp; billing</h1>
-            <p>Review invoices, payment methods, and billing activity for your portfolio.</p>
+            <h1>@L["Payments &amp; billing"]</h1>
+            <p>@L["Review invoices, payment methods, and billing activity for your portfolio."]</p>
         </div>
     </header>
 
     <div class="pa-billing-stats">
         <div class="pa-billing-stat">
-            <small>Outstanding</small>
+            <small>@L["Outstanding"]</small>
             <strong>@Model.OutstandingLabel</strong>
         </div>
         <div class="pa-billing-stat">
-            <small>Paid this month</small>
+            <small>@L["Paid this month"]</small>
             <strong>@Model.PaidThisMonthLabel</strong>
         </div>
     </div>
 
     <section class="pa-personal-section">
-        <h2>Payment method</h2>
+        <h2>@L["Payment method"]</h2>
         <div class="pa-personal-list">
             <div class="pa-personal-row pa-billing-method">
                 <span class="pa-personal-row-icon"><i class="fas fa-credit-card"></i></span>
@@ -41,7 +41,7 @@
     </section>
 
     <section class="pa-personal-section">
-        <h2>Recent invoices</h2>
+        <h2>@L["Recent invoices"]</h2>
         <div class="pa-personal-list">
             @foreach (var invoice in Model.Invoices)
             {
@@ -61,8 +61,8 @@
 
     <section class="pa-personal-info-card">
         <div>
-            <strong>Billing alerts</strong>
-            <p>Manage payment and billing notifications in <a asp-controller="Administrador" asp-action="NotificationPreferences">Notification preferences</a>.</p>
+            <strong>@L["Billing alerts"]</strong>
+            <p>@L["Manage payment and billing notifications in"] <a asp-controller="Administrador" asp-action="NotificationPreferences">@L["Notification preferences"]</a>.</p>
         </div>
         <i class="fas fa-chevron-right"></i>
     </section>

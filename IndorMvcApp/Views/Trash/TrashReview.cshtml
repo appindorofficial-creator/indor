@@ -7,23 +7,23 @@
     ViewData["WizardTotalSteps"] = 3;
 }
 
-<h2 class="page-heading" style="font-size:1.05rem;">Review & confirm your service</h2>
-    <p class="page-lead" style="margin-top:-8px;">Please review your selections before activating.</p>
+<h2 class="page-heading" style="font-size:1.05rem;">@L["Review & confirm your service"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Please review your selections before activating."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="field-card">
-        <div class="review-list-row"><span class="left"><i class="fas fa-trash-can"></i> Selected bins</span><span class="value">@Model.BinsLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-arrows-rotate"></i> Service type</span><span class="value">@Model.ServiceTypeLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-calendar"></i> Frequency</span><span class="value">@Model.FrequencyLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-calendar-day"></i> Pickup day</span><span class="value">@Model.PickupDayLabel</span></div>
-        <div class="review-list-row"><span class="left"><i class="fas fa-bell"></i> Reminder</span><span class="value">@Model.ReminderLabel</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-trash-can"></i> @L["Selected bins"]</span><span class="value">@Model.BinsLabel</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-arrows-rotate"></i> @L["Service type"]</span><span class="value">@Model.ServiceTypeLabel</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-calendar"></i> @L["Frequency"]</span><span class="value">@Model.FrequencyLabel</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-calendar-day"></i> @L["Pickup day"]</span><span class="value">@Model.PickupDayLabel</span></div>
+        <div class="review-list-row"><span class="left"><i class="fas fa-bell"></i> @L["Reminder"]</span><span class="value">@Model.ReminderLabel</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.NotasEspeciales))
         {
-            <div class="review-list-row"><span class="left"><i class="fas fa-note-sticky"></i> Notes</span><span class="value">@Model.NotasEspeciales</span></div>
+            <div class="review-list-row"><span class="left"><i class="fas fa-note-sticky"></i> @L["Notes"]</span><span class="value">@Model.NotasEspeciales</span></div>
         }
         <div class="review-total">
-            <span class="left"><i class="fas fa-tag" style="color:#0066CC;margin-right:8px;"></i> Monthly total</span>
+            <span class="left"><i class="fas fa-tag" style="color:#0066CC;margin-right:8px;"></i> @L["Monthly total"]</span>
             <span class="amount">$ @Model.PrecioMensual.ToString("0") @Model.Moneda</span>
         </div>
     </div>
@@ -37,5 +37,5 @@
         <button type="submit" name="action" value="continue" class="btn-primary">
             <i class="fas fa-check"></i> Activate service
         </button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>

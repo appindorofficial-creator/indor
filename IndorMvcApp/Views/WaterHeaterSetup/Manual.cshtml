@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.AddWaterHeaterViewModel
 @using IndorMvcApp.Validation
 @{
-    ViewData["Title"] = "Enter water heater details";
+    ViewData["Title"] = L["Enter water heater details"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
     ViewData["WizardStep"] = 
@@ -26,46 +26,46 @@ Model.CurrentStep
 
             <div class="hvac-form-card">
                 <div class="hvac-row hvac-row-stacked">
-                    <div class="hvac-label">Water heater type</div>
+                    <div class="hvac-label">@L["Water heater type"]</div>
                     <div class="wh-type-toggle">
                         <label class="wh-type-btn @(Model.HeaterType == "Tank" ? "active" : "")">
                             <input type="radio" asp-for="HeaterType" value="Tank" />
-                            <i class="fas fa-database"></i> Tank
+                            <i class="fas fa-database"></i> @L["Tank"]
                         </label>
                         <label class="wh-type-btn @(Model.HeaterType == "Tankless" ? "active" : "")">
                             <input type="radio" asp-for="HeaterType" value="Tankless" />
-                            <i class="fas fa-bolt"></i> Tankless
+                            <i class="fas fa-bolt"></i> @L["Tankless"]
                         </label>
                     </div>
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="Brand">Brand</label>
-                    <input asp-for="Brand" class="hvac-input" placeholder="e.g., Rheem" />
+                    <label class="hvac-label" asp-for="Brand">@L["Brand"]</label>
+                    <input asp-for="Brand" class="hvac-input" placeholder="@L["e.g., Rheem"]" />
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="EquipmentModel">Model</label>
-                    <input asp-for="EquipmentModel" class="hvac-input" placeholder="e.g., PROG50-38N RH62" />
+                    <label class="hvac-label" asp-for="EquipmentModel">@L["Model"]</label>
+                    <input asp-for="EquipmentModel" class="hvac-input" placeholder="@L["e.g., PROG50-38N RH62"]" />
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="SerialNumber">Serial number</label>
+                    <label class="hvac-label" asp-for="SerialNumber">@L["Serial number"]</label>
                     <input asp-for="SerialNumber"
                            class="hvac-input"
                            id="serialInput"
-                           placeholder="e.g., M123456789"
+                           placeholder="@L["e.g., M123456789"]"
                            maxlength="@EquipmentSerialNumberAttribute.MaxLength"
                            autocomplete="off"
                            spellcheck="false" />
-                    <span class="wh-field-hint">@EquipmentSerialNumberAttribute.HintText</span>
+                    <span class="wh-field-hint">@L[EquipmentSerialNumberAttribute.HintText]</span>
                     <span asp-validation-for="SerialNumber" class="text-danger"></span>
                 </div>
 
                 <div class="hvac-row hvac-row-stacked">
-                    <label class="hvac-label" asp-for="InstallYear">Approx. install year</label>
+                    <label class="hvac-label" asp-for="InstallYear">@L["Approx. install year"]</label>
                     <select asp-for="InstallYear" class="hvac-select">
-                        <option value="">Select year</option>
+                        <option value="">@L["Select year"]</option>
                         @foreach (var year in Model.InstallYearOptions)
                         {
                             <option value="@year">@year</option>
@@ -74,9 +74,9 @@ Model.CurrentStep
                 </div>
 
                 <div class="hvac-row hvac-row-stacked" id="tankSizeRow" data-hidden="@(Model.HeaterType == "Tankless" ? "true" : "false")">
-                    <label class="hvac-label" asp-for="TankSize">Tank size</label>
+                    <label class="hvac-label" asp-for="TankSize">@L["Tank size"]</label>
                     <select asp-for="TankSize" class="hvac-select">
-                        <option value="">Select tank size</option>
+                        <option value="">@L["Select tank size"]</option>
                         @foreach (var size in Model.TankSizeOptions)
                         {
                             <option value="@size">@size</option>
@@ -86,7 +86,7 @@ Model.CurrentStep
             </div>
 
             <div class="sticky-footer">
-                <button type="submit" class="hvac-save-btn">Continue to review</button>
+                <button type="submit" class="hvac-save-btn">@L["Continue to review"]</button>
             </div>
         </form>
     </div>
@@ -105,16 +105,16 @@ Model.CurrentStep
                 return '';
             }
             if (serial.length < @EquipmentSerialNumberAttribute.MinLength) {
-                return 'Serial number must be at least @EquipmentSerialNumberAttribute.MinLength characters.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number must be at least {0} characters.", EquipmentSerialNumberAttribute.MinLength)));
             }
             if (serial.length > @EquipmentSerialNumberAttribute.MaxLength) {
-                return 'Serial number cannot exceed @EquipmentSerialNumberAttribute.MaxLength characters.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L.T("Serial number cannot exceed {0} characters.", EquipmentSerialNumberAttribute.MaxLength)));
             }
             if (!/^[A-Za-z0-9\-]+$/.test(serial)) {
-                return 'Use only letters, numbers, and hyphens.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Use only letters, numbers, and hyphens."]));
             }
             if (!/\p{L}/u.test(serial) || !/\d/.test(serial)) {
-                return 'Serial number must include at least one letter and one number.';
+                return @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Serial number must include at least one letter and one number."]));
             }
             return '';
         }

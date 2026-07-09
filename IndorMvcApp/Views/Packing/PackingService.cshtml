@@ -33,7 +33,7 @@
         @if (Model.IncludedItems.Count > 0)
         {
             <div class="field-card">
-                <span class="field-label">What's included</span>
+                <span class="field-label">@L["What's included"]</span>
                 @foreach (var item in Model.IncludedItems)
                 {
                     <div class="included-row"><i class="fas @item.Icon"></i><span>@item.Text</span></div>

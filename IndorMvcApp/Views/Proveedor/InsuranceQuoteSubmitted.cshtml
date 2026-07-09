@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.InsuranceSubmittedViewModel
 @{
-    ViewData["Title"] = "You're All Set - INDOR PRO";
+    ViewData["Title"] = L["You're All Set - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     ViewData["ProviderProExtraCss"] = "insurance-quote.css";
@@ -17,11 +17,11 @@
 
 <div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
     <header class="ins-hd ins-hd--center">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-hd-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <span class="ins-done-badge" aria-hidden="true"><i class="fas fa-check"></i></span>
         <div class="ins-hd-text">
-            <h1>You're All Set</h1>
-            <p>Your payment was received and your insurance request has been submitted.</p>
+            <h1>@L["You're All Set"]</h1>
+            <p>@L["Your payment was received and your insurance request has been submitted."]</p>
         </div>
     </header>
 
@@ -34,14 +34,14 @@
             <h2>@Model.PlanDisplayName</h2>
             <span class="ins-success-cov"><i class="fas fa-shield-halved"></i> @Model.Coverage</span>
             <div class="ins-success-price">
-                <div><small>Paid today</small><strong>$@Model.PaidToday.ToString("0")</strong></div>
-                <div><small>Monthly plan</small><strong>$@Model.MonthlyPlan.ToString("0")<span>/month</span></strong></div>
+                <div><small>@L["Paid today"]</small><strong>$@Model.PaidToday.ToString("0")</strong></div>
+                <div><small>@L["Monthly plan"]</small><strong>$@Model.MonthlyPlan.ToString("0")<span>/month</span></strong></div>
             </div>
         </div>
     </div>
 
     <div class="ins-fc">
-        <h3 class="ins-rv-title">What happens next</h3>
+        <h3 class="ins-rv-title">@L["What happens next"]</h3>
         <ol class="ins-next">
             @for (var i = 0; i < nextSteps.Length; i++)
             {
@@ -68,7 +68,7 @@
     </div>
 
     <div class="ins-success-actions">
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--block">View Insurance Status</a>
-        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--ghost ins-cta--block">Back to Home</a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--block">@L["View Insurance Status"]</a>
+        <a asp-controller="Proveedor" asp-action="Dashboard" class="ins-cta ins-cta--ghost ins-cta--block">@L["Back to Home"]</a>
     </div>
 </div>

@@ -1,28 +1,28 @@
 @model IndorMvcApp.ViewModels.MyHomeMaintenanceFormViewModel
 @{
-    ViewData["Title"] = "Edit Maintenance";
+    ViewData["Title"] = L["Edit Maintenance"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "maintenance";
     ViewBag.MyHomeBackUrl = Url.Action("Maintenance", "MyHome", new { id = Model.PropiedadId, from = Model.NavigationFrom });
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Edit maintenance</h1>
+    <h1 class="hf-title">@L["Edit maintenance"]</h1>
 </div>
 <form asp-action="MaintenanceEdit" method="post">
     <input type="hidden" asp-for="Id" />
     <input type="hidden" asp-for="PropiedadId" />
     <input type="hidden" asp-for="NavigationFrom" />
-    <label asp-for="Title" class="hf-label">Task title</label>
+    <label asp-for="Title" class="hf-label">@L["Task title"]</label>
     <input asp-for="Title" class="hf-input" />
-    <label asp-for="DueDate" class="hf-label">Due date</label>
+    <label asp-for="DueDate" class="hf-label">@L["Due date"]</label>
     <input asp-for="DueDate" class="hf-input" type="date" />
-    <label asp-for="Status" class="hf-label">Status</label>
+    <label asp-for="Status" class="hf-label">@L["Status"]</label>
     <select asp-for="Status" class="hf-select">
-        <option value="Upcoming">Upcoming</option>
-        <option value="Completed">Completed</option>
+        <option value="Upcoming">@L["Upcoming"]</option>
+        <option value="Completed">@L["Completed"]</option>
     </select>
-    <label asp-for="Notes" class="hf-label">Notes</label>
+    <label asp-for="Notes" class="hf-label">@L["Notes"]</label>
     <textarea asp-for="Notes" class="hf-textarea" rows="3"></textarea>
-    <button type="submit" class="hf-btn hf-btn-primary">Save task</button>
+    <button type="submit" class="hf-btn hf-btn-primary">@L["Save task"]</button>
 </form>

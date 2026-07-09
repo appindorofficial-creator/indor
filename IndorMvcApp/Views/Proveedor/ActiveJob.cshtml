@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProActiveJobViewModel
 @{
-    ViewData["Title"] = "Active Job - INDOR PRO";
+    ViewData["Title"] = L["Active Job - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
 }
@@ -12,7 +12,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="JobDetails" asp-route-id="@Model.JobId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Active Job</h1>
+            <h1>@L["Active Job"]</h1>
             <small>@Model.Title</small>
         </div>
     </header>
@@ -23,7 +23,7 @@
             <strong>@Model.Title</strong>
             <small>@Model.Address</small>
             <div class="prv-pro-active-badges">
-                <span class="prv-pro-pill prv-pro-pill--progress">In Progress</span>
+                <span class="prv-pro-pill prv-pro-pill--progress">@L["In Progress"]</span>
                 <span class="prv-pro-pill prv-pro-pill--scheduled">@Model.StartedLabel</span>
                 <span class="prv-pro-pill prv-pro-pill--connected"><i class="fas fa-stopwatch"></i> @Model.ElapsedLabel</span>
                 <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
@@ -36,7 +36,7 @@
     </section>
 
     <section class="prv-pro-lead-section">
-        <h3>Service Checklist <small>@Model.Checklist.Count steps</small></h3>
+        <h3>@L["Service Checklist"]<small>@Model.Checklist.Count steps</small></h3>
         <ul class="prv-pro-checklist prv-pro-checklist--full">
             @foreach (var item in Model.Checklist)
             {
@@ -46,7 +46,7 @@
                         @item.Label
                         @if (item.IsInProgress)
                         {
-                            <span class="prv-pro-pill prv-pro-pill--progress">In Progress</span>
+                            <span class="prv-pro-pill prv-pro-pill--progress">@L["In Progress"]</span>
                         }
                         @if (!string.IsNullOrWhiteSpace(item.CompletedLabel))
                         {
@@ -61,7 +61,7 @@
     @if (Model.PhotoLabels.Count > 0)
     {
         <section class="prv-pro-lead-section">
-            <h3>Photo Evidence</h3>
+            <h3>@L["Photo Evidence"]</h3>
             <div class="prv-pro-active-photos">
                 @foreach (var label in Model.PhotoLabels)
                 {
@@ -77,7 +77,7 @@
     @if (Model.Materials.Count > 0)
     {
         <section class="prv-pro-lead-section">
-            <h3>Materials Used</h3>
+            <h3>@L["Materials Used"]</h3>
             <ul class="prv-pro-materials-list">
                 @foreach (var material in Model.Materials)
                 {
@@ -90,13 +90,13 @@
     @if (!string.IsNullOrWhiteSpace(Model.JobNotes))
     {
         <section class="prv-pro-lead-section">
-            <h3>Job Notes</h3>
+            <h3>@L["Job Notes"]</h3>
             <p class="prv-pro-lead-description">@Model.JobNotes</p>
         </section>
     }
 
     <section class="prv-pro-lead-section">
-        <h3>Homeowner Approval <span class="prv-pro-pill prv-pro-pill--urgency">Required</span></h3>
+        <h3>@L["Homeowner Approval"]<span class="prv-pro-pill prv-pro-pill--urgency">@L["Required"]</span></h3>
         @if (Model.HasSignature)
         {
             <p class="prv-pro-signature">@Model.HomeownerSignature</p>
@@ -104,19 +104,18 @@
         }
         else
         {
-            <p class="prv-pro-lead-description">Work completed to satisfaction — awaiting signature.</p>
+            <p class="prv-pro-lead-description">@L["Work completed to satisfaction — awaiting signature."]</p>
         }
     </section>
 
     <footer class="prv-pro-job-footer">
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-camera"></i> Add Photos</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-camera"></i> @L["Add Photos"]</button>
         <form asp-controller="Proveedor" asp-action="CompleteJob" method="post" class="prv-pro-job-footer-form">
             @Html.AntiForgeryToken()
             <input type="hidden" name="id" value="@Model.JobId" />
             <button type="submit" class="prv-pro-btn prv-pro-btn--success prv-pro-job-action-btn">
-                <i class="fas fa-circle-check"></i> Complete Job
-            </button>
+                <i class="fas fa-circle-check"></i> @L["Complete Job"]</button>
         </form>
-        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> Message Homeowner</button>
+        <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-job-action-btn"><i class="fas fa-message"></i> @L["Message Homeowner"]</button>
     </footer>
 </div>

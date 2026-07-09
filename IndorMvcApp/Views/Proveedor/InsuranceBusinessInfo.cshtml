@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.InsuranceBusinessInfoStepViewModel
 @{
-    ViewData["Title"] = "Business & Owner Info - INDOR PRO";
+    ViewData["Title"] = L["Business & Owner Info - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     ViewData["ProviderProExtraCss"] = "insurance-quote.css";
@@ -8,10 +8,10 @@
 
 <div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
     <header class="ins-hd">
-        <a asp-controller="Proveedor" asp-action="InsuranceQuote" class="ins-hd-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="InsuranceQuote" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div class="ins-hd-text">
-            <h1>Business &amp; Owner Info</h1>
-            <p>Tell us about your business so we can request your quote.</p>
+            <h1>@L["Business &amp; Owner Info"]</h1>
+            <p>@L["Tell us about your business so we can request your quote."]</p>
         </div>
     </header>
 
@@ -20,12 +20,12 @@
     <div class="ins-plancard">
         <span class="ins-plancard-icon"><i class="fas fa-shield-halved"></i></span>
         <div class="ins-plancard-name">
-            <strong>@Model.PlanDisplayName@if (Model.IsPopular) {<span class="ins-popular">Most Popular</span>}</strong>
-            <small>Your selected plan</small>
+            <strong>@Model.PlanDisplayName@if (Model.IsPopular) {<span class="ins-popular">@L["Most Popular"]</span>}</strong>
+            <small>@L["Your selected plan"]</small>
         </div>
         <div class="ins-plancard-price">
-            <div><small>Pay today</small><strong>$@Model.PayToday.ToString("0")</strong></div>
-            <div><small>Then</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
+            <div><small>@L["Pay today"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
+            <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>/month</span></strong></div>
         </div>
     </div>
 
@@ -34,10 +34,10 @@
 
         <div class="ins-fc">
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Trade / Industry</span>
+                <span class="ins-bx-lbl">@L["Trade / Industry"]</span>
                 <div class="ins-bx-ctl">
                     <select asp-for="Trade" class="ins-bx-select">
-                        <option value="">Select your trade or industry</option>
+                        <option value="">@L["Select your trade or industry"]</option>
                         @foreach (var t in IndorMvcApp.ViewModels.InsuranceCatalog.Trades)
                         {
                             <option value="@t.Value" selected="@(Model.Trade == t.Value)">@t.Value</option>
@@ -48,28 +48,28 @@
             </div>
 
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Business Name</span>
+                <span class="ins-bx-lbl">@L["Business Name"]</span>
                 <div class="ins-bx-ctl">
-                    <input asp-for="BusinessName" class="ins-bx-input" placeholder="Enter legal business name" />
+                    <input asp-for="BusinessName" class="ins-bx-input" placeholder="@L["Enter legal business name"]" />
                 </div>
             </div>
 
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Street Address</span>
+                <span class="ins-bx-lbl">@L["Street Address"]</span>
                 <div class="ins-bx-ctl">
-                    <input asp-for="StreetAddress" class="ins-bx-input" placeholder="Enter street address" />
+                    <input asp-for="StreetAddress" class="ins-bx-input" placeholder="@L["Enter street address"]" />
                 </div>
             </div>
 
             <div class="ins-bx-row ins-bx-row--3">
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">City</span>
+                    <span class="ins-bx-lbl">@L["City"]</span>
                     <div class="ins-bx-ctl">
-                        <input asp-for="City" class="ins-bx-input" placeholder="Enter city" />
+                        <input asp-for="City" class="ins-bx-input" placeholder="@L["Enter city"]" />
                     </div>
                 </div>
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">State</span>
+                    <span class="ins-bx-lbl">@L["State"]</span>
                     <div class="ins-bx-ctl">
                         <select asp-for="State" class="ins-bx-select">
                             @foreach (var s in IndorMvcApp.ViewModels.InsuranceCatalog.States)
@@ -81,51 +81,51 @@
                     </div>
                 </div>
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">ZIP Code</span>
+                    <span class="ins-bx-lbl">@L["ZIP Code"]</span>
                     <div class="ins-bx-ctl">
-                        <input asp-for="ZipCode" class="ins-bx-input" placeholder="Enter ZIP code" />
+                        <input asp-for="ZipCode" class="ins-bx-input" placeholder="@L["Enter ZIP code"]" />
                     </div>
                 </div>
             </div>
 
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Owner Name</span>
+                <span class="ins-bx-lbl">@L["Owner Name"]</span>
                 <div class="ins-bx-ctl">
-                    <input asp-for="OwnerName" class="ins-bx-input" placeholder="Enter owner full name" />
+                    <input asp-for="OwnerName" class="ins-bx-input" placeholder="@L["Enter owner full name"]" />
                 </div>
             </div>
 
             <div class="ins-bx-row">
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">Owner Date of Birth</span>
+                    <span class="ins-bx-lbl">@L["Owner Date of Birth"]</span>
                     <div class="ins-bx-ctl">
-                        <input asp-for="OwnerDateOfBirth" type="date" class="ins-bx-input" placeholder="MM / DD / YYYY" />
+                        <input asp-for="OwnerDateOfBirth" type="date" class="ins-bx-input" placeholder="@L["MM / DD / YYYY"]" />
                     </div>
                 </div>
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">Owner Phone Number</span>
+                    <span class="ins-bx-lbl">@L["Owner Phone Number"]</span>
                     <div class="ins-bx-ctl">
-                        <input asp-for="OwnerPhone" type="tel" class="ins-bx-input" placeholder="(000) 000-0000" />
+                        <input asp-for="OwnerPhone" type="tel" class="ins-bx-input" placeholder="@L["(000) 000-0000"]" />
                     </div>
                 </div>
             </div>
 
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Owner Email</span>
+                <span class="ins-bx-lbl">@L["Owner Email"]</span>
                 <div class="ins-bx-ctl">
-                    <input asp-for="OwnerEmail" type="email" class="ins-bx-input" placeholder="Enter owner email address" />
+                    <input asp-for="OwnerEmail" type="email" class="ins-bx-input" placeholder="@L["Enter owner email address"]" />
                 </div>
             </div>
         </div>
 
         <div class="ins-note ins-note--info">
             <i class="fas fa-circle-info"></i>
-            <span><strong>ID may be requested by email.</strong> Your licensed insurance agent may ask for your SSN, ITIN, EIN, or business registration number after you submit. Please check your email for messages from INDOR.</span>
+            <span><strong>@L["ID may be requested by email."]</strong> Your licensed insurance agent may ask for your SSN, ITIN, EIN, or business registration number after you submit. Please check your email for messages from INDOR.</span>
         </div>
 
         <div class="ins-footer ins-footer--split">
-            <a asp-controller="Proveedor" asp-action="InsuranceQuote" class="ins-cta ins-cta--ghost">Back</a>
-            <button type="submit" class="ins-cta">Continue</button>
+            <a asp-controller="Proveedor" asp-action="InsuranceQuote" class="ins-cta ins-cta--ghost">@L["Back"]</a>
+            <button type="submit" class="ins-cta">@L["Continue"]</button>
         </div>
     </form>
 </div>

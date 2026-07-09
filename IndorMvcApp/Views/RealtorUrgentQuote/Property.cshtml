@@ -6,7 +6,7 @@
 
     <i class="fas fa-circle-info"></i>
 
-    <p>For urgent closing needs, fill only the essentials: property, issue, urgency, and photos. INDOR can send this request in minutes.</p>
+    <p>@L["For urgent closing needs, fill only the essentials: property, issue, urgency, and photos. INDOR can send this request in minutes."]</p>
 
 </div>
 
@@ -18,7 +18,7 @@
 
         <i class="fas fa-magnifying-glass"></i>
 
-        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search address" />
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search address"]" />
 
     </div>
 
@@ -31,23 +31,23 @@
     <button type="button" class="rl-uq-quickadd-head" id="uqQuickAddToggle" aria-expanded="true">
         <span class="rl-uq-quickadd-icon"><i class="fas fa-plus"></i></span>
         <span class="rl-uq-quickadd-title">
-            <strong>Can't find your property?</strong>
-            <small>Add property quickly</small>
+            <strong>@L["Can't find your property?"]</strong>
+            <small>@L["Add property quickly"]</small>
         </span>
         <i class="fas fa-chevron-up rl-uq-quickadd-chevron"></i>
     </button>
     <div class="rl-uq-quickadd-body">
         <div class="rl-uq-field">
-            <label>Street address</label>
-            <input type="text" name="quickAddAddress" value="@Model.QuickAddAddress" placeholder="e.g., 123 Main St" autocomplete="street-address" />
+            <label>@L["Street address"]</label>
+            <input type="text" name="quickAddAddress" value="@Model.QuickAddAddress" placeholder="@L["e.g., 123 Main St"]" autocomplete="street-address" />
         </div>
         <div class="rl-uq-grid3">
             <div class="rl-uq-field">
-                <label>City</label>
-                <input type="text" name="quickAddCity" value="@Model.QuickAddCity" placeholder="e.g., Charlotte" autocomplete="address-level2" />
+                <label>@L["City"]</label>
+                <input type="text" name="quickAddCity" value="@Model.QuickAddCity" placeholder="@L["e.g., Charlotte"]" autocomplete="address-level2" />
             </div>
             <div class="rl-uq-field">
-                <label>State</label>
+                <label>@L["State"]</label>
                 <select name="quickAddState">
                     <option value="">--</option>
                     @foreach (var st in Model.States)
@@ -57,15 +57,15 @@
                 </select>
             </div>
             <div class="rl-uq-field">
-                <label>ZIP code</label>
-                <input type="text" name="quickAddZip" value="@Model.QuickAddZip" placeholder="e.g., 28202" inputmode="numeric" autocomplete="postal-code" />
+                <label>@L["ZIP code"]</label>
+                <input type="text" name="quickAddZip" value="@Model.QuickAddZip" placeholder="@L["e.g., 28202"]" inputmode="numeric" autocomplete="postal-code" />
             </div>
         </div>
         <label class="rl-uq-check">
             <input type="checkbox" name="quickAddUseForQuote" value="true" @(Model.QuickAddUseForQuote ? "checked" : null) />
-            <span>Use this new property for this urgent quote</span>
+            <span>@L["Use this new property for this urgent quote"]</span>
         </label>
-        <button type="submit" class="ob-btn ob-btn-primary rl-uq-quickadd-submit">Add &amp; use property</button>
+        <button type="submit" class="ob-btn ob-btn-primary rl-uq-quickadd-submit">@L["Add &amp; use property"]</button>
     </div>
 </form>
 
@@ -78,7 +78,7 @@
     @* Lets the realtor continue using the address typed in the search box when no saved property matches. *@
     <input type="hidden" name="newPropertyAddress" id="uqNewPropertyAddress" value="" />
 
-    <h2 class="rl-invite-section-title">Select a saved property</h2>
+    <h2 class="rl-invite-section-title">@L["Select a saved property"]</h2>
 
     @foreach (var prop in Model.Properties)
 
@@ -122,7 +122,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">What do you need?</h2>
+    <h2 class="rl-invite-section-title">@L["What do you need?"]</h2>
 
     <div class="rl-urgent-category-grid">
 
@@ -148,7 +148,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">Service type</h2>
+    <h2 class="rl-invite-section-title">@L["Service type"]</h2>
 
     <div class="rl-pill-row">
 
@@ -172,7 +172,7 @@
 
 
 
-    <h2 class="rl-invite-section-title">Urgency level</h2>
+    <h2 class="rl-invite-section-title">@L["Urgency level"]</h2>
 
     <div class="rl-urgency-row">
 
@@ -200,7 +200,7 @@
 
         <i class="fas fa-circle-info"></i>
 
-        <p>Required for fast request: property + issue + urgency. Photos can be added next.</p>
+        <p>@L["Required for fast request: property + issue + urgency. Photos can be added next."]</p>
 
     </div>
 
@@ -214,11 +214,11 @@
 
         @Html.AntiForgeryToken()
 
-        <button type="submit" class="rl-invite-cancel">Cancel</button>
+        <button type="submit" class="rl-invite-cancel">@L["Cancel"]</button>
 
     </form>
 
-    <button type="submit" form="urgentPropertyForm" class="ob-btn ob-btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
+    <button type="submit" form="urgentPropertyForm" class="ob-btn ob-btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
 
 </div>
 

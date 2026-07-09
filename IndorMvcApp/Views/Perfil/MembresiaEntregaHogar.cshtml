@@ -4,10 +4,10 @@
     var signup = (IndorMvcApp.ViewModels.MembershipSignupState)ViewBag.Signup!;
     var kind = (MembershipPlanKind)(ViewBag.PlanKind ?? MembershipPlanKind.HomeCare);
     var deliveryDate = signup.FirstDeliveryDate ?? DateTime.Today.AddDays(30);
-    var planLabel = kind == MembershipPlanKind.Premium ? "Premium Care Plan" : "Home Care Plan";
+    var planLabel = kind == MembershipPlanKind.Premium ? L["Premium Care Plan"] : L["Home Care Plan"];
     var address = signup.PropertyAddress ?? signup.ShippingAddress ?? "1234 Maple Street, Austin, TX 78701";
     var filterSize = signup.FilterSize ?? "16x20x1";
-    var frequency = signup.DeliveryCycle ?? "Every 3 months";
+    var frequency = signup.DeliveryCycle ?? L["Every 3 months"];
 }
 
 <form method="post" asp-action="MembresiaEntregaHogar" class="pf-form mem-delivery-setup-form">
@@ -18,7 +18,7 @@
         <div class="mem-setup-row">
             <span class="mw-icon"><i class="fas fa-house"></i></span>
             <div class="mw-stack">
-                <span class="mw-label">Home address</span>
+                <span class="mw-label">@L["Home address"]</span>
                 <input type="text" name="propertyAddress" class="mw-input-line" value="@address"
                        placeholder="1234 Maple Street, Austin, TX 78701" required autocomplete="street-address" />
             </div>
@@ -28,7 +28,7 @@
         <div class="mem-setup-row">
             <span class="mw-icon"><i class="fas fa-wind"></i></span>
             <div class="mw-stack">
-                <span class="mw-label">Filter size</span>
+                <span class="mw-label">@L["Filter size"]</span>
                 <input type="text" name="filterSize" class="mw-input-line" value="@filterSize"
                        placeholder="16x20x1" />
             </div>
@@ -38,20 +38,20 @@
         <div class="mem-setup-row mem-setup-row--qty">
             <span class="mw-icon"><i class="fas fa-box"></i></span>
             <div class="mw-stack">
-                <span class="mw-label">Quantity</span>
+                <span class="mw-label">@L["Quantity"]</span>
             </div>
-            <div class="qty-stepper" role="group" aria-label="Quantity">
-                <button type="button" class="qty-btn" data-qty="-1" aria-label="Decrease quantity">−</button>
+            <div class="qty-stepper" role="group" aria-label="@L["Quantity"]">
+                <button type="button" class="qty-btn" data-qty="-1" aria-label="@L["Decrease quantity"]">−</button>
                 <input type="number" name="filterQuantity" id="filterQuantity" value="@signup.FilterQuantity"
-                       min="1" max="10" readonly aria-label="Quantity" />
-                <button type="button" class="qty-btn" data-qty="1" aria-label="Increase quantity">+</button>
+                       min="1" max="10" readonly aria-label="@L["Quantity"]" />
+                <button type="button" class="qty-btn" data-qty="1" aria-label="@L["Increase quantity"]">+</button>
             </div>
         </div>
 
         <div class="mem-setup-row">
             <span class="mw-icon"><i class="far fa-calendar"></i></span>
             <div class="mw-stack">
-                <span class="mw-label">Delivery frequency</span>
+                <span class="mw-label">@L["Delivery frequency"]</span>
                 <input type="text" name="deliveryCycle" class="mw-input-line mw-input-line--blue" value="@frequency" />
             </div>
             <span class="mw-trail" aria-hidden="true"><i class="fas fa-chevron-right"></i></span>
@@ -60,10 +60,10 @@
         <div class="mem-setup-row mem-setup-row--pets">
             <span class="mw-icon"><i class="fas fa-paw"></i></span>
             <div class="mw-stack">
-                <span class="mw-label">Pets in the home (optional)</span>
-                <span class="mw-hint">We can help recommend replacement frequency.</span>
+                <span class="mw-label">@L["Pets in the home (optional)"]</span>
+                <span class="mw-hint">@L["We can help recommend replacement frequency."]</span>
             </div>
-            <label class="mem-switch" aria-label="Pets in the home">
+            <label class="mem-switch" aria-label="@L["Pets in the home"]">
                 <input type="checkbox" name="petsAtHome" value="true" @(signup.PetsAtHome ? "checked" : "") />
                 <span class="slider"></span>
             </label>
@@ -72,13 +72,13 @@
 
     <div class="mem-info-banner">
         <i class="fas fa-circle-info"></i>
-        <span>Your @planLabel includes filter delivery and maintenance reminders.</span>
+        <span>@L.T("Your {0} includes filter delivery and maintenance reminders.", planLabel)</span>
     </div>
 
     <div class="mem-sticky-footer">
-        <button type="submit" class="pf-btn" style="width:100%;">Continue <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="pf-btn" style="width:100%;">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
         <p class="mem-help-link-wrap">
-            <span class="mem-help-link">Need help finding your filter size?</span>
+            <span class="mem-help-link">@L["Need help finding your filter size?"]</span>
         </p>
     </div>
 </form>

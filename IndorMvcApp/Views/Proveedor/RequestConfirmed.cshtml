@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RequestConfirmedViewModel
 @{
-    ViewData["Title"] = "Request Confirmed";
+    ViewData["Title"] = L["Request Confirmed"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-requests.css";
     ViewBag.NavActive = "jobs";
@@ -10,15 +10,15 @@
 <div class="prv-req-shell">
     <header class="prv-req-hero prv-req-hero--confirm">
         <div class="prv-req-hero-top">
-            <span class="prv-req-brand-word">INDOR</span>
-            <span class="prv-req-brand-pro">PRO</span>
+            <span class="prv-req-brand-word">@L["INDOR"]</span>
+            <span class="prv-req-brand-pro">@L["PRO"]</span>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-req-confirm-head">
             <span class="prv-req-confirm-check"><i class="fas fa-check"></i></span>
             <div>
-                <h1>Request Confirmed</h1>
-                <p>Your contractor has been hired.</p>
+                <h1>@L["Request Confirmed"]</h1>
+                <p>@L["Your contractor has been hired."]</p>
             </div>
         </div>
     </header>
@@ -42,15 +42,15 @@
 
         <div class="prv-req-selected">
             <div>
-                <span>Selected Contractor</span>
+                <span>@L["Selected Contractor"]</span>
                 <strong>@Model.ContractorName @if (Model.IsVerified) { <i class="fas fa-circle-check prv-req-verified"></i> }</strong>
             </div>
             <div>
-                <span>Quote</span>
+                <span>@L["Quote"]</span>
                 <strong class="prv-req-selected-amt">@Model.QuoteLabel</strong>
             </div>
             <div>
-                <span>Scheduled</span>
+                <span>@L["Scheduled"]</span>
                 <strong><i class="fas fa-calendar-check"></i> @Model.ScheduledLabel</strong>
             </div>
         </div>
@@ -93,22 +93,22 @@
     </section>
 
     <section class="prv-req-panel">
-        <h2 class="prv-req-panel-title">What happens next</h2>
+        <h2 class="prv-req-panel-title">@L["What happens next"]</h2>
         <div class="prv-req-next">
             <div class="prv-req-next-item">
                 <span class="prv-req-next-num">1</span>
                 <i class="fas fa-calendar-check"></i>
-                <span>Contractor confirms visit</span>
+                <span>@L["Contractor confirms visit"]</span>
             </div>
             <div class="prv-req-next-item">
                 <span class="prv-req-next-num">2</span>
                 <i class="fas fa-comment-dots"></i>
-                <span>You receive updates</span>
+                <span>@L["You receive updates"]</span>
             </div>
             <div class="prv-req-next-item">
                 <span class="prv-req-next-num">3</span>
                 <i class="fas fa-clipboard-check"></i>
-                <span>Job marked complete</span>
+                <span>@L["Job marked complete"]</span>
             </div>
         </div>
     </section>

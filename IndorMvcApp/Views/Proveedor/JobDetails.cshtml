@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProJobDetailsViewModel
 @{
-    ViewData["Title"] = "Job Details - INDOR PRO";
+    ViewData["Title"] = L["Job Details - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
     var fromCalendar = ViewBag.FromCalendar == true;
@@ -21,13 +21,13 @@
             <a asp-controller="Proveedor" asp-action="Calendar" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         }
         <div>
-            <h1>Job Details</h1>
+            <h1>@L["Job Details"]</h1>
             @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
             {
                 <small>Estimate @Model.EstimateCode</small>
             }
         </div>
-        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+        <button type="button" class="prv-pro-lead-share" aria-label="@L["Share"]"><i class="fas fa-share-nodes"></i></button>
     </header>
 
     <section class="prv-pro-lead-summary">
@@ -49,16 +49,16 @@
     </section>
 
     <section class="prv-pro-job-meta-row">
-        <div><i class="fas fa-clock"></i><strong>@Model.AppointmentLabel</strong><span>Appointment</span></div>
-        <div><i class="fas fa-circle-dot"></i><strong>@Model.StatusLabel</strong><span>Status</span></div>
+        <div><i class="fas fa-clock"></i><strong>@Model.AppointmentLabel</strong><span>@L["Appointment"]</span></div>
+        <div><i class="fas fa-circle-dot"></i><strong>@Model.StatusLabel</strong><span>@L["Status"]</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.EstimateCode))
         {
-            <div><i class="fas fa-file-invoice"></i><strong>@Model.EstimateCode</strong><span>Estimate</span></div>
+            <div><i class="fas fa-file-invoice"></i><strong>@Model.EstimateCode</strong><span>@L["Estimate"]</span></div>
         }
-        <div><i class="fas fa-receipt"></i><strong>@Model.InvoiceStatus</strong><span>Invoice</span></div>
+        <div><i class="fas fa-receipt"></i><strong>@Model.InvoiceStatus</strong><span>@L["Invoice"]</span></div>
         @if (!string.IsNullOrWhiteSpace(Model.PaymentLabel))
         {
-            <div><i class="fas fa-dollar-sign"></i><strong>@Model.PaymentLabel</strong><span>Payment</span></div>
+            <div><i class="fas fa-dollar-sign"></i><strong>@Model.PaymentLabel</strong><span>@L["Payment"]</span></div>
         }
     </section>
 
@@ -85,9 +85,9 @@
             <div class="prv-pro-job-contact-actions">
                 @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
                 {
-                    <a href="tel:@Model.CustomerPhone" class="prv-pro-round-btn" aria-label="Call"><i class="fas fa-phone"></i></a>
+                    <a href="tel:@Model.CustomerPhone" class="prv-pro-round-btn" aria-label="@L["Call"]"><i class="fas fa-phone"></i></a>
                 }
-                <button type="button" class="prv-pro-round-btn" aria-label="Message"><i class="fas fa-message"></i></button>
+                <button type="button" class="prv-pro-round-btn" aria-label="@L["Message"]"><i class="fas fa-message"></i></button>
             </div>
         </div>
     </section>
@@ -125,7 +125,7 @@
     {
         <section class="prv-pro-lead-section">
             <div class="prv-pro-checklist-head">
-                <h3>Job Checklist</h3>
+                <h3>@L["Job Checklist"]</h3>
                 <span>@Model.ChecklistCompleted of @Model.ChecklistTotal</span>
             </div>
             <ul class="prv-pro-checklist">

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PostJobReviewViewModel
 @{
-    ViewData["Title"] = "Review Your Job";
+    ViewData["Title"] = L["Review Your Job"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-network.css";
     ViewBag.NavActive = "jobs";
@@ -10,26 +10,26 @@
     <header class="prv-net-hero prv-net-hero--wizard">
         <div class="prv-net-hero-top">
             <a asp-controller="Proveedor" asp-action="PostNetworkJobLocation" asp-route-id="@Model.DraftId" class="prv-net-back"><i class="fas fa-chevron-left"></i></a>
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-net-brand" aria-label="INDOR PRO">
-                <span class="prv-net-brand-word">INDOR</span>
-                <span class="prv-net-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-net-brand" aria-label="@L["INDOR PRO"]">
+                <span class="prv-net-brand-word">@L["INDOR"]</span>
+                <span class="prv-net-brand-pro">@L["PRO"]</span>
             </a>
             <span style="width:36px;"></span>
         </div>
         <div class="prv-net-hero-title">
             <div>
-                <h1>Review Your Job</h1>
-                <p>Confirm everything before posting.</p>
+                <h1>@L["Review Your Job"]</h1>
+                <p>@L["Confirm everything before posting."]</p>
             </div>
         </div>
     </header>
 
     <div class="prv-net-stepper">
-        <div class="prv-net-step is-done"><span class="prv-net-step-num"><i class="fas fa-check"></i></span><span class="prv-net-step-label">Details</span></div>
+        <div class="prv-net-step is-done"><span class="prv-net-step-num"><i class="fas fa-check"></i></span><span class="prv-net-step-label">@L["Details"]</span></div>
         <span class="prv-net-step-line is-done"></span>
-        <div class="prv-net-step is-done"><span class="prv-net-step-num"><i class="fas fa-check"></i></span><span class="prv-net-step-label">Location &amp; Budget</span></div>
+        <div class="prv-net-step is-done"><span class="prv-net-step-num"><i class="fas fa-check"></i></span><span class="prv-net-step-label">@L["Location &amp; Budget"]</span></div>
         <span class="prv-net-step-line is-done"></span>
-        <div class="prv-net-step is-active"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">Review</span></div>
+        <div class="prv-net-step is-active"><span class="prv-net-step-num">3</span><span class="prv-net-step-label">@L["Review"]</span></div>
     </div>
 
     <a asp-controller="Proveedor" asp-action="PostNetworkJob" asp-route-id="@Model.DraftId" class="prv-net-review-card">
@@ -60,7 +60,7 @@
     <a asp-controller="Proveedor" asp-action="PostNetworkJobLocation" asp-route-id="@Model.DraftId" class="prv-net-review-card">
         <span class="prv-net-review-ic prv-net-review-ic--blue"><i class="fas fa-location-dot"></i></span>
         <div class="prv-net-review-body">
-            <span class="prv-net-review-label">Location</span>
+            <span class="prv-net-review-label">@L["Location"]</span>
             <strong>@(string.IsNullOrWhiteSpace(Model.Location) ? "Not set" : Model.Location)</strong>
             @if (!string.IsNullOrWhiteSpace(Model.PropertyTypeLabel))
             {
@@ -73,7 +73,7 @@
     <a asp-controller="Proveedor" asp-action="PostNetworkJobLocation" asp-route-id="@Model.DraftId" class="prv-net-review-card">
         <span class="prv-net-review-ic prv-net-review-ic--green"><i class="fas fa-dollar-sign"></i></span>
         <div class="prv-net-review-body">
-            <span class="prv-net-review-label">Budget</span>
+            <span class="prv-net-review-label">@L["Budget"]</span>
             <strong>@(string.IsNullOrWhiteSpace(Model.BudgetRange) ? "Not set" : Model.BudgetRange)</strong>
             <p class="prv-net-review-meta">
                 @if (!string.IsNullOrWhiteSpace(Model.QuoteTypeLabel))
@@ -91,21 +91,21 @@
     </a>
 
     <section class="prv-net-next">
-        <h3 class="prv-net-card-title">What happens next</h3>
+        <h3 class="prv-net-card-title">@L["What happens next"]</h3>
         <div class="prv-net-next-flow">
             <div class="prv-net-next-item">
                 <span class="prv-net-next-ic prv-net-next-ic--blue"><i class="fas fa-shield-halved"></i></span>
-                <span>Verified pros review your request</span>
+                <span>@L["Verified pros review your request"]</span>
             </div>
             <i class="fas fa-arrow-right prv-net-next-arrow"></i>
             <div class="prv-net-next-item">
                 <span class="prv-net-next-ic prv-net-next-ic--sky"><i class="fas fa-comment-dots"></i></span>
-                <span>You receive quotes and messages</span>
+                <span>@L["You receive quotes and messages"]</span>
             </div>
             <i class="fas fa-arrow-right prv-net-next-arrow"></i>
             <div class="prv-net-next-item">
                 <span class="prv-net-next-ic prv-net-next-ic--green"><i class="fas fa-user-check"></i></span>
-                <span>Hire the right pro fast</span>
+                <span>@L["Hire the right pro fast"]</span>
             </div>
         </div>
     </section>
@@ -115,5 +115,5 @@
         <input type="hidden" name="id" value="@Model.DraftId" />
         <button type="submit" class="prv-net-btn prv-net-btn--primary prv-net-btn--wizard"><i class="fas fa-paper-plane"></i> Post Job</button>
     </form>
-    <a asp-controller="Proveedor" asp-action="PostNetworkJobLocation" asp-route-id="@Model.DraftId" class="prv-net-back-link">Back</a>
+    <a asp-controller="Proveedor" asp-action="PostNetworkJobLocation" asp-route-id="@Model.DraftId" class="prv-net-back-link">@L["Back"]</a>
 </div>

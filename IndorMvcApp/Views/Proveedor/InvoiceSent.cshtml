@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProInvoiceSentViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Invoice Sent - INDOR PRO";
+    ViewData["Title"] = L["Invoice Sent - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "invoices";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -13,34 +13,34 @@
 
     <section class="prv-pro-estimate-sent-hero">
         <div class="prv-pro-estimate-sent-icon"><i class="fas fa-circle-check"></i></div>
-        <h1>Invoice Sent!</h1>
-        <p>Your invoice has been sent to the customer.</p>
+        <h1>@L["Invoice Sent!"]</h1>
+        <p>@L["Your invoice has been sent to the customer."]</p>
     </section>
 
     <section class="prv-pro-lead-section prv-pro-status-card">
         <div class="prv-pro-status-card-row">
-            <span>Invoice #</span>
+            <span>@L["Invoice #"]</span>
             <strong>@Model.InvoiceCode</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Property</span>
+            <span>@L["Property"]</span>
             <strong>@Model.Address</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Total Due</span>
+            <span>@L["Total Due"]</span>
             <strong class="prv-pro-estimate-sent-amount">@Model.TotalAmount.ToString("C0", money)</strong>
         </div>
         <div class="prv-pro-status-card-row">
-            <span>Status</span>
+            <span>@L["Status"]</span>
             <span class="prv-pro-pill prv-pro-pill--paid">@Model.StatusLabel</span>
         </div>
     </section>
 
     <footer class="prv-pro-workflow-footer prv-pro-workflow-footer--actions">
         <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@Model.InvoiceId"
-           class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full">View Invoice</a>
+           class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--full">@L["View Invoice"]</a>
         <a asp-controller="Proveedor" asp-action="RecordPayment" asp-route-id="@Model.InvoiceId" asp-route-from="all"
-           class="prv-pro-btn prv-pro-btn--teal prv-pro-btn--full">Mark as Paid</a>
+           class="prv-pro-btn prv-pro-btn--teal prv-pro-btn--full">@L["Mark as Paid"]</a>
         <a asp-controller="Proveedor" asp-action="Jobs" class="prv-pro-btn prv-pro-btn--primary prv-pro-btn--full">
             Back to Jobs
         </a>

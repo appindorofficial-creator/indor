@@ -12,7 +12,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
 }
 
 
-<p class="page-lead" style="margin-top:-8px;">Tell us what you need so we can match you with the right cleaner.</p>
+<p class="page-lead" style="margin-top:-8px;">@L["Tell us what you need so we can match you with the right cleaner."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     <span asp-validation-for="AreasLimpieza" class="text-danger" style="font-size:0.75rem;display:block;margin-bottom:8px;"></span>
@@ -27,8 +27,8 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         <input type="hidden" asp-for="AddonsSeleccionados" id="AddonsSeleccionados" />
 
         <div class="field-card">
-            <div class="section-num">What do you want cleaned?</div>
-            <div class="section-hint">You can select as many as you need.</div>
+            <div class="section-num">@L["What do you want cleaned?"]</div>
+            <div class="section-hint">@L["You can select as many as you need."]</div>
             <div class="area-grid" id="areaGroup">
                 @foreach (var area in CleaningProPricingService.AreaOptions)
                 {
@@ -42,43 +42,43 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         </div>
 
         <div class="field-card">
-            <div class="section-num">How often?</div>
+            <div class="section-num">@L["How often?"]</div>
             <div class="freq-row" id="freqGroup">
-                <button type="button" class="freq-chip" data-value="OneTime"><i class="fas fa-calendar-day"></i>One-time</button>
-                <button type="button" class="freq-chip" data-value="Weekly"><i class="fas fa-rotate"></i>Weekly</button>
-                <button type="button" class="freq-chip" data-value="Biweekly"><i class="fas fa-calendar-week"></i>Biweekly</button>
-                <button type="button" class="freq-chip" data-value="Monthly"><i class="fas fa-calendar"></i>Monthly</button>
+                <button type="button" class="freq-chip" data-value="OneTime"><i class="fas fa-calendar-day"></i>@L["One-time"]</button>
+                <button type="button" class="freq-chip" data-value="Weekly"><i class="fas fa-rotate"></i>@L["Weekly"]</button>
+                <button type="button" class="freq-chip" data-value="Biweekly"><i class="fas fa-calendar-week"></i>@L["Biweekly"]</button>
+                <button type="button" class="freq-chip" data-value="Monthly"><i class="fas fa-calendar"></i>@L["Monthly"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="section-num">Crew size</div>
-            <div class="section-hint">More cleaners = faster service.</div>
+            <div class="section-num">@L["Crew size"]</div>
+            <div class="section-hint">@L["More cleaners = faster service."]</div>
             <div class="crew-grid" id="crewGroup">
                 <button type="button" class="crew-card" data-value="One" data-rate="35">
                     <span class="check"><i class="fas fa-check"></i></span>
                     <i class="fas fa-user main"></i>
-                    <strong>1 cleaner</strong>
-                    <div class="rate">$35/hr</div>
+                    <strong>@L["1 cleaner"]</strong>
+                    <div class="rate">@L["$35/hr"]</div>
                 </button>
                 <button type="button" class="crew-card" data-value="Two" data-rate="70">
                     <span class="check"><i class="fas fa-check"></i></span>
                     <i class="fas fa-user-group main"></i>
-                    <strong>2 cleaners</strong>
-                    <div class="rate">$70/hr</div>
+                    <strong>@L["2 cleaners"]</strong>
+                    <div class="rate">@L["$70/hr"]</div>
                 </button>
                 <button type="button" class="crew-card" data-value="Three" data-rate="105">
                     <span class="check"><i class="fas fa-check"></i></span>
                     <i class="fas fa-users main"></i>
-                    <strong>3 cleaners</strong>
-                    <div class="rate">$105/hr</div>
+                    <strong>@L["3 cleaners"]</strong>
+                    <div class="rate">@L["$105/hr"]</div>
                 </button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="section-num">Estimated hours</div>
-            <div class="section-hint">Not sure? You can adjust later.</div>
+            <div class="section-num">@L["Estimated hours"]</div>
+            <div class="section-hint">@L["Not sure? You can adjust later."]</div>
             <div class="hours-row" id="hoursGroup">
                 @foreach (var hr in new[] { 2m, 3m, 4m, 5m })
                 {
@@ -88,8 +88,8 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
         </div>
 
         <div class="field-card">
-            <div class="section-num">Optional add-ons</div>
-            <div class="section-hint">Deep-clean extras you can add now.</div>
+            <div class="section-num">@L["Optional add-ons"]</div>
+            <div class="section-hint">@L["Deep-clean extras you can add now."]</div>
             <div class="addon-grid" id="addonGroup">
                 @foreach (var addon in CleaningProPricingService.AddonOptions)
                 {
@@ -108,7 +108,7 @@ var selectedAreas = (Model.AreasLimpieza ?? string.Empty).Split('|', StringSplit
             <button type="submit" name="action" value="continue" class="btn-primary">
                 Next: Review <i class="fas fa-chevron-right"></i>
             </button>
-            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
     </form>
 </div>

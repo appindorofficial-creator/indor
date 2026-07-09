@@ -1,7 +1,7 @@
 @using System.Globalization
 @model IndorMvcApp.ViewModels.NeighborRequestPreferencesStepViewModel
 @{
-    ViewData["Title"] = Model.IsEditMode ? "Edit request" : "Post Quick Job";
+    ViewData["Title"] = Model.IsEditMode ? L["Edit request"] : L["Post Quick Job"];
 }
 
 <form asp-action="Preferences" method="post" class="nr-step-form" id="nrPreferencesForm">
@@ -17,7 +17,7 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-calendar-day"></i></span>
-            <h2>When do you need help?</h2>
+            <h2>@L["When do you need help?"]</h2>
         </header>
         <div class="nr-option-grid nr-option-grid--3">
             @foreach (var option in Model.WhenOptions)
@@ -32,7 +32,7 @@
             }
         </div>
         <div class="nr-pick-date" id="nrPickDateWrap" hidden>
-            <label for="NeededByDate">Pick a date</label>
+            <label for="NeededByDate">@L["Pick a date"]</label>
             <input name="NeededByDate"
                    id="NeededByDate"
                    type="date"
@@ -46,7 +46,7 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-clock"></i></span>
-            <h2>Preferred time</h2>
+            <h2>@L["Preferred time"]</h2>
         </header>
         <div class="nr-option-grid nr-option-grid--4">
             @foreach (var option in Model.PreferredTimeOptions)
@@ -65,7 +65,7 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-user-group"></i></span>
-            <h2>How many helpers?</h2>
+            <h2>@L["How many helpers?"]</h2>
         </header>
         <div class="nr-option-grid nr-option-grid--3">
             @foreach (var option in Model.HelperCountOptions)
@@ -84,7 +84,7 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-hourglass-half"></i></span>
-            <h2>Estimated time</h2>
+            <h2>@L["Estimated time"]</h2>
         </header>
         <div class="nr-option-grid nr-option-grid--4">
             @foreach (var option in Model.DurationOptions)
@@ -103,26 +103,26 @@
     <section class="nr-card">
         <header class="nr-card-head">
             <span class="nr-card-icon"><i class="fas fa-dollar-sign"></i></span>
-            <h2>Pay</h2>
+            <h2>@L["Pay"]</h2>
         </header>
         <div class="nr-pay-toggle" role="tablist">
             <label class="nr-pay-toggle-btn @(Model.PayTypeCode == "Hourly" ? "is-active" : null)">
                 <input type="radio" name="PayTypeCode" value="Hourly" @(Model.PayTypeCode == "Hourly" ? "checked" : null) />
-                Hourly
+                @L["Hourly"]
             </label>
             <label class="nr-pay-toggle-btn @(Model.PayTypeCode == "Fixed" ? "is-active" : null)">
                 <input type="radio" name="PayTypeCode" value="Fixed" @(Model.PayTypeCode == "Fixed" ? "checked" : null) />
-                Fixed price
+                @L["Fixed price"]
             </label>
         </div>
         <div class="nr-budget-card">
-            <label asp-for="BudgetAmount">Your budget</label>
+            <label asp-for="BudgetAmount">@L["Your budget"]</label>
             <div class="nr-budget-display">
                 <input asp-for="BudgetAmount" type="number" min="0" step="1" class="nr-budget-input" placeholder="25" />
                 <span class="nr-budget-suffix" id="nrBudgetSuffix">/hr</span>
                 <span class="nr-budget-icon"><i class="fas fa-dollar-sign"></i></span>
             </div>
-            <p class="nr-budget-hint">This is the amount helpers will see in your job post.</p>
+            <p class="nr-budget-hint">@L["This is the amount helpers will see in your job post."]</p>
         </div>
     </section>
   }
@@ -131,7 +131,7 @@
     <div class="nr-pref-card">
         <div class="nr-section-title">
             <span class="nr-section-icon"><i class="fas fa-clock"></i></span>
-            <span>Estimated time<br /><small class="nr-section-sub">When do you need help?</small></span>
+            <span>Estimated time<br /><small class="nr-section-sub">@L["When do you need help?"]</small></span>
         </div>
         <div class="nr-pref-options">
             @foreach (var option in Model.TimelineOptions)
@@ -152,7 +152,7 @@
 </form>
 
 @section WizardFooter {
-    @{ ViewData["NrWizardFormId"] = "nrPreferencesForm"; ViewData["NrWizardContinueLabel"] = "Continue"; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @{ ViewData["NrWizardFormId"] = "nrPreferencesForm"; ViewData["NrWizardContinueLabel"] = L["Continue"]; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
     @await Html.PartialAsync("_NrWizardFooter")
 }
 

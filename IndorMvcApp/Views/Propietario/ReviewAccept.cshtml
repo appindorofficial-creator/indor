@@ -1,11 +1,12 @@
 @model IndorMvcApp.ViewModels.OnboardingReviewViewModel
+@using IndorMvcApp.Localization
 @{
-    ViewData["Title"] = "Review & Confirm - INDOR";
+    ViewData["Title"] = L["Review & Confirm - INDOR"];
     Layout = null;
     ViewBag.OnboardingStep = 5;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -21,13 +22,13 @@
             @await Html.PartialAsync("_OnboardingStepper")
 
             <div class="ob-head-block">
-                <h1>Review &amp; Confirm</h1>
-                <p>Please confirm your information.</p>
+                <h1>@L["Review & Confirm"]</h1>
+                <p>@L["Please confirm your information."]</p>
             </div>
 
             <div class="ob-review-stack">
                 <div class="ob-review-card">
-                    <h2>Your Account</h2>
+                    <h2>@L["Your Account"]</h2>
                     <div class="ob-review-item">
                         <i class="fas fa-user"></i>
                         <span class="val">@Model.FullName</span>
@@ -46,7 +47,7 @@
                 </div>
 
                 <div class="ob-review-card">
-                    <h2>Your Property</h2>
+                    <h2>@L["Your Property"]</h2>
                     <div class="ob-review-item">
                         <i class="fas fa-house"></i>
                         <span class="val">
@@ -72,7 +73,7 @@
 
             <form asp-action="ReviewAccept" method="post">
                 @Html.AntiForgeryToken()
-                <button type="submit" class="ob-btn ob-btn-primary">Create Account</button>
+                <button type="submit" class="ob-btn ob-btn-primary">@L["Create Account"]</button>
             </form>
         </div>
     </div>

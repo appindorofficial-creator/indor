@@ -4,7 +4,7 @@
 
     Layout = "_RealtorLayout";
 
-    ViewData["Title"] = "Inspection Analyzed";
+    ViewData["Title"] = L["Inspection Analyzed"];
 
     ViewBag.NavActive = "home";
 
@@ -26,9 +26,9 @@
 
         </div>
 
-        <h1>Quote Requests Created</h1>
+        <h1>@L["Quote Requests Created"]</h1>
 
-        <p>Your inspection report was analyzed and quote requests were sent.</p>
+        <p>@L["Your inspection report was analyzed and quote requests were sent."]</p>
 
     </section>
 
@@ -44,19 +44,19 @@
 
         </div>
 
-        <div class="rl-success-detail"><strong>Property:</strong> @Model.PropertyAddress</div>
+        <div class="rl-success-detail"><strong>@L["Property:"]</strong> @Model.PropertyAddress</div>
 
         @if (!string.IsNullOrWhiteSpace(Model.ClientName))
 
         {
 
-            <div class="rl-success-detail"><strong>Client:</strong> @Model.ClientName</div>
+            <div class="rl-success-detail"><strong>@L["Client:"]</strong> @Model.ClientName</div>
 
         }
 
-        <div class="rl-success-detail"><strong>Findings added:</strong> @Model.FindingsAdded repair items</div>
+        <div class="rl-success-detail"><strong>@L["Findings added:"]</strong> @Model.FindingsAdded repair items</div>
 
-        <div class="rl-success-detail"><strong>Trades:</strong> @Model.TradesSummary</div>
+        <div class="rl-success-detail"><strong>@L["Trades:"]</strong> @Model.TradesSummary</div>
 
         @foreach (var code in Model.QuoteCodes)
 
@@ -72,17 +72,17 @@
 
     <div class="rl-review-card">
 
-        <h2 class="rl-invite-section-title">What happens next?</h2>
+        <h2 class="rl-invite-section-title">@L["What happens next?"]</h2>
 
         <ol class="rl-next-steps">
 
-            <li><span>1</span> Providers receive trade-specific requests in INDOR Pro.</li>
+            <li><span>1</span> @L["Providers receive trade-specific requests in INDOR Pro."]</li>
 
-            <li><span>2</span> They review relevant findings and inspection pages.</li>
+            <li><span>2</span> @L["They review relevant findings and inspection pages."]</li>
 
-            <li><span>3</span> They send itemized quotes back.</li>
+            <li><span>3</span> @L["They send itemized quotes back."]</li>
 
-            <li><span>4</span> You compare quotes and choose the best options.</li>
+            <li><span>4</span> @L["You compare quotes and choose the best options."]</li>
 
         </ol>
 
@@ -90,9 +90,9 @@
 
 
 
-    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">Track Quotes</a>
+    <a asp-controller="Realtor" asp-action="Quotes" class="ob-btn ob-btn-primary rl-done-btn">@L["Track Quotes"]</a>
 
-    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">Done</a>
+    <a asp-controller="Realtor" asp-action="Dashboard" class="rl-later-link">@L["Done"]</a>
 
 </div>
 

@@ -14,7 +14,7 @@ var dateOptions = Enumerable.Range(0, 14)
 }
 
 
-<p class="page-lead" style="margin-top:-8px;">Please review your selected details and pricing.</p>
+<p class="page-lead" style="margin-top:-8px;">@L["Please review your selected details and pricing."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -27,41 +27,41 @@ var dateOptions = Enumerable.Range(0, 14)
 
         <div class="field-card">
             <div class="review-card-head">
-                <h3>Your cleaning details</h3>
-                <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="edit-link"><i class="fas fa-pen"></i> Edit</a>
+                <h3>@L["Your cleaning details"]</h3>
+                <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="edit-link"><i class="fas fa-pen"></i> @L["Edit"]</a>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-sparkles"></i>
                 <div>
-                    <div class="label">Service</div>
+                    <div class="label">@L["Service"]</div>
                     <div class="value">@Model.NombreServicio</div>
-                    <div style="font-size:0.72rem;color:#64748B;">General cleaning</div>
+                    <div style="font-size:0.72rem;color:#64748B;">@L["General cleaning"]</div>
                 </div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-rotate"></i>
-                <div><div class="label">Frequency</div><div class="value">@Model.FrequencyLabel</div></div>
+                <div><div class="label">@L["Frequency"]</div><div class="value">@Model.FrequencyLabel</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-border-all"></i>
-                <div><div class="label">Cleaned areas</div><div class="value">@Model.AreasLabel</div></div>
+                <div><div class="label">@L["Cleaned areas"]</div><div class="value">@Model.AreasLabel</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-users"></i>
-                <div><div class="label">Crew size</div><div class="value">@Model.CrewLabel</div></div>
+                <div><div class="label">@L["Crew size"]</div><div class="value">@Model.CrewLabel</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-clock"></i>
-                <div><div class="label">Estimated duration</div><div class="value">@Model.HoursLabel</div></div>
+                <div><div class="label">@L["Estimated duration"]</div><div class="value">@Model.HoursLabel</div></div>
             </div>
             <div class="review-detail-row">
                 <i class="fas fa-location-dot"></i>
-                <div><div class="label">Address</div><div class="value">@Model.DireccionPropiedad</div></div>
+                <div><div class="label">@L["Address"]</div><div class="value">@Model.DireccionPropiedad</div></div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Choose date &amp; time</span>
+            <span class="field-label">@L["Choose date &amp; time"]</span>
             <div class="date-scroll" id="dateGroup" style="margin-bottom:12px;">
                 @foreach (var date in dateOptions)
                 {
@@ -94,8 +94,8 @@ var dateOptions = Enumerable.Range(0, 14)
         {
             <div class="field-card">
                 <div class="review-card-head">
-                    <h3>Add-ons</h3>
-                    <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="edit-link"><i class="fas fa-pen"></i> Edit</a>
+                    <h3>@L["Add-ons"]</h3>
+                    <a asp-action="CleaningProCustomize" asp-route-id="@Model.SolicitudId" class="edit-link"><i class="fas fa-pen"></i> @L["Edit"]</a>
                 </div>
                 @foreach (var addon in Model.AddonLines)
                 {
@@ -108,32 +108,32 @@ var dateOptions = Enumerable.Range(0, 14)
         }
 
         <div class="field-card">
-            <span class="field-label">Pricing breakdown</span>
+            <span class="field-label">@L["Pricing breakdown"]</span>
             <div class="breakdown-line">
-                <span class="left">Hourly rate<small>@Model.CrewLabel x $@Model.TarifaHoraria.ToString("0")/hr</small></span>
+                <span class="left">@L["Hourly rate"]<small>@Model.CrewLabel x $@Model.TarifaHoraria.ToString("0")/hr</small></span>
                 <span class="right">$@Model.TarifaHoraria.ToString("0.00")/hr</span>
             </div>
             <div class="breakdown-line">
-                <span class="left">Estimated duration<small>@Model.HoursLabel</small></span>
+                <span class="left">@L["Estimated duration"]<small>@Model.HoursLabel</small></span>
                 <span class="right">x @Model.HorasEstimadas.ToString("0") hrs</span>
             </div>
             <div class="breakdown-line">
-                <span class="left">Service subtotal</span>
+                <span class="left">@L["Service subtotal"]</span>
                 <span class="right">$@Model.ServiceSubtotal.ToString("0.00")</span>
             </div>
             @if (Model.AddonsTotal > 0)
             {
                 <div class="breakdown-line">
-                    <span class="left">Add-ons</span>
+                    <span class="left">@L["Add-ons"]</span>
                     <span class="right">$@Model.AddonsTotal.ToString("0.00")</span>
                 </div>
             }
             <div class="breakdown-line">
-                <span class="left">Subtotal</span>
+                <span class="left">@L["Subtotal"]</span>
                 <span class="right">$@Model.Subtotal.ToString("0.00")</span>
             </div>
             <div class="breakdown-line">
-                <span class="left">Sales tax (8.25%) <i class="fas fa-circle-info" style="font-size:0.65rem;color:#94A3B8;"></i></span>
+                <span class="left">@L["Sales tax (8.25%)"] <i class="fas fa-circle-info" style="font-size:0.65rem;color:#94A3B8;"></i></span>
                 <span class="right">$@Model.ImpuestoVenta.ToString("0.00")</span>
             </div>
             <div class="total-highlight">
@@ -145,17 +145,17 @@ var dateOptions = Enumerable.Range(0, 14)
         </div>
 
         <div class="field-card">
-            <span class="field-label">Notes to your cleaner</span>
+            <span class="field-label">@L["Notes to your cleaner"]</span>
             <div class="notes-row">
                 <i class="fas fa-comment-dots"></i>
-                <textarea asp-for="NotasLimpiador" placeholder="Any special instructions for your cleaner?"></textarea>
+                <textarea asp-for="NotasLimpiador" placeholder="@L["Any special instructions for your cleaner?"]"></textarea>
             </div>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
             Confirm cleaning request <i class="fas fa-chevron-right"></i>
         </button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

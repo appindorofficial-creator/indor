@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IndorMvcApp.Data;
+using IndorMvcApp.Localization;
 using IndorMvcApp.Models;
 using IndorMvcApp.Services;
 using IndorMvcApp.Validation;
@@ -21,6 +22,8 @@ public class AccountController : Controller
     private readonly IPropertyAdministratorRegistrationService _propertyAdministratorRegistration;
     private readonly IPasswordResetEmailSender _passwordResetEmail;
     private readonly AccountDeletionService _accountDeletion;
+    private readonly IUiCultureCookieService _cultureCookie;
+    private readonly IIndorLocalizer _localizer;
 
     public AccountController(
         UserManager<ApplicationUser> userManager,
@@ -31,7 +34,9 @@ public class AccountController : Controller
         IRealtorRegistrationService realtorRegistration,
         IPropertyAdministratorRegistrationService propertyAdministratorRegistration,
         IPasswordResetEmailSender passwordResetEmail,
-        AccountDeletionService accountDeletion)
+        AccountDeletionService accountDeletion,
+        IUiCultureCookieService cultureCookie,
+        IIndorLocalizer localizer)
     {
         _userManager = userManager;
         _signInManager = signInManager;
@@ -42,6 +47,8 @@ public class AccountController : Controller
         _propertyAdministratorRegistration = propertyAdministratorRegistration;
         _passwordResetEmail = passwordResetEmail;
         _accountDeletion = accountDeletion;
+        _cultureCookie = cultureCookie;
+        _localizer = localizer;
     }
 
     [HttpPost]
@@ -50,13 +57,13 @@ public class AccountController : Controller
     {
         if (!string.IsNullOrWhiteSpace(model.Email) && !ValidEmailAttribute.IsValidAddress(model.Email, out var emailError))
         {
-            ModelState.AddModelError(nameof(model.Email), emailError ?? "Enter a valid email address.");
+            ModelState.AddModelError(nameof(model.Email), emailError ?? _localizer["Enter a valid email address."]);
         }
 
         if (!UsPhoneOptionalAttribute.IsValidOptional(model.Telefono))
         {
             ModelState.AddModelError(nameof(model.Telefono),
-                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
+                _localizer["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."]);
         }
 
         if (ModelState.IsValid)
@@ -72,6 +79,7 @@ public class AccountController : Controller
                 Apellidos = model.Apellidos,
                 Telefono = phone ?? string.Empty,
                 PhoneNumber = phone,
+                PreferredUiCulture = ResolveRegistrationCulture(model.UiCulture),
             };
 
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -79,6 +87,7 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 await _signInManager.SignInAsync(user, isPersistent: true);
+                _cultureCookie.SetCulture(Response, user.PreferredUiCulture ?? UiCulture.English);
                 return RedirectToAction(nameof(SelectRole), new { userId = user.Id });
             }
 
@@ -89,7 +98,7 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 1;
-        ViewBag.OnboardingTitle = "Create Account";
+        ViewBag.OnboardingTitle = _localizer["Create Account"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
         return View(model);
@@ -99,10 +108,13 @@ public class AccountController : Controller
     public IActionResult Register()
     {
         ViewBag.OnboardingStep = 1;
-        ViewBag.OnboardingTitle = "Create Account";
+        ViewBag.OnboardingTitle = _localizer["Create Account"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
-        return View(new RegisterViewModel());
+        return View(new RegisterViewModel
+        {
+            UiCulture = _cultureCookie.GetCulture(Request) ?? UiCulture.English
+        });
     }
 
     private static void SplitFullName(RegisterViewModel model)
@@ -127,7 +139,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Terms(string? from = null, int? propiedadId = null)
     {
-        ViewBag.OnboardingTitle = "Terms & Conditions";
+        ViewBag.OnboardingTitle = _localizer["Terms & Conditions"];
         ViewBag.OnboardingBackUrl = ResolveLegalBackUrl(from, propiedadId);
         ViewBag.OnboardingShowBack = true;
         ViewBag.LegalFrom = from;
@@ -138,7 +150,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult Privacy(string? from = null, int? propiedadId = null)
     {
-        ViewBag.OnboardingTitle = "Privacy Policy";
+        ViewBag.OnboardingTitle = _localizer["Privacy Policy"];
         ViewBag.OnboardingBackUrl = ResolveLegalBackUrl(from, propiedadId);
         ViewBag.OnboardingShowBack = true;
         ViewBag.LegalFrom = from;
@@ -233,12 +245,16 @@ public class AccountController : Controller
 
             if (result.Succeeded)
             {
-                // PasswordSignInAsync uses UserName (email at registration), not Email lookup.
-                // FindByEmailAsync throws if duplicate emails exist in AspNetUsers.
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user != null)
+                {
+                    await ApplyUserCultureAfterLoginAsync(user);
+                }
+
                 return await RedirectAuthenticatedUserAsync(returnUrl);
             }
 
-            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            ModelState.AddModelError(string.Empty, _localizer["Invalid login attempt."]);
         }
 
         return View("LoginForm", model);
@@ -263,7 +279,7 @@ public class AccountController : Controller
             return RedirectToAction(nameof(LoginForm));
         }
 
-        ViewBag.OnboardingTitle = "Delete account";
+        ViewBag.OnboardingTitle = _localizer["Delete account"];
         ViewBag.OnboardingShowBack = true;
         ViewBag.Email = user.Email;
         return View();
@@ -283,26 +299,26 @@ public class AccountController : Controller
 
         if (!string.Equals(confirmEmail?.Trim(), user.Email, StringComparison.OrdinalIgnoreCase))
         {
-            ViewBag.OnboardingTitle = "Delete account";
+            ViewBag.OnboardingTitle = _localizer["Delete account"];
             ViewBag.OnboardingShowBack = true;
             ViewBag.Email = user.Email;
-            ModelState.AddModelError(string.Empty, "Enter your account email exactly to confirm account deletion.");
+            ModelState.AddModelError(string.Empty, _localizer["Enter your account email exactly to confirm account deletion."]);
             return View("DeleteAccount");
         }
 
         var deleted = await _accountDeletion.DeleteAccountAsync(user);
         if (!deleted)
         {
-            ViewBag.OnboardingTitle = "Delete account";
+            ViewBag.OnboardingTitle = _localizer["Delete account"];
             ViewBag.OnboardingShowBack = true;
             ViewBag.Email = user.Email;
-            ModelState.AddModelError(string.Empty, "We could not delete your account right now. Please contact support.");
+            ModelState.AddModelError(string.Empty, _localizer["We could not delete your account right now. Please contact support."]);
             return View("DeleteAccount");
         }
 
         await _signInManager.SignOutAsync();
         HttpContext.Session.Clear();
-        TempData["AccountDeleted"] = "Your account and associated data have been permanently deleted.";
+        TempData["AccountDeleted"] = _localizer["Your account and associated data have been permanently deleted."];
         return RedirectToAction(nameof(Welcome));
     }
 
@@ -310,7 +326,7 @@ public class AccountController : Controller
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public IActionResult ForgotPassword()
     {
-        ViewBag.OnboardingTitle = "Reset password";
+        ViewBag.OnboardingTitle = _localizer["Reset password"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
         ViewBag.OnboardingShowBack = true;
         return View(new ForgotPasswordViewModel());
@@ -322,7 +338,7 @@ public class AccountController : Controller
     {
         if (!ModelState.IsValid)
         {
-            ViewBag.OnboardingTitle = "Reset password";
+            ViewBag.OnboardingTitle = _localizer["Reset password"];
             ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
             ViewBag.OnboardingShowBack = true;
             return View(model);
@@ -375,7 +391,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult ForgotPasswordConfirmation(string? email = null)
     {
-        ViewBag.OnboardingTitle = "Check your email";
+        ViewBag.OnboardingTitle = _localizer["Check your email"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
         ViewBag.OnboardingShowBack = true;
         ViewBag.Email = email;
@@ -386,7 +402,7 @@ public class AccountController : Controller
     [ResponseCache(NoStore = true, Location = ResponseCacheLocation.None)]
     public IActionResult ResetPassword(string? email = null, string? code = null)
     {
-        ViewBag.OnboardingTitle = "Set a new password";
+        ViewBag.OnboardingTitle = _localizer["Set a new password"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
         ViewBag.OnboardingShowBack = true;
         return View(new ResetPasswordViewModel
@@ -400,7 +416,7 @@ public class AccountController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
     {
-        ViewBag.OnboardingTitle = "Set a new password";
+        ViewBag.OnboardingTitle = _localizer["Set a new password"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
         ViewBag.OnboardingShowBack = true;
 
@@ -427,7 +443,7 @@ public class AccountController : Controller
             }
 
             ModelState.AddModelError(string.Empty,
-                "This code is invalid or has expired. Please request a new one.");
+                _localizer["This code is invalid or has expired. Please request a new one."]);
             return View(model);
         }
 
@@ -435,7 +451,7 @@ public class AccountController : Controller
                    ?? await _userManager.FindByEmailAsync(email);
         if (user == null)
         {
-            ModelState.AddModelError(string.Empty, "We couldn't find an account for this email.");
+            ModelState.AddModelError(string.Empty, _localizer["We couldn't find an account for this email."]);
             return View(model);
         }
 
@@ -472,7 +488,7 @@ public class AccountController : Controller
     [HttpGet]
     public IActionResult ResetPasswordConfirmation()
     {
-        ViewBag.OnboardingTitle = "Password updated";
+        ViewBag.OnboardingTitle = _localizer["Password updated"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(LoginForm));
         ViewBag.OnboardingShowBack = true;
         return View();
@@ -507,7 +523,7 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Create your profile";
+        ViewBag.OnboardingTitle = _localizer["Create your profile"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
 
@@ -565,7 +581,7 @@ public class AccountController : Controller
         }
 
         ViewBag.OnboardingStep = 2;
-        ViewBag.OnboardingTitle = "Create your profile";
+        ViewBag.OnboardingTitle = _localizer["Create your profile"];
         ViewBag.OnboardingBackUrl = Url.Action(nameof(Welcome));
         ViewBag.OnboardingShowBack = true;
         return View(model);
@@ -683,5 +699,63 @@ public class AccountController : Controller
         }
 
         return RedirectToAction("Index", "Administrador");
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> SetLanguage(string culture, string? returnUrl = null)
+    {
+        var normalized = UiCulture.Normalize(culture);
+        _cultureCookie.SetCulture(Response, normalized);
+
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                user.PreferredUiCulture = normalized;
+                await _userManager.UpdateAsync(user);
+            }
+        }
+
+        TempData["LanguageUpdated"] = true;
+
+        if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+        {
+            return Redirect(returnUrl);
+        }
+
+        return RedirectToAction(nameof(Welcome));
+    }
+
+    private string ResolveRegistrationCulture(string? requestedCulture)
+    {
+        if (UiCulture.IsSupported(requestedCulture))
+        {
+            return UiCulture.Normalize(requestedCulture);
+        }
+
+        var fromCookie = _cultureCookie.GetCulture(Request);
+        return UiCulture.IsSupported(fromCookie)
+            ? UiCulture.Normalize(fromCookie)
+            : UiCulture.English;
+    }
+
+    private async Task ApplyUserCultureAfterLoginAsync(ApplicationUser user)
+    {
+        if (UiCulture.IsSupported(user.PreferredUiCulture))
+        {
+            _cultureCookie.SetCulture(Response, user.PreferredUiCulture!);
+            return;
+        }
+
+        var cookieCulture = _cultureCookie.GetCulture(Request);
+        if (!UiCulture.IsSupported(cookieCulture))
+        {
+            return;
+        }
+
+        user.PreferredUiCulture = UiCulture.Normalize(cookieCulture);
+        await _userManager.UpdateAsync(user);
     }
 }

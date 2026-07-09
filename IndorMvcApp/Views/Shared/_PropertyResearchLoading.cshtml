@@ -5,18 +5,28 @@
             <div class="prl-radar" aria-hidden="true"></div>
             <i class="fas fa-house" aria-hidden="true"></i>
         </div>
-        <h2 class="prl-title">Researching your property</h2>
-        <p class="prl-step" id="prlStepText">Geocoding your address…</p>
+        <h2 class="prl-title">@L["Researching your property"]</h2>
+        <p class="prl-step" id="prlStepText">@L["Geocoding your address…"]</p>
         <div class="prl-progress" aria-hidden="true">
             <div class="prl-progress-bar"></div>
         </div>
-        <p class="prl-hint">Searching Redfin, Realtor, Zillow and public records. This may take up to 90 seconds — please keep this tab open.</p>
+        <p class="prl-hint">@L["Searching Redfin, Realtor, Zillow and public records. This may take up to 90 seconds — please keep this tab open."]</p>
         <div class="prl-sources" aria-hidden="true">
             <span class="prl-source-pill">Redfin</span>
             <span class="prl-source-pill">Realtor</span>
             <span class="prl-source-pill">Zillow</span>
-            <span class="prl-source-pill">County records</span>
+            <span class="prl-source-pill">@L["County records"]</span>
         </div>
     </div>
 </div>
+<script>
+    window.indorPropertyLoadingSteps = [
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Geocoding your address…"])),
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Searching public records…"])),
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Checking Redfin & Realtor listings…"])),
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Scanning county assessor data…"])),
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Building your House Fact profile…"])),
+        @Html.Raw(System.Text.Json.JsonSerializer.Serialize(L["Organizing results — almost there…"]))
+    ];
+</script>
 <script src="~/js/property-loading.js" asp-append-version="true"></script>

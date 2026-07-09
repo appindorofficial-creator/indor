@@ -2,7 +2,7 @@
 
 @{
 
-    ViewData["Title"] = "Quote Details";
+    ViewData["Title"] = L["Quote Details"];
 
     Layout = "_RealtorLayout";
 
@@ -26,7 +26,7 @@
 
         </a>
 
-        <h1 class="rl-page-title">Quote Details</h1>
+        <h1 class="rl-page-title">@L["Quote Details"]</h1>
 
     </div>
 
@@ -56,11 +56,11 @@
 
             <strong>@Model.ProviderName</strong>
 
-            <span class="rl-premium-muted">Verified provider</span>
+            <span class="rl-premium-muted">@L["Verified provider"]</span>
 
         </div>
 
-        <button type="button" class="rl-btn-outline rl-btn-outline--sm">View Provider</button>
+        <button type="button" class="rl-btn-outline rl-btn-outline--sm">@L["View Provider"]</button>
 
     </div>
 
@@ -72,7 +72,7 @@
 
             <i class="fas fa-dollar-sign rl-metric-icon rl-metric-icon--blue"></i>
 
-            <span>Total Quote</span>
+            <span>@L["Total Quote"]</span>
 
             <strong>@Model.TotalLabel</strong>
 
@@ -82,7 +82,7 @@
 
             <i class="fas fa-calendar-days rl-metric-icon rl-metric-icon--purple"></i>
 
-            <span>Timeline</span>
+            <span>@L["Timeline"]</span>
 
             <strong>@Model.TimelineLabel</strong>
 
@@ -92,7 +92,7 @@
 
             <i class="fas fa-shield-halved rl-metric-icon rl-metric-icon--green"></i>
 
-            <span>Warranty</span>
+            <span>@L["Warranty"]</span>
 
             <strong>@Model.WarrantyLabel</strong>
 
@@ -102,7 +102,7 @@
 
             <i class="fas fa-circle-check rl-metric-icon rl-metric-icon--green"></i>
 
-            <span>Status</span>
+            <span>@L["Status"]</span>
 
             <strong>@Model.ReviewStatusLabel</strong>
 
@@ -114,7 +114,7 @@
 
     <section class="rl-dash-section">
 
-        <div class="rl-dash-section-head"><h2><i class="fas fa-clipboard-list"></i> Scope of Work</h2></div>
+        <div class="rl-dash-section-head"><h2><i class="fas fa-clipboard-list"></i> @L["Scope of Work"]</h2></div>
 
         <p class="rl-qview-scope">@Model.ScopeOfWork</p>
 
@@ -128,7 +128,7 @@
 
         <section class="rl-dash-section">
 
-            <div class="rl-dash-section-head"><h2><i class="fas fa-wrench"></i> Included Repairs</h2></div>
+            <div class="rl-dash-section-head"><h2><i class="fas fa-wrench"></i> @L["Included Repairs"]</h2></div>
 
             <ul class="rl-qview-repairs">
 
@@ -150,7 +150,7 @@
 
     <section class="rl-dash-section">
 
-        <div class="rl-dash-section-head"><h2><i class="fas fa-receipt"></i> Price Breakdown</h2></div>
+        <div class="rl-dash-section-head"><h2><i class="fas fa-receipt"></i> @L["Price Breakdown"]</h2></div>
 
         <div class="rl-qview-pricing">
 
@@ -170,7 +170,7 @@
 
             <div class="rl-qview-price-row rl-qview-price-row--total">
 
-                <span>Total</span>
+                <span>@L["Total"]</span>
 
                 <strong>@Model.TotalAmountLabel</strong>
 
@@ -190,9 +190,9 @@
 
             <div>
 
-                <strong>Share with Homeowner</strong>
+                <strong>@L["Share with Homeowner"]</strong>
 
-                <p>Share this quote directly with the homeowner from INDOR.</p>
+                <p>@L["Share this quote directly with the homeowner from INDOR."]</p>
 
             </div>
 
@@ -212,7 +212,7 @@
 
             </a>
 
-            <div class="rl-qshare-or"><span>OR</span></div>
+            <div class="rl-qshare-or"><span>@L["OR"]</span></div>
 
             <form asp-controller="Realtor" asp-action="AcceptQuote" method="post">
 
@@ -230,7 +230,7 @@
 
             </form>
 
-            <a href="@Model.RequestAnotherUrl" class="rl-qview-message">Request Another Quote</a>
+            <a href="@Model.RequestAnotherUrl" class="rl-qview-message">@L["Request Another Quote"]</a>
 
         </div>
 

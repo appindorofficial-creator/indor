@@ -10,8 +10,8 @@
     var showAreas = isFullEdit || activeSection == "areas";
     var pageTitle = activeSection switch
     {
-        "business" => "Business Information",
-        "areas" => "Service Areas",
+        "business" => L["Business Information"],
+        "areas" => L["Service Areas"],
         _ => "Edit Profile"
     };
     ViewData["Title"] = $"{pageTitle} - INDOR PRO";
@@ -23,8 +23,8 @@
     };
     var saveLabel = activeSection switch
     {
-        "business" => "Save business info",
-        "areas" => "Save service areas",
+        "business" => L["Save business info"],
+        "areas" => L["Save service areas"],
         _ => "Save profile"
     };
 }
@@ -43,8 +43,7 @@
     @if (TempData["ProfileSaved"] is true)
     {
         <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-            <i class="fas fa-circle-check"></i> Profile updated successfully.
-        </div>
+            <i class="fas fa-circle-check"></i> @L["Profile updated successfully."]</div>
     }
 
     @if (TempData["ProfilePhotoError"] is string photoError)
@@ -72,8 +71,8 @@
         </div>
     }
     <section class="prv-pro-wizard-card" id="edit-profile-photo">
-        <h2>Profile photo</h2>
-        <p>Upload a logo or photo. It will appear on your provider profile.</p>
+        <h2>@L["Profile photo"]</h2>
+        <p>@L["Upload a logo or photo. It will appear on your provider profile."]</p>
         <form asp-controller="Proveedor" asp-action="UploadProfilePhoto" method="post" enctype="multipart/form-data" id="prvEditProfilePhotoForm">
             @Html.AntiForgeryToken()
             <input type="hidden" name="returnTo" value="editar" />
@@ -92,19 +91,16 @@
                 </div>
                 <div class="prv-pro-edit-profile-photo-actions">
                     <button type="button" class="prv-pro-btn prv-pro-btn--ghost prv-pro-edit-profile-upload-btn" id="prvEditProfilePhotoBtn" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-camera"></i> Change photo
-                    </button>
+                        <i class="fas fa-camera"></i> @L["Change photo"]</button>
                     <div class="prv-pro-profile-photo-menu" id="prvEditProfilePhotoMenu" role="menu" hidden>
                         <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoTake" role="menuitem">
-                            <i class="fas fa-camera"></i> Take photo
-                        </button>
+                            <i class="fas fa-camera"></i> @L["Take photo"]</button>
                         <button type="button" class="prv-pro-profile-photo-menu-item" id="prvEditProfilePhotoChoose" role="menuitem">
-                            <i class="fas fa-image"></i> Choose from library
-                        </button>
+                            <i class="fas fa-image"></i> @L["Choose from library"]</button>
                     </div>
                     <input type="file" id="prvEditProfilePhotoCamera" name="photo" accept="image/*" capture="environment" hidden />
                     <input type="file" id="prvEditProfilePhotoLibrary" name="photo" accept="image/jpeg,image/png,image/webp,image/*" hidden />
-                    <small>JPG, PNG or WEBP · Max 10 MB</small>
+                    <small>@L["JPG, PNG or WEBP · Max 10 MB"]</small>
                 </div>
             </div>
         </form>
@@ -142,39 +138,39 @@
         @if (showBusiness)
         {
         <section class="prv-pro-wizard-card" id="edit-profile-business">
-            <h2>Business details</h2>
+            <h2>@L["Business details"]</h2>
             <div class="prv-pro-edit-profile-fields">
                 <label>
-                    <span>Business name</span>
-                    <input type="text" name="BusinessName" value="@Model.BusinessName" placeholder="Legal business name" />
+                    <span>@L["Business name"]</span>
+                    <input type="text" name="BusinessName" value="@Model.BusinessName" placeholder="@L["Legal business name"]" />
                 </label>
                 <label>
-                    <span>DBA / display name</span>
-                    <input type="text" name="DbaName" value="@Model.DbaName" placeholder="Name shown to customers" />
+                    <span>@L["DBA / display name"]</span>
+                    <input type="text" name="DbaName" value="@Model.DbaName" placeholder="@L["Name shown to customers"]" />
                 </label>
                 <label>
-                    <span>Primary contact</span>
-                    <input type="text" name="PrimaryContact" value="@Model.PrimaryContact" placeholder="Contact person" />
+                    <span>@L["Primary contact"]</span>
+                    <input type="text" name="PrimaryContact" value="@Model.PrimaryContact" placeholder="@L["Contact person"]" />
                 </label>
                 <label>
-                    <span>Phone</span>
-                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="Business phone" data-phone-input />
+                    <span>@L["Phone"]</span>
+                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="@L["Business phone"]" data-phone-input />
                 </label>
                 <label>
-                    <span>Email</span>
-                    <input type="email" name="Email" value="@Model.Email" placeholder="Business email" />
+                    <span>@L["Email"]</span>
+                    <input type="email" name="Email" value="@Model.Email" placeholder="@L["Business email"]" />
                 </label>
                 <label>
-                    <span>Business address</span>
-                    <input type="text" name="BusinessAddress" value="@Model.BusinessAddress" placeholder="Street address" />
+                    <span>@L["Business address"]</span>
+                    <input type="text" name="BusinessAddress" value="@Model.BusinessAddress" placeholder="@L["Street address"]" />
                 </label>
                 <label>
-                    <span>Business hours</span>
-                    <input type="text" name="PreferredHours" value="@Model.PreferredHours" placeholder="e.g. Mon–Fri 8am–6pm" />
+                    <span>@L["Business hours"]</span>
+                    <input type="text" name="PreferredHours" value="@Model.PreferredHours" placeholder="@L["e.g. Mon–Fri 8am–6pm"]" />
                 </label>
                 <label class="prv-pro-edit-profile-field--wide">
-                    <span>Service description</span>
-                    <textarea name="ServiceDescription" rows="3" placeholder="Brief description of your services">@Model.ServiceDescription</textarea>
+                    <span>@L["Service description"]</span>
+                    <textarea name="ServiceDescription" rows="3" placeholder="@L["Brief description of your services"]">@Model.ServiceDescription</textarea>
                 </label>
             </div>
         </section>
@@ -183,31 +179,31 @@
         @if (showAreas)
         {
         <section class="prv-pro-wizard-card" id="edit-profile-areas">
-            <h2>Service areas</h2>
-            <p>Define where you accept jobs and how far you travel.</p>
+            <h2>@L["Service areas"]</h2>
+            <p>@L["Define where you accept jobs and how far you travel."]</p>
             <div class="prv-pro-edit-profile-fields">
                 <label>
-                    <span>Primary city / service area</span>
-                    <input type="text" name="PrimaryCity" value="@Model.PrimaryCity" placeholder="City, state" />
+                    <span>@L["Primary city / service area"]</span>
+                    <input type="text" name="PrimaryCity" value="@Model.PrimaryCity" placeholder="@L["City, state"]" />
                 </label>
                 <label class="prv-pro-edit-profile-field--wide">
-                    <span>ZIP codes served</span>
-                    <input type="text" name="ServiceZipCodes" value="@Model.ServiceZipCodes" placeholder="28202, 28203, 28205" />
+                    <span>@L["ZIP codes served"]</span>
+                    <input type="text" name="ServiceZipCodes" value="@Model.ServiceZipCodes" placeholder="@L["28202, 28203, 28205"]" />
                 </label>
                 <label>
-                    <span>Travel radius (miles)</span>
+                    <span>@L["Travel radius (miles)"]</span>
                     <input type="number" name="TravelRadiusMiles" value="@Model.TravelRadiusMiles" min="1" max="200" />
                 </label>
             </div>
             <div class="prv-pro-edit-profile-toggles">
                 <label class="prv-pro-toggle-row">
                     <input type="hidden" name="EmergencyService" value="false" />
-                    <span>Emergency service available</span>
+                    <span>@L["Emergency service available"]</span>
                     <input type="checkbox" name="EmergencyService" value="true" @(Model.EmergencyService ? "checked" : null) />
                 </label>
                 <label class="prv-pro-toggle-row">
                     <input type="hidden" name="SameDayJobs" value="false" />
-                    <span>Same-day jobs available</span>
+                    <span>@L["Same-day jobs available"]</span>
                     <input type="checkbox" name="SameDayJobs" value="true" @(Model.SameDayJobs ? "checked" : null) />
                 </label>
             </div>
@@ -215,7 +211,7 @@
         }
 
         <footer class="prv-pro-edit-profile-actions prv-pro-edit-profile-footer">
-            <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">Cancel</a>
+            <a asp-controller="Proveedor" asp-action="Profile" class="prv-pro-btn prv-pro-btn--ghost">@L["Cancel"]</a>
             <button type="submit" class="prv-pro-btn prv-pro-btn--primary">
                 <i class="fas fa-floppy-disk"></i> @saveLabel
             </button>

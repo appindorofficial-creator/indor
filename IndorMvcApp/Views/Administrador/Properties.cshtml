@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPropertiesPortalViewModel
 @{
-    ViewData["Title"] = "Portfolio & properties";
+    ViewData["Title"] = L["Portfolio & properties"];
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "properties";
     var hasProperties = Model.Properties.Count > 0;
@@ -10,12 +10,12 @@
     @if (Model.ShowBackHeader)
     {
         <header class="pa-portfolio-page-header">
-            <a href="@Model.BackUrl" class="pa-profile-back" aria-label="Back">
+            <a href="@Model.BackUrl" class="pa-profile-back" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <div class="pa-portfolio-page-header-text">
-                <h1>Portfolio &amp; properties</h1>
-                <p>Add, organize, and manage all your Airbnb and short-term rental homes in one place.</p>
+                <h1>@L["Portfolio &amp; properties"]</h1>
+                <p>@L["Add, organize, and manage all your Airbnb and short-term rental homes in one place."]</p>
             </div>
         </header>
     }
@@ -24,8 +24,8 @@
         @await Html.PartialAsync("_PropertyAdminTopbar", Model)
         <header class="pa-portfolio-page-header pa-portfolio-page-header--nav">
             <div class="pa-portfolio-page-header-text">
-                <h1>Portfolio &amp; properties</h1>
-                <p>Add, organize, and manage all your Airbnb and short-term rental homes in one place.</p>
+                <h1>@L["Portfolio &amp; properties"]</h1>
+                <p>@L["Add, organize, and manage all your Airbnb and short-term rental homes in one place."]</p>
             </div>
         </header>
     }
@@ -34,25 +34,25 @@
         <div class="pa-portfolio-stat">
             <span class="pa-portfolio-stat-icon"><i class="fas fa-building"></i></span>
             <div>
-                <small>Total properties</small>
+                <small>@L["Total properties"]</small>
                 <strong>@Model.TotalPropertyCount</strong>
-                <span class="pa-portfolio-stat-hint">All your homes</span>
+                <span class="pa-portfolio-stat-hint">@L["All your homes"]</span>
             </div>
         </div>
         <div class="pa-portfolio-stat">
             <span class="pa-portfolio-stat-icon"><i class="fas fa-house"></i></span>
             <div>
-                <small>Active properties</small>
+                <small>@L["Active properties"]</small>
                 <strong>@Model.ActivePropertiesCount</strong>
-                <span class="pa-portfolio-stat-hint">Ready to rent</span>
+                <span class="pa-portfolio-stat-hint">@L["Ready to rent"]</span>
             </div>
         </div>
         <div class="pa-portfolio-stat">
             <span class="pa-portfolio-stat-icon pa-portfolio-stat-icon--purple"><i class="fas fa-clipboard-check"></i></span>
             <div>
-                <small>Service tasks pending</small>
+                <small>@L["Service tasks pending"]</small>
                 <strong>@Model.ServiceTasksPendingCount</strong>
-                <span class="pa-portfolio-stat-hint">Stay on top</span>
+                <span class="pa-portfolio-stat-hint">@L["Stay on top"]</span>
             </div>
         </div>
     </section>
@@ -67,14 +67,14 @@
     </div>
 
     <section class="pa-portfolio-section">
-        <h2>Your properties</h2>
+        <h2>@L["Your properties"]</h2>
         @if (!hasProperties)
         {
             <div class="pa-portfolio-empty">
                 <span class="pa-portfolio-empty-art" aria-hidden="true"><i class="fas fa-house-chimney"></i></span>
                 <div class="pa-portfolio-empty-body">
-                    <strong>No properties added yet</strong>
-                    <p>Start by adding your first home to track services, maintenance, guests, and operations.</p>
+                    <strong>@L["No properties added yet"]</strong>
+                    <p>@L["Start by adding your first home to track services, maintenance, guests, and operations."]</p>
                     <a href="@Model.AddPropertyUrl" class="pa-btn-outline pa-btn-outline--sm">
                         <i class="fas fa-plus"></i> Add property
                     </a>
@@ -104,22 +104,22 @@
     @if (!hasProperties)
     {
         <section class="pa-portfolio-section">
-            <h2>What you can do here</h2>
+            <h2>@L["What you can do here"]</h2>
             <div class="pa-portfolio-features">
                 <div class="pa-portfolio-feature">
                     <span class="pa-portfolio-feature-icon"><i class="fas fa-chart-pie"></i></span>
-                    <strong>Track every home</strong>
-                    <p>Monitor performance, bookings, and status from one dashboard.</p>
+                    <strong>@L["Track every home"]</strong>
+                    <p>@L["Monitor performance, bookings, and status from one dashboard."]</p>
                 </div>
                 <div class="pa-portfolio-feature">
                     <span class="pa-portfolio-feature-icon"><i class="fas fa-screwdriver-wrench"></i></span>
-                    <strong>Manage services faster</strong>
-                    <p>Request cleaning, repairs, and maintenance with just a few taps.</p>
+                    <strong>@L["Manage services faster"]</strong>
+                    <p>@L["Request cleaning, repairs, and maintenance with just a few taps."]</p>
                 </div>
                 <div class="pa-portfolio-feature">
                     <span class="pa-portfolio-feature-icon"><i class="fas fa-calendar-check"></i></span>
-                    <strong>Stay organized</strong>
-                    <p>Keep house details, schedules, and tasks all in one place.</p>
+                    <strong>@L["Stay organized"]</strong>
+                    <p>@L["Keep house details, schedules, and tasks all in one place."]</p>
                 </div>
             </div>
         </section>
@@ -127,8 +127,8 @@
         <section class="pa-portfolio-banner">
             <span class="pa-portfolio-banner-icon"><i class="fas fa-star"></i></span>
             <div class="pa-portfolio-banner-body">
-                <strong>Built for portfolio owners</strong>
-                <p>Centralize operations across all your homes and save time managing what matters most.</p>
+                <strong>@L["Built for portfolio owners"]</strong>
+                <p>@L["Centralize operations across all your homes and save time managing what matters most."]</p>
             </div>
             <span class="pa-portfolio-banner-art" aria-hidden="true"><i class="fas fa-house-chimney-window"></i></span>
         </section>
@@ -138,8 +138,8 @@
         <section class="pa-portfolio-tip-card">
             <span class="pa-portfolio-tip-icon"><i class="fas fa-house-circle-check"></i></span>
             <div>
-                <strong>Keep your portfolio up to date</strong>
-                <p>Add all your properties and keep details updated to get the most out of Home Indor.</p>
+                <strong>@L["Keep your portfolio up to date"]</strong>
+                <p>@L["Add all your properties and keep details updated to get the most out of Home Indor."]</p>
             </div>
         </section>
     }

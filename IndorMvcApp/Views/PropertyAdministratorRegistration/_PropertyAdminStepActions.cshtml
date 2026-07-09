@@ -7,7 +7,7 @@
 <div class="pa-reg-actions">
     @if (!string.IsNullOrWhiteSpace(backUrl))
     {
-        <a href="@backUrl" class="pa-reg-action-back">Back</a>
+        <a href="@backUrl" class="pa-reg-action-back">@L["Back"]</a>
     }
     <button type="submit" form="@formId" class="ob-btn ob-btn-primary" @(submitFormNoValidate ? "formnovalidate" : null)>@submitLabel</button>
 </div>

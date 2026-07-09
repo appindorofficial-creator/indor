@@ -9,21 +9,21 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.05rem;">Upload photos and review your request</h2>
-    <p class="page-lead" style="margin-top:-8px;">This helps the provider arrive ready.</p>
+<h2 class="page-heading" style="font-size:1.05rem;">@L["Upload photos and review your request"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["This helps the provider arrive ready."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
     <div class="summary-card">
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
             <strong><i class="fas fa-couch" style="color:#0066CC;"></i> @Model.NombreServicio</strong>
-            <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> Edit</a>
+            <a asp-action="FurnitureAssemblyItems" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-size:0.85rem;text-decoration:none;"><i class="fas fa-pen"></i> @L["Edit"]</a>
         </div>
         <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-        <div class="summary-row"><i class="fas fa-box"></i><div><div class="summary-label">Items</div><div class="summary-value">@Model.ItemsResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Schedule</div><div class="summary-value">@Model.FechaHorarioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Room</div><div class="summary-value">@Model.HabitacionLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-stairs"></i><div><div class="summary-label">Access</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-box"></i><div><div class="summary-label">@L["Items"]</div><div class="summary-value">@Model.ItemsResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Schedule"]</div><div class="summary-value">@Model.FechaHorarioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Room"]</div><div class="summary-value">@Model.HabitacionLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-stairs"></i><div><div class="summary-label">@L["Access"]</div><div class="summary-value">@Model.AccesoLabel</div></div></div>
     </div>
 
     <form asp-action="FurnitureAssemblyReview" method="post" enctype="multipart/form-data">
@@ -37,8 +37,8 @@
                    accept="image/*,.jpg,.jpeg,.png,.pdf,.webp,.heic,.heif" />
             <label class="upload-drop" id="photoDropzone" for="photoInput">
                 <i class="fas fa-cloud-arrow-up"></i>
-                <strong>Tap to upload photos or manuals</strong>
-                <span>JPG, PNG, PDF up to 25 MB</span>
+                <strong>@L["Tap to upload photos or manuals"]</strong>
+                <span>@L["JPG, PNG, PDF up to 25 MB"]</span>
             </label>
         </div>
         <div class="upload-selected-list" id="photoSelectedList" hidden></div>
@@ -63,8 +63,8 @@
         }
 
         <div class="field-card">
-            <span class="field-label">Comments (optional)</span>
-            <div class="input-wrap"><i class="fas fa-comment"></i><textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="Boxes are already inside. One item needs wall anchoring."></textarea></div>
+            <span class="field-label">@L["Comments (optional)"]</span>
+            <div class="input-wrap"><i class="fas fa-comment"></i><textarea asp-for="NotaCorta" rows="3" maxlength="250" placeholder="@L["Boxes are already inside. One item needs wall anchoring."]"></textarea></div>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.DisclaimerTexto))
@@ -72,9 +72,9 @@
             <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@Model.DisclaimerTexto</span></div>
         }
 
-        <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Request service</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
-        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+        <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> @L["Request service"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
+        <button type="submit" name="action" value="edit" class="btn-outline">@L["Edit details"]</button>
     </form>
 </div>
 @section Scripts {

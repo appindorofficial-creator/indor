@@ -1,15 +1,15 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorDashboardViewModel
 @{
-    ViewData["Title"] = "Portfolio Dashboard";
+    ViewData["Title"] = L["Portfolio Dashboard"];
     Layout = "_PropertyAdminLayout";
     ViewBag.HideBottomNav = true;
 }
 
 <div class="pa-portal-shell">
     <header class="pa-reg-header">
-        <a asp-controller="Home" asp-action="Index" class="ob-nav-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+        <a asp-controller="Home" asp-action="Index" class="ob-nav-back" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
         <a asp-controller="Home" asp-action="Index" class="pa-reg-logo"><img src="~/logoindor.png" alt="INDOR" /></a>
-        <span class="pa-reg-step-label">Dashboard</span>
+        <span class="pa-reg-step-label">@L["Dashboard"]</span>
     </header>
 
     <div class="pa-dashboard-hero">
@@ -18,19 +18,19 @@
     </div>
 
     <div class="pa-stat-row">
-        <div class="pa-stat-card"><strong>@Model.PropertyCount</strong><span>Properties</span></div>
-        <div class="pa-stat-card"><strong>@Model.EnabledTools.Count</strong><span>Tools active</span></div>
-        <div class="pa-stat-card"><strong>1</strong><span>Portfolio</span></div>
+        <div class="pa-stat-card"><strong>@Model.PropertyCount</strong><span>@L["Properties"]</span></div>
+        <div class="pa-stat-card"><strong>@Model.EnabledTools.Count</strong><span>@L["Tools active"]</span></div>
+        <div class="pa-stat-card"><strong>1</strong><span>@L["Portfolio"]</span></div>
     </div>
 
     <div class="ob-head-block">
-        <h1 style="font-size:1.1rem;">Your properties</h1>
+        <h1 style="font-size:1.1rem;">@L["Your properties"]</h1>
         <p>@Model.ManagementStyleLabel</p>
     </div>
 
     @if (Model.Properties.Count == 0)
     {
-        <div class="pa-review-card">No properties yet. Add properties from your registration wizard.</div>
+        <div class="pa-review-card">@L["No properties yet. Add properties from your registration wizard."]</div>
     }
     else
     {
@@ -52,7 +52,7 @@
     @if (Model.EnabledTools.Count > 0)
     {
         <div class="ob-head-block" style="margin-top:20px;">
-            <h1 style="font-size:1.1rem;">Operations tools</h1>
+            <h1 style="font-size:1.1rem;">@L["Operations tools"]</h1>
         </div>
         <div class="pa-review-card">
             @foreach (var tool in Model.EnabledTools)
@@ -62,5 +62,5 @@
         </div>
     }
 
-    <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-primary" style="margin-top:16px;">Open INDOR Home <i class="fas fa-chevron-right"></i></a>
+    <a asp-controller="Home" asp-action="Index" class="ob-btn ob-btn-primary" style="margin-top:16px;">@L["Open INDOR Home"] <i class="fas fa-chevron-right"></i></a>
 </div>

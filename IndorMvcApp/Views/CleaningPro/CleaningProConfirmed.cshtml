@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.CleaningProConfirmedViewModel
 @{
-    ViewData["Title"] = "Cleaning Confirmed - INDOR";
+    ViewData["Title"] = L["Cleaning Confirmed - INDOR"];
 var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
@@ -10,22 +10,22 @@ var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
 
 <div class="success-wrap" style="text-align:center;margin-bottom:16px;">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.1rem;margin-bottom:6px;">Cleaning request confirmed!</h1>
+        <h1 class="page-heading" style="font-size:1.1rem;margin-bottom:6px;">@L["Cleaning request confirmed!"]</h1>
         <p class="page-lead" style="text-align:center;">Your @Model.NombreServicio service is all set.</p>
     </div>
 
     <div class="summary-card">
-        <h3>Booking summary</h3>
+        <h3>@L["Booking summary"]</h3>
         <div class="summary-row"><i class="fas fa-users"></i><div><div class="summary-value">@Model.CrewSummary</div></div></div>
         <div class="summary-row"><i class="fas fa-clock"></i><div>
-            <div class="summary-label">Estimated hours</div>
+            <div class="summary-label">@L["Estimated hours"]</div>
             <div class="summary-value">@Model.HoursLabel</div>
-            <div class="summary-label" style="margin-top:6px;">Total estimate</div>
+            <div class="summary-label" style="margin-top:6px;">@L["Total estimate"]</div>
             <div class="summary-value" style="color:#0066CC;">$@Model.ServiceEstimate.ToString("0")</div>
         </div></div>
         <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-value">@Model.FrequencyLabel</div></div></div>
         <div class="summary-row"><i class="fas fa-calendar-check"></i><div>
-            <div class="summary-label">Scheduled</div>
+            <div class="summary-label">@L["Scheduled"]</div>
             <div class="summary-value">@(scheduledParts.Length > 0 ? scheduledParts[0] : Model.ScheduledLabel)</div>
             @if (scheduledParts.Length > 1)
             {
@@ -35,10 +35,10 @@ var scheduledParts = (Model.ScheduledLabel ?? string.Empty).Split('\n', 2);
         <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
     </div>
 
-    <div class="info-row"><i class="fas fa-bell"></i> We'll send you a reminder before your cleaning.</div>
-    <div class="info-row"><i class="fas fa-mobile-screen"></i> You can manage or reschedule your booking anytime in the app.</div>
+    <div class="info-row"><i class="fas fa-bell"></i> @L["We'll send you a reminder before your cleaning."]</div>
+    <div class="info-row"><i class="fas fa-mobile-screen"></i> @L["You can manage or reschedule your booking anytime in the app."]</div>
 
     <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-primary">
         View booking <i class="fas fa-chevron-right"></i>
     </a>
-    <a asp-action="CleaningProSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> Edit booking</a>
+    <a asp-action="CleaningProSetup" asp-route-id="@Model.SolicitudId" class="btn-outline"><i class="fas fa-pen"></i> @L["Edit booking"]</a>

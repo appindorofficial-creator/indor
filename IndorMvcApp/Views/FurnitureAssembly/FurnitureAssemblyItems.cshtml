@@ -9,8 +9,8 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;">Tell us what needs assembly</h2>
-    <p class="page-lead" style="margin-top:-8px;">Help us prepare the right team and tools.</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["Tell us what needs assembly"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Help us prepare the right team and tools."]</p>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -27,7 +27,7 @@
             <div class="left">
                 <i class="fas fa-location-dot" style="color:#0066CC;"></i>
                 <input asp-for="DireccionPropiedad" id="DireccionPropiedad" class="address-input"
-                       placeholder="123 Riverside Dr, Mount Holly, NC 28120" required readonly
+                       placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required readonly
                        data-address-autocomplete autocomplete="off" />
             </div>
             <button type="button" class="address-edit-btn" id="editAddressBtn" aria-controls="DireccionPropiedad">Edit ></button>
@@ -35,22 +35,22 @@
         <span asp-validation-for="DireccionPropiedad" class="field-error"></span>
 
         <div class="field-card">
-            <span class="field-label">What are you assembling?</span>
+            <span class="field-label">@L["What are you assembling?"]</span>
             <div class="tile-grid tile-grid-4" id="typesGroup">
-                <button type="button" class="tile-btn" data-value="BedFrame"><i class="fas fa-bed"></i>Bed frame</button>
-                <button type="button" class="tile-btn" data-value="Dresser"><i class="fas fa-box"></i>Dresser</button>
-                <button type="button" class="tile-btn" data-value="Desk"><i class="fas fa-desktop"></i>Desk</button>
-                <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>Dining table</button>
-                <button type="button" class="tile-btn" data-value="Bookshelf"><i class="fas fa-book"></i>Bookshelf</button>
-                <button type="button" class="tile-btn" data-value="TvStand"><i class="fas fa-tv"></i>TV stand</button>
-                <button type="button" class="tile-btn" data-value="OfficeChair"><i class="fas fa-chair"></i>Office chair</button>
-                <button type="button" class="tile-btn" data-value="Shelving"><i class="fas fa-layer-group"></i>Shelving</button>
-                <button type="button" class="tile-btn" data-value="MultipleItems"><i class="fas fa-ellipsis"></i>Multiple items</button>
+                <button type="button" class="tile-btn" data-value="BedFrame"><i class="fas fa-bed"></i>@L["Bed frame"]</button>
+                <button type="button" class="tile-btn" data-value="Dresser"><i class="fas fa-box"></i>@L["Dresser"]</button>
+                <button type="button" class="tile-btn" data-value="Desk"><i class="fas fa-desktop"></i>@L["Desk"]</button>
+                <button type="button" class="tile-btn" data-value="DiningTable"><i class="fas fa-utensils"></i>@L["Dining table"]</button>
+                <button type="button" class="tile-btn" data-value="Bookshelf"><i class="fas fa-book"></i>@L["Bookshelf"]</button>
+                <button type="button" class="tile-btn" data-value="TvStand"><i class="fas fa-tv"></i>@L["TV stand"]</button>
+                <button type="button" class="tile-btn" data-value="OfficeChair"><i class="fas fa-chair"></i>@L["Office chair"]</button>
+                <button type="button" class="tile-btn" data-value="Shelving"><i class="fas fa-layer-group"></i>@L["Shelving"]</button>
+                <button type="button" class="tile-btn" data-value="MultipleItems"><i class="fas fa-ellipsis"></i>@L["Multiple items"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">How many items?</span>
+            <span class="field-label">@L["How many items?"]</span>
             <div class="segment-row" data-target="CantidadItems">
                 <button type="button" class="segment-btn" data-value="One">1</button>
                 <button type="button" class="segment-btn" data-value="Two">2</button>
@@ -60,26 +60,26 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label">What condition are the items in?</span>
+            <span class="field-label">@L["What condition are the items in?"]</span>
             <div class="fa-condition-grid" data-target="CondicionItems">
-                <button type="button" class="type-card" data-value="NewInBox"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>New in box</button>
-                <button type="button" class="type-card" data-value="PartiallyAssembled"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-screwdriver-wrench"></i>Partially assembled</button>
-                <button type="button" class="type-card" data-value="NeedsReassembly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-arrows-rotate"></i>Needs re-assembly</button>
-                <button type="button" class="type-card" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question"></i>Not sure</button>
+                <button type="button" class="type-card" data-value="NewInBox"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>@L["New in box"]</button>
+                <button type="button" class="type-card" data-value="PartiallyAssembled"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-screwdriver-wrench"></i>@L["Partially assembled"]</button>
+                <button type="button" class="type-card" data-value="NeedsReassembly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-arrows-rotate"></i>@L["Needs re-assembly"]</button>
+                <button type="button" class="type-card" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-circle-question"></i>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Will any item need wall anchoring?</span>
+            <span class="field-label">@L["Will any item need wall anchoring?"]</span>
             <div class="segment-row" data-target="AnclajePared">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary">Next <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> Upload photos</button>
+        <button type="submit" class="btn-primary">@L["Next"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" name="action" value="upload" class="btn-outline"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos"]</button>
     </form>
 </div>
 @section Scripts {

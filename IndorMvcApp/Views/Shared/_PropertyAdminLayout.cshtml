@@ -1,6 +1,9 @@
+@using IndorMvcApp.Localization
+@using IndorMvcApp.Services
+@inject IIndorLocalizer L
 <!DOCTYPE html>
 
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 
 <head>
 
@@ -10,7 +13,7 @@
 
     <meta name="theme-color" content="#0066CC" />
 
-    <title>@(ViewData["Title"] ?? "Portfolio") - INDOR</title>
+    <title>@(ViewData["Title"] ?? L["Portfolio"]) - INDOR</title>
 
     @await Html.PartialAsync("_AppVersionHead")
 
@@ -40,4 +43,3 @@
 </body>
 
 </html>
-

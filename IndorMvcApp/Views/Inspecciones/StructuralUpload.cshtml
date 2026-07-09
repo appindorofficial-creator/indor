@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.StructuralUploadViewModel
+@model IndorMvcApp.ViewModels.StructuralUploadViewModel
 @{
-    ViewData["Title"] = "Structural Details - INDOR";
-    ViewData["WizardTitle"] = "Structural Details";
+    ViewData["Title"] = L["Structural Details - INDOR"];
+    ViewData["WizardTitle"] = L["Structural Details"];
     ViewData["WizardBackUrl"] = Url.Action("StructuralDetails", "Inspecciones", new { id = Model.InspeccionId });
     ViewData["WizardStep"] = 5;
     ViewData["WizardTotalSteps"] = 6;
 
 }
 
-<h1 class="page-heading">Upload photos and add comments</h1>
-        <p class="page-lead">Help INDOR understand the issue before scheduling the right provider.</p>
+<h1 class="page-heading">@L["Upload photos and add comments"]</h1>
+        <p class="page-lead">@L["Help INDOR understand the issue before scheduling the right provider."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -23,42 +23,42 @@
             <input type="hidden" asp-for="DireccionPropiedad" />
 
             <div class="field-card">
-                <span class="field-label">Property address</span>
+                <span class="field-label">@L["Property address"]</span>
                 <div class="address-display"><i class="fas fa-location-dot"></i><span>@Model.DireccionPropiedad</span></div>
                 @if (!string.IsNullOrWhiteSpace(Model.TipoPropiedad))
                 {
-                    <p style="margin-top:8px;font-size:0.82rem;color:#64748B;">Property type: <strong style="color:#0A2540;">@Model.TipoPropiedad</strong></p>
+                    <p style="margin-top:8px;font-size:0.82rem;color:#64748B;">@L["Property type:"] <strong style="color:#0A2540;">@Model.TipoPropiedad</strong></p>
                 }
             </div>
 
             <div class="dropzone" id="dropzone">
                 <i class="fas fa-cloud-arrow-up"></i>
-                <p>Drag files here or <strong>browse</strong></p>
-                <p style="margin-top:6px;font-size:0.82rem;">JPG, PNG, PDF up to 25 MB each</p>
+                <p>@L["Drag files here or"] <strong>@L["browse"]</strong></p>
+                <p style="margin-top:6px;font-size:0.82rem;">@L["JPG, PNG, PDF up to 25 MB each"]</p>
             </div>
             <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov,.webm,application/pdf,image/*,video/*" />
 
             <div class="action-list">
                 <label class="action-item" for="fileInputCamera">
                     <i class="fas fa-camera icon"></i>
-                    <div class="action-text"><strong>Take photo</strong><small>Use your camera to capture images</small></div>
+                    <div class="action-text"><strong>@L["Take photo"]</strong><small>@L["Use your camera to capture images"]</small></div>
                     <i class="fas fa-chevron-right chevron"></i>
                 </label>
                 <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
                 <label class="action-item" for="fileInput">
                     <i class="fas fa-images icon"></i>
-                    <div class="action-text"><strong>Upload photos</strong><small>Choose from your photo library</small></div>
+                    <div class="action-text"><strong>@L["Upload photos"]</strong><small>@L["Choose from your photo library"]</small></div>
                     <i class="fas fa-chevron-right chevron"></i>
                 </label>
                 <label class="action-item" for="fileInputReport">
                     <i class="fas fa-file-lines icon"></i>
-                    <div class="action-text"><strong>Upload inspection report</strong><small>PDF or image files</small></div>
+                    <div class="action-text"><strong>@L["Upload inspection report"]</strong><small>@L["PDF or image files"]</small></div>
                     <i class="fas fa-chevron-right chevron"></i>
                 </label>
                 <input type="file" id="fileInputReport" class="hidden-input" accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/*" />
                 <label class="action-item" for="fileInputVideo">
                     <i class="fas fa-video icon"></i>
-                    <div class="action-text"><strong>Add video</strong><small>Record or upload a short video</small></div>
+                    <div class="action-text"><strong>@L["Add video"]</strong><small>@L["Record or upload a short video"]</small></div>
                     <i class="fas fa-chevron-right chevron"></i>
                 </label>
                 <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
@@ -71,7 +71,7 @@
                     {
                         <div class="file-item">
                             <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
-                            <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                            <a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a>
                         </div>
                     }
                 </div>
@@ -80,19 +80,19 @@
             <div id="selectedFiles" class="file-list"></div>
 
             <div class="field-card">
-                <label asp-for="ComentariosProveedor" class="field-label">Comments for the provider</label>
+                <label asp-for="ComentariosProveedor" class="field-label">@L["Comments for the provider"]</label>
                 <textarea asp-for="ComentariosProveedor" class="form-textarea" maxlength="1000"
-                          placeholder="Horizontal crack in the foundation near the garage, uneven floors in the hallway, sticking doors, and previous inspection noted settlement..."></textarea>
+                          placeholder="@L["Horizontal crack in the foundation near the garage, uneven floors in the hallway, sticking doors, and previous inspection noted settlement..."]"></textarea>
                 <div class="char-count"><span id="charCount">0</span>/1000</div>
             </div>
 
             <div class="tip-box">
                 <i class="fas fa-circle-info"></i>
-                <div>Photos of foundation cracks, wall movement, floor leveling concerns, crawl space access, and any prior inspection reports help providers give you a more accurate review.</div>
+                <div>@L["Photos of foundation cracks, wall movement, floor leveling concerns, crawl space access, and any prior inspection reports help providers give you a more accurate review."]</div>
             </div>
 
-            <button type="submit" class="btn-primary" name="action" value="continue">Continue <i class="fas fa-arrow-right"></i></button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-primary" name="action" value="continue">@L["Continue"] <i class="fas fa-arrow-right"></i></button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

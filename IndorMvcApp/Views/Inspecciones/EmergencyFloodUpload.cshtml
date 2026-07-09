@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyFloodUploadViewModel
 @{
-    ViewData["Title"] = "Flood Details - INDOR";
-    ViewData["WizardTitle"] = "Flood Details";
+    ViewData["Title"] = L["Flood Details - INDOR"];
+    ViewData["WizardTitle"] = L["Flood Details"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyFloodSafety", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 4;
@@ -10,13 +10,13 @@
 
 
     <div class="title-row">
-        <h1>Flood Details</h1>
+        <h1>@L["Flood Details"]</h1>
         <span class="badge-247">24/7</span>
     </div>
-    <p class="page-lead">Photos help the provider understand the situation before arrival.</p>
+    <p class="page-lead">@L["Photos help the provider understand the situation before arrival."]</p>
 
     
-<h2 class="page-heading">Add photos and a quick note</h2>
+<h2 class="page-heading">@L["Add photos and a quick note"]</h2>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -36,26 +36,26 @@
 
         <div class="dropzone" id="dropzone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong style="color:#0066CC;">Drag files here or browse</strong></p>
-            <p style="margin-top:6px;font-size:0.82rem;color:#64748B;">JPG, PNG, PDF up to 25 MB each</p>
+            <p><strong style="color:#0066CC;">@L["Drag files here or browse"]</strong></p>
+            <p style="margin-top:6px;font-size:0.82rem;color:#64748B;">@L["JPG, PNG, PDF up to 25 MB each"]</p>
         </div>
         <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov,.webm,application/pdf,image/*,video/*" />
 
         <div class="action-list">
             <label class="action-item" for="fileInputCamera">
                 <i class="fas fa-camera icon"></i>
-                <div class="action-text"><strong>Take photo</strong></div>
+                <div class="action-text"><strong>@L["Take photo"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
             <label class="action-item" for="fileInput">
                 <i class="fas fa-images icon"></i>
-                <div class="action-text"><strong>Upload photos</strong></div>
+                <div class="action-text"><strong>@L["Upload photos"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <label class="action-item" for="fileInputVideo">
                 <i class="fas fa-video icon"></i>
-                <div class="action-text"><strong>Add video</strong></div>
+                <div class="action-text"><strong>@L["Add video"]</strong></div>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
@@ -68,7 +68,7 @@
                 {
                     <div class="file-item">
                         <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
-                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a>
                     </div>
                 }
             </div>
@@ -76,16 +76,16 @@
 
         <div id="selectedFiles" class="file-list"></div>
 
-        <label asp-for="NotaCorta" class="field-label">Tell us anything important</label>
-        <textarea asp-for="NotaCorta" class="form-textarea" maxlength="500" placeholder="Water is coming from under the sink and spreading into the kitchen and hallway."></textarea>
+        <label asp-for="NotaCorta" class="field-label">@L["Tell us anything important"]</label>
+        <textarea asp-for="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Water is coming from under the sink and spreading into the kitchen and hallway."]"></textarea>
 
         <div class="tip-box">
             <i class="fas fa-circle-info"></i>
             Include where the water started, how long it has been happening, and any damage already visible.
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="continue">Continue <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="skip">Skip for now</button>
+        <button type="submit" class="btn-primary" name="action" value="continue">@L["Continue"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="skip">@L["Skip for now"]</button>
     </form>
 </div>
 @section Scripts {

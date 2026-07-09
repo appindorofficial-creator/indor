@@ -21,15 +21,18 @@ public class WaterHeaterSetupController : Controller
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly IWebHostEnvironment _env;
+    private readonly IIndorLocalizer _localizer;
 
     public WaterHeaterSetupController(
         AppDbContext db,
         UserManager<ApplicationUser> userManager,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
         _env = env;
+        _localizer = localizer;
     }
 
     [HttpGet]
@@ -69,11 +72,11 @@ public class WaterHeaterSetupController : Controller
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 2,
-            PageTitle = "Scan Water Heater Label",
+            PageTitle = _localizer["Scan Water Heater Label"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
             BackUrl = Url.Action(nameof(Add), new { propiedadId = propiedad.Id }) ?? "/",
-            ScanHint = "Center the label inside the frame. Make sure the brand, model, and serial number are visible.",
+            ScanHint = _localizer["Center the label inside the frame. Make sure the brand, model, and serial number are visible."],
             PreviewImageUrl = draft.LabelImagePath
         });
     }
@@ -186,14 +189,14 @@ public class WaterHeaterSetupController : Controller
     {
         if (viewModel.PropiedadId <= 0)
         {
-            ModelState.AddModelError(nameof(viewModel.PropiedadId), "Your property could not be identified. Please start again from Home.");
+            ModelState.AddModelError(nameof(viewModel.PropiedadId), _localizer["Your property could not be identified. Please start again from Home."]);
             return RedirectToAction(nameof(Add));
         }
 
         var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
         if (propiedad == null)
         {
-            TempData["WaterHeaterSetupError"] = "We could not find your property. Please try again from Home.";
+            TempData["WaterHeaterSetupError"] = _localizer["We could not find your property. Please try again from Home."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -233,14 +236,14 @@ public class WaterHeaterSetupController : Controller
         var resolvedPropiedadId = id ?? propiedadId ?? 0;
         if (resolvedPropiedadId <= 0)
         {
-            TempData["WaterHeaterSetupError"] = "Your property could not be identified. Please start again from Home.";
+            TempData["WaterHeaterSetupError"] = _localizer["Your property could not be identified. Please start again from Home."];
             return RedirectToAction(nameof(Add));
         }
 
         var propiedad = await LoadPropertyAsync(resolvedPropiedadId);
         if (propiedad == null)
         {
-            TempData["WaterHeaterSetupError"] = "We could not find your property. Please try again from Home.";
+            TempData["WaterHeaterSetupError"] = _localizer["We could not find your property. Please try again from Home."];
             return RedirectToAction(nameof(Add));
         }
 
@@ -252,7 +255,7 @@ public class WaterHeaterSetupController : Controller
         var draft = ResolveDraft(propiedad.Id);
         if (draft == null)
         {
-            TempData["WaterHeaterSetupError"] = "Your water heater draft expired. Please enter your details again.";
+            TempData["WaterHeaterSetupError"] = _localizer["Your water heater draft expired. Please enter your details again."];
             return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
@@ -275,7 +278,7 @@ public class WaterHeaterSetupController : Controller
         var propiedad = await LoadPropertyAsync(viewModel.PropiedadId);
         if (propiedad == null)
         {
-            TempData["WaterHeaterSetupError"] = "We could not find your property. Please try again from Home.";
+            TempData["WaterHeaterSetupError"] = _localizer["We could not find your property. Please try again from Home."];
             return RedirectToAction("Index", "Home");
         }
 
@@ -287,13 +290,13 @@ public class WaterHeaterSetupController : Controller
         var draft = ResolveDraft(propiedad.Id);
         if (draft == null)
         {
-            TempData["WaterHeaterSetupError"] = "Your water heater draft expired. Please enter your details again.";
+            TempData["WaterHeaterSetupError"] = _localizer["Your water heater draft expired. Please enter your details again."];
             return RedirectToAction(nameof(Manual), new { propiedadId = propiedad.Id });
         }
 
         if (!viewModel.ConfirmSave)
         {
-            ModelState.AddModelError(nameof(viewModel.ConfirmSave), "Please confirm before saving.");
+            ModelState.AddModelError(nameof(viewModel.ConfirmSave), _localizer["Please confirm before saving."]);
         }
 
         if (!ModelState.IsValid)
@@ -331,7 +334,7 @@ public class WaterHeaterSetupController : Controller
         }
         catch (Exception ex) when (HomeDashboardDataService.IsMissingTable(ex))
         {
-            ModelState.AddModelError(string.Empty, "Water heater storage is not available yet. Run Scripts/CreatePropiedadWaterHeaterTables.sql on the database.");
+            ModelState.AddModelError(string.Empty, _localizer["Water heater storage is not available yet. Run Scripts/CreatePropiedadWaterHeaterTables.sql on the database."]);
             var info = MyHomeDisplayService.DeserializeProperty(propiedad);
             return View(BuildReviewModel(propiedad, info, draft, viewModel));
         }
@@ -366,7 +369,7 @@ public class WaterHeaterSetupController : Controller
 
         var info = MyHomeDisplayService.DeserializeProperty(propiedad);
         var estimatedAge = record.InstallYear.HasValue
-            ? $"{Math.Max(0, DateTime.Today.Year - record.InstallYear.Value)} years"
+            ? _localizer.T("{0} years", Math.Max(0, DateTime.Today.Year - record.InstallYear.Value))
             : "—";
 
         // Manual flow has 4 steps, scan flow 5. Fall back to scan when unknown
@@ -378,7 +381,7 @@ public class WaterHeaterSetupController : Controller
             PropiedadId = propiedad.Id,
             CurrentStep = isManual ? 4 : 5,
             TotalSteps = isManual ? 4 : 5,
-            PageTitle = "Water Heater Added",
+            PageTitle = _localizer["Water Heater Added"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
             BackUrl = Url.Action("Index", "Home") ?? "/",
@@ -404,7 +407,7 @@ public class WaterHeaterSetupController : Controller
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 1,
-            PageTitle = "Scan Water Heater Label",
+            PageTitle = _localizer["Scan Water Heater Label"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
             BackUrl = Url.Action("Index", "Home") ?? "/"
@@ -435,13 +438,13 @@ public class WaterHeaterSetupController : Controller
         // Manual entry skips the scan step, so its flow is 4 steps (1→2→3→4).
         posted.CurrentStep = 2;
         posted.TotalSteps = 4;
-        posted.PageTitle = "Enter water heater details";
+        posted.PageTitle = _localizer["Enter water heater details"];
         posted.Address = FormatAddress(propiedad, info);
         posted.ImageUrl = "/welcome-house.png";
         posted.BackUrl = Url.Action(nameof(Add), new { propiedadId = propiedad.Id }) ?? "/";
         posted.InstallYearOptions = WaterHeaterOpenAiHintsService.BuildInstallYearOptions();
         posted.TankSizeOptions = WaterHeaterOpenAiHintsService.CommonTankSizes.ToList();
-        posted.OpenAiHintNote = "Confirm or edit the details before continuing.";
+        posted.OpenAiHintNote = _localizer["Confirm or edit the details before continuing."];
         return posted;
     }
 
@@ -451,14 +454,14 @@ public class WaterHeaterSetupController : Controller
         WaterHeaterSetupDraft draft)
     {
         var estimatedAge = draft.InstallYear.HasValue
-            ? $"{Math.Max(0, DateTime.Today.Year - draft.InstallYear.Value)} years"
+            ? _localizer.T("{0} years", Math.Max(0, DateTime.Today.Year - draft.InstallYear.Value))
             : null;
 
         return new WaterHeaterDetailsFoundViewModel
         {
             PropiedadId = propiedad.Id,
             CurrentStep = 3,
-            PageTitle = "Water Heater Details Found",
+            PageTitle = _localizer["Water Heater Details Found"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
             BackUrl = Url.Action(nameof(ScanLabel), new { propiedadId = propiedad.Id }) ?? "/",
@@ -487,7 +490,7 @@ public class WaterHeaterSetupController : Controller
             PropiedadId = propiedad.Id,
             CurrentStep = isManual ? 3 : 4,
             TotalSteps = isManual ? 4 : 5,
-            PageTitle = "Review & Save",
+            PageTitle = _localizer["Review & Save"],
             Address = FormatAddress(propiedad, info),
             ImageUrl = "/welcome-house.png",
             BackUrl = draft.EntryMode == "scan"
@@ -629,14 +632,14 @@ public class WaterHeaterSetupController : Controller
     {
         var brandModel = string.Join(" ", new[] { record.Brand, record.Model }.Where(s => !string.IsNullOrWhiteSpace(s)));
         var description = string.IsNullOrWhiteSpace(brandModel)
-            ? $"{WaterHeaterOpenAiHintsService.HeaterTypeLabel(record.HeaterType)} water heater added to your home."
-            : $"{brandModel.Trim()} added to your home.";
+            ? _localizer.T("{0} water heater added to your home.", WaterHeaterOpenAiHintsService.HeaterTypeLabel(record.HeaterType))
+            : _localizer.T("{0} added to your home.", brandModel.Trim());
 
         _db.PropiedadHistorial.Add(new PropiedadHistorial
         {
             PropiedadId = propiedad.Id,
             RecordType = "System",
-            Title = "Water heater added",
+            Title = _localizer["Water heater added"],
             Description = description,
             CompletionDate = DateTime.UtcNow,
             Source = "User",

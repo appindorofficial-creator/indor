@@ -9,7 +9,7 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <div class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Clients" class="rl-back-link"><i class="fas fa-chevron-left"></i> Clients</a>
+        <a asp-controller="Realtor" asp-action="Clients" class="rl-back-link"><i class="fas fa-chevron-left"></i> @L["Clients"]</a>
         <h1 class="rl-page-title">@Model.FullName</h1>
         <p class="rl-page-subtitle">@Model.ClientRole client profile</p>
     </div>
@@ -34,28 +34,28 @@
             @if (!string.IsNullOrWhiteSpace(Model.Email))
             {
                 <div class="rl-client-detail-meta--full">
-                    <span>Email</span>
+                    <span>@L["Email"]</span>
                     <strong>@Model.Email</strong>
                 </div>
             }
             @if (!string.IsNullOrWhiteSpace(Model.Phone))
             {
                 <div class="rl-client-detail-meta--full">
-                    <span>Phone</span>
+                    <span>@L["Phone"]</span>
                     <strong>@Model.Phone</strong>
                 </div>
             }
             @if (!string.IsNullOrWhiteSpace(Model.PropertyAddress))
             {
                 <div class="rl-client-detail-meta--full">
-                    <span>Property</span>
+                    <span>@L["Property"]</span>
                     <strong>@Model.PropertyAddress</strong>
                 </div>
             }
-            <div><span>Connected</span><strong>@Model.ConnectedLabel.Replace("Connected ", "")</strong></div>
-            <div><span>Last active</span><strong>@Model.LastActiveLabel</strong></div>
-            <div><span>Files</span><strong>@Model.FilesCount</strong></div>
-            <div><span>Quotes</span><strong>@Model.QuotesCount</strong></div>
+            <div><span>@L["Connected"]</span><strong>@Model.ConnectedLabel.Replace("Connected ", "")</strong></div>
+            <div><span>@L["Last active"]</span><strong>@Model.LastActiveLabel</strong></div>
+            <div><span>@L["Files"]</span><strong>@Model.FilesCount</strong></div>
+            <div><span>@L["Quotes"]</span><strong>@Model.QuotesCount</strong></div>
         </div>
     </div>
 
@@ -73,11 +73,11 @@
 
     <section class="rl-dash-section">
         <div class="rl-dash-section-head">
-            <h2>Property Files</h2>
+            <h2>@L["Property Files"]</h2>
         </div>
         @if (Model.Files.Count == 0)
         {
-            <div class="rl-dash-empty">No property files yet. Create one to start organizing inspections, quotes, and documents.</div>
+            <div class="rl-dash-empty">@L["No property files yet. Create one to start organizing inspections, quotes, and documents."]</div>
         }
         else
         {
@@ -109,7 +109,7 @@
     {
         <section class="rl-dash-section">
             <div class="rl-dash-section-head">
-                <h2>Quotes</h2>
+                <h2>@L["Quotes"]</h2>
             </div>
             @foreach (var quote in Model.Quotes)
             {
@@ -119,7 +119,7 @@
                         <span class="rl-premium-muted">@quote.ServiceType · @quote.QuoteCode</span>
                     </div>
                     <span class="rl-status-pill rl-status-pill--@quote.StatusCss">@quote.StatusLabel</span>
-                    <a href="@quote.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">View</a>
+                    <a href="@quote.ActionUrl" class="rl-btn-outline rl-btn-outline--sm">@L["View"]</a>
                 </article>
             }
         </section>

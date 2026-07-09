@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProAddCustomerPreferencesViewModel
 @{
-    ViewData["Title"] = "Preferences & Notes - INDOR PRO";
+    ViewData["Title"] = L["Preferences & Notes - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "customers";
     var sources = new[] { ("INDOR Lead", "fa-bullseye"), ("Manual Entry", "fa-pen"), ("Referral", "fa-user-group"), ("Realtor", "fa-building") };
@@ -14,7 +14,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Preferences &amp; Notes</h1>
+            <h1>@L["Preferences &amp; Notes"]</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -24,9 +24,8 @@
         @Html.AntiForgeryToken()
 
         <section class="prv-pro-add-customer-section">
-            <h3>Communication Preferences</h3>
-            <label class="prv-pro-form-label">Estimate Delivery
-                <div class="prv-pro-segmented">
+            <h3>@L["Communication Preferences"]</h3>
+            <label class="prv-pro-form-label">@L["Estimate Delivery"]<div class="prv-pro-segmented">
                     @foreach (var opt in new[] { "Email", "SMS", "Both" })
                     {
                         <label class="@(Model.EstimateDeliveryPref == opt ? "is-selected" : "")">
@@ -35,8 +34,7 @@
                     }
                 </div>
             </label>
-            <label class="prv-pro-form-label">Invoice Delivery
-                <div class="prv-pro-segmented">
+            <label class="prv-pro-form-label">@L["Invoice Delivery"]<div class="prv-pro-segmented">
                     @foreach (var opt in new[] { "Email", "SMS", "Both" })
                     {
                         <label class="@(Model.InvoiceDeliveryPref == opt ? "is-selected" : "")">
@@ -45,8 +43,7 @@
                     }
                 </div>
             </label>
-            <label class="prv-pro-form-label">Language
-                <div class="prv-pro-segmented">
+            <label class="prv-pro-form-label">@L["Language"]<div class="prv-pro-segmented">
                     @foreach (var opt in new[] { "English", "Spanish" })
                     {
                         <label class="@(Model.PreferredLanguage == opt ? "is-selected" : "")">
@@ -58,7 +55,7 @@
         </section>
 
         <section class="prv-pro-add-customer-section">
-            <h3>Customer Source</h3>
+            <h3>@L["Customer Source"]</h3>
             <div class="prv-pro-customer-type-grid prv-pro-customer-type-grid--4">
                 @foreach (var (source, icon) in sources)
                 {
@@ -72,7 +69,7 @@
         </section>
 
         <section class="prv-pro-add-customer-section">
-            <h3>Tags</h3>
+            <h3>@L["Tags"]</h3>
             <div class="prv-pro-tag-pills">
                 @foreach (var tag in tagOptions)
                 {
@@ -84,22 +81,21 @@
             </div>
         </section>
 
-        <label class="prv-pro-form-label">Internal Notes
-            <textarea name="InternalNotes" rows="4" maxlength="500" placeholder="Preferences, follow-up notes...">@Model.InternalNotes</textarea>
+        <label class="prv-pro-form-label">@L["Internal Notes"]<textarea name="InternalNotes" rows="4" maxlength="500" placeholder="@L["Preferences, follow-up notes..."]">@Model.InternalNotes</textarea>
         </label>
 
         <label class="prv-pro-create-toggle">
-            <div><i class="fas fa-link"></i><div><strong>Send INDOR invite link</strong></div></div>
+            <div><i class="fas fa-link"></i><div><strong>@L["Send INDOR invite link"]</strong></div></div>
             <input type="checkbox" name="SendIndorInvite" value="true" @(Model.SendIndorInvite ? "checked" : "") />
         </label>
         <label class="prv-pro-create-toggle">
-            <div><i class="fas fa-bell"></i><div><strong>Allow service updates</strong></div></div>
+            <div><i class="fas fa-bell"></i><div><strong>@L["Allow service updates"]</strong></div></div>
             <input type="checkbox" name="AllowServiceUpdates" value="true" @(Model.AllowServiceUpdates ? "checked" : "") />
         </label>
 
         <div class="prv-pro-add-customer-actions">
-            <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+            <a asp-controller="Proveedor" asp-action="AddCustomerProperty" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>
 </div>

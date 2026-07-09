@@ -10,4 +10,7 @@ public class ApplicationUser : IdentityUser
     public DateTime FechaRegistro { get; set; } = DateTime.Now;
     public string? RolUsuario { get; set; }
     public string? FotoUrl { get; set; }
+
+    /// <summary>UI language preference: en-US or es-US.</summary>
+    public string? PreferredUiCulture { get; set; }
 }

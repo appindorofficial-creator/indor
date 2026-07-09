@@ -156,7 +156,7 @@ public partial class ProveedorController
 
         if (isDraft)
         {
-            TempData["NetworkToast"] = "Invite saved as draft.";
+            TempData["NetworkToast"] = localizer["Invite saved as draft."];
             return RedirectToAction(nameof(SubcontractorProfile), new { id = input.SubcontractorId });
         }
 

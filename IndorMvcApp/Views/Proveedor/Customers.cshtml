@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCustomersPageViewModel
 @{
-    ViewData["Title"] = "Customers - INDOR PRO";
+    ViewData["Title"] = L["Customers - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "customers";
     var tabs = new[] {
@@ -25,33 +25,31 @@
 <div class="prv-pro-shell prv-pro-shell--customers prv-pro-shell--customers-v2">
     <div class="prv-pro-portal-page-hero">
         <div class="prv-pro-jobs-hero-top">
-            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="INDOR PRO home">
+            <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-brand prv-pro-brand--link prv-pro-brand--hero" aria-label="@L["INDOR PRO home"]">
                 <i class="fas fa-house" aria-hidden="true"></i>
-                <span class="prv-pro-brand-indor">INDOR</span>
-                <span class="prv-pro-brand-pro">PRO</span>
+                <span class="prv-pro-brand-indor">@L["INDOR"]</span>
+                <span class="prv-pro-brand-pro">@L["PRO"]</span>
             </a>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-pro-jobs-hero-header">
             <div class="prv-pro-jobs-hero-title-row">
-                <h1>Customers</h1>
-                <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-jobs-create-btn" aria-label="Add customer">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Add Customer
-                </a>
+                <h1>@L["Customers"]</h1>
+                <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-jobs-create-btn" aria-label="@L["Add customer"]">
+                    <i class="fas fa-plus" aria-hidden="true"></i> @L["Add Customer"]</a>
             </div>
-            <p>Manage homeowners, properties, and connected home records.</p>
+            <p>@L["Manage homeowners, properties, and connected home records."]</p>
         </div>
 
         <form method="get" asp-controller="Proveedor" asp-action="Customers" class="prv-pro-jobs-hero-search">
             <div class="prv-pro-jobs-search-row">
                 <div class="prv-pro-search-wrap">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search customers, properties, phone, address..." />
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search customers, properties, phone, address..."]" />
                 </div>
                 <div class="prv-pro-filter-wrap">
                     <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvCustomersFilterBtn" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-sliders"></i> Filter
-                    </button>
+                        <i class="fas fa-sliders"></i> @L["Filter"]</button>
                     <div class="prv-pro-filter-menu" id="prvCustomersFilterMenu" role="menu" hidden>
                         @foreach (var (id, label) in tabs)
                         {
@@ -105,11 +103,10 @@
         {
             <div class="prv-pro-customers-empty">
                 <img src="~/images/customers-empty.png" alt="" class="prv-pro-customers-empty-art" asp-append-version="true" />
-                <h2>No customers yet</h2>
-                <p>When you add customers, they'll appear here along with their properties, connection status, and recent activity.</p>
+                <h2>@L["No customers yet"]</h2>
+                <p>@L["When you add customers, they'll appear here along with their properties, connection status, and recent activity."]</p>
                 <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-customers-empty-btn">
-                    <i class="fas fa-plus" aria-hidden="true"></i> Add Your First Customer
-                </a>
+                    <i class="fas fa-plus" aria-hidden="true"></i> @L["Add Your First Customer"]</a>
             </div>
         }
         else
@@ -117,7 +114,7 @@
             @foreach (var customer in Model.Customers)
             {
                 <article class="prv-pro-customer-card">
-                    <button type="button" class="prv-pro-job-card-menu" aria-label="More options"><i class="fas fa-ellipsis-vertical"></i></button>
+                    <button type="button" class="prv-pro-job-card-menu" aria-label="@L["More options"]"><i class="fas fa-ellipsis-vertical"></i></button>
 
                     <div class="prv-pro-customer-card-top">
                         <div class="prv-pro-customer-card-avatar"><i class="fas fa-user"></i></div>
@@ -133,11 +130,11 @@
                             <div class="prv-pro-customer-indicators">
                                 @if (customer.IsPropertyVerified)
                                 {
-                                    <span><i class="fas fa-circle-check"></i> Property verified</span>
+                                    <span><i class="fas fa-circle-check"></i> @L["Property verified"]</span>
                                 }
                                 @if (customer.IsAppConnected)
                                 {
-                                    <span><i class="fas fa-mobile-screen"></i> App connected</span>
+                                    <span><i class="fas fa-mobile-screen"></i> @L["App connected"]</span>
                                 }
                                 <span><i class="fas fa-house"></i> @customer.PropertiesCount propert@(customer.PropertiesCount == 1 ? "y" : "ies")</span>
                             </div>
@@ -163,14 +160,14 @@
                                 }
                             </div>
                             <div class="prv-pro-job-quick-links">
-                                <span><i class="fas fa-briefcase"></i> Jobs</span>
-                                <span><i class="fas fa-message"></i> Messages</span>
-                                <span><i class="fas fa-house"></i> Property</span>
+                                <span><i class="fas fa-briefcase"></i> @L["Jobs"]</span>
+                                <span><i class="fas fa-message"></i> @L["Messages"]</span>
+                                <span><i class="fas fa-house"></i> @L["Property"]</span>
                                 @if (customer.ShowPhotosLink)
                                 {
-                                    <span><i class="fas fa-camera"></i> Photos</span>
+                                    <span><i class="fas fa-camera"></i> @L["Photos"]</span>
                                 }
-                                <span><i class="fas fa-clipboard-list"></i> House Facts</span>
+                                <span><i class="fas fa-clipboard-list"></i> @L["House Facts"]</span>
                             </div>
                         </div>
                     }
@@ -198,8 +195,8 @@
         <section class="prv-pro-smart-suggestions prv-pro-connection-insights">
             <div class="prv-pro-panel-head">
                 <div>
-                    <h2><i class="fas fa-wand-magic-sparkles"></i> Connection Insights</h2>
-                    <p>Grow customer engagement and home record quality.</p>
+                    <h2><i class="fas fa-wand-magic-sparkles"></i> @L["Connection Insights"]</h2>
+                    <p>@L["Grow customer engagement and home record quality."]</p>
                 </div>
             </div>
             <div class="prv-pro-smart-scroll">
@@ -214,7 +211,7 @@
         </section>
     }
 
-    <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-fab" aria-label="Add customer"><i class="fas fa-plus"></i></a>
+    <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-fab" aria-label="@L["Add customer"]"><i class="fas fa-plus"></i></a>
 </div>
 
 @section Scripts {

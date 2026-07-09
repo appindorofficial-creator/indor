@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateJobDetailsViewModel
 @{
-    ViewData["Title"] = "Create Job - INDOR PRO";
+    ViewData["Title"] = L["Create Job - INDOR PRO"];
     Layout = "_ProviderProLayout";
     var selectedCustomer = Model.Customers.FirstOrDefault(c => c.Id == Model.ClienteId) ?? Model.Customers.FirstOrDefault();
 }
@@ -20,21 +20,20 @@
         <input type="hidden" name="Title" value="@Model.Title" />
 
         <section class="prv-pro-wizard-card">
-            <h2>Who is this job for?</h2>
-            <p>Choose an existing customer from your list or add a new one to get started.</p>
+            <h2>@L["Who is this job for?"]</h2>
+            <p>@L["Choose an existing customer from your list or add a new one to get started."]</p>
 
             <div class="prv-pro-wizard-search">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="text" id="createJobCustomerSearch" class="prv-pro-search-input" placeholder="Search customer, property, or phone" autocomplete="off" inputmode="search" enterkeyhint="search" role="searchbox" />
+                <input type="text" id="createJobCustomerSearch" class="prv-pro-search-input" placeholder="@L["Search customer, property, or phone"]" autocomplete="off" inputmode="search" enterkeyhint="search" role="searchbox" />
             </div>
 
             <a asp-controller="Proveedor" asp-action="AddCustomer" class="prv-pro-wizard-link">
-                <i class="fas fa-plus"></i> Add new customer
-            </a>
+                <i class="fas fa-plus"></i> @L["Add new customer"]</a>
 
             @if (Model.Customers.Count > 0)
             {
-                <div class="prv-pro-customer-pick-list" role="radiogroup" aria-label="Customer">
+                <div class="prv-pro-customer-pick-list" role="radiogroup" aria-label="@L["Customer"]">
                     @foreach (var customer in Model.Customers)
                     {
                         var isSelected = customer.Id == (Model.ClienteId ?? selectedCustomer?.Id);
@@ -62,7 +61,7 @@
             {
                 <label class="prv-pro-form-label">
                     Customer name
-                    <input type="text" name="CustomerName" id="createJobCustomerName" value="@Model.CustomerName" placeholder="Customer name" required />
+                    <input type="text" name="CustomerName" id="createJobCustomerName" value="@Model.CustomerName" placeholder="@L["Customer name"]" required />
                 </label>
             }
 
@@ -70,7 +69,7 @@
                 Property address <span class="prv-pro-required">*</span>
                 <div class="prv-pro-form-input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input type="text" name="Address" id="createJobAddress" value="@(Model.Address ?? selectedCustomer?.Address)" placeholder="123 Maple St, Austin, TX 78704" required />
+                    <input type="text" name="Address" id="createJobAddress" value="@(Model.Address ?? selectedCustomer?.Address)" placeholder="@L["123 Maple St, Austin, TX 78704"]" required />
                 </div>
             </label>
         </section>
@@ -92,8 +91,8 @@
         </section>
 
         <div class="prv-pro-wizard-actions">
-            <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Continue</button>
+            <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Continue"]</button>
         </div>
     </form>
 </div>

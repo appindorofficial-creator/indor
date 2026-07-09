@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ScheduleMicroservicioViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Schedule service - INDOR";
+    ViewData["Title"] = L["Schedule service - INDOR"];
     Layout = null;
     var scheduledDateValue = Model.FechaProgramada.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 }<!DOCTYPE html>
@@ -85,7 +85,7 @@
 <body>
     <div class="page-container">
         <div class="top-bar">
-            <a asp-controller="Home" asp-action="Index" class="back-btn" aria-label="Back">
+            <a asp-controller="Home" asp-action="Index" class="back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
             <img src="~/logoindor.png" alt="Indor" class="smart-home-logo" />
@@ -107,7 +107,7 @@
             <p class="hint">
                 @if (Model.HasExistingSchedule)
                 {
-                    <text>You already have this service scheduled. Update the date below if needed.</text>
+                    <text>@L["You already have this service scheduled. Update the date below if needed."]</text>
                 }
                 else
                 {
@@ -147,7 +147,7 @@
 
                 <label asp-for="Notas" class="input-label"></label>
                 <textarea asp-for="Notas" class="form-textarea"
-                          placeholder="Optional notes (e.g. replace HVAC filter, 16x25x1)"></textarea>
+                          placeholder="@L["Optional notes (e.g. replace HVAC filter, 16x25x1)"]"></textarea>
 
                 <button type="submit" class="btn-primary">
                     <i class="fas fa-check"></i>

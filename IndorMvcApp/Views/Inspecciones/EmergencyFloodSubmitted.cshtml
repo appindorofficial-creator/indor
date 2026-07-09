@@ -1,7 +1,7 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyFloodSubmittedViewModel
+@model IndorMvcApp.ViewModels.EmergencyFloodSubmittedViewModel
 @{
-    ViewData["Title"] = "Request Confirmed - INDOR";
-    ViewData["WizardTitle"] = "Request Confirmed";
+    ViewData["Title"] = L["Request Confirmed - INDOR"];
+    ViewData["WizardTitle"] = L["Request Confirmed"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
@@ -9,47 +9,47 @@
 </div>
 
     <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading">Your flood emergency request has been sent</h1>
-    <p class="page-lead">We've received your details and are finding the right provider now.</p>
+    <h1 class="page-heading">@L["Your flood emergency request has been sent"]</h1>
+    <p class="page-lead">@L["We've received your details and are finding the right provider now."]</p>
 
     <div class="summary-card">
         <div class="arrival-badge">
             <i class="fas fa-clock"></i>
-            <div class="label">Estimated arrival</div>
+            <div class="label">@L["Estimated arrival"]</div>
             <div class="value">@Model.TiempoLlegadaRango</div>
         </div>
 
         <div class="summary-row">
             <i class="fas fa-water"></i>
-            <div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-house"></i>
-            <div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-location-dot"></i>
-            <div style="flex:1;"><div class="summary-label">Area</div><div class="summary-value">@Model.AreaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Area"]</div><div class="summary-value">@Model.AreaResumen</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-droplet"></i>
-            <div style="flex:1;"><div class="summary-label">Water source</div><div class="summary-value">@Model.CausaAguaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Water source"]</div><div class="summary-value">@Model.CausaAguaResumen</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-faucet-drip"></i>
-            <div style="flex:1;"><div class="summary-label">Shutoff status</div><div class="summary-value">@Model.PuedeCerrarAguaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Shutoff status"]</div><div class="summary-value">@Model.PuedeCerrarAguaResumen</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-magnifying-glass"></i>
-            <div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
         </div>
     </div>
 
     <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <div>Keep children and pets away from standing water. If water reaches electrical outlets, avoid the area and wait for professional help.</div>
+        <div>@L["Keep children and pets away from standing water. If water reaches electrical outlets, avoid the area and wait for professional help."]</div>
     </div>
 
-    <a asp-action="EmergencyFloodSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">View request <i class="fas fa-chevron-right"></i></a>
-    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-outline"><i class="fas fa-calendar"></i> Go to Schedule</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to My Home</a>
+    <a asp-action="EmergencyFloodSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">@L["View request"] <i class="fas fa-chevron-right"></i></a>
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-outline"><i class="fas fa-calendar"></i> @L["Go to Schedule"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> @L["Go to My Home"]</a>

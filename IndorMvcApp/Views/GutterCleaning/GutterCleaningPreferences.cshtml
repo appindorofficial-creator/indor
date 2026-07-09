@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.GutterCleaningPreferencesViewModel
 @{
-    ViewData["Title"] = "Condition & service preferences - INDOR";
+    ViewData["Title"] = L["Condition & service preferences - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("GutterCleaningSetup", "GutterCleaning", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -9,7 +9,7 @@
 
 
 <h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@Model.PageTitle</h1>
-    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">Condition & service preferences</span></p>
+    <p class="page-lead" style="margin-bottom:16px;"><span class="tagline">@L["Condition & service preferences"]</span></p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -22,44 +22,44 @@
         <input type="hidden" asp-for="PreferenciaRecordatorio" id="PreferenciaRecordatorio" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-eye"></i><span>What are you seeing?</span></div>
+            <div class="field-head"><i class="fas fa-eye"></i><span>@L["What are you seeing?"]</span></div>
             <div class="issue-grid">
-                <button type="button" class="issue-card" data-issue="LeavesDebris"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-leaf main"></i><span class="label">Leaves / debris</span></button>
-                <button type="button" class="issue-card" data-issue="OverflowingWater"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-water main"></i><span class="label">Overflowing water</span></button>
-                <button type="button" class="issue-card" data-issue="PlantsGrowing"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-seedling main"></i><span class="label">Plants growing</span></button>
-                <button type="button" class="issue-card" data-issue="SaggingSections"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">Sagging sections</span></button>
-                <button type="button" class="issue-card" data-issue="DownspoutClogged"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-faucet main"></i><span class="label">Downspout clogged</span></button>
-                <button type="button" class="issue-card" data-issue="NoVisibleIssues"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">No visible issues</span></button>
+                <button type="button" class="issue-card" data-issue="LeavesDebris"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-leaf main"></i><span class="label">@L["Leaves / debris"]</span></button>
+                <button type="button" class="issue-card" data-issue="OverflowingWater"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-water main"></i><span class="label">@L["Overflowing water"]</span></button>
+                <button type="button" class="issue-card" data-issue="PlantsGrowing"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-seedling main"></i><span class="label">@L["Plants growing"]</span></button>
+                <button type="button" class="issue-card" data-issue="SaggingSections"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-grip-lines main"></i><span class="label">@L["Sagging sections"]</span></button>
+                <button type="button" class="issue-card" data-issue="DownspoutClogged"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-faucet main"></i><span class="label">@L["Downspout clogged"]</span></button>
+                <button type="button" class="issue-card" data-issue="NoVisibleIssues"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-shield-halved main"></i><span class="label">@L["No visible issues"]</span></button>
             </div>
             <span asp-validation-for="ProblemasSeleccionados" class="text-danger"></span>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-location-dot"></i><span>Any problem areas?</span></div>
+            <div class="field-head"><i class="fas fa-location-dot"></i><span>@L["Any problem areas?"]</span></div>
             <div class="area-row">
-                <button type="button" class="area-pill" data-area="FrontOnly"><i class="fas fa-house"></i> Front only</button>
-                <button type="button" class="area-pill" data-area="BackOnly"><i class="fas fa-house"></i> Back only</button>
-                <button type="button" class="area-pill" data-area="WholeHouse"><i class="fas fa-house"></i> Whole house</button>
-                <button type="button" class="area-pill" data-area="OneSideOnly"><i class="fas fa-house"></i> One side only</button>
-                <button type="button" class="area-pill" data-area="NotSure"><i class="fas fa-circle-question"></i> Not sure</button>
+                <button type="button" class="area-pill" data-area="FrontOnly"><i class="fas fa-house"></i> @L["Front only"]</button>
+                <button type="button" class="area-pill" data-area="BackOnly"><i class="fas fa-house"></i> @L["Back only"]</button>
+                <button type="button" class="area-pill" data-area="WholeHouse"><i class="fas fa-house"></i> @L["Whole house"]</button>
+                <button type="button" class="area-pill" data-area="OneSideOnly"><i class="fas fa-house"></i> @L["One side only"]</button>
+                <button type="button" class="area-pill" data-area="NotSure"><i class="fas fa-circle-question"></i> @L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-hand-pointer"></i><span>What do you want today?</span></div>
+            <div class="field-head"><i class="fas fa-hand-pointer"></i><span>@L["What do you want today?"]</span></div>
             <div class="goal-grid">
-                <button type="button" class="goal-card" data-goal="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">Reminder only</span><span class="sub">Remind me when it's time</span></button>
-                <button type="button" class="goal-card" data-goal="CleaningEstimate"><i class="fas fa-file-invoice-dollar main"></i><span class="label">Cleaning estimate</span><span class="sub">Get a price estimate first</span></button>
-                <button type="button" class="goal-card" data-goal="ScheduleService"><i class="fas fa-calendar main"></i><span class="label">Schedule service</span><span class="sub">Book a pro to handle it</span></button>
+                <button type="button" class="goal-card" data-goal="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">@L["Reminder only"]</span><span class="sub">@L["Remind me when it's time"]</span></button>
+                <button type="button" class="goal-card" data-goal="CleaningEstimate"><i class="fas fa-file-invoice-dollar main"></i><span class="label">@L["Cleaning estimate"]</span><span class="sub">@L["Get a price estimate first"]</span></button>
+                <button type="button" class="goal-card" data-goal="ScheduleService"><i class="fas fa-calendar main"></i><span class="label">@L["Schedule service"]</span><span class="sub">@L["Book a pro to handle it"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-camera"></i><span>Add photos (optional)</span></div>
+            <div class="field-head"><i class="fas fa-camera"></i><span>@L["Add photos (optional)"]</span></div>
             <label class="upload-drop" for="photoInput">
                 <i class="fas fa-camera"></i>
-                <strong>Help us see clogged areas, overflow, or sagging gutters</strong>
-                <span>Tap to upload photos</span>
+                <strong>@L["Help us see clogged areas, overflow, or sagging gutters"]</strong>
+                <span>@L["Tap to upload photos"]</span>
             </label>
             <input type="file" name="files" id="photoInput" accept=".jpg,.jpeg,.png" multiple style="display:none;" />
             @if (Model.ArchivosExistentes.Count > 0)
@@ -74,17 +74,17 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-bell"></i><span>Reminder preference</span></div>
+            <div class="field-head"><i class="fas fa-bell"></i><span>@L["Reminder preference"]</span></div>
             <div class="reminder-grid">
                 <button type="button" class="reminder-card" data-reminder="SpringFall">
                     <i class="fas fa-leaf main"></i>
-                    <span class="label">Spring & Fall</span>
-                    <span class="sub">Twice a year</span>
+                    <span class="label">@L["Spring & Fall"]</span>
+                    <span class="sub">@L["Twice a year"]</span>
                 </button>
                 <button type="button" class="reminder-card" data-reminder="CustomDate">
                     <i class="fas fa-calendar-check main"></i>
-                    <span class="label">Custom date</span>
-                    <span class="sub">Choose your date</span>
+                    <span class="label">@L["Custom date"]</span>
+                    <span class="sub">@L["Choose your date"]</span>
                 </button>
             </div>
             <div id="customDateWrap" style="margin-top:10px;display:none;">
@@ -94,8 +94,8 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
-            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
+            <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">

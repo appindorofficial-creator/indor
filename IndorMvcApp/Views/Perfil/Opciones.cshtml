@@ -1,7 +1,8 @@
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Profile Options";
-    ViewData["Subtitulo"] = "Manage your account details and preferences.";
+    ViewData["Title"] = L["Profile Options"];
+    ViewData["Subtitulo"] = L["Manage your account details and preferences."];
+    ViewData["LanguageSelectorVariant"] = "card";
     var moreProfile = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
         ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
     var usr = (IndorMvcApp.Models.ApplicationUser?)ViewBag.UsuarioActual;
@@ -14,14 +15,25 @@
 }
 @await Html.PartialAsync("_MoreProfileHero", moreProfile)
 
+@if (TempData["LanguageUpdated"] as bool? == true)
+{
+    <div class="pf-card" style="margin-bottom:12px;border-color:#BFDBFE;background:#EFF6FF;color:#1D4ED8;">
+        @L["Language updated."]
+    </div>
+}
+
+<div class="pf-card" style="margin-bottom:16px;">
+    @await Html.PartialAsync("_LanguageSelector")
+</div>
+
 @if (!moreProfile.IsProfileComplete)
 {
 <div class="pf-cta-card">
     <div class="cta-icon"><i class="fas fa-clipboard-check"></i></div>
     <div>
-        <h4>Complete your profile</h4>
-        <p>Add a few more details to personalize your experience and get better recommendations.</p>
-        <a asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" class="pf-btn" style="display:inline-flex;">Edit profile</a>
+        <h4>@L["Complete your profile"]</h4>
+        <p>@L["Add a few more details to personalize your experience and get better recommendations."]</p>
+        <a asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" class="pf-btn" style="display:inline-flex;">@L["Edit profile"]</a>
     </div>
 </div>
 }
@@ -29,124 +41,122 @@
 <nav class="pf-settings-list">
     <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" asp-fragment="personal">
         <span class="si-icon"><i class="fas fa-user"></i></span>
-        <span class="si-text"><strong>Personal Information</strong><small>Update your name, address, and personal details.</small></span>
+        <span class="si-text"><strong>@L["Personal Information"]</strong><small>@L["Update your name, address, and personal details."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" asp-controller="Perfil" asp-action="EditarPerfil" asp-route-from="opciones" asp-fragment="photo">
         <span class="si-icon"><i class="fas fa-camera"></i></span>
-        <span class="si-text"><strong>Profile Photo</strong><small>Change your profile picture.</small></span>
+        <span class="si-text"><strong>@L["Profile Photo"]</strong><small>@L["Change your profile picture."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" href="#contact">
         <span class="si-icon"><i class="fas fa-phone"></i></span>
-        <span class="si-text"><strong>Phone &amp; Email</strong><small>Manage your contact information.</small></span>
+        <span class="si-text"><strong>@L["Phone & Email"]</strong><small>@L["Manage your contact information."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" href="#password">
         <span class="si-icon"><i class="fas fa-shield-halved"></i></span>
-        <span class="si-text"><strong>Password &amp; Security</strong><small>Update your password and security settings.</small></span>
+        <span class="si-text"><strong>@L["Password & Security"]</strong><small>@L["Update your password and security settings."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" href="#payment">
         <span class="si-icon"><i class="far fa-credit-card"></i></span>
-        <span class="si-text"><strong>Payment Methods</strong><small>View and manage your saved payment methods.</small></span>
+        <span class="si-text"><strong>@L["Payment Methods"]</strong><small>@L["View and manage your saved payment methods."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" href="#notifications" id="notifications">
         <span class="si-icon"><i class="fas fa-bell"></i></span>
-        <span class="si-text"><strong>Notification Preferences</strong><small>Choose what updates and alerts you receive.</small></span>
+        <span class="si-text"><strong>@L["Notification Preferences"]</strong><small>@L["Choose what updates and alerts you receive."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" asp-controller="Account" asp-action="Privacy" asp-route-from="homeowner-profile">
         <span class="si-icon"><i class="fas fa-lock"></i></span>
-        <span class="si-text"><strong>Privacy Policy</strong><small>Review how we collect, use, and protect your data.</small></span>
+        <span class="si-text"><strong>@L["Privacy Policy"]</strong><small>@L["Review how we collect, use, and protect your data."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
     <a class="pf-settings-item" href="#delete-account">
         <span class="si-icon"><i class="fas fa-user-xmark"></i></span>
-        <span class="si-text"><strong>Delete Account</strong><small>Permanently delete your account and associated data.</small></span>
+        <span class="si-text"><strong>@L["Delete Account"]</strong><small>@L["Permanently delete your account and associated data."]</small></span>
         <i class="fas fa-chevron-right" style="color:#9CA3AF;"></i>
     </a>
 </nav>
 
 <div class="pf-card" id="contact">
-    <h3><i class="fas fa-phone"></i> Phone</h3>
+    <h3><i class="fas fa-phone"></i> @L["Phone"]</h3>
     <form class="pf-form" method="post" asp-controller="Perfil" asp-action="ActualizarDatos">
         @Html.AntiForgeryToken()
         <input type="hidden" name="nombre" value="@usr?.Nombre" />
         <input type="hidden" name="apellidos" value="@usr?.Apellidos" />
         <input type="tel" name="telefono" placeholder="5551234567" value="@usr?.Telefono"
                data-phone-input required autocomplete="tel" />
-        <p style="font-size:.78rem;color:#6B7280;">Email: @usr?.Email (managed by your account sign-in)</p>
-        <button type="submit" class="pf-btn"><i class="fas fa-save"></i> Save phone</button>
+        <p style="font-size:.78rem;color:#6B7280;">@L.T("Email: {0} (managed by your account sign-in)", usr?.Email)</p>
+        <button type="submit" class="pf-btn"><i class="fas fa-save"></i> @L["Save phone"]</button>
     </form>
 </div>
 
 <div class="pf-card" id="password">
-    <h3><i class="fas fa-lock"></i> Change password</h3>
+    <h3><i class="fas fa-lock"></i> @L["Change password"]</h3>
     <form class="pf-form" method="post" asp-controller="Perfil" asp-action="CambiarPassword">
         @Html.AntiForgeryToken()
-        <input type="password" name="actual" placeholder="Current password" required autocomplete="current-password" />
-        <input type="password" name="nueva" placeholder="New password" required autocomplete="new-password" />
-        <input type="password" name="confirmar" placeholder="Confirm new password" required autocomplete="new-password" />
-        <button type="submit" class="pf-btn"><i class="fas fa-key"></i> Change password</button>
+        <input type="password" name="actual" placeholder="@L["Current password"]" required autocomplete="current-password" />
+        <input type="password" name="nueva" placeholder="@L["New password"]" required autocomplete="new-password" />
+        <input type="password" name="confirmar" placeholder="@L["Confirm new password"]" required autocomplete="new-password" />
+        <button type="submit" class="pf-btn"><i class="fas fa-key"></i> @L["Change password"]</button>
     </form>
 </div>
 
 <div class="pf-card" id="payment">
-    <h3><i class="fas fa-credit-card"></i> Add payment method</h3>
+    <h3><i class="fas fa-credit-card"></i> @L["Add payment method"]</h3>
     <p style="font-size:.8rem;color:#6B7280;margin:0 0 10px;">
-        <a asp-action="Pagos" style="color:#0066CC;font-weight:600;">View saved methods</a>
+        <a asp-action="Pagos" style="color:#0066CC;font-weight:600;">@L["View saved methods"]</a>
     </p>
     <form class="pf-form" method="post" asp-controller="Perfil" asp-action="AgregarMetodoPago" id="paymentMethodForm" novalidate>
         @Html.AntiForgeryToken()
         <div class="pf-row">
             <select name="tipo" id="paymentTipo">
-                <option value="Card">Card</option>
-                <option value="Bank">Bank</option>
+                <option value="Card">@L["Card"]</option>
+                <option value="Bank">@L["Bank"]</option>
             </select>
-            <input type="text" name="marca" id="paymentMarca" placeholder="Brand (Visa, etc.)" autocomplete="cc-type" />
+            <input type="text" name="marca" id="paymentMarca" placeholder="@L["Brand (Visa, etc.)"]" autocomplete="cc-type" />
         </div>
         <div class="pf-row">
-            <input type="text" name="ultimos4" id="paymentUltimos4" placeholder="Last 4 digits" maxlength="4" inputmode="numeric" pattern="\d{4}" />
-            <input type="text" name="expiracion" id="paymentExpiracion" placeholder="MM/YY" maxlength="5" inputmode="numeric" />
+            <input type="text" name="ultimos4" id="paymentUltimos4" placeholder="@L["Last 4 digits"]" maxlength="4" inputmode="numeric" pattern="\d{4}" />
+            <input type="text" name="expiracion" id="paymentExpiracion" placeholder="@L["MM/YY"]" maxlength="5" inputmode="numeric" />
         </div>
-        <input type="text" name="titular" id="paymentTitular" placeholder="Cardholder name" autocomplete="cc-name" />
+        <input type="text" name="titular" id="paymentTitular" placeholder="@L["Cardholder name"]" autocomplete="cc-name" />
         <label style="font-size:.78rem;color:#475569;">
-            <input type="checkbox" name="predeterminado" value="true" /> Set as default
+            <input type="checkbox" name="predeterminado" value="true" /> @L["Set as default"]
         </label>
-        <button type="submit" class="pf-btn"><i class="fas fa-plus"></i> Add method</button>
+        <button type="submit" class="pf-btn"><i class="fas fa-plus"></i> @L["Add method"]</button>
     </form>
 </div>
 
 <div class="pf-card" id="notifications">
-    <h3><i class="fas fa-bell"></i> Notification preferences</h3>
+    <h3><i class="fas fa-bell"></i> @L["Notification preferences"]</h3>
     <p style="font-size:.85rem;color:#6B7280;line-height:1.45;">
-        Email and push alerts for maintenance, deliveries, and service updates are enabled for your account.
-        Contact <a asp-action="Soporte" style="color:#0066CC;">support</a> to customize channels.
+        @L["Email and push alerts for maintenance, deliveries, and service updates are enabled for your account."]
+        @L["Contact"] <a asp-action="Soporte" style="color:#0066CC;">@L["Support"]</a> @L["to customize channels."]
     </p>
 </div>
 
 <form method="post" asp-controller="Account" asp-action="Logout" style="margin-top:16px;">
     @Html.AntiForgeryToken()
     <button type="submit" class="pf-btn danger" style="width:100%;">
-        <i class="fas fa-right-from-bracket"></i> Sign out
+        <i class="fas fa-right-from-bracket"></i> @L["Sign out"]
     </button>
 </form>
 
 <div class="pf-card" id="delete-account" style="border:1px solid #FCA5A5;margin-top:16px;">
-    <h3 style="color:#B91C1C;"><i class="fas fa-triangle-exclamation"></i> Delete account</h3>
+    <h3 style="color:#B91C1C;"><i class="fas fa-triangle-exclamation"></i> @L["Delete account"]</h3>
     <p style="font-size:.85rem;color:#6B7280;line-height:1.45;margin:0 0 12px;">
-        This permanently deletes your INDOR account along with your homes, requests, documents,
-        and service history. This action cannot be undone. To confirm, type your account email
-        (<strong>@usr?.Email</strong>) below.
+        @L.T("This permanently deletes your INDOR account along with your homes, requests, documents, and service history. This action cannot be undone. To confirm, type your account email ({0}) below.", usr?.Email)
     </p>
     <form class="pf-form" method="post" asp-controller="Perfil" asp-action="EliminarCuenta"
-          onsubmit="return confirm('This will permanently delete your account and all associated data. Continue?');">
+          onsubmit="return confirm('@L["This will permanently delete your account and all associated data. Continue?"]');">
         @Html.AntiForgeryToken()
-        <input type="email" name="confirmEmail" placeholder="Enter your account email" required autocomplete="off" />
+        <input type="email" name="confirmEmail" placeholder="@L["Enter your account email"]" required autocomplete="off" />
         <button type="submit" class="pf-btn danger" style="width:100%;">
-            <i class="fas fa-user-xmark"></i> Permanently delete my account
+            <i class="fas fa-user-xmark"></i> @L["Permanently delete my account"]
         </button>
     </form>
 </div>

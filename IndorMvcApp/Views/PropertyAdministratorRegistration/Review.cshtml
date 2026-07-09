@@ -26,23 +26,23 @@
     </div>
 
     <div class="pa-review-line">
-        <span class="pa-review-line-label"><i class="fas fa-user"></i> Profile</span>
+        <span class="pa-review-line-label"><i class="fas fa-user"></i> @L["Profile"]</span>
         <strong>@s.DisplayName</strong>
     </div>
     <div class="pa-review-line">
-        <span class="pa-review-line-label"><i class="fas fa-briefcase"></i> Portfolio type</span>
+        <span class="pa-review-line-label"><i class="fas fa-briefcase"></i> @L["Portfolio type"]</span>
         <strong>@Model.PortfolioTypeLabel</strong>
     </div>
     <div class="pa-review-line">
-        <span class="pa-review-line-label"><i class="fas fa-house"></i> Properties</span>
+        <span class="pa-review-line-label"><i class="fas fa-house"></i> @L["Properties"]</span>
         <strong>@Model.PropertyCount</strong>
     </div>
     <div class="pa-review-line">
-        <span class="pa-review-line-label"><i class="fas fa-globe"></i> Markets</span>
+        <span class="pa-review-line-label"><i class="fas fa-globe"></i> @L["Markets"]</span>
         <strong>@s.PrimaryMarket</strong>
     </div>
     <div class="pa-review-line">
-        <span class="pa-review-line-label"><i class="fas fa-gear"></i> Management style</span>
+        <span class="pa-review-line-label"><i class="fas fa-gear"></i> @L["Management style"]</span>
         <strong>@Model.ManagementStyleLabel</strong>
     </div>
 </div>
@@ -50,23 +50,23 @@
 <div class="pa-checklist">
     @if (Model.AccountCreated)
     {
-        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Account created</div>
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Account created"]</div>
     }
     @if (Model.PortfolioDetailsAdded)
     {
-        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Portfolio details added</div>
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Portfolio details added"]</div>
     }
     @if (Model.PropertiesAdded)
     {
-        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Properties added</div>
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Properties added"]</div>
     }
     @if (Model.ToolsSelected)
     {
-        <div class="pa-check-item"><i class="fas fa-circle-check"></i> Tools selected</div>
+        <div class="pa-check-item"><i class="fas fa-circle-check"></i> @L["Tools selected"]</div>
     }
 </div>
 
-<a asp-action="InviteTeam" class="pa-action-row pa-action-row--review-invite" aria-label="Invite team members">
+<a asp-action="InviteTeam" class="pa-action-row pa-action-row--review-invite" aria-label="@L["Invite team members"]">
     <span>
         <i class="fas fa-user-plus"></i>
         Invite team members
@@ -93,7 +93,7 @@
                value="true"
                data-pa-required="true"
                data-field-label="INDOR's platform terms" />
-        <span>I agree to <a asp-controller="Account" asp-action="Terms">INDOR's platform terms</a></span>
+        <span>@L["I agree to"] <a asp-controller="Account" asp-action="Terms">@L["INDOR's platform terms"]</a></span>
     </label>
     @if (ViewData.ModelState.TryGetValue("platformTermsAccepted", out var platformTermsState) && platformTermsState.Errors.Count > 0)
     {

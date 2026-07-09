@@ -26,7 +26,7 @@
             }
             else
             {
-                <small>Manage invoices and pending payments</small>
+                <small>@L["Manage invoices and pending payments"]</small>
             }
         </div>
     </header>
@@ -44,10 +44,10 @@
             <i class="fas fa-magnifying-glass"></i>
             <input type="search" name="q" value="@Model.SearchQuery" placeholder="@Model.SearchPlaceholder" />
         </div>
-        <button type="button" class="prv-pro-filter-btn" title="Filters"><i class="fas fa-sliders"></i></button>
+        <button type="button" class="prv-pro-filter-btn" title="@L["Filters"]"><i class="fas fa-sliders"></i></button>
     </form>
 
-    <nav class="prv-pro-leads-filters" aria-label="Invoice filters">
+    <nav class="prv-pro-leads-filters" aria-label="@L["Invoice filters"]">
         @foreach (var (id, label) in tabs)
         {
             <a asp-controller="Proveedor" asp-action="Invoices"
@@ -64,14 +64,14 @@
                 <i class="fas fa-circle-exclamation"></i>
                 <div>
                     <strong>@Model.OverdueTotal.ToString("C0", money)</strong>
-                    <span>Total amount due</span>
+                    <span>@L["Total amount due"]</span>
                 </div>
             </div>
             <div class="prv-pro-invoice-stat prv-pro-invoice-stat--late">
                 <i class="fas fa-calendar-xmark"></i>
                 <div>
                     <strong>@Model.OverdueCount Invoice@(Model.OverdueCount == 1 ? "" : "s") Late</strong>
-                    <span>Past due</span>
+                    <span>@L["Past due"]</span>
                 </div>
             </div>
         </section>
@@ -83,14 +83,14 @@
                 <i class="fas fa-dollar-sign"></i>
                 <div>
                     <strong>@Model.PendingTotal.ToString("C0", money)</strong>
-                    <span>Pending Total</span>
+                    <span>@L["Pending Total"]</span>
                 </div>
             </div>
             <div class="prv-pro-invoice-stat prv-pro-invoice-stat--late">
                 <i class="fas fa-file-invoice"></i>
                 <div>
                     <strong>@Model.PendingCount Invoice@(Model.PendingCount == 1 ? "" : "s")</strong>
-                    <span>Awaiting Payment</span>
+                    <span>@L["Awaiting Payment"]</span>
                 </div>
             </div>
         </section>
@@ -102,21 +102,21 @@
                 <span class="dot dot--paid"></span>
                 <div>
                     <strong>@Model.PaidThisMonth.ToString("C0", money)</strong>
-                    <span>Paid This Month</span>
+                    <span>@L["Paid This Month"]</span>
                 </div>
             </div>
             <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="pending" class="prv-pro-invoice-stat prv-pro-invoice-stat--pending prv-pro-invoice-stat--link">
                 <span class="dot dot--pending"></span>
                 <div>
                     <strong>@Model.PendingTotal.ToString("C0", money)</strong>
-                    <span>Pending</span>
+                    <span>@L["Pending"]</span>
                 </div>
             </a>
             <a asp-controller="Proveedor" asp-action="Invoices" asp-route-tab="overdue" class="prv-pro-invoice-stat prv-pro-invoice-stat--overdue prv-pro-invoice-stat--link">
                 <span class="dot dot--overdue"></span>
                 <div>
                     <strong>@Model.OverdueTotal.ToString("C0", money)</strong>
-                    <span>Overdue</span>
+                    <span>@L["Overdue"]</span>
                 </div>
             </a>
         </section>
@@ -126,7 +126,7 @@
         @if (Model.Invoices.Count == 0)
         {
             <div class="prv-pro-panel">
-                <p class="prv-pro-empty">No invoices in this view yet.</p>
+                <p class="prv-pro-empty">@L["No invoices in this view yet."]</p>
             </div>
         }
         else
@@ -162,7 +162,7 @@
                             </div>
                         </div>
                         <div class="prv-pro-invoice-card-actions">
-                            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@inv.Id" asp-route-from="@fromTab" class="prv-pro-btn prv-pro-btn--ghost">View</a>
+                            <a asp-controller="Proveedor" asp-action="InvoiceDetails" asp-route-id="@inv.Id" asp-route-from="@fromTab" class="prv-pro-btn prv-pro-btn--ghost">@L["View"]</a>
                             @if (inv.ShowReminderAction)
                             {
                                 <a asp-controller="Proveedor" asp-action="SendInvoiceReminder" asp-route-id="@inv.Id" asp-route-from="@fromTab" class="prv-pro-btn prv-pro-btn--ghost">

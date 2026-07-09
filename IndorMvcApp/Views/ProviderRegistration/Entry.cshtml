@@ -4,7 +4,7 @@
     var s = Model.State;
     var selectedPath = string.Equals(s.OnboardingPath, "Apply", StringComparison.OrdinalIgnoreCase) ? "apply" : "pro";
 }
-<div class="prv-wiz-step-label">Step @Model.Step of @Model.TotalSteps</div>
+<div class="prv-wiz-step-label">@L.T("Step {0} of {1}", Model.Step, Model.TotalSteps)</div>
 <div class="ob-head-block">
     <h1>@Model.Title</h1>
     <p>@Model.Subtitle</p>
@@ -16,7 +16,7 @@
 
     <input type="hidden" name="path" id="prvEntryPath" value="@selectedPath" />
 
-    <div class="prv-entry-options" role="radiogroup" aria-label="Choose how you want to get started with INDOR">
+    <div class="prv-entry-options" role="radiogroup" aria-label="@L["Choose how you want to get started with INDOR"]">
         <button type="button"
                 class="prv-wiz-card prv-wiz-card--selectable @(selectedPath == "pro" ? "is-selected" : "")"
                 data-path="pro"
@@ -24,7 +24,7 @@
                 aria-checked="@(selectedPath == "pro" ? "true" : "false")">
             <span class="prv-wiz-card-icon prv-wiz-icon-blue"><i class="fas fa-chart-line"></i></span>
             <span class="prv-wiz-card-body">
-                <strong>Use INDOR Pro</strong>
+                <strong>@L["Use INDOR Pro"]</strong>
                 <small>Run your business with INDOR Pro. Manage clients, jobs, photos, estimates, invoices, reports, and property history in one place.</small>
                 <span class="prv-wiz-badge prv-wiz-badge--green"><i class="fas fa-check"></i> Available now</span>
             </span>
@@ -37,19 +37,19 @@
                 aria-checked="@(selectedPath == "apply" ? "true" : "false")">
             <span class="prv-wiz-card-icon prv-wiz-icon-orange"><i class="fas fa-clipboard-check"></i></span>
             <span class="prv-wiz-card-body">
-                <strong>Apply to Become an INDOR Provider</strong>
-                <small>Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile.</small>
+                <strong>@L["Apply to Become an INDOR Provider"]</strong>
+                <small>@L["Apply to receive INDOR leads and job opportunities, appear in the provider network, and activate your provider profile."]</small>
                 <span class="prv-wiz-badge prv-wiz-badge--orange"><i class="fas fa-shield-halved"></i> Requires verification</span>
             </span>
         </button>
     </div>
 
-    <p class="prv-entry-hint">Tap an option to select it. Both paths are available.</p>
+    <p class="prv-entry-hint">@L["Tap an option to select it. Both paths are available."]</p>
 
     <div class="prv-wiz-info">
         <i class="fas fa-circle-info"></i>
         <div>
-            <strong>Important</strong>
+            <strong>@L["Important"]</strong>
             <p>You can start using INDOR Pro without completing provider activation. To receive INDOR jobs, you will need to submit your business information, verification documents, complete a short category assessment, and schedule an activation call with INDOR.</p>
         </div>
     </div>
@@ -62,14 +62,14 @@
                value="true"
                @(s.TermsAccepted ? "checked" : null)
                data-pa-required="true"
-               data-field-label="Please agree to INDOR's Terms &amp; Conditions." />
-        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-entry">Terms &amp; Conditions</a></span>
+               data-field-label="@L["Please agree to INDOR's Terms &amp; Conditions."]" />
+        <span>I agree to INDOR's <a asp-controller="Account" asp-action="Terms" asp-route-from="provider-entry">@L["Terms & Conditions"]</a></span>
     </label>
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="prvEntryForm" class="ob-btn ob-btn-primary">Continue</button>
-    <button type="submit" form="prvEntryForm" name="action" value="later" class="prv-save-later" formnovalidate>I'll do this later</button>
+    <button type="submit" form="prvEntryForm" class="ob-btn ob-btn-primary">@L["Continue"]</button>
+    <button type="submit" form="prvEntryForm" name="action" value="later" class="prv-save-later" formnovalidate>@L["I'll do this later"]</button>
 </div>
 
 @section Scripts {

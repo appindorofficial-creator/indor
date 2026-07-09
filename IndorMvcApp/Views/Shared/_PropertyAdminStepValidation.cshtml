@@ -1,4 +1,12 @@
 <script>
+    var indorPaMsgs = {
+        agreeTo: @System.Text.Json.JsonSerializer.Serialize(L["Please agree to {0} to continue."]),
+        validEmail: @System.Text.Json.JsonSerializer.Serialize(L["Enter a valid email address (e.g. name@email.com)."]),
+        select: @System.Text.Json.JsonSerializer.Serialize(L["Please select {0}."]),
+        enter: @System.Text.Json.JsonSerializer.Serialize(L["Please enter {0}."]),
+        validPhone: @System.Text.Json.JsonSerializer.Serialize(L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."])
+    };
+
     (function () {
         function isRequired(field) {
             return field.hasAttribute('required') || field.getAttribute('data-pa-required') === 'true';
@@ -22,15 +30,15 @@
         function messageFor(field) {
             var label = labelFor(field);
             if (field.type === 'checkbox') {
-                return 'Please agree to ' + label + ' to continue.';
+                return indorPaMsgs.agreeTo.replace('{0}', label);
             }
             if (isEmailField(field)) {
-                return 'Enter a valid email address (e.g. name@@email.com).';
+                return indorPaMsgs.validEmail;
             }
             if (field.type === 'radio' || field.tagName === 'SELECT') {
-                return 'Please select ' + label + '.';
+                return indorPaMsgs.select.replace('{0}', label);
             }
-            return 'Please enter ' + label + '.';
+            return indorPaMsgs.enter.replace('{0}', label);
         }
 
         var emailFormatRegex = /^[a-zA-Z0-9._%+-]+@@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*\.[a-zA-Z]{2,}$/;
@@ -190,7 +198,7 @@
                 if (!isInvalidPhone(field)) {
                     return;
                 }
-                registerValidationIssue(field, 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).', state);
+                registerValidationIssue(field, indorPaMsgs.validPhone, state);
             });
 
             if (state.firstInvalid) {

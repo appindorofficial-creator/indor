@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.CrawlspaceCheckScheduleViewModel
 @{
-    ViewData["Title"] = "Schedule crawlspace check - INDOR";
+    ViewData["Title"] = L["Schedule crawlspace check - INDOR"];
 var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks", "PestSigns", "Cracks", "PipeLeaks", "DamagedDucts" };
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("CrawlspaceCheckSetup", "CrawlspaceCheck", new { id = Model.SolicitudId });
@@ -10,8 +10,8 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">What should we look for?</h1>
-    <p class="page-lead" style="margin-bottom:16px;">Select any concerns and tell us when you'd like the check.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["What should we look for?"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["Select any concerns and tell us when you'd like the check."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -24,7 +24,7 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
         @if (Model.ConcernOptions.Count > 0)
         {
             <div class="field-card">
-                <div class="field-head"><i class="fas fa-magnifying-glass"></i><span>What should we look for?</span></div>
+                <div class="field-head"><i class="fas fa-magnifying-glass"></i><span>@L["What should we look for?"]</span></div>
                 <div class="concern-grid">
                     @for (var i = 0; i < Model.ConcernOptions.Count; i++)
                     {
@@ -42,36 +42,36 @@ var concernCodes = new[] { "StandingWater", "MustyOdor", "MoldMildew", "AirLeaks
         }
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock"></i><span>Preferred timing</span></div>
+            <div class="field-head"><i class="fas fa-clock"></i><span>@L["Preferred timing"]</span></div>
             <div class="timing-row">
                 <button type="button" class="timing-card" data-timing="AsSoonAsPossible">
                     <span class="radio"></span>
-                    <i class="fas fa-bolt main"></i><span class="label">As soon as possible</span>
+                    <i class="fas fa-bolt main"></i><span class="label">@L["As soon as possible"]</span>
                 </button>
                 <button type="button" class="timing-card" data-timing="ThisMonth">
                     <span class="radio"></span>
-                    <i class="fas fa-calendar main"></i><span class="label">This month</span>
+                    <i class="fas fa-calendar main"></i><span class="label">@L["This month"]</span>
                 </button>
                 <button type="button" class="timing-card" data-timing="YearlyReminder">
                     <span class="radio"></span>
-                    <i class="fas fa-bell main"></i><span class="label">Just a yearly reminder</span>
+                    <i class="fas fa-bell main"></i><span class="label">@L["Just a yearly reminder"]</span>
                 </button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
             <div class="date-picker-card">
-                <div class="field-head" style="margin-bottom:8px;"><i class="fas fa-calendar-day"></i><span>Preferred date</span></div>
-                <p class="sub">Tell us when it works best for you.</p>
+                <div class="field-head" style="margin-bottom:8px;"><i class="fas fa-calendar-day"></i><span>@L["Preferred date"]</span></div>
+                <p class="sub">@L["Tell us when it works best for you."]</p>
                 <input asp-for="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" style="margin-top:10px;" />
                 <span asp-validation-for="FechaPreferida" class="text-danger"></span>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
-            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
+            <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
         </div>
 
         @if (!string.IsNullOrWhiteSpace(Model.TipTexto))

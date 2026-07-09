@@ -1,19 +1,19 @@
 @{
     var step = ViewBag.ProfileFlowStep as int? ?? 1;
 }
-<nav class="prv-flow-stepper" aria-label="Profile setup progress">
+<nav class="prv-flow-stepper" aria-label="@L["Profile setup progress"]">
     <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-flow-stepper-item @(step == 1 ? "is-active" : step > 1 ? "is-done" : "")">
         <span class="prv-flow-stepper-dot">@(step > 1 ? "" : "1")</span>
-        <small>Public profile</small>
+        <small>@L["Public profile"]</small>
     </a>
     <span class="prv-flow-stepper-line @(step > 1 ? "is-done" : "")"></span>
     <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-flow-stepper-item @(step == 2 ? "is-active" : step > 2 ? "is-done" : "")">
         <span class="prv-flow-stepper-dot">@(step > 2 ? "" : "2")</span>
-        <small>Business profile</small>
+        <small>@L["Business profile"]</small>
     </a>
     <span class="prv-flow-stepper-line @(step > 2 ? "is-done" : "")"></span>
     <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-stepper-item @(step == 3 ? "is-active" : "")">
         <span class="prv-flow-stepper-dot">3</span>
-        <small>Documents &amp; verification</small>
+        <small>@L["Documents &amp; verification"]</small>
     </a>
 </nav>

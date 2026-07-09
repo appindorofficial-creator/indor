@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyElectricalContactViewModel
 @{
-    ViewData["Title"] = "Electrical emergency - INDOR";
-    ViewData["WizardTitle"] = "Electrical emergency";
+    ViewData["Title"] = L["Electrical emergency - INDOR"];
+    ViewData["WizardTitle"] = L["Electrical emergency"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyElectricalLocation", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 3;
@@ -9,10 +9,10 @@
 }
 
 
-    <strong style="display:block;margin-bottom:6px;">Electrical emergency</strong>
+    <strong style="display:block;margin-bottom:6px;">@L["Electrical emergency"]</strong>
     
-<h2 class="page-heading">Photos &amp; callback</h2>
-    <p class="page-lead">Add anything that helps us respond faster.</p>
+<h2 class="page-heading">@L["Photos &amp; callback"]</h2>
+    <p class="page-lead">@L["Add anything that helps us respond faster."]</p>
 
     @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
     {
@@ -33,26 +33,26 @@
 
         <div class="dropzone" id="dropzone">
             <i class="fas fa-camera"></i>
-            <p><strong style="color:#0066CC;">Add photo or short video</strong></p>
-            <p style="font-size:0.82rem;color:#64748B;margin-top:4px;">Optional</p>
+            <p><strong style="color:#0066CC;">@L["Add photo or short video"]</strong></p>
+            <p style="font-size:0.82rem;color:#64748B;margin-top:4px;">@L["Optional"]</p>
         </div>
         <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".jpg,.jpeg,.png,.mp4,.mov,.webm,image/*,video/*" />
 
         <div class="action-list">
             <label class="action-item" for="fileInputCamera">
                 <i class="fas fa-camera icon"></i>
-                <span class="action-text">Take photo</span>
+                <span class="action-text">@L["Take photo"]</span>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
             <label class="action-item" for="fileInput">
                 <i class="fas fa-images icon"></i>
-                <span class="action-text">Upload photo</span>
+                <span class="action-text">@L["Upload photo"]</span>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <label class="action-item" for="fileInputVideo">
                 <i class="fas fa-video icon"></i>
-                <span class="action-text">Add short video</span>
+                <span class="action-text">@L["Add short video"]</span>
                 <i class="fas fa-chevron-right chevron"></i>
             </label>
             <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
@@ -65,26 +65,26 @@
                 {
                     <div class="file-item">
                         <span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span>
-                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a>
+                        <a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a>
                     </div>
                 }
             </div>
         }
         <div id="selectedFiles" class="file-list"></div>
 
-        <label asp-for="NotaCorta" class="field-label">Short note for the electrician</label>
-        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="250" placeholder="Breaker trips when AC starts. Smell near panel."></textarea>
+        <label asp-for="NotaCorta" class="field-label">@L["Short note for the electrician"]</label>
+        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="250" placeholder="@L["Breaker trips when AC starts. Smell near panel."]"></textarea>
         <div class="char-count"><span id="charCount">0</span>/250</div>
 
-        <label asp-for="TelefonoContacto" class="field-label">Best callback number</label>
+        <label asp-for="TelefonoContacto" class="field-label">@L["Best callback number"]</label>
         <div class="input-wrap">
             <i class="fas fa-phone"></i>
             <input asp-for="TelefonoContacto" class="form-input" placeholder="(704) 555-0123" required />
         </div>
 
         <div class="toggle-row">
-            <span>Okay to text updates</span>
-            <button type="button" class="toggle @(Model.AceptaTextos == "Yes" ? "on" : "")" id="textToggle" aria-label="Toggle text updates"></button>
+            <span>@L["Okay to text updates"]</span>
+            <button type="button" class="toggle @(Model.AceptaTextos == "Yes" ? "on" : "")" id="textToggle" aria-label="@L["Toggle text updates"]"></button>
         </div>
 
         <div class="tip-box">
@@ -92,8 +92,8 @@
             Photos of the panel, outlet, or affected area can help us prepare.
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="send"><i class="fas fa-paper-plane"></i> Send emergency request</button>
-        <button type="submit" class="btn-outline" name="action" value="skip">Skip and send</button>
+        <button type="submit" class="btn-primary" name="action" value="send"><i class="fas fa-paper-plane"></i> @L["Send emergency request"]</button>
+        <button type="submit" class="btn-outline" name="action" value="skip">@L["Skip and send"]</button>
     </form>
 </div>
 @section Scripts {

@@ -33,7 +33,7 @@
     @if (Model.BestForItems.Count > 0)
     {
         <div class="includes-box">
-            <div class="includes-label">Best for</div>
+            <div class="includes-label">@L["Best for"]</div>
             <div class="bestfor-grid">
                 @foreach (var item in Model.BestForItems)
                 {
@@ -48,7 +48,7 @@
         <div class="preview-box-pw">
             <i class="fas fa-clipboard-list"></i>
             <div>
-                <strong>We'll ask a few quick questions</strong>
+                <strong>@L["We'll ask a few quick questions"]</strong>
                 <p>@Model.PreviewTexto</p>
             </div>
         </div>

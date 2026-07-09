@@ -15,7 +15,8 @@ public partial class ProviderRegistrationController(
     IProviderRegistrationService registration,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    IWebHostEnvironment env) : Controller
+    IWebHostEnvironment env,
+    IIndorLocalizer localizer) : Controller
 {
     private static readonly string[] AllowedDocExtensions = [".pdf", ".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxDocumentBytes = 10_000_000;
@@ -91,7 +92,7 @@ public partial class ProviderRegistrationController(
 
         if (state.SelectedCategoryIds.Count != 1)
         {
-            ModelState.AddModelError(string.Empty, "Choose exactly one provider category.");
+            ModelState.AddModelError(string.Empty, localizer["Choose exactly one provider category."]);
             ViewBag.Categories = await registration.GetCategoriesAsync();
             ViewBag.SelectedIds = state.SelectedCategoryIds;
             return View(StepVm(1, "What type of provider are you?",
@@ -227,7 +228,7 @@ public partial class ProviderRegistrationController(
         state.SelectedServiceIds = serviceIds?.Where(id => !string.IsNullOrWhiteSpace(id)).Distinct(StringComparer.OrdinalIgnoreCase).ToList() ?? [];
         if (state.SelectedServiceIds.Count == 0)
         {
-            ModelState.AddModelError(string.Empty, "Select at least one service.");
+            ModelState.AddModelError(string.Empty, localizer["Select at least one service."]);
             ViewBag.Offerings = await registration.GetServiceOfferingsForTradeAsync();
             ViewBag.SelectedIds = state.SelectedServiceIds;
             ViewBag.IsHvac = state.IsHvacOnly;
@@ -503,7 +504,7 @@ public partial class ProviderRegistrationController(
             string.IsNullOrWhiteSpace(state.PrimaryContact) ||
             string.IsNullOrWhiteSpace(state.Email))
         {
-            ModelState.AddModelError(string.Empty, "Business name, contact name, and email are required.");
+            ModelState.AddModelError(string.Empty, localizer["Business name, contact name, and email are required."]);
             ViewBag.IsPlumbing = state.IsPlumbingOnly;
             ViewBag.IsHvac = state.IsHvacOnly;
             ViewBag.IsHandyman = state.IsHandymanOnly;
@@ -555,7 +556,7 @@ public partial class ProviderRegistrationController(
 
         if (state.IsHvacOnly && !state.BackgroundCheckConsent)
         {
-            ModelState.AddModelError(string.Empty, "Background check consent is required to continue.");
+            ModelState.AddModelError(string.Empty, localizer["Background check consent is required to continue."]);
             ViewBag.IsHvac = true;
             return View(StepVm(3, "Tell us about your HVAC business", "", state, Url.Action(nameof(Services))!));
         }
@@ -870,7 +871,7 @@ public partial class ProviderRegistrationController(
         var state = await registration.GetAsync();
         if (!scopeTradeUnderstood || !scopeStandardsAgreed)
         {
-            ModelState.AddModelError(string.Empty, "You must agree to continue.");
+            ModelState.AddModelError(string.Empty, localizer["You must agree to continue."]);
             ViewBag.Allowed = await registration.GetScopeAllowedAsync();
             ViewBag.Disallowed = await registration.GetScopeDisallowedAsync();
             return View(StepVm(5, "Review your provider scope", "", state, Url.Action(nameof(Exam))));
@@ -1069,7 +1070,7 @@ public partial class ProviderRegistrationController(
 
         if (!await registration.HasRequiredDocumentsAsync())
         {
-            ModelState.AddModelError(string.Empty, "Upload all required documents before continuing.");
+            ModelState.AddModelError(string.Empty, localizer["Upload all required documents before continuing."]);
             ViewBag.DocumentSlots = await registration.GetDocumentSlotsAsync();
             ViewBag.TradeLabel = await registration.GetPrimaryTradeLabelAsync();
             return View(StepVm(5, "Upload required documents", "", state,
@@ -1482,7 +1483,7 @@ public partial class ProviderRegistrationController(
 
         if (file.Length > MaxDocumentBytes)
         {
-            ModelState.AddModelError(string.Empty, "Each file must be 10 MB or less.");
+            ModelState.AddModelError(string.Empty, localizer["Each file must be 10 MB or less."]);
             return;
         }
 
@@ -1520,8 +1521,8 @@ public partial class ProviderRegistrationController(
         new()
         {
             Step = step,
-            Title = title,
-            Subtitle = subtitle,
+            Title = localizer[title],
+            Subtitle = string.IsNullOrEmpty(subtitle) ? string.Empty : localizer[subtitle],
             State = state,
             BackUrl = backUrl,
         };

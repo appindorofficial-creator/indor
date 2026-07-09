@@ -1,9 +1,10 @@
-﻿@model IEnumerable<IndorMvcApp.Models.Propiedad>
+﻿@using IndorMvcApp.Localization
+@model IEnumerable<IndorMvcApp.Models.Propiedad>
 @using System.Text.Json
 @using IndorMvcApp.Services
 @using IndorMvcApp.ViewModels
 @{
-    ViewData["Title"] = "Home - InDor";
+    ViewData["Title"] = L["Home - InDor"];
     Layout = null;
 
     bool IsPrePurchaseInspection(string? name) =>
@@ -71,8 +72,12 @@
     string[] SplitIncludes(string? incluye) => string.IsNullOrWhiteSpace(incluye)
         ? Array.Empty<string>()
         : incluye.Split('|', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
-    string BedsLabel(int? beds) => beds.HasValue ? $"{beds} bed{(beds.Value == 1 ? "" : "s")}" : "";
-    string BathsLabel(decimal? baths) => baths.HasValue ? $"{Num(baths)} bath{(baths.Value == 1 ? "" : "s")}" : "";
+    string BedsLabel(int? beds) => beds.HasValue
+        ? (beds.Value == 1 ? L.T("{0} bed", beds.Value) : L.T("{0} beds", beds.Value))
+        : "";
+    string BathsLabel(decimal? baths) => baths.HasValue
+        ? (baths.Value == 1 ? L.T("{0} bath", Num(baths)) : L.T("{0} baths", Num(baths)))
+        : "";
 
     bool IsSafeAirMicroservice(IndorMvcApp.Models.Microservicio s) =>
         s.Id == 1 || string.Equals(s.Nombre, "Safe Air 365", StringComparison.OrdinalIgnoreCase);
@@ -105,23 +110,24 @@
 
     OfferingCarouselViewModel BuildMicroCarousel(IEnumerable<IndorMvcApp.Models.Microservicio> items, string subtitle)
     {
+        var es = L.IsSpanish;
         return new OfferingCarouselViewModel
         {
-            Title = "Home Care Essentials",
+            Title = L["Home Care Essentials"],
             Subtitle = subtitle,
             Icon = "fa-layer-group",
             BlockId = "home-care-essentials",
             Items = items.Select(s => new OfferingCardViewModel
             {
-                Name = s.Nombre,
-                Subtitle = s.Subtitulo,
-                Description = s.Descripcion,
-                Includes = SplitIncludes(s.Incluye),
-                Frequency = s.Frecuencia,
+                Name = s.LocalizedNombre(es),
+                Subtitle = s.LocalizedSubtitulo(es),
+                Description = CatalogText.Pick(s.Descripcion, s.DescripcionEs, es),
+                Includes = SplitIncludes(CatalogText.PickPipeList(s.Incluye, s.IncluyeEs, es)),
+                Frequency = CatalogText.Pick(s.Frecuencia, s.FrecuenciaEs, es),
                 Price = s.Valor,
-                PricePrefix = s.PrecioPrefijo,
+                PricePrefix = CatalogText.Pick(s.PrecioPrefijo, s.PrecioPrefijoEs, es),
                 Currency = s.Moneda,
-                Cta = string.IsNullOrWhiteSpace(s.CtaTexto) ? "Schedule service" : s.CtaTexto,
+                Cta = string.IsNullOrWhiteSpace(s.LocalizedCtaTexto(es)) ? L["Schedule service"] : s.LocalizedCtaTexto(es)!,
                 ImageUrl = s.ImagenUrl,
                 ImageBase64 = s.ImagenBase64,
                 SourceId = s.Id,
@@ -138,9 +144,10 @@
         string subtitle,
         IReadOnlyDictionary<string, int> homeCarePriorityIds)
     {
+        var es = L.IsSpanish;
         return new OfferingCarouselViewModel
         {
-            Title = "Services",
+            Title = L["Services"],
             Subtitle = subtitle,
             Icon = "fa-screwdriver-wrench",
             BlockId = "services",
@@ -153,16 +160,16 @@
 
                 return new OfferingCardViewModel
                 {
-                    Name = sv.Nombre,
-                    Subtitle = sv.Subtitulo,
-                    Description = sv.Descripcion,
-                    Includes = SplitIncludes(sv.Incluye),
-                    Frequency = sv.Frecuencia,
+                    Name = sv.LocalizedNombre(es),
+                    Subtitle = sv.LocalizedSubtitulo(es),
+                    Description = CatalogText.Pick(sv.Descripcion, sv.DescripcionEs, es),
+                    Includes = SplitIncludes(CatalogText.PickPipeList(sv.Incluye, sv.IncluyeEs, es)),
+                    Frequency = CatalogText.Pick(sv.Frecuencia, sv.FrecuenciaEs, es),
                     Price = sv.Valor,
-                    PricePrefix = sv.PrecioPrefijo,
-                    PriceText = sv.PrecioTexto,
+                    PricePrefix = CatalogText.Pick(sv.PrecioPrefijo, sv.PrecioPrefijoEs, es),
+                    PriceText = CatalogText.Pick(sv.PrecioTexto, sv.PrecioTextoEs, es),
                     Currency = sv.Moneda,
-                    Cta = string.IsNullOrWhiteSpace(sv.CtaTexto) ? "Request quote" : sv.CtaTexto,
+                    Cta = string.IsNullOrWhiteSpace(sv.LocalizedCtaTexto(es)) ? L["Request quote"] : sv.LocalizedCtaTexto(es)!,
                     ImageUrl = sv.ImagenUrl,
                     FreqIcon = "fa-clock",
                     CtaIcon = ServicioFlowRules.HasFlow(sv.Nombre, sv.Orden) ? "fa-arrow-right" : "fa-paper-plane",
@@ -177,9 +184,10 @@
 
     OfferingCarouselViewModel BuildInspeccionCarousel(IEnumerable<IndorMvcApp.Models.Inspeccion> items, string subtitle)
     {
+        var es = L.IsSpanish;
         return new OfferingCarouselViewModel
         {
-            Title = "Inspections",
+            Title = L["Inspections"],
             Subtitle = subtitle,
             Icon = "fa-magnifying-glass-chart",
             BlockId = "inspections",
@@ -188,18 +196,18 @@
             BadgeClass = "category-badge-insp",
             Items = items.Select(ins => new OfferingCardViewModel
             {
-                Name = ins.Nombre,
-                Subtitle = ins.Subtitulo,
-                Description = ins.Descripcion,
-                Includes = SplitIncludes(ins.Incluye),
-                Frequency = ins.Frecuencia,
+                Name = ins.LocalizedNombre(es),
+                Subtitle = CatalogText.Pick(ins.Subtitulo, ins.SubtituloEs, es),
+                Description = ins.LocalizedDescripcion(es),
+                Includes = SplitIncludes(CatalogText.PickPipeList(ins.Incluye, ins.IncluyeEs, es)),
+                Frequency = CatalogText.Pick(ins.Frecuencia, ins.FrecuenciaEs, es),
                 Price = ins.Valor,
-                PricePrefix = ins.PrecioPrefijo,
-                PriceText = ins.PrecioTexto,
+                PricePrefix = CatalogText.Pick(ins.PrecioPrefijo, ins.PrecioPrefijoEs, es),
+                PriceText = CatalogText.Pick(ins.PrecioTexto, ins.PrecioTextoEs, es),
                 Currency = ins.Moneda,
                 Cta = HasInspectionFlow(ins.Nombre)
-                    ? "Continue"
-                    : (string.IsNullOrWhiteSpace(ins.CtaTexto) ? "Schedule inspection" : ins.CtaTexto),
+                    ? L["Continue"]
+                    : (string.IsNullOrWhiteSpace(ins.LocalizedCtaTexto(es)) ? L["Schedule inspection"] : ins.LocalizedCtaTexto(es)!),
                 ImageUrl = ins.ImagenUrl,
                 FreqIcon = "fa-clipboard-check",
                 CtaIcon = HasInspectionFlow(ins.Nombre)
@@ -220,55 +228,55 @@
 
         // 1. Direccion
         var dir = new List<(string, string)>();
-        if (!string.IsNullOrWhiteSpace(info.FormattedAddress)) dir.Add(("Full address", info.FormattedAddress));
-        if (!string.IsNullOrWhiteSpace(info.HouseNumber)) dir.Add(("House number", info.HouseNumber!));
-        if (!string.IsNullOrWhiteSpace(info.Street)) dir.Add(("Street", info.Street!));
-        if (!string.IsNullOrWhiteSpace(info.City)) dir.Add(("City", info.City!));
-        if (!string.IsNullOrWhiteSpace(info.County)) dir.Add(("County", info.County!));
-        if (!string.IsNullOrWhiteSpace(info.State)) dir.Add(("State", info.State!));
-        if (!string.IsNullOrWhiteSpace(info.PostalCode)) dir.Add(("Postal code", info.PostalCode!));
-        if (!string.IsNullOrWhiteSpace(info.Country)) dir.Add(("Country", info.Country!));
-        if (dir.Count > 0) groups.Add(("Address", "fa-map-marker-alt", dir));
+        if (!string.IsNullOrWhiteSpace(info.FormattedAddress)) dir.Add((L["Full address"], info.FormattedAddress));
+        if (!string.IsNullOrWhiteSpace(info.HouseNumber)) dir.Add((L["House number"], info.HouseNumber!));
+        if (!string.IsNullOrWhiteSpace(info.Street)) dir.Add((L["Street"], info.Street!));
+        if (!string.IsNullOrWhiteSpace(info.City)) dir.Add((L["City"], info.City!));
+        if (!string.IsNullOrWhiteSpace(info.County)) dir.Add((L["County"], info.County!));
+        if (!string.IsNullOrWhiteSpace(info.State)) dir.Add((L["State"], info.State!));
+        if (!string.IsNullOrWhiteSpace(info.PostalCode)) dir.Add((L["Postal code"], info.PostalCode!));
+        if (!string.IsNullOrWhiteSpace(info.Country)) dir.Add((L["Country"], info.Country!));
+        if (dir.Count > 0) groups.Add((L["Address"], "fa-map-marker-alt", dir));
 
         // 2. Coordenadas
         var coords = new List<(string, string)>
         {
-            ("Latitude", info.Latitude.ToString("0.######")),
-            ("Longitude", info.Longitude.ToString("0.######"))
+            (L["Latitude"], info.Latitude.ToString("0.######")),
+            (L["Longitude"], info.Longitude.ToString("0.######"))
         };
         if (info.BoundingBox != null)
         {
-            coords.Add(("Area (lat min/max)", $"{info.BoundingBox.MinLat:0.####} / {info.BoundingBox.MaxLat:0.####}"));
-            coords.Add(("Area (lon min/max)", $"{info.BoundingBox.MinLon:0.####} / {info.BoundingBox.MaxLon:0.####}"));
+            coords.Add((L["Area (lat min/max)"], $"{info.BoundingBox.MinLat:0.####} / {info.BoundingBox.MaxLat:0.####}"));
+            coords.Add((L["Area (lon min/max)"], $"{info.BoundingBox.MinLon:0.####} / {info.BoundingBox.MaxLon:0.####}"));
         }
-        groups.Add(("Coordinates", "fa-location-crosshairs", coords));
+        groups.Add((L["Coordinates"], "fa-location-crosshairs", coords));
 
         // 3. Detalles de la propiedad
         if (info.PropertyDetails != null)
         {
             var d = info.PropertyDetails;
             var det = new List<(string, string)>();
-            if (!string.IsNullOrWhiteSpace(d.PropertyType)) det.Add(("Property type", d.PropertyType));
-            if (d.YearBuilt.HasValue) det.Add(("Year built", d.YearBuilt.Value.ToString()));
-            if (d.YearRenovated.HasValue) det.Add(("Year renovated", d.YearRenovated.Value.ToString()));
-            if (d.LivingArea.HasValue) det.Add(("Living area", $"{d.LivingArea} sq ft"));
-            if (d.LotSize.HasValue) det.Add(("Lot size", $"{d.LotSize} acres"));
-            if (d.Bedrooms.HasValue) det.Add(("Bedrooms", d.Bedrooms.Value.ToString()));
-            if (d.Bathrooms.HasValue) det.Add(("Bathrooms", Num(d.Bathrooms)));
-            if (d.Floors.HasValue) det.Add(("Floors", d.Floors.Value.ToString()));
-            if (!string.IsNullOrWhiteSpace(d.ArchitecturalStyle)) det.Add(("Style", d.ArchitecturalStyle));
-            if (d.Features != null && d.Features.Count > 0) det.Add(("Features", string.Join(", ", d.Features)));
-            if (det.Count > 0) groups.Add(("Property details", "fa-house", det));
+            if (!string.IsNullOrWhiteSpace(d.PropertyType)) det.Add((L["Property type"], d.PropertyType));
+            if (d.YearBuilt.HasValue) det.Add((L["Year built"], d.YearBuilt.Value.ToString()));
+            if (d.YearRenovated.HasValue) det.Add((L["Year renovated"], d.YearRenovated.Value.ToString()));
+            if (d.LivingArea.HasValue) det.Add((L["Living area"], $"{d.LivingArea} sq ft"));
+            if (d.LotSize.HasValue) det.Add((L["Lot size"], $"{d.LotSize} acres"));
+            if (d.Bedrooms.HasValue) det.Add((L["Bedrooms"], d.Bedrooms.Value.ToString()));
+            if (d.Bathrooms.HasValue) det.Add((L["Bathrooms"], Num(d.Bathrooms)));
+            if (d.Floors.HasValue) det.Add((L["Floors"], d.Floors.Value.ToString()));
+            if (!string.IsNullOrWhiteSpace(d.ArchitecturalStyle)) det.Add((L["Style"], d.ArchitecturalStyle));
+            if (d.Features != null && d.Features.Count > 0) det.Add((L["Features"], string.Join(", ", d.Features)));
+            if (det.Count > 0) groups.Add((L["Property details"], "fa-house", det));
 
             // 4. Valor e impuestos
             var val = new List<(string, string)>();
-            if (d.EstimatedValue.HasValue) val.Add(($"Valor estimado ({d.EstimatedValueYear})", Money(d.EstimatedValue)));
-            if (d.LastSalePrice.HasValue) val.Add(("Last sale price", Money(d.LastSalePrice)));
-            if (d.LastSaleDate.HasValue) val.Add(("Last sale date", Date(d.LastSaleDate)));
-            if (d.AnnualTaxAmount.HasValue) val.Add(($"Impuestos anuales ({d.TaxYear})", Money(d.AnnualTaxAmount)));
-            if (!string.IsNullOrWhiteSpace(d.ParcelNumber)) val.Add(("Parcel number", d.ParcelNumber!));
-            if (!string.IsNullOrWhiteSpace(d.Zoning)) val.Add(("Zoning", d.Zoning!));
-            if (val.Count > 0) groups.Add(("Value and taxes", "fa-dollar-sign", val));
+            if (d.EstimatedValue.HasValue) val.Add((L.T("Estimated value ({0})", d.EstimatedValueYear), Money(d.EstimatedValue)));
+            if (d.LastSalePrice.HasValue) val.Add((L["Last sale price"], Money(d.LastSalePrice)));
+            if (d.LastSaleDate.HasValue) val.Add((L["Last sale date"], Date(d.LastSaleDate)));
+            if (d.AnnualTaxAmount.HasValue) val.Add((L.T("Annual taxes ({0})", d.TaxYear), Money(d.AnnualTaxAmount)));
+            if (!string.IsNullOrWhiteSpace(d.ParcelNumber)) val.Add((L["Parcel number"], d.ParcelNumber!));
+            if (!string.IsNullOrWhiteSpace(d.Zoning)) val.Add((L["Zoning"], d.Zoning!));
+            if (val.Count > 0) groups.Add((L["Value and taxes"], "fa-dollar-sign", val));
         }
 
         return groups;
@@ -352,7 +360,7 @@
                 slides.Add(new SlideEntry
                 {
                     Kind = "utilities",
-                    Title = "Utilities",
+                    Title = L["Utilities"],
                     Icon = "fa-plug-circle-bolt",
                     Utilities = utils
                 });
@@ -365,7 +373,7 @@
                 slides.Add(new SlideEntry
                 {
                     Kind = "warranties",
-                    Title = "Insurance and warranties",
+                    Title = L["Insurance and warranties"],
                     Icon = "fa-shield-halved",
                     Warranties = warrs
                 });
@@ -377,9 +385,9 @@
             slides.Add(new SlideEntry
             {
                 Kind = "group",
-                Title = "Address",
+                Title = L["Address"],
                 Icon = "fa-map-marker-alt",
-                Items = new List<(string, string)> { ("Address", p.Direccion ?? "\u2014") }
+                Items = new List<(string, string)> { (L["Address"], p.Direccion ?? "\u2014") }
             });
         }
 
@@ -426,17 +434,19 @@
             if (days < 0)
             {
                 severity = "expired";
-                title = $"{w.SystemName} expired";
+                title = L.T("{0} expired", w.SystemName);
             }
             else if (days <= 30)
             {
                 severity = "soon";
-                title = $"{w.SystemName} expires in {days} day{(days == 1 ? "" : "s")}";
+                title = days == 1
+                    ? L.T("{0} expires in {1} day", w.SystemName, days)
+                    : L.T("{0} expires in {1} days", w.SystemName, days);
             }
             else if (days <= 90)
             {
                 severity = "upcoming";
-                title = $"{w.SystemName} expires in {days} days";
+                title = L.T("{0} expires in {1} days", w.SystemName, days);
             }
             else
             {
@@ -447,7 +457,7 @@
                 Icon = icon,
                 Severity = severity,
                 Title = title,
-                Subtitle = $"{(string.IsNullOrWhiteSpace(w.WarrantyProvider) ? "Warranty" : w.WarrantyProvider)} \u00B7 {p.Direccion}",
+                Subtitle = $"{(string.IsNullOrWhiteSpace(w.WarrantyProvider) ? L["Warranty"] : w.WarrantyProvider)} \u00B7 {p.Direccion}",
                 Date = end,
                 DaysRemaining = days
             });
@@ -469,28 +479,35 @@
     {
         var scheduled = prog.FechaProgramada.Date;
         var days = (scheduled - DateTime.Today).Days;
-        var serviceName = prog.Microservicio?.Nombre ?? "Microservice";
+        var serviceName = prog.Microservicio != null
+            ? prog.Microservicio.LocalizedNombre(L.IsSpanish)
+            : L["Microservice"];
         string severity;
         string title;
         if (days < 0)
         {
             severity = "expired";
-            title = $"{serviceName} overdue by {Math.Abs(days)} day{(Math.Abs(days) == 1 ? "" : "s")}";
+            var overdueDays = Math.Abs(days);
+            title = overdueDays == 1
+                ? L.T("{0} overdue by {1} day", serviceName, overdueDays)
+                : L.T("{0} overdue by {1} days", serviceName, overdueDays);
         }
         else if (days == 0)
         {
             severity = "soon";
-            title = $"{serviceName} due today";
+            title = L.T("{0} due today", serviceName);
         }
         else if (days <= 30)
         {
             severity = "soon";
-            title = $"{serviceName} due in {days} day{(days == 1 ? "" : "s")}";
+            title = days == 1
+                ? L.T("{0} due in {1} day", serviceName, days)
+                : L.T("{0} due in {1} days", serviceName, days);
         }
         else if (days <= 90)
         {
             severity = "upcoming";
-            title = $"{serviceName} scheduled in {days} days";
+            title = L.T("{0} scheduled in {1} days", serviceName, days);
         }
         else
         {
@@ -503,7 +520,7 @@
             Severity = severity,
             Title = title,
             Subtitle = string.IsNullOrWhiteSpace(prog.Propiedad?.Direccion)
-                ? "Home maintenance reminder"
+                ? L["Home maintenance reminder"]
                 : prog.Propiedad!.Direccion!,
             Date = scheduled,
             DaysRemaining = days
@@ -556,7 +573,7 @@
     }
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@(L.IsSpanish ? "es" : "en")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -575,11 +592,11 @@
     @await Html.PartialAsync("_TabletResponsiveHead")
 </head>
 <body class="rl-dash-page">
-    <div class="home-search-overlay" id="homeSearchOverlay" role="dialog" aria-label="Search" aria-hidden="true">
+    <div class="home-search-overlay" id="homeSearchOverlay" role="dialog" aria-label="@L["Search"]" aria-hidden="true">
         <div class="home-search-panel">
             <div class="home-search-head">
-                <input type="search" id="homeSearchInput" placeholder="Search services, inspections, emergencies..." autocomplete="off" />
-                <button type="button" class="home-search-cancel" id="homeSearchClose">Cancel</button>
+                <input type="search" id="homeSearchInput" placeholder="@L["Search services, inspections, emergencies..."]" autocomplete="off" />
+                <button type="button" class="home-search-cancel" id="homeSearchClose">@L["Cancel"]</button>
             </div>
             <div class="home-search-results" id="homeSearchResults"></div>
         </div>
@@ -591,17 +608,17 @@
             var notifyItems = ViewData["HomeNotificationItems"] as IReadOnlyList<IndorMvcApp.ViewModels.HomeNotificationItemViewModel>
                 ?? Array.Empty<IndorMvcApp.ViewModels.HomeNotificationItemViewModel>();
         }
-        <div class="ho-notify-panel" id="notifPanel" role="dialog" aria-label="Notifications">
+        <div class="ho-notify-panel" id="notifPanel" role="dialog" aria-label="@L["Notifications"]">
             <div class="ho-notify-panel-head">
-                <strong>Notifications</strong>
+                <strong>@L["Notifications"]</strong>
                 @if (notifyCount > 0)
                 {
-                    <span class="ho-notify-badge">New</span>
+                    <span class="ho-notify-badge">@L["New"]</span>
                 }
             </div>
             @if (notifyCount == 0)
             {
-                <div class="ho-notify-empty">You have no notifications right now.</div>
+                <div class="ho-notify-empty">@L["You have no notifications right now."]</div>
             }
             else
             {
@@ -628,13 +645,13 @@
                 {
                     <div class="rl-page-header rl-page-header--hero rl-network-head">
                         <div class="rl-page-header-copy">
-                            <h1 class="rl-page-title">@homeNearbyNetwork.PageTitle</h1>
-                            <p class="rl-page-subtitle">@homeNearbyNetwork.RadiusLabel</p>
+                            <h1 class="rl-page-title">@L["Nearby Network"]</h1>
+                            <p class="rl-page-subtitle">@L.T("{0} miles around your home", homeNearbyNetwork.RadiusMiles.ToString("0.#"))</p>
                         </div>
                         @if (!isHomeMapView)
                         {
                             <button type="button" class="rl-btn-outline rl-btn-outline--sm rl-network-profile-btn nav-jump" data-target="section-more">
-                                <i class="fas fa-user"></i> My Profile
+                                <i class="fas fa-user"></i> @L["My Profile"]
                             </button>
                         }
                     </div>
@@ -679,8 +696,8 @@
                         <span class="ho-home-avatar ho-home-avatar--placeholder"><i class="fas fa-user"></i></span>
                     }
                     <div>
-                        <h1>Hello @(string.IsNullOrWhiteSpace(moreProfileShell.FullName) || moreProfileShell.FullName == "Your name" ? "there" : moreProfileShell.FullName)</h1>
-                        <span class="ho-home-badge"><i class="fas fa-house"></i> Homeowner</span>
+                        <h1>@L["Hello"] @(string.IsNullOrWhiteSpace(moreProfileShell.FullName) || moreProfileShell.FullName == "Your name" ? L["there"] : moreProfileShell.FullName)</h1>
+                        <span class="ho-home-badge"><i class="fas fa-house"></i> @L["Homeowner"]</span>
                     </div>
                 </div>
             </div>
@@ -711,8 +728,8 @@
         <div class="rl-dash-shell">
         @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
         {
-            Title = "Services",
-            Subtitle = "Verified professionals for your home"
+            Title = L["Services"],
+            Subtitle = L["Verified professionals for your home"]
         })
         @{
             var microservicios = (IEnumerable<IndorMvcApp.Models.Microservicio>?)ViewBag.Microservicios
@@ -742,7 +759,7 @@
         {
             <div class="empty-state">
                 <i class="fas fa-tools"></i>
-                <p>No services available right now.</p>
+                <p>@L["No services available right now."]</p>
             </div>
         }
         else
@@ -750,15 +767,15 @@
             <div class="services-catalog">
                 <div class="services-hero">
                     <div class="services-hero-text">
-                        <strong>Take care of your home effortlessly</strong>
-                        <small>Verified professionals with transparent pricing.</small>
+                        <strong>@L["Take care of your home effortlessly"]</strong>
+                        <small>@L["Verified professionals with transparent pricing."]</small>
                     </div>
                     <div class="services-hero-icon"><i class="fas fa-house-chimney-medical"></i></div>
                 </div>
 
                 @if (microservicios.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, $"{microservicios.Count()} services available for your home"))
+                    @await Html.PartialAsync("_OfferingCarousel", BuildMicroCarousel(microservicios, L.T("{0} services available for your home", microservicios.Count())))
                 }
 
                 @if (homeCarePrioritiesSection != null)
@@ -773,16 +790,16 @@
 
                 @if (servicios.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, $"{servicios.Count()} remodeling and installation projects", homeCarePriorityIds))
+                    @await Html.PartialAsync("_OfferingCarousel", BuildServicioCarousel(servicios, L.T("{0} remodeling and installation projects", servicios.Count()), homeCarePriorityIds))
                 }
 
                 @if (inspecciones.Any())
                 {
-                    @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, $"{inspecciones.Count()} professional inspections for your home"))
+                    @await Html.PartialAsync("_OfferingCarousel", BuildInspeccionCarousel(inspecciones, L.T("{0} professional inspections for your home", inspecciones.Count())))
                 }
 
                 @{
-                    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url);
+                    var emergencySection = EmergencyServicesDisplayService.BuildSection(serviciosEmergencia, Url, L.IsSpanish);
                 }
                 @if (emergencySection != null)
                 {
@@ -796,8 +813,8 @@
         <div class="rl-dash-shell">
         @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
         {
-            Title = "House Facts",
-            Subtitle = "Your property overview and details"
+            Title = L["House Facts"],
+            Subtitle = L["Your property overview and details"]
         })
         @{
             var houseFactProfile = ViewBag.HouseFactProfile as HouseFactProfileViewModel;
@@ -823,10 +840,10 @@
             @if (houseFactPreviewMode)
             {
                 <div class="results-card" style="margin-top:16px;padding:16px;">
-                    <div class="results-title" style="margin-bottom:8px;">Ready to save this property?</div>
-                    <p style="color:#64748B;font-size:0.88rem;margin-bottom:12px;">Confirm the address to add it to your account and unlock full property management.</p>
+                    <div class="results-title" style="margin-bottom:8px;">@L["Ready to save this property?"]</div>
+                    <p style="color:#64748B;font-size:0.88rem;margin-bottom:12px;">@L["Confirm the address to add it to your account and unlock full property management."]</p>
                     <a asp-controller="Propietario" asp-action="PropertyDetails" class="btn-primary-link" style="display:inline-flex;align-items:center;gap:8px;">
-                        <i class="fas fa-check"></i> Continue to confirm property
+                        <i class="fas fa-check"></i> @L["Continue to confirm property"]
                     </a>
                 </div>
             }
@@ -835,25 +852,25 @@
         {
             <div class="hn-network-empty">
                 <i class="fas fa-house"></i>
-                <p>You have no registered properties yet.</p>
-                <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">Add property</a>
+                <p>@L["You have no registered properties yet."]</p>
+                <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">@L["Add property"]</a>
             </div>
         }
         else
         {
             <div class="hn-network-empty">
                 <i class="fas fa-file-circle-question"></i>
-                <p>No House Fact data is available yet for this property.</p>
+                <p>@L["No House Fact data is available yet for this property."]</p>
                 @if (hasProperties && primaryProp != null)
                 {
                     <a asp-controller="MyHome" asp-action="Details" asp-route-id="@primaryProp.Id" asp-route-tab="attom" class="hn-btn-primary">
-                        Refresh property data
+                        @L["Refresh property data"]
                     </a>
                 }
                 else
                 {
                     <a asp-controller="Perfil" asp-action="EditarPerfil" asp-fragment="home" class="hn-btn-primary">
-                        Search an address
+                        @L["Search an address"]
                     </a>
                 }
             </div>
@@ -873,15 +890,15 @@
         <div class="rl-dash-shell">
         @await Html.PartialAsync("_HomeownerSectionHero", new IndorMvcApp.ViewModels.HomeownerSectionHeroViewModel
         {
-            Title = "More",
-            Subtitle = "Account, homes, and preferences"
+            Title = L["More"],
+            Subtitle = L["Account, homes, and preferences"]
         })
         @{
             var moreProfile = (IndorMvcApp.ViewModels.MoreProfileViewModel?)ViewBag.MoreProfile
                 ?? new IndorMvcApp.ViewModels.MoreProfileViewModel();
-            var homeLabel = moreProfile.HomeCount == 1 ? "1 Home" : $"{moreProfile.HomeCount} Homes";
-            var docLabel = moreProfile.DocumentCount == 1 ? "1 Document" : $"{moreProfile.DocumentCount} Documents";
-            var svcLabel = moreProfile.ServiceCount == 1 ? "1 Service" : $"{moreProfile.ServiceCount} Services";
+            var homeLabel = moreProfile.HomeCount == 1 ? L["1 Home"] : L.T("{0} Homes", moreProfile.HomeCount);
+            var docLabel = moreProfile.DocumentCount == 1 ? L["1 Document"] : L.T("{0} Documents", moreProfile.DocumentCount);
+            var svcLabel = moreProfile.ServiceCount == 1 ? L["1 Service"] : L.T("{0} Services", moreProfile.ServiceCount);
         }
 
         @if (TempData["PerfilOk"] != null)
@@ -904,46 +921,46 @@
                 {
                     <div class="more-stat">
                         <i class="fas fa-shield-alt more-stat-ic"></i>
-                        <div class="ms-label">Membership status</div>
+                        <div class="ms-label">@L["Membership status"]</div>
                         <div class="ms-value">@moreProfile.MembershipLabel</div>
                         <i class="fas fa-shield-alt more-stat-art" aria-hidden="true"></i>
                     </div>
                 }
                 <div class="more-stat">
                     <i class="fas fa-house more-stat-ic"></i>
-                    <div class="ms-label">Home Added</div>
+                    <div class="ms-label">@L["Home Added"]</div>
                     <div class="ms-value">@homeLabel</div>
                     <i class="fas fa-house more-stat-art" aria-hidden="true"></i>
                 </div>
                 <div class="more-stat">
                     <i class="fas fa-file-lines more-stat-ic"></i>
-                    <div class="ms-label">Documents</div>
+                    <div class="ms-label">@L["Documents"]</div>
                     <div class="ms-value">@docLabel</div>
                     <i class="fas fa-book-open more-stat-art" aria-hidden="true"></i>
                 </div>
                 <div class="more-stat">
                     <i class="fas fa-screwdriver-wrench more-stat-ic"></i>
-                    <div class="ms-label">Services</div>
+                    <div class="ms-label">@L["Services"]</div>
                     <div class="ms-value">@svcLabel</div>
                     <i class="fas fa-toolbox more-stat-art" aria-hidden="true"></i>
                 </div>
             </div>
 
-            <p class="more-section-title">Account</p>
+            <p class="more-section-title">@L["Account"]</p>
             <div class="more-menu-card">
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Opciones">
                     <span class="mm-icon"><i class="fas fa-user"></i></span>
                     <span class="mm-body">
-                        <strong>Profile Options</strong>
-                        <small>Edit details, photo, password and payment methods</small>
+                        <strong>@L["Profile Options"]</strong>
+                        <small>@L["Edit details, photo, password and payment methods"]</small>
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Pagos">
                     <span class="mm-icon"><i class="fas fa-wallet"></i></span>
                     <span class="mm-body">
-                        <strong>Payments</strong>
-                        <small>View payments, financing and billing history</small>
+                        <strong>@L["Payments"]</strong>
+                        <small>@L["View payments, financing and billing history"]</small>
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
@@ -952,8 +969,8 @@
                     <a class="more-menu-item" asp-controller="Perfil" asp-action="Suscripciones">
                         <span class="mm-icon"><i class="fas fa-crown"></i></span>
                         <span class="mm-body">
-                            <strong>Subscriptions</strong>
-                            <small>Manage plans, add-ons and renewals</small>
+                            <strong>@L["Subscriptions"]</strong>
+                            <small>@L["Manage plans, add-ons and renewals"]</small>
                         </span>
                         <i class="fas fa-chevron-right mm-chevron"></i>
                     </a>
@@ -961,36 +978,36 @@
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Historial">
                     <span class="mm-icon"><i class="fas fa-clock-rotate-left"></i></span>
                     <span class="mm-body">
-                        <strong>History</strong>
-                        <small>Microservices, inspections and past services</small>
+                        <strong>@L["History"]</strong>
+                        <small>@L["Microservices, inspections and past services"]</small>
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
             </div>
 
-            <p class="more-section-title">Home &amp; Services</p>
+            <p class="more-section-title">@L["Home & Services"]</p>
             <div class="more-menu-card">
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Internet">
                     <span class="mm-icon"><i class="fas fa-wifi"></i></span>
                     <span class="mm-body">
-                        <strong>Internet Comparison</strong>
-                        <small>Compare internet plans and providers</small>
+                        <strong>@L["Internet Comparison"]</strong>
+                        <small>@L["Compare internet plans and providers"]</small>
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
                 <a class="more-menu-item" asp-controller="Perfil" asp-action="Opciones" asp-fragment="notifications">
                     <span class="mm-icon"><i class="fas fa-bell"></i></span>
                     <span class="mm-body">
-                        <strong>Notifications &amp; Security</strong>
-                        <small>Manage alerts, preferences and account security</small>
+                        <strong>@L["Notifications & Security"]</strong>
+                        <small>@L["Manage alerts, preferences and account security"]</small>
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
                 <a class="more-menu-item" asp-controller="Account" asp-action="DeleteAccount">
                     <span class="mm-icon" style="color:#B91C1C;"><i class="fas fa-user-xmark"></i></span>
                     <span class="mm-body">
-                        <strong style="color:#B91C1C;">Delete account</strong>
-                        <small>Permanently delete your account and all data</small>
+                        <strong style="color:#B91C1C;">@L["Delete Account"]</strong>
+                        <small>@L["Permanently delete your account and all data"]</small>
                     </span>
                     <i class="fas fa-chevron-right mm-chevron"></i>
                 </a>
@@ -999,7 +1016,7 @@
             <form method="post" asp-controller="Account" asp-action="Logout" style="margin-top:8px;">
                 @Html.AntiForgeryToken()
                 <button type="submit" class="pf-btn danger" style="width:100%;">
-                    <i class="fas fa-right-from-bracket"></i> Sign out
+                    <i class="fas fa-right-from-bracket"></i> @L["Sign out"]
                 </button>
             </form>
         </div>
@@ -1015,6 +1032,30 @@
     @await Html.PartialAsync("_HomeownerBottomNav")
 
     <script>
+        const hoI18n = {
+            requestHelp: @Html.Raw(JsonSerializer.Serialize(L["Request help"])),
+            showLess: @Html.Raw(JsonSerializer.Serialize(L["Show less"])),
+            showMore: @Html.Raw(JsonSerializer.Serialize(L["Show more"])),
+            noResults: @Html.Raw(JsonSerializer.Serialize(L["No results. Try another term."])),
+            service: @Html.Raw(JsonSerializer.Serialize(L["Service"])),
+            emergencyService: @Html.Raw(JsonSerializer.Serialize(L["Emergency service"])),
+            emergency: @Html.Raw(JsonSerializer.Serialize(L["Emergency"])),
+            requestService: @Html.Raw(JsonSerializer.Serialize(L["Request Service"])),
+            browseServices: @Html.Raw(JsonSerializer.Serialize(L["Browse all available services"])),
+            emergencyHelp: @Html.Raw(JsonSerializer.Serialize(L["Emergency Help"])),
+            urgentProblems: @Html.Raw(JsonSerializer.Serialize(L["24/7 urgent home problems"])),
+            houseFacts: @Html.Raw(JsonSerializer.Serialize(L["House Facts"])),
+            propertyOverview: @Html.Raw(JsonSerializer.Serialize(L["Property overview and details"])),
+            schedule: @Html.Raw(JsonSerializer.Serialize(L["Schedule"])),
+            upcomingVisits: @Html.Raw(JsonSerializer.Serialize(L["Upcoming visits and requests"])),
+            documents: @Html.Raw(JsonSerializer.Serialize(L["Documents"])),
+            inspectionReports: @Html.Raw(JsonSerializer.Serialize(L["Inspection reports and files"])),
+            homeMaintenance: @Html.Raw(JsonSerializer.Serialize(L["Home Maintenance"])),
+            tasksReminders: @Html.Raw(JsonSerializer.Serialize(L["Tasks and reminders"])),
+            propertyHistory: @Html.Raw(JsonSerializer.Serialize(L["Property History"])),
+            pastWork: @Html.Raw(JsonSerializer.Serialize(L["Past work on your home"]))
+        };
+
         function activateSection(sectionId, scrollTargetId) {
             if (!sectionId) return;
             const section = document.getElementById(sectionId);
@@ -1188,7 +1229,7 @@
 
                     renderFeatures(card.dataset.features);
                     if (ctaEl) {
-                        ctaEl.innerHTML = `<i class="fas fa-paper-plane"></i> ${card.dataset.cta || 'Request help'}`;
+                        ctaEl.innerHTML = `<i class="fas fa-paper-plane"></i> ${card.dataset.cta || hoI18n.requestHelp}`;
                         const startUrl = card.dataset.startUrl || '';
                         ctaEl.dataset.startUrl = startUrl;
                         if (startUrl) {
@@ -1234,11 +1275,11 @@
                 if (open) {
                     panel.removeAttribute('hidden');
                     btn.setAttribute('aria-expanded', 'true');
-                    btn.innerHTML = 'Show less <i class="fas fa-chevron-up"></i>';
+                    btn.innerHTML = hoI18n.showLess + ' <i class="fas fa-chevron-up"></i>';
                 } else {
                     panel.setAttribute('hidden', '');
                     btn.setAttribute('aria-expanded', 'false');
-                    btn.innerHTML = 'Show more <i class="fas fa-chevron-right"></i>';
+                    btn.innerHTML = hoI18n.showMore + ' <i class="fas fa-chevron-right"></i>';
                 }
             });
         })();
@@ -1257,16 +1298,16 @@
 
             function shortcutItems() {
                 const items = [
-                    { title: 'Request Service', subtitle: 'Browse all available services', icon: 'fa-screwdriver-wrench', section: 'section-services' },
-                    { title: 'Emergency Help', subtitle: '24/7 urgent home problems', icon: 'fa-triangle-exclamation', section: 'section-services', scrollTarget: 'emergency-services' },
-                    { title: 'House Facts', subtitle: 'Property overview and details', icon: 'fa-house-circle-check', section: 'section-myhome' },
-                    { title: 'Schedule', subtitle: 'Upcoming visits and requests', icon: 'fa-clipboard-list', section: 'section-schedule' }
+                    { title: hoI18n.requestService, subtitle: hoI18n.browseServices, icon: 'fa-screwdriver-wrench', section: 'section-services' },
+                    { title: hoI18n.emergencyHelp, subtitle: hoI18n.urgentProblems, icon: 'fa-triangle-exclamation', section: 'section-services', scrollTarget: 'emergency-services' },
+                    { title: hoI18n.houseFacts, subtitle: hoI18n.propertyOverview, icon: 'fa-house-circle-check', section: 'section-myhome' },
+                    { title: hoI18n.schedule, subtitle: hoI18n.upcomingVisits, icon: 'fa-clipboard-list', section: 'section-schedule' }
                 ];
                 if (propiedadId) {
                     items.push(
-                        { title: 'Documents', subtitle: 'Inspection reports and files', icon: 'fa-file-lines', url: '@(primaryProp != null ? Url.Action("Documents", "MyHome", new { id = primaryProp.Id }) : "#")' },
-                        { title: 'Home Maintenance', subtitle: 'Tasks and reminders', icon: 'fa-clipboard-check', url: '@(primaryProp != null ? Url.Action("Maintenance", "MyHome", new { id = primaryProp.Id, from = "home" }) : "#")' },
-                        { title: 'Property History', subtitle: 'Past work on your home', icon: 'fa-clock-rotate-left', url: '@(primaryProp != null ? Url.Action("History", "MyHome", new { id = primaryProp.Id }) : "#")' }
+                        { title: hoI18n.documents, subtitle: hoI18n.inspectionReports, icon: 'fa-file-lines', url: '@(primaryProp != null ? Url.Action("Documents", "MyHome", new { id = primaryProp.Id }) : "#")' },
+                        { title: hoI18n.homeMaintenance, subtitle: hoI18n.tasksReminders, icon: 'fa-clipboard-check', url: '@(primaryProp != null ? Url.Action("Maintenance", "MyHome", new { id = primaryProp.Id, from = "home" }) : "#")' },
+                        { title: hoI18n.propertyHistory, subtitle: hoI18n.pastWork, icon: 'fa-clock-rotate-left', url: '@(primaryProp != null ? Url.Action("History", "MyHome", new { id = primaryProp.Id }) : "#")' }
                     );
                 }
                 return items;
@@ -1286,14 +1327,14 @@
                 document.querySelectorAll('#section-services a.offering-card[href]').forEach(function (el) {
                     const title = el.querySelector('.offering-card-label')?.textContent?.trim();
                     if (!title) return;
-                    add({ title: title, subtitle: 'Service', icon: 'fa-wrench', url: el.href });
+                    add({ title: title, subtitle: hoI18n.service, icon: 'fa-wrench', url: el.href });
                 });
 
                 document.querySelectorAll('.emergency-card[data-start-url]').forEach(function (el) {
                     const url = (el.dataset.startUrl || '').trim();
                     if (!url) return;
-                    const title = (el.dataset.nombre || el.querySelector('.emergency-card-label')?.textContent || 'Emergency').trim();
-                    add({ title: title, subtitle: 'Emergency service', icon: 'fa-truck-medical', url: url });
+                    const title = (el.dataset.nombre || el.querySelector('.emergency-card-label')?.textContent || hoI18n.emergency).trim();
+                    add({ title: title, subtitle: hoI18n.emergencyService, icon: 'fa-truck-medical', url: url });
                 });
 
                 return items;
@@ -1314,7 +1355,7 @@
 
                 resultsEl.innerHTML = '';
                 if (matches.length === 0) {
-                    resultsEl.innerHTML = '<div class="home-search-empty">No results. Try another term.</div>';
+                    resultsEl.innerHTML = '<div class="home-search-empty">' + hoI18n.noResults + '</div>';
                     return;
                 }
 

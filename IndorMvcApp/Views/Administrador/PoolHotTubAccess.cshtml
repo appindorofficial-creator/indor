@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPoolHotTubStep2ViewModel
 @{
-    ViewData["Title"] = "Access & review details";
+    ViewData["Title"] = L["Access & review details"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Access &amp; review details</h1>
-        <p>Tell us how the technician can access the area and confirm the service request.</p>
+        <h1>@L["Access &amp; review details"]</h1>
+        <p>@L["Tell us how the technician can access the area and confirm the service request."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -41,7 +41,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label>Where is the equipment?</label>
+            <label>@L["Where is the equipment?"]</label>
             <div class="pa-chip-grid pa-chip-grid--2">
                 @foreach (var l in new[] { ("PoolPad", "Pool pad"), ("BackyardSpa", "Backyard spa"), ("EquipmentRoom", "Equipment room"), ("Other", "Other") })
                 {
@@ -55,7 +55,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> Can the pro enter now?</label>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["Can the pro enter now?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var e in new[] { ("GateCode", "Yes, gate code"), ("HostOnSite", "Host will meet"), ("GuestApproval", "Need guest approval") })
                 {
@@ -69,7 +69,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Gate / access code</label>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> @L["Gate / access code"]</label>
             <div class="pa-field">
                 <i class="fas fa-lock"></i>
                 <input type="text" name="AccessCode" value="@Model.AccessCode" />
@@ -78,7 +78,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should receive updates? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should receive updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
                 {
@@ -92,7 +92,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-phone pa-q-icon pa-q-icon--green"></i> Best contact number</label>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--green"></i> @L["Best contact number"]</label>
             <div class="pa-field">
                 <i class="fas fa-phone"></i>
                 <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
@@ -102,18 +102,18 @@
         <div class="pa-lawn-availability-banner">
             <div>
                 <strong>@Model.ProEtaLabel</strong>
-                <small>Licensed • Insured • Background checked</small>
+                <small>@L["Licensed • Insured • Background checked"]</small>
             </div>
             <i class="fas fa-user-check"></i>
         </div>
 
         <article class="pa-pool-pricing-card">
             <div class="pa-pool-pricing-row">
-                <span><i class="fas fa-tag"></i> Estimated diagnostic visit</span>
+                <span><i class="fas fa-tag"></i> @L["Estimated diagnostic visit"]</span>
                 <strong>@Model.DiagnosticEstimate</strong>
             </div>
             <div class="pa-pool-pricing-row">
-                <span><i class="fas fa-bolt"></i> Emergency priority fee</span>
+                <span><i class="fas fa-bolt"></i> @L["Emergency priority fee"]</span>
                 <strong class="pa-pool-pricing-included">@Model.EmergencyFeeLabel</strong>
             </div>
         </article>
@@ -121,12 +121,12 @@
         <div class="pa-lawn-photo-banner">
             <i class="fas fa-circle-info"></i>
             <div>
-                <strong>We'll send status updates to you and the guest.</strong>
+                <strong>@L["We'll send status updates to you and the guest."]</strong>
             </div>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Request repair service</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Request repair service"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

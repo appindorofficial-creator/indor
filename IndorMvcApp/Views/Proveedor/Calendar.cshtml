@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCalendarOverviewViewModel
 @{
-    ViewData["Title"] = "Calendar Overview - INDOR PRO";
+    ViewData["Title"] = L["Calendar Overview - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "jobs";
     var views = new[] { ("day", "Day"), ("week", "Week"), ("month", "Month") };
@@ -14,7 +14,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1><i class="fas fa-calendar-week"></i> Calendar Overview</h1>
+            <h1><i class="fas fa-calendar-week"></i> @L["Calendar Overview"]</h1>
             <small>@Model.WeekRangeLabel</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -77,29 +77,29 @@
         <article>
             <i class="fas fa-calendar-check"></i>
             <div>
-                <strong>This Week Summary</strong>
+                <strong>@L["This Week Summary"]</strong>
                 <span>@Model.WeekEventCount Events Scheduled • @Model.EstimatedWorkLabel Estimated Work Time</span>
             </div>
         </article>
         <article>
             <i class="fas fa-clock"></i>
             <div>
-                <strong>Available Time This Week</strong>
+                <strong>@L["Available Time This Week"]</strong>
                 <span>@Model.AvailableTimeLabel</span>
             </div>
         </article>
         <article>
             <i class="fas fa-chart-pie"></i>
             <div>
-                <strong>Schedule Utilization</strong>
+                <strong>@L["Schedule Utilization"]</strong>
                 <span>@Model.UtilizationPercent%</span>
             </div>
         </article>
     </section>
 
     <div class="prv-pro-calendar-footer-actions">
-        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> Add Event</a>
-        <a asp-controller="Proveedor" asp-action="DaySchedule" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-day"></i> View Day</a>
-        <button type="button" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-clock"></i> Edit Availability</button>
+        <a asp-controller="Proveedor" asp-action="CreateJob" class="prv-pro-btn prv-pro-btn--primary"><i class="fas fa-plus"></i> @L["Add Event"]</a>
+        <a asp-controller="Proveedor" asp-action="DaySchedule" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-calendar-day"></i> @L["View Day"]</a>
+        <button type="button" class="prv-pro-btn prv-pro-btn--outline"><i class="fas fa-clock"></i> @L["Edit Availability"]</button>
     </div>
 </div>

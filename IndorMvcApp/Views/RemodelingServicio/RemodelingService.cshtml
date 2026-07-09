@@ -25,7 +25,7 @@
     @if (Model.IncludedItems.Count > 0)
     {
         <div class="includes-box">
-            <strong style="font-size:0.85rem;">What's included</strong>
+            <strong style="font-size:0.85rem;">@L["What's included"]</strong>
             <ul>
                 @foreach (var item in Model.IncludedItems)
                 {
@@ -35,7 +35,7 @@
         </div>
     }
 
-    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>Tell us about your project and we'll connect you with a licensed remodeling pro for a custom quote.</span></div>
+    <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["Tell us about your project and we'll connect you with a licensed remodeling pro for a custom quote."]</span></div>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
@@ -43,5 +43,5 @@
         <input type="hidden" asp-for="SolicitudId" />
         <input type="hidden" asp-for="ServicioId" />
         <button type="submit" name="action" value="continue" class="btn-primary"><i class="fas fa-arrow-right"></i> @Model.CtaTexto</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back to Services</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back to Services"]</button>
     </form>

@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.StructuralReviewViewModel
+@model IndorMvcApp.ViewModels.StructuralReviewViewModel
 @{
-    ViewData["Title"] = "Review & Confirm - INDOR";
-    ViewData["WizardTitle"] = "Review & Confirm";
+    ViewData["Title"] = L["Review & Confirm - INDOR"];
+    ViewData["WizardTitle"] = L["Review & Confirm"];
     ViewData["WizardBackUrl"] = Url.Action("StructuralUpload", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 6;
     ViewData["WizardTotalSteps"] = 6;
 
 }
 
-<h1 class="page-heading">Review &amp; Confirm</h1>
-    <p class="page-lead">Verify your structural request details before submitting.</p>
+<h1 class="page-heading">@L["Review &amp; Confirm"]</h1>
+    <p class="page-lead">@L["Verify your structural request details before submitting."]</p>
 
     <form asp-controller="Inspecciones" asp-action="StructuralReview" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -27,11 +27,11 @@
         </div>
 
         <div class="field-card">
-            <div class="section-title">Main concerns</div>
+            <div class="section-title">@L["Main concerns"]</div>
             <div class="chip-list">
                 @if (Model.Preocupaciones.Count == 0)
                 {
-                    <span class="chip">No concerns selected</span>
+                    <span class="chip">@L["No concerns selected"]</span>
                 }
                 else
                 {
@@ -44,25 +44,25 @@
         </div>
 
         <div class="field-card">
-            <div class="section-title">Details</div>
-            <div class="detail-row"><span class="detail-label">Address</span><span class="detail-value">@Model.DireccionPropiedad</span></div>
-            <div class="detail-row"><span class="detail-label">When noticed</span><span class="detail-value">@Model.CuandoNotadoResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Severity</span><span class="detail-value">@Model.SeveridadResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Urgency</span><span class="detail-value">@Model.UrgenciaResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Foundation</span><span class="detail-value">@Model.TipoFundacionResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Repairs</span><span class="detail-value">@Model.ReparacionesPreviasResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Reason</span><span class="detail-value">@Model.MotivoResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Property type</span><span class="detail-value">@Model.TipoPropiedadResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Report</span><span class="detail-value">@Model.ReporteResumen</span></div>
-            <div class="detail-row"><span class="detail-label">Access</span><span class="detail-value">@Model.AccesoResumen</span></div>
+            <div class="section-title">@L["Details"]</div>
+            <div class="detail-row"><span class="detail-label">@L["Address"]</span><span class="detail-value">@Model.DireccionPropiedad</span></div>
+            <div class="detail-row"><span class="detail-label">@L["When noticed"]</span><span class="detail-value">@Model.CuandoNotadoResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Severity"]</span><span class="detail-value">@Model.SeveridadResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Urgency"]</span><span class="detail-value">@Model.UrgenciaResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Foundation"]</span><span class="detail-value">@Model.TipoFundacionResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Repairs"]</span><span class="detail-value">@Model.ReparacionesPreviasResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Reason"]</span><span class="detail-value">@Model.MotivoResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Property type"]</span><span class="detail-value">@Model.TipoPropiedadResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Report"]</span><span class="detail-value">@Model.ReporteResumen</span></div>
+            <div class="detail-row"><span class="detail-label">@L["Access"]</span><span class="detail-value">@Model.AccesoResumen</span></div>
         </div>
 
         <div class="field-card">
-            <div class="section-title">Photos &amp; files</div>
+            <div class="section-title">@L["Photos &amp; files"]</div>
             <div class="photo-grid">
                 @if (Model.Archivos.Count == 0)
                 {
-                    <div class="thumb">No files uploaded</div>
+                    <div class="thumb">@L["No files uploaded"]</div>
                 }
                 else
                 {
@@ -86,9 +86,9 @@
         </div>
 
         <div class="field-card">
-            <div class="section-title">Comments</div>
+            <div class="section-title">@L["Comments"]</div>
             <div class="comments-box">@(string.IsNullOrWhiteSpace(Model.ComentariosProveedor) ? "No additional comments were provided." : Model.ComentariosProveedor)</div>
         </div>
 
-        <button type="submit" class="btn-primary">Confirm &amp; Continue <i class="fas fa-check"></i></button>
+        <button type="submit" class="btn-primary">@L["Confirm &amp; Continue"] <i class="fas fa-check"></i></button>
     </form>

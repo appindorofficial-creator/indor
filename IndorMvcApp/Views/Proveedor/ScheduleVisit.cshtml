@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProScheduleVisitViewModel
 @{
-    ViewData["Title"] = "Schedule Visit - INDOR PRO";
+    ViewData["Title"] = L["Schedule Visit - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
 }
@@ -15,7 +15,7 @@
             <h1>@Model.PageTitle</h1>
             <small>@Model.LeadCode</small>
         </div>
-        <button type="button" class="prv-pro-lead-share" aria-label="Share"><i class="fas fa-share-nodes"></i></button>
+        <button type="button" class="prv-pro-lead-share" aria-label="@L["Share"]"><i class="fas fa-share-nodes"></i></button>
     </header>
 
     <section class="prv-pro-lead-summary">
@@ -23,7 +23,7 @@
         <div class="prv-pro-lead-summary-body">
             <div class="prv-pro-lead-summary-top">
                 <h2>@Model.Address</h2>
-                <button type="button" class="prv-pro-lead-map-btn" aria-label="View on map"><i class="fas fa-location-dot"></i></button>
+                <button type="button" class="prv-pro-lead-map-btn" aria-label="@L["View on map"]"><i class="fas fa-location-dot"></i></button>
             </div>
             <div class="prv-pro-lead-badges">
                 <span class="prv-pro-pill prv-pro-pill--scheduled"><i class="fas fa-wrench"></i> @Model.ServiceType</span>
@@ -65,7 +65,7 @@
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.CustomerPhone))
             {
-                <a href="tel:@Model.CustomerPhone" class="prv-pro-btn prv-pro-btn--ghost">Call</a>
+                <a href="tel:@Model.CustomerPhone" class="prv-pro-btn prv-pro-btn--ghost">@L["Call"]</a>
             }
         </div>
     </section>
@@ -76,55 +76,55 @@
 
         <label class="prv-pro-create-field">
             <i class="fas fa-clipboard-list"></i>
-            <span>Visit Type</span>
+            <span>@L["Visit Type"]</span>
             <select name="VisitType">
-                <option value="Verification Visit" selected="@(Model.VisitType == "Verification Visit")">Verification Visit</option>
-                <option value="Estimate Visit" selected="@(Model.VisitType == "Estimate Visit")">Estimate Visit</option>
-                <option value="Inspection Visit" selected="@(Model.VisitType == "Inspection Visit")">Inspection Visit</option>
+                <option value="@L["Verification Visit"]" selected="@(Model.VisitType == "Verification Visit")">@L["Verification Visit"]</option>
+                <option value="@L["Estimate Visit"]" selected="@(Model.VisitType == "Estimate Visit")">@L["Estimate Visit"]</option>
+                <option value="@L["Inspection Visit"]" selected="@(Model.VisitType == "Inspection Visit")">@L["Inspection Visit"]</option>
             </select>
             <i class="fas fa-chevron-right"></i>
         </label>
         <label class="prv-pro-create-field">
             <i class="fas fa-calendar"></i>
-            <span>Schedule Date</span>
+            <span>@L["Schedule Date"]</span>
             <input type="date" name="VisitDate" value="@Model.VisitDate" />
             <i class="fas fa-chevron-right"></i>
         </label>
         <label class="prv-pro-create-field">
             <i class="fas fa-clock"></i>
-            <span>Time</span>
-            <input type="text" name="TimeLabel" value="@Model.TimeLabel" placeholder="10:30 AM" />
+            <span>@L["Time"]</span>
+            <input type="text" name="TimeLabel" value="@Model.TimeLabel" placeholder="@L["10:30 AM"]" />
             <i class="fas fa-chevron-right"></i>
         </label>
         <label class="prv-pro-create-field">
             <i class="fas fa-user-gear"></i>
-            <span>Assigned Technician</span>
-            <input type="text" name="AssignedTechnician" value="@Model.AssignedTechnician" placeholder="Mike Johnson" />
+            <span>@L["Assigned Technician"]</span>
+            <input type="text" name="AssignedTechnician" value="@Model.AssignedTechnician" placeholder="@L["Mike Johnson"]" />
             <i class="fas fa-chevron-right"></i>
         </label>
         <label class="prv-pro-create-field">
             <i class="fas fa-flag"></i>
-            <span>Priority</span>
+            <span>@L["Priority"]</span>
             <select name="Priority">
-                <option value="Low" selected="@(Model.Priority == "Low")">Low</option>
-                <option value="Medium" selected="@(Model.Priority == "Medium")">Medium</option>
-                <option value="High" selected="@(Model.Priority == "High")">High</option>
+                <option value="@L["Low"]" selected="@(Model.Priority == "Low")">@L["Low"]</option>
+                <option value="@L["Medium"]" selected="@(Model.Priority == "Medium")">@L["Medium"]</option>
+                <option value="@L["High"]" selected="@(Model.Priority == "High")">@L["High"]</option>
             </select>
             <i class="fas fa-chevron-right"></i>
         </label>
         <label class="prv-pro-create-field">
             <i class="fas fa-bell"></i>
-            <span>Reminder</span>
+            <span>@L["Reminder"]</span>
             <select name="Reminder">
-                <option value="Send 1 hour before" selected="@(Model.Reminder == "Send 1 hour before")">Send 1 hour before</option>
-                <option value="Send 2 hours before" selected="@(Model.Reminder == "Send 2 hours before")">Send 2 hours before</option>
-                <option value="Send 1 day before" selected="@(Model.Reminder == "Send 1 day before")">Send 1 day before</option>
+                <option value="@L["Send 1 hour before"]" selected="@(Model.Reminder == "Send 1 hour before")">@L["Send 1 hour before"]</option>
+                <option value="@L["Send 2 hours before"]" selected="@(Model.Reminder == "Send 2 hours before")">@L["Send 2 hours before"]</option>
+                <option value="@L["Send 1 day before"]" selected="@(Model.Reminder == "Send 1 day before")">@L["Send 1 day before"]</option>
             </select>
             <i class="fas fa-chevron-right"></i>
         </label>
         <label class="prv-pro-create-field prv-pro-create-field--notes">
             <i class="fas fa-file-lines"></i>
-            <span>Notes</span>
+            <span>@L["Notes"]</span>
             <textarea name="Notes" rows="3">@Model.Notes</textarea>
         </label>
 
@@ -134,7 +134,7 @@
                 <span class="prv-pro-toggle-track"></span>
             </label>
             <div>
-                <strong>Notify homeowner</strong>
+                <strong>@L["Notify homeowner"]</strong>
                 <small>Send visit confirmation to @Model.CustomerName</small>
             </div>
         </div>
@@ -144,8 +144,8 @@
                 <span class="prv-pro-toggle-track"></span>
             </label>
             <div>
-                <strong>Add to Calendar</strong>
-                <small>Add this visit to your calendar</small>
+                <strong>@L["Add to Calendar"]</strong>
+                <small>@L["Add this visit to your calendar"]</small>
             </div>
         </div>
 

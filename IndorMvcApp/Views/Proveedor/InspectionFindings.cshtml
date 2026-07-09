@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProInspectionFindingsViewModel
 @{
-    ViewData["Title"] = "Inspection Findings - INDOR PRO";
+    ViewData["Title"] = L["Inspection Findings - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
 }
@@ -12,7 +12,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="LeadDetails" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Inspection Findings</h1>
+            <h1>@L["Inspection Findings"]</h1>
             <small>@Model.Address · @Model.ServiceType</small>
         </div>
     </header>
@@ -21,8 +21,7 @@
     {
         <a href="@Url.Content($"~{Model.InspectionReportUrl}")" target="_blank" rel="noopener"
            class="prv-pro-btn prv-pro-btn--ghost prv-pro-inspection-pdf-btn">
-            <i class="fas fa-file-pdf"></i> View Full Inspection Report PDF
-        </a>
+            <i class="fas fa-file-pdf"></i> @L["View Full Inspection Report PDF"]</a>
     }
 
     @if (!string.IsNullOrWhiteSpace(Model.AnalysisSummary))
@@ -30,7 +29,7 @@
         <section class="prv-pro-ai-summary">
             <i class="fas fa-wand-magic-sparkles"></i>
             <div>
-                <strong>AI Summary</strong>
+                <strong>@L["AI Summary"]</strong>
                 <p>@Model.AnalysisSummary</p>
             </div>
         </section>
@@ -74,8 +73,7 @@
                             {
                                 <a href="@($"{Url.Content($"~{Model.InspectionReportUrl}")}#page={item.SourcePage}")"
                                    target="_blank" rel="noopener" class="prv-pro-btn prv-pro-btn--ghost prv-pro-btn--sm">
-                                    <i class="fas fa-file-pdf"></i> View in PDF
-                                </a>
+                                    <i class="fas fa-file-pdf"></i> @L["View in PDF"]</a>
                             }
                         </div>
                     </div>

@@ -1,15 +1,16 @@
 @model IndorMvcApp.ViewModels.MyHomeHistoryDetailViewModel
 @{
-    ViewData["Title"] = "Record Details";
+    ViewData["Title"] = L["Record Details"];
     Layout = "~/Views/Shared/_MyHomeLayout.cshtml";
     ViewBag.PropiedadId = Model.PropiedadId;
     ViewBag.MyHomeNav = "history";
     ViewBag.MyHomeBackUrl = Url.Action("History", "MyHome", new { id = Model.PropiedadId });
     var warrantyActive = string.Equals(Model.WarrantyStatus, "Active", StringComparison.OrdinalIgnoreCase)
+        || string.Equals(Model.WarrantyStatus, L["Active"], StringComparison.OrdinalIgnoreCase)
         || string.Equals(Model.WarrantyStatus, "Vigente", StringComparison.OrdinalIgnoreCase);
 }
 <div class="hf-title-row">
-    <h1 class="hf-title">Record details</h1>
+    <h1 class="hf-title">@L["Record details"]</h1>
 </div>
 <div class="hf-card">
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
@@ -20,49 +21,49 @@
             <div style="font-size:0.82rem;color:#0066CC;font-weight:600;">@Model.RecordType</div>
         </div>
         <div style="text-align:right;">
-            <div style="font-size:0.72rem;color:#64748B;">Total</div>
+            <div style="font-size:0.72rem;color:#64748B;">@L["Total"]</div>
             <div style="font-weight:800;">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.TotalCost)</div>
         </div>
     </div>
-    <div class="hf-list-item"><i class="fas fa-calendar icon"></i><div class="meta"><div class="label">Completion date</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatDate(Model.CompletionDate)</div></div></div>
+    <div class="hf-list-item"><i class="fas fa-calendar icon"></i><div class="meta"><div class="label">@L["Completion date"]</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatDate(Model.CompletionDate)</div></div></div>
     @if (Model.ProviderId.HasValue)
     {
-        <a asp-action="ProviderEdit" asp-route-id="@Model.ProviderId" class="hf-list-item"><i class="fas fa-user icon"></i><div class="meta"><div class="label">Provider</div><div class="value" style="color:#0066CC;">@(Model.ProviderName ?? "—")</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></a>
+        <a asp-action="ProviderEdit" asp-route-id="@Model.ProviderId" class="hf-list-item"><i class="fas fa-user icon"></i><div class="meta"><div class="label">@L["Provider"]</div><div class="value" style="color:#0066CC;">@(Model.ProviderName ?? "—")</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></a>
     }
     else
     {
-        <div class="hf-list-item"><i class="fas fa-user icon"></i><div class="meta"><div class="label">Provider</div><div class="value" style="color:#0066CC;">@(Model.ProviderName ?? "—")</div></div></div>
+        <div class="hf-list-item"><i class="fas fa-user icon"></i><div class="meta"><div class="label">@L["Provider"]</div><div class="value" style="color:#0066CC;">@(Model.ProviderName ?? "—")</div></div></div>
     }
-    <div class="hf-list-item"><i class="fas fa-dollar-sign icon"></i><div class="meta"><div class="label">Total cost</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.TotalCost)</div></div></div>
-    <div class="hf-list-item"><i class="fas fa-shield icon"></i><div class="meta"><div class="label">Warranty status</div><div class="value">@if (warrantyActive) { <span class="hf-badge">Active</span> } else { @Model.WarrantyStatus }</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></div>
+    <div class="hf-list-item"><i class="fas fa-dollar-sign icon"></i><div class="meta"><div class="label">@L["Total cost"]</div><div class="value">@IndorMvcApp.Services.MyHomeDisplayService.FormatCurrency(Model.TotalCost)</div></div></div>
+    <div class="hf-list-item"><i class="fas fa-shield icon"></i><div class="meta"><div class="label">@L["Warranty status"]</div><div class="value">@if (warrantyActive) { <span class="hf-badge">@L["Active"]</span> } else { @Model.WarrantyStatus }</div></div><i class="fas fa-chevron-right" style="color:#CBD5E1;"></i></div>
 </div>
 @if (!string.IsNullOrWhiteSpace(Model.Description))
 {
     <div class="hf-card">
-        <div class="hf-label">Description</div>
+        <div class="hf-label">@L["Description"]</div>
         <p style="line-height:1.5;color:#475569;">@Model.Description</p>
     </div>
 }
 <div class="hf-card">
-    <div class="hf-label">Photos</div>
+    <div class="hf-label">@L["Photos"]</div>
     <div class="hf-photo-row">
-        <img src="@Url.Content("~/inspeccion2.jpeg")" alt="Photo 1" class="hf-photo" />
-        <img src="@Url.Content("~/inspeccion2.jpeg")" alt="Photo 2" class="hf-photo" />
-        <img src="@Url.Content("~/inspeccion2.jpeg")" alt="Photo 3" class="hf-photo" />
+        <img src="@Url.Content("~/inspeccion2.jpeg")" alt="@L["Photo 1"]" class="hf-photo" />
+        <img src="@Url.Content("~/inspeccion2.jpeg")" alt="@L["Photo 2"]" class="hf-photo" />
+        <img src="@Url.Content("~/inspeccion2.jpeg")" alt="@L["Photo 3"]" class="hf-photo" />
         <div class="hf-photo-more">+6</div>
     </div>
 </div>
 @if (Model.RelatedDocuments.Count > 0)
 {
     <div class="hf-card">
-        <div class="hf-label">Related documents</div>
+        <div class="hf-label">@L["Related documents"]</div>
         @foreach (var doc in Model.RelatedDocuments)
         {
             <div class="hf-doc-row">
                 <i class="fas fa-file-pdf" style="color:#0066CC;width:20px;"></i>
                 <div style="flex:1;">
                     <div style="font-weight:700;font-size:0.9rem;">@doc.Title</div>
-                    <div style="font-size:0.78rem;color:#64748B;">@(doc.FileName ?? doc.Category) · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
+                    <div style="font-size:0.78rem;color:#64748B;">@(doc.FileName ?? L[doc.Category]) · @IndorMvcApp.Services.MyHomeDisplayService.FormatFileSize(doc.SizeBytes)</div>
                 </div>
                 @if (!string.IsNullOrWhiteSpace(doc.StoragePath))
                 {
@@ -72,4 +73,4 @@
         }
     </div>
 }
-<a asp-action="HistoryEdit" asp-route-id="@Model.Id" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> Edit record</a>
+<a asp-action="HistoryEdit" asp-route-id="@Model.Id" class="hf-btn hf-btn-primary"><i class="fas fa-pen"></i> @L["Edit record"]</a>

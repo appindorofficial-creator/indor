@@ -1,8 +1,10 @@
 ﻿@model IndorMvcApp.ViewModels.RegisterViewModel
+@using IndorMvcApp.Localization
 @{
-    ViewData["Title"] = "Create Account - INDOR";
+    ViewData["Title"] = L["Create Account - INDOR"];
     Layout = "_LayoutAuthOnboarding";
     ViewBag.OnboardingStep = 1;
+    ViewData["LanguageSelectorVariant"] = "card";
 }
 
 <div class="ob-shell">
@@ -11,71 +13,75 @@
             @await Html.PartialAsync("_OnboardingStepper")
 
             <div class="ob-head-block">
-                <h1>Your Info</h1>
-                <p>Tell us a bit about yourself to get started.</p>
+                <h1>@L["Your Info"]</h1>
+                <p>@L["Tell us a bit about yourself to get started."]</p>
             </div>
+
+            @await Html.PartialAsync("_LanguageSelector")
 
             <div class="ob-form-card">
                 <form asp-controller="Account" asp-action="Register" method="post">
+                    <input type="hidden" asp-for="UiCulture" />
+
                     @if (!ViewData.ModelState.IsValid)
                     {
                         <div asp-validation-summary="ModelOnly" class="ob-summary"></div>
                     }
 
                     <div class="ob-field">
-                        <label asp-for="FullName" class="ob-label">Full Name</label>
+                        <label asp-for="FullName" class="ob-label">@L["Full Name"]</label>
                         <input asp-for="FullName" class="ob-control" placeholder="John Smith" autocomplete="name"
                                inputmode="text" autocapitalize="words" spellcheck="false"
                                aria-describedby="fullNameHint" />
                         <span id="fullNameHint" class="ob-error" style="color:#64748B;font-size:.75rem;margin-top:4px;display:block">
-                            Use your first and last name (letters only).
+                            @L["Use your first and last name (letters only)."]
                         </span>
                         <span asp-validation-for="FullName" class="ob-error"></span>
                     </div>
 
                     <div class="ob-field">
-                        <label asp-for="Email" class="ob-label">Email</label>
+                        <label asp-for="Email" class="ob-label">@L["Email"]</label>
                         <input asp-for="Email" type="email" class="ob-control" placeholder="john@gmail.com" autocomplete="email" id="Email" />
                         <span asp-validation-for="Email" class="ob-error"></span>
                     </div>
 
                     <div class="ob-field">
-                        <label asp-for="Telefono" class="ob-label">Phone <span style="font-weight:400;color:#94A3B8;">(Optional)</span></label>
+                        <label asp-for="Telefono" class="ob-label">@L["Phone"] <span style="font-weight:400;color:#94A3B8;">(@L["Optional"])</span></label>
                         <div class="ob-phone-row">
                             <div class="ob-phone-code"><span aria-hidden="true">&#127482;&#127480;</span> +1</div>
                             <input asp-for="Telefono" type="tel" class="ob-control" placeholder="5551234567" autocomplete="tel"
                                    inputmode="numeric" maxlength="10" pattern="[0-9]{10}" id="Telefono" />
                         </div>
                         <span class="ob-error" style="color:#64748B;font-size:.75rem;margin-top:4px;display:block">
-                            Optional &mdash; if entered, use 10 digits (US).
+                            @L["Optional — if entered, use 10 digits (US)."]
                         </span>
                         <span asp-validation-for="Telefono" class="ob-error"></span>
                     </div>
 
                     <div class="ob-field">
-                        <label asp-for="Password" class="ob-label">Password</label>
+                        <label asp-for="Password" class="ob-label">@L["Password"]</label>
                         <div class="ob-control-wrap">
                             <input name="Password" id="passwordInput" type="password" class="ob-control"
-                                   placeholder="Create a password" autocomplete="new-password"
+                                   placeholder="@L["Create a password"]" autocomplete="new-password"
                                    value="@(Model?.Password)" />
-                            <button type="button" class="ob-pw-toggle" id="togglePassword" aria-label="Show password" aria-pressed="false">
+                            <button type="button" class="ob-pw-toggle" id="togglePassword" aria-label="@L["Show password"]" aria-pressed="false">
                                 <i class="fas fa-eye-slash" aria-hidden="true"></i>
                             </button>
                         </div>
                         <ul class="ob-pw-rules" id="pwRules">
-                            <li data-rule="length"><i class="fas fa-circle"></i> At least 8 characters</li>
-                            <li data-rule="upper"><i class="fas fa-circle"></i> One uppercase letter</li>
-                            <li data-rule="number"><i class="fas fa-circle"></i> One number</li>
+                            <li data-rule="length"><i class="fas fa-circle"></i> @L["At least 8 characters"]</li>
+                            <li data-rule="upper"><i class="fas fa-circle"></i> @L["One uppercase letter"]</li>
+                            <li data-rule="number"><i class="fas fa-circle"></i> @L["One number"]</li>
                         </ul>
                         <span asp-validation-for="Password" class="ob-error"></span>
                     </div>
 
-                    <button type="submit" class="ob-btn ob-btn-primary">Create Account</button>
+                    <button type="submit" class="ob-btn ob-btn-primary">@L["Create Account"]</button>
 
                     <p class="ob-legal">
-                        By continuing, you agree to our
-                        <a asp-action="Terms" asp-route-from="register">Terms &amp; Conditions</a> and
-                        <a asp-action="Privacy" asp-route-from="register">Privacy Policy</a>.
+                        @L["By continuing, you agree to our"]
+                        <a asp-action="Terms" asp-route-from="register">@L["Terms & Conditions"]</a> @L["and"]
+                        <a asp-action="Privacy" asp-route-from="register">@L["Privacy Policy"]</a>.
                     </p>
                 </form>
             </div>
@@ -117,7 +123,7 @@
             }
 
             fullName?.addEventListener('input', function () {
-                this.setCustomValidity(validateFullName(this.value) ? '' : 'Enter your first and last name using letters.');
+                this.setCustomValidity(validateFullName(this.value) ? '' : '@Html.Raw(L["Enter your first and last name using letters."].Replace("'", "\\'"))');
             });
             if (fullName?.value) fullName.dispatchEvent(new Event('input'));
 
@@ -132,10 +138,10 @@
             function validateEmail(value) {
                 const v = (value || '').trim();
                 if (!v) return '';
-                if (!emailPattern.test(v)) return 'Enter a valid email address.';
+                if (!emailPattern.test(v)) return '@Html.Raw(L["Enter a valid email address."].Replace("'", "\\'"))';
                 const domain = v.split('@@')[1]?.toLowerCase();
                 if (domain && blockedDomains[domain]) {
-                    return 'Check your email address. Did you mean @@' + blockedDomains[domain] + '?';
+                    return '@Html.Raw(L["Enter a valid email address."].Replace("'", "\\'"))';
                 }
                 return '';
             }
@@ -159,7 +165,7 @@
             phoneInput?.addEventListener('input', function () {
                 const digits = normalizePhoneDigits(this.value);
                 if (this.value !== digits) this.value = digits;
-                this.setCustomValidity(validatePhone(digits) ? '' : 'Enter a valid 10-digit US phone number.');
+                this.setCustomValidity(validatePhone(digits) ? '' : '@Html.Raw(L["Enter a valid 10-digit US phone number (e.g. 555 123 4567)."].Replace("'", "\\'"))');
             });
             phoneInput?.addEventListener('paste', function (e) {
                 e.preventDefault();
@@ -168,6 +174,15 @@
                 this.dispatchEvent(new Event('input'));
             });
             if (phoneInput?.value) phoneInput.dispatchEvent(new Event('input'));
+
+            document.querySelectorAll('.indor-lang-option').forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    var culture = this.value;
+                    document.querySelectorAll('input[name="UiCulture"]').forEach(function (el) {
+                        el.value = culture;
+                    });
+                });
+            });
         })();
     </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

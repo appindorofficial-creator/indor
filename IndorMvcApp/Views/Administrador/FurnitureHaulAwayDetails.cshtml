@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorFurnitureHaulAwayStep1ViewModel
 @{
-    ViewData["Title"] = "Furniture Haul Away";
+    ViewData["Title"] = L["Furniture Haul Away"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-couch pa-flow-title-icon"></i> Furniture Haul Away</h1>
-        <p>Tell us what furniture needs to be removed so we can send the right crew.</p>
+        <h1><i class="fas fa-couch pa-flow-title-icon"></i> @L["Furniture Haul Away"]</h1>
+        <p>@L["Tell us what furniture needs to be removed so we can send the right crew."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -29,7 +29,7 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
         </div>
     }
 
@@ -39,7 +39,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-couch pa-q-icon pa-q-icon--blue"></i> What needs to be removed? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-couch pa-q-icon pa-q-icon--blue"></i> @L["What needs to be removed?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-furniture-items-grid">
                 @foreach (var i in new (string Value, string Label, string Icon)[]
                 {
@@ -66,7 +66,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>How many items?</label>
+            <label>@L["How many items?"]</label>
             <div class="pa-chip-grid pa-chip-grid--4">
                 @foreach (var c in new (string Value, string Label)[] { ("One", "1 item"), ("TwoThree", "2–3"), ("FourSix", "4–6"), ("SevenPlus", "7+") })
                 {
@@ -80,7 +80,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label><i class="fas fa-truck pa-q-icon pa-q-icon--blue"></i> How big is the pickup?</label>
+            <label><i class="fas fa-truck pa-q-icon pa-q-icon--blue"></i> @L["How big is the pickup?"]</label>
             <div class="pa-junk-load-row pa-junk-load-row--3">
                 @foreach (var l in new (string Value, string Label, string Icon)[] { ("SmallPickup", "Small pickup", "fa-truck-pickup"), ("HalfLoad", "Half load", "fa-truck"), ("FullLoad", "Full load", "fa-truck-moving") })
                 {
@@ -96,7 +96,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>Is the property occupied right now?</label>
+            <label>@L["Is the property occupied right now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.IsOccupied == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="IsOccupied" value="Yes" @(Model.IsOccupied == "Yes" ? "checked" : null) /> Yes
@@ -109,7 +109,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Are guests currently inside?</label>
+            <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) /> Yes
@@ -122,23 +122,23 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--blue"></i> Any quick details? <small>(optional)</small></label>
+            <label><i class="fas fa-note-sticky pa-q-icon pa-q-icon--blue"></i> @L["Any quick details?"] <small>@L["(optional)"]</small></label>
             <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="250" id="fhDetails">@Model.QuickDetails</textarea>
             <small class="pa-char-count"><span id="fhDetailsCount">@Model.QuickDetails.Length</span> / 250</small>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
         </div>
 
         <div class="pa-junk-priority-banner">
             <i class="fas fa-circle-info"></i>
-            <p>Large item pickups for Airbnb turnovers can be prioritized for faster scheduling.</p>
+            <p>@L["Large item pickups for Airbnb turnovers can be prioritized for faster scheduling."]</p>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

@@ -1,6 +1,6 @@
 @{
-    ViewData["Title"] = "Internet comparison";
-    ViewData["Subtitulo"] = "Your current plan vs market plans";
+    ViewData["Title"] = L["Internet comparison"];
+    ViewData["Subtitulo"] = L["Your current plan vs market plans"];
     var planesInternet = (IEnumerable<IndorMvcApp.Models.PlanInternet>?)ViewBag.PlanesInternet ?? Enumerable.Empty<IndorMvcApp.Models.PlanInternet>();
     var culture = System.Globalization.CultureInfo.GetCultureInfo("en-US");
 }
@@ -22,10 +22,10 @@
 </style>
 
 <div class="pf-card">
-    <h3><i class="fas fa-wifi"></i> Plans</h3>
+    <h3><i class="fas fa-wifi"></i> @L["Plans"]</h3>
     @if (!planesInternet.Any())
     {
-        <div class="empty">No internet plans available.</div>
+        <div class="empty">@L["No internet plans available."]</div>
     }
     else
     {
@@ -41,10 +41,10 @@
                             <div class="ic-prov">@pi.Proveedor</div>
                             <div class="ic-name">@pi.Nombre</div>
                         </div>
-                        @if (pi.EsPlanActual) { <span class="ic-tag">Current plan</span> }
+                        @if (pi.EsPlanActual) { <span class="ic-tag">@L["Current plan"]</span> }
                     </div>
-                    <div class="ic-speed"><i class="fas fa-gauge-high"></i> @pi.VelocidadDescargaMbps Mbps ↓ / @pi.VelocidadSubidaMbps Mbps ↑</div>
-                    <div class="ic-price">@pi.PrecioMensual.ToString("C0", culture) <small style="font-size:.7rem;color:#6B7280;font-weight:500;">/ month</small></div>
+                    <div class="ic-speed"><i class="fas fa-gauge-high"></i> @L.T("{0} Mbps ↓ / {1} Mbps ↑", pi.VelocidadDescargaMbps, pi.VelocidadSubidaMbps)</div>
+                    <div class="ic-price">@pi.PrecioMensual.ToString("C0", culture) <small style="font-size:.7rem;color:#6B7280;font-weight:500;">@L["/ month"]</small></div>
                     @if (feats.Length > 0)
                     {
                         <div class="ic-feats">@string.Join(" · ", feats)</div>

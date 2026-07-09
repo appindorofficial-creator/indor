@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HvacSavedViewModel
 @{
-    ViewData["Title"] = "HVAC system added";
+    ViewData["Title"] = L["HVAC system added"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
 
@@ -9,36 +9,36 @@
 
         <div class="hvac-celebrate">
             <div class="hvac-celebrate-icon"><i class="fas fa-check"></i></div>
-            <h2>Your HVAC system has been saved</h2>
+            <h2>@L["Your HVAC system has been saved"]</h2>
         </div>
 
-        <h2 class="hvac-section-title">System summary</h2>
+        <h2 class="hvac-section-title">@L["System summary"]</h2>
         <div class="hvac-summary-equipment @(string.IsNullOrWhiteSpace(Model.EquipmentImageUrl) ? "hvac-summary-equipment-no-image" : "")">
             @if (!string.IsNullOrWhiteSpace(Model.EquipmentImageUrl))
             {
-                <img src="@Url.Content($"~{Model.EquipmentImageUrl}")" alt="Your HVAC label photo" />
+                <img src="@Url.Content($"~{Model.EquipmentImageUrl}")" alt="@L["Your HVAC label photo"]" />
             }
             <div class="hvac-summary-list hvac-summary-list-inline">
-                <div class="hvac-summary-item"><i class="fas fa-snowflake icon"></i><span class="k">Type</span><span class="v">@Model.SystemTypeLabel</span></div>
-                <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">Brand</span><span class="v">@Model.Brand</span></div>
-                <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">Model</span><span class="v">@Model.EquipmentModel</span></div>
-                <div class="hvac-summary-item"><i class="fas fa-barcode icon"></i><span class="k">Serial number</span><span class="v">@Model.SerialNumber</span></div>
-                <div class="hvac-summary-item"><i class="far fa-calendar icon"></i><span class="k">Estimated age</span><span class="v">@Model.EstimatedAgeLabel</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-snowflake icon"></i><span class="k">@L["Type"]</span><span class="v">@Model.SystemTypeLabel</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-tag icon"></i><span class="k">@L["Brand"]</span><span class="v">@Model.Brand</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-cube icon"></i><span class="k">@L["Model"]</span><span class="v">@Model.EquipmentModel</span></div>
+                <div class="hvac-summary-item"><i class="fas fa-barcode icon"></i><span class="k">@L["Serial number"]</span><span class="v">@Model.SerialNumber</span></div>
+                <div class="hvac-summary-item"><i class="far fa-calendar icon"></i><span class="k">@L["Estimated age"]</span><span class="v">@Model.EstimatedAgeLabel</span></div>
             </div>
         </div>
 
         <div class="hvac-whats-next-box">
-            <strong>What happens next</strong>
-            <div class="hvac-whats-next-item"><i class="fas fa-bell"></i><span>Maintenance reminders activated</span></div>
-            <div class="hvac-whats-next-item"><i class="fas fa-house-circle-check"></i><span>System saved to House Facts</span></div>
-            <div class="hvac-whats-next-item"><i class="fas fa-file-lines"></i><span>Future service history can be attached</span></div>
+            <strong>@L["What happens next"]</strong>
+            <div class="hvac-whats-next-item"><i class="fas fa-bell"></i><span>@L["Maintenance reminders activated"]</span></div>
+            <div class="hvac-whats-next-item"><i class="fas fa-house-circle-check"></i><span>@L["System saved to House Facts"]</span></div>
+            <div class="hvac-whats-next-item"><i class="fas fa-file-lines"></i><span>@L["Future service history can be attached"]</span></div>
         </div>
 
         <a href="@Model.MyHomeUrl" class="hvac-save-btn hvac-btn-with-icon" style="text-decoration:none;">
-            <i class="fas fa-house"></i> Go to My Home
+            <i class="fas fa-house"></i> @L["Go to My Home"]
         </a>
         <a asp-controller="HvacFilterReplacement" asp-action="Pets" asp-route-id="@Model.PropiedadId" class="hvac-outline-btn hvac-btn-with-icon">
-            <i class="fas fa-circle-plus"></i> Set up filter reminders
+            <i class="fas fa-circle-plus"></i> @L["Set up filter reminders"]
         </a>
     </div>
 

@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RoofInspectionScheduleViewModel
 @{
-    ViewData["Title"] = "Schedule roof check - INDOR";
+    ViewData["Title"] = L["Schedule roof check - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("RoofInspectionDetails", "RoofInspection", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 2;
@@ -12,7 +12,7 @@
     </div>
 
     
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Schedule roof check</h1>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Schedule roof check"]</h1>
     <p class="page-lead" style="margin-bottom:16px;">@Model.ScheduleIntro</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
@@ -25,37 +25,37 @@
         <input type="hidden" asp-for="TimingPreferido" id="TimingPreferido" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-list-check"></i><span>Choose service</span></div>
+            <div class="field-head"><i class="fas fa-list-check"></i><span>@L["Choose service"]</span></div>
             <div class="choice-grid-2">
-                <button type="button" class="choice-card" data-service="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">Reminder only</span></button>
-                <button type="button" class="choice-card" data-service="BookInspection"><i class="fas fa-calendar main"></i><span class="label">Book inspection</span></button>
+                <button type="button" class="choice-card" data-service="ReminderOnly"><i class="fas fa-bell main"></i><span class="label">@L["Reminder only"]</span></button>
+                <button type="button" class="choice-card" data-service="BookInspection"><i class="fas fa-calendar main"></i><span class="label">@L["Book inspection"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-rotate"></i><span>How often?</span></div>
+            <div class="field-head"><i class="fas fa-rotate"></i><span>@L["How often?"]</span></div>
             <div class="freq-grid">
-                <button type="button" class="freq-card" data-freq="Yearly"><span class="badge">Recommended</span><i class="fas fa-calendar"></i><span class="label">Yearly</span></button>
-                <button type="button" class="freq-card" data-freq="Every2Years"><i class="fas fa-calendar-days"></i><span class="label">Every 2 years</span></button>
-                <button type="button" class="freq-card" data-freq="AfterStorms"><i class="fas fa-cloud-bolt"></i><span class="label">After major storms</span></button>
-                <button type="button" class="freq-card" data-freq="Custom"><i class="fas fa-sliders"></i><span class="label">Custom</span></button>
+                <button type="button" class="freq-card" data-freq="Yearly"><span class="badge">@L["Recommended"]</span><i class="fas fa-calendar"></i><span class="label">@L["Yearly"]</span></button>
+                <button type="button" class="freq-card" data-freq="Every2Years"><i class="fas fa-calendar-days"></i><span class="label">@L["Every 2 years"]</span></button>
+                <button type="button" class="freq-card" data-freq="AfterStorms"><i class="fas fa-cloud-bolt"></i><span class="label">@L["After major storms"]</span></button>
+                <button type="button" class="freq-card" data-freq="Custom"><i class="fas fa-sliders"></i><span class="label">@L["Custom"]</span></button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-seedling"></i><span>Preferred timing</span></div>
+            <div class="field-head"><i class="fas fa-seedling"></i><span>@L["Preferred timing"]</span></div>
             <div class="pill-row">
-                <button type="button" class="segment-btn" data-timing="Spring"><i class="fas fa-seedling"></i> Spring</button>
-                <button type="button" class="segment-btn" data-timing="Fall"><i class="fas fa-leaf"></i> Fall</button>
-                <button type="button" class="segment-btn" data-timing="ThisMonth"><i class="fas fa-calendar"></i> This month</button>
-                <button type="button" class="segment-btn" data-timing="Flexible"><i class="fas fa-clock"></i> Flexible</button>
+                <button type="button" class="segment-btn" data-timing="Spring"><i class="fas fa-seedling"></i> @L["Spring"]</button>
+                <button type="button" class="segment-btn" data-timing="Fall"><i class="fas fa-leaf"></i> @L["Fall"]</button>
+                <button type="button" class="segment-btn" data-timing="ThisMonth"><i class="fas fa-calendar"></i> @L["This month"]</button>
+                <button type="button" class="segment-btn" data-timing="Flexible"><i class="fas fa-clock"></i> @L["Flexible"]</button>
             </div>
         </div>
 
         @if (Model.CoverageItems.Count > 0)
         {
             <div class="field-card">
-                <div class="field-head"><i class="fas fa-clipboard-check"></i><span>Inspection covers</span></div>
+                <div class="field-head"><i class="fas fa-clipboard-check"></i><span>@L["Inspection covers"]</span></div>
                 <div class="coverage-grid">
                     @foreach (var item in Model.CoverageItems)
                     {
@@ -66,17 +66,17 @@
         }
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>Preferred date</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["Preferred date"]</span></div>
             <input asp-for="FechaPreferida" type="date" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Notes (optional)</span></div>
-            <textarea asp-for="Notas" placeholder="Add any details" maxlength="300"></textarea>
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Notes (optional)"]</span></div>
+            <textarea asp-for="Notas" placeholder="@L["Add any details"]" maxlength="300"></textarea>
         </div>
 
         <button type="submit" name="action" value="continue" class="btn-primary">
-            <i class="fas fa-calendar"></i> Review request <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-calendar"></i> @L["Review request"] <i class="fas fa-chevron-right"></i>
         </button>
 
         @if (!string.IsNullOrWhiteSpace(Model.TrustTexto))

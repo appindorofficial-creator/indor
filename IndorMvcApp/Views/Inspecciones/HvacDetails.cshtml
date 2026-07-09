@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.HvacDetailsViewModel
+@model IndorMvcApp.ViewModels.HvacDetailsViewModel
 @{
-    ViewData["Title"] = "HVAC Details - INDOR";
-    ViewData["WizardTitle"] = "HVAC Details";
+    ViewData["Title"] = L["HVAC Details - INDOR"];
+    ViewData["WizardTitle"] = L["HVAC Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
 </div>
 
-        <h1 class="page-heading">Tell us about your HVAC concern</h1>
-        <p class="page-lead">This helps INDOR prepare the right checklist and send the right provider.</p>
+        <h1 class="page-heading">@L["Tell us about your HVAC concern"]</h1>
+        <p class="page-lead">@L["This helps INDOR prepare the right checklist and send the right provider."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -26,71 +26,71 @@
             <input type="hidden" asp-for="SistemaFuncionando" id="SistemaFuncionando" />
 
             <div class="field-card">
-                <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+                <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">What type of HVAC issue is it?</span>
+                <span class="field-label">@L["What type of HVAC issue is it?"]</span>
                 <div class="issue-grid" data-target="TipoProblema">
-                    <button type="button" class="issue-btn" data-value="NotCooling"><span class="check"><i class="fas fa-check"></i></span>Not cooling</button>
-                    <button type="button" class="issue-btn" data-value="NotHeating"><span class="check"><i class="fas fa-check"></i></span>Not heating</button>
-                    <button type="button" class="issue-btn" data-value="NoAirflow"><span class="check"><i class="fas fa-check"></i></span>No airflow</button>
-                    <button type="button" class="issue-btn" data-value="WeakAirflow"><span class="check"><i class="fas fa-check"></i></span>Weak airflow</button>
-                    <button type="button" class="issue-btn" data-value="StrangeNoise"><span class="check"><i class="fas fa-check"></i></span>Strange noise</button>
-                    <button type="button" class="issue-btn" data-value="BadSmell"><span class="check"><i class="fas fa-check"></i></span>Bad smell</button>
-                    <button type="button" class="issue-btn" data-value="WaterLeak"><span class="check"><i class="fas fa-check"></i></span>Water leak</button>
-                    <button type="button" class="issue-btn" data-value="FrozenCoil"><span class="check"><i class="fas fa-check"></i></span>Frozen coil</button>
-                    <button type="button" class="issue-btn" data-value="ThermostatIssue"><span class="check"><i class="fas fa-check"></i></span>Thermostat issue</button>
-                    <button type="button" class="issue-btn" data-value="FilterIssue"><span class="check"><i class="fas fa-check"></i></span>Filter issue</button>
-                    <button type="button" class="issue-btn" data-value="HighEnergyBill"><span class="check"><i class="fas fa-check"></i></span>High energy bill</button>
-                    <button type="button" class="issue-btn" data-value="AnnualMaintenance"><span class="check"><i class="fas fa-check"></i></span>Annual maintenance</button>
-                    <button type="button" class="issue-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>General review</button>
+                    <button type="button" class="issue-btn" data-value="NotCooling"><span class="check"><i class="fas fa-check"></i></span>@L["Not cooling"]</button>
+                    <button type="button" class="issue-btn" data-value="NotHeating"><span class="check"><i class="fas fa-check"></i></span>@L["Not heating"]</button>
+                    <button type="button" class="issue-btn" data-value="NoAirflow"><span class="check"><i class="fas fa-check"></i></span>@L["No airflow"]</button>
+                    <button type="button" class="issue-btn" data-value="WeakAirflow"><span class="check"><i class="fas fa-check"></i></span>@L["Weak airflow"]</button>
+                    <button type="button" class="issue-btn" data-value="StrangeNoise"><span class="check"><i class="fas fa-check"></i></span>@L["Strange noise"]</button>
+                    <button type="button" class="issue-btn" data-value="BadSmell"><span class="check"><i class="fas fa-check"></i></span>@L["Bad smell"]</button>
+                    <button type="button" class="issue-btn" data-value="WaterLeak"><span class="check"><i class="fas fa-check"></i></span>@L["Water leak"]</button>
+                    <button type="button" class="issue-btn" data-value="FrozenCoil"><span class="check"><i class="fas fa-check"></i></span>@L["Frozen coil"]</button>
+                    <button type="button" class="issue-btn" data-value="ThermostatIssue"><span class="check"><i class="fas fa-check"></i></span>@L["Thermostat issue"]</button>
+                    <button type="button" class="issue-btn" data-value="FilterIssue"><span class="check"><i class="fas fa-check"></i></span>@L["Filter issue"]</button>
+                    <button type="button" class="issue-btn" data-value="HighEnergyBill"><span class="check"><i class="fas fa-check"></i></span>@L["High energy bill"]</button>
+                    <button type="button" class="issue-btn" data-value="AnnualMaintenance"><span class="check"><i class="fas fa-check"></i></span>@L["Annual maintenance"]</button>
+                    <button type="button" class="issue-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>@L["General review"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">Which part needs attention?</span>
+                <span class="field-label">@L["Which part needs attention?"]</span>
                 <div class="part-group" data-target="ParteAtencion">
-                    <button type="button" class="part-btn" data-value="OutdoorUnit"><span class="check"><i class="fas fa-check"></i></span>Outdoor unit</button>
-                    <button type="button" class="part-btn" data-value="IndoorUnit"><span class="check"><i class="fas fa-check"></i></span>Indoor unit</button>
-                    <button type="button" class="part-btn" data-value="FurnaceAirHandler"><span class="check"><i class="fas fa-check"></i></span>Furnace / air handler</button>
-                    <button type="button" class="part-btn" data-value="Thermostat"><span class="check"><i class="fas fa-check"></i></span>Thermostat</button>
-                    <button type="button" class="part-btn" data-value="AirFilter"><span class="check"><i class="fas fa-check"></i></span>Air filter</button>
-                    <button type="button" class="part-btn" data-value="DuctVents"><span class="check"><i class="fas fa-check"></i></span>Duct / vents</button>
-                    <button type="button" class="part-btn" data-value="WholeSystem"><span class="check"><i class="fas fa-check"></i></span>Whole system</button>
+                    <button type="button" class="part-btn" data-value="OutdoorUnit"><span class="check"><i class="fas fa-check"></i></span>@L["Outdoor unit"]</button>
+                    <button type="button" class="part-btn" data-value="IndoorUnit"><span class="check"><i class="fas fa-check"></i></span>@L["Indoor unit"]</button>
+                    <button type="button" class="part-btn" data-value="FurnaceAirHandler"><span class="check"><i class="fas fa-check"></i></span>@L["Furnace / air handler"]</button>
+                    <button type="button" class="part-btn" data-value="Thermostat"><span class="check"><i class="fas fa-check"></i></span>@L["Thermostat"]</button>
+                    <button type="button" class="part-btn" data-value="AirFilter"><span class="check"><i class="fas fa-check"></i></span>@L["Air filter"]</button>
+                    <button type="button" class="part-btn" data-value="DuctVents"><span class="check"><i class="fas fa-check"></i></span>@L["Duct / vents"]</button>
+                    <button type="button" class="part-btn" data-value="WholeSystem"><span class="check"><i class="fas fa-check"></i></span>@L["Whole system"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">How urgent is it?</span>
+                <span class="field-label">@L["How urgent is it?"]</span>
                 <div class="segmented-3" data-target="Urgencia">
-                    <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                    <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                    <button type="button" class="segment-btn emergency" data-value="Emergency">Emergency</button>
+                    <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                    <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                    <button type="button" class="segment-btn emergency" data-value="Emergency">@L["Emergency"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">Is the system running right now?</span>
+                <span class="field-label">@L["Is the system running right now?"]</span>
                 <div class="segmented-3" data-target="SistemaFuncionando">
-                    <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="segment-btn" data-value="No">No</button>
-                    <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="info-box">
                 <i class="fas fa-circle-info"></i>
-                <div>If there is no cooling or heating during extreme weather, choose <strong>Emergency</strong> or contact support immediately.</div>
+                <div>@L["If there is no cooling or heating during extreme weather, choose"] <strong>@L["Emergency"]</strong> @L["or contact support immediately."]</div>
             </div>
 
-            <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-            <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> Upload photos or report</button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+            <button type="submit" class="btn-outline" name="action" value="upload"><i class="fas fa-cloud-arrow-up"></i> @L["Upload photos or report"]</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

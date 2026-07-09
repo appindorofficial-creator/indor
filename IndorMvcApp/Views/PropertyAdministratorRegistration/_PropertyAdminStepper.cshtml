@@ -1,13 +1,13 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorRegistrationStepViewModel
 <header class="pa-reg-header">
-    <a href="@Model.BackUrl" class="ob-nav-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
+    <a href="@Model.BackUrl" class="ob-nav-back" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
     <a asp-controller="Account" asp-action="Welcome" class="pa-reg-logo" aria-label="INDOR">
-        <span class="pa-reg-logo-text">ÎNDÔR</span>
-        <span class="pa-reg-logo-sub">home pro</span>
+        <span class="pa-reg-logo-text">INDOR</span>
+        <span class="pa-reg-logo-sub">@L["home pro"]</span>
     </a>
-    <span class="pa-reg-step-label">Step @Model.DisplayStep of @Model.TotalSteps</span>
+    <span class="pa-reg-step-label">@L.T("Step {0} of {1}", Model.DisplayStep, Model.TotalSteps)</span>
 </header>
-<nav class="pa-reg-stepper" aria-label="Property administrator registration progress">
+<nav class="pa-reg-stepper" aria-label="@L["Property administrator registration progress"]">
     @for (var i = 1; i <= Model.TotalSteps; i++)
     {
         var cls = i < Model.DisplayStep ? "is-done" : i == Model.DisplayStep ? "is-active" : "";

@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.HomeReviewDetailsViewModel
+@model IndorMvcApp.ViewModels.HomeReviewDetailsViewModel
 @{
-    ViewData["Title"] = "Home Review Details - INDOR";
-    ViewData["WizardTitle"] = "Home Review Details";
+    ViewData["Title"] = L["Home Review Details - INDOR"];
+    ViewData["WizardTitle"] = L["Home Review Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
 </div>
 
-        <h1 class="page-heading">Tell us about this home review</h1>
-        <p class="page-lead">This helps INDOR prepare the right checklist and schedule the right provider.</p>
+        <h1 class="page-heading">@L["Tell us about this home review"]</h1>
+        <p class="page-lead">@L["This helps INDOR prepare the right checklist and schedule the right provider."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -25,15 +25,15 @@
             <input type="hidden" asp-for="EsUrgente" id="EsUrgente" />
 
             <div class="field-card">
-                <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+                <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
 
             <div class="field-card">
-                <span class="field-label">Why do you need this inspection?</span>
+                <span class="field-label">@L["Why do you need this inspection?"]</span>
                 <div class="chip-group" data-target="MotivoInspeccion" data-mode="single">
                     <button type="button" class="chip-btn" data-value="BuyingHome">
                         <span class="check"><i class="fas fa-check"></i></span>Buying a home
@@ -51,41 +51,41 @@
             </div>
 
             <div class="field-card">
-                <span class="field-label">What would you like us to focus on?</span>
+                <span class="field-label">@L["What would you like us to focus on?"]</span>
                 <div class="focus-grid" id="focusGrid">
-                    <button type="button" class="focus-btn" data-value="Electrical"><span class="check"><i class="fas fa-check"></i></span>Electrical</button>
-                    <button type="button" class="focus-btn" data-value="HVAC"><span class="check"><i class="fas fa-check"></i></span>HVAC</button>
-                    <button type="button" class="focus-btn" data-value="GeneralStructure"><span class="check"><i class="fas fa-check"></i></span>General structure</button>
-                    <button type="button" class="focus-btn" data-value="Plumbing"><span class="check"><i class="fas fa-check"></i></span>Plumbing</button>
-                    <button type="button" class="focus-btn" data-value="Roof"><span class="check"><i class="fas fa-check"></i></span>Roof</button>
-                    <button type="button" class="focus-btn" data-value="Moisture"><span class="check"><i class="fas fa-check"></i></span>Moisture</button>
-                    <button type="button" class="focus-btn" data-value="Safety"><span class="check"><i class="fas fa-check"></i></span>Safety</button>
+                    <button type="button" class="focus-btn" data-value="Electrical"><span class="check"><i class="fas fa-check"></i></span>@L["Electrical"]</button>
+                    <button type="button" class="focus-btn" data-value="HVAC"><span class="check"><i class="fas fa-check"></i></span>@L["HVAC"]</button>
+                    <button type="button" class="focus-btn" data-value="GeneralStructure"><span class="check"><i class="fas fa-check"></i></span>@L["General structure"]</button>
+                    <button type="button" class="focus-btn" data-value="Plumbing"><span class="check"><i class="fas fa-check"></i></span>@L["Plumbing"]</button>
+                    <button type="button" class="focus-btn" data-value="Roof"><span class="check"><i class="fas fa-check"></i></span>@L["Roof"]</button>
+                    <button type="button" class="focus-btn" data-value="Moisture"><span class="check"><i class="fas fa-check"></i></span>@L["Moisture"]</button>
+                    <button type="button" class="focus-btn" data-value="Safety"><span class="check"><i class="fas fa-check"></i></span>@L["Safety"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <label asp-for="TamanoPropiedad" class="field-label">Property size</label>
-                <input asp-for="TamanoPropiedad" class="form-input" style="padding-left:16px;" placeholder="2,150 sq ft" />
+                <label asp-for="TamanoPropiedad" class="field-label">@L["Property size"]</label>
+                <input asp-for="TamanoPropiedad" class="form-input" style="padding-left:16px;" placeholder="@L["2,150 sq ft"]" />
             </div>
 
             <div class="field-card">
-                <span class="field-label">Is anything urgent right now?</span>
+                <span class="field-label">@L["Is anything urgent right now?"]</span>
                 <div class="segmented-3" data-target="EsUrgente" data-mode="single">
-                    <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="segment-btn" data-value="No">No</button>
-                    <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="info-box">
                 <i class="fas fa-circle-info"></i>
-                <div><strong>We'll help you focus on what matters most.</strong> This review helps us prioritize the home systems that matter most so you get clear insights and next steps.</div>
+                <div><strong>@L["We'll help you focus on what matters most."]</strong> @L["This review helps us prioritize the home systems that matter most so you get clear insights and next steps."]</div>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">
                 Continue <i class="fas fa-arrow-right"></i>
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

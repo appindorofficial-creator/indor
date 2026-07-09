@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.PlumbingDetailsViewModel
+@model IndorMvcApp.ViewModels.PlumbingDetailsViewModel
 @{
-    ViewData["Title"] = "Plumbing Details - INDOR";
-    ViewData["WizardTitle"] = "Plumbing Details";
+    ViewData["Title"] = L["Plumbing Details - INDOR"];
+    ViewData["WizardTitle"] = L["Plumbing Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
 </div>
 
-        <h1 class="page-heading">Tell us about your plumbing concern</h1>
-        <p class="page-lead">This helps INDOR prepare the right checklist and find the right provider.</p>
+        <h1 class="page-heading">@L["Tell us about your plumbing concern"]</h1>
+        <p class="page-lead">@L["This helps INDOR prepare the right checklist and find the right provider."]</p>
 
         @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
         {
@@ -26,71 +26,71 @@
             <input type="hidden" asp-for="FugaAguaAhora" id="FugaAguaAhora" />
 
             <div class="field-card">
-                <label asp-for="DireccionPropiedad" class="field-label">Property address</label>
+                <label asp-for="DireccionPropiedad" class="field-label">@L["Property address"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="123 Main St, Charlotte, NC 28202" required />
+                    <input asp-for="DireccionPropiedad" class="form-input" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required />
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Step 1</div>
-                <span class="field-label">What type of plumbing issue is it?</span>
+                <div class="step-label">@L["Step 1"]</div>
+                <span class="field-label">@L["What type of plumbing issue is it?"]</span>
                 <div class="issue-grid" data-target="TipoProblema">
-                    <button type="button" class="issue-btn" data-value="BathroomIssue"><span class="check"><i class="fas fa-check"></i></span>Bathroom issue</button>
-                    <button type="button" class="issue-btn" data-value="KitchenIssue"><span class="check"><i class="fas fa-check"></i></span>Kitchen issue</button>
-                    <button type="button" class="issue-btn" data-value="Toilet"><span class="check"><i class="fas fa-check"></i></span>Toilet</button>
-                    <button type="button" class="issue-btn" data-value="FaucetSink"><span class="check"><i class="fas fa-check"></i></span>Faucet / sink</button>
-                    <button type="button" class="issue-btn" data-value="ShowerTub"><span class="check"><i class="fas fa-check"></i></span>Shower / tub</button>
-                    <button type="button" class="issue-btn" data-value="WaterSupplyLine"><span class="check"><i class="fas fa-check"></i></span>Water supply line</button>
-                    <button type="button" class="issue-btn" data-value="DrainLineClog"><span class="check"><i class="fas fa-check"></i></span>Drain line / clog</button>
-                    <button type="button" class="issue-btn" data-value="MainWaterLine"><span class="check"><i class="fas fa-check"></i></span>Main water line</button>
-                    <button type="button" class="issue-btn" data-value="MainShutoffValve"><span class="check"><i class="fas fa-check"></i></span>Main shutoff valve</button>
-                    <button type="button" class="issue-btn" data-value="LeakDetection"><span class="check"><i class="fas fa-check"></i></span>Leak detection</button>
-                    <button type="button" class="issue-btn" data-value="LowWaterPressure"><span class="check"><i class="fas fa-check"></i></span>Low water pressure</button>
-                    <button type="button" class="issue-btn" data-value="SewerMainDrain"><span class="check"><i class="fas fa-check"></i></span>Sewer / main drain</button>
-                    <button type="button" class="issue-btn" data-value="ExteriorHoseBib"><span class="check"><i class="fas fa-check"></i></span>Exterior hose bib</button>
-                    <button type="button" class="issue-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>General review</button>
+                    <button type="button" class="issue-btn" data-value="BathroomIssue"><span class="check"><i class="fas fa-check"></i></span>@L["Bathroom issue"]</button>
+                    <button type="button" class="issue-btn" data-value="KitchenIssue"><span class="check"><i class="fas fa-check"></i></span>@L["Kitchen issue"]</button>
+                    <button type="button" class="issue-btn" data-value="Toilet"><span class="check"><i class="fas fa-check"></i></span>@L["Toilet"]</button>
+                    <button type="button" class="issue-btn" data-value="FaucetSink"><span class="check"><i class="fas fa-check"></i></span>@L["Faucet / sink"]</button>
+                    <button type="button" class="issue-btn" data-value="ShowerTub"><span class="check"><i class="fas fa-check"></i></span>@L["Shower / tub"]</button>
+                    <button type="button" class="issue-btn" data-value="WaterSupplyLine"><span class="check"><i class="fas fa-check"></i></span>@L["Water supply line"]</button>
+                    <button type="button" class="issue-btn" data-value="DrainLineClog"><span class="check"><i class="fas fa-check"></i></span>@L["Drain line / clog"]</button>
+                    <button type="button" class="issue-btn" data-value="MainWaterLine"><span class="check"><i class="fas fa-check"></i></span>@L["Main water line"]</button>
+                    <button type="button" class="issue-btn" data-value="MainShutoffValve"><span class="check"><i class="fas fa-check"></i></span>@L["Main shutoff valve"]</button>
+                    <button type="button" class="issue-btn" data-value="LeakDetection"><span class="check"><i class="fas fa-check"></i></span>@L["Leak detection"]</button>
+                    <button type="button" class="issue-btn" data-value="LowWaterPressure"><span class="check"><i class="fas fa-check"></i></span>@L["Low water pressure"]</button>
+                    <button type="button" class="issue-btn" data-value="SewerMainDrain"><span class="check"><i class="fas fa-check"></i></span>@L["Sewer / main drain"]</button>
+                    <button type="button" class="issue-btn" data-value="ExteriorHoseBib"><span class="check"><i class="fas fa-check"></i></span>@L["Exterior hose bib"]</button>
+                    <button type="button" class="issue-btn" data-value="GeneralReview"><span class="check"><i class="fas fa-check"></i></span>@L["General review"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Step 2</div>
-                <span class="field-label">Where is the problem?</span>
+                <div class="step-label">@L["Step 2"]</div>
+                <span class="field-label">@L["Where is the problem?"]</span>
                 <div class="location-group" data-target="UbicacionProblema">
-                    <button type="button" class="location-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>Kitchen</button>
-                    <button type="button" class="location-btn" data-value="Bathroom"><span class="check"><i class="fas fa-check"></i></span>Bathroom</button>
-                    <button type="button" class="location-btn" data-value="Laundry"><span class="check"><i class="fas fa-check"></i></span>Laundry</button>
-                    <button type="button" class="location-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>Crawl space</button>
-                    <button type="button" class="location-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>Basement</button>
-                    <button type="button" class="location-btn" data-value="Exterior"><span class="check"><i class="fas fa-check"></i></span>Exterior</button>
-                    <button type="button" class="location-btn" data-value="WholeHouse"><span class="check"><i class="fas fa-check"></i></span>Whole house</button>
+                    <button type="button" class="location-btn" data-value="Kitchen"><span class="check"><i class="fas fa-check"></i></span>@L["Kitchen"]</button>
+                    <button type="button" class="location-btn" data-value="Bathroom"><span class="check"><i class="fas fa-check"></i></span>@L["Bathroom"]</button>
+                    <button type="button" class="location-btn" data-value="Laundry"><span class="check"><i class="fas fa-check"></i></span>@L["Laundry"]</button>
+                    <button type="button" class="location-btn" data-value="CrawlSpace"><span class="check"><i class="fas fa-check"></i></span>@L["Crawl space"]</button>
+                    <button type="button" class="location-btn" data-value="Basement"><span class="check"><i class="fas fa-check"></i></span>@L["Basement"]</button>
+                    <button type="button" class="location-btn" data-value="Exterior"><span class="check"><i class="fas fa-check"></i></span>@L["Exterior"]</button>
+                    <button type="button" class="location-btn" data-value="WholeHouse"><span class="check"><i class="fas fa-check"></i></span>@L["Whole house"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Step 3</div>
-                <span class="field-label">How urgent is it?</span>
+                <div class="step-label">@L["Step 3"]</div>
+                <span class="field-label">@L["How urgent is it?"]</span>
                 <div class="segmented-3" data-target="Urgencia">
-                    <button type="button" class="segment-btn" data-value="Normal">Normal</button>
-                    <button type="button" class="segment-btn" data-value="Priority">Priority</button>
-                    <button type="button" class="segment-btn emergency" data-value="Emergency">Emergency</button>
+                    <button type="button" class="segment-btn" data-value="Normal">@L["Normal"]</button>
+                    <button type="button" class="segment-btn" data-value="Priority">@L["Priority"]</button>
+                    <button type="button" class="segment-btn emergency" data-value="Emergency">@L["Emergency"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Step 4</div>
-                <span class="field-label">Is water leaking right now?</span>
+                <div class="step-label">@L["Step 4"]</div>
+                <span class="field-label">@L["Is water leaking right now?"]</span>
                 <div class="segmented-3" data-target="FugaAguaAhora">
-                    <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="segment-btn" data-value="No">No</button>
-                    <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="info-box">
                 <i class="fas fa-circle-info"></i>
-                <div>If there is active flooding or a burst pipe, choose <strong>Emergency</strong> or contact support immediately.</div>
+                <div>@L["If there is active flooding or a burst pipe, choose"] <strong>@L["Emergency"]</strong> @L["or contact support immediately."]</div>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">
@@ -99,7 +99,7 @@
             <button type="submit" class="btn-outline" name="action" value="upload">
                 <i class="fas fa-cloud-arrow-up"></i> Upload photos or report
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

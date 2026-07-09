@@ -28,6 +28,7 @@ public class PerfilController : Controller
     private readonly IHomeownerPropertyService _homeownerPropertyService;
     private readonly AccountDeletionService _accountDeletion;
     private readonly ILogger<PerfilController> _logger;
+    private readonly IIndorLocalizer _localizer;
 
     public PerfilController(AppDbContext db,
                             UserManager<ApplicationUser> userManager,
@@ -35,7 +36,8 @@ public class PerfilController : Controller
                             IWebHostEnvironment env,
                             IHomeownerPropertyService homeownerPropertyService,
                             AccountDeletionService accountDeletion,
-                            ILogger<PerfilController> logger)
+                            ILogger<PerfilController> logger,
+                            IIndorLocalizer localizer)
     {
         _db = db;
         _userManager = userManager;
@@ -44,6 +46,7 @@ public class PerfilController : Controller
         _homeownerPropertyService = homeownerPropertyService;
         _accountDeletion = accountDeletion;
         _logger = logger;
+        _localizer = localizer;
     }
 
     private async Task<MoreProfileViewModel> BuildMoreProfileAsync()
@@ -137,8 +140,8 @@ public class PerfilController : Controller
     public async Task<IActionResult> Opciones()
     {
         await CargarUsuarioYMembresiaAsync();
-        ViewData["Title"] = "Profile Options";
-        ViewData["Subtitulo"] = "Manage your account details and preferences.";
+        ViewData["Title"] = _localizer.T("Profile Options");
+        ViewData["Subtitulo"] = _localizer.T("Manage your account details and preferences.");
         SetMoreSectionBackUrl();
         return View();
     }
@@ -150,8 +153,8 @@ public class PerfilController : Controller
         if (user == null) return RedirectToAction("Login", "Account");
 
         await CargarUsuarioYMembresiaAsync();
-        ViewData["Title"] = "Edit Profile";
-        ViewData["Subtitulo"] = "Update your details and connect your home with AI.";
+        ViewData["Title"] = _localizer.T("Edit Profile");
+        ViewData["Subtitulo"] = _localizer.T("Update your details and connect your home with AI.");
         SetMoreSectionBackUrl(from);
         return View(await MapEditProfileViewModelAsync(user));
     }
@@ -170,7 +173,7 @@ public class PerfilController : Controller
 
         if (!ModelState.IsValid)
         {
-            TempData["PerfilError"] = "Please complete your street address, city, state, and ZIP code.";
+            TempData["PerfilError"] = _localizer.T("Please complete your street address, city, state, and ZIP code.");
             return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
         }
 
@@ -190,7 +193,7 @@ public class PerfilController : Controller
 
             if (propertyInfo == null)
             {
-                TempData["PerfilError"] = "No information was found for this address. Try a more specific address.";
+                TempData["PerfilError"] = _localizer.T("No information was found for this address. Try a more specific address.");
                 return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
             }
 
@@ -206,13 +209,13 @@ public class PerfilController : Controller
 
             if (hasAiData)
             {
-                TempData["PerfilOk"] = "Your home profile is ready — House Facts and maintenance insights are now available.";
+                TempData["PerfilOk"] = _localizer.T("Your home profile is ready — House Facts and maintenance insights are now available.");
                 TempData["HomeEnriched"] = true;
             }
             else if (!string.IsNullOrWhiteSpace(propertyInfo.AttomRawJson))
             {
                 TempData["PerfilOk"] =
-                    "Address saved with basic property details. Full House Facts are loading — refresh in about 1 minute.";
+                    _localizer.T("Address saved with basic property details. Full House Facts are loading — refresh in about 1 minute.");
             }
             else
             {
@@ -228,13 +231,12 @@ public class PerfilController : Controller
                     // configured") so a misconfigured/timed-out server can be diagnosed
                     // instead of showing a misleading "AI is researching" message.
                     TempData["PerfilError"] =
-                        $"Address saved, but AI research could not complete: {propertyInfo.EnrichmentError} " +
-                        "Please try again in a moment.";
+                        _localizer.T("Address saved, but AI research could not complete: {0} Please try again in a moment.", propertyInfo.EnrichmentError);
                 }
                 else
                 {
                     TempData["PerfilOk"] =
-                        "Address saved! AI is researching your home now — refresh this page in about 1 minute to see House Facts.";
+                        _localizer.T("Address saved! AI is researching your home now — refresh this page in about 1 minute to see House Facts.");
                 }
             }
 
@@ -243,18 +245,18 @@ public class PerfilController : Controller
         catch (TimeoutException)
         {
             _logger.LogWarning("Home enrichment timed out for {Address}", model.BuildLookupAddress());
-            TempData["PerfilError"] = "Address lookup is taking longer than expected. Please try again in a moment.";
+            TempData["PerfilError"] = _localizer.T("Address lookup is taking longer than expected. Please try again in a moment.");
             return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
         }
         catch (OperationCanceledException) when (HttpContext.RequestAborted.IsCancellationRequested)
         {
-            TempData["PerfilError"] = "Address lookup was interrupted. Please try again.";
+            TempData["PerfilError"] = _localizer.T("Address lookup was interrupted. Please try again.");
             return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Unexpected error enriching homeowner property");
-            TempData["PerfilError"] = "We couldn't research this address right now. Please try again.";
+            TempData["PerfilError"] = _localizer.T("We couldn't research this address right now. Please try again.");
             return Redirect(Url.Action(nameof(EditarPerfil)) + "#home");
         }
     }
@@ -283,7 +285,7 @@ public class PerfilController : Controller
         {
             return await ReturnEditProfileViewAsync(
                 user,
-                "First name, last name, and phone are required.",
+                _localizer.T("First name, last name, and phone are required."),
                 nombre,
                 apellidos,
                 telefono,
@@ -294,7 +296,7 @@ public class PerfilController : Controller
         {
             return await ReturnEditProfileViewAsync(
                 user,
-                "Enter a valid 10-digit US phone number (e.g. 555 123 4567).",
+                _localizer.T("Enter a valid 10-digit US phone number (e.g. 555 123 4567)."),
                 nombre,
                 apellidos,
                 telefono,
@@ -305,7 +307,7 @@ public class PerfilController : Controller
         {
             return await ReturnEditProfileViewAsync(
                 user,
-                "Complete street address, city, state, and ZIP code to save your home.",
+                _localizer.T("Complete street address, city, state, and ZIP code to save your home."),
                 nombre,
                 apellidos,
                 telefono,
@@ -320,7 +322,7 @@ public class PerfilController : Controller
                     .SelectMany(v => v.Errors)
                     .Select(e => e.ErrorMessage)
                     .FirstOrDefault(e => !string.IsNullOrWhiteSpace(e))
-                    ?? "Enter a valid home address.";
+                    ?? _localizer.T("Enter a valid home address.");
                 return await ReturnEditProfileViewAsync(
                     user,
                     addressError,
@@ -355,8 +357,8 @@ public class PerfilController : Controller
         }
 
         TempData["PerfilOk"] = savedHome
-            ? "Profile and home address saved successfully."
-            : "Profile updated successfully.";
+            ? _localizer.T("Profile and home address saved successfully.")
+            : _localizer.T("Profile updated successfully.");
         return Redirect(savedHome
             ? Url.Action(nameof(EditarPerfil)) + "#home"
             : Url.Action(nameof(Opciones))!);
@@ -376,8 +378,8 @@ public class PerfilController : Controller
             .Where(p => p.UserId == userId)
             .OrderByDescending(p => p.FechaCreacion)
             .ToListAsync();
-        ViewData["Title"] = "Payments & History";
-        ViewData["Subtitulo"] = "Track services, billing, and financing in one place.";
+        ViewData["Title"] = _localizer.T("Payments & History");
+        ViewData["Subtitulo"] = _localizer.T("Track services, billing, and financing in one place.");
         SetMoreSectionBackUrl();
         return View();
     }
@@ -396,8 +398,8 @@ public class PerfilController : Controller
             .OrderBy(p => p.Orden)
             .ToListAsync();
         ViewBag.SelectedPlanId = planId ?? GetMembershipSignup()?.PlanId;
-        ViewData["Title"] = "Choose your membership";
-        ViewData["Subtitulo"] = "Pick the plan that fits your home care needs.";
+        ViewData["Title"] = _localizer.T("Choose your membership");
+        ViewData["Subtitulo"] = _localizer.T("Pick the plan that fits your home care needs.");
         ViewData["MembershipStep"] = 1;
         ViewData["MembershipTotalSteps"] = 6;
         ViewData["MembershipBackUrl"] = HomeNavigationUrls.MoreTab(Url);
@@ -416,7 +418,7 @@ public class PerfilController : Controller
         var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == planId && p.Activo);
         if (plan == null)
         {
-            TempData["PerfilError"] = "Plan not found.";
+            TempData["PerfilError"] = _localizer.T("Plan not found.");
             return RedirectToAction(nameof(Suscripciones));
         }
 
@@ -461,23 +463,23 @@ public class PerfilController : Controller
         switch (kind)
         {
             case MembershipPlanKind.Filter:
-                ViewData["Title"] = "Filter Plan details";
-                ViewData["Subtitulo"] = $"See how your {price}/month plan works.";
+                ViewData["Title"] = _localizer.T("Filter Plan details");
+                ViewData["Subtitulo"] = _localizer.T("See how your {0}/month plan works.", price);
                 ViewData["MembershipStep"] = 2;
                 break;
             case MembershipPlanKind.HomeCare:
-                ViewData["Title"] = "Home Care Plan";
-                ViewData["Subtitulo"] = "Everything you need for ongoing home care.";
+                ViewData["Title"] = _localizer.T("Home Care Plan");
+                ViewData["Subtitulo"] = _localizer.T("Everything you need for ongoing home care.");
                 ViewData["MembershipStep"] = 2;
                 break;
             case MembershipPlanKind.Premium:
-                ViewData["Title"] = "Premium Care Plan";
-                ViewData["Subtitulo"] = "Best for proactive homeowners.";
+                ViewData["Title"] = _localizer.T("Premium Care Plan");
+                ViewData["Subtitulo"] = _localizer.T("Best for proactive homeowners.");
                 ViewData["MembershipStep"] = 2;
                 break;
             default:
-                ViewData["Title"] = plan.Nombre;
-                ViewData["Subtitulo"] = $"See how your {price}/month plan works.";
+                ViewData["Title"] = plan.LocalizedNombre(_localizer.IsSpanish);
+                ViewData["Subtitulo"] = _localizer.T("See how your {0}/month plan works.", price);
                 ViewData["MembershipStep"] = 2;
                 break;
         }
@@ -515,8 +517,8 @@ public class PerfilController : Controller
         await CargarUsuarioYMembresiaAsync();
         ViewBag.Plan = plan;
         ViewBag.Signup = state;
-        ViewData["Title"] = "Tell us about your filter";
-        ViewData["Subtitulo"] = "We'll send the right filter to your home.";
+        ViewData["Title"] = _localizer.T("Tell us about your filter");
+        ViewData["Subtitulo"] = _localizer.T("We'll send the right filter to your home.");
         ViewData["MembershipStep"] = 3;
         ViewData["MembershipBackUrl"] = Url.Action(nameof(PlanDetalle), new { id = plan.Id });
         return View();
@@ -583,8 +585,8 @@ public class PerfilController : Controller
         ViewBag.Plan = plan;
         ViewBag.Signup = state;
         ViewBag.PlanKind = kind;
-        ViewData["Title"] = "Set up your filter delivery";
-        ViewData["Subtitulo"] = "Confirm where and what we should send every 3 months.";
+        ViewData["Title"] = _localizer.T("Set up your filter delivery");
+        ViewData["Subtitulo"] = _localizer.T("Confirm where and what we should send every 3 months.");
         ViewData["MembershipStep"] = 3;
         ViewData["MembershipTotalSteps"] = 6;
         ViewData["MembershipBackUrl"] = Url.Action(nameof(PlanDetalle), new { id = plan.Id });
@@ -630,8 +632,8 @@ public class PerfilController : Controller
         ViewBag.Plan = plan;
         ViewBag.Signup = state;
         ViewBag.PlanKind = kind;
-        ViewData["Title"] = "Reminders & member benefits";
-        ViewData["Subtitulo"] = "Choose the maintenance alerts you want and see how your savings work.";
+        ViewData["Title"] = _localizer.T("Reminders & member benefits");
+        ViewData["Subtitulo"] = _localizer.T("Choose the maintenance alerts you want and see how your savings work.");
         ViewData["MembershipStep"] = 4;
         ViewData["MembershipTotalSteps"] = 6;
         ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaEntregaHogar));
@@ -677,8 +679,8 @@ public class PerfilController : Controller
         await CargarUsuarioYMembresiaAsync();
         ViewBag.Plan = plan;
         ViewBag.Signup = state;
-        ViewData["Title"] = "Delivery setup";
-        ViewData["Subtitulo"] = "Choose where and when your filter should arrive.";
+        ViewData["Title"] = _localizer.T("Delivery setup");
+        ViewData["Subtitulo"] = _localizer.T("Choose where and when your filter should arrive.");
         ViewData["MembershipStep"] = 4;
         ViewData["MembershipTotalSteps"] = 6;
         ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaFiltro));
@@ -727,19 +729,19 @@ public class PerfilController : Controller
         switch (kind)
         {
             case MembershipPlanKind.Filter:
-                ViewData["Title"] = "Review & payment";
-                ViewData["Subtitulo"] = "Confirm your Filter Plan before subscribing.";
+                ViewData["Title"] = _localizer.T("Review & payment");
+                ViewData["Subtitulo"] = _localizer.T("Confirm your Filter Plan before subscribing.");
                 ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaEntrega));
                 break;
             case MembershipPlanKind.HomeCare:
             case MembershipPlanKind.Premium:
-                ViewData["Title"] = "Review & payment";
-                ViewData["Subtitulo"] = $"Confirm your {plan.Nombre} before activating your membership.";
+                ViewData["Title"] = _localizer.T("Review & payment");
+                ViewData["Subtitulo"] = _localizer.T("Confirm your {0} before activating your membership.", plan.LocalizedNombre(_localizer.IsSpanish));
                 ViewData["MembershipBackUrl"] = Url.Action(nameof(MembresiaBeneficios));
                 break;
             default:
-                ViewData["Title"] = "Review & confirm your plan";
-                ViewData["Subtitulo"] = "Almost there! Complete your subscription setup.";
+                ViewData["Title"] = _localizer.T("Review & confirm your plan");
+                ViewData["Subtitulo"] = _localizer.T("Almost there! Complete your subscription setup.");
                 ViewData["MembershipBackUrl"] = Url.Action(nameof(PlanDetalle), new { id = plan.Id });
                 break;
         }
@@ -764,7 +766,7 @@ public class PerfilController : Controller
         var skipBillingCheckbox = kind is MembershipPlanKind.Filter or MembershipPlanKind.HomeCare or MembershipPlanKind.Premium;
         if (plan.PrecioMensual > 0 && !skipBillingCheckbox && !agreeBilling)
         {
-            TempData["PerfilError"] = "Please agree to recurring billing to continue.";
+            TempData["PerfilError"] = _localizer.T("Please agree to recurring billing to continue.");
             return RedirectToAction(nameof(MembresiaRevision));
         }
 
@@ -803,20 +805,22 @@ public class PerfilController : Controller
         switch (kind)
         {
             case MembershipPlanKind.Filter:
-                ViewData["Title"] = "You're all set!";
-                ViewData["Subtitulo"] = "Your Filter Plan is now active.";
+                ViewData["Title"] = _localizer.T("You're all set!");
+                ViewData["Subtitulo"] = _localizer.T("Your Filter Plan is now active.");
                 break;
             case MembershipPlanKind.HomeCare:
-                ViewData["Title"] = "Welcome to Home Care Plan";
-                ViewData["Subtitulo"] = "Your membership is active.";
+                ViewData["Title"] = _localizer.T("Welcome to Home Care Plan");
+                ViewData["Subtitulo"] = _localizer.T("Your membership is active.");
                 break;
             case MembershipPlanKind.Premium:
-                ViewData["Title"] = "Welcome to Premium Care Plan";
-                ViewData["Subtitulo"] = "Your membership is active.";
+                ViewData["Title"] = _localizer.T("Welcome to Premium Care Plan");
+                ViewData["Subtitulo"] = _localizer.T("Your membership is active.");
                 break;
             default:
-                ViewData["Title"] = "You're enrolled";
-                ViewData["Subtitulo"] = plan != null ? $"Your membership in {plan.Nombre} is active." : "Your plan is now active.";
+                ViewData["Title"] = _localizer.T("You're enrolled");
+                ViewData["Subtitulo"] = plan != null
+                    ? _localizer.T("Your membership in {0} is active.", plan.LocalizedNombre(_localizer.IsSpanish))
+                    : _localizer.T("Your plan is now active.");
                 break;
         }
         ViewData["MembershipStep"] = 6;
@@ -835,8 +839,8 @@ public class PerfilController : Controller
         AddPropertyViewModel? addressForm = null)
     {
         TempData["PerfilError"] = error;
-        ViewData["Title"] = "Edit Profile";
-        ViewData["Subtitulo"] = "Update your name, phone, and profile photo.";
+        ViewData["Title"] = _localizer.T("Edit Profile");
+        ViewData["Subtitulo"] = _localizer.T("Update your name, phone, and profile photo.");
         SetMoreSectionBackUrl(Request.Query["from"].ToString());
         var model = await MapEditProfileViewModelAsync(user);
         model.Nombre = nombre;
@@ -980,12 +984,12 @@ public class PerfilController : Controller
 
         if (!ProfilePhotoExtensions.Contains(ext))
         {
-            return "Photo must be JPG, PNG, or WEBP.";
+            return _localizer.T("Photo must be JPG, PNG, or WEBP.");
         }
 
         if (foto.Length > MaxProfilePhotoBytes)
         {
-            return "Photo must be 10 MB or less.";
+            return _localizer.T("Photo must be 10 MB or less.");
         }
 
         var carpeta = Path.Combine(_env.WebRootPath, "uploads", "avatars");
@@ -1010,8 +1014,8 @@ public class PerfilController : Controller
             .Where(h => h.UserId == userId)
             .OrderByDescending(h => h.Fecha)
             .ToListAsync();
-        ViewData["Title"] = "History";
-        ViewData["Subtitulo"] = "Microservices, inspections, and past services";
+        ViewData["Title"] = _localizer.T("History");
+        ViewData["Subtitulo"] = _localizer.T("Microservices, inspections, and past services");
         SetMoreSectionBackUrl();
         return View();
     }
@@ -1024,8 +1028,8 @@ public class PerfilController : Controller
             .Where(p => p.Activo)
             .OrderBy(p => p.Orden)
             .ToListAsync();
-        ViewData["Title"] = "Internet comparison";
-        ViewData["Subtitulo"] = "Compare internet plans and providers";
+        ViewData["Title"] = _localizer.T("Internet comparison");
+        ViewData["Subtitulo"] = _localizer.T("Compare internet plans and providers");
         SetMoreSectionBackUrl();
         return View();
     }
@@ -1039,8 +1043,8 @@ public class PerfilController : Controller
             .Where(m => m.UserId == userId)
             .OrderBy(m => m.Fecha)
             .ToListAsync();
-        ViewData["Title"] = "Support";
-        ViewData["Subtitulo"] = "Chat with our team";
+        ViewData["Title"] = _localizer.T("Support");
+        ViewData["Subtitulo"] = _localizer.T("Chat with our team");
         SetMoreSectionBackUrl();
         return View();
     }
@@ -1059,7 +1063,7 @@ public class PerfilController : Controller
             telefono = telefono.Trim();
             if (!UsPhoneOptionalAttribute.IsValidOptional(telefono))
             {
-                TempData["PerfilError"] = "Enter a valid 10-digit US phone number (e.g. 555 123 4567).";
+                TempData["PerfilError"] = _localizer.T("Enter a valid 10-digit US phone number (e.g. 555 123 4567).");
                 return RedirectToAction(nameof(Opciones));
             }
 
@@ -1069,7 +1073,7 @@ public class PerfilController : Controller
         }
 
         await _userManager.UpdateAsync(user);
-        TempData["PerfilOk"] = "Profile updated successfully.";
+        TempData["PerfilOk"] = _localizer.T("Profile updated successfully.");
         return RedirectToAction("Index", "Home", new { section = "more" });
     }
 
@@ -1089,7 +1093,7 @@ public class PerfilController : Controller
         var file = foto ?? photo;
         if (file == null || file.Length == 0)
         {
-            return HomeownerPhotoUploadResult("Please choose a photo to upload.");
+            return HomeownerPhotoUploadResult(_localizer.T("Please choose a photo to upload."));
         }
 
         var photoError = await TrySaveHomeownerPhotoAsync(user, file);
@@ -1111,7 +1115,7 @@ public class PerfilController : Controller
                 return BadRequest(new { ok = false, message = error });
             }
 
-            return Json(new { ok = true, message = "Profile photo updated.", photoUrl });
+            return Json(new { ok = true, message = _localizer.T("Profile photo updated."), photoUrl });
         }
 
         if (!string.IsNullOrWhiteSpace(error))
@@ -1120,7 +1124,7 @@ public class PerfilController : Controller
         }
         else
         {
-            TempData["PerfilOk"] = "Photo updated.";
+            TempData["PerfilOk"] = _localizer.T("Photo updated.");
         }
 
         var returnTo = Request.Form["returnTo"].ToString();
@@ -1144,7 +1148,7 @@ public class PerfilController : Controller
 
         if (string.IsNullOrEmpty(nueva) || nueva != confirmar)
         {
-            TempData["PerfilError"] = "Passwords do not match.";
+            TempData["PerfilError"] = _localizer.T("Passwords do not match.");
             return RedirectToAction(nameof(Opciones));
         }
 
@@ -1152,7 +1156,7 @@ public class PerfilController : Controller
         if (result.Succeeded)
         {
             await _signInManager.SignInAsync(user, isPersistent: true);
-            TempData["PerfilOk"] = "Password updated.";
+            TempData["PerfilOk"] = _localizer.T("Password updated.");
         }
         else
         {
@@ -1173,20 +1177,20 @@ public class PerfilController : Controller
 
         if (!string.Equals(confirmEmail?.Trim(), user.Email, StringComparison.OrdinalIgnoreCase))
         {
-            TempData["PerfilError"] = "Enter your account email exactly to confirm account deletion.";
+            TempData["PerfilError"] = _localizer.T("Enter your account email exactly to confirm account deletion.");
             return RedirectToAction(nameof(Opciones));
         }
 
         var deleted = await _accountDeletion.DeleteAccountAsync(user);
         if (!deleted)
         {
-            TempData["PerfilError"] = "We could not delete your account right now. Please contact support.";
+            TempData["PerfilError"] = _localizer.T("We could not delete your account right now. Please contact support.");
             return RedirectToAction(nameof(Opciones));
         }
 
         await _signInManager.SignOutAsync();
         HttpContext.Session.Clear();
-        TempData["AccountDeleted"] = "Your account and associated data have been permanently deleted.";
+        TempData["AccountDeleted"] = _localizer.T("Your account and associated data have been permanently deleted.");
         return RedirectToAction("Welcome", "Account");
     }
 
@@ -1220,7 +1224,7 @@ public class PerfilController : Controller
             EsPredeterminado = predeterminado
         });
         await _db.SaveChangesAsync();
-        TempData["PerfilOk"] = "Payment method added.";
+        TempData["PerfilOk"] = _localizer.T("Payment method added.");
         return RedirectToAction(nameof(Pagos));
     }
 
@@ -1245,7 +1249,7 @@ public class PerfilController : Controller
         {
             UserId = userId,
             Remitente = "Support",
-            Contenido = "Hello! We received your message. An agent will reply soon."
+            Contenido = _localizer.T("Hello! We received your message. An agent will reply soon.")
         });
         await _db.SaveChangesAsync();
         return RedirectToAction(nameof(Soporte));
@@ -1265,7 +1269,7 @@ public class PerfilController : Controller
         var plan = await _db.PlanesMembresia.FirstOrDefaultAsync(p => p.Id == planId && p.Activo);
         if (plan == null)
         {
-            TempData["PerfilError"] = "Plan not found.";
+            TempData["PerfilError"] = _localizer.T("Plan not found.");
             return RedirectToAction(nameof(Suscripciones));
         }
 
@@ -1284,7 +1288,7 @@ public class PerfilController : Controller
             Activa = true
         });
         await _db.SaveChangesAsync();
-        TempData["PerfilOk"] = $"You're enrolled in {plan.Nombre}.";
+        TempData["PerfilOk"] = _localizer.T("You're enrolled in {0}.", plan.LocalizedNombre(_localizer.IsSpanish));
         var signupState = GetMembershipSignup() ?? new MembershipSignupState();
         signupState.PlanId = planId;
         SaveMembershipSignup(signupState);

@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProQuickEstimateViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Quick Estimate - INDOR PRO";
+    ViewData["Title"] = L["Quick Estimate - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -14,12 +14,12 @@
 
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="SelectRepairItems" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
-        <div><h1>Quick Estimate</h1></div>
+        <div><h1>@L["Quick Estimate"]</h1></div>
     </header>
 
     @if (TempData["EstimateDraftSaved"] as bool? == true)
     {
-        <div class="prv-pro-lead-toast">Estimate draft saved.</div>
+        <div class="prv-pro-lead-toast">@L["Estimate draft saved."]</div>
     }
 
     <section class="prv-pro-estimate-summary">
@@ -55,7 +55,7 @@
 
     @await Html.PartialAsync("_ProviderProLeadJobContext", Model)
 
-    <nav class="prv-pro-estimate-stepper" aria-label="Estimate steps">
+    <nav class="prv-pro-estimate-stepper" aria-label="@L["Estimate steps"]">
         @foreach (var (id, label) in steps)
         {
             <span class="@(Model.ActiveStep == id ? "is-active" : id == "service" || (id == "scope") ? "is-done" : "")">@label</span>
@@ -72,15 +72,15 @@
 
         <label class="prv-pro-create-field">
             <i class="fas fa-wrench"></i>
-            <span>Service Type</span>
+            <span>@L["Service Type"]</span>
             <input type="text" name="ServiceType" value="@Model.ServiceType" />
         </label>
 
         <section class="prv-pro-lead-section prv-pro-scope-section">
-            <h3>Scope of Work</h3>
+            <h3>@L["Scope of Work"]</h3>
             @if (Model.ScopeItems.Count == 0)
             {
-                <p class="prv-pro-lead-hint">No line items yet. Add repair items from the job details above or create your own.</p>
+                <p class="prv-pro-lead-hint">@L["No line items yet. Add repair items from the job details above or create your own."]</p>
             }
             <ol class="prv-pro-scope-list prv-pro-scope-list--cards" id="scopeItemsList">
                 @for (var i = 0; i < Model.ScopeItems.Count; i++)
@@ -91,20 +91,20 @@
                         : item.Amount;
                     <li class="prv-pro-scope-card">
                         <label class="prv-pro-scope-field prv-pro-scope-field--item">
-                            <span>Repair item</span>
+                            <span>@L["Repair item"]</span>
                             <input type="text" name="ScopeLabels" value="@item.Label" />
                         </label>
                         <div class="prv-pro-scope-amounts">
                             <label class="prv-pro-scope-field">
-                                <span>Labor</span>
+                                <span>@L["Labor"]</span>
                                 <input type="number" name="ScopeLaborAmounts" value="@item.LaborAmount.ToString("0")" step="1" min="0" inputmode="numeric" class="scope-labor" />
                             </label>
                             <label class="prv-pro-scope-field">
-                                <span>Material</span>
+                                <span>@L["Material"]</span>
                                 <input type="number" name="ScopeMaterialAmounts" value="@item.MaterialAmount.ToString("0")" step="1" min="0" inputmode="numeric" class="scope-material" />
                             </label>
                             <label class="prv-pro-scope-field prv-pro-scope-field--total">
-                                <span>Total</span>
+                                <span>@L["Total"]</span>
                                 <input type="number" name="ScopeAmounts" value="@rowTotal.ToString("0")" step="1" min="0" class="scope-total" readonly tabindex="-1" />
                             </label>
                         </div>
@@ -115,17 +115,17 @@
         </section>
 
         <section class="prv-pro-estimate-pricing prv-pro-estimate-pricing--cards">
-            <h3>Additional Costs</h3>
+            <h3>@L["Additional Costs"]</h3>
             <label class="prv-pro-estimate-cost-row">
-                <span>Service Call / Assessment</span>
+                <span>@L["Service Call / Assessment"]</span>
                 <input type="number" name="LaborAmount" value="@Model.LaborAmount.ToString("0")" step="1" min="0" inputmode="numeric" />
             </label>
             <label class="prv-pro-estimate-cost-row">
-                <span>Materials &amp; Tools</span>
+                <span>@L["Materials &amp; Tools"]</span>
                 <input type="number" name="MaterialsAmount" value="@Model.MaterialsAmount.ToString("0")" step="1" min="0" inputmode="numeric" />
             </label>
             <div class="prv-pro-estimate-total">
-                <span>Total Estimate</span>
+                <span>@L["Total Estimate"]</span>
                 <strong id="estimateGrandTotal">@Model.TotalAmount.ToString("C0", money)</strong>
             </div>
         </section>
@@ -134,7 +134,7 @@
             <div class="prv-pro-lead-section">
                 <h3><i class="fas fa-calendar"></i> Timeline</h3>
                 <input type="text" name="Timeline" value="@Model.Timeline" class="prv-pro-estimate-inline-input" />
-                <small>Estimated completion</small>
+                <small>@L["Estimated completion"]</small>
             </div>
             <div class="prv-pro-lead-section">
                 <h3><i class="fas fa-shield"></i> Warranty</h3>
@@ -144,17 +144,17 @@
 
         <label class="prv-pro-create-field prv-pro-create-field--notes">
             <i class="fas fa-note-sticky"></i>
-            <span>Notes to Homeowner</span>
+            <span>@L["Notes to Homeowner"]</span>
             <textarea name="HomeownerNotes" rows="3">@Model.HomeownerNotes</textarea>
         </label>
 
         <div class="prv-pro-ai-banner">
             <i class="fas fa-wand-magic-sparkles"></i>
             <div>
-                <strong>AI Estimate Assistant</strong>
-                <small>I can suggest pricing based on local data and job complexity.</small>
+                <strong>@L["AI Estimate Assistant"]</strong>
+                <small>@L["I can suggest pricing based on local data and job complexity."]</small>
             </div>
-            <button type="button" class="prv-pro-btn prv-pro-btn--ghost">Suggest Prices</button>
+            <button type="button" class="prv-pro-btn prv-pro-btn--ghost">@L["Suggest Prices"]</button>
         </div>
 
         <footer class="prv-pro-estimate-footer">
@@ -204,20 +204,20 @@
         row.className = 'prv-pro-scope-card';
         row.innerHTML = `
             <label class="prv-pro-scope-field prv-pro-scope-field--item">
-                <span>Repair item</span>
-                <input type="text" name="ScopeLabels" placeholder="Describe the repair" />
+                <span>@L["Repair item"]</span>
+                <input type="text" name="ScopeLabels" placeholder="@L["Describe the repair"]" />
             </label>
             <div class="prv-pro-scope-amounts">
                 <label class="prv-pro-scope-field">
-                    <span>Labor</span>
+                    <span>@L["Labor"]</span>
                     <input type="number" name="ScopeLaborAmounts" value="0" step="1" min="0" inputmode="numeric" class="scope-labor" />
                 </label>
                 <label class="prv-pro-scope-field">
-                    <span>Material</span>
+                    <span>@L["Material"]</span>
                     <input type="number" name="ScopeMaterialAmounts" value="0" step="1" min="0" inputmode="numeric" class="scope-material" />
                 </label>
                 <label class="prv-pro-scope-field prv-pro-scope-field--total">
-                    <span>Total</span>
+                    <span>@L["Total"]</span>
                     <input type="number" name="ScopeAmounts" value="0" step="1" min="0" class="scope-total" readonly tabindex="-1" />
                 </label>
             </div>`;

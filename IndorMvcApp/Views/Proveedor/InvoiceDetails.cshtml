@@ -24,14 +24,12 @@
     @if (TempData["InvoiceReminderSent"] as bool? == true)
     {
         <div class="prv-pro-alert prv-pro-alert--success">
-            <i class="fas fa-circle-check"></i> Reminder sent successfully.
-        </div>
+            <i class="fas fa-circle-check"></i> @L["Reminder sent successfully."]</div>
     }
     @if (TempData["InvoiceReceiptSent"] as bool? == true)
     {
         <div class="prv-pro-alert prv-pro-alert--success">
-            <i class="fas fa-circle-check"></i> Receipt sent again to the homeowner.
-        </div>
+            <i class="fas fa-circle-check"></i> @L["Receipt sent again to the homeowner."]</div>
     }
 
     <section class="prv-pro-invoice-hero">
@@ -51,23 +49,23 @@
     {
         <section class="prv-pro-invoice-meta-grid prv-pro-invoice-meta-grid--paid">
             <div class="prv-pro-invoice-meta-item">
-                <span>Due Date</span>
+                <span>@L["Due Date"]</span>
                 <strong>@Model.DueDateLabel</strong>
             </div>
             <div class="prv-pro-invoice-meta-item">
-                <span>Invoice Date</span>
+                <span>@L["Invoice Date"]</span>
                 <strong>@Model.InvoiceDateLabel</strong>
             </div>
             <div class="prv-pro-invoice-meta-item prv-pro-invoice-meta-item--paid">
-                <span>Payment Date</span>
+                <span>@L["Payment Date"]</span>
                 <strong>@Model.PaymentDateLabel</strong>
             </div>
             <div class="prv-pro-invoice-meta-item">
-                <span>Payment Method</span>
+                <span>@L["Payment Method"]</span>
                 <strong>@Model.PaymentMethod</strong>
             </div>
             <div class="prv-pro-invoice-meta-item prv-pro-invoice-meta-item--receipt">
-                <span>Receipt</span>
+                <span>@L["Receipt"]</span>
                 <strong>@(Model.ReceiptAvailable ? "Receipt Available" : "—")</strong>
             </div>
         </section>
@@ -75,7 +73,7 @@
         <section class="prv-pro-paid-invoice-sections">
             <details class="prv-pro-paid-section" open>
                 <summary>
-                    <span><i class="fas fa-list"></i> Invoice Line Items</span>
+                    <span><i class="fas fa-list"></i> @L["Invoice Line Items"]</span>
                     <em>@Model.LineItemCount item@(Model.LineItemCount == 1 ? "" : "s") · @Model.PaidAmount.ToString("C2", money)</em>
                 </summary>
                 <div class="prv-pro-invoice-line-cards">
@@ -96,13 +94,13 @@
             @if (!string.IsNullOrWhiteSpace(Model.CustomerNotes))
             {
                 <details class="prv-pro-paid-section">
-                    <summary><span><i class="fas fa-comment"></i> Customer Notes</span></summary>
+                    <summary><span><i class="fas fa-comment"></i> @L["Customer Notes"]</span></summary>
                     <p class="prv-pro-invoice-notes">@Model.CustomerNotes</p>
                 </details>
             }
 
             <details class="prv-pro-paid-section">
-                <summary><span><i class="fas fa-briefcase"></i> Job Information</span></summary>
+                <summary><span><i class="fas fa-briefcase"></i> @L["Job Information"]</span></summary>
                 @if (!string.IsNullOrWhiteSpace(Model.JobCode))
                 {
                     <p><strong>Job #@Model.JobCode</strong>@(string.IsNullOrWhiteSpace(Model.JobStatus) ? "" : $" — {Model.JobStatus}")</p>
@@ -114,7 +112,7 @@
             </details>
 
             <details class="prv-pro-paid-section">
-                <summary><span><i class="fas fa-house"></i> Property Information</span></summary>
+                <summary><span><i class="fas fa-house"></i> @L["Property Information"]</span></summary>
                 <p>@Model.PropertyAddress</p>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyType))
                 {
@@ -123,7 +121,7 @@
             </details>
 
             <details class="prv-pro-paid-section" open>
-                <summary><span><i class="fas fa-clock-rotate-left"></i> Payment History</span></summary>
+                <summary><span><i class="fas fa-clock-rotate-left"></i> @L["Payment History"]</span></summary>
                 @if (Model.PaymentRecords.Count == 0)
                 {
                     <p class="prv-pro-invoice-notes">@Model.PaymentHistoryLabel</p>
@@ -145,18 +143,18 @@
         </section>
 
         <section class="prv-pro-paid-project-summary">
-            <h3>Project Summary</h3>
+            <h3>@L["Project Summary"]</h3>
             <div class="prv-pro-paid-project-grid">
                 <div>
-                    <span>Technician</span>
+                    <span>@L["Technician"]</span>
                     <strong>@(string.IsNullOrWhiteSpace(Model.TechnicianName) ? "—" : Model.TechnicianName)</strong>
                 </div>
                 <div>
-                    <span>Completed</span>
+                    <span>@L["Completed"]</span>
                     <strong>@(string.IsNullOrWhiteSpace(Model.JobCompletedLabel) ? Model.PaymentDateLabel : Model.JobCompletedLabel)</strong>
                 </div>
                 <div class="prv-pro-paid-project-wide">
-                    <span>Service Performed</span>
+                    <span>@L["Service Performed"]</span>
                     <strong>@Model.ServicePerformed</strong>
                 </div>
             </div>
@@ -164,21 +162,18 @@
 
         <footer class="prv-pro-invoice-details-footer prv-pro-invoice-details-footer--paid">
             <a asp-controller="Proveedor" asp-action="DownloadInvoice" asp-route-id="@Model.InvoiceId" class="prv-pro-btn prv-pro-btn--outline">
-                <i class="fas fa-download"></i> Download Invoice
-            </a>
+                <i class="fas fa-download"></i> @L["Download Invoice"]</a>
             <form asp-controller="Proveedor" asp-action="SendInvoiceReceipt" method="post" class="prv-pro-inline-form">
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.InvoiceId" />
                 <input type="hidden" name="from" value="@Model.ReturnTab" />
                 <button type="submit" class="prv-pro-btn prv-pro-btn--outline">
-                    <i class="fas fa-paper-plane"></i> Send Receipt Again
-                </button>
+                    <i class="fas fa-paper-plane"></i> @L["Send Receipt Again"]</button>
             </form>
             @if (Model.ShowViewJobReport && Model.JobId.HasValue)
             {
                 <a asp-controller="Proveedor" asp-action="JobReport" asp-route-id="@Model.JobId" class="prv-pro-btn prv-pro-btn--primary">
-                    <i class="fas fa-file-lines"></i> View Job Report
-                </a>
+                    <i class="fas fa-file-lines"></i> @L["View Job Report"]</a>
             }
         </footer>
     }
@@ -186,25 +181,25 @@
     {
         <section class="prv-pro-invoice-meta-grid">
             <div class="prv-pro-invoice-meta-item @(Model.StatusClass == "overdue" ? "is-overdue" : "")">
-                <span>Due Date</span>
+                <span>@L["Due Date"]</span>
                 <strong>@Model.DueDateLabel</strong>
             </div>
             <div class="prv-pro-invoice-meta-item">
-                <span>Invoice Date</span>
+                <span>@L["Invoice Date"]</span>
                 <strong>@Model.InvoiceDateLabel</strong>
             </div>
             <div class="prv-pro-invoice-meta-item is-overdue">
-                <span>Payment Method</span>
+                <span>@L["Payment Method"]</span>
                 <strong>@Model.PaymentMethod</strong>
             </div>
             <div class="prv-pro-invoice-meta-item">
-                <span>Status</span>
+                <span>@L["Status"]</span>
                 <strong>@Model.Status</strong>
             </div>
         </section>
 
         <section class="prv-pro-lead-section">
-            <h3>Line Items</h3>
+            <h3>@L["Line Items"]</h3>
             <div class="prv-pro-invoice-line-cards">
                 @foreach (var line in Model.LineItems)
                 {
@@ -218,7 +213,7 @@
                     </div>
                 }
                 <div class="prv-pro-invoice-line-total">
-                    <span>Total Due</span>
+                    <span>@L["Total Due"]</span>
                     <strong>@Model.Amount.ToString("C2", money)</strong>
                 </div>
             </div>
@@ -228,40 +223,40 @@
             @if (!string.IsNullOrWhiteSpace(Model.CustomerNotes))
             {
                 <section class="prv-pro-lead-section">
-                    <h3>Customer Notes</h3>
+                    <h3>@L["Customer Notes"]</h3>
                     <p class="prv-pro-invoice-notes">@Model.CustomerNotes</p>
                 </section>
             }
             <section class="prv-pro-lead-section">
-                <h3>Notes to Customer</h3>
+                <h3>@L["Notes to Customer"]</h3>
                 <p class="prv-pro-invoice-notes">@Model.NotesToCustomer</p>
             </section>
             <section class="prv-pro-lead-section">
-                <h3>Job Information</h3>
+                <h3>@L["Job Information"]</h3>
                 @if (!string.IsNullOrWhiteSpace(Model.JobTitle))
                 {
-                    <p><strong>Job:</strong> @Model.JobTitle</p>
+                    <p><strong>@L["Job:"]</strong> @Model.JobTitle</p>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.TechnicianName))
                 {
-                    <p><strong>Technician:</strong> @Model.TechnicianName</p>
+                    <p><strong>@L["Technician:"]</strong> @Model.TechnicianName</p>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.JobCode))
                 {
-                    <p><strong>Job #:</strong> @Model.JobCode</p>
+                    <p><strong>@L["Job #:"]</strong> @Model.JobCode</p>
                 }
             </section>
             <section class="prv-pro-lead-section">
-                <h3>Property Information</h3>
-                <p><strong>Homeowner:</strong> @Model.CustomerName</p>
-                <p><strong>Property:</strong> @Model.PropertyAddress</p>
+                <h3>@L["Property Information"]</h3>
+                <p><strong>@L["Homeowner:"]</strong> @Model.CustomerName</p>
+                <p><strong>@L["Property:"]</strong> @Model.PropertyAddress</p>
                 @if (!string.IsNullOrWhiteSpace(Model.PropertyType))
                 {
-                    <p><strong>Type:</strong> @Model.PropertyType</p>
+                    <p><strong>@L["Type:"]</strong> @Model.PropertyType</p>
                 }
             </section>
             <section class="prv-pro-lead-section">
-                <h3>Payment History</h3>
+                <h3>@L["Payment History"]</h3>
                 <p class="prv-pro-invoice-notes">@Model.PaymentHistoryLabel</p>
             </section>
         </div>
@@ -270,18 +265,15 @@
             @if (Model.ShowReminderAction)
             {
                 <a asp-controller="Proveedor" asp-action="SendInvoiceReminder" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--primary">
-                    <i class="fas fa-bell"></i> Send Reminder
-                </a>
+                    <i class="fas fa-bell"></i> @L["Send Reminder"]</a>
             }
             @if (Model.ShowMarkPaidAction)
             {
                 <a asp-controller="Proveedor" asp-action="RecordPayment" asp-route-id="@Model.InvoiceId" asp-route-from="@Model.ReturnTab" class="prv-pro-btn prv-pro-btn--outline-success">
-                    <i class="fas fa-circle-check"></i> Mark as Paid
-                </a>
+                    <i class="fas fa-circle-check"></i> @L["Mark as Paid"]</a>
             }
             <a asp-controller="Proveedor" asp-action="DownloadInvoice" asp-route-id="@Model.InvoiceId" class="prv-pro-btn prv-pro-btn--outline">
-                <i class="fas fa-download"></i> Download Invoice
-            </a>
+                <i class="fas fa-download"></i> @L["Download Invoice"]</a>
         </footer>
     }
 </div>

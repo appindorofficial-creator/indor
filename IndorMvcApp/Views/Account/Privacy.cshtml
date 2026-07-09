@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Privacy Policy - INDOR";
+    ViewData["Title"] = L["Privacy Policy - INDOR"];
     Layout = "_LayoutAuthOnboarding";
     ViewBag.OnboardingShowBack = true;
 }
@@ -9,44 +9,44 @@
             @await Html.PartialAsync("_OnboardingNav")
 
             <article class="ob-legal-doc">
-                <h1>Privacy Policy</h1>
-                <p class="ob-legal-updated">Last updated: June 13, 2026</p>
-                <p class="ob-legal-related">See also our <a asp-controller="Account" asp-action="Terms" asp-route-from="@ViewBag.LegalFrom" asp-route-propiedadId="@ViewBag.LegalPropiedadId">Terms &amp; Conditions</a>. You can also view this policy at <a href="https://homeindor.com/privacy-policy" target="_blank" rel="noopener">homeindor.com/privacy-policy</a>.</p>
+                <h1>@L["Privacy Policy"]</h1>
+                <p class="ob-legal-updated">@L["Last updated: June 13, 2026"]</p>
+                <p class="ob-legal-related">@L["See also our"] <a asp-controller="Account" asp-action="Terms" asp-route-from="@ViewBag.LegalFrom" asp-route-propiedadId="@ViewBag.LegalPropiedadId">@L["Terms & Conditions"]</a>. @L["You can also view this policy at"] <a href="https://homeindor.com/privacy-policy" target="_blank" rel="noopener">homeindor.com/privacy-policy</a>.</p>
 
-                <h2>1. Introduction</h2>
-                <p>Indor (&ldquo;we,&rdquo; &ldquo;us,&rdquo; or &ldquo;our&rdquo;) operates the Indor mobile application and website (collectively, the &ldquo;Service&rdquo;). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service. Indor is a home operating system designed to help homeowners manage their property through maintenance scheduling, document management, property facts tracking, service provider connections, and related home management tools. By using the Service, you agree to the collection and use of information in accordance with this Privacy Policy.</p>
+                <h2>@L["1. Introduction"]</h2>
+                <p>@L["Indor (\"we,\" \"us,\" or \"our\") operates the Indor mobile application and website (collectively, the \"Service\"). This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our Service. Indor is a home operating system designed to help homeowners manage their property through maintenance scheduling, document management, property facts tracking, service provider connections, and related home management tools. By using the Service, you agree to the collection and use of information in accordance with this Privacy Policy."]</p>
 
-                <h2>2. Information We Collect</h2>
-                <p><strong>Personal information you provide:</strong> name, email address, phone number; account credentials (encrypted passwords); profile information such as your role (homeowner, realtor, property administrator, service provider); property address and property-related information; and payment information (processed securely through third-party payment processors).</p>
-                <p><strong>Property and home data:</strong> property details (address, year built, square footage, bedrooms/bathrooms), home systems information (HVAC, water heater, roof, electrical, plumbing), maintenance records and schedules, documents you upload (inspection reports, warranties, disclosures), permit and improvement history, and service provider interactions and booking history.</p>
-                <p><strong>Automatically collected information:</strong> device information (type, operating system, unique identifiers), usage data, log data (IP address, browser type, access times), and location data (with your consent, for local service recommendations).</p>
+                <h2>@L["2. Information We Collect"]</h2>
+                <p><strong>@L["Personal information you provide:"]</strong> @L["name, email address, phone number; account credentials (encrypted passwords); profile information such as your role (homeowner, realtor, property administrator, service provider); property address and property-related information; and payment information (processed securely through third-party payment processors)."]</p>
+                <p><strong>@L["Property and home data:"]</strong> @L["property details (address, year built, square footage, bedrooms/bathrooms), home systems information (HVAC, water heater, roof, electrical, plumbing), maintenance records and schedules, documents you upload (inspection reports, warranties, disclosures), permit and improvement history, and service provider interactions and booking history."]</p>
+                <p><strong>@L["Automatically collected information:"]</strong> @L["device information (type, operating system, unique identifiers), usage data, log data (IP address, browser type, access times), and location data (with your consent, for local service recommendations)."]</p>
 
-                <h2>3. How We Use Your Information</h2>
-                <p>We use collected information to provide and maintain the Service; generate AI-powered maintenance plans tailored to your home; auto-fill property facts from public and verified data sources; connect you with vetted service providers; send maintenance reminders and emergency service notifications; store and organize your home documents securely; improve and personalize your experience; process payments for services booked through the platform; communicate with you about updates, features, and support; and comply with legal obligations.</p>
+                <h2>@L["3. How We Use Your Information"]</h2>
+                <p>@L["We use collected information to provide and maintain the Service; generate AI-powered maintenance plans tailored to your home; auto-fill property facts from public and verified data sources; connect you with vetted service providers; send maintenance reminders and emergency service notifications; store and organize your home documents securely; improve and personalize your experience; process payments for services booked through the platform; communicate with you about updates, features, and support; and comply with legal obligations."]</p>
 
-                <h2>4. Information Sharing and Disclosure</h2>
-                <p>We do not sell your personal information. We may share information with service providers (cloud hosting, analytics, payment processing); professional service providers when you book a service through Indor; as required by law, subpoena, or legal process; in connection with a merger, acquisition, or sale of assets; and with your consent.</p>
+                <h2>@L["4. Information Sharing and Disclosure"]</h2>
+                <p>@L["We do not sell your personal information. We may share information with service providers (cloud hosting, analytics, payment processing); professional service providers when you book a service through Indor; as required by law, subpoena, or legal process; in connection with a merger, acquisition, or sale of assets; and with your consent."]</p>
 
-                <h2>5. Data Security</h2>
-                <p>We implement industry-standard security measures, including encryption in transit and at rest, secure cloud infrastructure, regular security audits, and access controls. However, no method of transmission over the Internet or electronic storage is 100% secure.</p>
+                <h2>@L["5. Data Security"]</h2>
+                <p>@L["We implement industry-standard security measures, including encryption in transit and at rest, secure cloud infrastructure, regular security audits, and access controls. However, no method of transmission over the Internet or electronic storage is 100% secure."]</p>
 
-                <h2>6. Data Retention</h2>
-                <p>We retain your personal information for as long as your account is active or as needed to provide the Service. Property data and documents are retained as long as you maintain your account. You may request deletion of your data at any time by contacting us or by deleting your account from within the app.</p>
+                <h2>@L["6. Data Retention"]</h2>
+                <p>@L["We retain your personal information for as long as your account is active or as needed to provide the Service. Property data and documents are retained as long as you maintain your account. You may request deletion of your data at any time by contacting us or by deleting your account from within the app."]</p>
 
-                <h2>7. Your Rights and Choices</h2>
-                <p>You have the right to access, update, or delete your personal information; opt out of marketing communications; request a copy of your data in a portable format; withdraw consent for data processing; and delete your account and associated data.</p>
+                <h2>@L["7. Your Rights and Choices"]</h2>
+                <p>@L["You have the right to access, update, or delete your personal information; opt out of marketing communications; request a copy of your data in a portable format; withdraw consent for data processing; and delete your account and associated data."]</p>
 
-                <h2>8. Children's Privacy</h2>
-                <p>Our Service is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us.</p>
+                <h2>@L["8. Children's Privacy"]</h2>
+                <p>@L["Our Service is not intended for children under the age of 13. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal information, please contact us."]</p>
 
-                <h2>9. Third-Party Services</h2>
-                <p>Our Service may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties. We encourage you to review their privacy policies before providing any information.</p>
+                <h2>@L["9. Third-Party Services"]</h2>
+                <p>@L["Our Service may contain links to third-party websites or services. We are not responsible for the privacy practices of these third parties. We encourage you to review their privacy policies before providing any information."]</p>
 
-                <h2>10. Changes to This Privacy Policy</h2>
-                <p>We may update this Privacy Policy from time to time. We will notify you of material changes by posting the new Privacy Policy on this page and updating the &ldquo;Last updated&rdquo; date. Your continued use of the Service after changes constitutes acceptance of the updated policy.</p>
+                <h2>@L["10. Changes to This Privacy Policy"]</h2>
+                <p>@L["We may update this Privacy Policy from time to time. We will notify you of material changes by posting the new Privacy Policy on this page and updating the \"Last updated\" date. Your continued use of the Service after changes constitutes acceptance of the updated policy."]</p>
 
-                <h2>11. Contact Us</h2>
-                <p>If you have questions about this Privacy Policy, contact us through <a href="https://homeindor.com" target="_blank" rel="noopener">homeindor.com</a>. Indor is operated by Safe Project Solution.</p>
+                <h2>@L["11. Contact Us"]</h2>
+                <p>@L["If you have questions about this Privacy Policy, contact us through"] <a href="https://homeindor.com" target="_blank" rel="noopener">homeindor.com</a>. @L["Indor is operated by Safe Project Solution."]</p>
             </article>
         </div>
     </div>

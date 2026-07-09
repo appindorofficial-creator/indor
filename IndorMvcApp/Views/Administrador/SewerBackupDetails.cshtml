@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorEmergencySewerBackupStep1ViewModel
 @{
-    ViewData["Title"] = "Sewer Backup Emergency";
+    ViewData["Title"] = L["Sewer Backup Emergency"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Sewer Backup Emergency</h1>
-        <p>Tell us what's happening so we can dispatch help fast.</p>
+        <h1>@L["Sewer Backup Emergency"]</h1>
+        <p>@L["Tell us what's happening so we can dispatch help fast."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -25,7 +25,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label>What's happening?</label>
+            <label>@L["What's happening?"]</label>
             <div class="pa-chip-grid">
                 @foreach (var item in new (string Value, string Label, string Icon)[]
                 {
@@ -48,7 +48,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label>Is sewage or dirty water coming back up now?</label>
+            <label>@L["Is sewage or dirty water coming back up now?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.SewageBackingUp == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="SewageBackingUp" value="Yes" @(Model.SewageBackingUp == "Yes" ? "checked" : null) /> Yes
@@ -61,7 +61,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>Are guests currently inside?</label>
+            <label>@L["Are guests currently inside?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.GuestsInside == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="GuestsInside" value="Yes" @(Model.GuestsInside == "Yes" ? "checked" : null) />
@@ -76,7 +76,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>How urgent is it?</label>
+            <label>@L["How urgent is it?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var u in new[] { ("Normal", "Normal"), ("Urgent", "Urgent"), ("Emergency", "Emergency") })
                 {
@@ -91,7 +91,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label>Where is it happening?</label>
+            <label>@L["Where is it happening?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
@@ -114,22 +114,22 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label>Add quick details</label>
-            <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="250" placeholder="Describe what's happening...">@Model.QuickDetails</textarea>
+            <label>@L["Add quick details"]</label>
+            <textarea class="pa-textarea" name="QuickDetails" rows="3" maxlength="250" placeholder="@L["Describe what's happening..."]">@Model.QuickDetails</textarea>
         </div>
 
         <div class="pa-media-actions">
-            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> Add photos</button>
-            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> Voice note</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-camera"></i> @L["Add photos"]</button>
+            <button type="button" class="pa-media-btn"><i class="fas fa-microphone"></i> @L["Voice note"]</button>
         </div>
 
         <div class="pa-notify-banner pa-notify-banner--info">
             <i class="fas fa-shield-halved"></i>
-            <span>Occupied guest stays are prioritized. We'll dispatch the closest available sewer / drain pro.</span>
+            <span>@L["Occupied guest stays are prioritized. We'll dispatch the closest available sewer / drain pro."]</span>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Continue</button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">Back to services</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Continue"]</button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-back-link">@L["Back to services"]</a>
     </form>
 </div>
 

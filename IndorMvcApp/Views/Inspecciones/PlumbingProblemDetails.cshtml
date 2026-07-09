@@ -1,8 +1,8 @@
-﻿@model IndorMvcApp.ViewModels.PlumbingProblemDetailsViewModel
+@model IndorMvcApp.ViewModels.PlumbingProblemDetailsViewModel
 @using IndorMvcApp.Services
 @{
-    ViewData["Title"] = "Problem Details - INDOR";
-    ViewData["WizardTitle"] = "Problem Details";
+    ViewData["Title"] = L["Problem Details - INDOR"];
+    ViewData["WizardTitle"] = L["Problem Details"];
 var ubicacionLabel = InspeccionDisplayLabels.UbicacionProblemaPlomeria(Model.UbicacionProblema);
     ViewData["WizardBackUrl"] = Url.Action("PlumbingDetails", "Inspecciones", new { id = Model.InspeccionId });
 
@@ -10,17 +10,17 @@ var ubicacionLabel = InspeccionDisplayLabels.UbicacionProblemaPlomeria(Model.Ubi
 
 </div>
 
-        <h1 class="page-heading">Help us understand the problem better</h1>
-        <p class="page-lead">Add more details so we can prepare the provider and recommend the right next step.</p>
+        <h1 class="page-heading">@L["Help us understand the problem better"]</h1>
+        <p class="page-lead">@L["Add more details so we can prepare the provider and recommend the right next step."]</p>
 
         <div class="summary-box">
             <div class="summary-row">
                 <i class="fas fa-droplet"></i>
-                <span><strong>Selected issue:</strong> @Model.ResumenProblema</span>
+                <span><strong>@L["Selected issue:"]</strong> @Model.ResumenProblema</span>
             </div>
             <div class="summary-row">
                 <i class="fas fa-location-dot"></i>
-                <span><strong>Location:</strong> @ubicacionLabel</span>
+                <span><strong>@L["Location:"]</strong> @ubicacionLabel</span>
             </div>
         </div>
 
@@ -38,70 +38,70 @@ var ubicacionLabel = InspeccionDisplayLabels.UbicacionProblemaPlomeria(Model.Ubi
             <input type="hidden" asp-for="AguaCerrada" id="AguaCerrada" />
 
             <div class="field-card">
-                <div class="step-label">Question 1</div>
-                <span class="field-label">What is happening?</span>
+                <div class="step-label">@L["Question 1"]</div>
+                <span class="field-label">@L["What is happening?"]</span>
                 <div class="chip-grid" id="situacionesGroup">
-                    <button type="button" class="chip-btn" data-value="LeakUnderSink">Leak under sink</button>
-                    <button type="button" class="chip-btn" data-value="SlowDrain">Slow drain</button>
-                    <button type="button" class="chip-btn" data-value="ClogBackup">Clog / backup</button>
-                    <button type="button" class="chip-btn" data-value="PipeNoise">Pipe noise</button>
-                    <button type="button" class="chip-btn" data-value="WaterStain">Water stain</button>
-                    <button type="button" class="chip-btn" data-value="NoHotWater">No hot water</button>
-                    <button type="button" class="chip-btn" data-value="ToiletRunning">Toilet running</button>
-                    <button type="button" class="chip-btn" data-value="BadSmell">Bad smell</button>
-                    <button type="button" class="chip-btn" data-value="FixtureLoose">Fixture loose</button>
-                    <button type="button" class="chip-btn" data-value="LowPressure">Low pressure</button>
+                    <button type="button" class="chip-btn" data-value="LeakUnderSink">@L["Leak under sink"]</button>
+                    <button type="button" class="chip-btn" data-value="SlowDrain">@L["Slow drain"]</button>
+                    <button type="button" class="chip-btn" data-value="ClogBackup">@L["Clog / backup"]</button>
+                    <button type="button" class="chip-btn" data-value="PipeNoise">@L["Pipe noise"]</button>
+                    <button type="button" class="chip-btn" data-value="WaterStain">@L["Water stain"]</button>
+                    <button type="button" class="chip-btn" data-value="NoHotWater">@L["No hot water"]</button>
+                    <button type="button" class="chip-btn" data-value="ToiletRunning">@L["Toilet running"]</button>
+                    <button type="button" class="chip-btn" data-value="BadSmell">@L["Bad smell"]</button>
+                    <button type="button" class="chip-btn" data-value="FixtureLoose">@L["Fixture loose"]</button>
+                    <button type="button" class="chip-btn" data-value="LowPressure">@L["Low pressure"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Question 2</div>
-                <span class="field-label">When did it start?</span>
+                <div class="step-label">@L["Question 2"]</div>
+                <span class="field-label">@L["When did it start?"]</span>
                 <div class="segmented-4" data-target="CuandoEmpezo">
-                    <button type="button" class="segment-btn" data-value="Today">Today</button>
-                    <button type="button" class="segment-btn" data-value="ThisWeek">This week</button>
-                    <button type="button" class="segment-btn" data-value="MoreThanWeek">More than a week</button>
-                    <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                    <button type="button" class="segment-btn" data-value="Today">@L["Today"]</button>
+                    <button type="button" class="segment-btn" data-value="ThisWeek">@L["This week"]</button>
+                    <button type="button" class="segment-btn" data-value="MoreThanWeek">@L["More than a week"]</button>
+                    <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Question 3</div>
-                <span class="field-label">Have you already shut off the water if needed?</span>
+                <div class="step-label">@L["Question 3"]</div>
+                <span class="field-label">@L["Have you already shut off the water if needed?"]</span>
                 <div class="segmented-3" data-target="AguaCerrada">
-                    <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                    <button type="button" class="segment-btn" data-value="No">No</button>
-                    <button type="button" class="segment-btn" data-value="NotNeeded">Not needed</button>
+                    <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                    <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                    <button type="button" class="segment-btn" data-value="NotNeeded">@L["Not needed"]</button>
                 </div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Question 4</div>
-                <label asp-for="DescripcionProblema" class="field-label">Describe the problem</label>
+                <div class="step-label">@L["Question 4"]</div>
+                <label asp-for="DescripcionProblema" class="field-label">@L["Describe the problem"]</label>
                 <textarea asp-for="DescripcionProblema" class="form-textarea" maxlength="500"
-                          placeholder="Example: There is water leaking under the kitchen sink and the drain is backing up after using the dishwasher..."></textarea>
+                          placeholder="@L["Example: There is water leaking under the kitchen sink and the drain is backing up after using the dishwasher..."]"></textarea>
                 <div class="char-count"><span id="descCount">0</span>/500</div>
             </div>
 
             <div class="field-card">
-                <div class="step-label">Question 5</div>
-                <span class="field-label">Anything else the provider should know?</span>
+                <div class="step-label">@L["Question 5"]</div>
+                <span class="field-label">@L["Anything else the provider should know?"]</span>
                 <div class="extra-group" id="notasGroup">
-                    <button type="button" class="extra-btn" data-value="TenantOccupied">Tenant occupied +</button>
-                    <button type="button" class="extra-btn" data-value="AccessUnderSink">Access needed under sink +</button>
-                    <button type="button" class="extra-btn" data-value="RepeatedIssue">Repeated issue +</button>
-                    <button type="button" class="extra-btn" data-value="AfterHoursVisit">After-hours visit needed +</button>
+                    <button type="button" class="extra-btn" data-value="TenantOccupied">@L["Tenant occupied +"]</button>
+                    <button type="button" class="extra-btn" data-value="AccessUnderSink">@L["Access needed under sink +"]</button>
+                    <button type="button" class="extra-btn" data-value="RepeatedIssue">@L["Repeated issue +"]</button>
+                    <button type="button" class="extra-btn" data-value="AfterHoursVisit">@L["After-hours visit needed +"]</button>
                 </div>
                 <div class="info-box">
                     <i class="fas fa-circle-info"></i>
-                    <div>The more details you provide, the faster we can diagnose and send the right specialist prepared for your visit.</div>
+                    <div>@L["The more details you provide, the faster we can diagnose and send the right specialist prepared for your visit."]</div>
                 </div>
             </div>
 
             <button type="submit" class="btn-primary" name="action" value="next">
                 Next <i class="fas fa-arrow-right"></i>
             </button>
-            <button type="submit" class="btn-secondary" name="action" value="skip">Skip for now</button>
+            <button type="submit" class="btn-secondary" name="action" value="skip">@L["Skip for now"]</button>
         </form>
     </div>
 

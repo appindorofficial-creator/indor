@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadPhotosSelectJobViewModel
 @{
-    ViewData["Title"] = "Upload Photos - INDOR PRO";
+    ViewData["Title"] = L["Upload Photos - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "upload-photos.css";
@@ -11,12 +11,12 @@
     @await Html.PartialAsync("_UploadPhotosHead")
 
     <section class="upp-head">
-        <h1>Upload Photos</h1>
-        <p>Select the job or report you want to update.</p>
+        <h1>@L["Upload Photos"]</h1>
+        <p>@L["Select the job or report you want to update."]</p>
     </section>
 
     <div class="upp-progress">
-        <span class="upp-step">Step 1 of 3</span>
+        <span class="upp-step">@L["Step 1 of 3"]</span>
         <div class="upp-bar"><span style="width:33%"></span></div>
     </div>
 
@@ -24,9 +24,9 @@
         <input type="hidden" name="filter" value="@Model.ActiveFilter" />
         <div class="upp-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search jobs or reports" />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search jobs or reports"]" />
         </div>
-        <button type="submit" class="upp-filter-btn" aria-label="Filters"><i class="fas fa-sliders"></i></button>
+        <button type="submit" class="upp-filter-btn" aria-label="@L["Filters"]"><i class="fas fa-sliders"></i></button>
     </form>
 
     <div class="upp-filter-row">
@@ -42,18 +42,18 @@
         <div class="upp-empty">
             @if (Model.HasSearchWithNoResults)
             {
-                <p>No jobs matched <strong>@Model.SearchQuery</strong>.</p>
-                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@Model.ActiveFilter" class="upp-btn upp-btn--outline">Clear search</a>
+                <p>@L["No jobs matched"]<strong>@Model.SearchQuery</strong>.</p>
+                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-filter="@Model.ActiveFilter" class="upp-btn upp-btn--outline">@L["Clear search"]</a>
             }
             else if (Model.TotalJobsAvailable == 0)
             {
-                <p>You don't have any jobs yet. Create a job first, then return here to add photos.</p>
-                <a asp-controller="Proveedor" asp-action="CreateJob" class="upp-btn upp-btn--primary">Create Job</a>
+                <p>@L["You don't have any jobs yet. Create a job first, then return here to add photos."]</p>
+                <a asp-controller="Proveedor" asp-action="CreateJob" class="upp-btn upp-btn--primary">@L["Create Job"]</a>
             }
             else
             {
-                <p>No jobs match the current filter.</p>
-                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-q="@Model.SearchQuery" class="upp-btn upp-btn--outline">Show all jobs</a>
+                <p>@L["No jobs match the current filter."]</p>
+                <a asp-controller="Proveedor" asp-action="UploadPhotos" asp-route-q="@Model.SearchQuery" class="upp-btn upp-btn--outline">@L["Show all jobs"]</a>
             }
         </div>
     }
@@ -61,7 +61,7 @@
     {
         <form method="post" asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-select-form">
             @Html.AntiForgeryToken()
-            <h2 class="upp-section">Recent Jobs</h2>
+            <h2 class="upp-section">@L["Recent Jobs"]</h2>
             <div class="upp-jobs">
                 @foreach (var job in Model.Jobs)
                 {
@@ -83,14 +83,14 @@
                                 <span class="upp-job-photos"><i class="fas fa-image"></i> @job.PhotosCount photos</span>
                             </span>
                         </span>
-                        <span class="upp-job-select">Select <i class="fas fa-chevron-right"></i></span>
+                        <span class="upp-job-select">@L["Select"]<i class="fas fa-chevron-right"></i></span>
                     </label>
                 }
             </div>
 
             <div class="upp-actions">
-                <button type="submit" class="upp-btn upp-btn--primary">Continue</button>
-                <a asp-controller="Proveedor" asp-action="Dashboard" class="upp-btn-text">Cancel</a>
+                <button type="submit" class="upp-btn upp-btn--primary">@L["Continue"]</button>
+                <a asp-controller="Proveedor" asp-action="Dashboard" class="upp-btn-text">@L["Cancel"]</a>
             </div>
         </form>
     }

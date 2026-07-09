@@ -1,13 +1,13 @@
 @model IndorMvcApp.ViewModels.RealtorInspectionReportViewViewModel
 @{
     Layout = "_RealtorLayout";
-    ViewData["Title"] = "Inspection Report";
+    ViewData["Title"] = L["Inspection Report"];
     ViewBag.NavActive = "home";
 }
 
 <div class="rl-dash-shell rl-insp-report-view-page">
     <header class="rl-listing-detail-head">
-        <a href="@Model.BackUrl" class="rl-listing-detail-back" aria-label="Back to inspection findings">
+        <a href="@Model.BackUrl" class="rl-listing-detail-back" aria-label="@L["Back to inspection findings"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div class="rl-listing-detail-head-copy">

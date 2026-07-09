@@ -178,7 +178,7 @@ public partial class ProveedorController
 
         if (string.Equals(input.Mode, "draft", StringComparison.OrdinalIgnoreCase))
         {
-            TempData["NetworkToast"] = "Draft saved. You can finish posting it anytime.";
+            TempData["NetworkToast"] = localizer["Draft saved. You can finish posting it anytime."];
             return RedirectToAction(nameof(Network));
         }
 

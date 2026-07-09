@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProCreateJobQuoteViewModel
 @{
-    ViewData["Title"] = "Create Job - INDOR PRO";
+    ViewData["Title"] = L["Create Job - INDOR PRO"];
     Layout = "_ProviderProLayout";
     var charCount = Model.QuoteRequestNotes?.Length ?? 0;
 }
@@ -16,14 +16,14 @@
 
     <section class="prv-pro-wizard-summary">
         <div>
-            <small>Job type</small>
+            <small>@L["Job type"]</small>
             <span class="prv-pro-wizard-type-icon prv-pro-wizard-type-icon--@Model.ServiceCategoryTone">
                 <i class="fas @Model.ServiceCategoryIcon"></i>
             </span>
             <strong>@Model.ServiceCategoryLabel</strong>
         </div>
         <div>
-            <small>Customer</small>
+            <small>@L["Customer"]</small>
             <span class="prv-pro-customer-avatar prv-pro-customer-avatar--@Model.CustomerTone">@Model.CustomerInitials</span>
             <strong>@Model.CustomerName</strong>
         </div>
@@ -35,13 +35,12 @@
         <input type="hidden" name="SubmitAction" id="createJobQuoteAction" value="ai" />
 
         <section class="prv-pro-wizard-card">
-            <h2>Would you like to send a quote from INDOR?</h2>
-            <p>You can write the request or record audio. INDOR's AI agent will use it to help build a detailed estimate.</p>
+            <h2>@L["Would you like to send a quote from INDOR?"]</h2>
+            <p>@L["You can write the request or record audio. INDOR's AI agent will use it to help build a detailed estimate."]</p>
 
             <div class="prv-pro-quote-toggle">
                 <button type="button" class="prv-pro-quote-toggle-btn @(Model.SendQuote ? "is-active" : "")" data-send="true">
-                    <i class="fas fa-paper-plane"></i> Yes, send quote
-                </button>
+                    <i class="fas fa-paper-plane"></i> @L["Yes, send quote"]</button>
                 <button type="button" class="prv-pro-quote-toggle-btn @(!Model.SendQuote ? "is-active" : "")" data-send="false">
                     Skip for now
                 </button>
@@ -51,24 +50,24 @@
         <section class="prv-pro-wizard-card prv-pro-quote-inputs @(Model.SendQuote ? "" : "is-hidden")" id="createJobQuoteInputs">
             <label class="prv-pro-form-label">
                 Describe what needs to be done
-                <textarea name="QuoteRequestNotes" id="createJobQuoteNotes" rows="5" maxlength="@Model.MaxCharacters" placeholder="Describe the work, damage, and what the customer needs...">@Model.QuoteRequestNotes</textarea>
+                <textarea name="QuoteRequestNotes" id="createJobQuoteNotes" rows="5" maxlength="@Model.MaxCharacters" placeholder="@L["Describe the work, damage, and what the customer needs..."]">@Model.QuoteRequestNotes</textarea>
             </label>
             <div class="prv-pro-quote-charcount"><span id="createJobQuoteCount">@charCount</span> / @Model.MaxCharacters</div>
 
             <div class="prv-pro-quote-audio">
-                <button type="button" class="prv-pro-quote-mic" title="Record audio"><i class="fas fa-microphone"></i></button>
+                <button type="button" class="prv-pro-quote-mic" title="@L["Record audio"]"><i class="fas fa-microphone"></i></button>
                 <div class="prv-pro-quote-audio-body">
-                    <button type="button" class="prv-pro-quote-record-btn">Record audio</button>
+                    <button type="button" class="prv-pro-quote-record-btn">@L["Record audio"]</button>
                     <div class="prv-pro-quote-wave" aria-hidden="true">
                         @for (var i = 0; i < 24; i++) { <span></span> }
                     </div>
                     <small>00:00</small>
                 </div>
             </div>
-            <small class="prv-pro-wizard-hint">AI will transcribe audio automatically</small>
+            <small class="prv-pro-wizard-hint">@L["AI will transcribe audio automatically"]</small>
 
             <div class="prv-pro-quote-attachments">
-                <h3>Add photos or inspection notes (optional)</h3>
+                <h3>@L["Add photos or inspection notes (optional)"]</h3>
                 <div class="prv-pro-quote-attachment-list">
                     @foreach (var file in Model.Attachments)
                     {
@@ -85,7 +84,7 @@
                                 <strong>@file.Name</strong>
                                 <small>@file.SizeLabel</small>
                             </div>
-                            <button type="button" class="prv-pro-quote-attachment-remove" title="Remove"><i class="fas fa-xmark"></i></button>
+                            <button type="button" class="prv-pro-quote-attachment-remove" title="@L["Remove"]"><i class="fas fa-xmark"></i></button>
                         </div>
                     }
                 </div>
@@ -94,12 +93,12 @@
 
         <div class="prv-pro-wizard-info">
             <i class="fas fa-circle-info"></i>
-            <span>INDOR AI will read your notes, audio, and attachments to draft the quote.</span>
+            <span>@L["INDOR AI will read your notes, audio, and attachments to draft the quote."]</span>
         </div>
 
         <div class="prv-pro-wizard-actions">
-            <a asp-controller="Proveedor" asp-action="CreateJobDetails" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary" id="createJobQuoteSubmit">Send to AI</button>
+            <a asp-controller="Proveedor" asp-action="CreateJobDetails" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary" id="createJobQuoteSubmit">@L["Send to AI"]</button>
         </div>
     </form>
 </div>

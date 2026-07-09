@@ -45,7 +45,7 @@
         <div class="why-box">
             <i class="fas fa-circle-info"></i>
             <div>
-                <strong>Why it matters</strong>
+                <strong>@L["Why it matters"]</strong>
                 <p>@Model.WhyItMattersTexto</p>
             </div>
         </div>
@@ -54,7 +54,7 @@
     @if (Model.PreviewItems.Count > 0)
     {
         <div class="preview-box">
-            <div class="preview-label">What we'll ask</div>
+            <div class="preview-label">@L["What we'll ask"]</div>
             <div class="preview-grid">
                 @foreach (var item in Model.PreviewItems)
                 {

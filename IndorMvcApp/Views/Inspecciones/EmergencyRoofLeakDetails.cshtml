@@ -1,15 +1,15 @@
 @model IndorMvcApp.ViewModels.EmergencyRoofLeakDetailsViewModel
 @{
-    ViewData["Title"] = "Roof Leak Emergency - INDOR";
-    ViewData["WizardTitle"] = "Roof Leak Emergency";
+    ViewData["Title"] = L["Roof Leak Emergency - INDOR"];
+    ViewData["WizardTitle"] = L["Roof Leak Emergency"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyRoofLeakDescribe", "Inspecciones", new { id = Model.ServicioEmergenciaId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-    <div><strong>Roof Leak Emergency</strong><span class="badge-247">24/7</span></div>
-    <p class="page-lead" style="margin-top:8px;">Fast help for active roof leaks and water intrusion.</p>
+    <div><strong>@L["Roof Leak Emergency"]</strong><span class="badge-247">24/7</span></div>
+    <p class="page-lead" style="margin-top:8px;">@L["Fast help for active roof leaks and water intrusion."]</p>
 
     
 @if (ViewContext.ViewData.ModelState.ErrorCount > 0)
@@ -27,23 +27,23 @@
 
         <div class="address-display">
             <span><i class="fas fa-house"></i>@Model.DireccionPropiedad</span>
-            <a asp-action="EmergencyRoofLeakDescribe" asp-route-id="@Model.ServicioEmergenciaId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit</a>
+            <a asp-action="EmergencyRoofLeakDescribe" asp-route-id="@Model.ServicioEmergenciaId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">@L["Edit"]</a>
         </div>
 
         <div class="dropzone" id="dropzone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong style="color:#0066CC;">Drag files here or browse</strong></p>
-            <p style="font-size:0.82rem;color:#64748B;margin-top:4px;">JPG, PNG, PDF up to 25 MB each</p>
+            <p><strong style="color:#0066CC;">@L["Drag files here or browse"]</strong></p>
+            <p style="font-size:0.82rem;color:#64748B;margin-top:4px;">@L["JPG, PNG, PDF up to 25 MB each"]</p>
         </div>
         <input type="file" id="fileInput" name="files" class="hidden-input" multiple accept=".pdf,.jpg,.jpeg,.png,.mp4,.mov,.webm,application/pdf,image/*,video/*" />
 
         <div class="action-grid">
-            <label class="action-btn" for="fileInputCamera"><i class="fas fa-camera"></i>Take photo</label>
+            <label class="action-btn" for="fileInputCamera"><i class="fas fa-camera"></i>@L["Take photo"]</label>
             <input type="file" id="fileInputCamera" class="hidden-input" accept="image/*" capture="environment" />
-            <label class="action-btn" for="fileInput"><i class="fas fa-images"></i>Upload photos</label>
-            <label class="action-btn" for="fileInputVideo"><i class="fas fa-video"></i>Add video</label>
+            <label class="action-btn" for="fileInput"><i class="fas fa-images"></i>@L["Upload photos"]</label>
+            <label class="action-btn" for="fileInputVideo"><i class="fas fa-video"></i>@L["Add video"]</label>
             <input type="file" id="fileInputVideo" class="hidden-input" accept="video/*,.mp4,.mov,.webm" />
-            <button type="button" class="action-btn" onclick="document.getElementById('NotaCorta').focus()"><i class="fas fa-note-sticky"></i>Add note</button>
+            <button type="button" class="action-btn" onclick="document.getElementById('NotaCorta').focus()"><i class="fas fa-note-sticky"></i>@L["Add note"]</button>
         </div>
 
         @if (Model.ArchivosExistentes.Count > 0)
@@ -51,32 +51,32 @@
             <div class="file-list">
                 @foreach (var file in Model.ArchivosExistentes)
                 {
-                    <div class="file-item"><span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span><a href="@file.RutaArchivo" target="_blank" rel="noopener">View</a></div>
+                    <div class="file-item"><span><i class="fas fa-paperclip"></i> @file.NombreArchivo</span><a href="@file.RutaArchivo" target="_blank" rel="noopener">@L["View"]</a></div>
                 }
             </div>
         }
         <div id="selectedFiles" class="file-list"></div>
 
-        <label asp-for="NotaCorta" class="field-label">Notes (optional)</label>
-        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="500" placeholder="Water dripping through ceiling in upstairs hallway after heavy rain. Stain is spreading near the vent."></textarea>
+        <label asp-for="NotaCorta" class="field-label">@L["Notes (optional)"]</label>
+        <textarea asp-for="NotaCorta" id="NotaCorta" class="form-textarea" maxlength="500" placeholder="@L["Water dripping through ceiling in upstairs hallway after heavy rain. Stain is spreading near the vent."]"></textarea>
         <div class="char-count"><span id="charCount">0</span>/500</div>
 
         <div class="field-card">
-            <span class="field-label">Can you safely place a bucket or move items away from the leak?</span>
+            <span class="field-label">@L["Can you safely place a bucket or move items away from the leak?"]</span>
             <div class="choice-row" data-target="PuedeColocarCubeta">
-                <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>Yes</button>
-                <button type="button" class="choice-btn" data-value="No"><i class="fas fa-xmark" style="color:#DC2626;"></i>No</button>
-                <button type="button" class="choice-btn" data-value="AlreadyDone"><i class="fas fa-bucket" style="color:#0066CC;"></i>Already done</button>
+                <button type="button" class="choice-btn" data-value="Yes"><i class="fas fa-check" style="color:#16A34A;"></i>@L["Yes"]</button>
+                <button type="button" class="choice-btn" data-value="No"><i class="fas fa-xmark" style="color:#DC2626;"></i>@L["No"]</button>
+                <button type="button" class="choice-btn" data-value="AlreadyDone"><i class="fas fa-bucket" style="color:#0066CC;"></i>@L["Already done"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>If it is safe, a photo of the leak area, ceiling stain, attic, or outside roof damage can speed up dispatch.</div>
+            <div>@L["If it is safe, a photo of the leak area, ceiling stain, attic, or outside roof damage can speed up dispatch."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="submit">Submit emergency request <i class="fas fa-chevron-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="submit">@L["Submit emergency request"] <i class="fas fa-chevron-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

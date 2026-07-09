@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProSelectRepairItemsViewModel
 @{
-    ViewData["Title"] = "Select Repair Items - INDOR PRO";
+    ViewData["Title"] = L["Select Repair Items - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
 }
@@ -12,7 +12,7 @@
     <header class="prv-pro-workflow-head">
         <a asp-controller="Proveedor" asp-action="InspectionFindings" asp-route-id="@Model.LeadId" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Select Repair Items</h1>
+            <h1>@L["Select Repair Items"]</h1>
             <small>@Model.Address · @Model.ServiceType</small>
         </div>
     </header>

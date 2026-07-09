@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorPressureWashingStep2ViewModel
 @{
-    ViewData["Title"] = "Pressure Washing";
+    ViewData["Title"] = L["Pressure Washing"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -13,8 +13,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-spray-can pa-flow-title-icon pa-flow-title-icon--green"></i> Pressure Washing</h1>
-        <p>Choose timing and access details.</p>
+        <h1><i class="fas fa-spray-can pa-flow-title-icon pa-flow-title-icon--green"></i> @L["Pressure Washing"]</h1>
+        <p>@L["Choose timing and access details."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminViewingStrip", Model.ViewingProperty)
@@ -34,7 +34,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-calendar-day pa-q-icon pa-q-icon--green"></i> When should service happen?</label>
+            <label><i class="fas fa-calendar-day pa-q-icon pa-q-icon--green"></i> @L["When should service happen?"]</label>
             <div class="pa-pw-timing-row">
                 @foreach (var t in new (string Value, string Label)[] {
                     ("NextAvailable", "Next available"),
@@ -53,7 +53,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> Preferred arrival window</label>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--green"></i> @L["Preferred arrival window"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var w in new (string Value, string Label)[] {
                     ("Morning", "Morning (8:00 AM – 12:00 PM)"),
@@ -70,7 +70,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label>Do you have outdoor water access?</label>
+            <label>@L["Do you have outdoor water access?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.HasWaterAccess == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="HasWaterAccess" value="Yes" @(Model.HasWaterAccess == "Yes" ? "checked" : null) /> Yes
@@ -83,7 +83,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>Is exterior power available?</label>
+            <label>@L["Is exterior power available?"]</label>
             <div class="pa-toggle-pair">
                 <label class="pa-toggle-btn @(Model.HasPower == "Yes" ? "is-selected" : null)">
                     <input type="radio" name="HasPower" value="Yes" @(Model.HasPower == "Yes" ? "checked" : null) /> Yes
@@ -96,7 +96,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> How should the crew enter?</label>
+            <label><i class="fas fa-door-open pa-q-icon pa-q-icon--green"></i> @L["How should the crew enter?"]</label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var e in new (string Value, string Label)[] {
                     ("GateCode", "Gate code"),
@@ -113,14 +113,14 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> Gate / access notes</label>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--green"></i> @L["Gate / access notes"]</label>
             <textarea class="pa-textarea" name="AccessNotes" rows="3" maxlength="200" id="pwAccessNotes">@Model.AccessNotes</textarea>
             <small class="pa-char-count"><span id="pwAccessNotesCount">@Model.AccessNotes.Length</span> / 200</small>
         </div>
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">7</span>
-            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> Who should get updates? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--green"></i> @L["Who should get updates?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-chip-grid pa-chip-grid--3">
                 @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
                 {
@@ -135,13 +135,13 @@
         <div class="pa-lawn-availability-banner">
             <div>
                 <strong>@Model.CrewEtaLabel</strong>
-                <small>We'll confirm your arrival window and send updates as the crew is assigned.</small>
+                <small>@L["We'll confirm your arrival window and send updates as the crew is assigned."]</small>
             </div>
             <i class="fas fa-leaf"></i>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request <i class="fas fa-chevron-right"></i></button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"] <i class="fas fa-chevron-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

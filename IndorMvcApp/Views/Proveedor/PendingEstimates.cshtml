@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.ProviderProPendingEstimatesPageViewModel
 @using System.Globalization
 @{
-    ViewData["Title"] = "Pending Estimates - INDOR PRO";
+    ViewData["Title"] = L["Pending Estimates - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     var money = CultureInfo.GetCultureInfo("en-US");
@@ -20,7 +20,7 @@
         <a asp-controller="Proveedor" asp-action="Dashboard" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
             <h1>Step @Model.StepNumber of @Model.TotalSteps · Pending Estimates</h1>
-            <p>Here you can see all estimates waiting for action. Tap an estimate to review it.</p>
+            <p>@L["Here you can see all estimates waiting for action. Tap an estimate to review it."]</p>
         </div>
     </header>
 
@@ -39,35 +39,35 @@
         <input type="hidden" name="tab" value="@Model.ActiveTab" />
         <div class="prv-pro-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search estimates..." />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search estimates..."]" />
         </div>
-        <button type="submit" class="prv-pro-filter-btn" title="Search"><i class="fas fa-magnifying-glass"></i></button>
+        <button type="submit" class="prv-pro-filter-btn" title="@L["Search"]"><i class="fas fa-magnifying-glass"></i></button>
     </form>
 
     <section class="prv-pro-est-hub-stats">
         <div class="prv-pro-est-hub-stat">
             <span class="prv-pro-est-hub-stat-icon prv-pro-est-hub-stat-icon--amber"><i class="fas fa-file-lines"></i></span>
             <strong>@Model.PendingCount</strong>
-            <small>Pending Estimates</small>
+            <small>@L["Pending Estimates"]</small>
         </div>
         <div class="prv-pro-est-hub-stat">
             <span class="prv-pro-est-hub-stat-icon prv-pro-est-hub-stat-icon--purple"><i class="fas fa-wand-magic-sparkles"></i></span>
             <strong>@Model.AiDraftCount</strong>
-            <small>AI Draft Estimates</small>
+            <small>@L["AI Draft Estimates"]</small>
         </div>
         <div class="prv-pro-est-hub-stat">
             <span class="prv-pro-est-hub-stat-icon prv-pro-est-hub-stat-icon--orange"><i class="fas fa-eye"></i></span>
             <strong>@Model.NeedsReviewCount</strong>
-            <small>Needs Review</small>
+            <small>@L["Needs Review"]</small>
         </div>
         <div class="prv-pro-est-hub-stat">
             <span class="prv-pro-est-hub-stat-icon prv-pro-est-hub-stat-icon--green"><i class="fas fa-paper-plane"></i></span>
             <strong>@Model.ReadyCount</strong>
-            <small>Ready to Send</small>
+            <small>@L["Ready to Send"]</small>
         </div>
     </section>
 
-    <nav class="prv-pro-leads-filters" aria-label="Estimate filters">
+    <nav class="prv-pro-leads-filters" aria-label="@L["Estimate filters"]">
         @foreach (var (id, label) in tabs)
         {
             <a asp-controller="Proveedor" asp-action="PendingEstimates"
@@ -81,7 +81,7 @@
         @if (Model.Estimates.Count == 0)
         {
             <div class="prv-pro-panel">
-                <p class="prv-pro-empty">No estimates in this view yet. Create one from a lead or save a draft.</p>
+                <p class="prv-pro-empty">@L["No estimates in this view yet. Create one from a lead or save a draft."]</p>
             </div>
         }
         else

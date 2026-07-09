@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorFilesViewModel
 @{
-    ViewData["Title"] = "Property Files";
+    ViewData["Title"] = L["Property Files"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "files";
 }
@@ -11,15 +11,15 @@
 
         <div class="rl-page-header rl-page-header--hero">
             <div class="rl-page-header-copy">
-                <h1 class="rl-page-title">Property Files</h1>
-                <p class="rl-page-subtitle">Track each property file from inspection to package sharing.</p>
+                <h1 class="rl-page-title">@L["Property Files"]</h1>
+                <p class="rl-page-subtitle">@L["Track each property file from inspection to package sharing."]</p>
             </div>
             <a asp-controller="RealtorPropertyFile"
                asp-action="Details"
                asp-route-returnTo="files"
                class="rl-btn-primary rl-btn-primary--sm rl-page-hero-btn"
                id="rlFilesAddBtn"
-               aria-label="Create new property file">
+               aria-label="@L["Create new property file"]">
                 <i class="fas fa-plus" aria-hidden="true"></i> New File
             </a>
         </div>
@@ -28,10 +28,10 @@
         <div class="rl-search-row">
             <div class="rl-search-bar">
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address, client, or file ID..." />
+                <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search by address, client, or file ID..."]" />
             </div>
             <div class="rl-filter-wrap">
-                <button type="button" class="rl-filter-btn" id="rlFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> Filter</button>
+                <button type="button" class="rl-filter-btn" id="rlFilterBtn" aria-haspopup="true" aria-expanded="false"><i class="fas fa-sliders"></i> @L["Filter"]</button>
                 <div class="rl-filter-menu" id="rlFilterMenu" role="menu" hidden>
                     @foreach (var chip in Model.Filters)
                     {
@@ -80,7 +80,7 @@
         {
             if (!Model.HasAnyFiles)
             {
-                <div class="rl-dash-empty">No files match your filters.</div>
+                <div class="rl-dash-empty">@L["No files match your filters."]</div>
             }
             else if (!string.IsNullOrWhiteSpace(Model.SearchQuery))
             {
@@ -115,10 +115,10 @@
                                     <span class="rl-premium-muted">@file.CityRegion</span>
                                 }
                             </div>
-                            <button type="button" class="rl-card-menu" aria-label="Options" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i></button>
+                            <button type="button" class="rl-card-menu" aria-label="@L["Options"]" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-vertical"></i></button>
                             <div class="rl-card-menu-dropdown" role="menu" hidden>
-                                <a href="@file.ActionUrl" class="rl-card-menu-item" role="menuitem"><i class="fas fa-folder-open"></i> Open file</a>
-                                <button type="button" class="rl-card-menu-item" data-copy="@file.FileCode" role="menuitem"><i class="fas fa-copy"></i> Copy File ID</button>
+                                <a href="@file.ActionUrl" class="rl-card-menu-item" role="menuitem"><i class="fas fa-folder-open"></i> @L["Open file"]</a>
+                                <button type="button" class="rl-card-menu-item" data-copy="@file.FileCode" role="menuitem"><i class="fas fa-copy"></i> @L["Copy File ID"]</button>
                             </div>
                             <span class="rl-status-pill rl-status-pill--@file.StatusCss">@file.StatusBadge</span>
                         </div>
@@ -143,7 +143,7 @@
     {
         <section class="rl-dash-section">
             <div class="rl-dash-section-head">
-                <h2><i class="fas fa-lightbulb"></i> Smart Insights</h2>
+                <h2><i class="fas fa-lightbulb"></i> @L["Smart Insights"]</h2>
             </div>
             <div class="rl-hscroll rl-insight-chips">
                 @foreach (var insight in Model.Insights)

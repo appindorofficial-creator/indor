@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorTasksViewModel
 @{
-    ViewData["Title"] = "Service requests";
+    ViewData["Title"] = L["Service requests"];
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "tasks";
     var filters = new[] {
@@ -16,8 +16,8 @@
     @await Html.PartialAsync("_PropertyAdminTopbar", Model)
 
     <section class="pa-hero-block">
-        <h1>Service requests</h1>
-        <p>Track all home service activity in one place.</p>
+        <h1>@L["Service requests"]</h1>
+        <p>@L["Track all home service activity in one place."]</p>
     </section>
 
     @await Html.PartialAsync("_PropertyAdminPortfolioCard", Model)
@@ -35,7 +35,7 @@
     <section class="pa-section">
         @if (Model.Requests.Count == 0)
         {
-            <div class="pa-empty-card">No service requests match this filter.</div>
+            <div class="pa-empty-card">@L["No service requests match this filter."]</div>
         }
         else
         {

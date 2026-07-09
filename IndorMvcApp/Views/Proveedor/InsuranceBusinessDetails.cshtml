@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.InsuranceBusinessDetailsStepViewModel
 @{
-    ViewData["Title"] = "Business Details - INDOR PRO";
+    ViewData["Title"] = L["Business Details - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "home";
     ViewData["ProviderProExtraCss"] = "insurance-quote.css";
@@ -13,10 +13,10 @@
 
 <div class="prv-pro-shell ins-wiz@(Model.IsPremium ? " ins-wiz--premium" : "")">
     <header class="ins-hd">
-        <a asp-controller="Proveedor" asp-action="InsuranceBusinessInfo" class="ins-hd-back" aria-label="Back"><i class="fas fa-chevron-left"></i></a>
+        <a asp-controller="Proveedor" asp-action="InsuranceBusinessInfo" class="ins-hd-back" aria-label="@L["Back"]"><i class="fas fa-chevron-left"></i></a>
         <div class="ins-hd-text">
-            <h1>Business Details</h1>
-            <p>A few business details help our insurance partner prepare the quote.</p>
+            <h1>@L["Business Details"]</h1>
+            <p>@L["A few business details help our insurance partner prepare the quote."]</p>
         </div>
     </header>
 
@@ -29,12 +29,12 @@
             <small>@Model.CoverageTagline</small>
             @if (Model.IsPopular)
             {
-                <span class="ins-popular ins-popular--block">Most Popular</span>
+                <span class="ins-popular ins-popular--block">@L["Most Popular"]</span>
             }
         </div>
         <div class="ins-plancard-price">
-            <div><small>Pay today</small><strong>$@Model.PayToday.ToString("0")</strong></div>
-            <div><small>Then</small><strong>$@Model.Monthly.ToString("0")<span>/mo</span></strong></div>
+            <div><small>@L["Pay today"]</small><strong>$@Model.PayToday.ToString("0")</strong></div>
+            <div><small>@L["Then"]</small><strong>$@Model.Monthly.ToString("0")<span>/mo</span></strong></div>
         </div>
     </div>
 
@@ -42,10 +42,10 @@
         <div class="ins-fc">
             <div class="ins-bx-row">
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">Number of Employees</span>
+                    <span class="ins-bx-lbl">@L["Number of Employees"]</span>
                     <div class="ins-bx-ctl">
                         <select asp-for="NumberOfEmployees" class="ins-bx-select">
-                            <option value="">Select number</option>
+                            <option value="">@L["Select number"]</option>
                             @foreach (var e in IndorMvcApp.ViewModels.InsuranceCatalog.EmployeeOptions)
                             {
                                 <option value="@e" selected="@(Model.NumberOfEmployees == e)">@e</option>
@@ -55,25 +55,25 @@
                     </div>
                 </div>
                 <div class="ins-bx">
-                    <span class="ins-bx-lbl">Annual Payroll</span>
+                    <span class="ins-bx-lbl">@L["Annual Payroll"]</span>
                     <div class="ins-bx-ctl">
-                        <input asp-for="EmployeePayroll" type="number" min="0" step="any" class="ins-bx-input" placeholder="Enter amount in USD" />
+                        <input asp-for="EmployeePayroll" type="number" min="0" step="any" class="ins-bx-input" placeholder="@L["Enter amount in USD"]" />
                     </div>
                 </div>
             </div>
 
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Annual Gross Revenue</span>
+                <span class="ins-bx-lbl">@L["Annual Gross Revenue"]</span>
                 <div class="ins-bx-ctl">
-                    <input asp-for="CompanyGrossRevenue" type="number" min="0" step="any" class="ins-bx-input" placeholder="Enter amount in USD" />
+                    <input asp-for="CompanyGrossRevenue" type="number" min="0" step="any" class="ins-bx-input" placeholder="@L["Enter amount in USD"]" />
                 </div>
             </div>
 
             <div class="ins-bx">
-                <span class="ins-bx-lbl">Years in Business</span>
+                <span class="ins-bx-lbl">@L["Years in Business"]</span>
                 <div class="ins-bx-ctl">
                     <select asp-for="YearsInBusiness" class="ins-bx-select">
-                        <option value="">Select years</option>
+                        <option value="">@L["Select years"]</option>
                         @foreach (var y in IndorMvcApp.ViewModels.InsuranceCatalog.YearsOptions)
                         {
                             <option value="@y" selected="@(Model.YearsInBusiness == y)">@y</option>
@@ -84,7 +84,7 @@
             </div>
 
             <div class="ins-drow ins-drow--top">
-                <label class="ins-drow-lbl">Do you work at customer homes?</label>
+                <label class="ins-drow-lbl">@L["Do you work at customer homes?"]</label>
                 <div class="ins-seg">
                     <label class="ins-seg-opt @(homesYes ? "is-on" : "")">
                         <input type="radio" name="WorksAtCustomerHomes" value="true" @(homesYes ? "checked" : null) /> Yes
@@ -96,7 +96,7 @@
             </div>
 
             <div class="ins-drow">
-                <label class="ins-drow-lbl">Do you use subcontractors?</label>
+                <label class="ins-drow-lbl">@L["Do you use subcontractors?"]</label>
                 <div class="ins-seg">
                     <label class="ins-seg-opt @(subYes ? "is-on" : "")">
                         <input type="radio" name="UsesSubcontractors" value="true" @(subYes ? "checked" : null) /> Yes
@@ -108,7 +108,7 @@
             </div>
 
             <div class="ins-drow ins-drow--last">
-                <label class="ins-drow-lbl">Need a Certificate of Insurance (COI)?</label>
+                <label class="ins-drow-lbl">@L["Need a Certificate of Insurance (COI)?"]</label>
                 <div class="ins-seg">
                     <label class="ins-seg-opt @(coiYes ? "is-on" : "")">
                         <input type="radio" name="NeedsCOI" value="true" @(coiYes ? "checked" : null) /> Yes
@@ -121,19 +121,19 @@
         </div>
 
         <div class="ins-fc ins-pay-setup">
-            <h3 class="ins-pay-title">Payment Setup</h3>
+            <h3 class="ins-pay-title">@L["Payment Setup"]</h3>
             <div class="ins-pay-row">
                 <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-credit-card"></i></span>
                 <span class="ins-pay-body">
-                    <strong>Card on File</strong>
+                    <strong>@L["Card on File"]</strong>
                     <small>Visa ending in @Model.CardLast4</small>
                 </span>
             </div>
             <div class="ins-pay-row">
                 <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-arrows-rotate"></i></span>
                 <span class="ins-pay-body">
-                    <strong>AutoPay <span class="ins-pay-muted">(charged monthly)</span></strong>
-                    <small>Automatically charge my card each month</small>
+                    <strong>@L["AutoPay"]<span class="ins-pay-muted">(charged monthly)</span></strong>
+                    <small>@L["Automatically charge my card each month"]</small>
                 </span>
                 <label class="ins-switch">
                     <input type="checkbox" asp-for="AutoPayMonthly" />
@@ -143,7 +143,7 @@
             <div class="ins-pay-row">
                 <span class="ins-pay-ic ins-pay-ic--box"><i class="fas fa-calendar-days"></i></span>
                 <span class="ins-pay-body">
-                    <strong>First monthly billing date</strong>
+                    <strong>@L["First monthly billing date"]</strong>
                 </span>
                 <span class="ins-pay-val ins-pay-val--date">@Model.FirstBillingDate.ToString("MMMM d, yyyy")</span>
             </div>
@@ -151,12 +151,12 @@
 
         <div class="ins-note ins-note--info">
             <i class="fas fa-circle-info"></i>
-            <span>Monthly payments include the carrier installment plus your selected INDOR business benefits.</span>
+            <span>@L["Monthly payments include the carrier installment plus your selected INDOR business benefits."]</span>
         </div>
 
         <div class="ins-footer ins-footer--split">
-            <a asp-controller="Proveedor" asp-action="InsuranceBusinessInfo" class="ins-cta ins-cta--ghost">Back</a>
-            <button type="submit" class="ins-cta">Continue</button>
+            <a asp-controller="Proveedor" asp-action="InsuranceBusinessInfo" class="ins-cta ins-cta--ghost">@L["Back"]</a>
+            <button type="submit" class="ins-cta">@L["Continue"]</button>
         </div>
     </form>
 </div>

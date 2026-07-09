@@ -8,7 +8,7 @@
     <p>@Model.Subtitle</p>
 </div>
 <div class="prv-scope-block">
-    <h3>You may accept</h3>
+    <h3>@L["You may accept"]</h3>
     <ul class="prv-scope-list prv-scope-list--allowed">
         @foreach (var item in allowed)
         {
@@ -17,7 +17,7 @@
     </ul>
 </div>
 <div class="prv-scope-block">
-    <h3>Not through INDOR electrical</h3>
+    <h3>@L["Not through INDOR electrical"]</h3>
     <ul class="prv-scope-list prv-scope-list--disallowed">
         @foreach (var item in disallowed)
         {
@@ -30,14 +30,14 @@
     <div asp-validation-summary="All" class="ob-summary"></div>
     <label class="prv-check-row">
         <input type="checkbox" name="scopeTradeUnderstood" value="true" required />
-        <span>I understand the electrical scope limits for INDOR jobs.</span>
+        <span>@L["I understand the electrical scope limits for INDOR jobs."]</span>
     </label>
     <label class="prv-check-row">
         <input type="checkbox" name="scopeStandardsAgreed" value="true" required />
-        <span>I agree to INDOR provider standards and verification.</span>
+        <span>@L["I agree to INDOR provider standards and verification."]</span>
     </label>
 </form>
 
 <div class="prv-wiz-footer">
-    <button type="submit" form="prvScopeForm" class="ob-btn ob-btn-primary">Submit qualification</button>
+    <button type="submit" form="prvScopeForm" class="ob-btn ob-btn-primary">@L["Submit qualification"]</button>
 </div>

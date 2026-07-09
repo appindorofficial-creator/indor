@@ -1,7 +1,7 @@
-﻿@model IndorMvcApp.ViewModels.BookingConfirmedViewModel
+@model IndorMvcApp.ViewModels.BookingConfirmedViewModel
 @{
-    ViewData["Title"] = "Booking Confirmed - INDOR";
-    ViewData["WizardTitle"] = "Booking Confirmed";
+    ViewData["Title"] = L["Booking Confirmed - INDOR"];
+    ViewData["WizardTitle"] = L["Booking Confirmed"];
 var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.CultureInfo.GetCultureInfo("en-US"));
     var headline = Model.FlowType == "investor"
         ? "Your investor inspection has been scheduled"
@@ -38,12 +38,12 @@ var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.C
         </div>
 
         <div class="summary-card">
-            <div class="summary-title">Appointment summary</div>
+            <div class="summary-title">@L["Appointment summary"]</div>
 
             <div class="summary-row">
                 <i class="fas @(Model.FlowType == "investor" ? "fa-chart-line" : Model.FlowType == "homesafety" ? "fa-shield-halved" : Model.FlowType == "windowsinsulation" ? "fa-window-maximize" : Model.FlowType == "moldmoisture" ? "fa-droplet" : Model.FlowType == "roof" ? "fa-house-chimney-window" : Model.FlowType == "structural" ? "fa-building-shield" : Model.FlowType == "hvac" ? "fa-fan" : Model.FlowType == "plumbing" ? "fa-faucet" : Model.FlowType == "complete" ? "fa-clipboard-check" : Model.FlowType == "electrical" ? "fa-bolt" : "fa-house-chimney")"></i>
                 <div>
-                    <div class="summary-label">Service</div>
+                    <div class="summary-label">@L["Service"]</div>
                     <div class="summary-value">@Model.NombreServicio</div>
                 </div>
             </div>
@@ -51,7 +51,7 @@ var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.C
             <div class="summary-row">
                 <i class="fas fa-location-dot"></i>
                 <div>
-                    <div class="summary-label">Property</div>
+                    <div class="summary-label">@L["Property"]</div>
                     <div class="summary-value">@Model.DireccionPropiedad</div>
                 </div>
             </div>
@@ -60,11 +60,11 @@ var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.C
                 <i class="fas fa-calendar-day"></i>
                 <div class="datetime-grid">
                     <div>
-                        <div class="summary-label">Date</div>
+                        <div class="summary-label">@L["Date"]</div>
                         <div class="summary-value">@fechaTexto</div>
                     </div>
                     <div>
-                        <div class="summary-label">Time</div>
+                        <div class="summary-label">@L["Time"]</div>
                         <div class="summary-value">@Model.HoraCita</div>
                     </div>
                 </div>
@@ -92,7 +92,7 @@ var fechaTexto = Model.FechaCita.ToString("MMM dd, yyyy", System.Globalization.C
             <div class="summary-row">
                 <i class="fas fa-shield-check"></i>
                 <div>
-                    <div class="summary-label">Status</div>
+                    <div class="summary-label">@L["Status"]</div>
                     <div class="summary-value">
                         <span class="status-badge"><i class="fas fa-check"></i> @Model.Estado</span>
                     </div>

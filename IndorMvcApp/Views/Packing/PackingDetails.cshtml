@@ -9,12 +9,12 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.1rem;">What needs packing?</h2>
-    <p class="page-lead" style="margin-top:-8px;">Select rooms, item types, and supplies.</p>
+<h2 class="page-heading" style="font-size:1.1rem;">@L["What needs packing?"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Select rooms, item types, and supplies."]</p>
 
     <div class="address-card">
         <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><span style="font-weight:600;font-size:0.92rem;">@Model.DireccionPropiedad</span></div>
-        <a asp-action="PackingAbout" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">Edit</a>
+        <a asp-action="PackingAbout" asp-route-id="@Model.SolicitudId" style="color:#0066CC;font-weight:600;font-size:0.85rem;text-decoration:none;">@L["Edit"]</a>
     </div>
 
     <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
@@ -30,61 +30,61 @@
         <input type="hidden" asp-for="DetallesAcceso" id="DetallesAcceso" />
 
         <div class="field-card">
-            <span class="field-label">Rooms to pack</span>
+            <span class="field-label">@L["Rooms to pack"]</span>
             <div class="tile-grid" id="roomsGroup">
-                <button type="button" class="tile-btn" data-value="Kitchen"><i class="fas fa-kitchen-set"></i>Kitchen</button>
-                <button type="button" class="tile-btn" data-value="Bedroom"><i class="fas fa-bed"></i>Bedroom</button>
-                <button type="button" class="tile-btn" data-value="LivingRoom"><i class="fas fa-couch"></i>Living room</button>
-                <button type="button" class="tile-btn" data-value="Bathroom"><i class="fas fa-bath"></i>Bathroom</button>
-                <button type="button" class="tile-btn" data-value="Closet"><i class="fas fa-door-closed"></i>Closet</button>
-                <button type="button" class="tile-btn" data-value="Garage"><i class="fas fa-warehouse"></i>Garage</button>
-                <button type="button" class="tile-btn" data-value="Office"><i class="fas fa-desktop"></i>Office</button>
+                <button type="button" class="tile-btn" data-value="Kitchen"><i class="fas fa-kitchen-set"></i>@L["Kitchen"]</button>
+                <button type="button" class="tile-btn" data-value="Bedroom"><i class="fas fa-bed"></i>@L["Bedroom"]</button>
+                <button type="button" class="tile-btn" data-value="LivingRoom"><i class="fas fa-couch"></i>@L["Living room"]</button>
+                <button type="button" class="tile-btn" data-value="Bathroom"><i class="fas fa-bath"></i>@L["Bathroom"]</button>
+                <button type="button" class="tile-btn" data-value="Closet"><i class="fas fa-door-closed"></i>@L["Closet"]</button>
+                <button type="button" class="tile-btn" data-value="Garage"><i class="fas fa-warehouse"></i>@L["Garage"]</button>
+                <button type="button" class="tile-btn" data-value="Office"><i class="fas fa-desktop"></i>@L["Office"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Special items</span>
+            <span class="field-label">@L["Special items"]</span>
             <div class="tile-grid tile-grid-4" id="specialGroup">
-                <button type="button" class="tile-btn" data-value="TVs"><i class="fas fa-tv"></i>TVs</button>
-                <button type="button" class="tile-btn" data-value="Glassware"><i class="fas fa-wine-glass"></i>Glassware</button>
-                <button type="button" class="tile-btn" data-value="Artwork"><i class="fas fa-image"></i>Artwork</button>
-                <button type="button" class="tile-btn" data-value="Electronics"><i class="fas fa-plug"></i>Electronics</button>
-                <button type="button" class="tile-btn" data-value="Books"><i class="fas fa-book"></i>Books</button>
-                <button type="button" class="tile-btn" data-value="Clothing"><i class="fas fa-shirt"></i>Clothing</button>
-                <button type="button" class="tile-btn" data-value="Kitchenware"><i class="fas fa-utensils"></i>Kitchenware</button>
+                <button type="button" class="tile-btn" data-value="TVs"><i class="fas fa-tv"></i>@L["TVs"]</button>
+                <button type="button" class="tile-btn" data-value="Glassware"><i class="fas fa-wine-glass"></i>@L["Glassware"]</button>
+                <button type="button" class="tile-btn" data-value="Artwork"><i class="fas fa-image"></i>@L["Artwork"]</button>
+                <button type="button" class="tile-btn" data-value="Electronics"><i class="fas fa-plug"></i>@L["Electronics"]</button>
+                <button type="button" class="tile-btn" data-value="Books"><i class="fas fa-book"></i>@L["Books"]</button>
+                <button type="button" class="tile-btn" data-value="Clothing"><i class="fas fa-shirt"></i>@L["Clothing"]</button>
+                <button type="button" class="tile-btn" data-value="Kitchenware"><i class="fas fa-utensils"></i>@L["Kitchenware"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Supplies needed</span>
+            <span class="field-label">@L["Supplies needed"]</span>
             <div class="tile-grid" id="suppliesGroup">
-                <button type="button" class="tile-btn" data-value="Boxes"><i class="fas fa-box"></i>Boxes</button>
-                <button type="button" class="tile-btn" data-value="Tape"><i class="fas fa-tape"></i>Tape</button>
-                <button type="button" class="tile-btn" data-value="BubbleWrap"><i class="fas fa-burst"></i>Bubble wrap</button>
-                <button type="button" class="tile-btn" data-value="WardrobeBoxes"><i class="fas fa-shirt"></i>Wardrobe boxes</button>
-                <button type="button" class="tile-btn" data-value="Labels"><i class="fas fa-tag"></i>Labels</button>
-                <button type="button" class="tile-btn" data-value="NotSure"><i class="fas fa-circle-question"></i>Not sure</button>
+                <button type="button" class="tile-btn" data-value="Boxes"><i class="fas fa-box"></i>@L["Boxes"]</button>
+                <button type="button" class="tile-btn" data-value="Tape"><i class="fas fa-tape"></i>@L["Tape"]</button>
+                <button type="button" class="tile-btn" data-value="BubbleWrap"><i class="fas fa-burst"></i>@L["Bubble wrap"]</button>
+                <button type="button" class="tile-btn" data-value="WardrobeBoxes"><i class="fas fa-shirt"></i>@L["Wardrobe boxes"]</button>
+                <button type="button" class="tile-btn" data-value="Labels"><i class="fas fa-tag"></i>@L["Labels"]</button>
+                <button type="button" class="tile-btn" data-value="NotSure"><i class="fas fa-circle-question"></i>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Access details</span>
+            <span class="field-label">@L["Access details"]</span>
             <div class="chip-row" id="accessGroup" style="flex-wrap:wrap;">
-                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> Stairs</button>
-                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> Elevator</button>
-                <button type="button" class="chip-btn" data-value="LongWalk"><i class="fas fa-person-walking"></i> Long walk</button>
-                <button type="button" class="chip-btn" data-value="EasyAccess"><i class="fas fa-check"></i> Easy access</button>
+                <button type="button" class="chip-btn" data-value="Stairs"><i class="fas fa-stairs"></i> @L["Stairs"]</button>
+                <button type="button" class="chip-btn" data-value="Elevator"><i class="fas fa-elevator"></i> @L["Elevator"]</button>
+                <button type="button" class="chip-btn" data-value="LongWalk"><i class="fas fa-person-walking"></i> @L["Long walk"]</button>
+                <button type="button" class="chip-btn" data-value="EasyAccess"><i class="fas fa-check"></i> @L["Easy access"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Extra notes</span>
-            <div class="input-wrap"><i class="fas fa-note-sticky"></i><textarea asp-for="NotaCorta" rows="3" maxlength="500" placeholder="Need help packing kitchen, glass items, and 2 TVs. Third-floor apartment with elevator."></textarea></div>
+            <span class="field-label">@L["Extra notes"]</span>
+            <div class="input-wrap"><i class="fas fa-note-sticky"></i><textarea asp-for="NotaCorta" rows="3" maxlength="500" placeholder="@L["Need help packing kitchen, glass items, and 2 TVs. Third-floor apartment with elevator."]"></textarea></div>
         </div>
 
         <div class="upload-zone">
             <i class="fas fa-cloud-arrow-up"></i>
-            <p><strong>Upload photos or item list</strong></p>
+            <p><strong>@L["Upload photos or item list"]</strong></p>
             <input type="file" name="files" accept=".jpg,.jpeg,.png,.pdf,.txt" multiple style="margin-top:10px;width:100%;" />
         </div>
         @foreach (var file in Model.ArchivosExistentes)
@@ -92,8 +92,8 @@
             <div class="included-row"><i class="fas fa-file"></i><span>@file.NombreArchivo</span></div>
         }
 
-        <button type="submit" class="btn-primary">Next</button>
-        <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+        <button type="submit" class="btn-primary">@L["Next"]</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

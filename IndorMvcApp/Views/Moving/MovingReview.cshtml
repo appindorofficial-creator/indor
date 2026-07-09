@@ -8,36 +8,36 @@
 }
 
 <div class="cl-wizard-heading">
-    <h2>Review your moving request</h2>
+    <h2>@L["Review your moving request"]</h2>
 </div>
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
     <div class="summary-card">
-        <div class="summary-row"><i class="fas fa-truck-ramp-box"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.NombreServicio</div></div></div>
-        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">Move type</div><div class="summary-value">@Model.TipoMovimientoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">From</div><div class="summary-value">@Model.DireccionOrigen</div></div></div>
-        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">To</div><div class="summary-value">@Model.DireccionDestino</div></div></div>
-        <div class="summary-row"><i class="fas fa-building"></i><div><div class="summary-label">Property type</div><div class="summary-value">@Model.TipoPropiedadLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">Home size</div><div class="summary-value">@Model.TamanoHogarLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Selected items</div><div class="summary-value">@Model.ItemsResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-elevator"></i><div><div class="summary-label">Access details</div><div class="summary-value">@Model.AccesoResumen</div></div></div>
-        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaMovimientoLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Preferred arrival time</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
-        <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">Assembly / Disassembly</div><div class="summary-value">@Model.RequiereMontajeLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-truck-ramp-box"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.NombreServicio</div></div></div>
+        <div class="summary-row"><i class="fas fa-house"></i><div><div class="summary-label">@L["Move type"]</div><div class="summary-value">@Model.TipoMovimientoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["From"]</div><div class="summary-value">@Model.DireccionOrigen</div></div></div>
+        <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["To"]</div><div class="summary-value">@Model.DireccionDestino</div></div></div>
+        <div class="summary-row"><i class="fas fa-building"></i><div><div class="summary-label">@L["Property type"]</div><div class="summary-value">@Model.TipoPropiedadLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-ruler-combined"></i><div><div class="summary-label">@L["Home size"]</div><div class="summary-value">@Model.TamanoHogarLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Selected items"]</div><div class="summary-value">@Model.ItemsResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-elevator"></i><div><div class="summary-label">@L["Access details"]</div><div class="summary-value">@Model.AccesoResumen</div></div></div>
+        <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Date"]</div><div class="summary-value">@Model.FechaMovimientoLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Preferred arrival time"]</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
+        <div class="summary-row"><i class="fas fa-screwdriver-wrench"></i><div><div class="summary-label">@L["Assembly / Disassembly"]</div><div class="summary-value">@Model.RequiereMontajeLabel</div></div></div>
         @if (!string.IsNullOrWhiteSpace(Model.NotaCorta))
         {
-            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">Notes</div><div class="summary-value">@Model.NotaCorta</div></div></div>
+            <div class="summary-row"><i class="fas fa-note-sticky"></i><div><div class="summary-label">@L["Notes"]</div><div class="summary-value">@Model.NotaCorta</div></div></div>
         }
     </div>
 
     <div class="estimate-card">
-        <div class="summary-label">Estimated range</div>
+        <div class="summary-label">@L["Estimated range"]</div>
         <div class="range">$@Model.PrecioEstimadoMin.ToString("0") – $@Model.PrecioEstimadoMax.ToString("0")</div>
-        <div class="summary-label">Estimated duration</div>
+        <div class="summary-label">@L["Estimated duration"]</div>
         <div class="summary-value">@Model.DuracionEstimadaMinHoras – @Model.DuracionEstimadaMaxHoras hours</div>
         <div class="estimate-badges">
             <span class="estimate-badge">@Model.DuracionEstimadaMinHoras – @Model.DuracionEstimadaMaxHoras hours Estimated time</span>
-            <span class="estimate-badge">Licensed & insured Trusted pros</span>
+            <span class="estimate-badge">@L["Licensed & insured Trusted pros"]</span>
         </div>
     </div>
 
@@ -51,6 +51,6 @@
         <input type="hidden" asp-for="MovingSetupServicioId" />
         <input type="hidden" asp-for="NombreServicio" />
         <input type="hidden" asp-for="DisclaimerTexto" />
-        <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> Confirm request</button>
-        <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+        <button type="submit" class="btn-primary"><i class="fas fa-paper-plane"></i> @L["Confirm request"]</button>
+        <button type="submit" name="action" value="edit" class="btn-outline">@L["Edit details"]</button>
     </form>

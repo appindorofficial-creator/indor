@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadPhotosAddViewModel
 @{
-    ViewData["Title"] = "Add Photos - INDOR PRO";
+    ViewData["Title"] = L["Add Photos - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "upload-photos.css";
@@ -11,12 +11,12 @@
     @await Html.PartialAsync("_UploadPhotosHead")
 
     <section class="upp-head">
-        <h1>Add Photos</h1>
-        <p>Upload more photos for this job.</p>
+        <h1>@L["Add Photos"]</h1>
+        <p>@L["Upload more photos for this job."]</p>
     </section>
 
     <div class="upp-progress">
-        <span class="upp-step">Step 2 of 3</span>
+        <span class="upp-step">@L["Step 2 of 3"]</span>
         <div class="upp-bar"><span style="width:66%"></span></div>
     </div>
 
@@ -43,7 +43,7 @@
         @Html.AntiForgeryToken()
         <input type="hidden" name="action" id="uppAction" value="add" />
 
-        <h2 class="upp-section">Photo Category</h2>
+        <h2 class="upp-section">@L["Photo Category"]</h2>
         <div class="upp-cats">
             @foreach (var (cat, icon) in categories)
             {
@@ -56,36 +56,36 @@
 
         <label class="upp-dropzone">
             <span class="upp-dropzone-icon"><i class="fas fa-images"></i></span>
-            <span class="upp-dropzone-text">Drag photos here or choose a source</span>
+            <span class="upp-dropzone-text">@L["Drag photos here or choose a source"]</span>
             <span class="upp-dropzone-sources">
-                <span class="upp-source"><i class="fas fa-camera"></i> Camera</span>
-                <span class="upp-source"><i class="fas fa-image"></i> Gallery</span>
+                <span class="upp-source"><i class="fas fa-camera"></i> @L["Camera"]</span>
+                <span class="upp-source"><i class="fas fa-image"></i> @L["Gallery"]</span>
             </span>
             <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAddForm').submit();" />
         </label>
 
         @if (Model.NewPhotos.Count > 0)
         {
-            <h2 class="upp-section">New Photos</h2>
+            <h2 class="upp-section">@L["New Photos"]</h2>
             <div class="upp-thumbs">
                 @foreach (var photo in Model.NewPhotos)
                 {
                     <div class="upp-thumb">
                         <img src="@photo.Url" alt="@photo.Category" />
-                        <button type="submit" form="uppRemoveForm-@photo.Index" class="upp-thumb-remove" aria-label="Remove photo"><i class="fas fa-xmark"></i></button>
+                        <button type="submit" form="uppRemoveForm-@photo.Index" class="upp-thumb-remove" aria-label="@L["Remove photo"]"><i class="fas fa-xmark"></i></button>
                     </div>
                 }
                 <label class="upp-thumb upp-thumb--add">
                     <i class="fas fa-plus"></i>
-                    <span>Add More</span>
+                    <span>@L["Add More"]</span>
                     <input type="file" name="photos" accept="image/*" multiple class="upp-file" onchange="document.getElementById('uppAddForm').submit();" />
                 </label>
             </div>
         }
 
         <div class="upp-actions">
-            <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppAction').value='continue';">Continue</button>
-            <a asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-btn-text">Back</a>
+            <button type="submit" class="upp-btn upp-btn--primary" onclick="document.getElementById('uppAction').value='continue';">@L["Continue"]</button>
+            <a asp-controller="Proveedor" asp-action="UploadPhotos" class="upp-btn-text">@L["Back"]</a>
         </div>
     </form>
 

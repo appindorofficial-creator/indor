@@ -1,24 +1,24 @@
 @model IndorMvcApp.ViewModels.RealtorNetworkLeadDetailViewModel
 @{
-    ViewData["Title"] = "Buyer Lead";
+    ViewData["Title"] = L["Buyer Lead"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "network";
 }
 
 <div class="rl-dash-shell rl-listing-detail-page">
     <header class="rl-listing-detail-head">
-        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Leads" class="rl-listing-detail-back" aria-label="Back to Nearby Network">
+        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Leads" class="rl-listing-detail-back" aria-label="@L["Back to Nearby Network"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div class="rl-listing-detail-head-copy">
-            <h1>Buyer Lead</h1>
-            <p>Nearby Network</p>
+            <h1>@L["Buyer Lead"]</h1>
+            <p>@L["Nearby Network"]</p>
         </div>
     </header>
 
     <section class="rl-listing-detail-card">
         <div class="rl-network-card-icon-wrap rl-network-card-icon-wrap--lead">
-            <span class="rl-network-card-badge rl-network-card-badge--lead">NEW LEAD</span>
+            <span class="rl-network-card-badge rl-network-card-badge--lead">@L["NEW LEAD"]</span>
             <i class="fas fa-users"></i>
         </div>
 
@@ -52,15 +52,15 @@
     {
         <div class="rl-qshare-success">
             <i class="fas fa-circle-check"></i>
-            <strong>Contact request saved</strong>
-            <p>INDOR recorded your follow-up on this buyer lead.</p>
+            <strong>@L["Contact request saved"]</strong>
+            <p>@L["INDOR recorded your follow-up on this buyer lead."]</p>
         </div>
     }
 
     @if (Model.ShowContactPanel)
     {
         <section class="rl-listing-detail-card">
-            <h3>Contact this buyer</h3>
+            <h3>@L["Contact this buyer"]</h3>
             @if (!string.IsNullOrWhiteSpace(Model.BuyerName))
             {
                 <p><strong>@Model.BuyerName</strong></p>
@@ -112,6 +112,6 @@
                 <i class="fas fa-comment-dots"></i> Contact Buyer
             </a>
         }
-        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Leads" class="rl-btn-outline rl-btn-outline--sm">Back to Leads</a>
+        <a asp-action="Network" asp-route-view="feed" asp-route-filter="Leads" class="rl-btn-outline rl-btn-outline--sm">@L["Back to Leads"]</a>
     </div>
 </div>

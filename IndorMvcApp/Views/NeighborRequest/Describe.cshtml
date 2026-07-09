@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.NeighborRequestDescribeStepViewModel
 @{
-    ViewData["Title"] = "Post Quick Job";
+    ViewData["Title"] = L["Post Quick Job"];
 }
 
 <form asp-action="Describe" method="post" enctype="multipart/form-data" class="nr-step-form" id="nrDescribeForm">
@@ -9,8 +9,8 @@
 
     <section class="nr-card">
         <header class="nr-card-head nr-card-head--stack">
-            <h2>Add photos</h2>
-            <p>Show helpers what the job looks like. Photos are optional but recommended.</p>
+            <h2>@L["Add photos"]</h2>
+            <p>@L["Show helpers what the job looks like. Photos are optional but recommended."]</p>
         </header>
 
         <div class="nr-photo-strip">
@@ -24,7 +24,7 @@
             </div>
             <label class="nr-photo-add" id="nrPhotoDrop">
                 <i class="fas fa-plus"></i>
-                <span>Add more</span>
+                <span>@L["Add more"]</span>
                 <input type="file" asp-for="PhotoFiles" id="nrPhotoInput" accept="image/jpeg,image/png,image/webp" multiple hidden />
             </label>
         </div>
@@ -32,8 +32,8 @@
 
     <section class="nr-card">
         <header class="nr-card-head nr-card-head--stack">
-            <h2>What should the helper bring?</h2>
-            <p>Select all that apply.</p>
+            <h2>@L["What should the helper bring?"]</h2>
+            <p>@L["Select all that apply."]</p>
         </header>
         <div class="nr-chip-grid">
             @foreach (var tool in Model.ToolOptions)
@@ -50,12 +50,12 @@
 
     <section class="nr-card">
         <header class="nr-card-head nr-card-head--stack">
-            <h2>Special notes</h2>
-            <p>Anything else helpers should know before they arrive?</p>
+            <h2>@L["Special notes"]</h2>
+            <p>@L["Anything else helpers should know before they arrive?"]</p>
         </header>
         <div class="nr-field nr-field--count">
             <div class="nr-counted-control">
-                <textarea asp-for="SpecialNotes" class="nr-textarea" maxlength="250" placeholder="Please be careful with the wooden floors..."></textarea>
+                <textarea asp-for="SpecialNotes" class="nr-textarea" maxlength="250" placeholder="@L["Please be careful with the wooden floors..."]"></textarea>
             </div>
             <span class="nr-char-count"><span id="nrNotesCount">0</span>/250</span>
         </div>
@@ -63,37 +63,37 @@
 
     <section class="nr-card">
         <header class="nr-card-head nr-card-head--stack">
-            <h2>Safety &amp; access</h2>
-            <p>Help helpers arrive prepared and stay safe on your property.</p>
+            <h2>@L["Safety & access"]</h2>
+            <p>@L["Help helpers arrive prepared and stay safe on your property."]</p>
         </header>
         <div class="nr-safety-grid">
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-paw"></i></span>
-                <span class="nr-safety-label">Pets on property</span>
+                <span class="nr-safety-label">@L["Pets on property"]</span>
                 <select asp-for="PetsOnProperty" class="nr-safety-select">
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
+                    <option value="No">@L["No"]</option>
+                    <option value="Yes">@L["Yes"]</option>
                 </select>
             </label>
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-stairs"></i></span>
-                <span class="nr-safety-label">Stairs</span>
+                <span class="nr-safety-label">@L["Stairs"]</span>
                 <select asp-for="HasStairs" class="nr-safety-select">
-                    <option value="No">No</option>
-                    <option value="Yes">Yes</option>
+                    <option value="No">@L["No"]</option>
+                    <option value="Yes">@L["Yes"]</option>
                 </select>
             </label>
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-lock"></i></span>
-                <span class="nr-safety-label">Gate code</span>
-                <input asp-for="GateCode" class="nr-safety-input" placeholder="Optional" />
+                <span class="nr-safety-label">@L["Gate code"]</span>
+                <input asp-for="GateCode" class="nr-safety-input" placeholder="@L["Optional"]" />
             </label>
             <label class="nr-safety-item">
                 <span class="nr-safety-icon"><i class="fas fa-car"></i></span>
-                <span class="nr-safety-label">Parking available</span>
+                <span class="nr-safety-label">@L["Parking available"]</span>
                 <select asp-for="ParkingAvailable" class="nr-safety-select">
-                    <option value="Yes">Yes</option>
-                    <option value="No">No</option>
+                    <option value="Yes">@L["Yes"]</option>
+                    <option value="No">@L["No"]</option>
                 </select>
             </label>
         </div>
@@ -101,7 +101,7 @@
 </form>
 
 @section WizardFooter {
-    @{ ViewData["NrWizardFormId"] = "nrDescribeForm"; ViewData["NrWizardContinueLabel"] = "Review job"; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
+    @{ ViewData["NrWizardFormId"] = "nrDescribeForm"; ViewData["NrWizardContinueLabel"] = L["Review job"]; ViewData["NrWizardContinueIconAfter"] = "fa-arrow-right"; }
     @await Html.PartialAsync("_NrWizardFooter")
 }
 
@@ -160,7 +160,7 @@
                     urls.push(url);
                     var item = document.createElement('div');
                     item.className = 'nr-photo-thumb nr-photo-thumb--new';
-                    item.innerHTML = '<img src="' + url + '" alt="" /><button type="button" class="nr-photo-remove" aria-label="Remove"><i class="fas fa-xmark"></i></button>';
+                    item.innerHTML = '<img src="' + url + '" alt="" /><button type="button" class="nr-photo-remove" aria-label="@L["Remove"]"><i class="fas fa-xmark"></i></button>';
                     item.querySelector('button').addEventListener('click', function () {
                         selected.splice(index, 1);
                         syncInput();

@@ -9,26 +9,26 @@
     <button type="button"
             class="@btnClass@(Model.HasNotifications ? " has-dot" : "")"
             id="prvNotifyBtn"
-            aria-label="Notifications"
+            aria-label="@L["Notifications"]"
             aria-haspopup="true"
             aria-expanded="false"
             aria-controls="prvNotifyPanel">
         <i class="fas fa-bell"></i>
     </button>
-    <div class="prv-pro-notify-panel" id="prvNotifyPanel" role="dialog" aria-label="Recent activity" hidden>
+    <div class="prv-pro-notify-panel" id="prvNotifyPanel" role="dialog" aria-label="@L["Recent activity"]" hidden>
         <div class="prv-pro-notify-panel-head">
-            <strong>Notifications</strong>
+            <strong>@L["Notifications"]</strong>
             @if (Model.HasNotifications)
             {
-                <span class="prv-pro-notify-badge" id="prvNotifyNewBadge">New</span>
+                <span class="prv-pro-notify-badge" id="prvNotifyNewBadge">@L["New"]</span>
             }
         </div>
         @if (Model.RecentNotifications.Count == 0)
         {
             <div class="prv-pro-notify-empty">
                 <i class="fas fa-bell-slash"></i>
-                <p>No recent activity yet.</p>
-                <span>New leads, estimate updates, and messages will appear here.</span>
+                <p>@L["No recent activity yet."]</p>
+                <span>@L["New leads, estimate updates, and messages will appear here."]</span>
             </div>
         }
         else
@@ -65,7 +65,7 @@
         }
         <div class="prv-pro-notify-panel-foot">
             <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-notify-settings-link">
-                <i class="fas fa-gear"></i> Notification settings
+                <i class="fas fa-gear"></i> @L["Notification settings"]
             </a>
         </div>
     </div>

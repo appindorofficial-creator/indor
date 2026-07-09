@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.RealtorSharedQuoteTrackingViewModel
 @{
-    ViewData["Title"] = "Shared Quote";
+    ViewData["Title"] = L["Shared Quote"];
     Layout = "_RealtorLayout";
     ViewBag.NavActive = "quotes";
 }
@@ -9,18 +9,18 @@
     @await Html.PartialAsync("_RealtorTopbar", Model)
 
     <div class="rl-page-header rl-page-header--stack">
-        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> Quotes</a>
-        <h1 class="rl-page-title">Shared Quote</h1>
+        <a asp-controller="Realtor" asp-action="Quotes" class="rl-back-link"><i class="fas fa-chevron-left"></i> @L["Quotes"]</a>
+        <h1 class="rl-page-title">@L["Shared Quote"]</h1>
     </div>
 
     <div class="rl-qshare-success">
         <i class="fas fa-circle-check"></i>
-        <strong>Quote Shared Successfully</strong>
-        <p>The quote has been shared with the homeowner. You'll be notified when they respond.</p>
+        <strong>@L["Quote Shared Successfully"]</strong>
+        <p>@L["The quote has been shared with the homeowner. You'll be notified when they respond."]</p>
     </div>
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head"><h2><i class="fas fa-chart-line"></i> Status Timeline</h2></div>
+        <div class="rl-dash-section-head"><h2><i class="fas fa-chart-line"></i> @L["Status Timeline"]</h2></div>
         <ul class="rl-qshare-timeline">
             @foreach (var item in Model.Timeline)
             {
@@ -47,15 +47,15 @@
     </section>
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head"><h2><i class="fas fa-house"></i> Quote Summary</h2></div>
+        <div class="rl-dash-section-head"><h2><i class="fas fa-house"></i> @L["Quote Summary"]</h2></div>
         <div class="rl-qshare-summary">
             <img src="@Model.PhotoUrl" alt="" />
             <div>
-                <div class="rl-qshare-summary-row"><span>Property</span><strong>@Model.Address</strong></div>
-                <div class="rl-qshare-summary-row"><span>Homeowner</span><strong>@Model.HomeownerName</strong></div>
-                <div class="rl-qshare-summary-row"><span>Provider</span><strong>@Model.ProviderName <i class="fas fa-circle-check rl-verified-mini"></i></strong></div>
+                <div class="rl-qshare-summary-row"><span>@L["Property"]</span><strong>@Model.Address</strong></div>
+                <div class="rl-qshare-summary-row"><span>@L["Homeowner"]</span><strong>@Model.HomeownerName</strong></div>
+                <div class="rl-qshare-summary-row"><span>@L["Provider"]</span><strong>@Model.ProviderName <i class="fas fa-circle-check rl-verified-mini"></i></strong></div>
                 <div class="rl-qshare-summary-row rl-qshare-summary-row--total">
-                    <span>Quote Total</span>
+                    <span>@L["Quote Total"]</span>
                     <strong>@Model.TotalAmountLabel</strong>
                 </div>
             </div>
@@ -67,7 +67,7 @@
         <div class="rl-qshare-activity">
             <i class="fas fa-bell"></i>
             <div>
-                <strong>Recent Activity</strong>
+                <strong>@L["Recent Activity"]</strong>
                 <span>@Model.RecentActivityLabel</span>
             </div>
             @if (!string.IsNullOrWhiteSpace(Model.RecentActivityTime))
@@ -78,7 +78,7 @@
     }
 
     <section class="rl-dash-section">
-        <div class="rl-dash-section-head"><h2>Next Actions</h2></div>
+        <div class="rl-dash-section-head"><h2>@L["Next Actions"]</h2></div>
         <div class="rl-qview-actions">
             @if (Model.CanMessageHomeowner)
             {

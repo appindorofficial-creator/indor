@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorHomeViewModel
 @using System.Text.Json
 @{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = L["Home"];
     Layout = "_PropertyAdminLayout";
     ViewBag.NavActive = "home";
     var isMapView = Model.NetworkView == "map";
@@ -16,7 +16,7 @@
                 <i class="fas fa-chart-simple"></i> PORTFOLIO OVERVIEW
             </a>
             <h1>@Model.Greeting</h1>
-            <p>Manage your Airbnb homes, guests, services &amp; local operations across your portfolio.</p>
+            <p>@L["Manage your Airbnb homes, guests, services &amp; local operations across your portfolio."]</p>
         </div>
         <div class="pa-hero-scene" aria-hidden="true">
             <i class="fas fa-sun pa-hero-sun"></i>
@@ -34,24 +34,24 @@
             <button type="button" class="pa-network-mode is-active" data-pamode="network">
                 <span class="pa-network-mode-icon"><i class="fas fa-people-group"></i></span>
                 <span class="pa-network-mode-body">
-                    <strong>Portfolio Network</strong>
-                    <small>Feed, nearby help, hosts &amp; local updates</small>
+                    <strong>@L["Portfolio Network"]</strong>
+                    <small>@L["Feed, nearby help, hosts &amp; local updates"]</small>
                 </span>
             </button>
             <a asp-controller="Administrador" asp-action="Properties" class="pa-network-mode">
                 <span class="pa-network-mode-icon pa-network-mode-icon--muted"><i class="fas fa-house"></i></span>
                 <span class="pa-network-mode-body">
-                    <strong>My Properties</strong>
-                    <small>Your homes dashboard</small>
+                    <strong>@L["My Properties"]</strong>
+                    <small>@L["Your homes dashboard"]</small>
                 </span>
             </a>
         </div>
 
-        <div class="pa-network-viewtoggle" role="tablist" aria-label="Network view">
+        <div class="pa-network-viewtoggle" role="tablist" aria-label="@L["Network view"]">
             <a asp-controller="Administrador" asp-action="Index" asp-route-view="map" asp-route-filter="@Model.NetworkFilter"
-               class="pa-network-viewbtn @(isMapView ? "is-active" : null)"><i class="fas fa-map"></i> Map</a>
+               class="pa-network-viewbtn @(isMapView ? "is-active" : null)"><i class="fas fa-map"></i> @L["Map"]</a>
             <a asp-controller="Administrador" asp-action="Index" asp-route-view="feed" asp-route-filter="@Model.NetworkFilter"
-               class="pa-network-viewbtn @(!isMapView ? "is-active" : null)"><i class="fas fa-list"></i> Feed</a>
+               class="pa-network-viewbtn @(!isMapView ? "is-active" : null)"><i class="fas fa-list"></i> @L["Feed"]</a>
         </div>
 
         @if (isMapView)
@@ -104,12 +104,12 @@
 
                 <link rel="stylesheet" href="~/css/home-nearby-network.css" asp-append-version="true" />
 
-                <section class="hn-map-shell" aria-label="Nearby map">
+                <section class="hn-map-shell" aria-label="@L["Nearby map"]">
                     <div id="hnNearbyNetworkMap" class="hn-map-canvas"></div>
 
                     <div class="hn-map-radius-badge" aria-hidden="true">@nm.RadiusMiles.ToString("0.#") mi</div>
 
-                    <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="Recenter on your portfolio">
+                    <button type="button" class="hn-map-recenter" id="hnMapRecenterBtn" aria-label="@L["Recenter on your portfolio"]">
                         <i class="fas fa-location-arrow"></i>
                     </button>
 
@@ -130,7 +130,7 @@
             {
                 <div class="pa-network-empty-map">
                     <i class="fas fa-map-location-dot"></i>
-                    <p>The map is not available right now. Add a property location to see nearby providers.</p>
+                    <p>@L["The map is not available right now. Add a property location to see nearby providers."]</p>
                 </div>
             }
         }
@@ -140,15 +140,15 @@
                 <input type="hidden" name="view" value="feed" />
                 <input type="hidden" name="filter" value="@Model.NetworkFilter" />
                 <i class="fas fa-magnifying-glass"></i>
-                <input type="search" name="q" value="@Model.NetworkSearch" placeholder="Search in my portfolio neighborhoods..." aria-label="Search neighborhoods" />
+                <input type="search" name="q" value="@Model.NetworkSearch" placeholder="@L["Search in my portfolio neighborhoods..."]" aria-label="@L["Search neighborhoods"]" />
             </form>
 
             <div class="pa-network-chips">
-                <button type="button" class="pa-network-chip is-active"><i class="fas fa-table-cells-large"></i> All</button>
-                <button type="button" class="pa-network-chip"><i class="fas fa-house"></i> Listings</button>
-                <button type="button" class="pa-network-chip"><i class="fas fa-screwdriver-wrench"></i> Services</button>
-                <button type="button" class="pa-network-chip"><i class="fas fa-tag"></i> Promotions</button>
-                <button type="button" class="pa-network-chip pa-network-chip--danger"><i class="fas fa-triangle-exclamation"></i> Emergency</button>
+                <button type="button" class="pa-network-chip is-active"><i class="fas fa-table-cells-large"></i> @L["All"]</button>
+                <button type="button" class="pa-network-chip"><i class="fas fa-house"></i> @L["Listings"]</button>
+                <button type="button" class="pa-network-chip"><i class="fas fa-screwdriver-wrench"></i> @L["Services"]</button>
+                <button type="button" class="pa-network-chip"><i class="fas fa-tag"></i> @L["Promotions"]</button>
+                <button type="button" class="pa-network-chip pa-network-chip--danger"><i class="fas fa-triangle-exclamation"></i> @L["Emergency"]</button>
             </div>
 
             <div class="pa-network-actions">
@@ -160,45 +160,45 @@
                 {
                     <a asp-controller="NeighborRequest" asp-action="Create" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
                         <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
-                        <strong>Post a Request</strong>
-                        <small>Ask your network for help or recommendations</small>
+                        <strong>@L["Post a Request"]</strong>
+                        <small>@L["Ask your network for help or recommendations"]</small>
                     </a>
                     <a asp-controller="NeighborRequest" asp-action="Mine" asp-route-propiedadId="@neighborPropiedadId" class="pa-network-action">
                         <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
-                        <strong>My Requests</strong>
-                        <small>Track &amp; manage your requests and updates</small>
+                        <strong>@L["My Requests"]</strong>
+                        <small>@L["Track &amp; manage your requests and updates"]</small>
                     </a>
                 }
                 else
                 {
                     <a asp-controller="PropertyAdministratorRegistration" asp-action="Properties" class="pa-network-action">
                         <span class="pa-network-action-icon"><i class="fas fa-plus"></i></span>
-                        <strong>Post a Request</strong>
-                        <small>Add a property first to post a neighborhood request</small>
+                        <strong>@L["Post a Request"]</strong>
+                        <small>@L["Add a property first to post a neighborhood request"]</small>
                     </a>
                     <a asp-controller="Administrador" asp-action="Tasks" class="pa-network-action">
                         <span class="pa-network-action-icon pa-network-action-icon--chat"><i class="fas fa-comment-dots"></i></span>
-                        <strong>My Requests</strong>
-                        <small>Track &amp; manage your requests and updates</small>
+                        <strong>@L["My Requests"]</strong>
+                        <small>@L["Track &amp; manage your requests and updates"]</small>
                     </a>
                 }
             </div>
 
             <a asp-controller="Administrador" asp-action="EmergencyPlumbingDetails" class="pa-network-emergency">
-                <span class="pa-network-emergency-badge">EMERGENCY</span>
+                <span class="pa-network-emergency-badge">@L["EMERGENCY"]</span>
                 <div class="pa-network-emergency-main">
                     <span class="pa-network-emergency-icon"><i class="fas fa-bell"></i></span>
                     <div class="pa-network-emergency-text">
-                        <strong>Emergency Help Nearby</strong>
-                        <p>Licensed plumber available near your Airbnb property</p>
+                        <strong>@L["Emergency Help Nearby"]</strong>
+                        <p>@L["Licensed plumber available near your Airbnb property"]</p>
                     </div>
                 </div>
                 <div class="pa-network-emergency-foot">
                     <div class="pa-network-emergency-meta">
-                        <span><i class="far fa-clock"></i> Average arrival time: 28 mins</span>
-                        <span><i class="fas fa-location-dot"></i> 2.6 mi away</span>
+                        <span><i class="far fa-clock"></i> @L["Average arrival time: 28 mins"]</span>
+                        <span><i class="fas fa-location-dot"></i> @L["2.6 mi away"]</span>
                     </div>
-                    <span class="pa-network-emergency-call">Call now <i class="fas fa-chevron-right"></i></span>
+                    <span class="pa-network-emergency-call">@L["Call now"] <i class="fas fa-chevron-right"></i></span>
                 </div>
             </a>
         }

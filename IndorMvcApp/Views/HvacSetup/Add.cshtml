@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.HvacSetupStartViewModel
 @{
-    ViewData["Title"] = "Add HVAC System";
+    ViewData["Title"] = L["Add HVAC System"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Model.BackUrl;
     ViewData["WizardStep"] = Model.CurrentStep;
@@ -10,7 +10,7 @@
 
 
         <div class="hvac-prop-card">
-            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="Your home" />
+            <img src="@Url.Content($"~{Model.ImageUrl}")" alt="@L["Your home"]" />
             <p>@Model.Address</p>
         </div>
 
@@ -20,34 +20,34 @@
                 <span class="hvac-scan-sparkle hvac-scan-sparkle-2"><i class="fas fa-wand-magic-sparkles"></i></span>
                 <span class="hvac-scan-camera"><i class="fas fa-camera"></i></span>
             </div>
-            <h2 class="hvac-scan-title">Scan your unit label</h2>
-            <p class="hvac-scan-desc">INDOR can read your serial/model label to auto-fill system details, estimate age, and check maintenance history.</p>
+            <h2 class="hvac-scan-title">@L["Scan your unit label"]</h2>
+            <p class="hvac-scan-desc">@L["INDOR can read your serial/model label to auto-fill system details, estimate age, and check maintenance history."]</p>
             <a asp-action="ScanLabel" asp-route-propiedadId="@Model.PropiedadId" class="hvac-save-btn hvac-btn-with-icon">
-                <i class="fas fa-camera"></i> Scan label now
+                <i class="fas fa-camera"></i> @L["Scan label now"]
             </a>
-            <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">Enter manually</a>
+            <a asp-action="Manual" asp-route-propiedadId="@Model.PropiedadId" class="hvac-outline-btn">@L["Enter manually"]</a>
         </div>
 
         <div class="hvac-benefit-list">
             <div class="hvac-benefit-item">
                 <div class="hvac-benefit-icon" aria-hidden="true"><i class="fas fa-clipboard-list"></i></div>
                 <div>
-                    <strong>Auto-fill system info</strong>
-                    <span>We'll capture serial number, model, and more.</span>
+                    <strong>@L["Auto-fill system info"]</strong>
+                    <span>@L["We'll capture serial number, model, and more."]</span>
                 </div>
             </div>
             <div class="hvac-benefit-item">
                 <div class="hvac-benefit-icon" aria-hidden="true"><i class="fas fa-clock"></i></div>
                 <div>
-                    <strong>Estimate unit age</strong>
-                    <span>Get an estimated install year in seconds.</span>
+                    <strong>@L["Estimate unit age"]</strong>
+                    <span>@L["Get an estimated install year in seconds."]</span>
                 </div>
             </div>
             <div class="hvac-benefit-item">
                 <div class="hvac-benefit-icon" aria-hidden="true"><i class="fas fa-chart-line"></i></div>
                 <div>
-                    <strong>Find maintenance insights</strong>
-                    <span>See past service and recommended care.</span>
+                    <strong>@L["Find maintenance insights"]</strong>
+                    <span>@L["See past service and recommended care."]</span>
                 </div>
             </div>
         </div>

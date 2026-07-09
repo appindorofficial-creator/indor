@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProUploadReportTypeViewModel
 @{
-    ViewData["Title"] = "Report Type - INDOR PRO";
+    ViewData["Title"] = L["Report Type - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     var types = new[]
@@ -20,7 +20,7 @@
     <header class="prv-pro-workflow-head prv-pro-workflow-head--step">
         <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-lead-back"><i class="fas fa-chevron-left"></i></a>
         <div>
-            <h1>Choose Report Type</h1>
+            <h1>@L["Choose Report Type"]</h1>
             <small>Step @Model.StepNumber of @Model.TotalSteps</small>
         </div>
         <span class="prv-pro-step-badge">Step @Model.StepNumber of @Model.TotalSteps</span>
@@ -48,8 +48,8 @@
             Reports can be shared with the homeowner and saved to House Facts.
         </div>
         <div class="prv-pro-upload-report-actions">
-            <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline">Back</a>
-            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">Next</button>
+            <a asp-controller="Proveedor" asp-action="UploadReport" class="prv-pro-btn prv-pro-btn--outline">@L["Back"]</a>
+            <button type="submit" class="prv-pro-btn prv-pro-btn--primary">@L["Next"]</button>
         </div>
     </form>
 </div>

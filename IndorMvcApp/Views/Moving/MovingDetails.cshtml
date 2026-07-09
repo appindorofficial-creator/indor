@@ -8,7 +8,7 @@
 }
 
 <div class="cl-wizard-heading">
-    <h2>Tell us about your move</h2>
+    <h2>@L["Tell us about your move"]</h2>
 </div>
 
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
@@ -23,47 +23,47 @@
         <input type="hidden" asp-for="VentanaHorario" id="VentanaHorario" />
 
         <div class="field-card">
-            <span class="field-label">Move type</span>
+            <span class="field-label">@L["Move type"]</span>
             <div class="tile-grid" data-target="TipoMovimiento">
-                <button type="button" class="tile-btn" data-value="MoveIn"><i class="fas fa-house-circle-check"></i>Move-In</button>
-                <button type="button" class="tile-btn" data-value="MoveOut"><i class="fas fa-house-circle-xmark"></i>Move-Out</button>
-                <button type="button" class="tile-btn" data-value="FullMove"><i class="fas fa-truck-moving"></i>Full Move</button>
+                <button type="button" class="tile-btn" data-value="MoveIn"><i class="fas fa-house-circle-check"></i>@L["Move-In"]</button>
+                <button type="button" class="tile-btn" data-value="MoveOut"><i class="fas fa-house-circle-xmark"></i>@L["Move-Out"]</button>
+                <button type="button" class="tile-btn" data-value="FullMove"><i class="fas fa-truck-moving"></i>@L["Full Move"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Property type</span>
+            <span class="field-label">@L["Property type"]</span>
             <div class="tile-grid tile-grid-4" data-target="TipoPropiedad">
-                <button type="button" class="tile-btn" data-value="Apartment"><i class="fas fa-building"></i>Apartment</button>
-                <button type="button" class="tile-btn" data-value="House"><i class="fas fa-house"></i>House</button>
-                <button type="button" class="tile-btn" data-value="Condo"><i class="fas fa-city"></i>Condo</button>
-                <button type="button" class="tile-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i>Townhome</button>
+                <button type="button" class="tile-btn" data-value="Apartment"><i class="fas fa-building"></i>@L["Apartment"]</button>
+                <button type="button" class="tile-btn" data-value="House"><i class="fas fa-house"></i>@L["House"]</button>
+                <button type="button" class="tile-btn" data-value="Condo"><i class="fas fa-city"></i>@L["Condo"]</button>
+                <button type="button" class="tile-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i>@L["Townhome"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Home size</span>
+            <span class="field-label">@L["Home size"]</span>
             <div class="tile-grid" data-target="TamanoHogar">
-                <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>Studio</button>
-                <button type="button" class="tile-btn" data-value="OneTwoBedrooms"><i class="fas fa-door-open"></i>1-2 Bedrooms</button>
-                <button type="button" class="tile-btn" data-value="ThreePlusBedrooms"><i class="fas fa-house-user"></i>3+ Bedrooms</button>
+                <button type="button" class="tile-btn" data-value="Studio"><i class="fas fa-bed"></i>@L["Studio"]</button>
+                <button type="button" class="tile-btn" data-value="OneTwoBedrooms"><i class="fas fa-door-open"></i>@L["1-2 Bedrooms"]</button>
+                <button type="button" class="tile-btn" data-value="ThreePlusBedrooms"><i class="fas fa-house-user"></i>@L["3+ Bedrooms"]</button>
             </div>
         </div>
 
         <div class="input-row">
             <div class="input-field">
-                <label>From</label>
+                <label>@L["From"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionOrigen" placeholder="Pick up address" data-address-autocomplete autocomplete="off" />
+                    <input asp-for="DireccionOrigen" placeholder="@L["Pick up address"]" data-address-autocomplete autocomplete="off" />
                 </div>
                 <span asp-validation-for="DireccionOrigen" class="field-error"></span>
             </div>
             <div class="input-field">
-                <label>To</label>
+                <label>@L["To"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-location-dot"></i>
-                    <input asp-for="DireccionDestino" placeholder="Drop off address" data-address-autocomplete autocomplete="off" />
+                    <input asp-for="DireccionDestino" placeholder="@L["Drop off address"]" data-address-autocomplete autocomplete="off" />
                 </div>
                 <span asp-validation-for="DireccionDestino" class="field-error"></span>
             </div>
@@ -71,7 +71,7 @@
 
         <div class="input-row">
             <div class="input-field">
-                <label>Move date</label>
+                <label>@L["Move date"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-calendar"></i>
                     <input asp-for="FechaMovimiento" type="date" />
@@ -79,34 +79,34 @@
                 <span asp-validation-for="FechaMovimiento" class="field-error"></span>
             </div>
             <div class="input-field">
-                <label>Preferred arrival time</label>
+                <label>@L["Preferred arrival time"]</label>
                 <div class="input-wrap">
                     <i class="fas fa-clock"></i>
                     <select id="VentanaHorarioSelect">
-                        <option value="Morning">9:00 AM – 11:00 AM</option>
-                        <option value="MidMorning">11:00 AM – 1:00 PM</option>
-                        <option value="Afternoon">2:00 PM – 4:00 PM</option>
-                        <option value="Evening">4:00 PM – 6:00 PM</option>
+                        <option value="Morning">@L["9:00 AM – 11:00 AM"]</option>
+                        <option value="MidMorning">@L["11:00 AM – 1:00 PM"]</option>
+                        <option value="Afternoon">@L["2:00 PM – 4:00 PM"]</option>
+                        <option value="Evening">@L["4:00 PM – 6:00 PM"]</option>
                     </select>
                 </div>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Service type</span>
+            <span class="field-label">@L["Service type"]</span>
             <div class="service-block" data-target="TipoServicio" data-value="MoversOnly">
-                <strong>Movers only</strong>
-                <span>You provide the truck.</span>
+                <strong>@L["Movers only"]</strong>
+                <span>@L["You provide the truck."]</span>
             </div>
             <div class="service-block" data-target="TipoServicio" data-value="TruckAndMovers">
-                <strong>Truck + Movers</strong>
-                <span>We bring the truck.</span>
+                <strong>@L["Truck + Movers"]</strong>
+                <span>@L["We bring the truck."]</span>
             </div>
         </div>
 
         <div class="cl-form-actions">
-            <button type="submit" class="btn-primary">Continue <i class="fas fa-chevron-right"></i></button>
-            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+            <button type="submit" class="btn-primary">@L["Continue"] <i class="fas fa-chevron-right"></i></button>
+            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
     </form>
 

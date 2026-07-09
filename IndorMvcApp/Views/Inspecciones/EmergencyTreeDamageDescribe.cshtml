@@ -1,18 +1,18 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyTreeDamageDescribeViewModel
+@model IndorMvcApp.ViewModels.EmergencyTreeDamageDescribeViewModel
 @{
-    ViewData["Title"] = "Tree Damage Details - INDOR";
-    ViewData["WizardTitle"] = "Tree Damage Details";
+    ViewData["Title"] = L["Tree Damage Details - INDOR"];
+    ViewData["WizardTitle"] = L["Tree Damage Details"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
     ViewData["WizardStep"] = 1;
     ViewData["WizardTotalSteps"] = 3;
 
 }
 
-<div class="step-sub">Step 1 of 3 &middot; Describe the damage</div>
+<div class="step-sub">@L["Step 1 of 3 &middot; Describe the damage"]</div>
 
     
-<h2 class="page-heading">Tell us what happened</h2>
-    <p class="page-lead">We'll use this to dispatch the right crew fast.</p>
+<h2 class="page-heading">@L["Tell us what happened"]</h2>
+    <p class="page-lead">@L["We'll use this to dispatch the right crew fast."]</p>
 
     <form asp-controller="Inspecciones" asp-action="EmergencyTreeDamageDescribe" method="post">
         <input type="hidden" asp-for="ServicioEmergenciaId" />
@@ -28,63 +28,63 @@
             <div class="address-display">
                 <div class="left">
                     <i class="fas fa-house"></i>
-                    <input asp-for="DireccionPropiedad" placeholder="123 Riverside Dr, Mount Holly, NC 28120" required />
+                    <input asp-for="DireccionPropiedad" placeholder="@L["123 Riverside Dr, Mount Holly, NC 28120"]" required />
                 </div>
-                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+                <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">1. What happened?</span>
+            <span class="field-label">@L["1. What happened?"]</span>
             <div class="issue-grid" id="issueGroup">
-                <button type="button" class="issue-btn" data-value="TreeOnRoof"><i class="fas fa-house-chimney"></i>Tree on roof</button>
-                <button type="button" class="issue-btn" data-value="FallenBranch"><i class="fas fa-code-branch"></i>Fallen branch</button>
-                <button type="button" class="issue-btn" data-value="BlockedDriveway"><i class="fas fa-road-barrier"></i>Blocked driveway</button>
-                <button type="button" class="issue-btn" data-value="FenceDamage"><i class="fas fa-border-all"></i>Fence damage</button>
-                <button type="button" class="issue-btn" data-value="TreeLeaning"><i class="fas fa-tree"></i>Tree leaning</button>
-                <button type="button" class="issue-btn" data-value="DebrisCleanup"><i class="fas fa-broom"></i>Debris cleanup</button>
-                <button type="button" class="issue-btn span-2" data-value="Other"><i class="fas fa-comment"></i>Other</button>
+                <button type="button" class="issue-btn" data-value="TreeOnRoof"><i class="fas fa-house-chimney"></i>@L["Tree on roof"]</button>
+                <button type="button" class="issue-btn" data-value="FallenBranch"><i class="fas fa-code-branch"></i>@L["Fallen branch"]</button>
+                <button type="button" class="issue-btn" data-value="BlockedDriveway"><i class="fas fa-road-barrier"></i>@L["Blocked driveway"]</button>
+                <button type="button" class="issue-btn" data-value="FenceDamage"><i class="fas fa-border-all"></i>@L["Fence damage"]</button>
+                <button type="button" class="issue-btn" data-value="TreeLeaning"><i class="fas fa-tree"></i>@L["Tree leaning"]</button>
+                <button type="button" class="issue-btn" data-value="DebrisCleanup"><i class="fas fa-broom"></i>@L["Debris cleanup"]</button>
+                <button type="button" class="issue-btn span-2" data-value="Other"><i class="fas fa-comment"></i>@L["Other"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">2. Where is it?</span>
+            <span class="field-label">@L["2. Where is it?"]</span>
             <div class="loc-grid" data-target="UbicacionDanio">
-                <button type="button" class="loc-btn" data-value="FrontYard"><i class="fas fa-tree"></i>Front yard</button>
-                <button type="button" class="loc-btn" data-value="BackYard"><i class="fas fa-tree"></i>Back yard</button>
-                <button type="button" class="loc-btn" data-value="Roof"><i class="fas fa-house"></i>Roof</button>
-                <button type="button" class="loc-btn" data-value="Driveway"><i class="fas fa-car"></i>Driveway</button>
-                <button type="button" class="loc-btn" data-value="Street"><i class="fas fa-road"></i>Street</button>
-                <button type="button" class="loc-btn" data-value="SideOfHouse"><i class="fas fa-house"></i>Side of house</button>
+                <button type="button" class="loc-btn" data-value="FrontYard"><i class="fas fa-tree"></i>@L["Front yard"]</button>
+                <button type="button" class="loc-btn" data-value="BackYard"><i class="fas fa-tree"></i>@L["Back yard"]</button>
+                <button type="button" class="loc-btn" data-value="Roof"><i class="fas fa-house"></i>@L["Roof"]</button>
+                <button type="button" class="loc-btn" data-value="Driveway"><i class="fas fa-car"></i>@L["Driveway"]</button>
+                <button type="button" class="loc-btn" data-value="Street"><i class="fas fa-road"></i>@L["Street"]</button>
+                <button type="button" class="loc-btn" data-value="SideOfHouse"><i class="fas fa-house"></i>@L["Side of house"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">3. Is there immediate danger?</span>
+            <span class="field-label">@L["3. Is there immediate danger?"]</span>
             <div class="segmented-3" data-target="PeligroInmediato">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">4. Any utility risk?</span>
+            <span class="field-label">@L["4. Any utility risk?"]</span>
             <div class="segmented-4" data-target="RiesgoUtilidad">
-                <button type="button" class="segment-btn" data-value="NearPowerLine">Near power line</button>
-                <button type="button" class="segment-btn" data-value="NearGasMeter">Near gas meter</button>
-                <button type="button" class="segment-btn" data-value="NoUtilityRisk">No utility risk</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="NearPowerLine">@L["Near power line"]</button>
+                <button type="button" class="segment-btn" data-value="NearGasMeter">@L["Near gas meter"]</button>
+                <button type="button" class="segment-btn" data-value="NoUtilityRisk">@L["No utility risk"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="info-box">
             <i class="fas fa-circle-info"></i>
-            <div>If power lines are involved, stay back and call emergency services if needed.</div>
+            <div>@L["If power lines are involved, stay back and call emergency services if needed."]</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-chevron-right"></i></button>
-        <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> Call now</a>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-chevron-right"></i></button>
+        <a href="tel:+17045550186" class="btn-outline"><i class="fas fa-phone"></i> @L["Call now"]</a>
     </form>
 </div>
 @section Scripts {

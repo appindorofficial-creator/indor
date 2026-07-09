@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorFurnitureHaulAwayStep2ViewModel
 @{
-    ViewData["Title"] = "Furniture Haul Away";
+    ViewData["Title"] = L["Furniture Haul Away"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -12,8 +12,8 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1><i class="fas fa-couch pa-flow-title-icon"></i> Furniture Haul Away</h1>
-        <p>Tell us how the crew can access the property and when to arrive.</p>
+        <h1><i class="fas fa-couch pa-flow-title-icon"></i> @L["Furniture Haul Away"]</h1>
+        <p>@L["Tell us how the crew can access the property and when to arrive."]</p>
     </section>
 
     @if (Model.ViewingProperty != null && Model.ViewingProperty.Id > 0)
@@ -28,7 +28,7 @@
                 }
                 <small>@Model.ViewingProperty.PropertyTypeLabel • @Model.ViewingProperty.Location</small>
             </div>
-            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="Switch property"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
+            <a asp-controller="Administrador" asp-action="Properties" class="pa-viewing-switch" aria-label="@L["Switch property"]"><i class="fas fa-chevron-down pa-portfolio-chevron" aria-hidden="true"></i></a>
         </div>
     }
 
@@ -47,7 +47,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">1</span>
-            <label><i class="fas fa-bolt pa-q-icon pa-q-icon--blue"></i> When should pickup happen?</label>
+            <label><i class="fas fa-bolt pa-q-icon pa-q-icon--blue"></i> @L["When should pickup happen?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @foreach (var w in new (string Value, string Label, string Icon)[] { ("Asap", "ASAP", "fa-bolt"), ("TodayAfterCheckout", "Today after checkout", "fa-calendar-day"), ("ScheduledTime", "Scheduled time", "fa-calendar") })
                 {
@@ -62,7 +62,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">2</span>
-            <label><i class="fas fa-clock pa-q-icon pa-q-icon--blue"></i> What time window works best?</label>
+            <label><i class="fas fa-clock pa-q-icon pa-q-icon--blue"></i> @L["What time window works best?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var tw in new (string Value, string Label)[] { ("Morning", "Morning"), ("Afternoon", "Afternoon"), ("Evening", "Evening") })
                 {
@@ -76,7 +76,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">3</span>
-            <label><i class="fas fa-key pa-q-icon pa-q-icon--blue"></i> Can the crew enter the property?</label>
+            <label><i class="fas fa-key pa-q-icon pa-q-icon--blue"></i> @L["Can the crew enter the property?"]</label>
             <div class="pa-chip-grid pa-chip-grid--stack">
                 @foreach (var e in new (string Value, string Label)[] { ("SmartLock", "Yes, with smart lock"), ("HostMeet", "Host will meet crew"), ("CurbsideOnly", "Curbside pickup only") })
                 {
@@ -90,7 +90,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">4</span>
-            <label>Entry or gate code <small>(optional)</small></label>
+            <label>@L["Entry or gate code"] <small>@L["(optional)"]</small></label>
             <div class="pa-field">
                 <i class="fas fa-key"></i>
                 <input type="text" name="EntryCode" value="@Model.EntryCode" />
@@ -99,7 +99,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">5</span>
-            <label><i class="fas fa-location-dot pa-q-icon pa-q-icon--blue"></i> Where are the items located? <small>(Select all that apply)</small></label>
+            <label><i class="fas fa-location-dot pa-q-icon pa-q-icon--blue"></i> @L["Where are the items located?"] <small>@L["(Select all that apply)"]</small></label>
             <div class="pa-furniture-items-grid pa-furniture-items-grid--6">
                 @foreach (var loc in new (string Value, string Label, string Icon)[]
                 {
@@ -123,7 +123,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">6</span>
-            <label><i class="fas fa-stairs pa-q-icon pa-q-icon--blue"></i> Are there stairs or elevator access?</label>
+            <label><i class="fas fa-stairs pa-q-icon pa-q-icon--blue"></i> @L["Are there stairs or elevator access?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var a in new (string Value, string Label, string Icon)[] { ("GroundFloor", "Ground floor", "fa-building"), ("Stairs", "Stairs", "fa-stairs"), ("Elevator", "Elevator", "fa-elevator") })
                 {
@@ -137,7 +137,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">7</span>
-            <label><i class="fas fa-users pa-q-icon pa-q-icon--blue"></i> Who should receive updates?</label>
+            <label><i class="fas fa-users pa-q-icon pa-q-icon--blue"></i> @L["Who should receive updates?"]</label>
             <div class="pa-toggle-pair pa-toggle-pair--3">
                 @foreach (var r in new[] { ("Me", "Me"), ("Guest", "Guest"), ("CoHost", "Co-host") })
                 {
@@ -150,7 +150,7 @@
 
         <div class="pa-flow-question">
             <span class="pa-flow-qnum">8</span>
-            <label><i class="fas fa-phone pa-q-icon pa-q-icon--blue"></i> Best phone number for arrival updates</label>
+            <label><i class="fas fa-phone pa-q-icon pa-q-icon--blue"></i> @L["Best phone number for arrival updates"]</label>
             <div class="pa-field">
                 <i class="fas fa-phone"></i>
                 <input type="tel" name="ContactPhone" value="@Model.ContactPhone" />
@@ -161,12 +161,12 @@
             <i class="fas fa-circle-check"></i>
             <div>
                 <strong>@Model.CrewEtaLabel</strong>
-                <small>We'll confirm final arrival time after review.</small>
+                <small>@L["We'll confirm final arrival time after review."]</small>
             </div>
         </div>
 
-        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">Review request <i class="fas fa-arrow-right"></i></button>
-        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">Back</a>
+        <button type="submit" class="ob-btn ob-btn-primary pa-flow-submit">@L["Review request"] <i class="fas fa-arrow-right"></i></button>
+        <a href="@ViewBag.FlowBackUrl" class="pa-flow-back-link">@L["Back"]</a>
     </form>
 </div>
 

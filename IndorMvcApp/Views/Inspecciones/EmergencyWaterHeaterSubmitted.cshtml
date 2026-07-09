@@ -1,53 +1,53 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyWaterHeaterSubmittedViewModel
+@model IndorMvcApp.ViewModels.EmergencyWaterHeaterSubmittedViewModel
 @{
-    ViewData["Title"] = "Request Confirmed - INDOR";
-    ViewData["WizardTitle"] = "Request Confirmed";
+    ViewData["Title"] = L["Request Confirmed - INDOR"];
+    ViewData["WizardTitle"] = L["Request Confirmed"];
 var isEmergency = string.Equals(Model.UrgenciaResumen, "Emergency", StringComparison.OrdinalIgnoreCase);
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
 <div class="success-icon"><i class="fas fa-check"></i></div>
-    <div class="status-label">Request confirmed</div>
-    <h1 class="page-heading">Your emergency water heater service is scheduled</h1>
-    <p class="page-lead">We've received your request and are matching the nearest available provider.</p>
+    <div class="status-label">@L["Request confirmed"]</div>
+    <h1 class="page-heading">@L["Your emergency water heater service is scheduled"]</h1>
+    <p class="page-lead">@L["We've received your request and are matching the nearest available provider."]</p>
 
     <div class="summary-card">
         <div class="summary-row">
             <i class="fas fa-wrench"></i>
-            <div style="flex:1;"><div class="summary-label">Service</div><div class="summary-value">@Model.TituloServicio</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TituloServicio</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-house"></i>
-            <div style="flex:1;"><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-calendar"></i>
-            <div style="flex:1;"><div class="summary-label">Date</div><div class="summary-value">@Model.FechaServicio.ToString("MMM dd, yyyy")</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Date"]</div><div class="summary-value">@Model.FechaServicio.ToString("MMM dd, yyyy")</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-clock"></i>
-            <div style="flex:1;"><div class="summary-label">Time</div><div class="summary-value">@Model.HoraServicio</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Time"]</div><div class="summary-value">@Model.HoraServicio</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-droplet"></i>
-            <div style="flex:1;"><div class="summary-label">Problem</div><div class="summary-value">@Model.ProblemaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Problem"]</div><div class="summary-value">@Model.ProblemaResumen</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-triangle-exclamation"></i>
-            <div style="flex:1;"><div class="summary-label">Priority</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Priority"]</div><div class="summary-value @(isEmergency ? "emergency" : "")">@Model.UrgenciaResumen</div></div>
         </div>
         <div class="summary-row">
             <i class="fas fa-shield-halved"></i>
-            <div style="flex:1;"><div class="summary-label">Status</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
+            <div style="flex:1;"><div class="summary-label">@L["Status"]</div><div class="summary-value"><span class="status-pill">@Model.EstadoResumen</span></div></div>
         </div>
     </div>
 
     <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <div>Your provider will review your issue details and any uploaded photos before arrival.</div>
+        <div>@L["Your provider will review your issue details and any uploaded photos before arrival."]</div>
     </div>
 
-    <a asp-action="EmergencyWaterHeaterSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">View request <i class="fas fa-chevron-right"></i></a>
-    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-outline"><i class="fas fa-calendar"></i> Go to Schedule</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to My Home</a>
+    <a asp-action="EmergencyWaterHeaterSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary">@L["View request"] <i class="fas fa-chevron-right"></i></a>
+    <a asp-controller="Home" asp-action="Index" asp-fragment="section-schedule" class="btn-outline"><i class="fas fa-calendar"></i> @L["Go to Schedule"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> @L["Go to My Home"]</a>

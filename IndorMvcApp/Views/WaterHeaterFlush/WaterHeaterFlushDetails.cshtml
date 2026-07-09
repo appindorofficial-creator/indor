@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.WaterHeaterFlushDetailsViewModel
 @{
-    ViewData["Title"] = "Maintenance details - INDOR";
+    ViewData["Title"] = L["Maintenance details - INDOR"];
     ViewData["WizardTitle"] = Model.PageTitle;
     ViewData["WizardBackUrl"] = Url.Action("WaterHeaterFlushSetup", "WaterHeaterFlush", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
@@ -8,8 +8,8 @@
 }
 
 
-<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">Maintenance details</h1>
-    <p class="page-lead" style="margin-bottom:16px;">Help us understand the condition of your water heater.</p>
+<h1 class="page-heading" style="font-size:1.05rem;margin-bottom:4px;">@L["Maintenance details"]</h1>
+    <p class="page-lead" style="margin-bottom:16px;">@L["Help us understand the condition of your water heater."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -22,57 +22,57 @@
         <input type="hidden" asp-for="PreferenciaTiempo" id="PreferenciaTiempo" />
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-clock-rotate-left"></i><span>When was the last flush?</span></div>
+            <div class="field-head"><i class="fas fa-clock-rotate-left"></i><span>@L["When was the last flush?"]</span></div>
             <div class="segment-row">
-                <button type="button" class="segment-btn" data-flush="Within1Year">Within 1 year</button>
-                <button type="button" class="segment-btn" data-flush="OneToTwoYears">1–2 years ago</button>
-                <button type="button" class="segment-btn" data-flush="MoreThan2Years">More than 2 years</button>
-                <button type="button" class="segment-btn" data-flush="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-flush="Within1Year">@L["Within 1 year"]</button>
+                <button type="button" class="segment-btn" data-flush="OneToTwoYears">@L["1–2 years ago"]</button>
+                <button type="button" class="segment-btn" data-flush="MoreThan2Years">@L["More than 2 years"]</button>
+                <button type="button" class="segment-btn" data-flush="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-ear-listen"></i><span>What have you noticed?</span></div>
+            <div class="field-head"><i class="fas fa-ear-listen"></i><span>@L["What have you noticed?"]</span></div>
             <div class="symptom-grid">
-                <button type="button" class="symptom-pill" data-symptom="RumblingNoise"><i class="fas fa-volume-high"></i>Rumbling noise</button>
-                <button type="button" class="symptom-pill" data-symptom="RustyWater"><i class="fas fa-droplet"></i>Rusty / cloudy water</button>
-                <button type="button" class="symptom-pill" data-symptom="SlowHotWater"><i class="fas fa-temperature-half"></i>Slow hot water</button>
-                <button type="button" class="symptom-pill" data-symptom="TempChanges"><i class="fas fa-temperature-arrow-up"></i>Temperature changes</button>
-                <button type="button" class="symptom-pill" data-symptom="NoIssues" style="grid-column:1/-1;"><i class="fas fa-shield-halved"></i>No issues — just maintenance</button>
+                <button type="button" class="symptom-pill" data-symptom="RumblingNoise"><i class="fas fa-volume-high"></i>@L["Rumbling noise"]</button>
+                <button type="button" class="symptom-pill" data-symptom="RustyWater"><i class="fas fa-droplet"></i>@L["Rusty / cloudy water"]</button>
+                <button type="button" class="symptom-pill" data-symptom="SlowHotWater"><i class="fas fa-temperature-half"></i>@L["Slow hot water"]</button>
+                <button type="button" class="symptom-pill" data-symptom="TempChanges"><i class="fas fa-temperature-arrow-up"></i>@L["Temperature changes"]</button>
+                <button type="button" class="symptom-pill" data-symptom="NoIssues" style="grid-column:1/-1;"><i class="fas fa-shield-halved"></i>@L["No issues — just maintenance"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-wrench"></i><span>Service preference</span></div>
+            <div class="field-head"><i class="fas fa-wrench"></i><span>@L["Service preference"]</span></div>
             <button type="button" class="service-card" data-service="OneTime">
                 <span class="radio"></span>
-                <strong>One-time flush</strong>
-                <span>Schedule a single service at a time that works for you.</span>
+                <strong>@L["One-time flush"]</strong>
+                <span>@L["Schedule a single service at a time that works for you."]</span>
             </button>
             <button type="button" class="service-card" data-service="YearlyReminder">
                 <span class="radio"></span>
-                <strong>Set yearly reminder</strong>
-                <span>We'll remind you every year so you never miss it.</span>
+                <strong>@L["Set yearly reminder"]</strong>
+                <span>@L["We'll remind you every year so you never miss it."]</span>
             </button>
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-calendar"></i><span>When works best for you?</span></div>
+            <div class="field-head"><i class="fas fa-calendar"></i><span>@L["When works best for you?"]</span></div>
             <div class="timing-grid">
                 <button type="button" class="service-card" data-timing="NextAvailable">
                     <span class="radio"></span>
-                    <strong>Next available</strong>
-                    <span>We'll find the earliest spot</span>
+                    <strong>@L["Next available"]</strong>
+                    <span>@L["We'll find the earliest spot"]</span>
                 </button>
                 <button type="button" class="service-card" data-timing="ThisWeek">
                     <span class="radio"></span>
-                    <strong>This week</strong>
-                    <span>Within the next 7 days</span>
+                    <strong>@L["This week"]</strong>
+                    <span>@L["Within the next 7 days"]</span>
                 </button>
                 <button type="button" class="service-card" data-timing="ChooseDate">
                     <span class="radio"></span>
-                    <strong>Choose date</strong>
-                    <span>Pick a specific date</span>
+                    <strong>@L["Choose date"]</strong>
+                    <span>@L["Pick a specific date"]</span>
                 </button>
             </div>
             <div id="datePickerWrap" style="margin-top:10px;display:none;">
@@ -81,8 +81,8 @@
         </div>
 
         <div class="field-card">
-            <div class="field-head"><i class="fas fa-note-sticky"></i><span>Anything else we should know?</span></div>
-            <textarea asp-for="NotasAdicionales" placeholder="Add notes (optional)" maxlength="200"></textarea>
+            <div class="field-head"><i class="fas fa-note-sticky"></i><span>@L["Anything else we should know?"]</span></div>
+            <textarea asp-for="NotasAdicionales" placeholder="@L["Add notes (optional)"]" maxlength="200"></textarea>
         </div>
 
         <div class="estimate-box">

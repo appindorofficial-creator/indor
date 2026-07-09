@@ -11,7 +11,8 @@ namespace IndorMvcApp.Controllers;
 [ResponseCache(NoStore = true, Duration = 0, Location = ResponseCacheLocation.None)]
 public class NeighborRequestController(
     NeighborRequestWizardService wizardService,
-    UserManager<ApplicationUser> userManager) : Controller
+    UserManager<ApplicationUser> userManager,
+    IIndorLocalizer localizer) : Controller
 {
     [HttpGet]
     public async Task<IActionResult> Create(int propiedadId, CancellationToken cancellationToken)
@@ -102,7 +103,7 @@ public class NeighborRequestController(
         var categories = await wizardService.LoadCategoriesAsync(cancellationToken);
         if (model.CategoryId <= 0 || categories.All(c => c.Id != model.CategoryId))
         {
-            ModelState.AddModelError(nameof(model.CategoryId), "Choose a category to continue.");
+            ModelState.AddModelError(nameof(model.CategoryId), localizer["Choose a category to continue."]);
         }
 
         if (!ModelState.IsValid)
@@ -203,7 +204,7 @@ public class NeighborRequestController(
         var requestId = await wizardService.PublishAsync(userId, draft, cancellationToken);
         if (requestId == null)
         {
-            TempData["NeighborRequestError"] = "We could not publish your job. Please try again.";
+            TempData["NeighborRequestError"] = localizer["We could not publish your job. Please try again."];
             var invalidVm = await wizardService.BuildDescribeStepAsync(draft, cancellationToken);
             if (invalidVm == null)
             {
@@ -292,7 +293,7 @@ public class NeighborRequestController(
 
         if (!NeighborRequestWizardService.IsNeededByDateAllowed(draft.NeededByDate))
         {
-            TempData["NeighborRequestError"] = NeighborRequestWizardService.NeededByDatePastErrorMessage;
+            TempData["NeighborRequestError"] = localizer[NeighborRequestWizardService.NeededByDatePastErrorMessage];
             if (draft.EditingRequestId is int editId and > 0)
             {
                 return RedirectToAction(nameof(Edit), new { id = editId });
@@ -325,7 +326,7 @@ public class NeighborRequestController(
 
         if (!NeighborRequestWizardService.IsNeededByDateAllowed(draft.NeededByDate))
         {
-            TempData["NeighborRequestError"] = NeighborRequestWizardService.NeededByDatePastErrorMessage;
+            TempData["NeighborRequestError"] = localizer[NeighborRequestWizardService.NeededByDatePastErrorMessage];
             if (draft.EditingRequestId is int editId and > 0)
             {
                 return RedirectToAction(nameof(Edit), new { id = editId });
@@ -337,7 +338,7 @@ public class NeighborRequestController(
         var requestId = await wizardService.PublishAsync(userId, draft, cancellationToken);
         if (requestId == null)
         {
-            TempData["NeighborRequestError"] = "We could not publish your request. Please try again.";
+            TempData["NeighborRequestError"] = localizer["We could not publish your request. Please try again."];
             return RedirectToAction(nameof(Review), new { propiedadId });
         }
 
@@ -346,7 +347,7 @@ public class NeighborRequestController(
 
         if (editingRequestId is > 0)
         {
-            TempData["NeighborRequestSaved"] = "Your request was updated.";
+            TempData["NeighborRequestSaved"] = localizer["Your request was updated."];
             return RedirectToAction(nameof(Detail), new { id = editingRequestId.Value });
         }
 
@@ -512,7 +513,7 @@ public class NeighborRequestController(
             {
                 ModelState.AddModelError(
                     nameof(model.NeededByDate),
-                    NeighborRequestWizardService.NeededByDatePastErrorMessage);
+                    localizer[NeighborRequestWizardService.NeededByDatePastErrorMessage]);
             }
 
             var failedVm = await wizardService.BuildEditDetailsStepAsync(userId, model.RequestId ?? 0, Url, cancellationToken);
@@ -569,7 +570,7 @@ public class NeighborRequestController(
             return RedirectToAction("Index", "Home");
         }
 
-        TempData["NeighborRequestSaved"] = "Your request was cancelled.";
+        TempData["NeighborRequestSaved"] = localizer["Your request was cancelled."];
         return RedirectToAction(nameof(Mine), new { propiedadId });
     }
 

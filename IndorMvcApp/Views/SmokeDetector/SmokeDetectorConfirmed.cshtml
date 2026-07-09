@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.SmokeDetectorConfirmedViewModel
 @{
-    ViewData["Title"] = "Your smoke alarm reminders are ready - INDOR";
+    ViewData["Title"] = L["Your smoke alarm reminders are ready - INDOR"];
     ViewData["WizardTitle"] = Model.NombreServicio;
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 }
@@ -8,21 +8,21 @@
 
 <div class="success-wrap">
         <div class="success-icon"><i class="fas fa-check"></i></div>
-        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">Your smoke alarm reminders are ready</h1>
-        <p class="page-lead" style="text-align:center;margin-bottom:16px;">We've set up your reminders and tracking so you can stay protected with less to remember.</p>
+        <h1 class="page-heading" style="font-size:1.15rem;margin-bottom:6px;">@L["Your smoke alarm reminders are ready"]</h1>
+        <p class="page-lead" style="text-align:center;margin-bottom:16px;">@L["We've set up your reminders and tracking so you can stay protected with less to remember."]</p>
     </div>
 
     <div class="feature-icons">
-        <div class="feature-icon"><div class="circle"><i class="fas fa-calendar"></i></div><span>Monthly testing reminders</span></div>
-        <div class="feature-icon"><div class="circle"><i class="fas fa-battery-full"></i></div><span>Yearly battery checks</span></div>
-        <div class="feature-icon"><div class="circle"><i class="fas fa-rotate"></i></div><span>10-year alarm replacement tracking</span></div>
+        <div class="feature-icon"><div class="circle"><i class="fas fa-calendar"></i></div><span>@L["Monthly testing reminders"]</span></div>
+        <div class="feature-icon"><div class="circle"><i class="fas fa-battery-full"></i></div><span>@L["Yearly battery checks"]</span></div>
+        <div class="feature-icon"><div class="circle"><i class="fas fa-rotate"></i></div><span>@L["10-year alarm replacement tracking"]</span></div>
     </div>
 
     <div class="reminder-list">
         <div class="reminder-item">
             <i class="fas fa-calendar"></i>
             <div class="body">
-                <div class="label">Next monthly test</div>
+                <div class="label">@L["Next monthly test"]</div>
                 <div class="value">@Model.NextMonthlyTestLabel</div>
             </div>
             <i class="fas fa-chevron-right chev"></i>
@@ -30,7 +30,7 @@
         <div class="reminder-item">
             <i class="fas fa-battery-full"></i>
             <div class="body">
-                <div class="label">Next battery reminder</div>
+                <div class="label">@L["Next battery reminder"]</div>
                 <div class="value">@Model.NextBatteryLabel</div>
             </div>
             <i class="fas fa-chevron-right chev"></i>
@@ -38,7 +38,7 @@
         <div class="reminder-item">
             <i class="fas fa-shield-halved"></i>
             <div class="body">
-                <div class="label">Alarm replacement tracking saved</div>
+                <div class="label">@L["Alarm replacement tracking saved"]</div>
                 <div class="value">@Model.ReplacementLabel</div>
             </div>
             <i class="fas fa-chevron-right chev"></i>
@@ -50,15 +50,15 @@
         <div class="safety-visit">
             <i class="fas fa-house-chimney" style="color:#0066CC;font-size:1.2rem;"></i>
             <div class="text">
-                <strong>Schedule a safety visit</strong>
+                <strong>@L["Schedule a safety visit"]</strong>
                 A pro can inspect your alarms and recommend any updates.
             </div>
-            <span class="btn-find-pro">Find a pro</span>
+            <span class="btn-find-pro">@L["Find a pro"]</span>
         </div>
     }
 
     <a asp-controller="Home" asp-action="Index" class="btn-primary">
-        <i class="fas fa-house"></i> Go to Home Care Guide <i class="fas fa-chevron-right"></i>
+        <i class="fas fa-house"></i> @L["Go to Home Care Guide"] <i class="fas fa-chevron-right"></i>
     </a>
     <a asp-controller="SmokeDetector" asp-action="SmokeDetectorReminders" asp-route-id="@Model.SolicitudId" class="btn-outline" style="margin-top:10px;">
         Edit reminders

@@ -12,36 +12,36 @@
     <div class="review-summary-list">
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-seedling"></i></span>
-            <div><span class="k">Service</span><strong>@Model.ServiceName</strong></div>
+            <div><span class="k">@L["Service"]</span><strong>@Model.ServiceName</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-rotate"></i></span>
-            <div><span class="k">Frequency</span><strong>@Model.FrequencyLabel</strong></div>
+            <div><span class="k">@L["Frequency"]</span><strong>@Model.FrequencyLabel</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-house"></i></span>
-            <div><span class="k">Area</span><strong>@Model.AreaLabel</strong></div>
+            <div><span class="k">@L["Area"]</span><strong>@Model.AreaLabel</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-calendar"></i></span>
-            <div><span class="k">First visit</span><strong>@Model.ScheduledLabel</strong></div>
+            <div><span class="k">@L["First visit"]</span><strong>@Model.ScheduledLabel</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-bell"></i></span>
-            <div><span class="k">Reminder</span><strong>@Model.ReminderLabel</strong></div>
+            <div><span class="k">@L["Reminder"]</span><strong>@Model.ReminderLabel</strong></div>
         </article>
         <article class="review-summary-card">
             <span class="review-summary-icon"><i class="fas fa-location-dot"></i></span>
-            <div><span class="k">Address</span><strong>@Model.DireccionPropiedad</strong></div>
+            <div><span class="k">@L["Address"]</span><strong>@Model.DireccionPropiedad</strong></div>
         </article>
     </div>
 
     @if (!Model.IsReminderOnly)
     {
         <div class="field-card">
-            <span class="field-label">Price breakdown</span>
+            <span class="field-label">@L["Price breakdown"]</span>
             <div class="breakdown-line">
-                <span class="left"><i class="fas fa-seedling"></i> Base service</span>
+                <span class="left"><i class="fas fa-seedling"></i> @L["Base service"]</span>
                 <span>$@Model.PrecioBase.ToString("0.00")</span>
             </div>
             @foreach (var line in Model.AddonLines)
@@ -54,12 +54,12 @@
             @if (Model.DescuentoSuscripcion > 0)
             {
                 <div class="breakdown-line discount">
-                    <span class="left"><i class="fas fa-tag"></i> Subscription discount</span>
+                    <span class="left"><i class="fas fa-tag"></i> @L["Subscription discount"]</span>
                     <span>-$@Model.DescuentoSuscripcion.ToString("0.00")</span>
                 </div>
             }
             <div class="breakdown-total">
-                <strong>Total</strong>
+                <strong>@L["Total"]</strong>
                 <span class="value">$@Model.PrecioTotal.ToString("0.00") USD</span>
             </div>
         </div>
@@ -69,5 +69,5 @@
         <button type="submit" name="action" value="continue" class="btn-primary">
             @(Model.IsReminderOnly ? "Activate reminder" : "Confirm service")
         </button>
-        <button type="submit" name="action" value="back" class="btn-outline">Edit</button>
+        <button type="submit" name="action" value="back" class="btn-outline">@L["Edit"]</button>
     </form>

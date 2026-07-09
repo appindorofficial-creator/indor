@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProReportsPageViewModel
 @{
-    ViewData["Title"] = "Reports - INDOR PRO";
+    ViewData["Title"] = L["Reports - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "reports";
     ViewData["ProviderProExtraCss"] = "reports-v2.css";
@@ -32,9 +32,9 @@
     <section class="prv-pro-jobs-head">
         <div class="prv-pro-reports-title-row">
             <span class="prv-pro-reports-title-badge"><i class="fas fa-chart-simple"></i></span>
-            <h1>Reports</h1>
+            <h1>@L["Reports"]</h1>
         </div>
-        <p>Manage completion reports and home records.</p>
+        <p>@L["Manage completion reports and home records."]</p>
         <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-create-btn">
             <i class="fas fa-plus"></i> Create Report
         </a>
@@ -44,9 +44,9 @@
         <input type="hidden" name="tab" value="@Model.ActiveTab" />
         <div class="prv-pro-search-wrap">
             <i class="fas fa-magnifying-glass"></i>
-            <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search reports, jobs, or properties" />
+            <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search reports, jobs, or properties"]" />
         </div>
-        <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" title="Filters">
+        <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" title="@L["Filters"]">
             <i class="fas fa-sliders"></i> Filters
         </button>
     </form>
@@ -55,27 +55,27 @@
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="draft" class="prv-pro-jobs-stat prv-pro-jobs-stat--blue">
             <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--blue"><i class="fas fa-file-lines"></i></span>
             <strong>@Model.DraftCount</strong>
-            <span>Draft Reports</span>
+            <span>@L["Draft Reports"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="ready" class="prv-pro-jobs-stat prv-pro-jobs-stat--green">
             <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--green"><i class="fas fa-paper-plane"></i></span>
             <strong>@Model.ReadyCount</strong>
-            <span>Ready to Send</span>
+            <span>@L["Ready to Send"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="approval" class="prv-pro-jobs-stat prv-pro-jobs-stat--orange">
             <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--orange"><i class="fas fa-clock"></i></span>
             <strong>@Model.ApprovalCount</strong>
-            <span>Awaiting Approval</span>
+            <span>@L["Awaiting Approval"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="approved" class="prv-pro-jobs-stat prv-pro-jobs-stat--purple">
             <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--purple"><i class="fas fa-circle-check"></i></span>
             <strong>@Model.ApprovedCount</strong>
-            <span>Approved</span>
+            <span>@L["Approved"]</span>
         </a>
         <a asp-controller="Proveedor" asp-action="Reports" asp-route-tab="housefacts" class="prv-pro-jobs-stat prv-pro-jobs-stat--indigo">
             <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--indigo"><i class="fas fa-house"></i></span>
             <strong>@Model.HouseFactsCount</strong>
-            <span>Added to House Facts</span>
+            <span>@L["Added to House Facts"]</span>
         </a>
     </section>
 
@@ -95,8 +95,8 @@
             <div class="prv-pro-reports-empty">
                 <img src="~/images/reports-empty-folder.png" alt="" class="prv-pro-reports-empty-img" loading="lazy" decoding="async" asp-append-version="true" />
                 <div class="prv-pro-reports-empty-text">
-                    <strong>No reports in this view yet.</strong>
-                    <p>Completion reports for your jobs will appear here.</p>
+                    <strong>@L["No reports in this view yet."]</strong>
+                    <p>@L["Completion reports for your jobs will appear here."]</p>
                 </div>
             </div>
         }
@@ -105,7 +105,7 @@
             @foreach (var report in Model.Reports)
             {
                 <article class="prv-pro-report-card">
-                    <button type="button" class="prv-pro-job-card-menu" aria-label="More options"><i class="fas fa-ellipsis-vertical"></i></button>
+                    <button type="button" class="prv-pro-job-card-menu" aria-label="@L["More options"]"><i class="fas fa-ellipsis-vertical"></i></button>
 
                     <div class="prv-pro-report-card-main">
                         <div class="prv-pro-job-card-icon"><i class="fas @report.IconClass"></i></div>
@@ -147,7 +147,7 @@
     </section>
 
     <section class="prv-pro-quick prv-pro-quick--reports">
-        <h2>Quick Actions</h2>
+        <h2>@L["Quick Actions"]</h2>
         <div class="prv-pro-quick-grid prv-pro-quick-grid--reports">
             @foreach (var (icon, label, color, action) in quickActions)
             {
@@ -187,5 +187,5 @@
         </section>
     }
 
-    <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-fab" aria-label="Create report"><i class="fas fa-plus"></i></a>
+    <a asp-controller="Proveedor" asp-action="ReportTemplates" class="prv-pro-fab" aria-label="@L["Create report"]"><i class="fas fa-plus"></i></a>
 </div>

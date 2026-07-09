@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.ProviderProfileBusinessViewModel
 @{
-    ViewData["Title"] = "Business Profile - INDOR PRO";
+    ViewData["Title"] = L["Business Profile - INDOR PRO"];
     Layout = "_ProviderProLayout";
     ViewBag.NavActive = "profile";
     ViewBag.CompanyInitial = Model.CompanyInitial;
@@ -16,12 +16,12 @@
     @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
 
     <header class="prv-pro-jobs-head prv-flow-page-head">
-        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-lead-back" aria-label="Back">
+        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-lead-back" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <div>
-            <h1>Business profile</h1>
-            <p>Complete your business's main information.</p>
+            <h1>@L["Business profile"]</h1>
+            <p>@L["Complete your business's main information."]</p>
         </div>
     </header>
 
@@ -42,16 +42,16 @@
         @Html.AntiForgeryToken()
 
         <section class="prv-pro-wizard-card">
-            <h2>Basic information</h2>
+            <h2>@L["Basic information"]</h2>
             <div class="prv-pro-edit-profile-fields">
                 <label>
-                    <span>Business name</span>
-                    <input type="text" name="BusinessName" value="@Model.BusinessName" placeholder="Legal business name" required />
+                    <span>@L["Business name"]</span>
+                    <input type="text" name="BusinessName" value="@Model.BusinessName" placeholder="@L["Legal business name"]" required />
                 </label>
                 <label>
-                    <span>Category</span>
+                    <span>@L["Category"]</span>
                     <select name="PrimaryCategoryId">
-                        <option value="">Select category</option>
+                        <option value="">@L["Select category"]</option>
                         @foreach (var cat in Model.CategoryOptions)
                         {
                             if (cat.Id == Model.PrimaryCategoryId)
@@ -66,37 +66,37 @@
                     </select>
                 </label>
                 <label>
-                    <span>Phone</span>
-                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="(555) 555-5555" />
+                    <span>@L["Phone"]</span>
+                    <input type="tel" name="Phone" value="@Model.Phone" placeholder="@L["(555) 555-5555"]" />
                 </label>
                 <label>
-                    <span>Email</span>
-                    <input type="email" name="Email" value="@Model.Email" placeholder="you@company.com" />
+                    <span>@L["Email"]</span>
+                    <input type="email" name="Email" value="@Model.Email" placeholder="@L["you@company.com"]" />
                 </label>
                 <label class="prv-flow-website-row">
-                    <span>Website</span>
-                    <input type="url" name="Website" value="@Model.Website" placeholder="https://" @(Model.WebsiteNotApplicable ? "disabled" : "") id="prvFlowWebsite" />
+                    <span>@L["Website"]</span>
+                    <input type="url" name="Website" value="@Model.Website" placeholder="@L["https://"]" @(Model.WebsiteNotApplicable ? "disabled" : "") id="prvFlowWebsite" />
                     <label class="prv-flow-inline-check">
                         <input type="checkbox" name="WebsiteNotApplicable" value="true" @(Model.WebsiteNotApplicable ? "checked" : "") id="prvFlowWebsiteNa" />
                         Not applicable
                     </label>
                 </label>
                 <label>
-                    <span>Description</span>
-                    <textarea name="ServiceDescription" rows="3" placeholder="Short summary of your business">@Model.ServiceDescription</textarea>
+                    <span>@L["Description"]</span>
+                    <textarea name="ServiceDescription" rows="3" placeholder="@L["Short summary of your business"]">@Model.ServiceDescription</textarea>
                 </label>
                 <label>
-                    <span>Hours</span>
-                    <input type="text" name="PreferredHours" value="@Model.PreferredHours" placeholder="Mon–Fri, 8:00 a.m. – 6:00 p.m." />
+                    <span>@L["Hours"]</span>
+                    <input type="text" name="PreferredHours" value="@Model.PreferredHours" placeholder="@L["Mon–Fri, 8:00 a.m. – 6:00 p.m."]" />
                 </label>
             </div>
         </section>
 
         <section class="prv-pro-wizard-card">
-            <h2>Service options</h2>
+            <h2>@L["Service options"]</h2>
             <div class="prv-flow-tri-group">
                 <div class="prv-flow-tri">
-                    <span>Emergency service</span>
+                    <span>@L["Emergency service"]</span>
                     <div class="prv-flow-tri-btns">
                         <label><input type="radio" name="EmergencyPreference" value="yes" @TriChecked(Model.EmergencyPreference, Model.EmergencyService) /> Yes</label>
                         <label><input type="radio" name="EmergencyPreference" value="no" @TriNo(Model.EmergencyPreference, Model.EmergencyService) /> No</label>
@@ -104,7 +104,7 @@
                     </div>
                 </div>
                 <div class="prv-flow-tri">
-                    <span>Same-day jobs</span>
+                    <span>@L["Same-day jobs"]</span>
                     <div class="prv-flow-tri-btns">
                         <label><input type="radio" name="SameDayPreference" value="yes" @TriChecked(Model.SameDayPreference, Model.SameDayJobs) /> Yes</label>
                         <label><input type="radio" name="SameDayPreference" value="no" @TriNo(Model.SameDayPreference, Model.SameDayJobs) /> No</label>
@@ -115,8 +115,8 @@
         </section>
 
         <section class="prv-pro-wizard-card" id="services">
-            <h2>Services offered</h2>
-            <p>Select the services you provide. These appear on your public profile.</p>
+            <h2>@L["Services offered"]</h2>
+            <p>@L["Select the services you provide. These appear on your public profile."]</p>
             <div class="prv-pro-profile-tags prv-pro-edit-profile-service-grid">
                 @foreach (var option in Model.ServiceOptions)
                 {
@@ -130,15 +130,15 @@
         </section>
 
         <section class="prv-pro-wizard-card" id="areas">
-            <h2>Service areas</h2>
+            <h2>@L["Service areas"]</h2>
             <div class="prv-pro-edit-profile-fields">
                 <label>
-                    <span>Primary city</span>
-                    <input type="text" name="PrimaryCity" value="@Model.PrimaryCity" placeholder="Charlotte, NC" />
+                    <span>@L["Primary city"]</span>
+                    <input type="text" name="PrimaryCity" value="@Model.PrimaryCity" placeholder="@L["Charlotte, NC"]" />
                 </label>
                 <label>
-                    <span>ZIP codes / neighborhoods</span>
-                    <input type="text" name="ServiceZipCodes" value="@Model.ServiceZipCodes" placeholder="28202, 28203, Matthews" />
+                    <span>@L["ZIP codes / neighborhoods"]</span>
+                    <input type="text" name="ServiceZipCodes" value="@Model.ServiceZipCodes" placeholder="@L["28202, 28203, Matthews"]" />
                 </label>
             </div>
         </section>
@@ -152,15 +152,15 @@
             <button type="submit" name="SaveMode" value="save" class="prv-pro-btn prv-pro-btn--primary prv-flow-cta">
                 <i class="fas fa-floppy-disk"></i> Save changes
             </button>
-            <button type="submit" name="SaveMode" value="continue" class="prv-pro-btn prv-pro-btn--ghost">Save &amp; continue</button>
-            <button type="submit" name="SaveMode" value="exit" class="prv-flow-exit">Save &amp; exit</button>
+            <button type="submit" name="SaveMode" value="continue" class="prv-pro-btn prv-pro-btn--ghost">@L["Save &amp; continue"]</button>
+            <button type="submit" name="SaveMode" value="exit" class="prv-flow-exit">@L["Save &amp; exit"]</button>
         </footer>
     </form>
 
     <section class="prv-flow-next-card">
-        <h3>What's next</h3>
-        <p>After this step, continue to <strong>Documents &amp; verification</strong>.</p>
-        <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-next-link">Go to documents <i class="fas fa-arrow-right"></i></a>
+        <h3>@L["What's next"]</h3>
+        <p>@L["After this step, continue to"]<strong>@L["Documents &amp; verification"]</strong>.</p>
+        <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-next-link">@L["Go to documents"]<i class="fas fa-arrow-right"></i></a>
     </section>
 
     @await Html.PartialAsync("_ProfileFlowStepper")

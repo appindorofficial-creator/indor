@@ -1,15 +1,15 @@
-﻿@model IndorMvcApp.ViewModels.StructuralMoreDetailsViewModel
+@model IndorMvcApp.ViewModels.StructuralMoreDetailsViewModel
 @{
-    ViewData["Title"] = "Structural Details - INDOR";
-    ViewData["WizardTitle"] = "Structural Details";
+    ViewData["Title"] = L["Structural Details - INDOR"];
+    ViewData["WizardTitle"] = L["Structural Details"];
     ViewData["WizardBackUrl"] = Url.Action("StructuralSigns", "Inspecciones", new { id = Model.SolicitudId });
     ViewData["WizardStep"] = 3;
     ViewData["WizardTotalSteps"] = 6;
 
 }
 
-<h1 class="page-heading">Provide more details</h1>
-    <p class="page-lead">A few more details help us assign the right inspector and timing.</p>
+<h1 class="page-heading">@L["Provide more details"]</h1>
+    <p class="page-lead">@L["A few more details help us assign the right inspector and timing."]</p>
 
     <form asp-controller="Inspecciones" asp-action="StructuralMoreDetails" method="post">
         <input type="hidden" asp-for="SolicitudId" />
@@ -23,67 +23,67 @@
         <input type="hidden" asp-for="MejorHorarioVisita" id="MejorHorarioVisita" />
 
         <div class="field-card">
-            <label asp-for="UbicacionEspecifica" class="field-label">Specific location</label>
-            <input asp-for="UbicacionEspecifica" class="form-input" placeholder="Example: garage corner near side wall" />
+            <label asp-for="UbicacionEspecifica" class="field-label">@L["Specific location"]</label>
+            <input asp-for="UbicacionEspecifica" class="form-input" placeholder="@L["Example: garage corner near side wall"]" />
         </div>
 
         <div class="field-card">
-            <label asp-for="CuandoNotadoTexto" class="field-label">When did you notice it?</label>
-            <input asp-for="CuandoNotadoTexto" class="form-input" placeholder="Select date or timeframe" />
+            <label asp-for="CuandoNotadoTexto" class="field-label">@L["When did you notice it?"]</label>
+            <input asp-for="CuandoNotadoTexto" class="form-input" placeholder="@L["Select date or timeframe"]" />
         </div>
 
         <div class="field-card">
-            <span class="field-label">How long has this been happening?</span>
+            <span class="field-label">@L["How long has this been happening?"]</span>
             <div class="chip-grid" data-target="DuracionProblema" data-multi="false">
-                <button type="button" class="chip-btn" data-value="LessThanWeek"><span class="check"><i class="fas fa-check"></i></span>Less than a week</button>
-                <button type="button" class="chip-btn" data-value="OneToThreeMonths"><span class="check"><i class="fas fa-check"></i></span>1 to 3 months</button>
-                <button type="button" class="chip-btn" data-value="ThreeToTwelveMonths"><span class="check"><i class="fas fa-check"></i></span>3 to 12 months</button>
-                <button type="button" class="chip-btn" data-value="MoreThanYear"><span class="check"><i class="fas fa-check"></i></span>More than a year</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="LessThanWeek"><span class="check"><i class="fas fa-check"></i></span>@L["Less than a week"]</button>
+                <button type="button" class="chip-btn" data-value="OneToThreeMonths"><span class="check"><i class="fas fa-check"></i></span>@L["1 to 3 months"]</button>
+                <button type="button" class="chip-btn" data-value="ThreeToTwelveMonths"><span class="check"><i class="fas fa-check"></i></span>@L["3 to 12 months"]</button>
+                <button type="button" class="chip-btn" data-value="MoreThanYear"><span class="check"><i class="fas fa-check"></i></span>@L["More than a year"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Severity</span>
+            <span class="field-label">@L["Severity"]</span>
             <div class="segmented-3" data-target="Severidad">
-                <button type="button" class="segment-btn" data-value="Mild">Mild</button>
-                <button type="button" class="segment-btn" data-value="Moderate">Moderate</button>
-                <button type="button" class="segment-btn" data-value="Severe">Severe</button>
+                <button type="button" class="segment-btn" data-value="Mild">@L["Mild"]</button>
+                <button type="button" class="segment-btn" data-value="Moderate">@L["Moderate"]</button>
+                <button type="button" class="segment-btn" data-value="Severe">@L["Severe"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Any previous repairs?</span>
+            <span class="field-label">@L["Any previous repairs?"]</span>
             <div class="segmented-3" data-target="ReparacionesPrevias">
-                <button type="button" class="segment-btn" data-value="Yes">Yes</button>
-                <button type="button" class="segment-btn" data-value="No">No</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="Yes">@L["Yes"]</button>
+                <button type="button" class="segment-btn" data-value="No">@L["No"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Unsafe conditions now</span>
+            <span class="field-label">@L["Unsafe conditions now"]</span>
             <div class="chip-grid" data-target="CondicionesInseguras" data-multi="true">
-                <button type="button" class="chip-btn" data-value="CracksWidening"><span class="check"><i class="fas fa-check"></i></span>Cracks widening</button>
-                <button type="button" class="chip-btn" data-value="SoftFloor"><span class="check"><i class="fas fa-check"></i></span>Soft floor</button>
-                <button type="button" class="chip-btn" data-value="WaterNearFoundation"><span class="check"><i class="fas fa-check"></i></span>Water near foundation</button>
-                <button type="button" class="chip-btn" data-value="LooseSupport"><span class="check"><i class="fas fa-check"></i></span>Loose support</button>
-                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>Not sure</button>
+                <button type="button" class="chip-btn" data-value="CracksWidening"><span class="check"><i class="fas fa-check"></i></span>@L["Cracks widening"]</button>
+                <button type="button" class="chip-btn" data-value="SoftFloor"><span class="check"><i class="fas fa-check"></i></span>@L["Soft floor"]</button>
+                <button type="button" class="chip-btn" data-value="WaterNearFoundation"><span class="check"><i class="fas fa-check"></i></span>@L["Water near foundation"]</button>
+                <button type="button" class="chip-btn" data-value="LooseSupport"><span class="check"><i class="fas fa-check"></i></span>@L["Loose support"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure"><span class="check"><i class="fas fa-check"></i></span>@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Best visit time</span>
+            <span class="field-label">@L["Best visit time"]</span>
             <div class="chip-grid" data-target="MejorHorarioVisita" data-multi="false">
-                <button type="button" class="chip-btn" data-value="Morning"><span class="check"><i class="fas fa-check"></i></span>Morning</button>
-                <button type="button" class="chip-btn" data-value="Afternoon"><span class="check"><i class="fas fa-check"></i></span>Afternoon</button>
-                <button type="button" class="chip-btn" data-value="FirstAvailable"><span class="check"><i class="fas fa-check"></i></span>First available</button>
+                <button type="button" class="chip-btn" data-value="Morning"><span class="check"><i class="fas fa-check"></i></span>@L["Morning"]</button>
+                <button type="button" class="chip-btn" data-value="Afternoon"><span class="check"><i class="fas fa-check"></i></span>@L["Afternoon"]</button>
+                <button type="button" class="chip-btn" data-value="FirstAvailable"><span class="check"><i class="fas fa-check"></i></span>@L["First available"]</button>
             </div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="save"><i class="fas fa-bookmark"></i> Save &amp; continue later</button>
-        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="save"><i class="fas fa-bookmark"></i> @L["Save &amp; continue later"]</button>
+        <button type="submit" class="btn-secondary" name="action" value="back"><i class="fas fa-arrow-left"></i> @L["Back"]</button>
     </form>
 </div>
 @section Scripts {

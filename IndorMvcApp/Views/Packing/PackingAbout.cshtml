@@ -9,8 +9,8 @@
 }
 
 
-<h2 class="page-heading" style="font-size:1.15rem;">Tell us about your packing job</h2>
-    <p class="page-lead" style="margin-top:-8px;">Help us match the right crew and packing materials.</p>
+<h2 class="page-heading" style="font-size:1.15rem;">@L["Tell us about your packing job"]</h2>
+    <p class="page-lead" style="margin-top:-8px;">@L["Help us match the right crew and packing materials."]</p>
 
     <div asp-validation-summary="All" class="validation-summary"></div>
 
@@ -24,27 +24,27 @@
         <input type="hidden" asp-for="TamanoHogar" id="TamanoHogar" />
 
         <div class="address-card">
-            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="123 Main St, Charlotte, NC 28202" required /></div>
-            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">Edit</span>
+            <div class="left"><i class="fas fa-house" style="color:#0066CC;"></i><input asp-for="DireccionPropiedad" placeholder="@L["123 Main St, Charlotte, NC 28202"]" required /></div>
+            <span style="color:#0066CC;font-weight:600;font-size:0.85rem;">@L["Edit"]</span>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What kind of packing help do you need?</span>
+            <span class="field-label">@L["What kind of packing help do you need?"]</span>
             <div class="packing-type-grid" data-target="TipoEmpaque">
-                <button type="button" class="type-card" data-value="FullPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>Full packing</button>
-                <button type="button" class="type-card" data-value="PartialPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>Partial packing</button>
-                <button type="button" class="type-card" data-value="FragileOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wine-glass"></i>Fragile items only</button>
-                <button type="button" class="type-card" data-value="LastMinute"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-clock"></i>Last-minute help</button>
+                <button type="button" class="type-card" data-value="FullPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box-open"></i>@L["Full packing"]</button>
+                <button type="button" class="type-card" data-value="PartialPacking"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-box"></i>@L["Partial packing"]</button>
+                <button type="button" class="type-card" data-value="FragileOnly"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-wine-glass"></i>@L["Fragile items only"]</button>
+                <button type="button" class="type-card" data-value="LastMinute"><span class="check"><i class="fas fa-check"></i></span><i class="fas fa-clock"></i>@L["Last-minute help"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">When are you moving?</span>
+            <span class="field-label">@L["When are you moving?"]</span>
             <div class="segment-row" data-target="CuandoMudanza">
-                <button type="button" class="segment-btn" data-value="Today"><i class="fas fa-calendar-day"></i> Today</button>
-                <button type="button" class="segment-btn" data-value="Tomorrow"><i class="fas fa-calendar-plus"></i> Tomorrow</button>
-                <button type="button" class="segment-btn" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> This week</button>
-                <button type="button" class="segment-btn" data-value="LaterDate"><i class="fas fa-calendar"></i> Later date</button>
+                <button type="button" class="segment-btn" data-value="Today"><i class="fas fa-calendar-day"></i> @L["Today"]</button>
+                <button type="button" class="segment-btn" data-value="Tomorrow"><i class="fas fa-calendar-plus"></i> @L["Tomorrow"]</button>
+                <button type="button" class="segment-btn" data-value="ThisWeek"><i class="fas fa-calendar-week"></i> @L["This week"]</button>
+                <button type="button" class="segment-btn" data-value="LaterDate"><i class="fas fa-calendar"></i> @L["Later date"]</button>
             </div>
             <div id="laterDateWrap" style="margin-top:12px;display:none;">
                 <div class="input-wrap"><i class="fas fa-calendar"></i><input asp-for="FechaServicio" type="date" /></div>
@@ -52,29 +52,29 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label">Property type</span>
+            <span class="field-label">@L["Property type"]</span>
             <div class="segment-row" data-target="TipoPropiedad">
-                <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> Apartment</button>
-                <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> House</button>
-                <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> Townhome</button>
-                <button type="button" class="segment-btn" data-value="Office"><i class="fas fa-briefcase"></i> Office</button>
+                <button type="button" class="segment-btn" data-value="Apartment"><i class="fas fa-building"></i> @L["Apartment"]</button>
+                <button type="button" class="segment-btn" data-value="House"><i class="fas fa-house"></i> @L["House"]</button>
+                <button type="button" class="segment-btn" data-value="Townhome"><i class="fas fa-house-chimney"></i> @L["Townhome"]</button>
+                <button type="button" class="segment-btn" data-value="Office"><i class="fas fa-briefcase"></i> @L["Office"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Home size</span>
+            <span class="field-label">@L["Home size"]</span>
             <div class="segment-row" data-target="TamanoHogar">
-                <button type="button" class="segment-btn" data-value="OneTwoRooms">1-2 rooms</button>
-                <button type="button" class="segment-btn" data-value="ThreeFourRooms">3-4 rooms</button>
-                <button type="button" class="segment-btn" data-value="FivePlusRooms">5+ rooms</button>
-                <button type="button" class="segment-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="segment-btn" data-value="OneTwoRooms">@L["1-2 rooms"]</button>
+                <button type="button" class="segment-btn" data-value="ThreeFourRooms">@L["3-4 rooms"]</button>
+                <button type="button" class="segment-btn" data-value="FivePlusRooms">@L["5+ rooms"]</button>
+                <button type="button" class="segment-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
-        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>The more details you provide, the better we can prepare the right crew and materials for your move.</span></div>
+        <div class="info-box-blue"><i class="fas fa-circle-info"></i><span>@L["The more details you provide, the better we can prepare the right crew and materials for your move."]</span></div>
 
-        <button type="submit" class="btn-primary">Next</button>
-        <button type="submit" name="action" value="skip" class="btn-outline">Skip for now</button>
+        <button type="submit" class="btn-primary">@L["Next"]</button>
+        <button type="submit" name="action" value="skip" class="btn-outline">@L["Skip for now"]</button>
     </form>
 </div>
 @section Scripts {

@@ -11,7 +11,7 @@
     {
         <div class="info-box-blue" style="margin-bottom:12px;">
             <i class="fas fa-bell"></i>
-            <span>Reminder-only mode. You can still book the service later from your notification.</span>
+            <span>@L["Reminder-only mode. You can still book the service later from your notification."]</span>
         </div>
     }
 
@@ -26,18 +26,18 @@
         <input type="hidden" asp-for="EstimatedTotal" id="EstimatedTotal" />
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-calendar-day" style="color:#0066CC;margin-right:6px;"></i> How do you want it?</span>
+            <span class="field-label"><i class="fas fa-calendar-day" style="color:#0066CC;margin-right:6px;"></i> @L["How do you want it?"]</span>
             <div class="segment-group" id="freqGroup">
                 @foreach (var freq in Model.FrequencyOptions)
                 {
                     <button type="button" class="segment-btn" data-value="@freq.Code"><i class="fas @freq.Icon"></i> @freq.Label</button>
                 }
             </div>
-            <p class="field-hint">You can activate it as a recurring service or just as a reminder.</p>
+            <p class="field-hint">@L["You can activate it as a recurring service or just as a reminder."]</p>
         </div>
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-seedling" style="color:#0066CC;margin-right:6px;"></i> Area to service</span>
+            <span class="field-label"><i class="fas fa-seedling" style="color:#0066CC;margin-right:6px;"></i> @L["Area to service"]</span>
             <div class="area-grid" id="areaGroup">
                 @foreach (var area in Model.AreaOptions)
                 {
@@ -52,7 +52,7 @@
         </div>
 
         <div class="field-card">
-            <span class="field-label"><i class="fas fa-wand-magic-sparkles" style="color:#0066CC;margin-right:6px;"></i> Optional extras</span>
+            <span class="field-label"><i class="fas fa-wand-magic-sparkles" style="color:#0066CC;margin-right:6px;"></i> @L["Optional extras"]</span>
             <div class="segment-group" id="addonGroup">
                 @foreach (var addon in Model.AddonOptions)
                 {
@@ -65,11 +65,11 @@
 
         <div class="sticky-total">
             <div class="sticky-total-row">
-                <span class="label">Estimated total</span>
+                <span class="label">@L["Estimated total"]</span>
                 <span class="value" id="totalDisplay">$@Model.EstimatedTotal.ToString("0")</span>
             </div>
-            <button type="submit" name="action" value="continue" class="btn-primary">Continue</button>
-            <button type="submit" name="action" value="back" class="btn-outline">Back</button>
+            <button type="submit" name="action" value="continue" class="btn-primary">@L["Continue"]</button>
+            <button type="submit" name="action" value="back" class="btn-outline">@L["Back"]</button>
         </div>
     </form>
 

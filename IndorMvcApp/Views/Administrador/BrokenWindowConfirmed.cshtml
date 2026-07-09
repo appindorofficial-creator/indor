@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.PropertyAdministratorBrokenWindowBoardUpConfirmedViewModel
 @{
-    ViewData["Title"] = "Broken Window / Board-Up request sent";
+    ViewData["Title"] = L["Broken Window / Board-Up request sent"];
     Layout = "_PropertyAdminLayout";
     ViewBag.FlowStep = Model.FlowStep;
     ViewBag.FlowTotalSteps = Model.TotalSteps;
@@ -14,15 +14,15 @@
     @await Html.PartialAsync("_PropertyAdminFlowHeader", Model)
 
     <section class="pa-flow-intro">
-        <h1>Broken Window / Board-Up request sent</h1>
+        <h1>@L["Broken Window / Board-Up request sent"]</h1>
         <p>A technician is on the way to @(Model.ViewingProperty?.PropertyName ?? "your property").</p>
     </section>
 
     <div class="pa-success-banner">
         <span class="pa-success-icon"><i class="fas fa-check"></i></span>
         <div>
-            <strong>Request received</strong>
-            <span>We've dispatched a technician to help.</span>
+            <strong>@L["Request received"]</strong>
+            <span>@L["We've dispatched a technician to help."]</span>
         </div>
     </div>
 
@@ -34,19 +34,19 @@
                 <span><i class="fas fa-star"></i> @Model.TechnicianRating.ToString("0.0")</span>
                 <small>@Model.TechnicianTitle</small>
             </div>
-            <span class="pa-verified-badge"><i class="fas fa-check"></i> Verified</span>
-            <a href="tel:" class="pa-tech-call" aria-label="Call technician"><i class="fas fa-phone"></i></a>
+            <span class="pa-verified-badge"><i class="fas fa-check"></i> @L["Verified"]</span>
+            <a href="tel:" class="pa-tech-call" aria-label="@L["Call technician"]"><i class="fas fa-phone"></i></a>
         </div>
         <div class="pa-tech-stats">
             <div>
                 <i class="fas fa-clock"></i>
                 <strong>@Model.EtaLabel</strong>
-                <small>ETA</small>
+                <small>@L["ETA"]</small>
             </div>
             <div>
                 <i class="fas fa-car"></i>
                 <strong>@Model.VehicleLabel</strong>
-                <small>Vehicle</small>
+                <small>@L["Vehicle"]</small>
             </div>
             <div>
                 <i class="fas fa-house"></i>
@@ -57,7 +57,7 @@
     </article>
 
     <article class="pa-timeline-card">
-        <h2>Request timeline</h2>
+        <h2>@L["Request timeline"]</h2>
         <ul class="pa-timeline">
             @foreach (var step in Model.Timeline)
             {
@@ -73,17 +73,17 @@
     </article>
 
     <div class="pa-action-grid">
-        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>Call technician</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>Message guest</span></button>
-        <button type="button" class="pa-action-tile"><i class="fas fa-share"></i><span>Share ETA</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-phone"></i><span>@L["Call technician"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-comment"></i><span>@L["Message guest"]</span></button>
+        <button type="button" class="pa-action-tile"><i class="fas fa-share"></i><span>@L["Share ETA"]</span></button>
         <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="inprogress" class="pa-action-tile">
-            <i class="fas fa-file-lines"></i><span>View details</span>
+            <i class="fas fa-file-lines"></i><span>@L["View details"]</span>
         </a>
     </div>
 
     <div class="pa-tip-banner pa-tip-banner--info">
         <span class="pa-tip-icon"><i class="fas fa-lightbulb"></i></span>
-        <p><strong>Tip:</strong> @Model.Tip</p>
+        <p><strong>@L["Tip:"]</strong> @Model.Tip</p>
     </div>
 
     <a asp-controller="Administrador" asp-action="Tasks" asp-route-filter="inprogress" class="ob-btn ob-btn-primary pa-flow-submit">

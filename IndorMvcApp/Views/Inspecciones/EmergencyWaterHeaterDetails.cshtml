@@ -1,7 +1,7 @@
 @model IndorMvcApp.ViewModels.EmergencyWaterHeaterDetailsViewModel
 @{
-    ViewData["Title"] = "Emergency Water Heater - INDOR";
-    ViewData["WizardTitle"] = "Emergency Water Heater";
+    ViewData["Title"] = L["Emergency Water Heater - INDOR"];
+    ViewData["WizardTitle"] = L["Emergency Water Heater"];
     ViewData["WizardBackUrl"] = Url.Action("EmergencyWaterHeaterIssue", "Inspecciones", new { id = Model.ServicioEmergenciaId });
     ViewData["WizardStep"] = 2;
     ViewData["WizardTotalSteps"] = 4;
@@ -10,14 +10,14 @@
 
 
     <div class="title-row">
-        <h1>Emergency Water Heater</h1>
+        <h1>@L["Emergency Water Heater"]</h1>
         <span class="badge-247">24/7</span>
     </div>
-    <p class="page-lead">Fast help for leaks, no hot water, or unsafe units.</p>
+    <p class="page-lead">@L["Fast help for leaks, no hot water, or unsafe units."]</p>
 
     
-<h2 class="page-heading">Add a few details</h2>
-    <p class="page-lead" style="margin-top:-4px;">A quick summary helps the provider arrive prepared.</p>
+<h2 class="page-heading">@L["Add a few details"]</h2>
+    <p class="page-lead" style="margin-top:-4px;">@L["A quick summary helps the provider arrive prepared."]</p>
 
     <div class="address-row">
         <span><i class="fas fa-location-dot"></i>@Model.DireccionPropiedad</span>
@@ -35,49 +35,49 @@
         <input type="hidden" asp-for="SintomasVisibles" id="SintomasVisibles" />
 
         <div class="field-card">
-            <span class="field-label">Where is the problem?</span>
+            <span class="field-label">@L["Where is the problem?"]</span>
             <div class="chip-grid" id="locationGroup">
-                <button type="button" class="chip-btn" data-value="Garage">Garage</button>
-                <button type="button" class="chip-btn" data-value="Closet">Closet</button>
-                <button type="button" class="chip-btn" data-value="Attic">Attic</button>
-                <button type="button" class="chip-btn" data-value="Basement">Basement</button>
-                <button type="button" class="chip-btn" data-value="Outside">Outside</button>
-                <button type="button" class="chip-btn" data-value="UtilityRoom">Utility room</button>
+                <button type="button" class="chip-btn" data-value="Garage">@L["Garage"]</button>
+                <button type="button" class="chip-btn" data-value="Closet">@L["Closet"]</button>
+                <button type="button" class="chip-btn" data-value="Attic">@L["Attic"]</button>
+                <button type="button" class="chip-btn" data-value="Basement">@L["Basement"]</button>
+                <button type="button" class="chip-btn" data-value="Outside">@L["Outside"]</button>
+                <button type="button" class="chip-btn" data-value="UtilityRoom">@L["Utility room"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">What type of unit?</span>
+            <span class="field-label">@L["What type of unit?"]</span>
             <div class="chip-grid" id="unitGroup">
-                <button type="button" class="chip-btn" data-value="Gas">Gas</button>
-                <button type="button" class="chip-btn" data-value="Electric">Electric</button>
-                <button type="button" class="chip-btn" data-value="Tankless">Tankless</button>
-                <button type="button" class="chip-btn" data-value="NotSure">Not sure</button>
+                <button type="button" class="chip-btn" data-value="Gas">@L["Gas"]</button>
+                <button type="button" class="chip-btn" data-value="Electric">@L["Electric"]</button>
+                <button type="button" class="chip-btn" data-value="Tankless">@L["Tankless"]</button>
+                <button type="button" class="chip-btn" data-value="NotSure">@L["Not sure"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <span class="field-label">Visible symptoms</span>
+            <span class="field-label">@L["Visible symptoms"]</span>
             <div class="chip-grid" id="symptomsGroup">
-                <button type="button" class="chip-btn" data-value="WaterLeaking">Water leaking</button>
-                <button type="button" class="chip-btn" data-value="RustyWater">Rusty water</button>
-                <button type="button" class="chip-btn" data-value="NoHotWater">No hot water</button>
-                <button type="button" class="chip-btn" data-value="WarmOnly">Warm only</button>
-                <button type="button" class="chip-btn" data-value="LowPressureNearby">Low pressure nearby</button>
-                <button type="button" class="chip-btn" data-value="ErrorCode">Error code</button>
-                <button type="button" class="chip-btn" data-value="BurnerWontStayOn">Burner won't stay on</button>
-                <button type="button" class="chip-btn" data-value="PoppingNoise">Popping noise</button>
+                <button type="button" class="chip-btn" data-value="WaterLeaking">@L["Water leaking"]</button>
+                <button type="button" class="chip-btn" data-value="RustyWater">@L["Rusty water"]</button>
+                <button type="button" class="chip-btn" data-value="NoHotWater">@L["No hot water"]</button>
+                <button type="button" class="chip-btn" data-value="WarmOnly">@L["Warm only"]</button>
+                <button type="button" class="chip-btn" data-value="LowPressureNearby">@L["Low pressure nearby"]</button>
+                <button type="button" class="chip-btn" data-value="ErrorCode">@L["Error code"]</button>
+                <button type="button" class="chip-btn" data-value="BurnerWontStayOn">@L["Burner won't stay on"]</button>
+                <button type="button" class="chip-btn" data-value="PoppingNoise">@L["Popping noise"]</button>
             </div>
         </div>
 
         <div class="field-card">
-            <label asp-for="NotaCorta" class="field-label">Short note</label>
-            <textarea asp-for="NotaCorta" class="form-textarea" maxlength="250" id="NotaCorta" placeholder="Add any details that might help (e.g., when it started, any error codes)."></textarea>
+            <label asp-for="NotaCorta" class="field-label">@L["Short note"]</label>
+            <textarea asp-for="NotaCorta" class="form-textarea" maxlength="250" id="NotaCorta" placeholder="@L["Add any details that might help (e.g., when it started, any error codes)."]"></textarea>
             <div class="char-count"><span id="charCount">0</span>/250</div>
         </div>
 
-        <button type="submit" class="btn-primary" name="action" value="next">Next <i class="fas fa-arrow-right"></i></button>
-        <button type="submit" class="btn-outline" name="action" value="back">Back</button>
+        <button type="submit" class="btn-primary" name="action" value="next">@L["Next"] <i class="fas fa-arrow-right"></i></button>
+        <button type="submit" class="btn-outline" name="action" value="back">@L["Back"]</button>
     </form>
 </div>
 @section Scripts {

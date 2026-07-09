@@ -40,7 +40,8 @@ public class AdministradorController(
     HomeownerNearbyNetworkService nearbyNetwork,
     UserManager<ApplicationUser> userManager,
     SignInManager<ApplicationUser> signInManager,
-    IWebHostEnvironment environment) : Controller
+    IWebHostEnvironment environment,
+    IIndorLocalizer localizer) : Controller
 {
     private static readonly string[] ProfilePhotoExtensions = [".jpg", ".jpeg", ".png", ".webp"];
     private const long MaxProfilePhotoBytes = 10_000_000;
@@ -2129,7 +2130,7 @@ public class AdministradorController(
         }
         else
         {
-            TempData["PersonalPhotoOk"] = "Profile photo updated.";
+            TempData["PersonalPhotoOk"] = localizer["Profile photo updated."];
         }
 
         return RedirectToAction(ResolvePhotoUploadReturnAction());

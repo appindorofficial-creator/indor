@@ -12,17 +12,17 @@
 <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
 <div class="summary-card">
-    <div class="summary-row"><i class="fas fa-sparkles"></i><div><div class="summary-label">Service</div><div class="summary-value">@Model.TipoLimpiezaLabel</div></div></div>
-    <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">Property</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
-    <div class="summary-row"><i class="fas fa-bed"></i><div><div class="summary-label">Home size</div><div class="summary-value">@Model.TamanoHogarLabel</div></div></div>
-    <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">Condition</div><div class="summary-value">@Model.CondicionLabel</div></div></div>
-    <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">Date</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
-    <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">Time</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-sparkles"></i><div><div class="summary-label">@L["Service"]</div><div class="summary-value">@Model.TipoLimpiezaLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-location-dot"></i><div><div class="summary-label">@L["Property"]</div><div class="summary-value">@Model.DireccionPropiedad</div></div></div>
+    <div class="summary-row"><i class="fas fa-bed"></i><div><div class="summary-label">@L["Home size"]</div><div class="summary-value">@Model.TamanoHogarLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-box-open"></i><div><div class="summary-label">@L["Condition"]</div><div class="summary-value">@Model.CondicionLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-calendar"></i><div><div class="summary-label">@L["Date"]</div><div class="summary-value">@Model.FechaServicioLabel</div></div></div>
+    <div class="summary-row"><i class="fas fa-clock"></i><div><div class="summary-label">@L["Time"]</div><div class="summary-value">@Model.VentanaHorarioLabel</div></div></div>
 </div>
 
 <div class="review-grid">
     <div class="review-mini">
-        <h4>Selected tasks</h4>
+        <h4>@L["Selected tasks"]</h4>
         <ul>
             @foreach (var area in areas)
             {
@@ -35,12 +35,12 @@
         </ul>
     </div>
     <div class="review-mini">
-        <h4>Access</h4>
-        <p style="margin-bottom:8px;"><strong>@Model.MetodoAccesoLabel</strong> <span class="status-badge">Selected</span></p>
-        <p><strong>Crew supplies:</strong> @Model.SuministrosLabel</p>
+        <h4>@L["Access"]</h4>
+        <p style="margin-bottom:8px;"><strong>@Model.MetodoAccesoLabel</strong> <span class="status-badge">@L["Selected"]</span></p>
+        <p><strong>@L["Crew supplies:"]</strong> @Model.SuministrosLabel</p>
         @if (!string.IsNullOrWhiteSpace(Model.NotaCorta))
         {
-            <h4 style="margin-top:12px;">Notes</h4>
+            <h4 style="margin-top:12px;">@L["Notes"]</h4>
             <p>@Model.NotaCorta</p>
         }
     </div>
@@ -48,8 +48,8 @@
 
 <div class="total-card">
     <div>
-        <div class="summary-label">Estimated total</div>
-        <div class="summary-value" style="font-size:0.78rem;color:#64748B;">Includes labor, supplies, and equipment.</div>
+        <div class="summary-label">@L["Estimated total"]</div>
+        <div class="summary-value" style="font-size:0.78rem;color:#64748B;">@L["Includes labor, supplies, and equipment."]</div>
     </div>
     <div class="amount">$@Model.PrecioEstimado.ToString("0")</div>
 </div>
@@ -64,6 +64,6 @@
     <input type="hidden" asp-for="MovingSetupServicioId" />
     <input type="hidden" asp-for="NombreServicio" />
     <input type="hidden" asp-for="DisclaimerTexto" />
-    <button type="submit" class="btn-primary">Request cleaning <i class="fas fa-chevron-right"></i></button>
-    <button type="submit" name="action" value="edit" class="btn-outline">Edit details</button>
+    <button type="submit" class="btn-primary">@L["Request cleaning"] <i class="fas fa-chevron-right"></i></button>
+    <button type="submit" name="action" value="edit" class="btn-outline">@L["Edit details"]</button>
 </form>

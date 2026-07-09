@@ -4,7 +4,7 @@
     Layout = null;
 }
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@(L.IsSpanish ? "es" : "en")">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
@@ -82,7 +82,7 @@
 <body>
 <div class="hcg-page">
     <div class="hcg-top">
-        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="hcg-back" aria-label="Back">
+        <a asp-controller="Home" asp-action="Index" asp-fragment="section-services" class="hcg-back" aria-label="@L["Back"]">
             <i class="fas fa-chevron-left"></i>
         </a>
         <h1 class="hcg-title">@Model.Title</h1>

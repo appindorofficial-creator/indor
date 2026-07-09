@@ -1,5 +1,7 @@
+@using IndorMvcApp.Localization
+@inject IIndorLocalizer L
 <!DOCTYPE html>
-<html lang="en">
+<html lang="@UiCulture.HtmlLang(L.CurrentCulture)">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -7,6 +9,7 @@
     <title>@(ViewData["Title"] ?? "INDOR")</title>
     @await Html.PartialAsync("_AppVersionHead")
     @await Html.PartialAsync("_AuthPortalHead")
+    <link rel="stylesheet" href="~/css/language-selector.css" asp-append-version="true" />
     @RenderSection("Head", required: false)
 </head>
 <body class="auth-page">

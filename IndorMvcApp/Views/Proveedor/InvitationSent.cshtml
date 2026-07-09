@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.InvitationSentViewModel
 @{
-    ViewData["Title"] = "Invitation Sent";
+    ViewData["Title"] = L["Invitation Sent"];
     Layout = "_ProviderProLayout";
     ViewData["ProviderProExtraCss"] = "provider-requests.css";
     ViewBag.NavActive = "jobs";
@@ -9,15 +9,15 @@
 <div class="prv-req-shell">
     <header class="prv-req-hero prv-req-hero--confirm">
         <div class="prv-req-hero-top">
-            <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-req-back" aria-label="Back"><i class="fas fa-arrow-left"></i></a>
-            <span class="prv-req-brand-word">INDOR</span>
-            <span class="prv-req-brand-pro">PRO</span>
+            <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-req-back" aria-label="@L["Back"]"><i class="fas fa-arrow-left"></i></a>
+            <span class="prv-req-brand-word">@L["INDOR"]</span>
+            <span class="prv-req-brand-pro">@L["PRO"]</span>
             @await Component.InvokeAsync("ProviderProNotifications", new { tone = "inverse" })
         </div>
         <div class="prv-req-confirm-head">
             <span class="prv-req-confirm-check"><i class="fas fa-check"></i></span>
             <div>
-                <h1>Invitation Sent</h1>
+                <h1>@L["Invitation Sent"]</h1>
                 <p>Your invitation was sent to @Model.Sub.Name.</p>
             </div>
         </div>
@@ -28,15 +28,15 @@
     <section class="prv-req-panel">
         <div class="prv-inv-summary">
             <div class="prv-inv-summary-row">
-                <span><i class="fas fa-briefcase"></i> Job</span>
+                <span><i class="fas fa-briefcase"></i> @L["Job"]</span>
                 <strong>@Model.JobTitle</strong>
             </div>
             <div class="prv-inv-summary-row">
-                <span><i class="fas fa-calendar-check"></i> Schedule</span>
+                <span><i class="fas fa-calendar-check"></i> @L["Schedule"]</span>
                 <strong>@Model.ScheduleLabel</strong>
             </div>
             <div class="prv-inv-summary-row">
-                <span><i class="fas fa-dollar-sign"></i> Budget</span>
+                <span><i class="fas fa-dollar-sign"></i> @L["Budget"]</span>
                 <strong>@Model.BudgetRange</strong>
             </div>
         </div>
@@ -47,22 +47,22 @@
     </section>
 
     <section class="prv-req-panel">
-        <h2 class="prv-req-panel-title">What happens next</h2>
+        <h2 class="prv-req-panel-title">@L["What happens next"]</h2>
         <div class="prv-req-next">
             <div class="prv-req-next-item">
                 <span class="prv-req-next-num">1</span>
                 <i class="fas fa-file-magnifying-glass"></i>
-                <span>Contractor reviews request</span>
+                <span>@L["Contractor reviews request"]</span>
             </div>
             <div class="prv-req-next-item">
                 <span class="prv-req-next-num">2</span>
                 <i class="fas fa-comment-dots"></i>
-                <span>You receive quote or message</span>
+                <span>@L["You receive quote or message"]</span>
             </div>
             <div class="prv-req-next-item">
                 <span class="prv-req-next-num">3</span>
                 <i class="fas fa-calendar-check"></i>
-                <span>Hire and schedule work</span>
+                <span>@L["Hire and schedule work"]</span>
             </div>
         </div>
     </section>
@@ -73,8 +73,7 @@
     </div>
 
     <a asp-controller="Proveedor" asp-action="InvitationSent" asp-route-id="@Model.Id" class="prv-req-btn prv-req-btn--primary prv-req-btn--block">
-        <i class="fas fa-paper-plane"></i> Track Request
-    </a>
+        <i class="fas fa-paper-plane"></i> @L["Track Request"]</a>
     <a asp-controller="Proveedor" asp-action="FindSubcontractors" class="prv-req-btn prv-req-btn--ghost prv-req-btn--block">
         Back to Search
     </a>

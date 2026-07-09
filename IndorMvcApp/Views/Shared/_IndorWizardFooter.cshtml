@@ -1,6 +1,6 @@
 @model IndorMvcApp.ViewModels.IndorWizardShellViewModel
 @{
-    var label = string.IsNullOrWhiteSpace(Model.ContinueLabel) ? "Continue" : Model.ContinueLabel;
+    var label = string.IsNullOrWhiteSpace(Model.ContinueLabel) ? L["Continue"] : Model.ContinueLabel;
 }
 @if (!string.IsNullOrWhiteSpace(Model.ContinueFormId))
 {

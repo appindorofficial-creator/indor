@@ -1,56 +1,56 @@
-﻿@model IndorMvcApp.ViewModels.EmergencyPlumbingSubmittedViewModel
+@model IndorMvcApp.ViewModels.EmergencyPlumbingSubmittedViewModel
 @{
-    ViewData["Title"] = "Request Submitted - INDOR";
-    ViewData["WizardTitle"] = "Request Submitted";
+    ViewData["Title"] = L["Request Submitted - INDOR"];
+    ViewData["WizardTitle"] = L["Request Submitted"];
     ViewData["WizardBackUrl"] = Url.Action("Index", "Home");
 
 }
 
-<strong>Request Submitted</strong>
+<strong>@L["Request Submitted"]</strong>
         <div class="success-icon"><i class="fas fa-check"></i></div>
-    <h1 class="page-heading">Your plumbing emergency request is on the way</h1>
-    <p class="page-lead">We've sent your request and a provider is reviewing it now.</p>
+    <h1 class="page-heading">@L["Your plumbing emergency request is on the way"]</h1>
+    <p class="page-lead">@L["We've sent your request and a provider is reviewing it now."]</p>
 
     <div class="summary-card">
         <div class="summary-row">
             <i class="fas fa-droplet"></i>
             <div style="flex:1;">
-                <div class="summary-label">Service</div>
+                <div class="summary-label">@L["Service"]</div>
                 <div class="summary-value">@Model.TituloServicio</div>
             </div>
         </div>
         <div class="summary-row">
             <i class="fas fa-location-dot"></i>
             <div style="flex:1;">
-                <div class="summary-label">Property</div>
+                <div class="summary-label">@L["Property"]</div>
                 <div class="summary-value">@Model.DireccionPropiedad</div>
             </div>
         </div>
         <div class="summary-row">
             <i class="fas fa-faucet-drip"></i>
             <div style="flex:1;">
-                <div class="summary-label">Problem</div>
+                <div class="summary-label">@L["Problem"]</div>
                 <div class="summary-value">@Model.ProblemaResumen</div>
             </div>
         </div>
         <div class="summary-row">
             <i class="fas fa-stopwatch"></i>
             <div style="flex:1;">
-                <div class="summary-label">Avg. arrival</div>
+                <div class="summary-label">@L["Avg. arrival"]</div>
                 <div class="summary-value arrival-green">@Model.TiempoLlegadaMinutos min</div>
             </div>
         </div>
         <div class="summary-row">
             <i class="fas fa-shield-halved"></i>
             <div style="flex:1;">
-                <div class="summary-label">Status</div>
+                <div class="summary-label">@L["Status"]</div>
                 <div class="summary-value"><span class="status-pill"><span class="status-dot"></span>@Model.EstadoResumen</span></div>
             </div>
         </div>
         <div class="summary-row">
             <i class="fas fa-phone"></i>
             <div style="flex:1;">
-                <div class="summary-label">Contact</div>
+                <div class="summary-label">@L["Contact"]</div>
                 <div class="summary-value">@Model.TelefonoContacto</div>
             </div>
         </div>
@@ -58,9 +58,9 @@
 
     <div class="info-box">
         <i class="fas fa-circle-info"></i>
-        <div>Keep your phone nearby. If conditions worsen, shut off water if possible and move belongings away from the affected area.</div>
+        <div>@L["Keep your phone nearby. If conditions worsen, shut off water if possible and move belongings away from the affected area."]</div>
     </div>
 
-    <a asp-action="EmergencyPlumbingSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-paper-plane"></i> Track request</a>
-    <a href="tel:+17045550192" class="btn-outline"><i class="fas fa-phone"></i> Call support</a>
-    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> Go to Home</a>
+    <a asp-action="EmergencyPlumbingSubmitted" asp-route-id="@Model.SolicitudId" class="btn-primary"><i class="fas fa-paper-plane"></i> @L["Track request"]</a>
+    <a href="tel:+17045550192" class="btn-outline"><i class="fas fa-phone"></i> @L["Call support"]</a>
+    <a asp-controller="Home" asp-action="Index" class="btn-outline"><i class="fas fa-house"></i> @L["Go to Home"]</a>

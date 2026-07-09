@@ -7,17 +7,17 @@
 
 <div class="rl-info-box">
     <i class="fas fa-circle-info"></i>
-    <p>First select the property. Then upload the report as a PDF, scanned pages, or photos.</p>
+    <p>@L["First select the property. Then upload the report as a PDF, scanned pages, or photos."]</p>
 </div>
 
-<h2 class="rl-invite-section-title">1. Select Property</h2>
+<h2 class="rl-invite-section-title">@L["1. Select Property"]</h2>
 
 <form asp-action="Upload" method="get" class="rl-search-form">
     <div class="rl-search-bar">
         <i class="fas fa-magnifying-glass"></i>
-        <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search by address or first property numbers" />
+        <input type="search" name="q" value="@Model.SearchQuery" placeholder="@L["Search by address or first property numbers"]" />
     </div>
-    <p class="rl-search-hint">Search for a saved property or enter a new address.</p>
+    <p class="rl-search-hint">@L["Search for a saved property or enter a new address."]</p>
 </form>
 
 <form id="inspUploadForm" asp-action="Upload" method="post" enctype="multipart/form-data" class="rl-invite-form" novalidate>
@@ -42,12 +42,12 @@
                         <span>@prop.SpecsLabel</span>
                     }
                 </span>
-                <span class="rl-card-status rl-card-status--active">Active</span>
+                <span class="rl-card-status rl-card-status--active">@L["Active"]</span>
             </label>
         }
     }
 
-    <h2 class="rl-invite-section-title">2. Property Details</h2>
+    <h2 class="rl-invite-section-title">@L["2. Property Details"]</h2>
 
     <div class="rl-property-fields">
         <label class="rl-field-icon">
@@ -55,7 +55,7 @@
             <input type="text"
                    name="newPropertyAddress"
                    value="@Model.NewPropertyAddress"
-                   placeholder="e.g. 123 Maple Street"
+                   placeholder="@L["e.g. 123 Maple Street"]"
                    autocomplete="street-address" />
         </label>
         <label class="rl-field-icon">
@@ -63,7 +63,7 @@
             <input type="text"
                    name="newPropertyCityRegion"
                    value="@Model.NewPropertyCityRegion"
-                   placeholder="e.g. Toronto, ON"
+                   placeholder="@L["e.g. Toronto, ON"]"
                    autocomplete="address-level2" />
         </label>
         <label class="rl-field-icon">
@@ -71,31 +71,31 @@
             <input type="text"
                    name="newPropertyClientName"
                    value="@Model.NewPropertyClientName"
-                   placeholder="Client name (optional)"
+                   placeholder="@L["Client name (optional)"]"
                    autocomplete="name" />
         </label>
     </div>
 
-    <h2 class="rl-invite-section-title">3. Add Report</h2>
+    <h2 class="rl-invite-section-title">@L["3. Add Report"]</h2>
 
     <div class="rl-upload-method-grid">
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Pdf" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Pdf" @(Model.UploadMethod == "Pdf" ? "checked" : null) />
             <i class="fas fa-file-pdf rl-upload-method-icon rl-upload-method-icon--pdf"></i>
-            <strong>Upload PDF</strong>
-            <span>Best for full inspection reports.</span>
+            <strong>@L["Upload PDF"]</strong>
+            <span>@L["Best for full inspection reports."]</span>
         </label>
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Scan" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Scan" @(Model.UploadMethod == "Scan" ? "checked" : null) />
             <i class="fas fa-camera rl-upload-method-icon"></i>
-            <strong>Scan Pages</strong>
-            <span>Use your camera to scan pages.</span>
+            <strong>@L["Scan Pages"]</strong>
+            <span>@L["Use your camera to scan pages."]</span>
         </label>
         <label class="rl-upload-method rl-upload-method--picker @(Model.UploadMethod == "Photos" ? "is-selected" : "")">
             <input type="radio" name="uploadMethod" value="Photos" @(Model.UploadMethod == "Photos" ? "checked" : null) />
             <i class="fas fa-image rl-upload-method-icon"></i>
-            <strong>Add Photos</strong>
-            <span>Upload report photos or findings.</span>
+            <strong>@L["Add Photos"]</strong>
+            <span>@L["Upload report photos or findings."]</span>
         </label>
     </div>
 
@@ -104,23 +104,23 @@
             <input type="file" id="reportFileInput" name="reportFile" class="rl-file-drop-input" />
             <div class="rl-file-drop-body">
                 <i class="fas fa-cloud-arrow-up" id="rlFileDropIcon"></i>
-                <strong id="rlFileDropTitle">Tap to choose your inspection report</strong>
+                <strong id="rlFileDropTitle">@L["Tap to choose your inspection report"]</strong>
                 <span id="rlFileDropHint">PDF recommended • Up to @maxFileLabel</span>
                 <span id="rlFileDropName" class="rl-file-drop-name" hidden></span>
             </div>
         </label>
-        <button type="button" id="rlFileRemove" class="rl-file-drop-remove" hidden aria-label="Remove selected file">
+        <button type="button" id="rlFileRemove" class="rl-file-drop-remove" hidden aria-label="@L["Remove selected file"]">
             <i class="fas fa-xmark"></i>
         </button>
     </div>
 
     <div class="rl-info-box rl-info-box--ai">
         <i class="fas fa-wand-magic-sparkles"></i>
-        <p>INDOR AI reads your inspection report, detects findings, sorts them by urgency, and groups them by trade.</p>
+        <p>@L["INDOR AI reads your inspection report, detects findings, sorts them by urgency, and groups them by trade."]</p>
     </div>
 
     <div class="rl-invite-actions">
-        <button type="button" class="rl-invite-cancel" id="inspCancelBtn">Cancel</button>
+        <button type="button" class="rl-invite-cancel" id="inspCancelBtn">@L["Cancel"]</button>
         <button type="submit" id="inspContinueBtn" class="ob-btn ob-btn-primary">
             Continue <i class="fas fa-chevron-right"></i>
         </button>

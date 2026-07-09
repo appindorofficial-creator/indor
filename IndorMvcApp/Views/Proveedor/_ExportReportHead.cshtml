@@ -2,11 +2,11 @@
     var initial = ViewBag.ExportAvatarInitial as string ?? "R";
 }
 <header class="exr-topbar">
-    <a asp-controller="Proveedor" asp-action="Dashboard" class="exr-brand" aria-label="INDOR PRO home">
+    <a asp-controller="Proveedor" asp-action="Dashboard" class="exr-brand" aria-label="@L["INDOR PRO home"]">
         <i class="fas fa-house"></i>
-        <span>INDOR <strong>PRO</strong></span>
+        <span>@L["INDOR"]<strong>@L["PRO"]</strong></span>
     </a>
-    <a asp-controller="Proveedor" asp-action="Profile" class="exr-profile" aria-label="Profile menu">
+    <a asp-controller="Proveedor" asp-action="Profile" class="exr-profile" aria-label="@L["Profile menu"]">
         <span class="exr-avatar">@initial</span>
         <i class="fas fa-chevron-down"></i>
     </a>
