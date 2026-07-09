@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using IndorMvcApp.Localization;
 
 namespace IndorMvcApp.Models;
 
@@ -52,7 +53,48 @@ public class MovingSetupConfig
 
     public int? FeaturedCtaRouteId { get; set; }
 
+    [MaxLength(80)]
+    public string? TituloEs { get; set; }
+
+    [MaxLength(200)]
+    public string? SubtituloEs { get; set; }
+
+    [MaxLength(40)]
+    public string? ViewAllTextoEs { get; set; }
+
+    [MaxLength(60)]
+    public string? FeaturedEtiquetaEs { get; set; }
+
+    [MaxLength(120)]
+    public string? FeaturedTituloEs { get; set; }
+
+    [MaxLength(400)]
+    public string? FeaturedDescripcionEs { get; set; }
+
+    [MaxLength(500)]
+    public string? FeaturedCaracteristicasEs { get; set; }
+
+    [MaxLength(60)]
+    public string? FeaturedCtaTextoEs { get; set; }
+
     public bool Activo { get; set; } = true;
+
+    public string LocalizedTitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Titulo, TituloEs, isSpanish);
+
+    public string LocalizedSubtitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Subtitulo, SubtituloEs, isSpanish);
+
+    public string LocalizedViewAllTexto(bool isSpanish) => CatalogText.PickWithUiFallback(ViewAllTexto, ViewAllTextoEs, isSpanish);
+
+    public string LocalizedFeaturedEtiqueta(bool isSpanish) => CatalogText.PickWithUiFallback(FeaturedEtiqueta, FeaturedEtiquetaEs, isSpanish);
+
+    public string LocalizedFeaturedTitulo(bool isSpanish) => CatalogText.PickWithUiFallback(FeaturedTitulo, FeaturedTituloEs, isSpanish);
+
+    public string LocalizedFeaturedDescripcion(bool isSpanish) => CatalogText.PickWithUiFallback(FeaturedDescripcion, FeaturedDescripcionEs, isSpanish);
+
+    public string? LocalizedFeaturedCaracteristicas(bool isSpanish) =>
+        CatalogText.PickPipeListWithUiFallback(FeaturedCaracteristicas, FeaturedCaracteristicasEs, isSpanish);
+
+    public string LocalizedFeaturedCtaTexto(bool isSpanish) => CatalogText.PickWithUiFallback(FeaturedCtaTexto, FeaturedCtaTextoEs, isSpanish);
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 }
@@ -64,6 +106,9 @@ public class MovingSetupServicio
 
     [Required, MaxLength(80)]
     public string Nombre { get; set; } = string.Empty;
+
+    [MaxLength(120)]
+    public string? NombreEs { get; set; }
 
     [MaxLength(50)]
     public string IconoClase { get; set; } = "fa-house";
@@ -81,6 +126,8 @@ public class MovingSetupServicio
     public bool Activo { get; set; } = true;
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+
+    public string LocalizedNombre(bool isSpanish) => CatalogText.PickWithUiFallback(Nombre, NombreEs, isSpanish);
 }
 
 [Table("MovingSetupEnlacesRapidos")]
@@ -90,6 +137,9 @@ public class MovingSetupEnlaceRapido
 
     [Required, MaxLength(80)]
     public string Nombre { get; set; } = string.Empty;
+
+    [MaxLength(120)]
+    public string? NombreEs { get; set; }
 
     [MaxLength(50)]
     public string IconoClase { get; set; } = "fa-clipboard-list";
@@ -110,4 +160,6 @@ public class MovingSetupEnlaceRapido
     public bool Activo { get; set; } = true;
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+
+    public string LocalizedNombre(bool isSpanish) => CatalogText.PickWithUiFallback(Nombre, NombreEs, isSpanish);
 }

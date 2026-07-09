@@ -53,10 +53,7 @@
     </div>
 
     @{
-        var movingGridItem = Model.Servicios.FirstOrDefault(s =>
-            string.Equals(s.Nombre, "Moving", StringComparison.OrdinalIgnoreCase));
         var featuredCtaHref = Model.FeaturedCtaUrl
-            ?? movingGridItem?.Url
             ?? Url.Action("Index", "MovingSetup");
     }
     <a href="@featuredCtaHref" class="moving-setup-cta">

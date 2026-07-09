@@ -30,8 +30,8 @@ public static class HomeCarePrioritiesDisplayService
             .Select((item, index) => new HomeCarePriorityCardViewModel
             {
                 Orden = index + 1,
-                Title = item.Nombre,
-                Subtitle = item.Subtitulo,
+                Title = item.LocalizedNombre(isSpanish),
+                Subtitle = item.LocalizedSubtitulo(isSpanish),
                 ImageUrl = item.ImagenUrl ?? string.Empty,
                 Icon = item.IconoClase,
                 Url = ResolveItemUrl(urlHelper, item, propiedadId)
@@ -46,10 +46,10 @@ public static class HomeCarePrioritiesDisplayService
         return new HomeCarePrioritiesSectionViewModel
         {
             PropiedadId = propiedadId,
-            Title = config.Titulo,
+            Title = config.LocalizedTitulo(isSpanish),
             Subtitle = FormatCountSubtitle(cards.Count, isSpanish),
             IconClass = config.IconoClase,
-            ViewAllText = config.ViewAllTexto,
+            ViewAllText = config.LocalizedViewAllTexto(isSpanish),
             ViewAllUrl = ResolveViewAllUrl(urlHelper, config, propiedadId),
             Items = cards
         };

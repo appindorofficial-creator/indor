@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using IndorMvcApp.Localization;
 
 namespace IndorMvcApp.Models;
 
@@ -26,7 +27,22 @@ public class HomeCarePrioritiesConfig
     [MaxLength(80)]
     public string? ViewAllAction { get; set; } = "HomeCareGuide";
 
+    [MaxLength(80)]
+    public string? TituloEs { get; set; }
+
+    [MaxLength(200)]
+    public string? SubtituloEs { get; set; }
+
+    [MaxLength(40)]
+    public string? ViewAllTextoEs { get; set; }
+
     public bool Activo { get; set; } = true;
+
+    public string LocalizedTitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Titulo, TituloEs, isSpanish);
+
+    public string LocalizedSubtitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Subtitulo, SubtituloEs, isSpanish);
+
+    public string LocalizedViewAllTexto(bool isSpanish) => CatalogText.PickWithUiFallback(ViewAllTexto, ViewAllTextoEs, isSpanish);
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
 }
@@ -41,6 +57,12 @@ public class HomeCarePriority
 
     [Required, MaxLength(120)]
     public string Subtitulo { get; set; } = string.Empty;
+
+    [MaxLength(120)]
+    public string? NombreEs { get; set; }
+
+    [MaxLength(120)]
+    public string? SubtituloEs { get; set; }
 
     [MaxLength(300)]
     public string? ImagenUrl { get; set; }
@@ -62,4 +84,8 @@ public class HomeCarePriority
     public bool Activo { get; set; } = true;
 
     public DateTime FechaCreacion { get; set; } = DateTime.UtcNow;
+
+    public string LocalizedNombre(bool isSpanish) => CatalogText.PickWithUiFallback(Nombre, NombreEs, isSpanish);
+
+    public string LocalizedSubtitulo(bool isSpanish) => CatalogText.PickWithUiFallback(Subtitulo, SubtituloEs, isSpanish);
 }

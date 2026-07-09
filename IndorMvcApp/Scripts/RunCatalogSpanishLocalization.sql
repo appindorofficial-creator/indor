@@ -6,6 +6,7 @@
 --   1. AlterAspNetUsersAddPreferredUiCulture.sql   (UI language preference)
 --   2. AlterCatalogTablesAddSpanishColumns.sql     (add *Es columns)
 --   3. SeedCatalogSpanishTranslations.sql          (populate Spanish text)
+--   4. SeedHomeCareMovingSetupSpanishTranslations.sql (Home Care Guide + Moving Setup)
 --
 -- Optional: after seeding, add Spanish for custom rows / landing pages:
 --   UPDATE dbo.Microservicios SET NombreEs = N'...' WHERE Id = ...;

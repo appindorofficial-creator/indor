@@ -43,7 +43,7 @@ public static class MovingSetupDisplayService
             {
                 Orden = index + 1,
                 Id = servicio.Id,
-                Nombre = servicio.Nombre,
+                Nombre = servicio.LocalizedNombre(isSpanish),
                 IconoClase = servicio.IconoClase,
                 Url = ResolveServicioUrl(urlHelper, servicio)
             })
@@ -54,7 +54,7 @@ public static class MovingSetupDisplayService
             return null;
         }
 
-        var texts = SplitPipe(config.FeaturedCaracteristicas);
+        var texts = SplitPipe(config.LocalizedFeaturedCaracteristicas(isSpanish) ?? config.FeaturedCaracteristicas);
         var icons = SplitPipe(config.FeaturedIconosCaracteristicas);
         var features = new List<MovingSetupFeatureViewModel>();
         for (var i = 0; i < texts.Length; i++)
@@ -62,7 +62,7 @@ public static class MovingSetupDisplayService
             features.Add(new MovingSetupFeatureViewModel
             {
                 Icon = i < icons.Length && !string.IsNullOrWhiteSpace(icons[i]) ? icons[i] : "fa-check",
-                Text = texts[i]
+                Text = CatalogText.PickWithUiFallback(texts[i], null, isSpanish)
             });
         }
 
@@ -70,18 +70,18 @@ public static class MovingSetupDisplayService
 
         return new MovingSetupSectionViewModel
         {
-            Titulo = config.Titulo,
+            Titulo = config.LocalizedTitulo(isSpanish),
             Subtitulo = FormatCountSubtitle(serviceItems.Count, isSpanish),
             IconoClase = config.IconoClase,
-            ViewAllTexto = config.ViewAllTexto,
+            ViewAllTexto = config.LocalizedViewAllTexto(isSpanish),
             ViewAllUrl = string.IsNullOrWhiteSpace(config.ViewAllUrl)
                 ? urlHelper.Action("Index", "MovingSetup")
                 : config.ViewAllUrl,
-            FeaturedEtiqueta = config.FeaturedEtiqueta,
-            FeaturedTitulo = config.FeaturedTitulo,
-            FeaturedDescripcion = config.FeaturedDescripcion,
+            FeaturedEtiqueta = config.LocalizedFeaturedEtiqueta(isSpanish),
+            FeaturedTitulo = config.LocalizedFeaturedTitulo(isSpanish),
+            FeaturedDescripcion = config.LocalizedFeaturedDescripcion(isSpanish),
             FeaturedImagenUrl = config.FeaturedImagenUrl,
-            FeaturedCtaTexto = config.FeaturedCtaTexto,
+            FeaturedCtaTexto = config.LocalizedFeaturedCtaTexto(isSpanish),
             FeaturedCtaUrl = featuredCtaUrl,
             FeaturedCaracteristicas = features,
             Servicios = serviceItems,
@@ -91,7 +91,7 @@ public static class MovingSetupDisplayService
                 .Select(e => new MovingSetupQuickLinkViewModel
                 {
                     Id = e.Id,
-                    Nombre = e.Nombre,
+                    Nombre = e.LocalizedNombre(isSpanish),
                     IconoClase = e.IconoClase,
                     Url = ResolveQuickLinkUrl(urlHelper, e)
                 })
