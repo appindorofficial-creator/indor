@@ -55,6 +55,20 @@
         }
     }
 
+    function phoneValidityMessage() {
+        return 'Enter a valid 10-digit US phone number (e.g. 555 123 4567).';
+    }
+
+    function isValidPhoneField(field) {
+        if (!field.value.trim()) {
+            return true;
+        }
+
+        return window.IndorPhoneInput
+            ? window.IndorPhoneInput.isValidOptional(field.value)
+            : field.value.replace(/\D/g, '').length === 10;
+    }
+
     function bindEnglishFormValidation(form) {
         if (form.dataset.prvEnglishValidation === 'true') {
             return;
@@ -73,6 +87,14 @@
             });
 
             fields.forEach(function (field) {
+                if (field.getAttribute('data-phone-input') !== null && !isValidPhoneField(field)) {
+                    if (!firstInvalid) {
+                        firstInvalid = field;
+                    }
+                }
+            });
+
+            fields.forEach(function (field) {
                 if (!firstInvalid && !field.checkValidity()) {
                     firstInvalid = field;
                 }
@@ -83,7 +105,10 @@
             }
 
             e.preventDefault();
-            firstInvalid.setCustomValidity(englishValidityMessage(firstInvalid));
+            var message = firstInvalid.getAttribute('data-phone-input') !== null && firstInvalid.value.trim()
+                ? phoneValidityMessage()
+                : englishValidityMessage(firstInvalid);
+            firstInvalid.setCustomValidity(message);
             firstInvalid.reportValidity();
             if (typeof firstInvalid.focus === 'function') {
                 firstInvalid.focus({ preventScroll: true });
