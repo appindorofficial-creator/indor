@@ -1,0 +1,126 @@
+@model IndorMvcApp.ViewModels.ProviderProfileDocumentSectionViewModel
+@using IndorMvcApp.ViewModels
+@{
+    string F(string key) => Model.Fields.TryGetValue(key, out var v) ? v ?? "" : "";
+}
+
+<div class="prv-flow-detail-panel" id="section-@Model.Id">
+    @if (Model.Id != "background")
+    {
+        <div class="prv-flow-upload-row">
+            @if (Model.Id == "license")
+            {
+                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
+                    <i class="fas fa-upload"></i> Upload file
+                    <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/jpeg,image/png,image/webp,application/pdf" />
+                </label>
+                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
+                    <i class="fas fa-camera"></i> Take photo
+                    <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/*" capture="environment" />
+                </label>
+            }
+            else
+            {
+                <label class="prv-pro-btn prv-pro-btn--ghost prv-flow-upload-btn">
+                    <i class="fas fa-upload"></i> Upload @(Model.Id == "w9" ? "W-9" : "COI")
+                    <input type="file" class="prv-flow-doc-input" data-doc-type="@Model.DocumentType" data-section="@Model.Id" accept="image/jpeg,image/png,image/webp,application/pdf" />
+                </label>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.FileUrl))
+            {
+                <a href="@Url.Content($"~{Model.FileUrl}")" target="_blank" rel="noopener" class="prv-flow-doc-link">
+                    <i class="fas fa-file-lines"></i> View uploaded file
+                </a>
+            }
+        </div>
+    }
+
+    @if (Model.Id == "license")
+    {
+        <div class="prv-pro-edit-profile-fields">
+            <label><span>License number</span><input type="text" name="LicenseNumber" value="@F("LicenseNumber")" /></label>
+            <label><span>License type</span>
+                <select name="LicenseType">
+                    <option value="">Select type</option>
+                    @foreach (var t in new[] { "General Contractor", "HVAC", "Plumbing", "Electrical", "Roofing", "Other" })
+                    {
+                        if (F("LicenseType") == t) { <option value="@t" selected="selected">@t</option> }
+                        else { <option value="@t">@t</option> }
+                    }
+                </select>
+            </label>
+            <label><span>State</span>
+                <select name="LicenseState">
+                    <option value="">Select state</option>
+                    @foreach (var st in new[] { "NC", "SC", "VA", "GA", "TN", "FL" })
+                    {
+                        if (F("LicenseState") == st) { <option value="@st" selected="selected">@st</option> }
+                        else { <option value="@st">@st</option> }
+                    }
+                </select>
+            </label>
+            <label><span>Expiration date</span><input type="date" name="LicenseExpiry" value="@F("LicenseExpiry")" /></label>
+        </div>
+        <div class="prv-flow-flags">
+            <label><input type="checkbox" name="LicenseNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> Not applicable</label>
+            <label><input type="checkbox" name="LicenseUnknown" value="true" @(Model.Unknown ? "checked" : "") /> I don't know</label>
+        </div>
+    }
+    else if (Model.Id == "insurance")
+    {
+        <div class="prv-pro-edit-profile-fields">
+            <label><span>Insurance company</span><input type="text" name="InsuranceCompany" value="@F("InsuranceCompany")" /></label>
+            <label><span>Policy number</span><input type="text" name="PolicyNumber" value="@F("PolicyNumber")" /></label>
+            <label><span>Coverage amount</span><input type="text" name="CoverageAmount" value="@F("CoverageAmount")" placeholder="$1,000,000" /></label>
+            <label><span>Expiration date</span><input type="date" name="InsuranceExpiry" value="@F("InsuranceExpiry")" /></label>
+        </div>
+        <div class="prv-flow-flags">
+            <label><input type="checkbox" name="InsuranceNotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> Not applicable</label>
+            <label><input type="checkbox" name="InsuranceUnknown" value="true" @(Model.Unknown ? "checked" : "") /> I don't know</label>
+        </div>
+    }
+    else if (Model.Id == "w9")
+    {
+        <div class="prv-pro-edit-profile-fields">
+            <label><span>Legal business name</span><input type="text" name="W9LegalName" value="@F("W9LegalName")" /></label>
+            <label><span>DBA / trade name</span><input type="text" name="W9DbaName" value="@F("W9DbaName")" /></label>
+            <label><span>Tax classification</span>
+                <select name="W9TaxClassification">
+                    <option value="">Select classification</option>
+                    @foreach (var c in new[] { "Individual", "C Corporation", "S Corporation", "Partnership", "LLC", "Other" })
+                    {
+                        if (F("W9TaxClassification") == c) { <option value="@c" selected="selected">@c</option> }
+                        else { <option value="@c">@c</option> }
+                    }
+                </select>
+            </label>
+            <label><span>EIN / Tax ID</span><input type="text" name="W9Ein" value="@F("W9Ein")" placeholder="12-3456789" /></label>
+        </div>
+        <div class="prv-flow-flags">
+            <label><input type="checkbox" name="W9NotApplicable" value="true" @(Model.NotApplicable ? "checked" : "") /> Not applicable</label>
+            <label><input type="checkbox" name="W9Unknown" value="true" @(Model.Unknown ? "checked" : "") /> I don't know</label>
+        </div>
+    }
+    else if (Model.Id == "background")
+    {
+        <div class="prv-pro-edit-profile-fields">
+            <label><span>Full name</span><input type="text" name="BackgroundFullName" value="@F("BackgroundFullName")" /></label>
+            <label><span>Date of birth</span><input type="date" name="BackgroundDob" value="@F("BackgroundDob")" /></label>
+            <label><span>Last 4 of SSN or ID</span><input type="text" name="BackgroundSsnLast4" value="@F("BackgroundSsnLast4")" maxlength="4" inputmode="numeric" pattern="[0-9]{4}" /></label>
+            <label><span>State</span>
+                <select name="BackgroundState">
+                    <option value="">Select state</option>
+                    @foreach (var st in new[] { "NC", "SC", "VA", "GA", "TN", "FL" })
+                    {
+                        if (F("BackgroundState") == st) { <option value="@st" selected="selected">@st</option> }
+                        else { <option value="@st">@st</option> }
+                    }
+                </select>
+            </label>
+        </div>
+        <label class="prv-flow-consent">
+            <input type="checkbox" name="BackgroundConsent" value="true" @(Model.IsUploaded ? "checked" : "") />
+            I authorize INDOR to perform a background check
+        </label>
+    }
+</div>

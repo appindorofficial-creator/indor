@@ -25,6 +25,11 @@ public interface IProviderProDataService
     Task<bool> SaveEditProfileServicesAsync(int proveedorId, IReadOnlyList<string> selectedIds, CancellationToken cancellationToken = default);
     Task<ProviderProEditProfileVerificationViewModel> GetEditProfileVerificationAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
     Task ApplyVerificationDocumentFlagsAsync(int proveedorId, string documentType, CancellationToken cancellationToken = default);
+    Task<ProviderProfileCompletionViewModel> GetProfileCompletionAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
+    Task<ProviderProfileBusinessViewModel> GetProfileBusinessAsync(IndorProveedor proveedor, ProviderProfileBusinessInput? input = null, CancellationToken cancellationToken = default);
+    Task<bool> SaveProfileBusinessAsync(int proveedorId, ProviderProfileBusinessInput input, CancellationToken cancellationToken = default);
+    Task<ProviderProfileDocumentsViewModel> GetProfileDocumentsAsync(IndorProveedor proveedor, string? expandSection = null, CancellationToken cancellationToken = default);
+    Task<bool> SaveProfileDocumentsAsync(int proveedorId, ProviderProfileDocumentsInput input, CancellationToken cancellationToken = default);
     Task<ProviderProNotificationsViewModel> GetNotificationsPageAsync(IndorProveedor proveedor, CancellationToken cancellationToken = default);
     Task SaveNotificationPreferencesAsync(int proveedorId, ProviderProNotificationsInput input, CancellationToken cancellationToken = default);
     Task<ProviderProNewLeadsPageViewModel> GetNewLeadsPageAsync(IndorProveedor proveedor, string? filter = "all", string? search = null, CancellationToken cancellationToken = default);

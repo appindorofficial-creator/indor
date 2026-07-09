@@ -5758,6 +5758,120 @@ a.prv-pro-profile-center-action:focus-visible {
     line-height: 1.2;
 }
 
+/* Customers — single-tab stat row (mockup) */
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stats--single {
+    overflow: visible;
+    padding-bottom: 0;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stats--single .prv-pro-jobs-stat {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    text-align: left;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stats--single .prv-pro-jobs-stat .prv-pro-jobs-stat-icon {
+    width: 42px;
+    height: 42px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stat-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stats--single .prv-pro-jobs-stat-copy strong {
+    font-size: 1rem;
+    line-height: 1.1;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stats--single .prv-pro-jobs-stat-copy {
+    align-items: flex-start;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stats--single .prv-pro-jobs-stat-copy span {
+    font-size: .78rem;
+    font-weight: 600;
+    color: #64748B;
+}
+
+.prv-pro-shell--customers-v2 .prv-pro-jobs-stat-chevron {
+    color: #C3CFDD;
+    font-size: .78rem;
+    flex-shrink: 0;
+}
+
+/* Customers — rich empty state */
+.prv-pro-customers-empty {
+    background: #fff;
+    border: 1px solid #E7EEF7;
+    border-radius: 22px;
+    padding: 28px 22px 24px;
+    text-align: center;
+    box-shadow: 0 10px 28px rgba(20, 66, 124, 0.07);
+}
+
+.prv-pro-customers-empty-art {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    margin: 0 auto 18px;
+    display: block;
+    object-fit: contain;
+}
+
+.prv-pro-customers-empty h2 {
+    margin: 0 0 8px;
+    font-size: 1.05rem;
+    font-weight: 800;
+    color: #1A2B48;
+    line-height: 1.2;
+}
+
+.prv-pro-customers-empty p {
+    margin: 0 auto 18px;
+    max-width: 300px;
+    font-size: .82rem;
+    color: #64748B;
+    line-height: 1.45;
+}
+
+.prv-pro-customers-empty-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    padding: 0 20px;
+    border-radius: 999px;
+    border: 1.5px solid #0066CC;
+    background: #fff;
+    color: #0066CC;
+    font-size: .86rem;
+    font-weight: 700;
+    text-decoration: none;
+    box-shadow: 0 4px 14px rgba(0, 102, 204, 0.08);
+    transition: background .15s ease, color .15s ease, box-shadow .15s ease;
+}
+
+.prv-pro-customers-empty-btn:hover,
+.prv-pro-customers-empty-btn:focus-visible {
+    background: #F0F7FF;
+    color: #0056D2;
+    box-shadow: 0 6px 18px rgba(0, 102, 204, 0.14);
+}
+
 .prv-pro-shell--jobs-v2 .prv-pro-jobs-list-head h2 {
     font-size: 1rem;
     color: #1A2B48;

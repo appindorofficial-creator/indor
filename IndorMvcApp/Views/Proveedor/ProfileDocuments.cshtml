@@ -1,0 +1,104 @@
+@model IndorMvcApp.ViewModels.ProviderProfileDocumentsViewModel
+@{
+    ViewData["Title"] = "Documents & Verification - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+    ViewBag.ProfileFlowStep = 3;
+    var activeSection = Model.Sections.FirstOrDefault(s => s.IsExpanded);
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-flow-shell">
+    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+
+    <header class="prv-pro-jobs-head prv-flow-page-head">
+        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-lead-back" aria-label="Back">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+        <div>
+            <h1>Documents &amp; verification</h1>
+            <p>Upload credentials so INDOR can verify your account.</p>
+        </div>
+    </header>
+
+    @if (TempData["ProfileSaved"] is true)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+            <i class="fas fa-circle-check"></i> Saved successfully.
+        </div>
+    }
+    @if (TempData["ProfileSectionError"] is string sectionError)
+    {
+        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
+            <i class="fas fa-circle-exclamation"></i> @sectionError
+        </div>
+    }
+
+    <section class="prv-flow-setup-card">
+        <header class="prv-flow-setup-head">
+            <span class="prv-flow-setup-icon"><i class="fas fa-clipboard-list"></i></span>
+            <div>
+                <h2>Profile Setup</h2>
+                <p>Complete each section to verify your business.</p>
+            </div>
+        </header>
+        <div class="prv-flow-setup-list">
+            @foreach (var item in Model.Sections)
+            {
+                <article class="prv-flow-setup-row @(item.IsComplete ? "is-complete" : "") @(item.IsExpanded ? "is-active" : "")">
+                    <span class="prv-flow-setup-row-icon @(item.IsComplete ? "is-done" : "")"><i class="fas @item.IconClass"></i></span>
+                    <div class="prv-flow-setup-row-copy">
+                        <div class="prv-flow-setup-row-top">
+                            <strong>@item.Title</strong>
+                            <span class="prv-flow-status prv-flow-status--@item.StatusKind">@item.StatusLabel</span>
+                        </div>
+                        <p>@item.Description</p>
+                    </div>
+                    <a asp-controller="Proveedor" asp-action="ProfileDocuments" asp-route-section="@item.Id" class="prv-flow-setup-row-btn">@item.ActionLabel</a>
+                </article>
+            }
+        </div>
+    </section>
+
+    @if (activeSection != null)
+    {
+        <form asp-controller="Proveedor" asp-action="ProfileDocuments" method="post" enctype="multipart/form-data" class="prv-flow-form prv-flow-docs-form" id="prvFlowDocsForm" novalidate>
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="documentType" id="prvFlowDocType" value="" />
+            <input type="hidden" name="Section" value="@activeSection.Id" />
+
+            <section class="prv-flow-detail-card">
+                <header class="prv-flow-detail-head">
+                    <h3>@activeSection.Title</h3>
+                    <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-flow-detail-close" aria-label="Close section"><i class="fas fa-xmark"></i></a>
+                </header>
+                @await Html.PartialAsync("_ProfileDocumentSectionForm", activeSection)
+                <footer class="prv-flow-detail-actions">
+                    <button type="submit" name="SaveMode" value="save" class="prv-pro-btn prv-pro-btn--primary">
+                        <i class="fas fa-floppy-disk"></i> Save section
+                    </button>
+                </footer>
+            </section>
+        </form>
+    }
+
+    <p class="prv-flow-tip">
+        <i class="fas fa-circle-info"></i>
+        Your progress is saved automatically. You can return to any section at any time.
+    </p>
+
+    @if (!string.IsNullOrWhiteSpace(Model.ContinueAction))
+    {
+        <a href="@Model.ContinueAction" class="prv-pro-btn prv-pro-btn--primary prv-flow-continue">
+            <i class="fas fa-wand-magic-sparkles"></i> Continue Setup
+        </a>
+    }
+
+    <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-exit">Save &amp; Exit</a>
+
+    @await Html.PartialAsync("_ProfileFlowStepper")
+</div>
+
+@section Scripts {
+    <script src="~/js/provider-profile-flow.js" asp-append-version="true"></script>
+}

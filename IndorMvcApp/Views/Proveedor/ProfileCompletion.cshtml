@@ -1,0 +1,123 @@
+@model IndorMvcApp.ViewModels.ProviderProfileCompletionViewModel
+@{
+    ViewData["Title"] = "Public Profile - INDOR PRO";
+    Layout = "_ProviderProLayout";
+    ViewBag.NavActive = "profile";
+    ViewBag.CompanyInitial = Model.CompanyInitial;
+    ViewBag.ProfileFlowStep = 1;
+    var pct = Model.ProgressPercent;
+}
+
+<div class="prv-pro-shell prv-pro-shell--profile prv-flow-shell prv-flow-shell--hub">
+    <div class="prv-flow-hero-header">
+        @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-header-back" aria-label="Back to profile">
+            <i class="fas fa-chevron-left"></i>
+        </a>
+    </div>
+
+    <div class="prv-flow-sheet">
+        <header class="prv-flow-sheet-head">
+            <h1>Public Profile</h1>
+            <p>Manage how homeowners see your business on INDOR.</p>
+        </header>
+
+        @if (TempData["ProfileSaved"] is true)
+        {
+            <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+                <i class="fas fa-circle-check"></i> Progress saved successfully.
+            </div>
+        }
+
+        <section class="prv-flow-hero-card">
+            <div class="prv-flow-hero-top">
+                <div class="prv-flow-hero-identity">
+                    <div class="prv-flow-hero-avatar">
+                        @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                        {
+                            <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@Model.DisplayBusinessName" class="prv-flow-hero-avatar-img" />
+                        }
+                        else
+                        {
+                            <span class="prv-flow-hero-avatar-letter">@Model.CompanyInitial</span>
+                        }
+                        <span class="prv-flow-hero-verified"><i class="fas fa-check"></i></span>
+                    </div>
+                    <div class="prv-flow-hero-copy">
+                        <h2>@Model.DisplayBusinessName</h2>
+                        <p class="prv-flow-hero-location"><i class="fas fa-location-dot"></i> @Model.LocationLabel</p>
+                        <p class="prv-flow-hero-area">@Model.ServiceAreaSummary</p>
+                    </div>
+                </div>
+                <img src="~/images/profile-house-illustration.png" alt="" class="prv-flow-hero-illus" aria-hidden="true" />
+            </div>
+            <div class="prv-flow-hero-actions">
+                <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-flow-hero-btn">
+                    <i class="fas fa-pen"></i> Edit Profile
+                </a>
+                <a asp-controller="Proveedor" asp-action="PublicProfile" class="prv-flow-hero-btn">
+                    <i class="fas fa-eye"></i> Preview Profile
+                </a>
+            </div>
+        </section>
+
+        <section class="prv-flow-ready-card">
+            <div class="prv-flow-ready-ring" aria-hidden="true">
+                <svg viewBox="0 0 36 36" role="img" aria-label="@pct percent complete">
+                    <path class="prv-flow-ring-track" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path class="prv-flow-ring-fill" stroke-dasharray="@pct, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" class="prv-flow-ring-text">@pct%</text>
+                </svg>
+            </div>
+            <div class="prv-flow-ready-copy">
+                <p class="prv-flow-ready-title">Your profile is <strong>@pct% ready</strong></p>
+                <p class="prv-flow-ready-sub">Complete your profile to build trust and start receiving homeowner requests.</p>
+                <div class="prv-flow-progress-bar" role="progressbar" aria-valuenow="@pct" aria-valuemin="0" aria-valuemax="100">
+                    <span style="width:@pct%"></span>
+                </div>
+                <div class="prv-flow-ready-foot">
+                    <span>@Model.CompletedSections of @Model.TotalSections sections complete</span>
+                    @if (!string.IsNullOrWhiteSpace(Model.NextStepTitle) && !string.IsNullOrWhiteSpace(Model.NextStepAction))
+                    {
+                        <a href="@Model.NextStepAction" class="prv-flow-next-step">Next step: <strong>@Model.NextStepTitle</strong> <i class="fas fa-chevron-right"></i></a>
+                    }
+                </div>
+            </div>
+        </section>
+
+        @if (!string.IsNullOrWhiteSpace(Model.ContinueAction))
+        {
+            <a href="@Model.ContinueAction" class="prv-pro-btn prv-pro-btn--primary prv-flow-continue">
+                <i class="fas fa-wand-magic-sparkles"></i> Continue Setup
+            </a>
+        }
+
+        <section class="prv-flow-setup-card">
+            <header class="prv-flow-setup-head">
+                <span class="prv-flow-setup-icon"><i class="fas fa-clipboard-list"></i></span>
+                <div>
+                    <h2>Profile Setup</h2>
+                    <p>Complete each section to verify your business.</p>
+                </div>
+            </header>
+            <div class="prv-flow-setup-list">
+                @foreach (var item in Model.Sections)
+                {
+                    <article class="prv-flow-setup-row @(item.IsComplete ? "is-complete" : "")">
+                        <span class="prv-flow-setup-row-icon @(item.IsComplete ? "is-done" : "")"><i class="fas @item.IconClass"></i></span>
+                        <div class="prv-flow-setup-row-copy">
+                            <div class="prv-flow-setup-row-top">
+                                <strong>@item.Title</strong>
+                                <span class="prv-flow-status prv-flow-status--@item.StatusKind">@item.StatusLabel</span>
+                            </div>
+                            <p>@item.Description</p>
+                        </div>
+                        <a href="@item.Action" class="prv-flow-setup-row-btn">@item.ActionLabel</a>
+                    </article>
+                }
+            </div>
+        </section>
+
+        @await Html.PartialAsync("_ProfileFlowStepper")
+    </div>
+</div>

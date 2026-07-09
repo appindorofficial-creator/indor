@@ -29,4 +29,6 @@ public class ProviderOnboardingMeta
     public bool NotifyPaymentAlerts { get; set; } = true;
 
     public bool NotifyReportReminders { get; set; } = true;
+
+    public ProviderProfileDocumentMeta ProfileDocuments { get; set; } = new();
 }

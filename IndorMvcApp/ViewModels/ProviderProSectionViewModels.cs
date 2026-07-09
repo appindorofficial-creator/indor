@@ -153,7 +153,9 @@ public class ProviderProProfilePageViewModel : ProviderProPageBaseViewModel
     public decimal Rating { get; set; }
     public int ReviewCount { get; set; }
     public int JobsCompletedThisYear { get; set; }
+    public int TotalJobsCompleted { get; set; }
     public int HomeRecordsCreated { get; set; }
+    public string YearsActiveLabel { get; set; } = "—";
     public string BusinessHours { get; set; } = "";
     public string Website { get; set; } = "";
     public int TravelRadiusMiles { get; set; }

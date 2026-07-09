@@ -46,7 +46,7 @@
             <div class="prv-pro-jobs-search-row">
                 <div class="prv-pro-search-wrap">
                     <i class="fas fa-magnifying-glass"></i>
-                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search customers, properties, phone, address" />
+                    <input type="search" name="q" value="@Model.SearchQuery" placeholder="Search customers, properties, phone, address..." />
                 </div>
                 <div class="prv-pro-filter-wrap">
                     <button type="button" class="prv-pro-filter-btn prv-pro-filter-btn--labeled" id="prvCustomersFilterBtn" aria-haspopup="true" aria-expanded="false">
@@ -82,14 +82,20 @@
         </form>
     </div>
 
-    <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview">
+    <section class="prv-pro-jobs-stats prv-pro-jobs-stats--overview @(Model.ActiveTab == "all" ? null : "prv-pro-jobs-stats--single")">
         @foreach (var (tabId, icon, tone, count, label) in visibleStatCards)
         {
             <a asp-controller="Proveedor" asp-action="Customers" asp-route-tab="@tabId" asp-route-q="@Model.SearchQuery"
-               class="prv-pro-jobs-stat">
+               class="prv-pro-jobs-stat @(Model.ActiveTab == tabId ? "is-highlighted" : null)">
                 <span class="prv-pro-jobs-stat-icon prv-pro-jobs-stat-icon--@tone"><i class="fas @icon"></i></span>
-                <strong>@count</strong>
-                <span>@label</span>
+                <div class="prv-pro-jobs-stat-copy">
+                    <strong>@count</strong>
+                    <span>@label</span>
+                </div>
+                @if (Model.ActiveTab != "all")
+                {
+                    <i class="fas fa-chevron-right prv-pro-jobs-stat-chevron" aria-hidden="true"></i>
+                }
             </a>
         }
     </section>
@@ -97,8 +103,13 @@
     <section class="prv-pro-customers-list">
         @if (Model.Customers.Count == 0)
         {
-            <div class="prv-pro-panel">
-                <p class="prv-pro-empty">No customers in this view yet. Homeowners you serve will appear here.</p>
+            <div class="prv-pro-customers-empty">
+                <img src="~/images/customers-empty.png" alt="" class="prv-pro-customers-empty-art" asp-append-version="true" />
+                <h2>No customers yet</h2>
+                <p>When you add customers, they'll appear here along with their properties, connection status, and recent activity.</p>
+                <a asp-controller="Proveedor" asp-action="AddCustomer" asp-route-fresh="true" class="prv-pro-customers-empty-btn">
+                    <i class="fas fa-plus" aria-hidden="true"></i> Add Your First Customer
+                </a>
             </div>
         }
         else
@@ -182,7 +193,7 @@
         }
     </section>
 
-    @if (Model.ConnectionInsights.Count > 0)
+    @if (Model.ConnectionInsights.Count > 0 && Model.Customers.Count > 0)
     {
         <section class="prv-pro-smart-suggestions prv-pro-connection-insights">
             <div class="prv-pro-panel-head">

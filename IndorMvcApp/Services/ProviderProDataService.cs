@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace IndorMvcApp.Services;
 
-public class ProviderProDataService(
+public partial class ProviderProDataService(
     AppDbContext db,
     IRealtorProviderBridgeService realtorBridge,
     IHttpContextAccessor httpContextAccessor,
@@ -4976,7 +4976,9 @@ public class ProviderProDataService(
             Rating = 0,
             ReviewCount = 0,
             JobsCompletedThisYear = jobsThisYear,
+            TotalJobsCompleted = completedJobs,
             HomeRecordsCreated = homeRecordsCreated,
+            YearsActiveLabel = BuildYearsActiveLabel(proveedor.FechaCreacion),
             BusinessHours = string.IsNullOrWhiteSpace(proveedor.PreferredHours)
                 ? "Hours not set"
                 : proveedor.PreferredHours!,
@@ -5722,6 +5724,22 @@ public class ProviderProDataService(
         }
 
         return areas.Distinct().ToList();
+    }
+
+    private static string BuildYearsActiveLabel(DateTime createdUtc)
+    {
+        var years = Math.Max(0, DateTime.UtcNow.Year - createdUtc.Year);
+        if (years >= 3)
+        {
+            return "3+ Years";
+        }
+
+        return years switch
+        {
+            0 => "< 1 Year",
+            1 => "1 Year",
+            _ => $"{years} Years"
+        };
     }
 
     private static string BuildServiceAreaLabel(IndorProveedor proveedor)
