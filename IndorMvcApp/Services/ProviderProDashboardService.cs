@@ -9,7 +9,7 @@ namespace IndorMvcApp.Services;
 
 
 
-public class ProviderProDashboardService(IProviderProDataService dataService)
+public class ProviderProDashboardService(IProviderProDataService dataService, IIndorLocalizer localizer)
 
 {
 
@@ -61,7 +61,7 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
 
             CompanyInitial = companyName.Trim().Length > 0 ? companyName.Trim()[0].ToString().ToUpperInvariant() : "P",
 
-            Greeting = ResolveGreeting(),
+            Greeting = localizer.T(IndorGreeting.ForNow()),
 
             IsVerified = isApproved || (proveedor.ExamPassed == true && proveedor.Documentos.Count > 0),
 
@@ -73,9 +73,15 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
 
             ProviderScore = score,
 
-            ScoreLabel = score >= 85 ? "Great Work!" : score >= 70 ? "On Track" : "Getting Started",
+            ScoreLabel = score >= 85
+                ? localizer.T("Great Work!")
+                : score >= 70
+                    ? localizer.T("On Track")
+                    : localizer.T("Getting Started"),
 
-            ScoreSubtext = score >= 85 ? "Top 20% of providers" : "Complete activation to unlock INDOR leads",
+            ScoreSubtext = score >= 85
+                ? localizer.T("Top 20% of providers")
+                : localizer.T("Complete activation to unlock INDOR leads"),
 
             HomeRecordsThisMonth = workspace.HomeRecordsThisMonth,
 
@@ -132,12 +138,6 @@ public class ProviderProDashboardService(IProviderProDataService dataService)
         return model;
 
     }
-
-
-
-    private static string ResolveGreeting() => IndorGreeting.ForNow();
-
-
 
     private static List<string> BuildAiSuggestions(
 

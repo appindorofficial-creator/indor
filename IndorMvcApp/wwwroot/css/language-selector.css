@@ -1,77 +1,129 @@
+/* INDOR language toggle — compact EN/ES segmented control */
 .indor-lang {
     --indor-lang-blue: #1867F2;
-    --indor-lang-blue-soft: rgba(24, 103, 242, 0.12);
+    --indor-lang-blue-dark: #0B5BD3;
+    --indor-lang-track: rgba(15, 23, 42, 0.06);
     --indor-lang-border: rgba(15, 23, 42, 0.08);
 }
 
 .indor-lang-form {
-    display: inline-flex;
+    position: relative;
+    display: inline-grid;
+    grid-template-columns: 1fr 1fr;
     align-items: center;
-    gap: 6px;
-    padding: 4px;
-    border-radius: 999px;
-    background: rgba(255, 255, 255, 0.92);
+    gap: 0;
+    padding: 3px;
+    border-radius: 12px;
+    background: var(--indor-lang-track);
     border: 1px solid var(--indor-lang-border);
-    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
-    backdrop-filter: blur(8px);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.65);
+}
+
+.indor-lang-slider {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: calc(100% - 6px);
+    border-radius: 9px;
+    background: #fff;
+    box-shadow:
+        0 1px 2px rgba(15, 23, 42, 0.06),
+        0 4px 14px rgba(24, 103, 242, 0.14);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.indor-lang-form:has(.indor-lang-option:last-of-type.is-active) .indor-lang-slider {
+    transform: translateX(calc(100% + 3px));
 }
 
 .indor-lang-option {
+    position: relative;
+    z-index: 1;
     display: inline-flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    min-width: 52px;
     border: 0;
     background: transparent;
-    color: #334155;
+    color: #64748B;
     font: inherit;
     font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.01em;
-    padding: 10px 14px;
-    border-radius: 999px;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 9px 18px;
+    border-radius: 9px;
     cursor: pointer;
-    transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+    transition: color 0.18s ease;
 }
 
 .indor-lang-option:hover {
-    background: rgba(24, 103, 242, 0.06);
+    color: #334155;
 }
 
 .indor-lang-option.is-active {
-    background: linear-gradient(135deg, #1867F2 0%, #0B5BD3 100%);
-    color: #fff;
-    box-shadow: 0 10px 22px rgba(24, 103, 242, 0.28);
+    color: var(--indor-lang-blue);
 }
 
-.indor-lang-flag {
-    font-size: 16px;
+.indor-lang-code {
     line-height: 1;
+    font-size: 12px;
 }
 
 .indor-lang-name {
-    line-height: 1;
+    line-height: 1.2;
+    letter-spacing: 0.01em;
+    font-weight: 700;
 }
 
-/* Floating pill on welcome / auth headers */
+/* Compact — auth screens, welcome */
+.indor-lang--compact,
+.indor-lang--inline,
+.indor-lang--bar,
 .indor-lang--pill {
     display: flex;
     justify-content: center;
+    width: 100%;
 }
 
-.indor-lang--corner {
-    position: absolute;
-    top: max(14px, env(safe-area-inset-top));
-    right: max(14px, env(safe-area-inset-right));
-    z-index: 20;
+.indor-lang--inline {
+    margin-bottom: 14px;
 }
 
-.indor-lang--corner .indor-lang-form {
-    box-shadow: 0 10px 28px rgba(15, 23, 42, 0.12);
+.indor-lang--bar {
+    margin-bottom: 2px;
 }
 
-/* Card variant for register / settings */
+/* Top bar on auth screens — back left, toggle right */
+.top-bar--with-lang {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.top-bar--with-lang .indor-lang--compact {
+    width: auto;
+    margin-bottom: 0;
+    justify-content: flex-end;
+}
+
+.top-bar--with-lang .indor-lang-form {
+    box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.65),
+        0 2px 10px rgba(15, 23, 42, 0.06);
+}
+
+.top-bar--with-lang .indor-lang-option {
+    min-width: 44px;
+    padding: 8px 14px;
+}
+
+/* Settings card */
 .indor-lang--card {
-    margin-bottom: 18px;
+    margin-bottom: 0;
 }
 
 .indor-lang-card-label {
@@ -82,7 +134,7 @@
 }
 
 .indor-lang-card-hint {
-    margin: 0 0 12px;
+    margin: 0 0 14px;
     font-size: 13px;
     line-height: 1.45;
     color: #64748B;
@@ -90,36 +142,38 @@
 
 .indor-lang--card .indor-lang-form {
     width: 100%;
-    justify-content: stretch;
-    border-radius: 18px;
-    padding: 6px;
+    border-radius: 16px;
+    padding: 4px;
+}
+
+.indor-lang--card .indor-lang-slider {
+    border-radius: 12px;
 }
 
 .indor-lang--card .indor-lang-option {
-    flex: 1;
-    justify-content: center;
+    min-width: 0;
     padding: 14px 12px;
-    border-radius: 14px;
+    letter-spacing: 0.01em;
     font-size: 14px;
 }
 
-.indor-lang--inline {
-    margin: 0 auto 16px;
+.indor-lang--card .indor-lang-option.is-active {
+    color: var(--indor-lang-blue-dark);
 }
 
-@media (max-width: 420px) {
-    .indor-lang--corner {
-        position: static;
-        display: flex;
-        justify-content: center;
-        margin-bottom: 12px;
-    }
-
+@media (max-width: 360px) {
     .indor-lang-option {
-        padding: 9px 12px;
+        min-width: 46px;
+        padding: 8px 14px;
     }
 
-    .indor-lang-name {
-        font-size: 12px;
+    .indor-lang-code {
+        font-size: 11px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .indor-lang-slider {
+        transition: none;
     }
 }

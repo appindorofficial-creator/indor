@@ -2,14 +2,15 @@
 @using IndorMvcApp.Services
 @inject IIndorLocalizer L
 @{
-    var variant = ViewData["LanguageSelectorVariant"] as string ?? "pill";
+    var variant = ViewData["LanguageSelectorVariant"] as string ?? "compact";
     var current = UiCulture.Normalize(L.CurrentCulture);
     var isEnglish = current == UiCulture.English;
     var returnUrl = Context.Request.Path + Context.Request.QueryString;
+    var isCard = variant == "card";
 }
 
 <div class="indor-lang indor-lang--@variant" role="group" aria-label="@L["Choose your language"]">
-    @if (variant == "card")
+    @if (isCard)
     {
         <p class="indor-lang-card-label">@L["Language"]</p>
         <p class="indor-lang-card-hint">@L["Select the language for the entire app"]</p>
@@ -19,18 +20,36 @@
         @Html.AntiForgeryToken()
         <input type="hidden" name="returnUrl" value="@returnUrl" />
 
+        <span class="indor-lang-slider" aria-hidden="true"></span>
+
         <button type="submit" name="culture" value="@UiCulture.English"
                 class="indor-lang-option @(isEnglish ? "is-active" : "")"
-                aria-pressed="@(isEnglish ? "true" : "false")">
-            <span class="indor-lang-flag" aria-hidden="true">🇺🇸</span>
-            <span class="indor-lang-name">@L["English"]</span>
+                aria-pressed="@(isEnglish ? "true" : "false")"
+                aria-label="@L["English"]"
+                title="@L["English"]">
+            @if (isCard)
+            {
+                <span class="indor-lang-name">@L["English"]</span>
+            }
+            else
+            {
+                <span class="indor-lang-code">EN</span>
+            }
         </button>
 
         <button type="submit" name="culture" value="@UiCulture.Spanish"
                 class="indor-lang-option @(!isEnglish ? "is-active" : "")"
-                aria-pressed="@(!isEnglish ? "true" : "false")">
-            <span class="indor-lang-flag" aria-hidden="true">🇪🇸</span>
-            <span class="indor-lang-name">@L["Spanish"]</span>
+                aria-pressed="@(!isEnglish ? "true" : "false")"
+                aria-label="@L["Spanish"]"
+                title="@L["Spanish"]">
+            @if (isCard)
+            {
+                <span class="indor-lang-name">@L["Spanish"]</span>
+            }
+            else
+            {
+                <span class="indor-lang-code">ES</span>
+            }
         </button>
     </form>
 </div>

@@ -4,8 +4,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="~/css/brand-colors.css" asp-append-version="true" />
 <link rel="stylesheet" href="~/css/app-background.css" asp-append-version="true" />
-<link rel="stylesheet" href="~/css/navigation-loading.css" asp-append-version="true" />
-<script src="~/js/navigation-loading.js" asp-append-version="true"></script>
+@await Html.PartialAsync("_NavigationLoadingHead")
+@await Html.PartialAsync("_IndorGreetingHead")
 <script>
     // Smart back + navigation recovery (see PreventWebViewCacheMiddleware: no-store is
     // avoided so bfcache can restore pages instantly when the browser allows it).

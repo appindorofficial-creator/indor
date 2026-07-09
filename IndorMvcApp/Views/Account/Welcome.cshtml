@@ -1,11 +1,13 @@
 ﻿@{
     ViewData["Title"] = L["Welcome - INDOR"];
     Layout = "_LayoutWelcome";
-    ViewData["LanguageSelectorVariant"] = "corner";
+    ViewData["LanguageSelectorVariant"] = "compact";
 }
 
 <div class="wl-screen">
-    @await Html.PartialAsync("_LanguageSelector")
+    <div class="wl-lang-bar">
+        @await Html.PartialAsync("_LanguageSelector")
+    </div>
 
     <header class="wl-top wl-reveal wl-reveal-1">
         <div class="wl-brand" aria-label="INDOR home Indor">
@@ -95,10 +97,6 @@
 
 @section Head {
     <style>
-        .wl-screen {
-            position: relative;
-        }
-
         .wl-guest-link {
             display: block;
             margin-top: 14px;

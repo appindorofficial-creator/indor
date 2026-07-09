@@ -4,17 +4,15 @@
     ViewData["Title"] = L["Sign In - INDOR"];
     Layout = "_LayoutAuth";
     var returnUrl = ViewData["ReturnUrl"] as string;
-    ViewData["LanguageSelectorVariant"] = "inline";
+    ViewData["LanguageSelectorVariant"] = "compact";
 }
 
 <div class="login-container login-container--signin">
-        @await Html.PartialAsync("_LanguageSelector")
-
-        <div class="top-bar">
+        <div class="top-bar top-bar--with-lang">
             <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <div style="width:44px;"></div>
+            @await Html.PartialAsync("_LanguageSelector")
         </div>
 
         <div class="logo-container">

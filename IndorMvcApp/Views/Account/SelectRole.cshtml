@@ -2,12 +2,10 @@
 @{
     ViewData["Title"] = L["Create your profile - INDOR"];
     Layout = "_LayoutAuth";
-    ViewData["LanguageSelectorVariant"] = "inline";
+    ViewData["LanguageSelectorVariant"] = "compact";
 }
 
 <div class="login-container login-container--select-role">
-    @await Html.PartialAsync("_LanguageSelector")
-
     <nav class="auth-stepper" aria-label="@L["Onboarding progress"]">
             <div class="auth-stepper-seg is-done"></div>
             <div class="auth-stepper-seg is-active"></div>
@@ -15,11 +13,11 @@
             <div class="auth-stepper-seg"></div>
             <div class="auth-stepper-seg"></div>
         </nav>
-        <div class="top-bar">
+        <div class="top-bar top-bar--with-lang">
             <a asp-controller="Account" asp-action="Welcome" class="back-btn" aria-label="@L["Back"]">
                 <i class="fas fa-arrow-left"></i>
             </a>
-            <div style="width:44px;"></div>
+            @await Html.PartialAsync("_LanguageSelector")
         </div>
 
         <div class="logo-container">

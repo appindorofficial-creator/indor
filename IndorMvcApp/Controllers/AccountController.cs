@@ -743,19 +743,24 @@ public class AccountController : Controller
 
     private async Task ApplyUserCultureAfterLoginAsync(ApplicationUser user)
     {
+        var cookieCulture = _cultureCookie.GetCulture(Request);
+        if (UiCulture.IsSupported(cookieCulture))
+        {
+            var normalized = UiCulture.Normalize(cookieCulture!);
+            _cultureCookie.SetCulture(Response, normalized);
+
+            if (!string.Equals(user.PreferredUiCulture, normalized, StringComparison.OrdinalIgnoreCase))
+            {
+                user.PreferredUiCulture = normalized;
+                await _userManager.UpdateAsync(user);
+            }
+
+            return;
+        }
+
         if (UiCulture.IsSupported(user.PreferredUiCulture))
         {
             _cultureCookie.SetCulture(Response, user.PreferredUiCulture!);
-            return;
         }
-
-        var cookieCulture = _cultureCookie.GetCulture(Request);
-        if (!UiCulture.IsSupported(cookieCulture))
-        {
-            return;
-        }
-
-        user.PreferredUiCulture = UiCulture.Normalize(cookieCulture);
-        await _userManager.UpdateAsync(user);
     }
 }
