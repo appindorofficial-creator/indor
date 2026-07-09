@@ -1567,23 +1567,66 @@ a.prv-pro-profile-btn { text-decoration: none; }
     background: linear-gradient(180deg, #F8FFF9 0%, #fff 72px);
 }
 
+.prv-pro-doc-on-file {
+    margin-bottom: 14px;
+    border: 1.5px solid #BFDBFE;
+    border-radius: 14px;
+    background: #F8FBFF;
+    overflow: hidden;
+}
+
+.prv-pro-doc-on-file.is-hidden {
+    display: none !important;
+}
+
 .prv-pro-doc-attached {
     display: flex;
     align-items: center;
     gap: 12px;
-    margin-bottom: 14px;
+    margin-bottom: 0;
     padding: 12px;
-    border: 1.5px solid #BFDBFE;
-    border-radius: 14px;
-    background: #F8FBFF;
+    border: none;
+    border-radius: 0;
+    background: transparent;
     text-decoration: none;
     color: inherit;
-    transition: border-color .15s ease, box-shadow .15s ease;
+    transition: background .15s ease;
 }
 
 .prv-pro-doc-attached:hover {
-    border-color: #93C5FD;
-    box-shadow: 0 8px 20px rgba(0, 102, 204, .08);
+    background: rgba(255, 255, 255, .55);
+}
+
+.prv-pro-doc-replace-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-top: 1px solid #DBEAFE;
+    background: #fff;
+    color: #0066CC;
+    font-size: .78rem;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.prv-pro-doc-empty-icon--btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    font-size: .9rem;
+}
+
+.prv-pro-doc-replace-btn:hover {
+    background: #F8FBFF;
+}
+
+.prv-pro-doc-replace-btn.is-hidden {
+    display: none !important;
 }
 
 .prv-pro-doc-file-thumb {
@@ -1766,8 +1809,8 @@ a.prv-pro-profile-btn { text-decoration: none; }
     justify-content: center;
 }
 
-.prv-pro-doc-empty--replace {
-    margin-top: 0;
+.prv-pro-doc-upload-form .prv-pro-btn--primary.is-hidden {
+    display: none !important;
 }
 
 .prv-pro-edit-profile-doc-form .prv-pro-btn--primary {
