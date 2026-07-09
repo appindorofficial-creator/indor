@@ -205,6 +205,33 @@ public static class UiDisplayLocalization
             return localizer.T("{0} mi", miMatch.Groups[1].Value);
         }
 
+        var thisMonthMatch = Regex.Match(text, @"^\+(\d+) this month$", RegexOptions.IgnoreCase);
+        if (thisMonthMatch.Success && int.TryParse(thisMonthMatch.Groups[1].Value, out var thisMonthCount))
+        {
+            return localizer.T("+{0} this month", thisMonthCount);
+        }
+
+        var vsLastMonthMatch = Regex.Match(text, @"^\+(\d+)% vs last month$", RegexOptions.IgnoreCase);
+        if (vsLastMonthMatch.Success && int.TryParse(vsLastMonthMatch.Groups[1].Value, out var pctChange))
+        {
+            return localizer.T("+{0}% vs last month", pctChange);
+        }
+
+        if (string.Equals(text, "+100% vs last month", StringComparison.OrdinalIgnoreCase))
+        {
+            return localizer.T("+100% vs last month");
+        }
+
+        var attachDocMatch = Regex.Match(
+            text,
+            @"^Please attach your (.+) before continuing, or choose Skip for now\.$",
+            RegexOptions.IgnoreCase);
+        if (attachDocMatch.Success)
+        {
+            var docLabel = Localize(localizer, attachDocMatch.Groups[1].Value.Trim());
+            return localizer.T("Please attach your {0} before continuing, or choose Skip for now.", docLabel);
+        }
+
         return localizer[text];
     }
 

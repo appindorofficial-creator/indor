@@ -12,8 +12,8 @@
     };
 }
 <div class="ob-head-block">
-    <h1>@Model.Title</h1>
-    <p>@Model.Subtitle</p>
+    <h1>@UiDisplayLocalization.Localize(L, Model.Title)</h1>
+    <p>@UiDisplayLocalization.Localize(L, Model.Subtitle)</p>
 </div>
 
 @if (!string.IsNullOrWhiteSpace(licenseNumber))
@@ -28,7 +28,7 @@
 {
     <div class="rl-error-banner" role="alert">
         <i class="fas fa-triangle-exclamation"></i>
-        <span>@verificationError</span>
+        <span>@UiDisplayLocalization.Localize(L, verificationError)</span>
     </div>
 }
 <div class="rl-error-banner is-hidden" id="verificationClientError" role="alert">
@@ -41,7 +41,7 @@
     <div class="rl-doc-card" data-doc-card="@slot.DocumentType">
         <div class="rl-doc-card-icon"><i class="fas fa-id-card"></i></div>
         <div>
-            <strong>@slot.Label</strong>
+            <strong>@UiDisplayLocalization.Localize(L, slot.Label)</strong>
             @if (!slot.Required) { <small>@L["Optional"]</small> }
             @if (slot.Uploaded)
             {
@@ -66,7 +66,7 @@
                 || slot.FileUrl.EndsWith(".webp", StringComparison.OrdinalIgnoreCase));
 
         <div class="rl-doc-upload" data-doc-type="@field.DocumentType" data-required="@(slot?.Required == true ? "true" : "false")">
-            <span class="rl-doc-upload-label">@field.Label</span>
+            <span class="rl-doc-upload-label">@UiDisplayLocalization.Localize(L, field.Label)</span>
 
             <div class="rl-file-attached @(uploaded ? null : "is-hidden")" data-role="attached">
                 @if (isImage)
@@ -83,7 +83,7 @@
                         value="remove"
                         class="rl-file-remove-btn rl-file-remove-uploaded"
                         data-document-type="@field.DocumentType"
-                        aria-label="@L["Remove @field.Label"]">
+                        aria-label="@L.T("Remove {0}", UiDisplayLocalization.Localize(L, field.Label))">
                     <i class="fas fa-xmark"></i>
                 </button>
             </div>
@@ -122,8 +122,15 @@
 </form>
 
 @section Scripts {
+@await Html.PartialAsync("_RealtorVerificationI18n")
 <script>
     (function () {
+        var i18n = window.IndorRealtorVerificationI18n || {};
+        function t(key, arg) {
+            var template = i18n[key] || key;
+            return arg == null ? template : template.replace('{0}', arg);
+        }
+
         function isImageFile(file) {
             return file.type && file.type.indexOf('image/') === 0;
         }
@@ -179,7 +186,7 @@
                 showBlock(picker);
                 var nameEl = picker.querySelector('.rl-file-picker-name');
                 if (nameEl) {
-                    nameEl.textContent = 'No file selected';
+                    nameEl.textContent = t('No file selected');
                 }
             }
         }
@@ -202,7 +209,7 @@
                 showBlock(picker);
                 var nameEl = picker.querySelector('.rl-file-picker-name');
                 if (nameEl) {
-                    nameEl.textContent = 'No file selected';
+                    nameEl.textContent = t('No file selected');
                 }
             }
 
@@ -367,8 +374,8 @@
             });
             showClientError(
                 missing.length === 1
-                    ? 'Please attach your ' + (missing[0].querySelector('.rl-doc-upload-label')?.textContent?.trim().toLowerCase() || 'document') + ' before continuing, or choose Skip for now.'
-                    : 'No required documents attached. Please upload your license photo and government ID, or choose Skip for now.'
+                    ? t('Please attach your {0} before continuing, or choose Skip for now.', missing[0].querySelector('.rl-doc-upload-label')?.textContent?.trim().toLowerCase() || 'document')
+                    : t('No required documents attached. Please upload your license photo and government ID, or choose Skip for now.')
             );
             return false;
         }

@@ -1,0 +1,9 @@
+@using System.Text.Json
+<script>
+window.IndorRealtorVerificationI18n = @Html.Raw(JsonSerializer.Serialize(new Dictionary<string, string>
+{
+    ["No file selected"] = L["No file selected"],
+    ["Please attach your {0} before continuing, or choose Skip for now."] = L["Please attach your {0} before continuing, or choose Skip for now."],
+    ["No required documents attached. Please upload your license photo and government ID, or choose Skip for now."] = L["No required documents attached. Please upload your license photo and government ID, or choose Skip for now."]
+}));
+</script>

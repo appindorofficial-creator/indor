@@ -11,21 +11,21 @@
 <section class="rl-ready-hero">
     <h1>@L["Your profile is ready"]</h1>
     <p>@L["You can now enter as a Realtor."]</p>
-    <span class="rl-badge"><i class="fas fa-star"></i> @Model.BadgeLabel</span>
+    <span class="rl-badge"><i class="fas fa-star"></i> @UiDisplayLocalization.Localize(L, Model.BadgeLabel)</span>
 </section>
 
 <ul class="rl-ready-checklist">
     <li class="@(Model.LicenseNumberSaved ? "is-done" : "")">
-        <i class="fas @(Model.LicenseNumberSaved ? "fa-circle-check" : "fa-circle")"></i> License number saved
+        <i class="fas @(Model.LicenseNumberSaved ? "fa-circle-check" : "fa-circle")"></i> @L["License number saved"]
     </li>
     <li class="@(Model.ProfileCreated ? "is-done" : "")">
-        <i class="fas @(Model.ProfileCreated ? "fa-circle-check" : "fa-circle")"></i> Profile created
+        <i class="fas @(Model.ProfileCreated ? "fa-circle-check" : "fa-circle")"></i> @L["Profile created"]
     </li>
     <li class="@(Model.LicensePhotoUploaded ? "is-done" : "")">
-        <i class="fas @(Model.LicensePhotoUploaded ? "fa-circle-check" : "fa-circle")"></i> License photo @(Model.LicensePhotoUploaded ? "" : "pending")
+        <i class="fas @(Model.LicensePhotoUploaded ? "fa-circle-check" : "fa-circle")"></i> @L["License photo"] @(Model.LicensePhotoUploaded ? "" : L["pending"])
     </li>
     <li class="@(Model.GovernmentIdUploaded ? "is-done" : "")">
-        <i class="fas @(Model.GovernmentIdUploaded ? "fa-circle-check" : "fa-circle")"></i> Government ID @(Model.GovernmentIdUploaded ? "" : "pending")
+        <i class="fas @(Model.GovernmentIdUploaded ? "fa-circle-check" : "fa-circle")"></i> @L["Government ID"] @(Model.GovernmentIdUploaded ? "" : L["pending"])
     </li>
 </ul>
 
