@@ -10,7 +10,7 @@
                 <h3 id="hd-maint-title">@L["Recommended for your home"]</h3>
                 @if (!string.IsNullOrWhiteSpace(Model.Summary))
                 {
-                    <p class="hd-maint-summary">@Model.Summary</p>
+                    <p class="hd-maint-summary">@UiDisplayLocalization.Localize(L, Model.Summary)</p>
                 }
             </div>
             @if (Model.ShowAlerts)
@@ -37,16 +37,16 @@
                         <span class="hd-maint-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title)"></i></span>
                         <div class="hd-maint-body">
                             <div class="hd-maint-row">
-                                <strong>@item.Title</strong>
+                                <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                                 <span class="hd-maint-priority">@L[item.Priority]</span>
                             </div>
-                            <p>@item.Description</p>
+                            <p>@UiDisplayLocalization.Localize(L, item.Description)</p>
                             <div class="hd-maint-tags">
-                                <span>@item.Category</span>
-                                <span>@item.Frequency</span>
+                                <span>@UiDisplayLocalization.Localize(L, item.Category)</span>
+                                <span>@UiDisplayLocalization.Localize(L, item.Frequency)</span>
                             </div>
                             <span class="hd-maint-schedule">
-                                @item.ScheduleActionLabel
+                                @UiDisplayLocalization.Localize(L, item.ScheduleActionLabel)
                                 <i class="fas fa-chevron-right" aria-hidden="true"></i>
                             </span>
                         </div>
@@ -58,13 +58,13 @@
                         <span class="hd-maint-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(item.Icon, item.Category, item.Title)"></i></span>
                         <div class="hd-maint-body">
                             <div class="hd-maint-row">
-                                <strong>@item.Title</strong>
+                                <strong>@UiDisplayLocalization.Localize(L, item.Title)</strong>
                                 <span class="hd-maint-priority">@L[item.Priority]</span>
                             </div>
-                            <p>@item.Description</p>
+                            <p>@UiDisplayLocalization.Localize(L, item.Description)</p>
                             <div class="hd-maint-tags">
-                                <span>@item.Category</span>
-                                <span>@item.Frequency</span>
+                                <span>@UiDisplayLocalization.Localize(L, item.Category)</span>
+                                <span>@UiDisplayLocalization.Localize(L, item.Frequency)</span>
                             </div>
                         </div>
                     </article>

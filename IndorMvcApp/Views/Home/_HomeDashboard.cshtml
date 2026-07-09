@@ -27,15 +27,15 @@ else
                 <div class="hd-specs">
                     @if (!string.IsNullOrEmpty(Model.BedsLabel))
                     {
-                        <span class="hd-spec"><i class="fas fa-bed"></i> @Model.BedsLabel</span>
+                        <span class="hd-spec"><i class="fas fa-bed"></i> @UiDisplayLocalization.Localize(L, Model.BedsLabel)</span>
                     }
                     @if (!string.IsNullOrEmpty(Model.BathsLabel))
                     {
-                        <span class="hd-spec"><i class="fas fa-bath"></i> @Model.BathsLabel</span>
+                        <span class="hd-spec"><i class="fas fa-bath"></i> @UiDisplayLocalization.Localize(L, Model.BathsLabel)</span>
                     }
                     @if (!string.IsNullOrEmpty(Model.SqftLabel))
                     {
-                        <span class="hd-spec"><i class="fas fa-ruler-combined"></i> @Model.SqftLabel</span>
+                        <span class="hd-spec"><i class="fas fa-ruler-combined"></i> @UiDisplayLocalization.Localize(L, Model.SqftLabel)</span>
                     }
                 </div>
             }
@@ -84,16 +84,16 @@ else
                     <button type="button" class="hd-task nav-jump" data-target="@todayTask.Url.TrimStart('#')" style="width:100%;border:none;background:transparent;text-align:left;cursor:pointer;">
                         <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, todayTask.Category, todayTask.Title)"></i></span>
                         <span class="hd-task-body">
-                            <span class="hd-task-title">@todayTask.Title</span>
+                            <span class="hd-task-title">@UiDisplayLocalization.Localize(L, todayTask.Title)</span>
                             <span class="hd-task-sub">
                                 @if (!string.IsNullOrEmpty(todayTask.Badge))
                                 {
-                                    @($"{todayTask.Subtitle.Split('•')[0].Trim()} • ")
-                                    <span class="badge">@todayTask.Badge</span>
+                                    @($"{UiDisplayLocalization.Localize(L, todayTask.Subtitle.Split('•')[0].Trim())} • ")
+                                    <span class="badge">@UiDisplayLocalization.Localize(L, todayTask.Badge)</span>
                                 }
                                 else
                                 {
-                                    @todayTask.Subtitle
+                                    @UiDisplayLocalization.Localize(L, todayTask.Subtitle)
                                 }
                             </span>
                         </span>
@@ -105,16 +105,16 @@ else
                     <a href="@todayTask.Url" class="hd-task">
                         <span class="hd-task-icon"><i class="@PropertyMaintenanceIconResolver.EnsureCssClass(todayTask.Icon, todayTask.Category, todayTask.Title)"></i></span>
                         <span class="hd-task-body">
-                            <span class="hd-task-title">@todayTask.Title</span>
+                            <span class="hd-task-title">@UiDisplayLocalization.Localize(L, todayTask.Title)</span>
                             <span class="hd-task-sub">
                                 @if (!string.IsNullOrEmpty(todayTask.Badge))
                                 {
-                                    @($"{todayTask.Subtitle.Split('•')[0].Trim()} • ")
-                                    <span class="badge">@todayTask.Badge</span>
+                                    @($"{UiDisplayLocalization.Localize(L, todayTask.Subtitle.Split('•')[0].Trim())} • ")
+                                    <span class="badge">@UiDisplayLocalization.Localize(L, todayTask.Badge)</span>
                                 }
                                 else
                                 {
-                                    @todayTask.Subtitle
+                                    @UiDisplayLocalization.Localize(L, todayTask.Subtitle)
                                 }
                             </span>
                         </span>
@@ -138,8 +138,8 @@ else
                     <a href="@doc.Url" class="hd-doc-card">
                         <span class="hd-doc-icon"><i class="fas @doc.Icon"></i></span>
                         <span class="hd-doc-text">
-                            <span class="hd-doc-title">@doc.Title</span>
-                            <span class="hd-doc-meta">@doc.Meta</span>
+                            <span class="hd-doc-title">@UiDisplayLocalization.Localize(L, doc.Title)</span>
+                            <span class="hd-doc-meta">@UiDisplayLocalization.Localize(L, doc.Meta)</span>
                         </span>
                         <i class="fas fa-chevron-right hd-doc-chevron" aria-hidden="true"></i>
                     </a>
@@ -161,11 +161,11 @@ else
                     <div class="hd-activity-item">
                         <span class="hd-activity-dot"><i class="fas @act.Icon"></i></span>
                         <div class="hd-activity-body">
-                            <div class="hd-activity-title">@act.Title</div>
+                            <div class="hd-activity-title">@UiDisplayLocalization.Localize(L, act.Title)</div>
                             <div class="hd-activity-time">@act.Timestamp</div>
                             @if (!string.IsNullOrWhiteSpace(act.Description))
                             {
-                                <div class="hd-activity-desc">@act.Description</div>
+                                <div class="hd-activity-desc">@UiDisplayLocalization.Localize(L, act.Description)</div>
                             }
                         </div>
                     </div>

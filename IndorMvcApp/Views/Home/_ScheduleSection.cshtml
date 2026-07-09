@@ -26,7 +26,7 @@
             @foreach (var quick in Model.QuickAddItems)
             {
                 <div class="sch-quick-card">
-                    <a href="@quick.Url" class="sch-quick-tap" aria-label="@L.T("Add {0} reminder", quick.Label)">
+                    <a href="@quick.Url" class="sch-quick-tap" aria-label="@L.T("Add {0} reminder", L[quick.Label])">
                         <span class="sch-quick-visual">
                             <span class="sch-quick-icon @quick.ToneClass @(string.IsNullOrWhiteSpace(quick.ImageUrl) ? "" : "has-image")">
                                 @if (!string.IsNullOrWhiteSpace(quick.ImageUrl))
@@ -41,7 +41,7 @@
                             <span class="sch-quick-plus" aria-hidden="true"><i class="fas fa-plus"></i></span>
                         </span>
                     </a>
-                    <span class="sch-quick-name">@quick.Label</span>
+                    <span class="sch-quick-name">@L[quick.Label]</span>
                 </div>
             }
         </div>
@@ -77,13 +77,13 @@
                     </span>
                     <div class="sch-reminder-body">
                         <div class="sch-reminder-top">
-                            <h3 class="sch-reminder-title">@item.Title</h3>
+                            <h3 class="sch-reminder-title">@UiDisplayLocalization.Localize(L, item.Title)</h3>
                             <a href="@item.EditUrl" class="sch-edit-link">
                                 <i class="fas fa-pen"></i>
-                                @item.EditLabel
+                                @UiDisplayLocalization.Localize(L, item.EditLabel)
                             </a>
                         </div>
-                        <p class="sch-reminder-sub">@item.Subtitle</p>
+                        <p class="sch-reminder-sub">@UiDisplayLocalization.Localize(L, item.Subtitle)</p>
                         <p class="sch-reminder-date">
                             <i class="far fa-calendar"></i>
                             @item.DateLabel

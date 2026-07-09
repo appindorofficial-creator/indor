@@ -4,7 +4,9 @@
 
     var OVERLAY_ID = "indorNavigationLoading";
     var BOTTOM_NAV_SELECTOR = ".bottom-nav, .prv-pro-bottom-nav, .rl-bottom-nav, .pa-bottom-nav";
-    var SPA_HIDE_DELAY_MS = 320;
+    var BOTTOM_NAV_SPA_TARGET_SELECTOR =
+        ".bottom-nav [data-target], .prv-pro-bottom-nav [data-target], .rl-bottom-nav [data-target], .pa-bottom-nav [data-target]";
+    var SPA_HIDE_DELAY_MS = 650;
     var hideTimer = null;
 
     function isPlainLeftClick(e) {
@@ -177,10 +179,18 @@
         if (!isPlainLeftClick(e)) return;
         if (!e.target || !e.target.closest) return;
 
-        var spaTarget = e.target.closest(BOTTOM_NAV_SELECTOR + " [data-target]");
+        var spaTarget = e.target.closest(BOTTOM_NAV_SPA_TARGET_SELECTOR);
         if (spaTarget) {
-            var tag = spaTarget.tagName;
-            if (tag === "BUTTON" || spaTarget.getAttribute("role") === "button" || tag === "A") {
+            showNavigationLoading({ autoHide: true });
+            return;
+        }
+
+        var bottomNavItem = e.target.closest(BOTTOM_NAV_SELECTOR + " .nav-item");
+        if (bottomNavItem && !bottomNavItem.hasAttribute("data-no-nav-loading")) {
+            var isSpaButton = bottomNavItem.tagName === "BUTTON"
+                || bottomNavItem.getAttribute("role") === "button";
+            var bottomNavHref = bottomNavItem.getAttribute("href") || "";
+            if (isSpaButton || isSamePageHashNavigation(bottomNavHref)) {
                 showNavigationLoading({ autoHide: true });
                 return;
             }

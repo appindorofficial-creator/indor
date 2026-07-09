@@ -6,17 +6,17 @@
         {
             <div class="rl-network-card-media">
                 <img src="@Url.Content("~" + Model.ImageUrl)" alt="" class="rl-network-card-img" />
-                <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@Model.BadgeLabel</span>
+                <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@UiDisplayLocalization.Localize(L, Model.BadgeLabel)</span>
             </div>
         }
 
         <div class="rl-network-card-body">
             <div class="rl-network-card-head">
                 <div class="rl-network-card-copy">
-                    <strong class="rl-network-card-title">@Model.Title</strong>
+                    <strong class="rl-network-card-title">@UiDisplayLocalization.Localize(L, Model.Title)</strong>
                     @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
                     {
-                        <span class="rl-network-card-sub">@Model.Subtitle</span>
+                        <span class="rl-network-card-sub">@UiDisplayLocalization.Localize(L, Model.Subtitle)</span>
                     }
                     @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                     {
@@ -28,7 +28,7 @@
                 <div class="rl-network-card-side">
                     @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
                     {
-                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                        <span class="rl-network-status rl-network-status--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
                     }
                 </div>
             </div>
@@ -36,11 +36,11 @@
             <div class="rl-network-card-actions">
                 @if (string.IsNullOrWhiteSpace(Model.PrimaryActionUrl) || Model.PrimaryActionUrl == "#")
                 {
-                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Not available"><span>@Model.PrimaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
+                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="@L["Not available"]"><span>@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                 }
                 else
                 {
-                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
@@ -55,16 +55,16 @@
                                 data-share-url="@Model.SecondaryActionUrl"
                                 data-share-title="@Model.Title"
                                 data-share-text="@shareText">
-                            @Model.SecondaryActionLabel
+                            @UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)
                         </button>
                     }
                     else if (string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) || Model.SecondaryActionUrl == "#")
                     {
-                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Not available"><span>@Model.SecondaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
+                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="@L["Not available"]"><span>@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                     }
                     else
                     {
-                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</a>
                     }
                 }
             </div>
@@ -78,13 +78,13 @@ else
     {
         <div class="rl-network-card-media">
             <img src="@Url.Content("~" + Model.ImageUrl)" alt="" class="rl-network-card-img" />
-            <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@Model.BadgeLabel</span>
+            <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@UiDisplayLocalization.Localize(L, Model.BadgeLabel)</span>
         </div>
     }
     else if (!string.IsNullOrWhiteSpace(Model.IconClass))
     {
         <div class="rl-network-card-icon-wrap rl-network-card-icon-wrap--@Model.BadgeCss">
-            <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@Model.BadgeLabel</span>
+            <span class="rl-network-card-badge rl-network-card-badge--@Model.BadgeCss">@UiDisplayLocalization.Localize(L, Model.BadgeLabel)</span>
             <i class="fas @Model.IconClass"></i>
         </div>
     }
@@ -96,14 +96,14 @@ else
                 {
                     <strong class="rl-network-card-price">@Model.PriceLabel</strong>
                 }
-                <strong class="rl-network-card-title">@Model.Title</strong>
+                <strong class="rl-network-card-title">@UiDisplayLocalization.Localize(L, Model.Title)</strong>
                 @if (!string.IsNullOrWhiteSpace(Model.Subtitle))
                 {
-                    <span class="rl-network-card-sub">@Model.Subtitle</span>
+                    <span class="rl-network-card-sub">@UiDisplayLocalization.Localize(L, Model.Subtitle)</span>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SpecsLabel))
                 {
-                    <span class="rl-network-card-specs">@Model.SpecsLabel</span>
+                    <span class="rl-network-card-specs">@UiDisplayLocalization.Localize(L, Model.SpecsLabel)</span>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.MetaLabel))
                 {
@@ -122,7 +122,7 @@ else
             <div class="rl-network-card-side">
                 @if (!string.IsNullOrWhiteSpace(Model.StatusBadge))
                 {
-                    <span class="rl-network-status rl-network-status--@Model.StatusCss">@Model.StatusBadge</span>
+                    <span class="rl-network-status rl-network-status--@Model.StatusCss">@UiDisplayLocalization.Localize(L, Model.StatusBadge)</span>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.DistanceLabel))
                 {
@@ -134,11 +134,11 @@ else
             <div class="rl-network-card-actions">
                 @if (string.IsNullOrWhiteSpace(Model.PrimaryActionUrl) || Model.PrimaryActionUrl == "#")
                 {
-                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="Not available"><span>@Model.PrimaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
+                    <span class="rl-btn-outline rl-btn-outline--sm rl-soon" role="button" aria-disabled="true" title="@L["Not available"]"><span>@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                 }
                 else
                 {
-                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@Model.PrimaryActionLabel</a>
+                    <a href="@Model.PrimaryActionUrl" class="rl-btn-outline rl-btn-outline--sm">@UiDisplayLocalization.Localize(L, Model.PrimaryActionLabel)</a>
                 }
                 @if (!string.IsNullOrWhiteSpace(Model.SecondaryActionLabel))
                 {
@@ -153,16 +153,16 @@ else
                                 data-share-url="@Model.SecondaryActionUrl"
                                 data-share-title="@Model.Title"
                                 data-share-text="@shareText">
-                            @Model.SecondaryActionLabel
+                            @UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)
                         </button>
                     }
                     else if (string.IsNullOrWhiteSpace(Model.SecondaryActionUrl) || Model.SecondaryActionUrl == "#")
                     {
-                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="Not available"><span>@Model.SecondaryActionLabel</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
+                        <span class="rl-btn-primary rl-btn-primary--sm rl-soon" role="button" aria-disabled="true" title="@L["Not available"]"><span>@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</span><i class="fas fa-lock rl-soon-lock" aria-hidden="true"></i></span>
                     }
                     else
                     {
-                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@Model.SecondaryActionLabel</a>
+                        <a href="@Model.SecondaryActionUrl" class="rl-btn-primary rl-btn-primary--sm">@UiDisplayLocalization.Localize(L, Model.SecondaryActionLabel)</a>
                     }
                 }
             </div>
