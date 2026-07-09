@@ -102,51 +102,59 @@
 }
 
 .prv-pro-profile-v2-overview-illus {
-    width: 88px;
-    height: 68px;
-    object-fit: cover;
+    width: 96px;
+    height: 72px;
+    object-fit: contain;
     object-position: center;
-    border-radius: 12px;
     flex-shrink: 0;
 }
 
+/* Metrics — icon left, value + label stacked */
 .prv-pro-profile-v2-metrics {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
+    gap: 4px;
     margin-top: 16px;
     padding-top: 14px;
     border-top: 1px solid #f1f5f9;
 }
 
 .prv-pro-profile-v2-metric {
-    text-align: center;
+    display: flex;
+    align-items: flex-start;
+    gap: 5px;
+    min-width: 0;
 }
 
 .prv-pro-profile-v2-metric-icon {
-    width: 28px;
-    height: 28px;
-    border-radius: 8px;
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
     background: #eef4fc;
     color: #0066cc;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.72rem;
-    margin-bottom: 4px;
+    flex-shrink: 0;
 }
 
-.prv-pro-profile-v2-metric strong {
+.prv-pro-profile-v2-metric-copy {
+    min-width: 0;
+    padding-top: 1px;
+}
+
+.prv-pro-profile-v2-metric-copy strong {
     display: block;
-    font-size: 0.82rem;
+    font-size: 0.8rem;
     font-weight: 800;
     color: #0a2d5c;
-    line-height: 1.2;
+    line-height: 1.15;
 }
 
-.prv-pro-profile-v2-metric span {
+.prv-pro-profile-v2-metric-copy span {
     display: block;
-    font-size: 0.62rem;
+    font-size: 0.6rem;
     color: #94a3b8;
     line-height: 1.2;
     margin-top: 2px;
@@ -245,6 +253,58 @@ a.prv-pro-profile-v2-card {
     align-items: flex-start;
     flex: 1;
     min-width: 0;
+    position: relative;
+    z-index: 1;
+}
+
+.prv-pro-profile-v2-card--areas {
+    position: relative;
+    padding-bottom: 14px;
+}
+
+.prv-pro-profile-v2-card-head--areas {
+    position: relative;
+    margin-bottom: 14px;
+    align-items: flex-start;
+    overflow: hidden;
+    min-height: 52px;
+    padding-right: 18px;
+}
+
+.prv-pro-profile-v2-areas-map-bg {
+    position: absolute;
+    right: 20px;
+    top: 2px;
+    width: 82px;
+    height: 58px;
+    object-fit: contain;
+    pointer-events: none;
+    opacity: 0.92;
+}
+
+.prv-pro-profile-v2-card-head--areas .prv-pro-profile-v2-card-chevron {
+    position: relative;
+    z-index: 1;
+    margin-top: 12px;
+}
+
+.prv-pro-profile-v2-areas-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.prv-pro-profile-v2-area-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 0;
+    flex-shrink: 0;
 }
 
 .prv-pro-profile-v2-card-icon {
@@ -278,83 +338,80 @@ a.prv-pro-profile-v2-card {
 .prv-pro-profile-v2-card-chevron {
     color: #cbd5e1;
     font-size: 0.8rem;
-    margin-top: 10px;
     flex-shrink: 0;
 }
 
+.prv-pro-profile-v2-card-head:not(.prv-pro-profile-v2-card-head--areas) .prv-pro-profile-v2-card-chevron {
+    margin-top: 10px;
+}
+
 .prv-pro-profile-v2-card-deco {
-    width: 72px;
-    height: 52px;
+    width: 64px;
+    height: 48px;
     object-fit: contain;
     flex-shrink: 0;
 }
 
-.prv-pro-profile-v2-area-row {
+.prv-pro-profile-v2-zips {
     display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 0.82rem;
-    color: #334155;
-    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: flex-end;
+    margin-left: auto;
+}
+
+.prv-pro-profile-v2-zip {
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: #eef4fc;
+    color: #0066cc;
+    font-size: 0.74rem;
+    font-weight: 700;
 }
 
 .prv-pro-profile-v2-area-row i {
     color: #0066cc;
 }
 
-.prv-pro-profile-v2-zips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-}
-
-.prv-pro-profile-v2-zip {
-    padding: 6px 12px;
-    border-radius: 999px;
-    background: #eef4fc;
-    color: #0066cc;
-    font-size: 0.78rem;
-    font-weight: 700;
-}
-
 /* Services empty */
 .prv-pro-profile-v2-empty {
     text-align: center;
-    padding: 8px 12px 4px;
+    padding: 4px 0 0;
 }
 
 .prv-pro-profile-v2-empty img {
-    width: 120px;
+    width: 140px;
     height: auto;
-    margin: 0 auto 10px;
+    margin: 0 auto 12px;
     display: block;
 }
 
 .prv-pro-profile-v2-empty h4 {
     margin: 0 0 6px;
-    font-size: 0.88rem;
+    font-size: 0.9rem;
     font-weight: 800;
     color: #0a2d5c;
 }
 
 .prv-pro-profile-v2-empty p {
-    margin: 0 0 14px;
+    margin: 0 0 16px;
     font-size: 0.76rem;
     color: #94a3b8;
     line-height: 1.4;
 }
 
 .prv-pro-profile-v2-add-btn {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 12px 20px;
+    width: 100%;
+    padding: 14px 20px;
     border-radius: 999px;
     background: linear-gradient(135deg, #0066cc, #0056d2);
     color: #fff;
-    font-size: 0.84rem;
+    font-size: 0.86rem;
     font-weight: 700;
-    text-decoration: none;
     box-shadow: 0 4px 14px rgba(0, 102, 204, 0.3);
 }
 
@@ -410,8 +467,8 @@ a.prv-pro-profile-v2-card {
     font-weight: 700;
     padding: 4px 10px;
     border-radius: 999px;
-    background: #fff0e0;
-    color: #c46a00;
+    background: #ffedd5;
+    color: #9a3412;
 }
 
 .prv-pro-profile-v2-pending.is-done {
@@ -511,61 +568,67 @@ a.prv-pro-profile-v2-card {
 .prv-pro-profile-v2-perf {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: 8px;
+    gap: 6px;
 }
 
 .prv-pro-profile-v2-perf-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-align: center;
+    min-width: 0;
 }
 
 .prv-pro-profile-v2-perf-icon {
-    width: 36px;
-    height: 36px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.82rem;
-    margin-bottom: 6px;
+    font-size: 0.88rem;
+    margin-bottom: 8px;
 }
 
-.prv-pro-profile-v2-perf-icon--time { background: #dbeafe; color: #2563eb; }
-.prv-pro-profile-v2-perf-icon--check { background: #dcfce7; color: #16a34a; }
-.prv-pro-profile-v2-perf-icon--thumb { background: #ede9fe; color: #7c3aed; }
-.prv-pro-profile-v2-perf-icon--home { background: #fef9c3; color: #ca8a04; }
+.prv-pro-profile-v2-perf-icon--time { background: #e8f1ff; color: #475569; }
+.prv-pro-profile-v2-perf-icon--check { background: #e8f8ee; color: #475569; }
+.prv-pro-profile-v2-perf-icon--thumb { background: #f0ebff; color: #475569; }
+.prv-pro-profile-v2-perf-icon--home { background: #fef6dc; color: #475569; }
 
 .prv-pro-profile-v2-perf-item strong {
     display: block;
-    font-size: 0.88rem;
+    font-size: 0.92rem;
     font-weight: 800;
     color: #0a2d5c;
+    line-height: 1.1;
+    margin-bottom: 4px;
 }
 
 .prv-pro-profile-v2-perf-item span {
     display: block;
-    font-size: 0.6rem;
+    font-size: 0.58rem;
     color: #94a3b8;
-    line-height: 1.25;
-    margin-top: 2px;
+    line-height: 1.3;
+    max-width: 72px;
 }
 
 /* Reviews empty */
 .prv-pro-profile-v2-reviews-empty {
     display: flex;
     align-items: center;
-    gap: 16px;
-    padding: 8px 4px;
+    gap: 14px;
+    padding: 10px 0;
 }
 
 .prv-pro-profile-v2-reviews-empty img {
-    width: 100px;
+    width: 88px;
     height: auto;
     flex-shrink: 0;
 }
 
 .prv-pro-profile-v2-reviews-empty h4 {
     margin: 0 0 4px;
-    font-size: 0.9rem;
+    font-size: 0.92rem;
     font-weight: 800;
     color: #0a2d5c;
 }
@@ -574,76 +637,96 @@ a.prv-pro-profile-v2-card {
     margin: 0;
     font-size: 0.76rem;
     color: #94a3b8;
-    line-height: 1.4;
+    line-height: 1.45;
 }
 
-/* Activation banner with house */
+/* Activation banner */
 .prv-pro-profile-v2-activation {
     display: grid;
-    grid-template-columns: 1fr 100px;
-    gap: 12px;
+    grid-template-columns: 1fr minmax(96px, 118px);
+    gap: 4px;
     align-items: center;
     padding: 16px;
     margin-top: 14px;
     border-radius: 20px;
-    background: linear-gradient(135deg, #fff8f3 0%, #ffedd5 50%, #fef3c7 100%);
-    box-shadow: 0 8px 24px rgba(234, 88, 12, 0.1);
+    background: linear-gradient(135deg, #fffaf5 0%, #fff3e6 55%, #ffedd5 100%);
+    box-shadow: 0 8px 24px rgba(234, 88, 12, 0.08);
     overflow: hidden;
 }
 
-.prv-pro-profile-v2-activation-copy strong {
+.prv-pro-profile-v2-activation-title {
     display: flex;
     align-items: center;
     gap: 8px;
-    font-size: 0.9rem;
-    color: #9a3412;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
 }
 
-.prv-pro-profile-v2-activation-copy strong i {
-    width: 32px;
-    height: 32px;
+.prv-pro-profile-v2-activation-icon {
+    width: 34px;
+    height: 34px;
     border-radius: 10px;
     background: linear-gradient(145deg, #ffedd5, #fdba74);
-    color: #c2410c;
-    display: inline-flex;
+    color: #ea580c;
+    display: flex;
     align-items: center;
     justify-content: center;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.prv-pro-profile-v2-activation-title strong {
+    font-size: 0.95rem;
+    font-weight: 800;
+    color: #0a2d5c;
+    line-height: 1.25;
 }
 
 .prv-pro-profile-v2-activation-copy p {
-    margin: 0 0 12px;
-    font-size: 0.76rem;
-    color: #b45309;
-    line-height: 1.4;
+    margin: 0 0 14px;
+    font-size: 0.78rem;
+    color: #64748b;
+    line-height: 1.45;
 }
 
 .prv-pro-profile-v2-activation-copy a {
     display: inline-block;
-    padding: 10px 16px;
-    border-radius: 12px;
+    padding: 12px 18px;
+    border-radius: 14px;
     background: linear-gradient(135deg, #0066cc, #0056d2);
     color: #fff;
-    font-size: 0.8rem;
+    font-size: 0.84rem;
     font-weight: 700;
     text-decoration: none;
+    text-align: center;
     box-shadow: 0 4px 14px rgba(0, 86, 210, 0.35);
 }
 
-.prv-pro-profile-v2-activation img {
-    width: 100%;
-    height: auto;
-    object-fit: contain;
+.prv-pro-profile-v2-activation-art {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    align-self: stretch;
 }
 
-@media (max-width: 380px) {
-    .prv-pro-profile-v2-metrics,
-    .prv-pro-profile-v2-perf {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+.prv-pro-profile-v2-activation-art img {
+    width: 100%;
+    max-height: 108px;
+    object-fit: contain;
+    object-position: center;
+}
+
+@media (max-width: 360px) {
+    .prv-pro-profile-v2-areas-row {
+        flex-direction: column;
+        align-items: flex-start;
     }
 
-    .prv-pro-profile-v2-overview-illus {
-        width: 72px;
-        height: 56px;
+    .prv-pro-profile-v2-zips {
+        justify-content: flex-start;
+        margin-left: 0;
+    }
+
+    .prv-pro-profile-v2-activation {
+        grid-template-columns: 1fr 88px;
     }
 }

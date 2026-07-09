@@ -87,23 +87,31 @@
         <div class="prv-pro-profile-v2-metrics">
             <div class="prv-pro-profile-v2-metric">
                 <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-star"></i></span>
-                <strong>@ratingLabel</strong>
-                <span>Rating</span>
+                <div class="prv-pro-profile-v2-metric-copy">
+                    <strong>@ratingLabel</strong>
+                    <span>Rating</span>
+                </div>
             </div>
             <div class="prv-pro-profile-v2-metric">
                 <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-shield-halved"></i></span>
-                <strong>@inspectionsLabel</strong>
-                <span>Inspections</span>
+                <div class="prv-pro-profile-v2-metric-copy">
+                    <strong>@inspectionsLabel</strong>
+                    <span>Inspections</span>
+                </div>
             </div>
             <div class="prv-pro-profile-v2-metric">
                 <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-chart-line"></i></span>
-                <strong>@satisfactionLabel</strong>
-                <span>Satisfaction</span>
+                <div class="prv-pro-profile-v2-metric-copy">
+                    <strong>@satisfactionLabel</strong>
+                    <span>Satisfaction</span>
+                </div>
             </div>
             <div class="prv-pro-profile-v2-metric">
                 <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-clock"></i></span>
-                <strong>@Model.YearsActiveLabel</strong>
-                <span>Active</span>
+                <div class="prv-pro-profile-v2-metric-copy">
+                    <strong>@Model.YearsActiveLabel</strong>
+                    <span>Years Active</span>
+                </div>
             </div>
         </div>
     </section>
@@ -151,8 +159,8 @@
     </nav>
 
     <div class="prv-pro-profile-v2-stack">
-        <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card" aria-label="Edit service areas">
-            <header class="prv-pro-profile-v2-card-head">
+        <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card prv-pro-profile-v2-card--areas" aria-label="Edit service areas">
+            <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--areas">
                 <div class="prv-pro-profile-v2-card-head-main">
                     <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-map-location-dot"></i></span>
                     <div>
@@ -160,30 +168,33 @@
                         <p>Where you provide your services</p>
                     </div>
                 </div>
-                <img src="~/images/profile-map-areas.png" alt="" class="prv-pro-profile-v2-card-deco" aria-hidden="true" />
+                <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
+                <img src="~/images/profile-map-areas.png" alt="" class="prv-pro-profile-v2-areas-map-bg" aria-hidden="true" />
             </header>
-            <div class="prv-pro-profile-v2-area-row">
-                <i class="fas fa-location-dot"></i>
-                <span>@cityLabel</span>
+            <div class="prv-pro-profile-v2-areas-row">
+                <div class="prv-pro-profile-v2-area-row">
+                    <i class="fas fa-location-dot"></i>
+                    <span>@cityLabel</span>
+                </div>
+                @if (zipCodes.Count > 0)
+                {
+                    <div class="prv-pro-profile-v2-zips">
+                        @foreach (var zip in zipCodes)
+                        {
+                            <span class="prv-pro-profile-v2-zip">@zip</span>
+                        }
+                    </div>
+                }
+                else if (Model.ServiceAreas.Count > 0)
+                {
+                    <div class="prv-pro-profile-v2-zips">
+                        @foreach (var area in Model.ServiceAreas.Take(4))
+                        {
+                            <span class="prv-pro-profile-v2-zip">@area</span>
+                        }
+                    </div>
+                }
             </div>
-            @if (zipCodes.Count > 0)
-            {
-                <div class="prv-pro-profile-v2-zips">
-                    @foreach (var zip in zipCodes)
-                    {
-                        <span class="prv-pro-profile-v2-zip">@zip</span>
-                    }
-                </div>
-            }
-            else if (Model.ServiceAreas.Count > 0)
-            {
-                <div class="prv-pro-profile-v2-zips">
-                    @foreach (var area in Model.ServiceAreas.Take(4))
-                    {
-                        <span class="prv-pro-profile-v2-zip">@area</span>
-                    }
-                </div>
-            }
         </a>
 
         <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card" aria-label="Edit services offered">
@@ -420,11 +431,16 @@
     {
         <div class="prv-pro-profile-v2-activation">
             <div class="prv-pro-profile-v2-activation-copy">
-                <strong><i class="fas fa-shield-halved"></i> Complete your activation</strong>
+                <div class="prv-pro-profile-v2-activation-title">
+                    <span class="prv-pro-profile-v2-activation-icon"><i class="fas fa-shield-halved"></i></span>
+                    <strong>Complete your activation</strong>
+                </div>
                 <p>Finish verification to unlock your full public profile and INDOR leads.</p>
                 <a asp-controller="Proveedor" asp-action="ProfileCompletion">Complete activation</a>
             </div>
-            <img src="~/images/profile-house-illustration.png" alt="" aria-hidden="true" />
+            <div class="prv-pro-profile-v2-activation-art">
+                <img src="~/images/profile-house-illustration.png" alt="" aria-hidden="true" />
+            </div>
         </div>
     }
 </div>
