@@ -17,15 +17,27 @@
     var cityLabel = !string.IsNullOrWhiteSpace(Model.PrimaryCity)
         ? Model.PrimaryCity
         : Model.ServiceAreas.FirstOrDefault(a => a.Contains(',')) ?? "Add your location";
+    var locationLabel = !string.IsNullOrWhiteSpace(Model.ServiceAreaLabel)
+        ? Model.ServiceAreaLabel
+        : $"Serving {cityLabel} and surrounding areas";
     var zipCodes = Model.ServiceAreas
         .Where(a => Regex.IsMatch(a.Trim(), @"^\d{5}$"))
         .Distinct()
         .ToList();
-    var ratingLabel = Model.ReviewCount > 0 ? Model.Rating.ToString("0.0") : "—";
-    var inspectionsLabel = Model.TotalJobsCompleted > 0 ? Model.TotalJobsCompleted.ToString() : Model.HomeRecordsCreated.ToString();
-    var satisfactionLabel = Model.Performance.CompletionRate != "—"
-        ? Model.Performance.CompletionRate
-        : Model.ProviderScore > 0 ? $"{Model.ProviderScore}%" : "—";
+    var ratingLabel = Model.ReviewCount > 0 ? Model.Rating.ToString("0.0") : null;
+    var phoneLabel = string.IsNullOrWhiteSpace(Model.Phone) ? "—" : Model.Phone;
+    var emailLabel = string.IsNullOrWhiteSpace(Model.Email) ? "—" : Model.Email;
+    var hoursLabel = string.IsNullOrWhiteSpace(Model.BusinessHours) || Model.BusinessHours == "Hours not set"
+        ? "—"
+        : Model.BusinessHours;
+    string ScoreLabel(int score) => score switch
+    {
+        >= 90 => "Excellent",
+        >= 75 => "Great",
+        >= 60 => "Good",
+        >= 40 => "Fair",
+        _ => "Building"
+    };
     string VerifyIcon(string label) => label switch
     {
         var s when s.Contains("License", StringComparison.OrdinalIgnoreCase) => "fa-id-card",
@@ -36,413 +48,437 @@
 }
 
 <div class="prv-pro-shell prv-pro-shell--profile prv-pro-profile-v2">
-    @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-
-    <header class="prv-pro-jobs-head">
-        <div>
+    <div class="prv-pro-profile-v2-hero">
+        @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
+        <header class="prv-pro-profile-v2-page-head">
             <h1>Profile</h1>
             <p>Your business profile and control center.</p>
-        </div>
-    </header>
+        </header>
+    </div>
 
-    @if (TempData["ProfileSaved"] is true)
-    {
-        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
-            <i class="fas fa-circle-check"></i> Profile updated successfully.
-        </div>
-    }
-    @if (TempData["ProfileSectionError"] is string sectionError)
-    {
-        <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
-            <i class="fas fa-circle-exclamation"></i> @sectionError
-        </div>
-    }
+    <div class="prv-pro-profile-v2-body">
+        @if (TempData["ProfileSaved"] is true)
+        {
+            <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--success">
+                <i class="fas fa-circle-check"></i> Profile updated successfully.
+            </div>
+        }
+        @if (TempData["ProfileSectionError"] is string sectionError)
+        {
+            <div class="prv-pro-edit-profile-alert prv-pro-edit-profile-alert--error">
+                <i class="fas fa-circle-exclamation"></i> @sectionError
+            </div>
+        }
 
-    <section class="prv-pro-profile-v2-overview">
-        <div class="prv-pro-profile-v2-overview-top">
-            <div class="prv-pro-profile-v2-avatar-wrap">
-                @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+        <section class="prv-pro-profile-v2-overview">
+            <div class="prv-pro-profile-v2-overview-top">
+                <div class="prv-pro-profile-v2-avatar-wrap">
+                    @if (!string.IsNullOrWhiteSpace(Model.LogoUrl))
+                    {
+                        <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@displayName" class="prv-pro-profile-v2-avatar" />
+                    }
+                    else
+                    {
+                        <span class="prv-pro-profile-v2-avatar">@initial</span>
+                    }
+                    @if (Model.IsVerified)
+                    {
+                        <span class="prv-pro-profile-v2-verified"><i class="fas fa-check"></i></span>
+                    }
+                </div>
+                <div class="prv-pro-profile-v2-overview-copy">
+                    <h2>@displayName</h2>
+                    @if (Model.IsVerified)
+                    {
+                        <span class="prv-pro-profile-v2-badge"><i class="fas fa-circle-check"></i> Verified Provider</span>
+                    }
+                    <p class="prv-pro-profile-v2-location"><i class="fas fa-location-dot"></i> @locationLabel</p>
+                </div>
+            </div>
+            <div class="prv-pro-profile-v2-stats">
+                <div class="prv-pro-profile-v2-stat">
+                    <span class="prv-pro-profile-v2-stat-label">Provider Score <i class="fas fa-circle-info" aria-hidden="true"></i></span>
+                    <strong class="prv-pro-profile-v2-stat-value is-score">@Model.ProviderScore</strong>
+                    <span class="prv-pro-profile-v2-stat-foot is-good"><i class="fas fa-star"></i> @ScoreLabel(Model.ProviderScore)</span>
+                </div>
+                <div class="prv-pro-profile-v2-stat">
+                    <span class="prv-pro-profile-v2-stat-label">Rating</span>
+                    @if (ratingLabel is not null)
+                    {
+                        <strong class="prv-pro-profile-v2-stat-value"><i class="fas fa-star is-rating"></i> @ratingLabel</strong>
+                        <span class="prv-pro-profile-v2-stat-foot">@Model.ReviewCount review@(Model.ReviewCount == 1 ? "" : "s")</span>
+                    }
+                    else
+                    {
+                        <strong class="prv-pro-profile-v2-stat-value"><i class="fas fa-star is-rating"></i> —</strong>
+                        <span class="prv-pro-profile-v2-stat-foot">No reviews yet</span>
+                    }
+                </div>
+                <div class="prv-pro-profile-v2-stat">
+                    <span class="prv-pro-profile-v2-stat-label">Jobs Completed</span>
+                    <strong class="prv-pro-profile-v2-stat-value is-jobs">@Model.JobsCompletedThisYear</strong>
+                    <span class="prv-pro-profile-v2-stat-foot">This Year</span>
+                </div>
+                <div class="prv-pro-profile-v2-stat">
+                    <span class="prv-pro-profile-v2-stat-label">Home Records</span>
+                    <strong class="prv-pro-profile-v2-stat-value is-records">@Model.HomeRecordsCreated</strong>
+                    <span class="prv-pro-profile-v2-stat-foot">Created</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="prv-pro-profile-v2-actions" aria-label="Profile shortcuts">
+            <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-profile-v2-action">
+                <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--edit"><i class="fas fa-pen"></i></span>
+                <span class="prv-pro-profile-v2-action-copy">
+                    <strong>Edit Profile</strong>
+                    <small>Update your business information</small>
+                </span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-profile-v2-action">
+                <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--public"><i class="fas fa-globe"></i></span>
+                <span class="prv-pro-profile-v2-action-copy">
+                    <strong>Public Profile</strong>
+                    <small>View how customers see you</small>
+                </span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="@publicProfileUrl"
+               class="prv-pro-profile-v2-action"
+               id="prvProfileShareBtn"
+               data-provider-share
+               data-share-url="@publicProfileUrl"
+               data-share-title="@displayName - INDOR PRO"
+               data-share-text="View my provider profile on INDOR"
+               role="button">
+                <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--share"><i class="fas fa-share-nodes"></i></span>
+                <span class="prv-pro-profile-v2-action-copy">
+                    <strong>Share</strong>
+                    <small>Share your profile with customers</small>
+                </span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a asp-controller="Proveedor" asp-action="Settings" class="prv-pro-profile-v2-action">
+                <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--settings"><i class="fas fa-gear"></i></span>
+                <span class="prv-pro-profile-v2-action-copy">
+                    <strong>Settings</strong>
+                    <small>Manage preferences and account</small>
+                </span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+        </nav>
+
+        <div class="prv-pro-profile-v2-stack">
+            <a asp-controller="Proveedor" asp-action="EditProfile" class="prv-pro-profile-v2-card" aria-label="Edit business information">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-building"></i></span>
+                        <div><h3>Business Information</h3></div>
+                    </div>
+                </header>
+                <div class="prv-pro-profile-v2-biz-row">
+                    <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-phone"></i></span>
+                    <span>Phone</span>
+                    <strong>@phoneLabel</strong>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="prv-pro-profile-v2-biz-row">
+                    <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-envelope"></i></span>
+                    <span>Email</span>
+                    <strong class="prv-pro-profile-v2-biz-value">@emailLabel</strong>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+                <div class="prv-pro-profile-v2-biz-row">
+                    <span class="prv-pro-profile-v2-biz-icon"><i class="fas fa-clock"></i></span>
+                    <span>Business Hours</span>
+                    <strong>@hoursLabel</strong>
+                    <i class="fas fa-chevron-right"></i>
+                </div>
+            </a>
+
+            <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card prv-pro-profile-v2-card--areas" aria-label="Edit service areas">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--areas">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-map-location-dot"></i></span>
+                        <div>
+                            <h3>Service Areas</h3>
+                            <p>Where you provide your services</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
+                    <img src="~/images/profile-map-areas.png" alt="" class="prv-pro-profile-v2-areas-map-bg" aria-hidden="true" />
+                </header>
+                <div class="prv-pro-profile-v2-areas-row">
+                    <div class="prv-pro-profile-v2-area-row">
+                        <i class="fas fa-location-dot"></i>
+                        <span>@cityLabel</span>
+                    </div>
+                    @if (zipCodes.Count > 0)
+                    {
+                        <div class="prv-pro-profile-v2-zips">
+                            @foreach (var zip in zipCodes)
+                            {
+                                <span class="prv-pro-profile-v2-zip">@zip</span>
+                            }
+                        </div>
+                    }
+                    else if (Model.ServiceAreas.Count > 0)
+                    {
+                        <div class="prv-pro-profile-v2-zips">
+                            @foreach (var area in Model.ServiceAreas.Take(4))
+                            {
+                                <span class="prv-pro-profile-v2-zip">@area</span>
+                            }
+                        </div>
+                    }
+                </div>
+            </a>
+
+            <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card" aria-label="Edit services offered">
+                <header class="prv-pro-profile-v2-card-head">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-wrench"></i></span>
+                        <div>
+                            <h3>Services Offered</h3>
+                            <p>Add and manage the services you provide</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
+                </header>
+                @if (allServices.Count == 0)
                 {
-                    <img src="@Url.Content($"~{Model.LogoUrl}")" alt="@displayName" class="prv-pro-profile-v2-avatar" />
+                    <div class="prv-pro-profile-v2-empty">
+                        <img src="~/images/profile-services-empty.png" alt="" aria-hidden="true" />
+                        <h4>No services selected yet</h4>
+                        <p>Add services to show customers what you offer.</p>
+                        <span class="prv-pro-profile-v2-add-btn"><i class="fas fa-plus"></i> Add Services</span>
+                    </div>
                 }
                 else
                 {
-                    <span class="prv-pro-profile-v2-avatar">@initial</span>
-                }
-                @if (Model.IsVerified)
-                {
-                    <span class="prv-pro-profile-v2-verified"><i class="fas fa-check"></i></span>
-                }
-            </div>
-            <div class="prv-pro-profile-v2-overview-copy">
-                <h2>@displayName</h2>
-                @if (Model.IsVerified)
-                {
-                    <span class="prv-pro-profile-v2-badge"><i class="fas fa-circle-check"></i> Verified Provider</span>
-                }
-                <p class="prv-pro-profile-v2-location"><i class="fas fa-location-dot"></i> @cityLabel</p>
-            </div>
-            <img src="~/images/profile-house-illustration.png" alt="" class="prv-pro-profile-v2-overview-illus" aria-hidden="true" />
-        </div>
-        <div class="prv-pro-profile-v2-metrics">
-            <div class="prv-pro-profile-v2-metric">
-                <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-star"></i></span>
-                <div class="prv-pro-profile-v2-metric-copy">
-                    <strong>@ratingLabel</strong>
-                    <span>Rating</span>
-                </div>
-            </div>
-            <div class="prv-pro-profile-v2-metric">
-                <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-shield-halved"></i></span>
-                <div class="prv-pro-profile-v2-metric-copy">
-                    <strong>@inspectionsLabel</strong>
-                    <span>Inspections</span>
-                </div>
-            </div>
-            <div class="prv-pro-profile-v2-metric">
-                <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-chart-line"></i></span>
-                <div class="prv-pro-profile-v2-metric-copy">
-                    <strong>@satisfactionLabel</strong>
-                    <span>Satisfaction</span>
-                </div>
-            </div>
-            <div class="prv-pro-profile-v2-metric">
-                <span class="prv-pro-profile-v2-metric-icon"><i class="fas fa-clock"></i></span>
-                <div class="prv-pro-profile-v2-metric-copy">
-                    <strong>@Model.YearsActiveLabel</strong>
-                    <span>Years Active</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <nav class="prv-pro-profile-v2-actions" aria-label="Profile shortcuts">
-        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-profile-v2-action">
-            <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--edit"><i class="fas fa-pen"></i></span>
-            <span class="prv-pro-profile-v2-action-copy">
-                <strong>Edit Profile</strong>
-                <small>Update your business information</small>
-            </span>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <a asp-controller="Proveedor" asp-action="ProfileCompletion" class="prv-pro-profile-v2-action">
-            <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--public"><i class="fas fa-globe"></i></span>
-            <span class="prv-pro-profile-v2-action-copy">
-                <strong>Public Profile</strong>
-                <small>View how customers see you</small>
-            </span>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <a href="@publicProfileUrl"
-           class="prv-pro-profile-v2-action"
-           id="prvProfileShareBtn"
-           data-provider-share
-           data-share-url="@publicProfileUrl"
-           data-share-title="@displayName - INDOR PRO"
-           data-share-text="View my provider profile on INDOR"
-           role="button">
-            <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--share"><i class="fas fa-share-nodes"></i></span>
-            <span class="prv-pro-profile-v2-action-copy">
-                <strong>Share</strong>
-                <small>Share your profile with customers</small>
-            </span>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-        <a asp-controller="Proveedor" asp-action="Settings" class="prv-pro-profile-v2-action">
-            <span class="prv-pro-profile-v2-action-icon prv-pro-profile-v2-action-icon--settings"><i class="fas fa-gear"></i></span>
-            <span class="prv-pro-profile-v2-action-copy">
-                <strong>Settings</strong>
-                <small>Manage preferences and account</small>
-            </span>
-            <i class="fas fa-chevron-right"></i>
-        </a>
-    </nav>
-
-    <div class="prv-pro-profile-v2-stack">
-        <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card prv-pro-profile-v2-card--areas" aria-label="Edit service areas">
-            <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--areas">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-map-location-dot"></i></span>
-                    <div>
-                        <h3>Service Areas</h3>
-                        <p>Where you provide your services</p>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
-                <img src="~/images/profile-map-areas.png" alt="" class="prv-pro-profile-v2-areas-map-bg" aria-hidden="true" />
-            </header>
-            <div class="prv-pro-profile-v2-areas-row">
-                <div class="prv-pro-profile-v2-area-row">
-                    <i class="fas fa-location-dot"></i>
-                    <span>@cityLabel</span>
-                </div>
-                @if (zipCodes.Count > 0)
-                {
-                    <div class="prv-pro-profile-v2-zips">
-                        @foreach (var zip in zipCodes)
+                    <div class="prv-pro-profile-v2-tags">
+                        @foreach (var svc in allServices)
                         {
-                            <span class="prv-pro-profile-v2-zip">@zip</span>
+                            <span class="prv-pro-profile-v2-tag">@svc</span>
                         }
                     </div>
                 }
-                else if (Model.ServiceAreas.Count > 0)
+            </a>
+
+            <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-pro-profile-v2-card" aria-label="Verification and documents">
+                <header class="prv-pro-profile-v2-card-head">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-shield-halved"></i></span>
+                        <div>
+                            <h3>Verification &amp; Documents</h3>
+                            <p>Keep your documents up to date</p>
+                        </div>
+                    </div>
+                    <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
+                </header>
+                @foreach (var item in Model.VerificationItems)
                 {
-                    <div class="prv-pro-profile-v2-zips">
-                        @foreach (var area in Model.ServiceAreas.Take(4))
-                        {
-                            <span class="prv-pro-profile-v2-zip">@area</span>
-                        }
+                    <div class="prv-pro-profile-v2-verify-row">
+                        <span class="prv-pro-profile-v2-verify-icon"><i class="fas @VerifyIcon(item.Label)"></i></span>
+                        <span>@item.Label</span>
+                        <span class="prv-pro-profile-v2-pending @(item.IsComplete ? "is-done" : "")">@(item.IsComplete ? "Complete" : "Pending")</span>
+                        <i class="fas fa-chevron-right prv-pro-profile-v2-verify-chevron"></i>
                     </div>
                 }
-            </div>
-        </a>
+            </a>
 
-        <a asp-controller="Proveedor" asp-action="ProfileBusiness" class="prv-pro-profile-v2-card" aria-label="Edit services offered">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-wrench"></i></span>
-                    <div>
-                        <h3>Services Offered</h3>
-                        <p>Add and manage the services you provide</p>
+            <a asp-controller="Proveedor" asp-action="EditProfilePayments" class="prv-pro-profile-v2-card" aria-label="Payments and banking">
+                <header class="prv-pro-profile-v2-card-head">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-credit-card"></i></span>
+                        <div><h3>Payments &amp; Banking</h3></div>
                     </div>
+                    <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
+                </header>
+                <div class="prv-pro-profile-v2-kv">
+                    <span>Payout Account</span>
+                    <strong class="@(Model.PayoutConnected ? "is-ok" : "")">@(Model.PayoutConnected ? "Connected" : "Not connected")</strong>
                 </div>
-                <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
-            </header>
-            @if (allServices.Count == 0)
-            {
-                <div class="prv-pro-profile-v2-empty">
-                    <img src="~/images/profile-services-empty.png" alt="" aria-hidden="true" />
-                    <h4>No services selected yet</h4>
-                    <p>Add services to show customers what you offer.</p>
-                    <span class="prv-pro-profile-v2-add-btn"><i class="fas fa-plus"></i> Add Services</span>
+                <div class="prv-pro-profile-v2-kv">
+                    <span>Payment Processing</span>
+                    <strong class="@(Model.PaymentProcessingActive ? "is-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
                 </div>
-            }
-            else
-            {
-                <div class="prv-pro-profile-v2-tags">
-                    @foreach (var svc in allServices)
+                <div class="prv-pro-profile-v2-kv">
+                    <span>Next Payout</span>
+                    <strong>@Model.NextPayoutAmount.ToString("C2", money)</strong>
+                </div>
+            </a>
+
+            <section class="prv-pro-profile-v2-card">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-users"></i></span>
+                        <div><h3>Team Members</h3></div>
+                    </div>
+                </header>
+                @if (Model.TeamMembers.Count == 0)
+                {
+                    <div class="prv-pro-profile-v2-team-empty">
+                        <span class="prv-pro-profile-v2-team-empty-icon"><i class="fas fa-users"></i></span>
+                        <p>No team members listed yet.</p>
+                    </div>
+                }
+                else
+                {
+                    @foreach (var member in Model.TeamMembers)
                     {
-                        <span class="prv-pro-profile-v2-tag">@svc</span>
+                        <div class="prv-pro-profile-v2-kv">
+                            <span>@member.Name</span>
+                            <strong>@member.Role</strong>
+                        </div>
                     }
-                </div>
-            }
-        </a>
-
-        <a asp-controller="Proveedor" asp-action="ProfileDocuments" class="prv-pro-profile-v2-card" aria-label="Verification and documents">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-shield-halved"></i></span>
-                    <div>
-                        <h3>Verification &amp; Documents</h3>
-                        <p>Keep your documents up to date</p>
-                    </div>
-                </div>
-                <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
-            </header>
-            @foreach (var item in Model.VerificationItems)
-            {
-                <div class="prv-pro-profile-v2-verify-row">
-                    <span class="prv-pro-profile-v2-verify-icon"><i class="fas @VerifyIcon(item.Label)"></i></span>
-                    <span>@item.Label</span>
-                    <span class="prv-pro-profile-v2-pending @(item.IsComplete ? "is-done" : "")">@(item.IsComplete ? "Complete" : "Pending")</span>
-                    <i class="fas fa-chevron-right" style="color:#cbd5e1;font-size:.75rem;"></i>
-                </div>
-            }
-        </a>
-
-        <a asp-controller="Proveedor" asp-action="EditProfilePayments" class="prv-pro-profile-v2-card" aria-label="Payments and banking">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-credit-card"></i></span>
-                    <div><h3>Payments &amp; Banking</h3></div>
-                </div>
-                <i class="fas fa-chevron-right prv-pro-profile-v2-card-chevron"></i>
-            </header>
-            <div class="prv-pro-profile-v2-kv">
-                <span>Payout Account</span>
-                <strong class="@(Model.PayoutConnected ? "is-ok" : "")">@(Model.PayoutConnected ? "Connected" : "Not connected")</strong>
-            </div>
-            <div class="prv-pro-profile-v2-kv">
-                <span>Payment Processing</span>
-                <strong class="@(Model.PaymentProcessingActive ? "is-ok" : "")">@(Model.PaymentProcessingActive ? "Active" : "Inactive")</strong>
-            </div>
-            <div class="prv-pro-profile-v2-kv">
-                <span>Next Payout</span>
-                <strong>@Model.NextPayoutAmount.ToString("C2", money)</strong>
-            </div>
-        </a>
-
-        <section class="prv-pro-profile-v2-card">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-users"></i></span>
-                    <div><h3>Team Members</h3></div>
-                </div>
-            </header>
-            @if (Model.TeamMembers.Count == 0)
-            {
-                <div class="prv-pro-profile-v2-team-empty">
-                    <span class="prv-pro-profile-v2-team-empty-icon"><i class="fas fa-users"></i></span>
-                    <p>No team members listed yet.</p>
-                </div>
-            }
-            else
-            {
-                @foreach (var member in Model.TeamMembers)
-                {
-                    <div class="prv-pro-profile-v2-kv">
-                        <span>@member.Name</span>
-                        <strong>@member.Role</strong>
-                    </div>
                 }
-            }
-        </section>
+            </section>
 
-        <section class="prv-pro-profile-v2-card">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-robot"></i></span>
-                    <div><h3>Automation &amp; Tools</h3></div>
+            <section class="prv-pro-profile-v2-card">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-robot"></i></span>
+                        <div><h3>Automation &amp; Tools</h3></div>
+                    </div>
+                </header>
+                <div class="prv-pro-profile-v2-auto-row">
+                    <i class="fas fa-bell"></i>
+                    <span>Auto reminders</span>
+                    <strong class="@(Model.AutoRemindersOn ? "is-ok" : "")">@(Model.AutoRemindersOn ? "ON" : "OFF")</strong>
                 </div>
-            </header>
-            <div class="prv-pro-profile-v2-auto-row">
-                <i class="fas fa-bell"></i>
-                <span>Auto reminders</span>
-                <strong class="@(Model.AutoRemindersOn ? "is-ok" : "")">@(Model.AutoRemindersOn ? "ON" : "OFF")</strong>
-            </div>
-            <div class="prv-pro-profile-v2-auto-row">
-                <i class="fas fa-file-lines"></i>
-                <span>Saved report templates</span>
-                <strong>@Model.ReportTemplatesCount</strong>
-            </div>
-            <div class="prv-pro-profile-v2-auto-row">
-                <i class="fas fa-paper-plane"></i>
-                <span>Follow-up campaigns</span>
-                <strong class="@(Model.FollowUpCampaignsActive ? "is-ok" : "")">@(Model.FollowUpCampaignsActive ? "Active" : "Inactive")</strong>
-            </div>
-            <div class="prv-pro-profile-v2-auto-row">
-                <i class="fas fa-wand-magic-sparkles"></i>
-                <span>AI assistant</span>
-                <strong class="@(Model.AiAssistantEnabled ? "is-ok" : "")">@(Model.AiAssistantEnabled ? "Enabled" : "Disabled")</strong>
-            </div>
-        </section>
+                <div class="prv-pro-profile-v2-auto-row">
+                    <i class="fas fa-file-lines"></i>
+                    <span>Saved report templates</span>
+                    <strong>@Model.ReportTemplatesCount</strong>
+                </div>
+                <div class="prv-pro-profile-v2-auto-row">
+                    <i class="fas fa-paper-plane"></i>
+                    <span>Follow-up campaigns</span>
+                    <strong class="@(Model.FollowUpCampaignsActive ? "is-ok" : "")">@(Model.FollowUpCampaignsActive ? "Active" : "Inactive")</strong>
+                </div>
+                <div class="prv-pro-profile-v2-auto-row">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    <span>AI assistant</span>
+                    <strong class="@(Model.AiAssistantEnabled ? "is-ok" : "")">@(Model.AiAssistantEnabled ? "Enabled" : "Disabled")</strong>
+                </div>
+            </section>
 
-        <section class="prv-pro-profile-v2-card">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-chart-line"></i></span>
-                    <div><h3>Performance</h3></div>
+            <section class="prv-pro-profile-v2-card">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-chart-line"></i></span>
+                        <div><h3>Performance</h3></div>
+                    </div>
+                </header>
+                <div class="prv-pro-profile-v2-perf">
+                    <div class="prv-pro-profile-v2-perf-item">
+                        <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--time"><i class="fas fa-clock"></i></span>
+                        <strong>@Model.Performance.AvgResponseTime</strong>
+                        <span class="prv-pro-profile-v2-perf-label">Avg. Response Time</span>
+                    </div>
+                    <div class="prv-pro-profile-v2-perf-item">
+                        <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--check"><i class="fas fa-circle-check"></i></span>
+                        <strong>@Model.Performance.CompletionRate</strong>
+                        <span class="prv-pro-profile-v2-perf-label">Completion Rate</span>
+                    </div>
+                    <div class="prv-pro-profile-v2-perf-item">
+                        <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--thumb"><i class="fas fa-thumbs-up"></i></span>
+                        <strong>@Model.Performance.HomeownerApproval</strong>
+                        <span class="prv-pro-profile-v2-perf-label">Homeowner Approval</span>
+                    </div>
+                    <div class="prv-pro-profile-v2-perf-item">
+                        <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--home"><i class="fas fa-house"></i></span>
+                        <strong class="is-facts">@Model.Performance.HouseFactsAdded</strong>
+                        <span class="prv-pro-profile-v2-perf-label">House Facts Added</span>
+                    </div>
                 </div>
-            </header>
-            <div class="prv-pro-profile-v2-perf">
-                <div class="prv-pro-profile-v2-perf-item">
-                    <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--time"><i class="fas fa-clock"></i></span>
-                    <strong>@Model.Performance.AvgResponseTime</strong>
-                    <span>Avg. Response Time</span>
-                </div>
-                <div class="prv-pro-profile-v2-perf-item">
-                    <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--check"><i class="fas fa-circle-check"></i></span>
-                    <strong>@Model.Performance.CompletionRate</strong>
-                    <span>Completion Rate</span>
-                </div>
-                <div class="prv-pro-profile-v2-perf-item">
-                    <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--thumb"><i class="fas fa-thumbs-up"></i></span>
-                    <strong>@Model.Performance.HomeownerApproval</strong>
-                    <span>Homeowner Approval</span>
-                </div>
-                <div class="prv-pro-profile-v2-perf-item">
-                    <span class="prv-pro-profile-v2-perf-icon prv-pro-profile-v2-perf-icon--home"><i class="fas fa-house"></i></span>
-                    <strong>@Model.Performance.HouseFactsAdded</strong>
-                    <span>House Facts Added</span>
-                </div>
-            </div>
-        </section>
+            </section>
 
-        <section class="prv-pro-profile-v2-card">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-star"></i></span>
-                    <div><h3>Reviews</h3></div>
-                </div>
-            </header>
-            @if (Model.Reviews.Count == 0)
-            {
+            <section class="prv-pro-profile-v2-card">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-star"></i></span>
+                        <div><h3>Reviews</h3></div>
+                    </div>
+                </header>
+                @if (Model.Reviews.Count == 0)
+                {
                 <div class="prv-pro-profile-v2-reviews-empty">
-                    <img src="~/images/profile-reviews-empty.png" alt="" aria-hidden="true" />
-                    <div>
+                    <img src="~/images/profile-reviews-illustration.png" alt="" class="prv-pro-profile-v2-reviews-illus" aria-hidden="true" asp-append-version="true" />
+                    <div class="prv-pro-profile-v2-reviews-copy">
                         <h4>No reviews yet</h4>
                         <p>Customer reviews will appear here after completed jobs.</p>
                     </div>
                 </div>
-            }
-            else
-            {
-                @foreach (var review in Model.Reviews.Take(2))
-                {
-                    <blockquote class="prv-pro-profile-v2-kv" style="flex-direction:column;align-items:flex-start;">
-                        <strong>@review.Author · @review.Rating.ToString("0.0") ★</strong>
-                        <span style="color:#64748b;margin-top:4px;">@review.Comment</span>
-                    </blockquote>
                 }
-            }
-        </section>
+                else
+                {
+                    @foreach (var review in Model.Reviews.Take(2))
+                    {
+                        <blockquote class="prv-pro-profile-v2-kv prv-pro-profile-v2-kv--review">
+                            <strong>@review.Author · @review.Rating.ToString("0.0") ★</strong>
+                            <span>@review.Comment</span>
+                        </blockquote>
+                    }
+                }
+            </section>
 
-        <section class="prv-pro-profile-v2-card prv-pro-profile-card--support">
-            <header class="prv-pro-profile-v2-card-head">
-                <div class="prv-pro-profile-v2-card-head-main">
-                    <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-life-ring"></i></span>
-                    <div><h3>Support &amp; Account</h3></div>
-                </div>
-            </header>
-            <a asp-controller="Proveedor" asp-action="HelpCenter" class="prv-pro-profile-link-row">
-                <i class="fas fa-book"></i>
-                <span>Help Center</span>
-                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
-            </a>
-            <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-profile-link-row prv-pro-profile-link-row--plan">
-                <span><i class="fas fa-crown"></i> Subscription / Plan</span>
-                <strong class="prv-pro-status-plan">@Model.SubscriptionPlan</strong>
-                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
-            </a>
-            <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-profile-link-row">
-                <i class="fas fa-bell"></i>
-                <span>Notifications</span>
-                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
-            </a>
-            <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
-                @Html.AntiForgeryToken()
-                <button type="submit" class="prv-pro-profile-link-row prv-pro-profile-link-row--danger">
+            <section class="prv-pro-profile-v2-card prv-pro-profile-card--support">
+                <header class="prv-pro-profile-v2-card-head prv-pro-profile-v2-card-head--compact">
+                    <div class="prv-pro-profile-v2-card-head-main">
+                        <span class="prv-pro-profile-v2-card-icon"><i class="fas fa-life-ring"></i></span>
+                        <div><h3>Support &amp; Account</h3></div>
+                    </div>
+                </header>
+                <a asp-controller="Proveedor" asp-action="HelpCenter" class="prv-pro-profile-link-row">
+                    <i class="fas fa-book"></i>
+                    <span>Help Center</span>
+                    <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+                </a>
+                <a asp-controller="Proveedor" asp-action="Subscription" class="prv-pro-profile-link-row prv-pro-profile-link-row--plan">
+                    <span><i class="fas fa-crown"></i> Subscription / Plan</span>
+                    <strong class="prv-pro-status-plan">@Model.SubscriptionPlan</strong>
+                    <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+                </a>
+                <a asp-controller="Proveedor" asp-action="Notifications" class="prv-pro-profile-link-row">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                    <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+                </a>
+                <form asp-controller="Account" asp-action="Logout" method="post" class="prv-pro-logout-form">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="prv-pro-profile-link-row prv-pro-profile-link-row--danger">
+                        <span class="prv-pro-profile-link-row-label">
+                            <i class="fas fa-right-from-bracket"></i> Sign Out
+                        </span>
+                        <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
+                    </button>
+                </form>
+                <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-link-row prv-pro-profile-link-row--danger">
                     <span class="prv-pro-profile-link-row-label">
-                        <i class="fas fa-right-from-bracket"></i> Sign Out
+                        <i class="fas fa-user-xmark"></i> Delete account
                     </span>
                     <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
-                </button>
-            </form>
-            <a asp-controller="Account" asp-action="DeleteAccount" class="prv-pro-profile-link-row prv-pro-profile-link-row--danger">
-                <span class="prv-pro-profile-link-row-label">
-                    <i class="fas fa-user-xmark"></i> Delete account
-                </span>
-                <i class="fas fa-chevron-right prv-pro-profile-link-chevron"></i>
-            </a>
-        </section>
-    </div>
-
-    @if (!Model.IsApproved)
-    {
-        <div class="prv-pro-profile-v2-activation">
-            <div class="prv-pro-profile-v2-activation-copy">
-                <div class="prv-pro-profile-v2-activation-title">
-                    <span class="prv-pro-profile-v2-activation-icon"><i class="fas fa-shield-halved"></i></span>
-                    <strong>Complete your activation</strong>
-                </div>
-                <p>Finish verification to unlock your full public profile and INDOR leads.</p>
-                <a asp-controller="Proveedor" asp-action="ProfileCompletion">Complete activation</a>
-            </div>
-            <div class="prv-pro-profile-v2-activation-art">
-                <img src="~/images/profile-house-illustration.png" alt="" aria-hidden="true" />
-            </div>
+                </a>
+            </section>
         </div>
-    }
+
+        @if (!Model.IsApproved)
+        {
+            <div class="prv-pro-profile-v2-activation">
+                <div class="prv-pro-profile-v2-activation-copy">
+                    <div class="prv-pro-profile-v2-activation-title">
+                        <span class="prv-pro-profile-v2-activation-icon"><i class="fas fa-shield-halved"></i></span>
+                        <strong>Complete your activation</strong>
+                    </div>
+                    <p>Finish verification to unlock your full public profile and INDOR leads.</p>
+                    <a asp-controller="Proveedor" asp-action="ProfileCompletion">Complete activation</a>
+                </div>
+            </div>
+        }
+    </div>
 </div>
 
 <div id="prvProfileToast" class="prv-pro-profile-toast" hidden role="status"></div>

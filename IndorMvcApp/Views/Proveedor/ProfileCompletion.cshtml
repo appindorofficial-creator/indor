@@ -11,12 +11,12 @@
 <div class="prv-pro-shell prv-pro-shell--profile prv-flow-shell prv-flow-shell--hub">
     <div class="prv-flow-hero-header">
         @await Html.PartialAsync("_ProviderProTopbar", Model.CompanyName)
-        <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-header-back" aria-label="Back to profile">
-            <i class="fas fa-chevron-left"></i>
-        </a>
     </div>
 
     <div class="prv-flow-sheet">
+        <a asp-controller="Proveedor" asp-action="Profile" class="prv-flow-sheet-back" aria-label="Back to profile">
+            <i class="fas fa-chevron-left"></i>
+        </a>
         <header class="prv-flow-sheet-head">
             <h1>Public Profile</h1>
             <p>Manage how homeowners see your business on INDOR.</p>
